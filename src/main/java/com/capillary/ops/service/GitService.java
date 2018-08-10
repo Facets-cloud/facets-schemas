@@ -34,7 +34,7 @@ public class GitService {
                     .setURI(application.getRepoURL())
                     .call();
             git.checkout().setName(deployment.getTag()).call();
-            git.fetch().call();
+            git.fetch().setTransportConfigCallback(transportConfigCallback).call();
             git.branchCreate().setName(deployment.getId()).call();
             git.checkout().setName(deployment.getId()).call();
             git.remoteAdd().setName("deis").setUri(new URIish(
