@@ -25,8 +25,8 @@ public class GitService {
     @Async
     public void pushToDeis(Application application, Deployment deployment) {
         try {
-            File workingDir = Files.createTempDirectory(String.format("%s_%s_%s", application.getName(),
-                    deployment.getEnvironment().name(), deployment.getTag())).toFile();
+            File workingDir = Files.createTempDirectory(String.format("%s_%s", application.getName(),
+                    deployment.getId())).toFile();
             TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(application);
             Git git = Git.cloneRepository()
                     .setDirectory(workingDir)
@@ -34,6 +34,7 @@ public class GitService {
                     .setURI(application.getRepoURL())
                     .call();
             git.checkout().setName(deployment.getTag()).call();
+            git.fetch().call();
             git.branchCreate().setName(deployment.getId()).call();
             git.checkout().setName(deployment.getId()).call();
             git.remoteAdd().setName("deis").setUri(new URIish(
