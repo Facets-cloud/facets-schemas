@@ -49,7 +49,8 @@ public class GitService {
             deploymentMongoService.update(deployment);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            deployment.setStatus(Deployment.Status.FINISHED);
+            deployment.setPushResult(e.getMessage());
         }
     }
 
