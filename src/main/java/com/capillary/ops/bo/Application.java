@@ -24,6 +24,8 @@ public class Application {
 
     private String repoURL;
 
+    private String projectFolder;
+
     @JsonIgnore
     private Map<Environments, String> endpoints;
 
@@ -89,5 +91,13 @@ public class Application {
     @JsonIgnore
     public void setEndpoints(Map<Environments, String> endpoints) {
         this.endpoints = endpoints;
+    }
+
+    public String getProjectFolder() {
+        return projectFolder;
+    }
+
+    public void setProjectFolder(String projectFolder) {
+        this.projectFolder = projectFolder;
     }
 }

@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.transport.*;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,16 @@ public class GitService {
             git.fetch().setTransportConfigCallback(transportConfigCallback).call();
             git.branchCreate().setName(deployment.getId()).call();
             git.checkout().setName(deployment.getId()).call();
+
+            if(!StringUtils.isEmptyOrNull(application.getProjectFolder())) {
+                workingDir = new File(workingDir.getAbsolutePath() + "/" + application.getProjectFolder());
+                git = Git.init().setDirectory(workingDir).call();
+                git.add().addFilepattern(".").call();
+                git.commit().setCommitter("admin", "admin@deployer")
+                        .setAuthor("admin", "admin@deployer")
+                        .setMessage("adding subdir as a repo")
+                        .call();
+            }
             git.remoteAdd().setName("deis").setUri(new URIish(
                     String.format("%s/%s.git",
                             deployment.getEnvironment().getDeisGitUri(),
