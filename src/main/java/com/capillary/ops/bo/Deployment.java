@@ -25,6 +25,10 @@ public class Deployment {
 
     private Status status = Status.RUNNING;
 
+    private String deployedBy;
+
+    private String deploymentTime;
+
     public Environments getEnvironment() {
         return environment;
     }
@@ -73,5 +77,21 @@ public class Deployment {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getDeployedBy() {
+        return deployedBy;
+    }
+
+    public void setDeployedBy(String deployedBy) {
+        this.deployedBy = deployedBy;
+    }
+
+    public String getDeploymentTime() {
+        return deploymentTime;
+    }
+
+    public void setDeploymentTime(String deploymentTime) {
+        this.deploymentTime = deploymentTime;
     }
 }

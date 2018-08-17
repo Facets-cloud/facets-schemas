@@ -1,12 +1,10 @@
 package com.capillary.ops.controller;
 
 import com.capillary.ops.App;
-import com.capillary.ops.bo.Application;
-import com.capillary.ops.bo.Deployment;
-import com.capillary.ops.bo.Environments;
-import com.capillary.ops.bo.SSHKeyPair;
+import com.capillary.ops.bo.*;
 import com.capillary.ops.bo.exceptions.ApplicationAlreadyExists;
 import com.capillary.ops.bo.exceptions.ApplicationDoesNotExist;
+import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
 import com.capillary.ops.service.*;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,9 @@ public class DeisApplicationController {
     @Autowired
     private GitService gitService;
 
+    @Autowired
+    private ConfigSetService configSetService;
+
     @PostMapping("/applications")
     public ResponseEntity<Application> createApplication(@RequestBody Application application) throws ApplicationAlreadyExists {
         SSHKeyPair keyPair = sshKeyPairGenerator.generate();
@@ -49,8 +50,21 @@ public class DeisApplicationController {
 
     @PostMapping("/applications/{applicationName}/deployment")
     public ResponseEntity<Deployment> deploy(@PathVariable String applicationName,
-                                                  @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
+                                             @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
         Application application = applicationMongoService.getApplication(applicationName);
+        if(application == null) {
+            throw new ApplicationDoesNotExist();
+        }
+        deployment.setApplicationId(application.getId());
+        deploymentMongoService.createDeployment(deployment);
+        gitService.pushToDeis(application, deployment);
+        return new ResponseEntity<>(deployment, HttpStatus.OK);
+    }
+
+    @PostMapping("/applications/{applicationId}/deployments")
+    public ResponseEntity<Deployment> deployByAppId(@PathVariable String applicationId,
+                                             @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
+        Application application = applicationMongoService.getApplicationById(applicationId);
         if(application == null) {
             throw new ApplicationDoesNotExist();
         }
@@ -72,4 +86,41 @@ public class DeisApplicationController {
         return new ResponseEntity<>(apps, HttpStatus.OK);
     }
 
+    @GetMapping("/applications/{applicationId}")
+    public ResponseEntity<Application> getApp(@PathVariable String applicationId) {
+        Application app = applicationMongoService.getApplicationById(applicationId);
+        return new ResponseEntity<>(app, HttpStatus.OK);
+    }
+
+    @PutMapping("/applications/{applicationId}")
+    public ResponseEntity<Application> updateApp(@PathVariable String applicationId, @RequestBody Application application) {
+        Application app = applicationMongoService.getApplicationById(applicationId);
+        app.setConfigs(application.getConfigs());
+        for (Environments environment : Environments.values()) {
+            deisApiService.createApplication(environment, app);
+        }
+        applicationMongoService.updateApplication(app);
+        return new ResponseEntity<>(app, HttpStatus.OK);
+    }
+
+    @GetMapping("/applications/{applicationId}/deployments")
+    public ResponseEntity<List<Deployment>> getDeployments(@PathVariable String applicationId) {
+        Application app = applicationMongoService.getApplicationById(applicationId);
+        List<Deployment> deployment = deploymentMongoService.getDeploymentOfApp(app.getId());
+        return new ResponseEntity<>(deployment, HttpStatus.OK);
+    }
+
+    @PostMapping("/configsets")
+    public ResponseEntity<ConfigSet> addConfigSet(@RequestBody ConfigSet configSet) {
+        List<ConfigSet> configSetByName = configSetService.getConfigSetByName(configSet.getName());
+        if(configSetByName != null) {
+            throw new ResourceAlreadyExists();
+        }
+        return new ResponseEntity<>(configSetService.addConfigSet(configSet), HttpStatus.OK);
+    }
+
+    @GetMapping("/configsets")
+    public ResponseEntity<List<ConfigSet>> getConfigSets() {
+        return new ResponseEntity<>(configSetService.getAllConfigSets(), HttpStatus.OK);
+    }
 }

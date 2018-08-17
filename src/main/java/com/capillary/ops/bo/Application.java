@@ -26,6 +26,8 @@ public class Application {
 
     private String projectFolder;
 
+    private Map<String, String> tags;
+
     @JsonIgnore
     private Map<Environments, String> endpoints;
 
@@ -65,10 +67,12 @@ public class Application {
         this.repoURL = repoURL;
     }
 
+    @JsonProperty
     public String getId() {
         return id;
     }
 
+    @JsonIgnore
     public void setId(String id) {
         this.id = id;
     }
@@ -99,5 +103,13 @@ public class Application {
 
     public void setProjectFolder(String projectFolder) {
         this.projectFolder = projectFolder;
+    }
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
     }
 }

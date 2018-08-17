@@ -6,6 +6,7 @@ import com.capillary.ops.repository.DeploymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,10 @@ public class DeploymentMongoService {
             return deploymentOptional.get();
         }
         throw new DeploymentNotFoundException();
+    }
+
+    public List<Deployment> getDeploymentOfApp(String applicationId) {
+        return deploymentRepository.findByApplicationId(applicationId);
     }
 }
 

@@ -1,5 +1,6 @@
 package com.capillary.ops.service;
 
+import com.capillary.ops.App;
 import com.capillary.ops.bo.Application;
 import com.capillary.ops.bo.Deployment;
 import com.capillary.ops.bo.Environments;
@@ -41,6 +42,14 @@ public class DeisApiService {
         String response = restTemplate.postForObject(endpoint, entity, String.class);
         Map<String, String> responseMap = gson.fromJson(response, HashMap.class);
         return responseMap.get("token");
+    }
+
+    public void updateApplication(Environments environment, Application application) {
+        try {
+            addConfigs(environment, application);
+        } catch (ResourceAlreadyExists e) {
+            System.out.println("Application already exits");
+        }
     }
 
     public void createApplication(Environments environment, Application application) {
