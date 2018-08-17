@@ -48,19 +48,6 @@ public class DeisApplicationController {
         return new ResponseEntity<>(application, HttpStatus.OK);
     }
 
-    @PostMapping("/applications/{applicationName}/deployment")
-    public ResponseEntity<Deployment> deploy(@PathVariable String applicationName,
-                                             @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
-        Application application = applicationMongoService.getApplication(applicationName);
-        if(application == null) {
-            throw new ApplicationDoesNotExist();
-        }
-        deployment.setApplicationId(application.getId());
-        deploymentMongoService.createDeployment(deployment);
-        gitService.pushToDeis(application, deployment);
-        return new ResponseEntity<>(deployment, HttpStatus.OK);
-    }
-
     @PostMapping("/applications/{applicationId}/deployments")
     public ResponseEntity<Deployment> deployByAppId(@PathVariable String applicationId,
                                              @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
