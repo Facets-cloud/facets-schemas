@@ -117,4 +117,11 @@ public class DeisApplicationController {
         Application app = applicationMongoService.getApplicationById(applicationId);
         return new ResponseEntity<>(gitService.listBranches(app), HttpStatus.OK);
     }
+
+    @GetMapping("/applications/{applicationId}/tags")
+    public ResponseEntity<List<String>> getTags(@PathVariable String applicationId) {
+        Application app = applicationMongoService.getApplicationById(applicationId);
+        return new ResponseEntity<>(gitService.listTags(app), HttpStatus.OK);
+    }
+
 }

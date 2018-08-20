@@ -70,14 +70,26 @@ public class GitService {
     }
 
     public List<String> listBranches(Application application) {
+        return lsRemote(application).stream()
+                .filter(x->x.contains("refs/heads"))
+                .map(x->x.replace("refs/heads", "origin"))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> listTags(Application application) {
+        return lsRemote(application).stream()
+                .filter(x->x.contains("refs/tags"))
+                .map(x->x.replace("refs/tags", "origin"))
+                .collect(Collectors.toList());
+    }
+
+    private List<String> lsRemote(Application application) {
         try {
             TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(application);
             return Git.lsRemoteRepository()
                     .setTransportConfigCallback(transportConfigCallback)
                     .setRemote(application.getRepoURL())
                     .call().stream().map(x->x.getName())
-                    .filter(x->x.contains("refs/heads"))
-                    .map(x->x.replace("refs/heads", "origin"))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
