@@ -7,6 +7,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.*;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.StringUtils;
@@ -16,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GitService {
@@ -62,6 +66,22 @@ public class GitService {
             e.printStackTrace();
             deployment.setStatus(Deployment.Status.FINISHED);
             deployment.setPushResult(e.getMessage());
+        }
+    }
+
+    public List<String> listBranches(Application application) {
+        try {
+            TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(application);
+            return Git.lsRemoteRepository()
+                    .setTransportConfigCallback(transportConfigCallback)
+                    .setRemote(application.getRepoURL())
+                    .call().stream().map(x->x.getName())
+                    .filter(x->x.contains("refs/heads"))
+                    .map(x->x.replace("refs/heads", "origin"))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

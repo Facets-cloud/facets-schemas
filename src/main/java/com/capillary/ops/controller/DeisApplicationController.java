@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -109,5 +110,11 @@ public class DeisApplicationController {
     @GetMapping("/configsets")
     public ResponseEntity<List<ConfigSet>> getConfigSets() {
         return new ResponseEntity<>(configSetService.getAllConfigSets(), HttpStatus.OK);
+    }
+
+    @GetMapping("/applications/{applicationId}/branches")
+    public ResponseEntity<List<String>> getBranches(@PathVariable String applicationId) {
+        Application app = applicationMongoService.getApplicationById(applicationId);
+        return new ResponseEntity<>(gitService.listBranches(app), HttpStatus.OK);
     }
 }
