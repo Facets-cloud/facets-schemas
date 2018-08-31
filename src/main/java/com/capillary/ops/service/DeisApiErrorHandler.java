@@ -16,8 +16,8 @@ public class DeisApiErrorHandler extends DefaultResponseErrorHandler {
         String statusText = response.getStatusText();
         try (BufferedReader buffer = new BufferedReader(new InputStreamReader(response.getBody()))) {
             String data = buffer.lines().collect(Collectors.joining());
+            System.out.println(data);
             if(data.contains("already exists")) {
-                System.out.println(data);
                 throw new ResourceAlreadyExists();
             }
         }
