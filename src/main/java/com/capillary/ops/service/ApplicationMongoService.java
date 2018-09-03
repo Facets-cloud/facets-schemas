@@ -47,4 +47,8 @@ public class ApplicationMongoService {
         return applicationRepository.save(application);
     }
 
+    public void deleteApplication(Application application){
+        applicationRepository.delete(application);
+    }
+
 }

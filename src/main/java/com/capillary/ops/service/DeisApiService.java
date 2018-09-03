@@ -4,6 +4,7 @@ import com.capillary.ops.App;
 import com.capillary.ops.bo.Application;
 import com.capillary.ops.bo.Deployment;
 import com.capillary.ops.bo.Environments;
+import com.capillary.ops.bo.exceptions.ApplicationDoesNotExist;
 import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -113,5 +114,20 @@ public class DeisApiService {
                 environment.getDeisEndpoint(),
                 environment.generateAppName(application.getName()));
         restTemplate.postForObject(endpoint, entity, String.class);
+    }
+
+    public void deleteApplication(Environments environment, Application application) {
+        String token = login(environment);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.set("Authorization", String.format("token %s", token));
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
+        String endpoint = String.format("https://%s/v2/apps/%s",environment.getDeisEndpoint(),environment.generateAppName(application.getName()));
+        try {
+            restTemplate.delete(endpoint);
+        } catch (Exception e) {
+            System.out.println("Error deleting the app: "+ e.getMessage());
+        }
     }
 }

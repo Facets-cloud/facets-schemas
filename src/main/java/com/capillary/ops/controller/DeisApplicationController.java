@@ -124,4 +124,15 @@ public class DeisApplicationController {
         return new ResponseEntity<>(gitService.listTags(app), HttpStatus.OK);
     }
 
+    @DeleteMapping("/applications/{applicationId}")
+    public ResponseEntity<Application> deleteApp(@PathVariable String applicationId, @RequestBody Application application) {
+        Application app = applicationMongoService.getApplicationById(applicationId);
+        app.setConfigs(application.getConfigs());
+        for (Environments environment : Environments.values()) {
+           deisApiService.deleteApplication(environment, app);
+        }
+        applicationMongoService.deleteApplication(app);
+        return new ResponseEntity<>(app, HttpStatus.OK);
+    }
+
 }
