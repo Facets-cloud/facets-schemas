@@ -125,9 +125,8 @@ public class DeisApplicationController {
     }
 
     @DeleteMapping("/applications/{applicationId}")
-    public ResponseEntity<Application> deleteApp(@PathVariable String applicationId, @RequestBody Application application) {
+    public ResponseEntity<Application> deleteApp(@PathVariable String applicationId) {
         Application app = applicationMongoService.getApplicationById(applicationId);
-        app.setConfigs(application.getConfigs());
         for (Environments environment : Environments.values()) {
            deisApiService.deleteApplication(environment, app);
         }
