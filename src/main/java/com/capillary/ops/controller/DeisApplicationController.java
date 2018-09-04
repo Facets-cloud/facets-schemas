@@ -84,6 +84,8 @@ public class DeisApplicationController {
     public ResponseEntity<Application> updateApp(@PathVariable String applicationId, @RequestBody Application application) {
         Application app = applicationMongoService.getApplicationById(applicationId);
         app.setConfigs(application.getConfigs());
+        app.setRepoURL(application.getRepoURL());
+        app.setProjectFolder(application.getProjectFolder());
         for (Environments environment : Environments.values()) {
             deisApiService.createApplication(environment, app);
         }
