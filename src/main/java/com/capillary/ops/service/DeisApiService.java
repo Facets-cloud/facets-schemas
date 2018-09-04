@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -125,7 +126,7 @@ public class DeisApiService {
         HttpEntity<String> entity = new HttpEntity<String>(headers);
         String endpoint = String.format("https://%s/v2/apps/%s",environment.getDeisEndpoint(),environment.generateAppName(application.getName()));
         try {
-            restTemplate.delete(endpoint,entity);
+            restTemplate.exchange(endpoint, HttpMethod.DELETE, entity, String.class);
         } catch (Exception e) {
             System.out.println("Error deleting the app: "+ e.getMessage());
         }
