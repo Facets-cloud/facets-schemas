@@ -125,7 +125,7 @@ public class DeisApiService {
         HttpEntity<String> entity = new HttpEntity<String>(headers);
         String endpoint = String.format("https://%s/v2/apps/%s",environment.getDeisEndpoint(),environment.generateAppName(application.getName()));
         try {
-            restTemplate.delete(endpoint);
+            restTemplate.delete(endpoint,entity);
         } catch (Exception e) {
             System.out.println("Error deleting the app: "+ e.getMessage());
         }
