@@ -8,7 +8,8 @@ public class Deployment {
 
     public static enum Status {
         RUNNING,
-        FINISHED
+        FINISHED,
+        FAILED
     }
 
     @Id
