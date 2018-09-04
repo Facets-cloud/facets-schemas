@@ -66,6 +66,7 @@ public class GitService {
             e.printStackTrace();
             deployment.setStatus(Deployment.Status.FINISHED);
             deployment.setPushResult(e.getMessage());
+            deploymentMongoService.update(deployment);
         }
     }
 
