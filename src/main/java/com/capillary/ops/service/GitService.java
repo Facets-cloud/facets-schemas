@@ -59,8 +59,15 @@ public class GitService {
                 ).call();
             Iterable<PushResult> pushResults = git.push().setTimeout(3600).setTransportConfigCallback(transportConfigCallback)
                     .setForce(true).setRemote("deis").call();
-            deployment.setPushResult(pushResults.iterator().next().getMessages());
-            deployment.setStatus(Deployment.Status.FINISHED);
+            String responseMessage = pushResults.iterator().next().getMessages();
+            if(responseMessage != null && responseMessage.contains("deployed to Workflow")) {
+                deployment.setPushResult(responseMessage);
+                deployment.setStatus(Deployment.Status.FINISHED);
+            }
+            else {
+                deployment.setPushResult(responseMessage);
+                deployment.setStatus(Deployment.Status.FAILED);
+            }
             deploymentMongoService.update(deployment);
         } catch (Exception e) {
             e.printStackTrace();
