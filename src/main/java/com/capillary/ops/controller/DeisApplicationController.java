@@ -87,7 +87,7 @@ public class DeisApplicationController {
         app.setRepoURL(application.getRepoURL());
         app.setProjectFolder(application.getProjectFolder());
         for (Environments environment : Environments.values()) {
-            deisApiService.createApplication(environment, app);
+            deisApiService.updateApplication(environment, app);
         }
         applicationMongoService.updateApplication(app);
         return new ResponseEntity<>(app, HttpStatus.OK);

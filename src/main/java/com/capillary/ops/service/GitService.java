@@ -72,7 +72,7 @@ public class GitService {
         } catch (Exception e) {
             e.printStackTrace();
             deployment.setStatus(Deployment.Status.FAILED);
-            deployment.setPushResult(e.getMessage());
+            deployment.setPushResult(e.getMessage() +" " + e.getStackTrace());
             deploymentMongoService.update(deployment);
         }
     }
