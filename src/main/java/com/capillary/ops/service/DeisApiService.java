@@ -49,8 +49,9 @@ public class DeisApiService {
     public void updateApplication(Environments environment, Application application) {
         try {
             addConfigs(environment, application);
-        } catch (ResourceAlreadyExists e) {
-            System.out.println("Application already exits");
+        } catch (Exception e) {
+            System.out.println("Error while updating: "+ e.getMessage());
+            e.printStackTrace();
         }
     }
 
