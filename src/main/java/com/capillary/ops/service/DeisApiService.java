@@ -40,7 +40,7 @@ public class DeisApiService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-        String endpoint = String.format("https://%s/v2/auth/login/", environment.getDeisEndpoint());
+        String endpoint = String.format("http://%s/v2/auth/login/", environment.getDeisEndpoint());
         String response = restTemplate.postForObject(endpoint, entity, String.class);
         Map<String, String> responseMap = gson.fromJson(response, HashMap.class);
         return responseMap.get("token");
@@ -66,7 +66,7 @@ public class DeisApiService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", String.format("token %s", token));
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-        String endpoint = String.format("https://%s/v2/apps/", environment.getDeisEndpoint());
+        String endpoint = String.format("http://%s/v2/apps/", environment.getDeisEndpoint());
         try {
             restTemplate.postForObject(endpoint, entity, String.class);
             addKey(environment, application);
@@ -89,7 +89,7 @@ public class DeisApiService {
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             headers.set("Authorization", String.format("token %s", token));
             HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-            String endpoint = String.format("https://%s/v2/keys/", environment.getDeisEndpoint());
+            String endpoint = String.format("http://%s/v2/keys/", environment.getDeisEndpoint());
             String s = restTemplate.postForObject(endpoint, entity, String.class);
 
         } catch (JsonProcessingException e) {
@@ -112,7 +112,7 @@ public class DeisApiService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", String.format("token %s", token));
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-        String endpoint = String.format("https://%s/v2/apps/%s/config/",
+        String endpoint = String.format("http://%s/v2/apps/%s/config/",
                 environment.getDeisEndpoint(),
                 environment.generateAppName(application.getName()));
         restTemplate.postForObject(endpoint, entity, String.class);
@@ -125,7 +125,7 @@ public class DeisApiService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", String.format("token %s", token));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
-        String endpoint = String.format("https://%s/v2/apps/%s",environment.getDeisEndpoint(),environment.generateAppName(application.getName()));
+        String endpoint = String.format("http://%s/v2/apps/%s",environment.getDeisEndpoint(),environment.generateAppName(application.getName()));
         try {
             restTemplate.exchange(endpoint, HttpMethod.DELETE, entity, String.class);
         } catch (Exception e) {
