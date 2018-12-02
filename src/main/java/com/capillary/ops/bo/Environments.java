@@ -26,7 +26,7 @@ public enum Environments {
   }
 
   public String getDeisGitUri() {
-    return "deis-builder.deis:2222";
+    return "ssh://git@deis-builder.deis:2222";
   }
 
   public String getDomain(String appName) {
