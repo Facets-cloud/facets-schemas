@@ -28,6 +28,8 @@ public class Application {
 
     private Map<String, String> tags;
 
+    private String port = "3000";
+
     @JsonIgnore
     private Map<Environments, String> endpoints;
 
@@ -78,6 +80,12 @@ public class Application {
     }
 
     public Map<Environments, Map<String, String>> getConfigs() {
+        for(Environments env : Environments.values()) {
+            if(configs.get(env) == null) {
+                configs.put(env, new HashMap<>());
+            }
+            configs.get(env).put("PORT", port);
+        }
         return configs;
     }
 
@@ -111,5 +119,13 @@ public class Application {
 
     public void setTags(Map<String, String> tags) {
         this.tags = tags;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getPort() {
+        return port;
     }
 }
