@@ -14,19 +14,19 @@ public enum Environments {
   }
 
   public String getDeisEndpoint() {
-    return System.getenv().get(String.format("%s_ENDPOINT", this.name()));
+    return "deis-controller.deis";
   }
 
   public String getDeisUser() {
-    return System.getenv().get(String.format("%s_USER", this.name()));
+    return System.getenv().get("DEIS_USER");
   }
 
   public String getDeisPassword() {
-    return System.getenv().get(String.format("%s_PASSWORD", this.name()));
+    return System.getenv().get("DEIS_PASSWORD");
   }
 
   public String getDeisGitUri() {
-    return System.getenv().get(String.format("%s_GITURI", this.name()));
+    return "ssh://git@deis-builder.deis:2222";
   }
 
   public String getDomain(String appName) {
