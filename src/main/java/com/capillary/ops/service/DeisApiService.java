@@ -57,16 +57,20 @@ public class DeisApiService {
 
     public void createApplication(Environments environment, Application application) {
         String token = login(environment);
+
         Gson gson = new Gson();
         String data = gson.toJson(new ImmutableMap.Builder<String, String>()
                 .put("id", environment.generateAppName(application.getName()))
                 .build());
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", String.format("token %s", token));
+
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
         String endpoint = String.format("http://%s/v2/apps/", environment.getDeisEndpoint());
+        
         try {
             restTemplate.postForObject(endpoint, entity, String.class);
             addKey(environment, application);

@@ -1,6 +1,12 @@
 package com.capillary.ops;
 
 import com.capillary.ops.service.DeisApiErrorHandler;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +17,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -18,6 +25,11 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
@@ -53,7 +65,7 @@ public class App {
 
     @Configuration
     public class SecurityConfig extends WebSecurityConfigurerAdapter {
-        // Authentication : User --> Roles
+        // Authentication : MongoUser --> Roles
         protected void configure(AuthenticationManagerBuilder auth)
                 throws Exception {
             auth.inMemoryAuthentication()
@@ -69,5 +81,15 @@ public class App {
                     .csrf().disable().headers().frameOptions().disable();
         }
 
+    }
+
+    @Bean(name = "HelmChartConfig")
+    public Map<String, LinkedTreeMap> helmChartConfig() throws FileNotFoundException {
+        Gson gson = new Gson();
+        JsonReader helmConfigReader = new JsonReader(new FileReader(ResourceUtils.getFile("classpath:HelmChartConfigs.json")));
+        Type type = new TypeToken<Map<String, LinkedTreeMap>>(){}.getType();
+        Map<String, LinkedTreeMap> helmConfigMap = gson.fromJson(helmConfigReader, type);
+
+        return helmConfigMap;
     }
 }

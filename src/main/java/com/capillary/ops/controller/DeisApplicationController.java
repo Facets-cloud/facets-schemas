@@ -1,19 +1,19 @@
 package com.capillary.ops.controller;
 
-import com.capillary.ops.App;
 import com.capillary.ops.bo.*;
 import com.capillary.ops.bo.exceptions.ApplicationAlreadyExists;
 import com.capillary.ops.bo.exceptions.ApplicationDoesNotExist;
 import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
+import com.capillary.ops.bo.mongodb.MongoCommand;
+import com.capillary.ops.bo.mongodb.MongoUser;
 import com.capillary.ops.service.*;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class DeisApplicationController {
@@ -35,6 +35,12 @@ public class DeisApplicationController {
 
     @Autowired
     private ConfigSetService configSetService;
+
+    @Autowired
+    private MongoResourceService mongoResourceService;
+
+    @Autowired
+    private InstanceTypeService instanceTypeService;
 
     @PostMapping("/applications")
     public ResponseEntity<Application> createApplication(@RequestBody Application application) throws ApplicationAlreadyExists {
@@ -136,4 +142,41 @@ public class DeisApplicationController {
         return new ResponseEntity<>(app, HttpStatus.OK);
     }
 
+    @PostMapping("/infra/resource/mongo")
+    public ResponseEntity<MongoResource> createMongoResource(@RequestBody MongoResource mongoResource) {
+        return new ResponseEntity<>(mongoResourceService.save(mongoResource), HttpStatus.OK);
+    }
+
+    @PostMapping("/infra/resource/mongo/user")
+    public ResponseEntity<MongoUser> addMongoUser(@RequestBody MongoUser mongoUser) {
+        System.out.println("mongoUser = " + mongoUser);
+        MongoUser user = mongoResourceService.createUser(mongoUser);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostMapping("/infra/resource/mongo/command")
+    public ResponseEntity<Map<Integer, String>> runMongoCommand(@RequestBody MongoCommand mongoCommand) {
+        Map<Integer, String> commandStatus = mongoResourceService.runCommand(mongoCommand);
+        return new ResponseEntity<>(commandStatus, HttpStatus.OK);
+    }
+
+    @PostMapping("/infra/resource/instancetype")
+    public ResponseEntity<InstanceType> addInstanceType(@RequestBody InstanceType instanceType) {
+        return new ResponseEntity<>(instanceTypeService.save(instanceType), HttpStatus.OK);
+    }
+
+    @GetMapping("/infra/resource/instancetype")
+    public ResponseEntity<List<InstanceType>> getAllInstanceTypes() {
+        return new ResponseEntity<>(instanceTypeService.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping("/infra/resource/instancetype/{instanceTypeName}")
+    public ResponseEntity<InstanceType> getInstanceTypeByName(@PathVariable String instanceTypeName) {
+        return new ResponseEntity<>(instanceTypeService.findByName(instanceTypeName), HttpStatus.OK);
+    }
 }
