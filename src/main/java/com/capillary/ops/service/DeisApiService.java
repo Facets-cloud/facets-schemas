@@ -70,7 +70,7 @@ public class DeisApiService {
 
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
         String endpoint = String.format("http://%s/v2/apps/", environment.getDeisEndpoint());
-        
+
         try {
             restTemplate.postForObject(endpoint, entity, String.class);
             addKey(environment, application);

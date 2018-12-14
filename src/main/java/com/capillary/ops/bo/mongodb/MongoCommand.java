@@ -12,7 +12,7 @@ public class MongoCommand {
     @JsonIgnore
     private String id;
 
-    private String appName;
+    private String resourceName;
 
     private Environments environment;
 
@@ -20,8 +20,8 @@ public class MongoCommand {
 
     private List<String> commands;
 
-    public String getAppName() {
-        return appName;
+    public String getResourceName() {
+        return resourceName;
     }
 
     public Environments getEnvironment() {

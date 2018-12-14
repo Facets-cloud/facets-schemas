@@ -1,4 +1,4 @@
-package com.capillary.ops.repository;
+package com.capillary.ops.repository.mongodb;
 
 import com.capillary.ops.bo.mongodb.MongoUser;
 import org.springframework.data.mongodb.repository.MongoRepository;

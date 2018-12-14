@@ -5,7 +5,9 @@ import com.capillary.ops.bo.exceptions.ApplicationAlreadyExists;
 import com.capillary.ops.bo.exceptions.ApplicationDoesNotExist;
 import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
 import com.capillary.ops.bo.mongodb.MongoCommand;
+import com.capillary.ops.bo.mongodb.MongoResource;
 import com.capillary.ops.bo.mongodb.MongoUser;
+import com.capillary.ops.bo.redis.RedisResource;
 import com.capillary.ops.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +43,9 @@ public class DeisApplicationController {
 
     @Autowired
     private InstanceTypeService instanceTypeService;
+
+    @Autowired
+    private RedisResourceService redisResourceService;
 
     @PostMapping("/applications")
     public ResponseEntity<Application> createApplication(@RequestBody Application application) throws ApplicationAlreadyExists {
@@ -144,7 +149,8 @@ public class DeisApplicationController {
 
     @PostMapping("/infra/resource/mongo")
     public ResponseEntity<MongoResource> createMongoResource(@RequestBody MongoResource mongoResource) {
-        return new ResponseEntity<>(mongoResourceService.save(mongoResource), HttpStatus.OK);
+        MongoResource resource = (MongoResource) mongoResourceService.create(mongoResource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
     @PostMapping("/infra/resource/mongo/user")
@@ -178,5 +184,17 @@ public class DeisApplicationController {
     @GetMapping("/infra/resource/instancetype/{instanceTypeName}")
     public ResponseEntity<InstanceType> getInstanceTypeByName(@PathVariable String instanceTypeName) {
         return new ResponseEntity<>(instanceTypeService.findByName(instanceTypeName), HttpStatus.OK);
+    }
+
+    @PostMapping("/infra/resource/redis")
+    public ResponseEntity<RedisResource> createRedisResource(@RequestBody RedisResource redisResource) {
+        RedisResource resource = (RedisResource) redisResourceService.create(redisResource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+    @PutMapping("/infra/resource/redis")
+    public ResponseEntity<RedisResource> updateRedisResource(@RequestBody RedisResource redisResource) {
+        RedisResource resource = (RedisResource) redisResourceService.update(redisResource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 }

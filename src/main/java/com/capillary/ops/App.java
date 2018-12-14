@@ -2,8 +2,6 @@ package com.capillary.ops;
 
 import com.capillary.ops.service.DeisApiErrorHandler;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -28,7 +26,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 

@@ -12,8 +12,6 @@ public class HelmInfrastructureResource {
     @JsonIgnore
     private String id;
 
-    private String appName;
-
     private String type;
 
     private String repository;
@@ -24,22 +22,16 @@ public class HelmInfrastructureResource {
 
     private String description;
 
+    private String deploymentName;
+
     private Map<String, Object> valueParams = new LinkedHashMap<>();
 
     public HelmInfrastructureResource() {}
 
-    public HelmInfrastructureResource(String appName, String type, Map<String, Object> valueParams) {
-        this.appName = appName;
+    public HelmInfrastructureResource(String deploymentName, String type, Map<String, Object> valueParams) {
+        this.deploymentName = deploymentName;
         this.type = type;
         this.valueParams = valueParams;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
     }
 
     public String getType() {
@@ -90,16 +82,24 @@ public class HelmInfrastructureResource {
         this.description = description;
     }
 
+    public String getDeploymentName() {
+        return deploymentName;
+    }
+
+    public void setDeploymentName(String deploymentName) {
+        this.deploymentName = deploymentName;
+    }
+
     @Override
     public String toString() {
         return "HelmInfrastructureResource{" +
                 "id='" + id + '\'' +
-                ", appName='" + appName + '\'' +
                 ", type='" + type + '\'' +
                 ", repository='" + repository + '\'' +
                 ", chartVersion='" + chartVersion + '\'' +
                 ", appVersion='" + appVersion + '\'' +
                 ", description='" + description + '\'' +
+                ", deploymentName='" + deploymentName + '\'' +
                 ", valueParams=" + valueParams +
                 '}';
     }
