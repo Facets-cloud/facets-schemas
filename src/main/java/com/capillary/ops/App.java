@@ -23,8 +23,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -83,7 +82,9 @@ public class App {
     @Bean(name = "HelmChartConfig")
     public Map<String, LinkedTreeMap> helmChartConfig() throws FileNotFoundException {
         Gson gson = new Gson();
-        JsonReader helmConfigReader = new JsonReader(new FileReader(ResourceUtils.getFile("classpath:HelmChartConfigs.json")));
+        InputStream inputStream = App.class.getClassLoader().getResourceAsStream("HelmChartConfigs.json");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        JsonReader helmConfigReader = new JsonReader(reader);
         Type type = new TypeToken<Map<String, LinkedTreeMap>>(){}.getType();
         Map<String, LinkedTreeMap> helmConfigMap = gson.fromJson(helmConfigReader, type);
 

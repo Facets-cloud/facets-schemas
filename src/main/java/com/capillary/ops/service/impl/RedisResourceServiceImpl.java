@@ -13,12 +13,14 @@ import com.capillary.ops.service.RedisResourceService;
 import hapi.release.ReleaseOuterClass;
 import org.microbean.helm.chart.resolver.ChartResolverException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 
+@Service
 public class RedisResourceServiceImpl implements RedisResourceService {
 
     @Autowired
@@ -48,7 +50,7 @@ public class RedisResourceServiceImpl implements RedisResourceService {
         }
 
         Map<String, Object> nodeSelector = new HashMap<>();
-        nodeSelector.put("env", resource.getEnvironment().name());
+        nodeSelector.put("environment", resource.getEnvironment().name());
 
         InstanceType masterInstanceType = instanceTypeService.findByName(resource.getInstanceType());
         if (masterInstanceType == null) {
@@ -60,13 +62,13 @@ public class RedisResourceServiceImpl implements RedisResourceService {
             throw new ResourceDoesNotExist("following slave instance type does not exist");
         }
 
-        Map<String, Object> serviceType = new HashMap<>(1);
-        serviceType.put("type", "LoadBalancer");
+//        Map<String, Object> serviceType = new HashMap<>(1);
+//        serviceType.put("type", "LoadBalancer");
 
         Map<String, Object> masterConfig = new HashMap<>();
         masterConfig.put("resources", masterInstanceType.toKubeConfig());
-        masterConfig.put("service", serviceType);
-        masterConfig.put("disableCommands", new ArrayList<>());
+//        masterConfig.put("service", serviceType);
+//        masterConfig.put("disableCommands", new ArrayList<>());
 
         Map<String, Object> slaveConfig = new HashMap<>();
         slaveConfig.put("resources", slaveInstanceType.toKubeConfig());
@@ -129,11 +131,11 @@ public class RedisResourceServiceImpl implements RedisResourceService {
              release = helmInfrastructureService.deploy(helmInfrastructureResource, resource.getEnvironment());
         } catch (URISyntaxException | ChartResolverException | IOException e) {
             e.printStackTrace();
-            throw new RuntimeException("error occured while creating resource");
+            throw new RuntimeException("error occured while creating resource", e);
         }
 
         if (release == null) {
-            throw new RuntimeException("error occured while creating resource");
+            throw new RuntimeException("error occured while creating resource, release was null");
         }
 
         resource.setDeploymentName(release.getName());
@@ -165,5 +167,16 @@ public class RedisResourceServiceImpl implements RedisResourceService {
         }
 
         return redisInfraRepository.save(savedResource);
+    }
+
+    @Override
+    public List<AbstractInfrastructureResource> findAll() {
+        return new ArrayList<>(redisInfraRepository.findAll());
+    }
+
+    @Override
+    public RedisResource findById(String id) {
+        Optional<RedisResource> redisResource = redisInfraRepository.findById(id);
+        return redisResource.orElse(null);
     }
 }

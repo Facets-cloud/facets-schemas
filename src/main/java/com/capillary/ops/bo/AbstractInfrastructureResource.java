@@ -2,6 +2,7 @@ package com.capillary.ops.bo;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 
 public abstract class AbstractInfrastructureResource {
@@ -35,6 +36,11 @@ public abstract class AbstractInfrastructureResource {
      */
     @JsonIgnore
     private String deploymentName;
+
+    @JsonProperty
+    public String getId() {
+        return id;
+    }
 
     public String getAppName() {
         return appName;
@@ -78,5 +84,9 @@ public abstract class AbstractInfrastructureResource {
 
     public void setDeploymentName(String deploymentName) {
         this.deploymentName = deploymentName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class DeisApplicationController {
@@ -62,9 +63,9 @@ public class DeisApplicationController {
 
     @PostMapping("/applications/{applicationId}/deployments")
     public ResponseEntity<Deployment> deployByAppId(@PathVariable String applicationId,
-                                             @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
+                                                    @RequestBody Deployment deployment) throws ApplicationDoesNotExist {
         Application application = applicationMongoService.getApplicationById(applicationId);
-        if(application == null) {
+        if (application == null) {
             throw new ApplicationDoesNotExist();
         }
         deployment.setApplicationId(application.getId());
@@ -114,7 +115,7 @@ public class DeisApplicationController {
     @PostMapping("/configsets")
     public ResponseEntity<ConfigSet> addConfigSet(@RequestBody ConfigSet configSet) {
         List<ConfigSet> configSetByName = configSetService.getConfigSetByName(configSet.getName());
-        if(configSetByName != null) {
+        if (configSetByName != null) {
             throw new ResourceAlreadyExists();
         }
         return new ResponseEntity<>(configSetService.addConfigSet(configSet), HttpStatus.OK);
@@ -141,19 +142,37 @@ public class DeisApplicationController {
     public ResponseEntity<Application> deleteApp(@PathVariable String applicationId) {
         Application app = applicationMongoService.getApplicationById(applicationId);
         for (Environments environment : Environments.values()) {
-           deisApiService.deleteApplication(environment, app);
+            deisApiService.deleteApplication(environment, app);
         }
         applicationMongoService.deleteApplication(app);
         return new ResponseEntity<>(app, HttpStatus.OK);
     }
 
-    @PostMapping("/infra/resource/mongo")
+    @PostMapping("/resources/mongodb")
     public ResponseEntity<MongoResource> createMongoResource(@RequestBody MongoResource mongoResource) {
         MongoResource resource = (MongoResource) mongoResourceService.create(mongoResource);
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
-    @PostMapping("/infra/resource/mongo/user")
+    @PutMapping("/resources/mongodb")
+    public ResponseEntity<MongoResource> updateMongoResource(@RequestBody MongoResource mongoResource) {
+        MongoResource resource = (MongoResource) redisResourceService.update(mongoResource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+    @GetMapping("/resources/mongodb")
+    public ResponseEntity<List<MongoResource>> getAllMongoResources() {
+        List<MongoResource> mongoResources = mongoResourceService.findAll().stream().map(resource -> (MongoResource) resource).collect(Collectors.toList());
+        return new ResponseEntity<>(mongoResources, HttpStatus.OK);
+    }
+
+    @GetMapping("/resources/mongodb/{id}")
+    public ResponseEntity<MongoResource> getMongoResourceById(@PathVariable String id) {
+        MongoResource resource = (MongoResource) mongoResourceService.findById(id);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+    @PostMapping("/resources/mongodb/user")
     public ResponseEntity<MongoUser> addMongoUser(@RequestBody MongoUser mongoUser) {
         System.out.println("mongoUser = " + mongoUser);
         MongoUser user = mongoResourceService.createUser(mongoUser);
@@ -165,7 +184,7 @@ public class DeisApplicationController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping("/infra/resource/mongo/command")
+    @PostMapping("/resources/mongodb/command")
     public ResponseEntity<Map<Integer, String>> runMongoCommand(@RequestBody MongoCommand mongoCommand) {
         Map<Integer, String> commandStatus = mongoResourceService.runCommand(mongoCommand);
         return new ResponseEntity<>(commandStatus, HttpStatus.OK);
@@ -176,25 +195,37 @@ public class DeisApplicationController {
         return new ResponseEntity<>(instanceTypeService.save(instanceType), HttpStatus.OK);
     }
 
-    @GetMapping("/infra/resource/instancetype")
+    @GetMapping("/resources/instancetype")
     public ResponseEntity<List<InstanceType>> getAllInstanceTypes() {
         return new ResponseEntity<>(instanceTypeService.findAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/infra/resource/instancetype/{instanceTypeName}")
+    @GetMapping("/resources/instancetype/{instanceTypeName}")
     public ResponseEntity<InstanceType> getInstanceTypeByName(@PathVariable String instanceTypeName) {
         return new ResponseEntity<>(instanceTypeService.findByName(instanceTypeName), HttpStatus.OK);
     }
 
-    @PostMapping("/infra/resource/redis")
+    @PostMapping("/resources/redis")
     public ResponseEntity<RedisResource> createRedisResource(@RequestBody RedisResource redisResource) {
         RedisResource resource = (RedisResource) redisResourceService.create(redisResource);
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
-    @PutMapping("/infra/resource/redis")
+    @PutMapping("/resources/redis")
     public ResponseEntity<RedisResource> updateRedisResource(@RequestBody RedisResource redisResource) {
         RedisResource resource = (RedisResource) redisResourceService.update(redisResource);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+    @GetMapping("/resources/redis")
+    public ResponseEntity<List<RedisResource>> getAllRedisResources() {
+        List<RedisResource> redisResources = redisResourceService.findAll().stream().map(resource -> (RedisResource) resource).collect(Collectors.toList());
+        return new ResponseEntity<>(redisResources, HttpStatus.OK);
+    }
+
+    @GetMapping("/resources/redis/{id}")
+    public ResponseEntity<RedisResource> getRedisResourceById(@PathVariable String id) {
+        RedisResource resource = (RedisResource) redisResourceService.findById(id);
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 }

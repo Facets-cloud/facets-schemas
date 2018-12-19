@@ -22,6 +22,8 @@ public class MongoUser {
 
     private String appName;
 
+    private String resourceName;
+
     private Environments environment;
 
     public String getDbName() {
@@ -52,15 +54,26 @@ public class MongoUser {
         return environment;
     }
 
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+
     @Override
     public String toString() {
         return "MongoUser{" +
-                "dbName='" + dbName + '\'' +
+                "id='" + id + '\'' +
+                ", dbName='" + dbName + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", userRoles=" + userRoles +
                 ", appName='" + appName + '\'' +
+                ", resourceName='" + resourceName + '\'' +
                 ", environment=" + environment +
                 '}';
     }
+
 }

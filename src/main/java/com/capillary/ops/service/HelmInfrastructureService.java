@@ -62,7 +62,7 @@ public class HelmInfrastructureService {
         String resourceType = helmResource.getType();
 
         URI chartUri = new URI(getChartConfig(helmResource.getType(), "repository"));
-        ChartRepository repository = new ChartRepository("google", chartUri);
+        ChartRepository repository = new ChartRepository("google", chartUri, true);
 
         ChartOuterClass.Chart.Builder chartBuilder = repository.resolve(resourceType, getChartConfig(helmResource.getType(), "chartVersion"));
         System.out.println("mongodb.getMetadataOrBuilder() = " + chartBuilder.getMetadataOrBuilder());
@@ -95,7 +95,7 @@ public class HelmInfrastructureService {
         String resourceType = helmResource.getType();
 
         URI chartUri = new URI(getChartConfig(helmResource.getType(), "repository"));
-        ChartRepository repository = new ChartRepository("google", chartUri);
+        ChartRepository repository = new ChartRepository("google", chartUri, true);
 
         ChartOuterClass.Chart.Builder chartBuilder = repository.resolve(resourceType, getChartConfig(helmResource.getType(), "chartVersion"));
         System.out.println("metadata = " + chartBuilder.getMetadataOrBuilder());
@@ -103,6 +103,7 @@ public class HelmInfrastructureService {
         // Move this to a getter if only release manager is needed
         DefaultKubernetesClient client = new DefaultKubernetesClient();
         Tiller tiller = new Tiller(client);
+
         ReleaseManager releaseManager = new ReleaseManager(tiller);
 
         String valueParams = new Yaml().dump(helmResource.getValueParams());
@@ -111,7 +112,7 @@ public class HelmInfrastructureService {
         ReleaseOuterClass.Release release = null;
         final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chartBuilder);
         try {
-             release = releaseFuture.get().getRelease();
+            release = releaseFuture.get().getRelease();
             helmInfrastructureRepository.save(helmResource);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -131,7 +132,7 @@ public class HelmInfrastructureService {
     }
 
     public static void main(String[] args) throws URISyntaxException, ChartResolverException, IOException, ExecutionException, InterruptedException {
-        DefaultKubernetesClient client = new DefaultKubernetesClient("https://localhost:6443");
+        DefaultKubernetesClient client = new DefaultKubernetesClient();
         Tiller tiller = new Tiller(client);
         ReleaseManager releaseManager = new ReleaseManager(tiller);
 
