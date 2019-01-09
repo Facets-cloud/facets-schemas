@@ -18,11 +18,14 @@ public class MongoResource extends AbstractInfrastructureResource {
 
     @Override
     public String toString() {
-        return "MongoResource{" + "id='" + id + '\'' + ", appName='" + appName
-            + '\'' + ", resourceName='" + resourceName + '\''
-            + ", environment=" + environment + ", instanceType='"
-            + instanceType + '\'' + ", volumeSize=" + volumeSize
-            + ", deploymentName='" + deploymentName + '\''
-            + ", deploymentStatus=" + deploymentStatus + '}';
+        return "MongoResource{" +
+                "id='" + id + '\'' +
+                ", resourceName='" + resourceName + '\'' +
+                ", environment=" + environment +
+                ", instanceType='" + instanceType + '\'' +
+                ", volumeSize=" + volumeSize +
+                ", deploymentName='" + deploymentName + '\'' +
+                ", deploymentStatus=" + deploymentStatus +
+                '}';
     }
 }

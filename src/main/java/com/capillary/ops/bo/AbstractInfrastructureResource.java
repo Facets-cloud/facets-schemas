@@ -1,5 +1,6 @@
 package com.capillary.ops.bo;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
@@ -9,8 +10,6 @@ public abstract class AbstractInfrastructureResource {
     @Id
     @JsonIgnore
     protected String id;
-
-    protected String appName;
 
     protected String resourceName;
 
@@ -42,14 +41,6 @@ public abstract class AbstractInfrastructureResource {
     @JsonProperty
     public String getId() {
         return id;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
     }
 
     public Environments getEnvironment() {
