@@ -9,34 +9,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RedisResourceResponseHandler implements
-    AbstractResourceResponseHandler {
+public class RedisResourceResponseHandler implements AbstractResourceResponseHandler {
 
-    @Autowired
-    private RedisInfraRepository redisInfraRepository;
+  @Autowired private RedisInfraRepository redisInfraRepository;
 
-    @Override
-    public void handleResponse(
-        AbstractInfrastructureResource infrastructureResource,
-        String releaseName) {
-        RedisResource redisResource = (RedisResource) infrastructureResource;
-        redisResource.setDeploymentName(releaseName);
-        redisResource.setDeploymentStatus(InfrastructureResourceStatus.SUCCESS);
+  @Override
+  public void handleResponse(
+      AbstractInfrastructureResource infrastructureResource, String releaseName) {
+    RedisResource redisResource = (RedisResource) infrastructureResource;
+    redisResource.setDeploymentName(releaseName);
+    redisResource.setDeploymentStatus(InfrastructureResourceStatus.SUCCESS);
 
-        redisInfraRepository.save(redisResource);
-    }
+    redisInfraRepository.save(redisResource);
+  }
 
-    @Override
-    public void handleError(
-        AbstractInfrastructureResource infrastructureResource, Exception ex) {
-        RedisResource redisResource = (RedisResource) infrastructureResource;
+  @Override
+  public void handleError(AbstractInfrastructureResource infrastructureResource, Exception ex) {
+    RedisResource redisResource = (RedisResource) infrastructureResource;
 
-        System.out.println("error happened while deploying resource:"
-            + redisResource);
-        ex.printStackTrace();
+    System.out.println("error happened while deploying resource:" + redisResource);
+    ex.printStackTrace();
 
-        infrastructureResource
-            .setDeploymentStatus(InfrastructureResourceStatus.FAILURE);
-        redisInfraRepository.save(redisResource);
-    }
+    infrastructureResource.setDeploymentStatus(InfrastructureResourceStatus.FAILURE);
+    redisInfraRepository.save(redisResource);
+  }
 }

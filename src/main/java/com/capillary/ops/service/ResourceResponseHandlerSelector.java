@@ -8,22 +8,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResourceResponseHandlerSelector {
 
-    @Autowired
-    private MongoResourceResponseHandler mongoResourceResponseHandler;
+  @Autowired private MongoResourceResponseHandler mongoResourceResponseHandler;
 
-    @Autowired
-    private RedisResourceResponseHandler redisResourceResponseHandler;
+  @Autowired private RedisResourceResponseHandler redisResourceResponseHandler;
 
-    public AbstractResourceResponseHandler selectHandler(String resourceType) {
-        switch (resourceType) {
-            case "mongodb":
-                return mongoResourceResponseHandler;
-            case "redis":
-                return redisResourceResponseHandler;
-            default:
-                throw new RuntimeException(
-                    "cannot select unknown handler for resource type: "
-                        + resourceType);
-        }
+  public AbstractResourceResponseHandler selectHandler(String resourceType) {
+    switch (resourceType) {
+      case "mongodb":
+        return mongoResourceResponseHandler;
+      case "redis":
+        return redisResourceResponseHandler;
+      default:
+        throw new RuntimeException(
+            "cannot select unknown handler for resource type: " + resourceType);
     }
+  }
 }

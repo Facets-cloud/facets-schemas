@@ -11,6 +11,12 @@ import hapi.services.tiller.Tiller.InstallReleaseRequest;
 import hapi.services.tiller.Tiller.InstallReleaseResponse;
 import hapi.services.tiller.Tiller.UpdateReleaseRequest;
 import hapi.services.tiller.Tiller.UpdateReleaseResponse;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.chart.repository.ChartRepository;
 import org.microbean.helm.chart.resolver.ChartResolverException;
@@ -19,158 +25,145 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 @Service
 public class HelmDeploymentServiceImpl implements HelmDeploymentService {
 
-    @Autowired
-    @Qualifier("HelmChartConfig")
-    private Map<String, LinkedTreeMap> helmChartConfig;
+  @Autowired
+  @Qualifier("HelmChartConfig")
+  private Map<String, LinkedTreeMap> helmChartConfig;
 
-    @Autowired
-    private HelmInfrastructureRepository helmInfrastructureRepository;
+  @Autowired private HelmInfrastructureRepository helmInfrastructureRepository;
 
-    @Autowired
-    @Qualifier(value = "HelmReleaseManager")
-    private ReleaseManager releaseManager;
+  @Autowired
+  @Qualifier(value = "HelmReleaseManager")
+  private ReleaseManager releaseManager;
 
-    private static String DEFAULT_NAMESPACE = "infra";
+  private static String DEFAULT_NAMESPACE = "infra";
 
-    private String getChartConfig(String type, String configKey) {
-        LinkedTreeMap chartConfig = helmChartConfig.get(type);
-        System.out.println("chartConfig = " + chartConfig);
+  private String getChartConfig(String type, String configKey) {
+    LinkedTreeMap chartConfig = helmChartConfig.get(type);
+    System.out.println("chartConfig = " + chartConfig);
 
-        String configValue;
-        try {
-            configValue = chartConfig.get(configKey).toString();
-            System.out.println("configKey = " + configKey + "; configValue = "
-                + configValue);
-        } catch (Exception e) {
-            throw new RuntimeException(
-                "error happened while getting helm chart config", e);
-        }
-
-        return configValue;
+    String configValue;
+    try {
+      configValue = chartConfig.get(configKey).toString();
+      System.out.println("configKey = " + configKey + "; configValue = " + configValue);
+    } catch (Exception e) {
+      throw new RuntimeException("error happened while getting helm chart config", e);
     }
 
-    @Override
-    public ReleaseOuterClass.Release update(AbstractDeploymentResource deploymentResource) throws IOException {
-        HelmInfrastructureResource helmResource = (HelmInfrastructureResource) deploymentResource;
-        String resourceType = helmResource.getType();
+    return configValue;
+  }
 
-        ChartOuterClass.Chart.Builder chartBuilder = getHelmChartBuilder(helmResource, resourceType);
+  @Override
+  public ReleaseOuterClass.Release update(AbstractDeploymentResource deploymentResource)
+      throws IOException {
+    HelmInfrastructureResource helmResource = (HelmInfrastructureResource) deploymentResource;
+    String resourceType = helmResource.getType();
 
-        String valueParams = new Yaml().dump(helmResource.getValueParams());
-        final UpdateReleaseRequest.Builder upadteReleaseRequestBuilder = getUpdateReleaseBuilder(helmResource, valueParams);
+    ChartOuterClass.Chart.Builder chartBuilder = getHelmChartBuilder(helmResource, resourceType);
 
-        Future<UpdateReleaseResponse> updateFuture = releaseManager.update(upadteReleaseRequestBuilder, chartBuilder);
-        final ReleaseOuterClass.Release release;
-        try {
-            release = updateFuture.get().getRelease();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("error happened while updating helm release", e);
-        }
+    String valueParams = new Yaml().dump(helmResource.getValueParams());
+    final UpdateReleaseRequest.Builder upadteReleaseRequestBuilder =
+        getUpdateReleaseBuilder(helmResource, valueParams);
 
-        return release;
+    Future<UpdateReleaseResponse> updateFuture =
+        releaseManager.update(upadteReleaseRequestBuilder, chartBuilder);
+    final ReleaseOuterClass.Release release;
+    try {
+      release = updateFuture.get().getRelease();
+    } catch (InterruptedException | ExecutionException e) {
+      throw new RuntimeException("error happened while updating helm release", e);
     }
 
-    private UpdateReleaseRequest.Builder getUpdateReleaseBuilder(
-        HelmInfrastructureResource helmResource, String valueParams) {
-        final UpdateReleaseRequest.Builder upadteReleaseRequestBuilder =
-            UpdateReleaseRequest.newBuilder();
-        upadteReleaseRequestBuilder.setName(helmResource.getDeploymentName());
-        upadteReleaseRequestBuilder.setTimeout(5000L);
-        upadteReleaseRequestBuilder.setWait(true);
-        upadteReleaseRequestBuilder.getValuesBuilder().setRaw(valueParams);
-        upadteReleaseRequestBuilder.setResetValues(false);
-        upadteReleaseRequestBuilder.setReuseValues(true);
-        return upadteReleaseRequestBuilder;
+    return release;
+  }
+
+  private UpdateReleaseRequest.Builder getUpdateReleaseBuilder(
+      HelmInfrastructureResource helmResource, String valueParams) {
+    final UpdateReleaseRequest.Builder upadteReleaseRequestBuilder =
+        UpdateReleaseRequest.newBuilder();
+    upadteReleaseRequestBuilder.setName(helmResource.getDeploymentName());
+    upadteReleaseRequestBuilder.setTimeout(5000L);
+    upadteReleaseRequestBuilder.setWait(true);
+    upadteReleaseRequestBuilder.getValuesBuilder().setRaw(valueParams);
+    upadteReleaseRequestBuilder.setResetValues(false);
+    upadteReleaseRequestBuilder.setReuseValues(true);
+    return upadteReleaseRequestBuilder;
+  }
+
+  @Override
+  public ReleaseOuterClass.Release deploy(AbstractDeploymentResource deploymentResource)
+      throws IOException {
+    System.out.println("going to deploy helm resource: " + deploymentResource.getResourceName());
+
+    HelmInfrastructureResource helmResource = (HelmInfrastructureResource) deploymentResource;
+    String resourceType = helmResource.getType();
+
+    String valueParams = new Yaml().dump(helmResource.getValueParams());
+    final InstallReleaseRequest.Builder requestBuilder = getReleaseRequestBuilder(valueParams);
+
+    ChartOuterClass.Chart.Builder chartBuilder = getHelmChartBuilder(helmResource, resourceType);
+
+    ReleaseOuterClass.Release release = null;
+    final Future<InstallReleaseResponse> releaseFuture =
+        releaseManager.install(requestBuilder, chartBuilder);
+    try {
+      release = releaseFuture.get().getRelease();
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
     }
 
-    @Override
-    public ReleaseOuterClass.Release deploy(AbstractDeploymentResource deploymentResource) throws IOException {
-        System.out.println("going to deploy helm resource: " + deploymentResource.getResourceName());
+    return release;
+  }
 
-        HelmInfrastructureResource helmResource = (HelmInfrastructureResource) deploymentResource;
-        String resourceType = helmResource.getType();
+  private ChartOuterClass.Chart.Builder getHelmChartBuilder(
+      HelmInfrastructureResource helmResource, String resourceType) {
+    ChartRepository repository = getChartRepository(helmResource);
 
-        String valueParams = new Yaml().dump(helmResource.getValueParams());
-        final InstallReleaseRequest.Builder requestBuilder = getReleaseRequestBuilder(valueParams);
+    ChartOuterClass.Chart.Builder chartBuilder =
+        getChartBuilder(helmResource, resourceType, repository);
+    System.out.println("metadata = " + chartBuilder.getMetadataOrBuilder());
 
-        ChartOuterClass.Chart.Builder chartBuilder = getHelmChartBuilder(helmResource, resourceType);
+    return chartBuilder;
+  }
 
-        ReleaseOuterClass.Release release = null;
-        final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chartBuilder);
-        try {
-            release = releaseFuture.get().getRelease();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+  private ChartOuterClass.Chart.Builder getChartBuilder(
+      HelmInfrastructureResource helmResource, String resourceType, ChartRepository repository) {
+    ChartOuterClass.Chart.Builder chartBuilder;
+    String chartVersion = getChartConfig(helmResource.getType(), "chartVersion");
 
-        return release;
+    try {
+      chartBuilder = repository.resolve(resourceType, chartVersion);
+    } catch (ChartResolverException e) {
+      e.printStackTrace();
+      throw new RuntimeException("cannot resolve helm chart for version: " + chartVersion);
     }
 
-    private ChartOuterClass.Chart.Builder getHelmChartBuilder(
-        HelmInfrastructureResource helmResource, String resourceType) {
-        ChartRepository repository = getChartRepository(helmResource);
+    return chartBuilder;
+  }
 
-        ChartOuterClass.Chart.Builder chartBuilder =
-            getChartBuilder(helmResource, resourceType, repository);
-        System.out.println("metadata = " + chartBuilder.getMetadataOrBuilder());
+  private ChartRepository getChartRepository(HelmInfrastructureResource helmResource) {
+    URI chartUri;
+    String repositoryUrl = getChartConfig(helmResource.getType(), "repository");
 
-        return chartBuilder;
+    try {
+      chartUri = new URI(repositoryUrl);
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      throw new RuntimeException("cannot resolve helm chart url: " + repositoryUrl);
     }
 
-    private ChartOuterClass.Chart.Builder getChartBuilder(
-        HelmInfrastructureResource helmResource, String resourceType,
-        ChartRepository repository) {
-        ChartOuterClass.Chart.Builder chartBuilder;
-        String chartVersion =
-            getChartConfig(helmResource.getType(), "chartVersion");
+    return new ChartRepository("google", chartUri, true);
+  }
 
-        try {
-            chartBuilder = repository.resolve(resourceType, chartVersion);
-        } catch (ChartResolverException e) {
-            e.printStackTrace();
-            throw new RuntimeException(
-                "cannot resolve helm chart for version: " + chartVersion);
-        }
+  private InstallReleaseRequest.Builder getReleaseRequestBuilder(String valueParams) {
+    final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
+    requestBuilder.setTimeout(5000L);
+    requestBuilder.setWait(true);
+    requestBuilder.setNamespace(DEFAULT_NAMESPACE);
+    requestBuilder.getValuesBuilder().setRaw(valueParams);
 
-        return chartBuilder;
-    }
-
-    private ChartRepository getChartRepository(
-        HelmInfrastructureResource helmResource) {
-        URI chartUri;
-        String repositoryUrl =
-            getChartConfig(helmResource.getType(), "repository");
-
-        try {
-            chartUri = new URI(repositoryUrl);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            throw new RuntimeException("cannot resolve helm chart url: "
-                + repositoryUrl);
-        }
-
-        return new ChartRepository("google", chartUri, true);
-    }
-
-    private InstallReleaseRequest.Builder getReleaseRequestBuilder(
-        String valueParams) {
-        final InstallReleaseRequest.Builder requestBuilder =
-            InstallReleaseRequest.newBuilder();
-        requestBuilder.setTimeout(5000L);
-        requestBuilder.setWait(true);
-        requestBuilder.setNamespace(DEFAULT_NAMESPACE);
-        requestBuilder.getValuesBuilder().setRaw(valueParams);
-
-        return requestBuilder;
-    }
+    return requestBuilder;
+  }
 }

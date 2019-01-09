@@ -15,18 +15,24 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class ErrorController {
 
-    @ExceptionHandler(ApplicationAlreadyExists.class)
-    public ResponseEntity<ErrorDetails> applicationAlreadyExists(ApplicationAlreadyExists ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorDetails("Application already exists", "ERR01"), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(ApplicationAlreadyExists.class)
+  public ResponseEntity<ErrorDetails> applicationAlreadyExists(
+      ApplicationAlreadyExists ex, WebRequest request) {
+    return new ResponseEntity<>(
+        new ErrorDetails("Application already exists", "ERR01"), HttpStatus.BAD_REQUEST);
+  }
 
-    @ExceptionHandler(ApplicationDoesNotExist.class)
-    public ResponseEntity<ErrorDetails> applicationDoesNotExist(ApplicationDoesNotExist ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorDetails("Application does not exist", "ERR02"), HttpStatus.NOT_FOUND);
-    }
+  @ExceptionHandler(ApplicationDoesNotExist.class)
+  public ResponseEntity<ErrorDetails> applicationDoesNotExist(
+      ApplicationDoesNotExist ex, WebRequest request) {
+    return new ResponseEntity<>(
+        new ErrorDetails("Application does not exist", "ERR02"), HttpStatus.NOT_FOUND);
+  }
 
-    @ExceptionHandler(DeploymentNotFoundException.class)
-    public ResponseEntity<ErrorDetails> deploymentDoesNotExist(DeploymentNotFoundException ex, WebRequest request) {
-        return new ResponseEntity<>(new ErrorDetails("Deployment does not exist", "ERR03"), HttpStatus.NOT_FOUND);
-    }
+  @ExceptionHandler(DeploymentNotFoundException.class)
+  public ResponseEntity<ErrorDetails> deploymentDoesNotExist(
+      DeploymentNotFoundException ex, WebRequest request) {
+    return new ResponseEntity<>(
+        new ErrorDetails("Deployment does not exist", "ERR03"), HttpStatus.NOT_FOUND);
+  }
 }

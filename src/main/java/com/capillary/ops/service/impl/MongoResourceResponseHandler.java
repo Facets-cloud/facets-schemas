@@ -9,34 +9,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MongoResourceResponseHandler implements
-    AbstractResourceResponseHandler {
+public class MongoResourceResponseHandler implements AbstractResourceResponseHandler {
 
-    @Autowired
-    private MongoInfraRepository mongoInfraRepository;
+  @Autowired private MongoInfraRepository mongoInfraRepository;
 
-    @Override
-    public void handleResponse(
-        AbstractInfrastructureResource infrastructureResource,
-        String releaseName) {
-        MongoResource mongoResource = (MongoResource) infrastructureResource;
-        mongoResource.setDeploymentName(releaseName);
-        mongoResource.setDeploymentStatus(InfrastructureResourceStatus.SUCCESS);
+  @Override
+  public void handleResponse(
+      AbstractInfrastructureResource infrastructureResource, String releaseName) {
+    MongoResource mongoResource = (MongoResource) infrastructureResource;
+    mongoResource.setDeploymentName(releaseName);
+    mongoResource.setDeploymentStatus(InfrastructureResourceStatus.SUCCESS);
 
-        mongoInfraRepository.save(mongoResource);
-    }
+    mongoInfraRepository.save(mongoResource);
+  }
 
-    @Override
-    public void handleError(
-        AbstractInfrastructureResource infrastructureResource, Exception ex) {
-        MongoResource mongoResource = (MongoResource) infrastructureResource;
+  @Override
+  public void handleError(AbstractInfrastructureResource infrastructureResource, Exception ex) {
+    MongoResource mongoResource = (MongoResource) infrastructureResource;
 
-        System.out.println("error happened while deploying resource:"
-            + mongoResource);
-        ex.printStackTrace();
+    System.out.println("error happened while deploying resource:" + mongoResource);
+    ex.printStackTrace();
 
-        infrastructureResource
-            .setDeploymentStatus(InfrastructureResourceStatus.FAILURE);
-        mongoInfraRepository.save(mongoResource);
-    }
+    infrastructureResource.setDeploymentStatus(InfrastructureResourceStatus.FAILURE);
+    mongoInfraRepository.save(mongoResource);
+  }
 }

@@ -4,10 +4,8 @@ import com.capillary.ops.bo.AbstractInfrastructureResource;
 
 public interface AbstractResourceResponseHandler {
 
-    public void handleResponse(
-        AbstractInfrastructureResource infrastructureResource,
-        String releaseName);
+  public void handleResponse(
+      AbstractInfrastructureResource infrastructureResource, String releaseName);
 
-    public void handleError(
-        AbstractInfrastructureResource infrastructureResource, Exception ex);
+  public void handleError(AbstractInfrastructureResource infrastructureResource, Exception ex);
 }

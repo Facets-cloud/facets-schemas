@@ -1,4 +1,3 @@
 package com.capillary.ops.bo.exceptions;
 
-public class ApplicationDoesNotExist extends RuntimeException {
-}
+public class ApplicationDoesNotExist extends RuntimeException {}

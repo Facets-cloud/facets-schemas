@@ -5,11 +5,13 @@ import com.capillary.ops.bo.AbstractInfrastructureResource;
 
 public interface DeploymentResponseHandler {
 
-    public void handleResponse(
-        AbstractInfrastructureResource infrastructureResource,
-        AbstractDeploymentResource deploymentResource, Object responseObject);
+  public void handleResponse(
+      AbstractInfrastructureResource infrastructureResource,
+      AbstractDeploymentResource deploymentResource,
+      Object responseObject);
 
-    public void handleError(
-        AbstractInfrastructureResource infrastructureResource,
-        AbstractDeploymentResource deploymentResource, Exception ex);
+  public void handleError(
+      AbstractInfrastructureResource infrastructureResource,
+      AbstractDeploymentResource deploymentResource,
+      Exception ex);
 }

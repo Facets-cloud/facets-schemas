@@ -2,14 +2,11 @@ package com.capillary.ops.repository.mongodb;
 
 import com.capillary.ops.bo.Environments;
 import com.capillary.ops.bo.mongodb.MongoResource;
-import com.capillary.ops.bo.mongodb.MongoUser;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.util.List;
+public interface MongoInfraRepository extends MongoRepository<MongoResource, String> {
 
-public interface MongoInfraRepository extends
-    MongoRepository<MongoResource, String> {
-
-    public List<MongoResource> findByResourceNameAndEnvironment(
-        String resourceName, Environments environment);
+  public List<MongoResource> findByResourceNameAndEnvironment(
+      String resourceName, Environments environment);
 }

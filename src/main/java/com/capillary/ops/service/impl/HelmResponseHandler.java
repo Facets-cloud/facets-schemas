@@ -13,44 +13,43 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelmResponseHandler implements DeploymentResponseHandler {
 
-    @Autowired
-    private HelmInfrastructureRepository helmInfrastructureRepository;
+  @Autowired private HelmInfrastructureRepository helmInfrastructureRepository;
 
-    @Autowired
-    private ResourceResponseHandlerSelector responseHandlerSelector;
+  @Autowired private ResourceResponseHandlerSelector responseHandlerSelector;
 
-    @Override
-    public void handleResponse(
-        AbstractInfrastructureResource infrastructureResource,
-        AbstractDeploymentResource deploymentResource, Object responseObject) {
+  @Override
+  public void handleResponse(
+      AbstractInfrastructureResource infrastructureResource,
+      AbstractDeploymentResource deploymentResource,
+      Object responseObject) {
 
-        HelmInfrastructureResource helmInfrastructureResource =
-            (HelmInfrastructureResource) deploymentResource;
+    HelmInfrastructureResource helmInfrastructureResource =
+        (HelmInfrastructureResource) deploymentResource;
 
-        Release release = (Release) responseObject;
-        if (release == null) {
-            throw new RuntimeException(
-                "error occured while deploying resource, release was null: "
-                    + deploymentResource);
-        }
-
-        String releaseName = release.getName();
-
-        helmInfrastructureResource.setDeploymentName(releaseName);
-        helmInfrastructureRepository
-            .save((HelmInfrastructureResource) deploymentResource);
-
-        responseHandlerSelector.selectHandler(deploymentResource.getType())
-            .handleResponse(infrastructureResource, releaseName);
+    Release release = (Release) responseObject;
+    if (release == null) {
+      throw new RuntimeException(
+          "error occured while deploying resource, release was null: " + deploymentResource);
     }
 
-    @Override
-    public void handleError(
-        AbstractInfrastructureResource infrastructureResource,
-        AbstractDeploymentResource deploymentResource, Exception ex) {
-        System.out.println("exception occured while deploying helm resource = "
-            + ex);
-        responseHandlerSelector.selectHandler(deploymentResource.getType())
-            .handleError(infrastructureResource, ex);
-    }
+    String releaseName = release.getName();
+
+    helmInfrastructureResource.setDeploymentName(releaseName);
+    helmInfrastructureRepository.save((HelmInfrastructureResource) deploymentResource);
+
+    responseHandlerSelector
+        .selectHandler(deploymentResource.getType())
+        .handleResponse(infrastructureResource, releaseName);
+  }
+
+  @Override
+  public void handleError(
+      AbstractInfrastructureResource infrastructureResource,
+      AbstractDeploymentResource deploymentResource,
+      Exception ex) {
+    System.out.println("exception occured while deploying helm resource = " + ex);
+    responseHandlerSelector
+        .selectHandler(deploymentResource.getType())
+        .handleError(infrastructureResource, ex);
+  }
 }

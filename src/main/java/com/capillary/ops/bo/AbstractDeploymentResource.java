@@ -5,31 +5,29 @@ import org.springframework.data.annotation.Id;
 
 public class AbstractDeploymentResource {
 
-    @Id
-    @JsonIgnore
-    protected String id;
+  @Id @JsonIgnore protected String id;
 
-    String type;
+  String type;
 
-    protected String resourceName;
+  protected String resourceName;
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public String getType() {
-        return type;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getResourceName() {
-        return resourceName;
-    }
+  public String getResourceName() {
+    return resourceName;
+  }
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
+  public void setResourceName(String resourceName) {
+    this.resourceName = resourceName;
+  }
 }

@@ -1,4 +1,3 @@
 package com.capillary.ops.service;
 
-public interface HelmDeploymentService extends InfrastructureDeploymentService {
-}
+public interface HelmDeploymentService extends InfrastructureDeploymentService {}

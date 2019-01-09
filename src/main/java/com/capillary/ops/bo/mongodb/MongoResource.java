@@ -5,27 +5,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class MongoResource extends AbstractInfrastructureResource {
 
-    @JsonIgnore
-    private String mongodbRootPassword = "";
+  @JsonIgnore private String mongodbRootPassword = "";
 
-    public String getMongodbRootPassword() {
-        return mongodbRootPassword;
-    }
+  public String getMongodbRootPassword() {
+    return mongodbRootPassword;
+  }
 
-    public void setMongodbRootPassword(String mongodbRootPassword) {
-        this.mongodbRootPassword = mongodbRootPassword;
-    }
+  public void setMongodbRootPassword(String mongodbRootPassword) {
+    this.mongodbRootPassword = mongodbRootPassword;
+  }
 
-    @Override
-    public String toString() {
-        return "MongoResource{" +
-                "id='" + id + '\'' +
-                ", resourceName='" + resourceName + '\'' +
-                ", environment=" + environment +
-                ", instanceType='" + instanceType + '\'' +
-                ", volumeSize=" + volumeSize +
-                ", deploymentName='" + deploymentName + '\'' +
-                ", deploymentStatus=" + deploymentStatus +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "MongoResource{"
+        + "id='"
+        + id
+        + '\''
+        + ", resourceName='"
+        + resourceName
+        + '\''
+        + ", environment="
+        + environment
+        + ", instanceType='"
+        + instanceType
+        + '\''
+        + ", volumeSize="
+        + volumeSize
+        + ", deploymentName='"
+        + deploymentName
+        + '\''
+        + ", deploymentStatus="
+        + deploymentStatus
+        + '}';
+  }
 }
