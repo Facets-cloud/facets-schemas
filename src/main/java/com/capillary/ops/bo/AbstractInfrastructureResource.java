@@ -1,7 +1,7 @@
 package com.capillary.ops.bo;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 
 public abstract class AbstractInfrastructureResource {
@@ -22,9 +22,10 @@ public abstract class AbstractInfrastructureResource {
   /** Name of helm deployment Should not be exposed to the end user */
   @JsonIgnore protected String deploymentName;
 
+  @JsonIgnore
   protected InfrastructureResourceStatus deploymentStatus = InfrastructureResourceStatus.PENDING;
 
-  @JsonProperty
+  @JsonGetter
   public String getId() {
     return id;
   }
@@ -61,6 +62,7 @@ public abstract class AbstractInfrastructureResource {
     return deploymentName;
   }
 
+  @JsonIgnore
   public void setDeploymentName(String deploymentName) {
     this.deploymentName = deploymentName;
   }
@@ -69,6 +71,7 @@ public abstract class AbstractInfrastructureResource {
     this.resourceName = resourceName;
   }
 
+  @JsonGetter
   public InfrastructureResourceStatus getDeploymentStatus() {
     return deploymentStatus;
   }
