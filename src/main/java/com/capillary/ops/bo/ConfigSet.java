@@ -7,37 +7,38 @@ import org.springframework.data.annotation.Id;
 import java.util.List;
 
 public class ConfigSet {
-  @Id
-  @JsonIgnore
-  private String id;
 
-  private String name;
+    @Id
+    @JsonIgnore
+    private String id;
 
-  private List<String> keys;
+    private String name;
 
-  public String getName() {
-    return name;
-  }
+    private List<String> keys;
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public List<String> getKeys() {
-    return keys;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setKeys(List<String> keys) {
-    this.keys = keys;
-  }
+    public List<String> getKeys() {
+        return keys;
+    }
 
-  @JsonProperty
-  public String getId() {
-    return id;
-  }
+    public void setKeys(List<String> keys) {
+        this.keys = keys;
+    }
 
-  @JsonIgnore
-  public void setId(String id) {
-    this.id = id;
-  }
+    @JsonProperty
+    public String getId() {
+        return id;
+    }
+
+    @JsonIgnore
+    public void setId(String id) {
+        this.id = id;
+    }
 }

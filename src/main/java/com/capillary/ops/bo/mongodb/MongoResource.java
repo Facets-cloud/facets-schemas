@@ -15,4 +15,14 @@ public class MongoResource extends AbstractInfrastructureResource {
     public void setMongodbRootPassword(String mongodbRootPassword) {
         this.mongodbRootPassword = mongodbRootPassword;
     }
+
+    @Override
+    public String toString() {
+        return "MongoResource{" + "id='" + id + '\'' + ", appName='" + appName
+            + '\'' + ", resourceName='" + resourceName + '\''
+            + ", environment=" + environment + ", instanceType='"
+            + instanceType + '\'' + ", volumeSize=" + volumeSize
+            + ", deploymentName='" + deploymentName + '\''
+            + ", deploymentStatus=" + deploymentStatus + '}';
+    }
 }

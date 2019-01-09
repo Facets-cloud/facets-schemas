@@ -1,8 +1,6 @@
 package com.capillary.ops.service.impl;
 
-import com.capillary.ops.bo.AbstractInfrastructureResource;
-import com.capillary.ops.bo.HelmInfrastructureResource;
-import com.capillary.ops.bo.InstanceType;
+import com.capillary.ops.bo.*;
 import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
 import com.capillary.ops.bo.exceptions.ResourceDoesNotExist;
 import com.capillary.ops.bo.mongodb.MongoCommand;
@@ -10,22 +8,14 @@ import com.capillary.ops.bo.mongodb.MongoResource;
 import com.capillary.ops.bo.mongodb.MongoUser;
 import com.capillary.ops.repository.mongodb.MongoInfraRepository;
 import com.capillary.ops.repository.mongodb.MongoUserRepository;
-import com.capillary.ops.service.HelmInfrastructureService;
-import com.capillary.ops.service.InstanceTypeService;
-import com.capillary.ops.service.KubeUtils;
-import com.capillary.ops.service.MongoResourceService;
-import com.mongodb.*;
-import hapi.release.ReleaseOuterClass;
+import com.capillary.ops.service.*;
+import com.mongodb.BasicDBObject;
 import org.bson.Document;
-import org.microbean.helm.chart.resolver.ChartResolverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MongoResourceServiceImpl implements MongoResourceService {
@@ -34,7 +24,7 @@ public class MongoResourceServiceImpl implements MongoResourceService {
     private MongoInfraRepository mongoInfraRepository;
 
     @Autowired
-    private HelmInfrastructureService helmInfrastructureService;
+    private HelmDeploymentService helmDeploymentService;
 
     @Autowired
     private MongoUserRepository mongoUserRepository;
@@ -42,22 +32,34 @@ public class MongoResourceServiceImpl implements MongoResourceService {
     @Autowired
     private InstanceTypeService instanceTypeService;
 
+    @Autowired
+    private DeploymentServiceClient deploymentServiceClient;
+
     private enum CommandStatus {
-        PENDING,
-        SUCCESS,
-        ERROR
+        PENDING, SUCCESS, ERROR
     }
 
-    public MongoResource findResourceByNameAndEnvironment(MongoResource mongoResource) {
-        List<MongoResource> mongoResources = mongoInfraRepository.findByResourceNameAndEnvironment(mongoResource.getResourceName(), mongoResource.getEnvironment());
+    public MongoResource findResourceByNameAndEnvironment(String resourceName,
+        Environments environment) {
+        List<MongoResource> mongoResources =
+            mongoInfraRepository.findByResourceNameAndEnvironment(resourceName,
+                environment);
         if (mongoResources.size() > 1) {
-            System.out.println("error in data, more than one resources with same name");
+            System.out
+                .println("error in data, more than one resources with same name");
         }
 
         return mongoResources.isEmpty() ? null : mongoResources.get(0);
     }
 
-    private MongoResource setParamsForPersistence(MongoResource savedResource, MongoResource newResource) {
+    public MongoResource findResourceByNameAndEnvironment(
+        MongoResource mongoResource) {
+        return findResourceByNameAndEnvironment(
+            mongoResource.getResourceName(), mongoResource.getEnvironment());
+    }
+
+    private MongoResource setParamsForPersistence(MongoResource savedResource,
+        MongoResource newResource) {
         Integer volumeSize = newResource.getVolumeSize();
         if (volumeSize != null) {
             savedResource.setVolumeSize(volumeSize);
@@ -66,7 +68,8 @@ public class MongoResourceServiceImpl implements MongoResourceService {
         return savedResource;
     }
 
-    private MongoResource setParamsForInstanceType(MongoResource savedResource, MongoResource newResource) {
+    private MongoResource setParamsForInstanceType(MongoResource savedResource,
+        MongoResource newResource) {
         String instanceType = newResource.getInstanceType();
         if (!StringUtils.isEmpty(instanceType)) {
             savedResource.setInstanceType(instanceType);
@@ -100,33 +103,33 @@ public class MongoResourceServiceImpl implements MongoResourceService {
     }
 
     @Override
-    public MongoResource update(AbstractInfrastructureResource infrastructureResource) {
+    public MongoResource update(
+        AbstractInfrastructureResource infrastructureResource) {
         MongoResource mongoResource = (MongoResource) infrastructureResource;
 
-        MongoResource savedResource = findResourceByNameAndEnvironment(mongoResource);
+        MongoResource savedResource =
+            findResourceByNameAndEnvironment(mongoResource);
         if (savedResource == null) {
-            throw new ResourceDoesNotExist("monogodb for given resource name and environment does not exist");
+            throw new ResourceDoesNotExist(
+                "monogodb for given resource name and environment does not exist");
         }
 
         setParamsForPersistence(savedResource, mongoResource);
         setParamsForInstanceType(savedResource, mongoResource);
 
         Map<String, Object> helmSetParams = generateSetParams(savedResource);
-        helmSetParams.put("mongodbRootPassword", savedResource.getMongodbRootPassword());
+        helmSetParams.put("mongodbRootPassword", savedResource
+            .getMongodbRootPassword());
 
-        Map<String, Object> serviceType = new HashMap<>(1);
-        serviceType.put("type", "LoadBalancer");
-        helmSetParams.put("service", serviceType);
+        HelmInfrastructureResource helmInfrastructureResource =
+            new HelmInfrastructureResource(savedResource.getDeploymentName(),
+                "mongodb", helmSetParams);
 
-        HelmInfrastructureResource helmInfrastructureResource = new HelmInfrastructureResource(mongoResource.getDeploymentName(), "mongodb", helmSetParams);
-        try {
-            helmInfrastructureService.update(helmInfrastructureResource, mongoResource.getEnvironment());
-        } catch (URISyntaxException | ChartResolverException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("error occured while updating resource");
-        }
+        deploymentServiceClient.update(savedResource,
+            helmInfrastructureResource, "helm");
 
-        return mongoInfraRepository.save(savedResource);
+        savedResource.setDeploymentStatus(InfrastructureResourceStatus.PENDING);
+        return savedResource;
     }
 
     @Override
@@ -136,17 +139,21 @@ public class MongoResourceServiceImpl implements MongoResourceService {
 
     @Override
     public MongoResource findById(String id) {
-        Optional<MongoResource> mongoResource = mongoInfraRepository.findById(id);
+        Optional<MongoResource> mongoResource =
+            mongoInfraRepository.findById(id);
         return mongoResource.orElse(null);
     }
 
     @Override
-    public MongoResource create(AbstractInfrastructureResource infrastructureResource) {
+    public MongoResource create(
+        AbstractInfrastructureResource infrastructureResource) {
         MongoResource mongoResource = (MongoResource) infrastructureResource;
 
-        MongoResource existingMonogResource = this.findResourceByNameAndEnvironment(mongoResource);
+        MongoResource existingMonogResource =
+            this.findResourceByNameAndEnvironment(mongoResource);
         if (existingMonogResource != null) {
-            throw new ResourceAlreadyExists("mongodb with this name and environment already exists");
+            throw new ResourceAlreadyExists(
+                "mongodb with this name and environment already exists");
         }
 
         Map<String, Object> helmSetParams = generateSetParams(mongoResource);
@@ -154,25 +161,13 @@ public class MongoResourceServiceImpl implements MongoResourceService {
         String mongoRootPassword = KubeUtils.generatePassword(15);
         helmSetParams.put("mongodbRootPassword", mongoRootPassword);
 
-//        Map<String, Object> serviceType = new HashMap<>();
-//        serviceType.put("type", "LoadBalancer");
-//        helmSetParams.put("service", serviceType);
+        HelmInfrastructureResource helmInfrastructureResource =
+            new HelmInfrastructureResource("mongodb", helmSetParams);
 
-        ReleaseOuterClass.Release release = null;
-        HelmInfrastructureResource helmInfrastructureResource = new HelmInfrastructureResource("", "mongodb", helmSetParams);
-        try {
-            release = helmInfrastructureService.deploy(helmInfrastructureResource, mongoResource.getEnvironment());
-        } catch (URISyntaxException | ChartResolverException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("error occured while deploying resource", e);
-        }
-
-        if (release == null) {
-            throw new RuntimeException("error occured while deploying resource, release was null");
-        }
+        deploymentServiceClient.deploy(mongoResource,
+            helmInfrastructureResource, "helm");
 
         mongoResource.setMongodbRootPassword(mongoRootPassword);
-        mongoResource.setDeploymentName(release.getName());
         return mongoInfraRepository.save(mongoResource);
     }
 
@@ -182,33 +177,37 @@ public class MongoResourceServiceImpl implements MongoResourceService {
         mongoResource.setEnvironment(user.getEnvironment());
         mongoResource.setResourceName(user.getResourceName());
 
-        List<MongoUser> existingUser = mongoUserRepository.findByUserNameAndResourceNameAndDbNameAndEnvironment(user.getUserName(), user.getResourceName(), user.getDbName(), user.getEnvironment().name());
+        List<MongoUser> existingUser =
+            mongoUserRepository
+                .findByUserNameAndResourceNameAndDbNameAndEnvironment(user
+                    .getUserName(), user.getResourceName(), user.getDbName(),
+                    user.getEnvironment().name());
         if (!existingUser.isEmpty()) {
-            throw new ResourceAlreadyExists("following user already exists for current app, db and environment");
+            throw new ResourceAlreadyExists(
+                "following user already exists for current app, db and environment");
         }
 
-        MongoResource savedMongoResource = this.findResourceByNameAndEnvironment(mongoResource);
+        MongoResource savedMongoResource =
+            this.findResourceByNameAndEnvironment(mongoResource);
         if (savedMongoResource == null) {
-            throw new ResourceDoesNotExist("mongodb savedMongoResource does not exist for this application");
+            throw new ResourceDoesNotExist(
+                "mongodb savedMongoResource does not exist for this application");
         }
 
         user.setPassword(KubeUtils.generatePassword(15));
 
-        MongoCredential credential = MongoCredential.createCredential("root", "admin", savedMongoResource.getMongodbRootPassword().toCharArray());
-        MongoClientOptions options = MongoClientOptions.builder().sslEnabled(false).build();
-
-//        MongoClient mongoClient = new MongoClient(new ServerAddress("localhost", 27017), credential, options);
-        MongoClient mongoClient = new MongoClient(new ServerAddress(savedMongoResource.getDeploymentName() + "-mongodb.infra", 27017), credential, options);
-
         BasicDBObject commandArguments = constructCreateUserCommand(user);
         BasicDBObject command = new BasicDBObject(commandArguments);
 
-        Document document = mongoClient.getDatabase("admin").runCommand(command);
+        Document document =
+            new KubeMongoClient(savedMongoResource.getDeploymentName(),
+                "admin", savedMongoResource.getMongodbRootPassword())
+                .execute(command);
+
         System.out.println("document = " + document);
         if (!document.containsKey("ok") && document.getDouble("ok") != 1.0) {
             return null;
         }
-        mongoClient.close();
 
         return mongoUserRepository.save(user);
     }
@@ -236,41 +235,28 @@ public class MongoResourceServiceImpl implements MongoResourceService {
     }
 
     public Map<Integer, String> runCommand(MongoCommand mongoCommand) {
-        List<MongoResource> mongoResources = mongoInfraRepository.findByResourceNameAndEnvironment(mongoCommand.getResourceName(), mongoCommand.getEnvironment());
-        if (mongoResources.isEmpty()) {
+        MongoResource mongoResource = findResourceByNameAndEnvironment(mongoCommand.getResourceName(), mongoCommand.getEnvironment());
+        if (mongoResource == null) {
             throw new ResourceDoesNotExist("Mongodb for given app and environment does not exist");
         }
 
-        MongoResource mongoResource = mongoResources.get(0);
-
-        MongoCredential credential = MongoCredential.createCredential("root", "admin", mongoResource.getMongodbRootPassword().toCharArray());
-        MongoClientOptions options = MongoClientOptions.builder().sslEnabled(false).build();
-        MongoClient mongoClient = new MongoClient(new ServerAddress("localhost", 27017), credential, options);
-
-        Map<Integer, String> commandStatus = new HashMap<>(mongoCommand.getCommands().size());
-        int commandStatusCounter = 1;
-        for (String command: mongoCommand.getCommands()) {
-            commandStatus.put(commandStatusCounter, CommandStatus.PENDING.name());
-            commandStatusCounter++;
+        KubeMongoClient mongoAdminClient = new KubeMongoClient(mongoResource.getDeploymentName(), "admin", mongoResource.getMongodbRootPassword());
+        if (!mongoAdminClient.isExecuteFunctionPermissionPresent()) {
+            System.out.println("execute function role does not exist, going to create");
+            mongoAdminClient.createExecuteFunctionRoleAndGivePermission();
+            System.out.println("successfully created execute function role");
         }
 
-        commandStatusCounter = 1;
-        for (String command: mongoCommand.getCommands()) {
+        KubeMongoClient mongoClient = new KubeMongoClient(mongoResource.getDeploymentName(), mongoCommand.getDbName(), mongoResource.getMongodbRootPassword());
+        List<BasicDBObject> commandList = new ArrayList<>(mongoCommand.getCommands().size());
+        mongoCommand.getCommands().forEach(command -> {
             BasicDBObject basicDBObject = new BasicDBObject();
             basicDBObject.put("eval", command);
 
             BasicDBObject runCommand = new BasicDBObject(basicDBObject);
-            Document document = mongoClient.getDatabase(mongoCommand.getDbName()).runCommand(runCommand);
+            commandList.add(runCommand);
+        });
 
-            if (!document.containsKey("ok") || document.getDouble("ok") != 1.0) {
-                commandStatus.put(commandStatusCounter, CommandStatus.ERROR.name());
-                break;
-            }
-
-            commandStatus.put(commandStatusCounter, CommandStatus.SUCCESS.name());
-        }
-        mongoClient.close();
-
-        return commandStatus;
+        return mongoClient.execute(commandList);
     }
 }

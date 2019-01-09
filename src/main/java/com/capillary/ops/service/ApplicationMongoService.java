@@ -24,7 +24,7 @@ public class ApplicationMongoService {
 
     public Application createApplication(Application application) {
         Application existingApplication = getApplication(application.getName());
-        if(existingApplication != null) {
+        if (existingApplication != null) {
             throw new ApplicationAlreadyExists();
         }
         application = applicationRepository.insert(application);
@@ -36,8 +36,9 @@ public class ApplicationMongoService {
     }
 
     public Application getApplicationById(String applicationId) {
-        Optional<Application> byId = applicationRepository.findById(applicationId);
-        if(!byId.isPresent()) {
+        Optional<Application> byId =
+            applicationRepository.findById(applicationId);
+        if (!byId.isPresent()) {
             throw new ApplicationDoesNotExist();
         }
         return byId.get();
@@ -47,7 +48,7 @@ public class ApplicationMongoService {
         return applicationRepository.save(application);
     }
 
-    public void deleteApplication(Application application){
+    public void deleteApplication(Application application) {
         applicationRepository.delete(application);
     }
 

@@ -1,18 +1,9 @@
 package com.capillary.ops.bo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.annotation.Id;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class HelmInfrastructureResource {
-
-    @Id
-    @JsonIgnore
-    private String id;
-
-    private String type;
+public class HelmInfrastructureResource extends AbstractDeploymentResource {
 
     private String repository;
 
@@ -32,6 +23,10 @@ public class HelmInfrastructureResource {
         this.deploymentName = deploymentName;
         this.type = type;
         this.valueParams = valueParams;
+    }
+
+    public HelmInfrastructureResource(String type, Map<String, Object> valueParams) {
+        this(null, type, valueParams);
     }
 
     public String getType() {
@@ -93,14 +88,15 @@ public class HelmInfrastructureResource {
     @Override
     public String toString() {
         return "HelmInfrastructureResource{" +
-                "id='" + id + '\'' +
-                ", type='" + type + '\'' +
-                ", repository='" + repository + '\'' +
+                "repository='" + repository + '\'' +
                 ", chartVersion='" + chartVersion + '\'' +
                 ", appVersion='" + appVersion + '\'' +
                 ", description='" + description + '\'' +
                 ", deploymentName='" + deploymentName + '\'' +
                 ", valueParams=" + valueParams +
+                ", id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                ", resourceName='" + resourceName + '\'' +
                 '}';
     }
 }

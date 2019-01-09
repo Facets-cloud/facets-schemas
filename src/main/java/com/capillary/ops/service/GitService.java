@@ -30,41 +30,48 @@ public class GitService {
     @Async
     public void pushToDeis(Application application, Deployment deployment) {
         try {
-            File workingDir = Files.createTempDirectory(String.format("%s_%s", application.getName(),
-                    deployment.getId())).toFile();
-            TransportConfigCallback transportConfigCallback = new SshTransportConfigCallback(application);
-            Git git = Git.cloneRepository()
-                    .setDirectory(workingDir)
+            File workingDir =
+                Files.createTempDirectory(
+                    String.format("%s_%s", application.getName(), deployment
+                        .getId())).toFile();
+            TransportConfigCallback transportConfigCallback =
+                new SshTransportConfigCallback(application);
+            Git git =
+                Git.cloneRepository().setDirectory(workingDir)
                     .setTransportConfigCallback(transportConfigCallback)
-                    .setURI(application.getRepoURL())
-                    .call();
+                    .setURI(application.getRepoURL()).call();
             git.checkout().setName(deployment.getTag()).call();
-            git.fetch().setTransportConfigCallback(transportConfigCallback).call();
+            git.fetch().setTransportConfigCallback(transportConfigCallback)
+                .call();
             git.branchCreate().setName(deployment.getId()).call();
             git.checkout().setName(deployment.getId()).call();
 
-            if(!StringUtils.isEmptyOrNull(application.getProjectFolder())) {
-                workingDir = new File(workingDir.getAbsolutePath() + "/" + application.getProjectFolder());
+            if (!StringUtils.isEmptyOrNull(application.getProjectFolder())) {
+                workingDir =
+                    new File(workingDir.getAbsolutePath() + "/"
+                        + application.getProjectFolder());
                 git = Git.init().setDirectory(workingDir).call();
                 git.add().addFilepattern(".").call();
-                git.commit().setCommitter("admin", "admin@deployer")
-                        .setAuthor("admin", "admin@deployer")
-                        .setMessage("adding subdir as a repo")
-                        .call();
+                git.commit().setCommitter("admin", "admin@deployer").setAuthor(
+                    "admin", "admin@deployer").setMessage(
+                    "adding subdir as a repo").call();
             }
-            git.remoteAdd().setName("deis").setUri(new URIish(
-                    String.format("%s/%s.git",
-                            deployment.getEnvironment().getDeisGitUri(),
-                            deployment.getEnvironment().generateAppName(application.getName())))
-                ).call();
-            Iterable<PushResult> pushResults = git.push().setTimeout(3600).setTransportConfigCallback(transportConfigCallback)
-                    .setForce(true).setRemote("deis").call();
-            String responseMessage = pushResults.iterator().next().getMessages();
-            if(responseMessage != null && responseMessage.contains("deployed to Workflow")) {
+            git.remoteAdd().setName("deis").setUri(
+                new URIish(String.format("%s/%s.git", deployment
+                    .getEnvironment().getDeisGitUri(), deployment
+                    .getEnvironment().generateAppName(application.getName()))))
+                .call();
+            Iterable<PushResult> pushResults =
+                git.push().setTimeout(3600).setTransportConfigCallback(
+                    transportConfigCallback).setForce(true).setRemote("deis")
+                    .call();
+            String responseMessage =
+                pushResults.iterator().next().getMessages();
+            if (responseMessage != null
+                && responseMessage.contains("deployed to Workflow")) {
                 deployment.setPushResult(responseMessage);
                 deployment.setStatus(Deployment.Status.FINISHED);
-            }
-            else {
+            } else {
                 deployment.setPushResult(responseMessage);
                 deployment.setStatus(Deployment.Status.FAILED);
             }
@@ -72,7 +79,7 @@ public class GitService {
         } catch (Exception e) {
             e.printStackTrace();
             deployment.setStatus(Deployment.Status.FAILED);
-            deployment.setPushResult(e.getMessage() +" " + e.getStackTrace());
+            deployment.setPushResult(e.getMessage() + " " + e.getStackTrace());
             deploymentMongoService.update(deployment);
         }
     }
@@ -105,11 +112,14 @@ public class GitService {
         }
     }
 
-    private static class SshTransportConfigCallback implements TransportConfigCallback {
+    private static class SshTransportConfigCallback implements
+        TransportConfigCallback {
+
         private final SshSessionFactory sshSessionFactory;
 
         public SshTransportConfigCallback(Application application) {
             sshSessionFactory = new JschConfigSessionFactory() {
+
                 @Override
                 protected void configure(OpenSshConfig.Host hc, Session session) {
                     session.setConfig("StrictHostKeyChecking", "no");
@@ -119,12 +129,13 @@ public class GitService {
                         e.printStackTrace();
                     }
                 }
+
                 @Override
                 protected JSch createDefaultJSch(FS fs) throws JSchException {
                     JSch jSch = super.createDefaultJSch(fs);
-                    jSch.addIdentity(application.getName(),
-                            application.getPrivateKey().getBytes(),
-                            application.getPublicKey().getBytes(), "".getBytes());
+                    jSch.addIdentity(application.getName(), application
+                        .getPrivateKey().getBytes(), application.getPublicKey()
+                        .getBytes(), "".getBytes());
                     return jSch;
                 }
             };

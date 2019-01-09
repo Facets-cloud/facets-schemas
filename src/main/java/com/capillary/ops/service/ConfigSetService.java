@@ -10,19 +10,19 @@ import java.util.List;
 @Service
 public class ConfigSetService {
 
-  @Autowired
-  private ConfigSetRepository configSetRepository;
+    @Autowired
+    private ConfigSetRepository configSetRepository;
 
-  public ConfigSet addConfigSet(ConfigSet configSet) {
-    return configSetRepository.save(configSet);
-  }
+    public ConfigSet addConfigSet(ConfigSet configSet) {
+        return configSetRepository.save(configSet);
+    }
 
-  public List<ConfigSet> getAllConfigSets() {
-    return configSetRepository.findAll();
-  }
+    public List<ConfigSet> getAllConfigSets() {
+        return configSetRepository.findAll();
+    }
 
-  public List<ConfigSet> getConfigSetByName(String name) {
-    return configSetRepository.findByName(name);
-  }
+    public List<ConfigSet> getConfigSetByName(String name) {
+        return configSetRepository.findByName(name);
+    }
 
 }

@@ -25,8 +25,9 @@ public class DeploymentMongoService {
     }
 
     public Deployment getDeployment(String deploymentId) {
-        Optional<Deployment> deploymentOptional = deploymentRepository.findById(deploymentId);
-        if(deploymentOptional.isPresent()) {
+        Optional<Deployment> deploymentOptional =
+            deploymentRepository.findById(deploymentId);
+        if (deploymentOptional.isPresent()) {
             return deploymentOptional.get();
         }
         throw new DeploymentNotFoundException();
@@ -36,4 +37,3 @@ public class DeploymentMongoService {
         return deploymentRepository.findByApplicationId(applicationId);
     }
 }
-

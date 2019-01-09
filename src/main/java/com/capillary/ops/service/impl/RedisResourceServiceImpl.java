@@ -2,22 +2,20 @@ package com.capillary.ops.service.impl;
 
 import com.capillary.ops.bo.AbstractInfrastructureResource;
 import com.capillary.ops.bo.HelmInfrastructureResource;
+import com.capillary.ops.bo.InfrastructureResourceStatus;
 import com.capillary.ops.bo.InstanceType;
 import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
 import com.capillary.ops.bo.exceptions.ResourceDoesNotExist;
 import com.capillary.ops.bo.redis.RedisResource;
 import com.capillary.ops.repository.redis.RedisInfraRepository;
-import com.capillary.ops.service.HelmInfrastructureService;
+import com.capillary.ops.service.DeploymentServiceClient;
+import com.capillary.ops.service.HelmDeploymentService;
 import com.capillary.ops.service.InstanceTypeService;
 import com.capillary.ops.service.RedisResourceService;
-import hapi.release.ReleaseOuterClass;
-import org.microbean.helm.chart.resolver.ChartResolverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
 
 @Service
@@ -30,12 +28,19 @@ public class RedisResourceServiceImpl implements RedisResourceService {
     private InstanceTypeService instanceTypeService;
 
     @Autowired
-    private HelmInfrastructureService helmInfrastructureService;
+    private HelmDeploymentService helmDeploymentService;
 
-    public RedisResource findResourceByNameAndEnvironment(RedisResource redisResource) {
-        List<RedisResource> redisResources = redisInfraRepository.findByResourceNameAndEnvironment(redisResource.getResourceName(), redisResource.getEnvironment());
+    @Autowired
+    private DeploymentServiceClient deploymentServiceClient;
+
+    private RedisResource findResourceByNameAndEnvironment(
+        RedisResource redisResource) {
+        List<RedisResource> redisResources =
+            redisInfraRepository.findByResourceNameAndEnvironment(redisResource
+                .getResourceName(), redisResource.getEnvironment());
         if (redisResources.size() > 1) {
-            System.out.println("error in data, more than one resources with same name");
+            System.out
+                .println("error in data, more than one resources with same name");
         }
 
         return redisResources.isEmpty() ? null : redisResources.get(0);
@@ -87,69 +92,62 @@ public class RedisResourceServiceImpl implements RedisResourceService {
         return valueParams;
     }
 
-    private RedisResource setParamsForPersistence(RedisResource savedResource, RedisResource newResource) {
+    private void setParamsForPersistence(RedisResource savedResource,
+        RedisResource newResource) {
         Integer volumeSize = newResource.getVolumeSize();
         if (volumeSize != null) {
             savedResource.setVolumeSize(volumeSize);
         }
-
-        return savedResource;
     }
 
-    private RedisResource setParamsForInstanceType(RedisResource savedResource, RedisResource newResource) {
+    private void setParamsForInstanceType(RedisResource savedResource,
+        RedisResource newResource) {
         String instanceType = newResource.getInstanceType();
         if (!StringUtils.isEmpty(instanceType)) {
             savedResource.setInstanceType(instanceType);
         }
-
-        return savedResource;
     }
 
-    private RedisResource setParamsForSlaveInstanceType(RedisResource savedResource, RedisResource newResource) {
+    private void setParamsForSlaveInstanceType(RedisResource savedResource,
+        RedisResource newResource) {
         String instanceType = newResource.getSlaveInstanceType();
         if (!StringUtils.isEmpty(instanceType)) {
             savedResource.setSlaveInstanceType(instanceType);
         }
-
-        return savedResource;
     }
 
     @Override
-    public RedisResource create(AbstractInfrastructureResource infrastructureResource) {
+    public RedisResource create(
+        AbstractInfrastructureResource infrastructureResource) {
         RedisResource resource = (RedisResource) infrastructureResource;
 
-        RedisResource existingRedisResource = this.findResourceByNameAndEnvironment(resource);
+        RedisResource existingRedisResource =
+            this.findResourceByNameAndEnvironment(resource);
         if (existingRedisResource != null) {
-            throw new ResourceAlreadyExists("redis with given resource name and environment already exists");
+            throw new ResourceAlreadyExists(
+                "redis with given resource name and environment already exists");
         }
 
         Map<String, Object> helmSetParams = generateSetParams(resource);
+        HelmInfrastructureResource helmInfrastructureResource =
+            new HelmInfrastructureResource("redis", helmSetParams);
 
-        HelmInfrastructureResource helmInfrastructureResource = new HelmInfrastructureResource("", "redis", helmSetParams);
-        ReleaseOuterClass.Release release = null;
-        try {
-             release = helmInfrastructureService.deploy(helmInfrastructureResource, resource.getEnvironment());
-        } catch (URISyntaxException | ChartResolverException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("error occured while creating resource", e);
-        }
-
-        if (release == null) {
-            throw new RuntimeException("error occured while creating resource, release was null");
-        }
-
-        resource.setDeploymentName(release.getName());
+        deploymentServiceClient.deploy(resource, helmInfrastructureResource,
+            "helm");
 
         return redisInfraRepository.save(resource);
     }
 
     @Override
-    public RedisResource update(AbstractInfrastructureResource infrastructureResource) {
+    public RedisResource update(
+        AbstractInfrastructureResource infrastructureResource) {
         RedisResource resource = (RedisResource) infrastructureResource;
 
-        RedisResource savedResource = findResourceByNameAndEnvironment(resource);
+        RedisResource savedResource =
+            findResourceByNameAndEnvironment(resource);
         if (savedResource == null) {
-            throw new ResourceDoesNotExist("redis for given resource name and environment does not exist");
+            throw new ResourceDoesNotExist(
+                "redis for given resource name and environment does not exist");
         }
 
         setParamsForPersistence(savedResource, resource);
@@ -158,15 +156,14 @@ public class RedisResourceServiceImpl implements RedisResourceService {
 
         Map<String, Object> helmSetParams = generateSetParams(savedResource);
 
-        HelmInfrastructureResource helmInfrastructureResource = new HelmInfrastructureResource(savedResource.getDeploymentName(), "redis", helmSetParams);
-        try {
-            helmInfrastructureService.update(helmInfrastructureResource, resource.getEnvironment());
-        } catch (URISyntaxException | ChartResolverException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("error occured while updating resource");
-        }
+        HelmInfrastructureResource helmInfrastructureResource =
+            new HelmInfrastructureResource(savedResource.getDeploymentName(),
+                "redis", helmSetParams);
+        deploymentServiceClient.update(savedResource,
+            helmInfrastructureResource, "helm");
 
-        return redisInfraRepository.save(savedResource);
+        savedResource.setDeploymentStatus(InfrastructureResourceStatus.PENDING);
+        return savedResource;
     }
 
     @Override
@@ -176,7 +173,8 @@ public class RedisResourceServiceImpl implements RedisResourceService {
 
     @Override
     public RedisResource findById(String id) {
-        Optional<RedisResource> redisResource = redisInfraRepository.findById(id);
+        Optional<RedisResource> redisResource =
+            redisInfraRepository.findById(id);
         return redisResource.orElse(null);
     }
 }

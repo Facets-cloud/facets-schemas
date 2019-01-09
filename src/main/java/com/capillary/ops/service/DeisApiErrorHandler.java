@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
 public class DeisApiErrorHandler extends DefaultResponseErrorHandler {
+
     @Override
     protected void handleError(ClientHttpResponse response, HttpStatus statusCode) throws IOException {
         String statusText = response.getStatusText();

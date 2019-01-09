@@ -7,9 +7,7 @@ import org.springframework.data.annotation.Id;
 public class Deployment {
 
     public static enum Status {
-        RUNNING,
-        FINISHED,
-        FAILED
+        RUNNING, FINISHED, FAILED
     }
 
     @Id

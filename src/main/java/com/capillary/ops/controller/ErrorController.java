@@ -29,5 +29,4 @@ public class ErrorController {
     public ResponseEntity<ErrorDetails> deploymentDoesNotExist(DeploymentNotFoundException ex, WebRequest request) {
         return new ResponseEntity<>(new ErrorDetails("Deployment does not exist", "ERR03"), HttpStatus.NOT_FOUND);
     }
-
 }

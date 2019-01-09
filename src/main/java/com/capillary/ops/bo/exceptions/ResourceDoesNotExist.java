@@ -1,6 +1,6 @@
 package com.capillary.ops.bo.exceptions;
 
-public class ResourceDoesNotExist extends RuntimeException{
+public class ResourceDoesNotExist extends RuntimeException {
 
     public ResourceDoesNotExist() {
         super();

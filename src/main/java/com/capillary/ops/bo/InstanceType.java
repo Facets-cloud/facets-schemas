@@ -45,11 +45,13 @@ public class InstanceType {
     }
 
     public void setMinMemory(String minMemory) {
-        this.minMemory = !minMemory.endsWith("Mi") ? (minMemory + "Mi") : minMemory;
+        this.minMemory =
+            !minMemory.endsWith("Mi") ? (minMemory + "Mi") : minMemory;
     }
 
     public void setMaxMemory(String maxMemory) {
-        this.maxMemory = !maxMemory.endsWith("Mi") ? (maxMemory + "Mi") : maxMemory;
+        this.maxMemory =
+            !maxMemory.endsWith("Mi") ? (maxMemory + "Mi") : maxMemory;
     }
 
     public Map<String, Object> toKubeConfig() {
@@ -70,13 +72,9 @@ public class InstanceType {
 
     @Override
     public String toString() {
-        return "InstanceType{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", minCpu='" + minCpu + '\'' +
-                ", maxCpu='" + maxCpu + '\'' +
-                ", minMemory='" + minMemory + '\'' +
-                ", maxMemory='" + maxMemory + '\'' +
-                '}';
+        return "InstanceType{" + "id='" + id + '\'' + ", name='" + name + '\''
+            + ", minCpu='" + minCpu + '\'' + ", maxCpu='" + maxCpu + '\''
+            + ", minMemory='" + minMemory + '\'' + ", maxMemory='" + maxMemory
+            + '\'' + '}';
     }
 }

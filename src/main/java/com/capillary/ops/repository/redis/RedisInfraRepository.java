@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface RedisInfraRepository extends MongoRepository<RedisResource, String> {
-    public List<RedisResource> findByResourceNameAndEnvironment(String resourceName, Environments environment);
+public interface RedisInfraRepository extends
+    MongoRepository<RedisResource, String> {
+
+    public List<RedisResource> findByResourceNameAndEnvironment(
+        String resourceName, Environments environment);
 }

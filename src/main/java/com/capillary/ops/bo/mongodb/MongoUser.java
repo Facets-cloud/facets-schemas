@@ -64,16 +64,11 @@ public class MongoUser {
 
     @Override
     public String toString() {
-        return "MongoUser{" +
-                "id='" + id + '\'' +
-                ", dbName='" + dbName + '\'' +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", userRoles=" + userRoles +
-                ", appName='" + appName + '\'' +
-                ", resourceName='" + resourceName + '\'' +
-                ", environment=" + environment +
-                '}';
+        return "MongoUser{" + "id='" + id + '\'' + ", dbName='" + dbName + '\''
+            + ", userName='" + userName + '\'' + ", password='" + password
+            + '\'' + ", userRoles=" + userRoles + ", appName='" + appName
+            + '\'' + ", resourceName='" + resourceName + '\''
+            + ", environment=" + environment + '}';
     }
 
 }

@@ -17,18 +17,22 @@ public class InstanceTypeService {
     private InstanceTypeRepository instanceTypeRepository;
 
     public InstanceType save(InstanceType instanceType) {
-        InstanceType existingInstanceType = this.findByName(instanceType.getName());
+        InstanceType existingInstanceType =
+            this.findByName(instanceType.getName());
         if (existingInstanceType != null) {
-            throw new ResourceAlreadyExists("Instance type with this name already exist");
+            throw new ResourceAlreadyExists(
+                "Instance type with this name already exist");
         }
 
         return instanceTypeRepository.save(instanceType);
     }
 
     public InstanceType findByName(String instanceTypeName) {
-        List<InstanceType> instanceTypeList = instanceTypeRepository.findByName(instanceTypeName);
+        List<InstanceType> instanceTypeList =
+            instanceTypeRepository.findByName(instanceTypeName);
         if (instanceTypeList.size() > 1) {
-            System.out.println("Error in data, more than one instance types found with the same name");
+            System.out
+                .println("Error in data, more than one instance types found with the same name");
         }
 
         return instanceTypeList.isEmpty() ? null : instanceTypeList.get(0);

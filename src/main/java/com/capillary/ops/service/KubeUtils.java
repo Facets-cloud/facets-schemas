@@ -1,7 +1,5 @@
 package com.capillary.ops.service;
 
-import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
 
 public class KubeUtils {
@@ -15,12 +13,12 @@ public class KubeUtils {
 
     public static String generatePassword(int passwordLength) {
         String charSet = ALPHA_CAPS + ALPHA + SPECIAL_CHARS + NUMERIC;
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < passwordLength; i++) {
             int index = secureRandom.nextInt(charSet.length());
-            result += charSet.charAt(index);
+            result.append(charSet.charAt(index));
         }
 
-        return result;
+        return result.toString();
     }
 }

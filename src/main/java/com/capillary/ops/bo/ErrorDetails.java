@@ -1,6 +1,7 @@
 package com.capillary.ops.bo;
 
 public class ErrorDetails {
+
     private String message;
     private String code;
 

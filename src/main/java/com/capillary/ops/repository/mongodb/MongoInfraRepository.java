@@ -7,6 +7,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface MongoInfraRepository extends MongoRepository<MongoResource, String> {
-    public List<MongoResource> findByResourceNameAndEnvironment(String resourceName, Environments environment);
+public interface MongoInfraRepository extends
+    MongoRepository<MongoResource, String> {
+
+    public List<MongoResource> findByResourceNameAndEnvironment(
+        String resourceName, Environments environment);
 }

@@ -1,6 +1,5 @@
 package com.capillary.ops.bo;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
@@ -9,33 +8,36 @@ public abstract class AbstractInfrastructureResource {
 
     @Id
     @JsonIgnore
-    private String id;
+    protected String id;
 
-    private String appName;
+    protected String appName;
 
-    private String resourceName;
+    protected String resourceName;
 
     /**
      * Environment where the resource should be deployed, e.g., NIGHTLY, STAGE, PROD
      */
-    private Environments environment;
+    protected Environments environment;
 
     /**
      * Defines cpu and memory limits for the resource
      */
-    private String instanceType;
+    protected String instanceType;
 
     /**
      * Size of the physical volume
      */
-    private Integer volumeSize;
+    protected Integer volumeSize;
 
     /**
      * Name of helm deployment
      * Should not be exposed to the end user
      */
     @JsonIgnore
-    private String deploymentName;
+    protected String deploymentName;
+
+    protected InfrastructureResourceStatus deploymentStatus =
+        InfrastructureResourceStatus.PENDING;
 
     @JsonProperty
     public String getId() {
@@ -88,5 +90,14 @@ public abstract class AbstractInfrastructureResource {
 
     public void setResourceName(String resourceName) {
         this.resourceName = resourceName;
+    }
+
+    public InfrastructureResourceStatus getDeploymentStatus() {
+        return deploymentStatus;
+    }
+
+    public void setDeploymentStatus(
+        InfrastructureResourceStatus deploymentStatus) {
+        this.deploymentStatus = deploymentStatus;
     }
 }

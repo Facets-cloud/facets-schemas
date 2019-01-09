@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import org.microbean.helm.ReleaseManager;
+import org.microbean.helm.Tiller;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,8 +28,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootApplication
 @EnableSwagger2
@@ -39,12 +45,9 @@ public class App {
 
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.any())
-                .build()
-                .genericModelSubstitutes(ResponseEntity.class);
+        return new Docket(DocumentationType.SWAGGER_2).select().apis(
+            RequestHandlerSelectors.any()).paths(PathSelectors.any()).build()
+            .genericModelSubstitutes(ResponseEntity.class);
     }
 
     @Bean
@@ -61,33 +64,56 @@ public class App {
 
     @Configuration
     public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
         // Authentication : MongoUser --> Roles
         protected void configure(AuthenticationManagerBuilder auth)
-                throws Exception {
-            auth.inMemoryAuthentication()
-                    .passwordEncoder(org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance())
-                    .withUser(System.getenv().get("APP_USER"))
-                    .password(System.getenv().get("APP_PASSWORD"))
-                    .roles("ADMIN");
+            throws Exception {
+            auth
+                .inMemoryAuthentication()
+                .passwordEncoder(
+                    org.springframework.security.crypto.password.NoOpPasswordEncoder
+                        .getInstance()).withUser(
+                    System.getenv().get("APP_USER")).password(
+                    System.getenv().get("APP_PASSWORD")).roles("ADMIN");
         }
 
         // Authorization : Role -> Access
         protected void configure(HttpSecurity http) throws Exception {
-            http.httpBasic().and().authorizeRequests().antMatchers("/**").hasRole("ADMIN").and()
-                    .csrf().disable().headers().frameOptions().disable();
+            http.httpBasic().and().authorizeRequests().antMatchers("/**")
+                .hasRole("ADMIN").and().csrf().disable().headers()
+                .frameOptions().disable();
         }
 
     }
 
     @Bean(name = "HelmChartConfig")
-    public Map<String, LinkedTreeMap> helmChartConfig() throws FileNotFoundException {
+    public Map<String, LinkedTreeMap> helmChartConfig() {
         Gson gson = new Gson();
-        InputStream inputStream = App.class.getClassLoader().getResourceAsStream("HelmChartConfigs.json");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        InputStream inputStream =
+            App.class.getClassLoader().getResourceAsStream(
+                "HelmChartConfigs.json");
+        BufferedReader reader =
+            new BufferedReader(new InputStreamReader(inputStream));
         JsonReader helmConfigReader = new JsonReader(reader);
-        Type type = new TypeToken<Map<String, LinkedTreeMap>>(){}.getType();
-        Map<String, LinkedTreeMap> helmConfigMap = gson.fromJson(helmConfigReader, type);
+        Type type = new TypeToken<Map<String, LinkedTreeMap>>() {
+        }.getType();
+        Map<String, LinkedTreeMap> helmConfigMap =
+            gson.fromJson(helmConfigReader, type);
 
         return helmConfigMap;
+    }
+
+    @Bean(name = "HelmReleaseManager")
+    public ReleaseManager helmReleaseManager() throws MalformedURLException {
+        DefaultKubernetesClient client = new DefaultKubernetesClient();
+        Tiller tiller = new Tiller(client);
+
+        return new ReleaseManager(tiller);
+    }
+
+    @Bean(name = "DeploymentPool")
+    public ExecutorService executorServicePool() {
+        ExecutorService pool = Executors.newFixedThreadPool(20);
+        return pool;
     }
 }

@@ -33,35 +33,42 @@ public class DeisApiService {
 
     public String login(Environments environment) {
         Gson gson = new Gson();
-        String data = gson.toJson(new ImmutableMap.Builder<String, String>()
-                .put("username", environment.getDeisUser())
-                .put("password", environment.getDeisPassword()).build());
+        String data =
+            gson.toJson(new ImmutableMap.Builder<String, String>().put(
+                "username", environment.getDeisUser()).put("password",
+                environment.getDeisPassword()).build());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-        String endpoint = String.format("http://%s/v2/auth/login/", environment.getDeisEndpoint());
-        String response = restTemplate.postForObject(endpoint, entity, String.class);
-        Map<String, String> responseMap = gson.fromJson(response, HashMap.class);
+        String endpoint =
+            String.format("http://%s/v2/auth/login/", environment
+                .getDeisEndpoint());
+        String response =
+            restTemplate.postForObject(endpoint, entity, String.class);
+        Map<String, String> responseMap =
+            gson.fromJson(response, HashMap.class);
         return responseMap.get("token");
     }
 
-    public void updateApplication(Environments environment, Application application) {
+    public void updateApplication(Environments environment,
+        Application application) {
         try {
             addConfigs(environment, application);
         } catch (Exception e) {
-            System.out.println("Error while updating: "+ e.getMessage());
+            System.out.println("Error while updating: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void createApplication(Environments environment, Application application) {
+    public void createApplication(Environments environment,
+        Application application) {
         String token = login(environment);
 
         Gson gson = new Gson();
-        String data = gson.toJson(new ImmutableMap.Builder<String, String>()
-                .put("id", environment.generateAppName(application.getName()))
-                .build());
+        String data =
+            gson.toJson(new ImmutableMap.Builder<String, String>().put("id",
+                environment.generateAppName(application.getName())).build());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -69,7 +76,8 @@ public class DeisApiService {
         headers.set("Authorization", String.format("token %s", token));
 
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-        String endpoint = String.format("http://%s/v2/apps/", environment.getDeisEndpoint());
+        String endpoint =
+            String.format("http://%s/v2/apps/", environment.getDeisEndpoint());
 
         try {
             restTemplate.postForObject(endpoint, entity, String.class);
@@ -84,17 +92,21 @@ public class DeisApiService {
         String token = login(environment);
         ObjectMapper om = new ObjectMapper();
         try {
-            String data = om.writeValueAsString(new ImmutableMap.Builder<String, String>()
-                    .put("public", application.getPublicKey())
-                    .put("id", application.getId())
-                    .build());
+            String data =
+                om
+                    .writeValueAsString(new ImmutableMap.Builder<String, String>()
+                        .put("public", application.getPublicKey()).put("id",
+                            application.getId()).build());
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             headers.set("Authorization", String.format("token %s", token));
             HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-            String endpoint = String.format("http://%s/v2/keys/", environment.getDeisEndpoint());
-            String s = restTemplate.postForObject(endpoint, entity, String.class);
+            String endpoint =
+                String.format("http://%s/v2/keys/", environment
+                    .getDeisEndpoint());
+            String s =
+                restTemplate.postForObject(endpoint, entity, String.class);
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -107,33 +119,40 @@ public class DeisApiService {
     public void addConfigs(Environments environment, Application application) {
         String token = login(environment);
         Gson gson = new Gson();
-        String data = gson.toJson(new ImmutableMap.Builder<String, Map<String, String>>()
-                .put("values", application.getConfigs().get(environment))
-                .put("tags", ImmutableMap.of("environment", environment.name()))
+        String data =
+            gson.toJson(new ImmutableMap.Builder<String, Map<String, String>>()
+                .put("values", application.getConfigs().get(environment)).put(
+                    "tags", ImmutableMap.of("environment", environment.name()))
                 .build());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", String.format("token %s", token));
         HttpEntity<String> entity = new HttpEntity<String>(data, headers);
-        String endpoint = String.format("http://%s/v2/apps/%s/config/",
-                environment.getDeisEndpoint(),
-                environment.generateAppName(application.getName()));
+        String endpoint =
+            String.format("http://%s/v2/apps/%s/config/", environment
+                .getDeisEndpoint(), environment.generateAppName(application
+                .getName()));
         restTemplate.postForObject(endpoint, entity, String.class);
     }
 
-    public void deleteApplication(Environments environment, Application application) {
+    public void deleteApplication(Environments environment,
+        Application application) {
         String token = login(environment);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.set("Authorization", String.format("token %s", token));
         HttpEntity<String> entity = new HttpEntity<String>(headers);
-        String endpoint = String.format("http://%s/v2/apps/%s",environment.getDeisEndpoint(),environment.generateAppName(application.getName()));
+        String endpoint =
+            String.format("http://%s/v2/apps/%s",
+                environment.getDeisEndpoint(), environment
+                    .generateAppName(application.getName()));
         try {
-            restTemplate.exchange(endpoint, HttpMethod.DELETE, entity, String.class);
+            restTemplate.exchange(endpoint, HttpMethod.DELETE, entity,
+                String.class);
         } catch (Exception e) {
-            System.out.println("Error deleting the app: "+ e.getMessage());
+            System.out.println("Error deleting the app: " + e.getMessage());
         }
     }
 }

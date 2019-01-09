@@ -156,7 +156,7 @@ public class DeisApplicationController {
 
     @PutMapping("/resources/mongodb")
     public ResponseEntity<MongoResource> updateMongoResource(@RequestBody MongoResource mongoResource) {
-        MongoResource resource = (MongoResource) redisResourceService.update(mongoResource);
+        MongoResource resource = (MongoResource) mongoResourceService.update(mongoResource);
         return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 

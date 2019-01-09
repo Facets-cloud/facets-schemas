@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 
-
 @Service
 public class SSHKeyPairGenerator {
 
@@ -15,11 +14,14 @@ public class SSHKeyPairGenerator {
         try {
             JSch jsch = new JSch();
             KeyPair kpair = KeyPair.genKeyPair(jsch, KeyPair.RSA, 2048);
-            ByteArrayOutputStream publicKeyOStream = new ByteArrayOutputStream();
-            ByteArrayOutputStream privateKeyOStream = new ByteArrayOutputStream();
+            ByteArrayOutputStream publicKeyOStream =
+                new ByteArrayOutputStream();
+            ByteArrayOutputStream privateKeyOStream =
+                new ByteArrayOutputStream();
             kpair.writePrivateKey(privateKeyOStream);
             kpair.writePublicKey(publicKeyOStream, "deis");
-            return new SSHKeyPair(privateKeyOStream.toString("UTF-8"), publicKeyOStream.toString("UTF-8"));
+            return new SSHKeyPair(privateKeyOStream.toString("UTF-8"),
+                publicKeyOStream.toString("UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
