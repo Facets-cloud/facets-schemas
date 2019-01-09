@@ -2,14 +2,12 @@ package com.capillary.ops.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import org.springframework.data.annotation.Id;
 
-import java.util.List;
-
 public class ConfigSet {
-  @Id
-  @JsonIgnore
-  private String id;
+
+  @Id @JsonIgnore private String id;
 
   private String name;
 

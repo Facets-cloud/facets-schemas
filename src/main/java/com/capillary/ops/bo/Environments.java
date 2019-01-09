@@ -3,9 +3,9 @@ package com.capillary.ops.bo;
 import java.util.function.Function;
 
 public enum Environments {
-  PRODUCTION(x->x),
-  STAGE(x-> String.format("stage-%s", x)),
-  NIGHTLY(x-> String.format("nightly-%s", x));
+  PRODUCTION(x -> x),
+  STAGE(x -> String.format("stage-%s", x)),
+  NIGHTLY(x -> String.format("nightly-%s", x));
 
   private Function<String, String> nameGenerator;
 

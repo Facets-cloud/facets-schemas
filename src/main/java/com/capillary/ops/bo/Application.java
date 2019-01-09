@@ -2,130 +2,124 @@ package com.capillary.ops.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.Id;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.data.annotation.Id;
 
 public class Application {
 
-    @Id
-    @JsonIgnore
-    private String id;
+  @Id @JsonIgnore private String id;
 
-    private String name;
+  private String name;
 
-    @JsonIgnore
-    private String privateKey;
+  @JsonIgnore private String privateKey;
 
-    @JsonIgnore
-    private String publicKey;
+  @JsonIgnore private String publicKey;
 
-    private String repoURL;
+  private String repoURL;
 
-    private String projectFolder;
+  private String projectFolder;
 
-    private Map<String, String> tags;
+  private Map<String, String> tags;
 
-    private String port = "3000";
+  private String port = "3000";
 
-    @JsonIgnore
-    private Map<Environments, String> endpoints;
+  @JsonIgnore private Map<Environments, String> endpoints;
 
-    private Map<Environments, Map<String, String>> configs;
+  private Map<Environments, Map<String, String>> configs;
 
-    public String getName() {
-        return name;
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getPrivateKey() {
+    return privateKey;
+  }
+
+  public void setPrivateKey(String privateKey) {
+    this.privateKey = privateKey;
+  }
+
+  @JsonProperty
+  public String getPublicKey() {
+    return publicKey;
+  }
+
+  @JsonIgnore
+  public void setPublicKey(String publicKey) {
+    this.publicKey = publicKey;
+  }
+
+  public String getRepoURL() {
+    return repoURL;
+  }
+
+  public void setRepoURL(String repoURL) {
+    this.repoURL = repoURL;
+  }
+
+  @JsonProperty
+  public String getId() {
+    return id;
+  }
+
+  @JsonIgnore
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public Map<Environments, Map<String, String>> getConfigs() {
+    for (Environments env : Environments.values()) {
+      if (configs.get(env) == null) {
+        configs.put(env, new HashMap<>());
+      }
+      configs.get(env).put("PORT", port);
     }
+    return configs;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setConfigs(Map<Environments, Map<String, String>> configs) {
+    this.configs = configs;
+  }
 
-    public String getPrivateKey() {
-        return privateKey;
-    }
+  @JsonProperty
+  public Map<Environments, String> getEndpoints() {
+    Map<Environments, String> ret = new HashMap<>();
+    Arrays.stream(Environments.values()).forEach(x -> ret.put(x, x.getDomain(this.name)));
+    return ret;
+  }
 
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
-    }
+  @JsonIgnore
+  public void setEndpoints(Map<Environments, String> endpoints) {
+    this.endpoints = endpoints;
+  }
 
-    @JsonProperty
-    public String getPublicKey() {
-        return publicKey;
-    }
+  public String getProjectFolder() {
+    return projectFolder;
+  }
 
-    @JsonIgnore
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
-    }
+  public void setProjectFolder(String projectFolder) {
+    this.projectFolder = projectFolder;
+  }
 
-    public String getRepoURL() {
-        return repoURL;
-    }
+  public Map<String, String> getTags() {
+    return tags;
+  }
 
-    public void setRepoURL(String repoURL) {
-        this.repoURL = repoURL;
-    }
+  public void setTags(Map<String, String> tags) {
+    this.tags = tags;
+  }
 
-    @JsonProperty
-    public String getId() {
-        return id;
-    }
+  public void setPort(String port) {
+    this.port = port;
+  }
 
-    @JsonIgnore
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Map<Environments, Map<String, String>> getConfigs() {
-        for(Environments env : Environments.values()) {
-            if(configs.get(env) == null) {
-                configs.put(env, new HashMap<>());
-            }
-            configs.get(env).put("PORT", port);
-        }
-        return configs;
-    }
-
-    public void setConfigs(Map<Environments, Map<String, String>> configs) {
-        this.configs = configs;
-    }
-
-    @JsonProperty
-    public Map<Environments, String> getEndpoints() {
-        Map<Environments, String> ret = new HashMap<>();
-        Arrays.stream(Environments.values()).forEach(x->ret.put(x, x.getDomain(this.name)));
-        return ret;
-    }
-
-    @JsonIgnore
-    public void setEndpoints(Map<Environments, String> endpoints) {
-        this.endpoints = endpoints;
-    }
-
-    public String getProjectFolder() {
-        return projectFolder;
-    }
-
-    public void setProjectFolder(String projectFolder) {
-        this.projectFolder = projectFolder;
-    }
-
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Map<String, String> tags) {
-        this.tags = tags;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    public String getPort() {
-        return port;
-    }
+  public String getPort() {
+    return port;
+  }
 }

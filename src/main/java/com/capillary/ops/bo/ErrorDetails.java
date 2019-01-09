@@ -1,30 +1,30 @@
 package com.capillary.ops.bo;
 
 public class ErrorDetails {
-    private String message;
-    private String code;
 
-    public ErrorDetails() {
-    }
+  private String message;
+  private String code;
 
-    public ErrorDetails(String message, String code) {
-        this.message = message;
-        this.code = code;
-    }
+  public ErrorDetails() {}
 
-    public String getMessage() {
-        return message;
-    }
+  public ErrorDetails(String message, String code) {
+    this.message = message;
+    this.code = code;
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
 }

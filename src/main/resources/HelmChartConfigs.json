@@ -1,0 +1,14 @@
+{
+  "mongodb": {
+    "chartVersion": "4.9.0",
+    "appVersion": "4.0.3",
+    "description": "Helm chart for mongodb",
+    "repository": "https://kubernetes-charts.storage.googleapis.com/"
+  },
+  "redis": {
+    "chartVersion": "4.3.0",
+    "appVersion": "4.0.11",
+    "description": "Helm chart for redis",
+    "repository": "https://kubernetes-charts.storage.googleapis.com/"
+  }
+}
