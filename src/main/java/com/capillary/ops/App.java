@@ -6,6 +6,14 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import java.io.*;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +27,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.client.RestTemplate;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -120,5 +133,20 @@ public class App {
   public ExecutorService executorServicePool() {
     ExecutorService pool = Executors.newFixedThreadPool(20);
     return pool;
+  }
+
+  @Bean(name = "codeBuildClient")
+  public CodeBuildClient codeBuildClient() throws Exception {
+    FileInputStream configInputStream = new FileInputStream("/etc/capillary/codebuildcredentials.ini");
+    Properties properties = new Properties();
+    properties.load(configInputStream);
+    String access = properties.getProperty("access");
+    String secret = properties.getProperty("secret");
+    AwsBasicCredentials credentials = AwsBasicCredentials.create(access, secret);
+    CodeBuildClient codeBuildClient = CodeBuildClient.builder()
+            .region(Region.of(properties.getProperty("region")))
+            .credentialsProvider(StaticCredentialsProvider.create(credentials))
+            .build();
+    return codeBuildClient;
   }
 }
