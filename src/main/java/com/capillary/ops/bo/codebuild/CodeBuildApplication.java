@@ -2,24 +2,54 @@ package com.capillary.ops.bo.codebuild;
 
 import com.capillary.ops.bo.Application;
 import software.amazon.awssdk.services.codebuild.model.CreateProjectRequest;
+import software.amazon.awssdk.services.codebuild.model.Project;
 
 public class CodeBuildApplication extends Application {
 
-    public enum ApplicationSource {
-        GITHUB, BITBUCKET
+  public enum ApplicationSource {
+    GITHUB,
+    BITBUCKET
+  }
+
+  public enum ApplicationType {
+    MAVEN_JAVA
+  }
+
+  ApplicationSource sourceType;
+
+  ApplicationType applicationType;
+
+  String namespace = "default";
+
+  public ApplicationSource getSourceType() {
+    return sourceType;
+  }
+
+  public void setSourceType(String sourceType) {
+    this.sourceType = ApplicationSource.valueOf(sourceType);
+  }
+
+  public ApplicationType getApplicationType() {
+    return applicationType;
+  }
+
+  public void setApplicationType(String applicationType) {
+    this.applicationType = ApplicationType.valueOf(applicationType);
+  }
+
+  public CodeBuildApplication fromCreateProject(CreateProjectRequest createProjectRequest) {
+    return this;
+  }
+
+  public CodeBuildApplication fromGetProject(Project project) {
+      return this;
+  }
+
+    public String getNamespace() {
+        return namespace;
     }
 
-    ApplicationSource sourceType;
-
-    public ApplicationSource getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(String sourceType) {
-        this.sourceType = ApplicationSource.valueOf(sourceType);
-    }
-
-    public CodeBuildApplication fromCreateProject(CreateProjectRequest createProjectRequest) {
-        return new CodeBuildApplication();
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 }

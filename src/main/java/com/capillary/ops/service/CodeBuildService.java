@@ -4,11 +4,13 @@ import com.capillary.ops.bo.codebuild.CodeBuildApplication;
 import com.capillary.ops.bo.codebuild.CodeBuildDetails;
 
 public interface CodeBuildService {
-    CodeBuildApplication createApplication(CodeBuildApplication application);
+  CodeBuildApplication createApplication(CodeBuildApplication application);
 
-    CodeBuildDetails createBuild(String applicationId, CodeBuildDetails details);
+  CodeBuildApplication getApplication(String applicationId);
 
-    CodeBuildDetails getBuildDetails(String buildId);
+  CodeBuildDetails createBuild(String applicationId, CodeBuildDetails details);
 
-    CodeBuildDetails stopBuild(String buildId);
+  CodeBuildDetails getBuildDetails(String buildId);
+
+  CodeBuildDetails stopBuild(String buildId);
 }

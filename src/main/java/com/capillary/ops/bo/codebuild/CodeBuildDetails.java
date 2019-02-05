@@ -1,43 +1,67 @@
 package com.capillary.ops.bo.codebuild;
 
+import java.util.List;
 import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.StartBuildResponse;
 
-import java.util.List;
-
 public class CodeBuildDetails {
 
-    private String buildId;
+  private String buildId;
 
-    private String branch;
+  private String branch;
 
-    private String buildStatus;
+  private String buildStatus;
 
-    public CodeBuildDetails(List<Build> builds) {
+  public CodeBuildDetails(List<Build> builds) {}
 
-    }
+  public CodeBuildDetails() {}
 
-    public CodeBuildDetails() {
+  public String getBranch() {
+    return branch;
+  }
 
-    }
+  public void setBranch(String branch) {
+    this.branch = branch;
+  }
 
-    public String getBranch() {
-        return branch;
-    }
+  public String getBuildId() {
+    return buildId;
+  }
 
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
+  public void setBuildId(String buildId) {
+    this.buildId = buildId;
+  }
 
-    public CodeBuildDetails fromStartBuild(StartBuildResponse startBuildResponse) {
-        return null;
-    }
+  public String getBuildStatus() {
+    return buildStatus;
+  }
 
-    public CodeBuildDetails fromGetBuild(Build builds) {
-        return null;
-    }
+  public void setBuildStatus(String buildStatus) {
+    this.buildStatus = buildStatus;
+  }
 
-    public CodeBuildDetails fromStopBuild(Build build) {
-        return null;
-    }
+  public CodeBuildDetails fromStartBuild(StartBuildResponse startBuildResponse) {
+    CodeBuildDetails buildDetails = new CodeBuildDetails();
+    Build build = startBuildResponse.build();
+    buildDetails.setBranch(build.sourceVersion());
+    buildDetails.setBuildId(build.id());
+    buildDetails.setBuildStatus(build.buildStatusAsString());
+    return buildDetails;
+  }
+
+  public CodeBuildDetails fromGetBuild(Build build) {
+    CodeBuildDetails buildDetails = new CodeBuildDetails();
+    buildDetails.setBranch(build.sourceVersion());
+    buildDetails.setBuildId(build.id());
+    buildDetails.setBuildStatus(build.buildStatusAsString());
+    return buildDetails;
+  }
+
+  public CodeBuildDetails fromStopBuild(Build build) {
+    CodeBuildDetails buildDetails = new CodeBuildDetails();
+    buildDetails.setBranch(build.sourceVersion());
+    buildDetails.setBuildId(build.id());
+    buildDetails.setBuildStatus(build.buildStatusAsString());
+    return buildDetails;
+  }
 }

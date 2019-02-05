@@ -28,7 +28,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.client.RestTemplate;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
@@ -137,13 +136,15 @@ public class App {
 
   @Bean(name = "codeBuildClient")
   public CodeBuildClient codeBuildClient() throws Exception {
-    FileInputStream configInputStream = new FileInputStream("/etc/capillary/codebuildcredentials.ini");
+    FileInputStream configInputStream =
+        new FileInputStream("/etc/capillary/codebuildcredentials.ini");
     Properties properties = new Properties();
     properties.load(configInputStream);
     String access = properties.getProperty("access");
     String secret = properties.getProperty("secret");
     AwsBasicCredentials credentials = AwsBasicCredentials.create(access, secret);
-    CodeBuildClient codeBuildClient = CodeBuildClient.builder()
+    CodeBuildClient codeBuildClient =
+        CodeBuildClient.builder()
             .region(Region.of(properties.getProperty("region")))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build();

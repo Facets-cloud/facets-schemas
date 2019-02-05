@@ -2,7 +2,11 @@ package com.capillary.ops.controller;
 
 import com.capillary.ops.bo.codebuild.CodeBuildApplication;
 import com.capillary.ops.bo.codebuild.CodeBuildDetails;
+import com.capillary.ops.repository.CodeBuildApplicationRepository;
 import com.capillary.ops.service.CodeBuildService;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,33 +15,63 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class CodeBuildController {
 
-    @Autowired
-    CodeBuildService codeBuildService;
+  @Autowired CodeBuildService codeBuildService;
 
-    @PostMapping("codebuild/applications")
-    public ResponseEntity<CodeBuildApplication> createApplication(@RequestBody CodeBuildApplication application) {
+  @Autowired CodeBuildApplicationRepository repository;
+
+  @PostMapping("codebuild/applications")
+  public ResponseEntity<CodeBuildApplication> createApplication(
+      @RequestBody CodeBuildApplication application) {
         CodeBuildApplication resApplication = codeBuildService.createApplication(application);
-        return new ResponseEntity<>(resApplication, HttpStatus.CREATED);
-    }
+        repository.save(application);
+        return new ResponseEntity<>(resApplication, resApplication == null ? HttpStatus.CONFLICT : HttpStatus.CREATED);
+  }
 
-    @PostMapping("codebuild/applications/{applicationId}/build")
-    public ResponseEntity<CodeBuildDetails> createBuild(@PathVariable(name = "applicationId") String applicationId,
-                                                        @RequestBody CodeBuildDetails details) {
-        CodeBuildDetails resDetails = codeBuildService.createBuild(applicationId, details);
-        return new ResponseEntity<>(resDetails, HttpStatus.CREATED);
-    }
+  @GetMapping("codebuild/applications/{applicationId}")
+  public ResponseEntity<CodeBuildApplication> getApplication(
+      @PathVariable(name = "applicationId") String applicationId) {
+    CodeBuildApplication application = codeBuildService.getApplication(applicationId);
+    return new ResponseEntity<>(application, application == null ? HttpStatus.NOT_FOUND : HttpStatus.OK);
+  }
 
-    @GetMapping("codebuild/builds/{buildId}")
-    public ResponseEntity<CodeBuildDetails> getBuildDetails(@PathVariable(name = "buildId") String buildId) {
-        CodeBuildDetails resDetails = codeBuildService.getBuildDetails(buildId);
-        HttpStatus status = (resDetails == null) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
-        return new ResponseEntity<>(resDetails, status);
-    }
+  @PostMapping("codebuild/applications/{applicationId}/build")
+  public ResponseEntity<CodeBuildDetails> createBuild(
+      @PathVariable(name = "applicationId") String applicationId,
+      @RequestBody CodeBuildDetails details) {
+    CodeBuildDetails resDetails = codeBuildService.createBuild(applicationId, details);
+    return new ResponseEntity<>(
+        resDetails, resDetails == null ? HttpStatus.NOT_FOUND : HttpStatus.CREATED);
+  }
 
-    @DeleteMapping("codebuild/builds/{buildId}")
-    public ResponseEntity<CodeBuildDetails> stopBuild(@PathVariable(name = "buildId") String buildId) {
-        CodeBuildDetails resDetails = codeBuildService.stopBuild(buildId);
-        HttpStatus status = (resDetails == null) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
-        return new ResponseEntity<>(resDetails, status);
-    }
+  @GetMapping("codebuild/builds/{buildId}")
+  public ResponseEntity<CodeBuildDetails> getBuildDetails(
+      @PathVariable(name = "buildId") String buildId) {
+    CodeBuildDetails resDetails = codeBuildService.getBuildDetails(buildId);
+    HttpStatus status = (resDetails == null) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+    return new ResponseEntity<>(resDetails, status);
+  }
+
+  @DeleteMapping("codebuild/builds/{buildId}")
+  public ResponseEntity<CodeBuildDetails> stopBuild(
+      @PathVariable(name = "buildId") String buildId) {
+    CodeBuildDetails resDetails = codeBuildService.stopBuild(buildId);
+    HttpStatus status = (resDetails == null) ? HttpStatus.NOT_FOUND : HttpStatus.OK;
+    return new ResponseEntity<>(resDetails, status);
+  }
+
+  @PostMapping("codebuild/applications/{applicationId}/deploy/{tag}")
+    public ResponseEntity<Object> deployApplication(
+            @PathVariable(name = "applicationId") String applicationId, @PathVariable(name = "tag") String tag) {
+
+      CodeBuildApplication application = codeBuildService.getApplication(applicationId);
+      KubernetesClient kubernetesClient = new DefaultKubernetesClient();
+        Deployment deployment = kubernetesClient.extensions().deployments().inNamespace(application.getNamespace()).withName(applicationId).get();
+
+      String imagePath = deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage();
+      String newPath = imagePath.split(":")[0] + ":" + tag;
+      deployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage(newPath);
+      kubernetesClient.extensions().deployments().inNamespace(application.getNamespace()).withName(applicationId).createOrReplace(deployment);
+
+      return new ResponseEntity<>(HttpStatus.OK);
+  }
 }
