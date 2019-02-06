@@ -14,6 +14,11 @@
         <version>2.0.3.RELEASE</version>
     </parent>
 
+    <properties>
+        <jmockit.version>1.43</jmockit.version>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -122,32 +127,49 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>io.fabric8</groupId>-->
-                <!--<artifactId>docker-maven-plugin</artifactId>-->
-                <!--<version>0.27.1</version>-->
-
-                <!--<configuration>-->
-                    <!--<images>-->
-                        <!--<image>-->
-                            <!--<name>deisdeployer:mongoredis</name>-->
-                            <!--<build>-->
-                                <!--<dockerFileDir>${basedir}</dockerFileDir>-->
-                            <!--</build>-->
-                        <!--</image>-->
-                    <!--</images>-->
-                <!--</configuration>-->
-
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>docker:build</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>build</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>docker-cibuild</id>
+            <activation>
+                <property>
+                    <name>env.ENV_BUILD</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.27.1</version>
+
+                        <configuration>
+                            <pushRegistry>486456986266.dkr.ecr.us-east-1.amazonaws.com</pushRegistry>
+                            <images>
+                                <image>
+                                    <name>capillary/${project.artifactId}:${project.version}-${maven.build.timestamp}</name>
+                                    <build>
+                                        <dockerFileDir>${basedir}</dockerFileDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>docker:build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                    <goal>push</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
