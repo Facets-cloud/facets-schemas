@@ -1,31 +1,33 @@
 package com.capillary.ops.service.impl;
 
-import com.capillary.ops.bo.codebuild.BuildSpec;
 import com.capillary.ops.bo.codebuild.CodeBuildApplication;
 import com.capillary.ops.bo.codebuild.CodeBuildDetails;
 import com.capillary.ops.constants.CodeBuildConstants;
 import com.capillary.ops.repository.CodeBuildApplicationRepository;
 import com.capillary.ops.service.CodeBuildService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
+import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsResponse;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 @Service
-public class CodeBuildServiceImpl implements CodeBuildService {
+public abstract class CodeBuildServiceImpl implements CodeBuildService {
 
   @Qualifier("codeBuildClient")
   @Autowired
   CodeBuildClient codeBuildClient;
+
+  @Qualifier("cloudWatchLogsClient")
+  @Autowired
+  CloudWatchLogsClient cloudWatchLogsClient;
 
   @Autowired CodeBuildApplicationRepository repository;
 
@@ -34,16 +36,16 @@ public class CodeBuildServiceImpl implements CodeBuildService {
   @Override
   public CodeBuildApplication createApplication(CodeBuildApplication application) {
 
-      CodeBuildApplication resApplication = repository.findByName(application.getName());
+      /*CodeBuildApplication resApplication = repository.findByName(application.getName());
       if (resApplication == null) {
           repository.save(application);
       } else {
           return null;
-      }
+      }*/
 
       CreateProjectRequest createProjectRequest =
         CreateProjectRequest.builder()
-            .name(application.getName())
+            .name(application.getId())
             .source(
                 ProjectSource.builder()
                     .type(SourceType.valueOf(application.getSourceType().toString()))
@@ -52,7 +54,7 @@ public class CodeBuildServiceImpl implements CodeBuildService {
             .environment(
                 ProjectEnvironment.builder()
                     .type(EnvironmentType.LINUX_CONTAINER)
-                    .image(environment.getProperty("codebuild.mavenimage.path"))
+                    .image(environment.getProperty(this.getContainerImageConfig()))
                     .imagePullCredentialsType(ImagePullCredentialsType.CODEBUILD)
                     .privilegedMode(true)
                     .build())
@@ -70,7 +72,7 @@ public class CodeBuildServiceImpl implements CodeBuildService {
                         CloudWatchLogsConfig.builder()
                             .status(LogsConfigStatusType.ENABLED)
                             .groupName(CodeBuildConstants.CLOUDWATCH_GROUP)
-                            .streamName(application.getName())
+                            .streamName(application.getId())
                             .build())
                     .s3Logs(S3LogsConfig.builder().status(LogsConfigStatusType.DISABLED).build())
                     .build())
@@ -82,6 +84,7 @@ public class CodeBuildServiceImpl implements CodeBuildService {
 
   @Override
   public CodeBuildApplication getApplication(String applicationId) {
+    CodeBuildApplication projectMetadata = repository.findById(applicationId).get();
       BatchGetProjectsResponse batchGetProjectsResponse = codeBuildClient.batchGetProjects(BatchGetProjectsRequest.builder()
               .names(applicationId)
               .build());
@@ -89,16 +92,12 @@ public class CodeBuildServiceImpl implements CodeBuildService {
       if (projects != null && projects.isEmpty()) {
           return null;
       }
-      CodeBuildApplication projectMetadata = repository.findByName(applicationId);
       return projectMetadata.fromGetProject(projects.get(0));
   }
 
   @Override
   public CodeBuildDetails createBuild(String applicationId, CodeBuildDetails details) {
-    CodeBuildApplication application = repository.findByName(applicationId);
-    if (application == null) {
-      return null;
-    }
+    CodeBuildApplication application = repository.findById(applicationId).get();
     String buildSpec = this.createBuildSpec(application);
     StartBuildRequest startBuildRequest =
         StartBuildRequest.builder()
@@ -115,7 +114,30 @@ public class CodeBuildServiceImpl implements CodeBuildService {
     BatchGetBuildsResponse batchGetBuildsResponse =
         codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder().ids(buildId).build());
     List<Build> builds = batchGetBuildsResponse.builds();
-    return builds.isEmpty() ? null : new CodeBuildDetails().fromGetBuild(builds.get(0));
+    if (builds.isEmpty())
+      return null;
+    Build build = builds.get(0);
+    String streamName = build.id().replace(':', '/');
+    GetLogEventsResponse logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
+            .logGroupName("codebuild-test")
+            .logStreamName(streamName)
+            .startFromHead(true)
+            .build());
+    String nextForwardToken = logEvents.nextForwardToken();
+    StringBuffer logBuffer = new StringBuffer(logEvents.events().stream().map(outputLogEvent -> outputLogEvent.message()).collect(Collectors.joining("\n")));
+    while(!logEvents.events().isEmpty()) {
+      logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
+              .logGroupName("codebuild-test")
+              .logStreamName(streamName)
+              .nextToken(nextForwardToken)
+              .build());
+      nextForwardToken = logEvents.nextForwardToken();
+      logBuffer.append(logEvents.events().stream().map(outputLogEvent -> outputLogEvent.message()).collect(Collectors.joining("\n")));
+      //logEvents.events().stream().forEach(outputLogEvent ->  System.out.println(outputLogEvent.message()));
+    }
+    CodeBuildDetails response = new CodeBuildDetails().fromGetBuild(builds.get(0));
+    response.setBuildLogs(logBuffer.toString());
+    return response;
   }
 
   @Override
@@ -126,60 +148,6 @@ public class CodeBuildServiceImpl implements CodeBuildService {
     return build == null ? null : new CodeBuildDetails().fromStopBuild(build);
   }
 
-  private String createBuildSpec(CodeBuildApplication application) {
-    BuildSpec buildSpec = new BuildSpec();
-    String buildSpecString = null;
-    buildSpec.setVersion("0.2");
+  protected abstract String createBuildSpec(CodeBuildApplication application);
 
-    List<String> installCommands = new ArrayList<>();
-    Map<String, Object> installPhase = new HashMap<>();
-    installCommands.add(
-        "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
-    installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
-    installPhase.put("commands", installCommands);
-
-    List<String> preBuildCommands = new ArrayList<>();
-    Map<String, Object> preBuildPhase = new HashMap<>();
-    preBuildPhase.put("commands", preBuildCommands);
-
-    List<String> buildCommands = new ArrayList<>();
-    Map<String, Object> buildPhase = new HashMap<>();
-    buildCommands.add("$(aws ecr get-login --region us-east-1 --no-include-email)");
-    buildCommands.add(String.format("cd %s", application.getProjectFolder()));
-    if(application.getApplicationType() == CodeBuildApplication.ApplicationType.MAVEN_JAVA) {
-        buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U -Pdocker-cibuild");
-    }
-    buildPhase.put("commands", buildCommands);
-
-    List<String> postBuildCommands = new ArrayList<>();
-    Map<String, Object> postBuildPhase = new HashMap<>();
-    postBuildPhase.put("commands", postBuildCommands);
-
-    Map<String, Object> phases = new HashMap<>();
-    phases.put("install", installPhase);
-    phases.put("pre_build", preBuildPhase);
-    phases.put("build", buildPhase);
-    phases.put("post_build", postBuildPhase);
-
-    Map<String, Object> cache = new HashMap<>();
-    List<String> cachePaths = new ArrayList<>();
-    if(application.getApplicationType() == CodeBuildApplication.ApplicationType.MAVEN_JAVA) {
-        cachePaths.add("/root/.m2/**/*");
-    }
-    cache.put("paths", cachePaths);
-
-    buildSpec.setPhases(phases);
-    buildSpec.setCache(cache);
-
-    // JsonTree objectMapper = new ObjectMapper().rea;
-    YAMLMapper yamlMapper = new YAMLMapper();
-    yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
-    yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
-    try {
-      buildSpecString = yamlMapper.writeValueAsString(buildSpec);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-    return buildSpecString;
-  }
 }

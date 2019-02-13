@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -149,5 +150,22 @@ public class App {
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build();
     return codeBuildClient;
+  }
+
+  @Bean(name = "cloudWatchLogsClient")
+  public CloudWatchLogsClient cloudWatchLogsClient() throws Exception {
+    FileInputStream configInputStream =
+            new FileInputStream("/etc/capillary/cloudwatchcredentials.ini");
+    Properties properties = new Properties();
+    properties.load(configInputStream);
+    String access = properties.getProperty("access");
+    String secret = properties.getProperty("secret");
+    AwsBasicCredentials credentials = AwsBasicCredentials.create(access, secret);
+    CloudWatchLogsClient cloudWatchClient =
+            CloudWatchLogsClient.builder()
+            .region(Region.of(properties.getProperty("region")))
+            .credentialsProvider(StaticCredentialsProvider.create(credentials))
+            .build();
+    return cloudWatchClient;
   }
 }

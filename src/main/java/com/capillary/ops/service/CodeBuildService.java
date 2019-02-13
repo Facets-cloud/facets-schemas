@@ -13,4 +13,6 @@ public interface CodeBuildService {
   CodeBuildDetails getBuildDetails(String buildId);
 
   CodeBuildDetails stopBuild(String buildId);
+
+  String getContainerImageConfig();
 }

@@ -12,6 +12,8 @@ public class CodeBuildDetails {
 
   private String buildStatus;
 
+  private String buildLogs;
+
   public CodeBuildDetails(List<Build> builds) {}
 
   public CodeBuildDetails() {}
@@ -38,6 +40,14 @@ public class CodeBuildDetails {
 
   public void setBuildStatus(String buildStatus) {
     this.buildStatus = buildStatus;
+  }
+
+  public String getBuildLogs() {
+    return buildLogs;
+  }
+
+  public void setBuildLogs(String buildLogs) {
+    this.buildLogs = buildLogs;
   }
 
   public CodeBuildDetails fromStartBuild(StartBuildResponse startBuildResponse) {
