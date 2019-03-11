@@ -74,6 +74,9 @@ public class Application {
   }
 
   public Map<Environments, Map<String, String>> getConfigs() {
+    if (configs == null) {
+      configs = new HashMap<>();
+    }
     for (Environments env : Environments.values()) {
       if (configs.get(env) == null) {
         configs.put(env, new HashMap<>());
