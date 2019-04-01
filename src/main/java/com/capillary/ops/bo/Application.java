@@ -78,11 +78,10 @@ public class Application {
       configs = new HashMap<>();
     }
     for (Environments env : Environments.values()) {
-      if (configs.get(env) == null) {
-        configs.put(env, new HashMap<>());
-      }
+      configs.computeIfAbsent(env, k -> new HashMap<>());
       configs.get(env).put("PORT", port);
     }
+
     return configs;
   }
 
