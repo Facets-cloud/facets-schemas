@@ -12,7 +12,8 @@ public class CodeBuildApplication extends Application {
   }
 
   public enum ApplicationType {
-    MAVEN_JAVA
+    MAVEN_JAVA,
+    DOCKER
   }
 
   ApplicationSource sourceType;
