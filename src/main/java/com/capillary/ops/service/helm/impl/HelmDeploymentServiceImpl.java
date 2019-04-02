@@ -1,9 +1,9 @@
-package com.capillary.ops.service.impl;
+package com.capillary.ops.service.helm.impl;
 
 import com.capillary.ops.bo.AbstractDeploymentResource;
 import com.capillary.ops.bo.HelmInfrastructureResource;
 import com.capillary.ops.repository.HelmInfrastructureRepository;
-import com.capillary.ops.service.HelmDeploymentService;
+import com.capillary.ops.service.helm.HelmDeploymentService;
 import com.google.gson.internal.LinkedTreeMap;
 import hapi.chart.ChartOuterClass;
 import hapi.release.ReleaseOuterClass;

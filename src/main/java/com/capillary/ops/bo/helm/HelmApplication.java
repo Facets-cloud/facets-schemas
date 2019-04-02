@@ -9,7 +9,7 @@ public class HelmApplication {
 
     public HelmApplication() {}
 
-    public HelmApplication(HelmApplicationType helmApplicationType, String name, String instanceType, Integer replicas, Map<String, Object> configs, List<String> domains, ExposureType exposureType) {
+    public HelmApplication(HelmApplicationType helmApplicationType, String name, String instanceType, Integer replicas, Map<String, Object> configs, List<String> domains, ExposureType exposureType, SourceType sourceType, String sourceUrl) {
         this.helmApplicationType = helmApplicationType;
         this.name = name;
         this.instanceType = instanceType;
@@ -17,11 +17,25 @@ public class HelmApplication {
         this.configs = configs;
         this.domains = domains;
         this.exposureType = exposureType;
+        this.sourceType = sourceType;
+        this.sourceUrl = sourceUrl;
     }
 
     public enum ExposureType {
         INTERNAL,
         EXTERNAL
+    }
+
+    public enum SourceType {
+        GIT,
+        SVN,
+        HG
+    }
+
+    public enum BuildType {
+        MVN,
+        DOCKER,
+        NETCORE
     }
 
     private HelmApplicationType helmApplicationType;
@@ -37,6 +51,20 @@ public class HelmApplication {
     private List<String> domains = new ArrayList<>();
 
     private ExposureType exposureType = ExposureType.INTERNAL;
+
+    private SourceType sourceType;
+
+    private String sourceUrl;
+
+    private BuildType buildType;
+
+    public BuildType getBuildType() {
+        return buildType;
+    }
+
+    public void setBuildType(BuildType buildType) {
+        this.buildType = buildType;
+    }
 
     public HelmApplicationType getHelmApplicationType() {
         return helmApplicationType;
@@ -92,5 +120,21 @@ public class HelmApplication {
 
     public void setExposureType(ExposureType exposureType) {
         this.exposureType = exposureType;
+    }
+
+    public SourceType getSourceType() {
+        return sourceType;
+    }
+
+    public void setSourceType(SourceType sourceType) {
+        this.sourceType = sourceType;
+    }
+
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
     }
 }

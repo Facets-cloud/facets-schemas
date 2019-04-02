@@ -1,6 +1,6 @@
 package com.capillary.ops.service;
 
-import com.capillary.ops.service.impl.HelmResponseHandler;
+import com.capillary.ops.service.helm.impl.HelmResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

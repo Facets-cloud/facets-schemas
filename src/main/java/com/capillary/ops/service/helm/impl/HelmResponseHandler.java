@@ -1,4 +1,4 @@
-package com.capillary.ops.service.impl;
+package com.capillary.ops.service.helm.impl;
 
 import com.capillary.ops.bo.AbstractDeploymentResource;
 import com.capillary.ops.bo.AbstractInfrastructureResource;

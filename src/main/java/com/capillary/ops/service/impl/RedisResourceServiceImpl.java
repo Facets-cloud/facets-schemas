@@ -9,7 +9,7 @@ import com.capillary.ops.bo.exceptions.ResourceDoesNotExist;
 import com.capillary.ops.bo.redis.RedisResource;
 import com.capillary.ops.repository.redis.RedisInfraRepository;
 import com.capillary.ops.service.DeploymentServiceClient;
-import com.capillary.ops.service.HelmDeploymentService;
+import com.capillary.ops.service.helm.HelmDeploymentService;
 import com.capillary.ops.service.InstanceTypeService;
 import com.capillary.ops.service.RedisResourceService;
 import java.util.*;

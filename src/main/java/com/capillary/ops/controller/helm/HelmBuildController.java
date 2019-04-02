@@ -1,0 +1,33 @@
+package com.capillary.ops.controller.helm;
+
+import com.capillary.ops.bo.helm.BuildStatus;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/applications/build")
+public class HelmBuildController {
+
+    // Async call - returns build number
+    @PostMapping("/trigger")
+    public ResponseEntity<BuildStatus> triggerBuild(@RequestParam(name = "appName") String appName,
+                                               @RequestParam(name = "branch") String branch) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/status/{appName}/{buildId}")
+    public ResponseEntity<BuildStatus> getBuildStatus(@PathVariable String appName,
+                                                      @PathVariable Long buildId) {
+        return new ResponseEntity<>(new BuildStatus(), HttpStatus.OK);
+    }
+
+    // Only return pending builds if pending=true
+    @GetMapping("/status/{appName}")
+    public ResponseEntity<List<BuildStatus>> getAllBuildStatusesForApp(@PathVariable String appName,
+                                                                       @RequestParam(required = false) Boolean pending) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+}
