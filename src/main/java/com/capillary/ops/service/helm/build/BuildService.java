@@ -8,7 +8,7 @@ public interface BuildService {
 
     public BuildStatus triggerBuild(String appName, String branch);
 
-    public BuildStatus getBuildStatus(String appName, String buildId);
+    public BuildStatus getBuildStatus(String buildId);
 
     public List<BuildStatus> getAllBuilds(String appName, boolean pending);
 }

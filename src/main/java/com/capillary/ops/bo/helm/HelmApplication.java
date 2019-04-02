@@ -1,5 +1,7 @@
 package com.capillary.ops.bo.helm;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +11,12 @@ public class HelmApplication {
 
     public HelmApplication() {}
 
-    public HelmApplication(HelmApplicationType helmApplicationType, String name, String instanceType, Integer replicas, Map<String, Object> configs, List<String> domains, ExposureType exposureType, SourceType sourceType, String sourceUrl) {
-        this.helmApplicationType = helmApplicationType;
+    public HelmApplication(ApplicationFamily applicationFamily, String name,
+                           String instanceType, Integer replicas,
+                           Map<String, String> configs, List<String> domains,
+                           ExposureType exposureType, SourceType sourceType,
+                           String sourceUrl, Map<Integer, String> portMapping) {
+        this.applicationFamily = applicationFamily;
         this.name = name;
         this.instanceType = instanceType;
         this.replicas = replicas;
@@ -19,6 +25,7 @@ public class HelmApplication {
         this.exposureType = exposureType;
         this.sourceType = sourceType;
         this.sourceUrl = sourceUrl;
+        this.setPortMapping(portMapping);
     }
 
     public enum ExposureType {
@@ -38,7 +45,7 @@ public class HelmApplication {
         NETCORE
     }
 
-    private HelmApplicationType helmApplicationType;
+    private ApplicationFamily applicationFamily;
 
     private String name;
 
@@ -46,7 +53,7 @@ public class HelmApplication {
 
     private Integer replicas = 0;
 
-    private Map<String, Object> configs = new HashMap<>();
+    private Map<String, String> configs = new HashMap<>();
 
     private List<String> domains = new ArrayList<>();
 
@@ -58,6 +65,8 @@ public class HelmApplication {
 
     private BuildType buildType;
 
+    private Map<Integer, String> portMapping = new HashMap<>();
+
     public BuildType getBuildType() {
         return buildType;
     }
@@ -66,12 +75,12 @@ public class HelmApplication {
         this.buildType = buildType;
     }
 
-    public HelmApplicationType getHelmApplicationType() {
-        return helmApplicationType;
+    public ApplicationFamily getApplicationFamily() {
+        return applicationFamily;
     }
 
-    public void setHelmApplicationType(HelmApplicationType helmApplicationType) {
-        this.helmApplicationType = helmApplicationType;
+    public void setApplicationFamily(ApplicationFamily applicationFamily) {
+        this.applicationFamily = applicationFamily;
     }
 
     public String getName() {
@@ -98,11 +107,11 @@ public class HelmApplication {
         this.replicas = replicas;
     }
 
-    public Map<String, Object> getConfigs() {
+    public Map<String, String> getConfigs() {
         return configs;
     }
 
-    public void setConfigs(Map<String, Object> configs) {
+    public void setConfigs(Map<String, String> configs) {
         this.configs = configs;
     }
 
@@ -136,5 +145,14 @@ public class HelmApplication {
 
     public void setSourceUrl(String sourceUrl) {
         this.sourceUrl = sourceUrl;
+    }
+
+    public Map<Integer, String> getPortMapping() {
+        return portMapping;
+    }
+
+    @JsonSetter("portMapping")
+    public void setPortMapping(Map<Integer, String> portMapping) {
+        portMapping.forEach((k, v) -> this.portMapping.put(k, v.toLowerCase()));
     }
 }

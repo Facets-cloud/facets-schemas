@@ -18,9 +18,8 @@ public class HelmBuildController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/status/{appName}/{buildId}")
-    public ResponseEntity<BuildStatus> getBuildStatus(@PathVariable String appName,
-                                                      @PathVariable Long buildId) {
+    @GetMapping("/status/{buildId}")
+    public ResponseEntity<BuildStatus> getBuildStatus(@PathVariable Long buildId) {
         return new ResponseEntity<>(new BuildStatus(), HttpStatus.OK);
     }
 

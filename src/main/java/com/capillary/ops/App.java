@@ -1,18 +1,16 @@
 package com.capillary.ops;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.codebuild.AWSCodeBuild;
+import com.amazonaws.services.codebuild.AWSCodeBuildClientBuilder;
+import com.amazonaws.services.ecr.AmazonECR;
+import com.amazonaws.services.ecr.AmazonECRClientBuilder;
 import com.capillary.ops.service.DeisApiErrorHandler;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import java.io.*;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.springframework.boot.SpringApplication;
@@ -31,6 +29,16 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootApplication
 @EnableSwagger2
@@ -118,4 +126,15 @@ public class App {
     ExecutorService pool = Executors.newFixedThreadPool(20);
     return pool;
   }
+
+  @Bean
+  public AWSCodeBuild getCodebuildClient() {
+    return AWSCodeBuildClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
+  }
+
+  @Bean
+  public AmazonECR getEcrClient() {
+    return AmazonECRClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
+  }
+
 }
