@@ -1,10 +1,5 @@
 package com.capillary.ops;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.codebuild.AWSCodeBuild;
-import com.amazonaws.services.codebuild.AWSCodeBuildClientBuilder;
-import com.amazonaws.services.ecr.AmazonECR;
-import com.amazonaws.services.ecr.AmazonECRClientBuilder;
 import com.capillary.ops.service.DeisApiErrorHandler;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
@@ -126,15 +121,4 @@ public class App {
     ExecutorService pool = Executors.newFixedThreadPool(20);
     return pool;
   }
-
-  @Bean
-  public AWSCodeBuild getCodebuildClient() {
-    return AWSCodeBuildClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
-  }
-
-  @Bean
-  public AmazonECR getEcrClient() {
-    return AmazonECRClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
-  }
-
 }

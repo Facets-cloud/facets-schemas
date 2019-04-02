@@ -11,12 +11,6 @@ import java.util.List;
 
 public class HelmBuildServiceImpl implements BuildService {
 
-    @Autowired
-    private AWSCodeBuild awsCodeBuild;
-
-    @Autowired
-    private AmazonECR amazonECR;
-
     @Override
     public BuildStatus triggerBuild(String appName, String branch) {
         return null;
