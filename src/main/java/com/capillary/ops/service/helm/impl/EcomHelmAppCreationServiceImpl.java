@@ -5,12 +5,14 @@ import com.capillary.ops.bo.exceptions.ResourceAlreadyExists;
 import com.capillary.ops.bo.helm.HelmApplication;
 import com.capillary.ops.bo.helm.Port;
 import com.capillary.ops.repository.helm.EcommerceHelmApplicationRepository;
-import com.capillary.ops.service.CodeBuildService;
+import com.capillary.ops.service.CodeBuildServiceFactory;
 import com.capillary.ops.service.helm.HelmAppCreationService;
 import com.capillary.ops.service.helm.build.BuildService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.codebuild.model.SourceType;
+
+import java.util.List;
 
 @Service
 public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceImpl
@@ -20,7 +22,8 @@ public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceIm
 
   @Autowired private BuildService buildService;
 
-  @Autowired private CodeBuildService codeBuildService;
+  @Autowired
+  private CodeBuildServiceFactory codeBuildServiceFactory;
 
   @Override
   public HelmApplication create(HelmApplication helmApplication) {
@@ -35,14 +38,26 @@ public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceIm
           "helm application already exists: " + helmApplication.getName());
     }
 
-    buildService.createEcrRepository(helmApplication);
+        HelmApplication application = applicationRepository.save(helmApplication);
 
-    codeBuildService.createApplication(
-        new CodeBuildApplication(
-            CodeBuildApplication.ApplicationSource.GITHUB,
-            CodeBuildApplication.ApplicationType.valueOf(helmApplication.getBuildType().name()),
-            helmApplication.getApplicationFamily().getName()));
+        buildService.createEcrRepository(helmApplication);
 
-    return applicationRepository.save(helmApplication);
-  }
+        createCodeBuildApplication(helmApplication, application.getId());
+
+        return application;
+    }
+
+    private void createCodeBuildApplication(HelmApplication helmApplication, String id) {
+        CodeBuildApplication codeBuildApplication = new CodeBuildApplication();
+        codeBuildApplication.setSourceType(SourceType.GITHUB.name());
+        codeBuildApplication.setApplicationType(helmApplication.getBuildType().name());
+        codeBuildApplication.setRepoURL(helmApplication.getRepositoryUrl());
+        codeBuildApplication.setProjectFolder(helmApplication.getPathFromRoot());
+        codeBuildApplication.setName(helmApplication.getName());
+        codeBuildApplication.setId(id);
+
+        codeBuildServiceFactory.getCodeBuildService(
+                CodeBuildApplication.ApplicationType.valueOf(
+                        helmApplication.getBuildType().name())).createApplication(codeBuildApplication);
+    }
 }

@@ -1,5 +1,8 @@
 package com.capillary.ops.bo.helm;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.Id;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,13 +40,17 @@ public class HelmApplication {
     EXTERNAL
   }
 
+  @Id @JsonIgnore
+
+  private String id;
+
+  private ApplicationFamily applicationFamily;
+
   public enum BuildType {
     MAVEN_JAVA,
     DOCKER,
     NETCORE
   }
-
-  private ApplicationFamily applicationFamily;
 
   private String name;
 
@@ -62,6 +69,14 @@ public class HelmApplication {
   private String pathFromRoot = "";
 
   private BuildType buildType;
+
+  public String getId() {
+      return id;
+  }
+
+  public void setId(String id) {
+      this.id = id;
+  }
 
   private List<Port> portMapping;
 
