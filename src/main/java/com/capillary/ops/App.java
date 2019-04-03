@@ -19,13 +19,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.client.RestTemplate;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.ecr.EcrClient;
-import software.amazon.awssdk.services.ecr.EcrClientBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -33,13 +31,11 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -133,39 +129,25 @@ public class App {
 
   @Bean(name = "codeBuildClient")
   public CodeBuildClient codeBuildClient() throws Exception {
-    FileInputStream configInputStream =
-        new FileInputStream("/etc/capillary/codebuildcredentials.ini");
-    Properties properties = new Properties();
-    properties.load(configInputStream);
-    String access = properties.getProperty("access");
-    String secret = properties.getProperty("secret");
-    AwsBasicCredentials credentials = AwsBasicCredentials.create(access, secret);
-    CodeBuildClient codeBuildClient =
-        CodeBuildClient.builder()
-            .region(Region.of(properties.getProperty("region")))
-            .credentialsProvider(StaticCredentialsProvider.create(credentials))
+    CodeBuildClient codeBuildClient = CodeBuildClient.builder()
+            .region(Region.US_EAST_1)
+            .credentialsProvider(ProfileCredentialsProvider.builder().profileName("freemium").build())
             .build();
     return codeBuildClient;
   }
 
   @Bean(name = "cloudWatchLogsClient")
   public CloudWatchLogsClient cloudWatchLogsClient() throws Exception {
-    FileInputStream configInputStream =
-            new FileInputStream("/etc/capillary/cloudwatchcredentials.ini");
-    Properties properties = new Properties();
-    properties.load(configInputStream);
-    String access = properties.getProperty("access");
-    String secret = properties.getProperty("secret");
-    AwsBasicCredentials credentials = AwsBasicCredentials.create(access, secret);
     CloudWatchLogsClient cloudWatchClient =
             CloudWatchLogsClient.builder()
-            .region(Region.of(properties.getProperty("region")))
-            .credentialsProvider(StaticCredentialsProvider.create(credentials))
-            .build();
+                    .region(Region.US_EAST_1)
+                    .credentialsProvider(ProfileCredentialsProvider.builder().profileName("freemium").build())
+                    .build();
     return cloudWatchClient;
   }
 
+  @Bean
   public EcrClient getEcrClient() {
-    return EcrClient.builder().region(Region.of(System.getenv("region"))).build();
+    return EcrClient.builder().region(Region.US_EAST_1).build();
   }
 }

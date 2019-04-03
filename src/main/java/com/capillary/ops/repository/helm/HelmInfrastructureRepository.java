@@ -1,4 +1,4 @@
-package com.capillary.ops.repository;
+package com.capillary.ops.repository.helm;
 
 import com.capillary.ops.bo.HelmInfrastructureResource;
 import org.springframework.data.mongodb.repository.MongoRepository;

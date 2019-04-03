@@ -3,7 +3,7 @@ package com.capillary.ops.service.helm.impl;
 import com.capillary.ops.bo.AbstractDeploymentResource;
 import com.capillary.ops.bo.AbstractInfrastructureResource;
 import com.capillary.ops.bo.HelmInfrastructureResource;
-import com.capillary.ops.repository.HelmInfrastructureRepository;
+import com.capillary.ops.repository.helm.HelmInfrastructureRepository;
 import com.capillary.ops.service.DeploymentResponseHandler;
 import com.capillary.ops.service.ResourceResponseHandlerSelector;
 import hapi.release.ReleaseOuterClass.Release;

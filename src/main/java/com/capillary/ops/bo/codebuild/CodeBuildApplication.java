@@ -6,13 +6,23 @@ import software.amazon.awssdk.services.codebuild.model.Project;
 
 public class CodeBuildApplication extends Application {
 
+  public CodeBuildApplication() {}
+
+  public CodeBuildApplication(ApplicationSource sourceType, ApplicationType applicationType, String namespace) {
+    this.sourceType = sourceType;
+    this.applicationType = applicationType;
+    this.namespace = namespace;
+  }
+
   public enum ApplicationSource {
     GITHUB,
     BITBUCKET
   }
 
   public enum ApplicationType {
-    MAVEN_JAVA
+    MAVEN_JAVA,
+    DOCKER,
+    NETCORE
   }
 
   ApplicationSource sourceType;

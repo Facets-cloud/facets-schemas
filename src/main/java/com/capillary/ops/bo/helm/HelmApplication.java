@@ -14,8 +14,8 @@ public class HelmApplication {
     public HelmApplication(ApplicationFamily applicationFamily, String name,
                            String instanceType, Integer replicas,
                            Map<String, String> configs, List<String> domains,
-                           ExposureType exposureType, SourceType sourceType,
-                           String sourceUrl, Map<Integer, String> portMapping) {
+                           ExposureType exposureType, String repositoryUrl,
+                           String pathFromRoot, List<Port> portMapping) {
         this.applicationFamily = applicationFamily;
         this.name = name;
         this.instanceType = instanceType;
@@ -23,8 +23,8 @@ public class HelmApplication {
         this.configs = configs;
         this.domains = domains;
         this.exposureType = exposureType;
-        this.sourceType = sourceType;
-        this.sourceUrl = sourceUrl;
+        this.repositoryUrl = repositoryUrl;
+        this.pathFromRoot = pathFromRoot;
         this.setPortMapping(portMapping);
     }
 
@@ -33,14 +33,8 @@ public class HelmApplication {
         EXTERNAL
     }
 
-    public enum SourceType {
-        GIT,
-        SVN,
-        HG
-    }
-
     public enum BuildType {
-        MVN,
+        MAVEN_JAVA,
         DOCKER,
         NETCORE
     }
@@ -59,13 +53,13 @@ public class HelmApplication {
 
     private ExposureType exposureType = ExposureType.INTERNAL;
 
-    private SourceType sourceType;
+    private String repositoryUrl;
 
-    private String sourceUrl;
+    private String pathFromRoot = "";
 
     private BuildType buildType;
 
-    private Map<Integer, String> portMapping = new HashMap<>();
+    private List<Port> portMapping;
 
     public BuildType getBuildType() {
         return buildType;
@@ -131,28 +125,29 @@ public class HelmApplication {
         this.exposureType = exposureType;
     }
 
-    public SourceType getSourceType() {
-        return sourceType;
+    public String getRepositoryUrl() {
+        return repositoryUrl;
     }
 
-    public void setSourceType(SourceType sourceType) {
-        this.sourceType = sourceType;
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
     }
 
-    public String getSourceUrl() {
-        return sourceUrl;
-    }
-
-    public void setSourceUrl(String sourceUrl) {
-        this.sourceUrl = sourceUrl;
-    }
-
-    public Map<Integer, String> getPortMapping() {
+    public List<Port> getPortMapping() {
         return portMapping;
     }
 
-    @JsonSetter("portMapping")
-    public void setPortMapping(Map<Integer, String> portMapping) {
-        portMapping.forEach((k, v) -> this.portMapping.put(k, v.toLowerCase()));
+    public void setPortMapping(List<Port> portMapping) {
+        this.portMapping = portMapping;
     }
+
+    public String getPathFromRoot() {
+        return pathFromRoot;
+    }
+
+    public void setPathFromRoot(String pathFromRoot) {
+        this.pathFromRoot = pathFromRoot;
+    }
+
+
 }

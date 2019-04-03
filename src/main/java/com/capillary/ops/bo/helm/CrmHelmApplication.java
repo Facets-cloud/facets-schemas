@@ -8,8 +8,8 @@ public class CrmHelmApplication extends HelmApplication {
     public CrmHelmApplication() {
     }
 
-    public CrmHelmApplication(ApplicationFamily applicationFamily, String name, String instanceType, Integer replicas, Map<String, Object> configs, List<String> domains, ExposureType exposureType, SourceType sourceType, String sourceUrl, Map<String, Object> params) {
-        super(applicationFamily, name, instanceType, replicas, configs, domains, exposureType, sourceType, sourceUrl);
+    public CrmHelmApplication(ApplicationFamily applicationFamily, String name, String instanceType, Integer replicas, Map<String, String> configs, List<String> domains, ExposureType exposureType, String repositoryUrl, String pathFromRoot, List<Port> portMapping, Map<String, Object> params) {
+        super(applicationFamily, name, instanceType, replicas, configs, domains, exposureType, repositoryUrl, pathFromRoot, portMapping);
         this.params = params;
     }
 
