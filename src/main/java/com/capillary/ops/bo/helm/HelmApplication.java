@@ -2,12 +2,11 @@ package com.capillary.ops.bo.helm;
 
 import com.capillary.ops.bo.codebuild.CodeBuildApplication;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.data.annotation.Id;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.annotation.Id;
 
 public class HelmApplication {
 
@@ -43,9 +42,7 @@ public class HelmApplication {
     EXTERNAL
   }
 
-  @Id @JsonIgnore
-
-  private String id;
+  @Id @JsonIgnore private String id;
 
   private ApplicationFamily applicationFamily;
 
@@ -76,11 +73,11 @@ public class HelmApplication {
   private BuildType buildType;
 
   public String getId() {
-      return id;
+    return id;
   }
 
   public void setId(String id) {
-      this.id = id;
+    this.id = id;
   }
 
   private List<Port> portMapping;

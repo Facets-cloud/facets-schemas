@@ -7,15 +7,14 @@ import com.capillary.ops.bo.helm.HelmApplication;
 import com.capillary.ops.service.helm.build.BuildService;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
 import software.amazon.awssdk.services.ecr.model.CreateRepositoryRequest;
 import software.amazon.awssdk.services.ecr.model.SetRepositoryPolicyRequest;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
 
 @Service
 public class HelmBuildServiceImpl implements BuildService {
@@ -39,7 +38,8 @@ public class HelmBuildServiceImpl implements BuildService {
 
   @Override
   public void createEcrRepository(HelmApplication application) {
-    String repositoryName = application.getApplicationFamily().getName().toLowerCase() + "/" + application.getName();
+    String repositoryName =
+        application.getApplicationFamily().getName().toLowerCase() + "/" + application.getName();
     System.out.println("creating repository with name = " + repositoryName);
     CreateRepositoryRequest createRepositoryRequest =
         CreateRepositoryRequest.builder().repositoryName(repositoryName).build();

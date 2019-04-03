@@ -8,11 +8,9 @@ import com.capillary.ops.repository.helm.EcommerceHelmApplicationRepository;
 import com.capillary.ops.service.CodeBuildServiceFactory;
 import com.capillary.ops.service.helm.HelmAppCreationService;
 import com.capillary.ops.service.helm.build.BuildService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.codebuild.model.SourceType;
-
-import java.util.List;
 
 @Service
 public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceImpl
@@ -22,8 +20,7 @@ public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceIm
 
   @Autowired private BuildService buildService;
 
-  @Autowired
-  private CodeBuildServiceFactory codeBuildServiceFactory;
+  @Autowired private CodeBuildServiceFactory codeBuildServiceFactory;
 
   @Override
   public HelmApplication create(HelmApplication helmApplication) {
@@ -38,26 +35,27 @@ public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceIm
           "helm application already exists: " + helmApplication.getName());
     }
 
-        HelmApplication application = applicationRepository.save(helmApplication);
+    HelmApplication application = applicationRepository.save(helmApplication);
 
-        buildService.createEcrRepository(helmApplication);
+    buildService.createEcrRepository(helmApplication);
 
-        createCodeBuildApplication(helmApplication, application.getId());
+    createCodeBuildApplication(helmApplication, application.getId());
 
-        return application;
-    }
+    return application;
+  }
 
-    private void createCodeBuildApplication(HelmApplication helmApplication, String id) {
-        CodeBuildApplication codeBuildApplication = new CodeBuildApplication();
-        codeBuildApplication.setSourceType(helmApplication.getApplicationSource().name());
-        codeBuildApplication.setApplicationType(helmApplication.getBuildType().name());
-        codeBuildApplication.setRepoURL(helmApplication.getRepositoryUrl());
-        codeBuildApplication.setProjectFolder(helmApplication.getPathFromRoot());
-        codeBuildApplication.setName(helmApplication.getName());
-        codeBuildApplication.setId(id);
+  private void createCodeBuildApplication(HelmApplication helmApplication, String id) {
+    CodeBuildApplication codeBuildApplication = new CodeBuildApplication();
+    codeBuildApplication.setSourceType(helmApplication.getApplicationSource().name());
+    codeBuildApplication.setApplicationType(helmApplication.getBuildType().name());
+    codeBuildApplication.setRepoURL(helmApplication.getRepositoryUrl());
+    codeBuildApplication.setProjectFolder(helmApplication.getPathFromRoot());
+    codeBuildApplication.setName(helmApplication.getName());
+    codeBuildApplication.setId(id);
 
-        codeBuildServiceFactory.getCodeBuildService(
-                CodeBuildApplication.ApplicationType.valueOf(
-                        helmApplication.getBuildType().name())).createApplication(codeBuildApplication);
-    }
+    codeBuildServiceFactory
+        .getCodeBuildService(
+            CodeBuildApplication.ApplicationType.valueOf(helmApplication.getBuildType().name()))
+        .createApplication(codeBuildApplication);
+  }
 }
