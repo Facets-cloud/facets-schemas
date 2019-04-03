@@ -8,7 +8,8 @@ public class CodeBuildApplication extends Application {
 
   public CodeBuildApplication() {}
 
-  public CodeBuildApplication(ApplicationSource sourceType, ApplicationType applicationType, String namespace) {
+  public CodeBuildApplication(
+      ApplicationSource sourceType, ApplicationType applicationType, String namespace) {
     this.sourceType = sourceType;
     this.applicationType = applicationType;
     this.namespace = namespace;
@@ -52,14 +53,14 @@ public class CodeBuildApplication extends Application {
   }
 
   public CodeBuildApplication fromGetProject(Project project) {
-      return this;
+    return this;
   }
 
-    public String getNamespace() {
-        return namespace;
-    }
+  public String getNamespace() {
+    return namespace;
+  }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
+  public void setNamespace(String namespace) {
+    this.namespace = namespace;
+  }
 }

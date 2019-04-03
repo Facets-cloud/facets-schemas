@@ -32,7 +32,8 @@ public class AWSCodebuildTest {
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build();
 
-    CloudWatchLogsClient cloudWatchClient = CloudWatchLogsClient.builder()
+    CloudWatchLogsClient cloudWatchClient =
+        CloudWatchLogsClient.builder()
             .region(Region.of(properties.getProperty("region")))
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build();
@@ -46,7 +47,8 @@ public class AWSCodebuildTest {
     // createProject(codeBuildClient);
     // System.out.println(getBuildSpec());
     // intouchapi-codebuild:5351bf48-688e-41b6-938e-f2fc09f0c22b
-    //buildStatusLoop(codeBuildClient, "intouchapi-codebuild:5351bf48-688e-41b6-938e-f2fc09f0c22b");
+    // buildStatusLoop(codeBuildClient,
+    // "intouchapi-codebuild:5351bf48-688e-41b6-938e-f2fc09f0c22b");
     getCloudWatchLogs(cloudWatchClient, "intouchapi/844b9fdc-58e4-4c4e-ad2d-4b4858090a53");
 
     codeBuildClient.close();
@@ -144,21 +146,26 @@ public class AWSCodebuildTest {
   }
 
   public static void getCloudWatchLogs(CloudWatchLogsClient cloudWatchLogsClient, String buildId) {
-      GetLogEventsResponse logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
-              .logGroupName("codebuild-test")
-              .logStreamName(buildId)
-              .startFromHead(true)
-              .build());
-      String nextForwardToken = logEvents.nextForwardToken();
-      logEvents.events().stream().forEach(outputLogEvent ->  System.out.println(outputLogEvent.message()));
+    GetLogEventsResponse logEvents =
+        cloudWatchLogsClient.getLogEvents(
+            GetLogEventsRequest.builder()
+                .logGroupName("codebuild-test")
+                .logStreamName(buildId)
+                .startFromHead(true)
+                .build());
+    String nextForwardToken = logEvents.nextForwardToken();
+    logEvents
+        .events()
+        .stream()
+        .forEach(outputLogEvent -> System.out.println(outputLogEvent.message()));
 
-      /*logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
-              .logGroupName("codebuild-test")
-              .logStreamName(buildId)
-              .nextToken(nextForwardToken)
-              .build());
-      System.out.println("**********************"+nextForwardToken);
-      logEvents.events().stream().forEach(outputLogEvent ->  System.out.println(outputLogEvent.message()));*/
+    /*logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
+            .logGroupName("codebuild-test")
+            .logStreamName(buildId)
+            .nextToken(nextForwardToken)
+            .build());
+    System.out.println("**********************"+nextForwardToken);
+    logEvents.events().stream().forEach(outputLogEvent ->  System.out.println(outputLogEvent.message()));*/
   }
 }
 

@@ -4,50 +4,50 @@ import java.util.List;
 
 public class Port {
 
-    public static boolean areValid(List<Port> ports) {
-        return true;
-    }
+  public static boolean areValid(List<Port> ports) {
+    return true;
+  }
 
-    public enum Protocol {
-        TCP,
-        HTTP
-    }
+  public enum Protocol {
+    TCP,
+    HTTP
+  }
 
-    public Port() {}
+  public Port() {}
 
-    public Port(int internalPort, int externalPort, Protocol protocol) {
-        this.internalPort = internalPort;
-        this.externalPort = externalPort;
-        this.protocol = protocol;
-    }
+  public Port(int internalPort, int externalPort, Protocol protocol) {
+    this.internalPort = internalPort;
+    this.externalPort = externalPort;
+    this.protocol = protocol;
+  }
 
-    private int internalPort;
+  private int internalPort;
 
-    private int externalPort;
+  private int externalPort;
 
-    private Protocol protocol;
+  private Protocol protocol;
 
-    public int getInternalPort() {
-        return internalPort;
-    }
+  public int getInternalPort() {
+    return internalPort;
+  }
 
-    public void setInternalPort(int internalPort) {
-        this.internalPort = internalPort;
-    }
+  public void setInternalPort(int internalPort) {
+    this.internalPort = internalPort;
+  }
 
-    public int getExternalPort() {
-        return externalPort;
-    }
+  public int getExternalPort() {
+    return externalPort;
+  }
 
-    public void setExternalPort(int externalPort) {
-        this.externalPort = externalPort;
-    }
+  public void setExternalPort(int externalPort) {
+    this.externalPort = externalPort;
+  }
 
-    public Protocol getProtocol() {
-        return protocol;
-    }
+  public Protocol getProtocol() {
+    return protocol;
+  }
 
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
+  public void setProtocol(Protocol protocol) {
+    this.protocol = protocol;
+  }
 }

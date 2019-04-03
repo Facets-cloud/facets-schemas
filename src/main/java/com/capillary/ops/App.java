@@ -6,6 +6,15 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.springframework.boot.SpringApplication;
@@ -29,16 +38,6 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @SpringBootApplication
 @EnableSwagger2
@@ -129,9 +128,11 @@ public class App {
 
   @Bean(name = "codeBuildClient")
   public CodeBuildClient codeBuildClient() throws Exception {
-    CodeBuildClient codeBuildClient = CodeBuildClient.builder()
+    CodeBuildClient codeBuildClient =
+        CodeBuildClient.builder()
             .region(Region.US_EAST_1)
-            .credentialsProvider(ProfileCredentialsProvider.builder().profileName("freemium").build())
+            .credentialsProvider(
+                ProfileCredentialsProvider.builder().profileName("freemium").build())
             .build();
     return codeBuildClient;
   }
@@ -139,10 +140,11 @@ public class App {
   @Bean(name = "cloudWatchLogsClient")
   public CloudWatchLogsClient cloudWatchLogsClient() throws Exception {
     CloudWatchLogsClient cloudWatchClient =
-            CloudWatchLogsClient.builder()
-                    .region(Region.US_EAST_1)
-                    .credentialsProvider(ProfileCredentialsProvider.builder().profileName("freemium").build())
-                    .build();
+        CloudWatchLogsClient.builder()
+            .region(Region.US_EAST_1)
+            .credentialsProvider(
+                ProfileCredentialsProvider.builder().profileName("freemium").build())
+            .build();
     return cloudWatchClient;
   }
 

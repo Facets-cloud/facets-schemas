@@ -33,7 +33,7 @@ public class CodeBuildServiceDockerImpl extends CodeBuildServiceImpl {
     preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
     preBuildCommands.add("echo $TAG");
     preBuildCommands.add("REPO=" + ECR_REPO);
-    preBuildCommands.add("APP_NAME="+application.getName());
+    preBuildCommands.add("APP_NAME=" + application.getName());
     preBuildPhase.put("commands", preBuildCommands);
 
     List<String> buildCommands = new ArrayList<>();

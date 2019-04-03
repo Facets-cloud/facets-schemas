@@ -7,7 +7,6 @@ import com.capillary.ops.repository.CodeBuildApplicationRepository;
 import com.capillary.ops.service.CodeBuildService;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
@@ -36,14 +35,14 @@ public abstract class CodeBuildServiceImpl implements CodeBuildService {
   @Override
   public CodeBuildApplication createApplication(CodeBuildApplication application) {
 
-      /*CodeBuildApplication resApplication = repository.findByName(application.getName());
-      if (resApplication == null) {
-          repository.save(application);
-      } else {
-          return null;
-      }*/
+    /*CodeBuildApplication resApplication = repository.findByName(application.getName());
+    if (resApplication == null) {
+        repository.save(application);
+    } else {
+        return null;
+    }*/
 
-      CreateProjectRequest createProjectRequest =
+    CreateProjectRequest createProjectRequest =
         CreateProjectRequest.builder()
             .name(application.getId())
             .source(
@@ -85,14 +84,14 @@ public abstract class CodeBuildServiceImpl implements CodeBuildService {
   @Override
   public CodeBuildApplication getApplication(String applicationId) {
     CodeBuildApplication projectMetadata = repository.findById(applicationId).get();
-      BatchGetProjectsResponse batchGetProjectsResponse = codeBuildClient.batchGetProjects(BatchGetProjectsRequest.builder()
-              .names(applicationId)
-              .build());
-      List<Project> projects = batchGetProjectsResponse.projects();
-      if (projects != null && projects.isEmpty()) {
-          return null;
-      }
-      return projectMetadata.fromGetProject(projects.get(0));
+    BatchGetProjectsResponse batchGetProjectsResponse =
+        codeBuildClient.batchGetProjects(
+            BatchGetProjectsRequest.builder().names(applicationId).build());
+    List<Project> projects = batchGetProjectsResponse.projects();
+    if (projects != null && projects.isEmpty()) {
+      return null;
+    }
+    return projectMetadata.fromGetProject(projects.get(0));
   }
 
   @Override
@@ -114,26 +113,41 @@ public abstract class CodeBuildServiceImpl implements CodeBuildService {
     BatchGetBuildsResponse batchGetBuildsResponse =
         codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder().ids(buildId).build());
     List<Build> builds = batchGetBuildsResponse.builds();
-    if (builds.isEmpty())
-      return null;
+    if (builds.isEmpty()) return null;
     Build build = builds.get(0);
     String streamName = build.id().replace(':', '/');
-    GetLogEventsResponse logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
-            .logGroupName("codebuild-test")
-            .logStreamName(streamName)
-            .startFromHead(true)
-            .build());
+    GetLogEventsResponse logEvents =
+        cloudWatchLogsClient.getLogEvents(
+            GetLogEventsRequest.builder()
+                .logGroupName("codebuild-test")
+                .logStreamName(streamName)
+                .startFromHead(true)
+                .build());
     String nextForwardToken = logEvents.nextForwardToken();
-    StringBuffer logBuffer = new StringBuffer(logEvents.events().stream().map(outputLogEvent -> outputLogEvent.message()).collect(Collectors.joining("\n")));
-    while(!logEvents.events().isEmpty()) {
-      logEvents = cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder()
-              .logGroupName("codebuild-test")
-              .logStreamName(streamName)
-              .nextToken(nextForwardToken)
-              .build());
+    StringBuffer logBuffer =
+        new StringBuffer(
+            logEvents
+                .events()
+                .stream()
+                .map(outputLogEvent -> outputLogEvent.message())
+                .collect(Collectors.joining("\n")));
+    while (!logEvents.events().isEmpty()) {
+      logEvents =
+          cloudWatchLogsClient.getLogEvents(
+              GetLogEventsRequest.builder()
+                  .logGroupName("codebuild-test")
+                  .logStreamName(streamName)
+                  .nextToken(nextForwardToken)
+                  .build());
       nextForwardToken = logEvents.nextForwardToken();
-      logBuffer.append(logEvents.events().stream().map(outputLogEvent -> outputLogEvent.message()).collect(Collectors.joining("\n")));
-      //logEvents.events().stream().forEach(outputLogEvent ->  System.out.println(outputLogEvent.message()));
+      logBuffer.append(
+          logEvents
+              .events()
+              .stream()
+              .map(outputLogEvent -> outputLogEvent.message())
+              .collect(Collectors.joining("\n")));
+      // logEvents.events().stream().forEach(outputLogEvent ->
+      // System.out.println(outputLogEvent.message()));
     }
     CodeBuildDetails response = new CodeBuildDetails().fromGetBuild(builds.get(0));
     response.setBuildLogs(logBuffer.toString());
@@ -149,5 +163,4 @@ public abstract class CodeBuildServiceImpl implements CodeBuildService {
   }
 
   protected abstract String createBuildSpec(CodeBuildApplication application);
-
 }

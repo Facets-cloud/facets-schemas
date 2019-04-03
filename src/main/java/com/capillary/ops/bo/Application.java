@@ -9,10 +9,19 @@ import org.springframework.data.annotation.Id;
 
 public class Application {
 
-  public Application() {
-  }
+  public Application() {}
 
-  public Application(String id, String name, String privateKey, String publicKey, String repoURL, String projectFolder, Map<String, String> tags, String port, Map<Environments, String> endpoints, Map<Environments, Map<String, String>> configs) {
+  public Application(
+      String id,
+      String name,
+      String privateKey,
+      String publicKey,
+      String repoURL,
+      String projectFolder,
+      Map<String, String> tags,
+      String port,
+      Map<Environments, String> endpoints,
+      Map<Environments, Map<String, String>> configs) {
     this.name = name;
     this.privateKey = privateKey;
     this.publicKey = publicKey;

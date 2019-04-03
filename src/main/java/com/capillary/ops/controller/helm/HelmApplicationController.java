@@ -15,23 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/applications/create")
 public class HelmApplicationController {
 
-    @Autowired
-    private EcomHelmAppCreationServiceImpl ecomHelmAppCreationService;
+  @Autowired private EcomHelmAppCreationServiceImpl ecomHelmAppCreationService;
 
-    @PostMapping("/ecommerce")
-    public ResponseEntity<HelmApplication> createEcomApplication(@RequestBody HelmApplication helmApplication) {
-        HelmApplication application = ecomHelmAppCreationService.create(helmApplication);
-        return new ResponseEntity<>(application, HttpStatus.OK);
-    }
+  @PostMapping("/ecommerce")
+  public ResponseEntity<HelmApplication> createEcomApplication(
+      @RequestBody HelmApplication helmApplication) {
+    HelmApplication application = ecomHelmAppCreationService.create(helmApplication);
+    return new ResponseEntity<>(application, HttpStatus.OK);
+  }
 
-    @PostMapping("/integration")
-    public ResponseEntity<HelmApplication> createIntegrationApplication(@RequestBody HelmApplication helmApplication) {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+  @PostMapping("/integration")
+  public ResponseEntity<HelmApplication> createIntegrationApplication(
+      @RequestBody HelmApplication helmApplication) {
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 
-    @PostMapping("/crm")
-    public ResponseEntity<CrmHelmApplication> createCrmApplication(@RequestBody CrmHelmApplication crmHelmApplication) {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
+  @PostMapping("/crm")
+  public ResponseEntity<CrmHelmApplication> createCrmApplication(
+      @RequestBody CrmHelmApplication crmHelmApplication) {
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 }
