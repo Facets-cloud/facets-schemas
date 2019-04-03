@@ -1,0 +1,56 @@
+{{- $releaseName := .Release.Name}}
+
+  apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Release.Name  }}
+  labels:
+    app: {{ .Release.Name  }}
+    chart: {{ template "capillary-base.chart" . }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+              {{- range .Values.ports }}
+              {{- with . }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+              protocol: TCP
+              {{- end }}
+              {{- end }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          env:
+{{- range $k, $v := .Values.configurations }}
+          - name: {{ $k }}
+            valueFrom:
+              secretKeyRef:
+                name: "{{ $releaseName }}-configs"
+                key: {{ $k }}
+{{- end }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
