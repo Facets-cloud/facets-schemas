@@ -49,7 +49,7 @@ public class EcomHelmAppCreationServiceImpl extends BaseHelmAppCreationServiceIm
 
     private void createCodeBuildApplication(HelmApplication helmApplication, String id) {
         CodeBuildApplication codeBuildApplication = new CodeBuildApplication();
-        codeBuildApplication.setSourceType(SourceType.GITHUB.name());
+        codeBuildApplication.setSourceType(helmApplication.getApplicationSource().name());
         codeBuildApplication.setApplicationType(helmApplication.getBuildType().name());
         codeBuildApplication.setRepoURL(helmApplication.getRepositoryUrl());
         codeBuildApplication.setProjectFolder(helmApplication.getPathFromRoot());

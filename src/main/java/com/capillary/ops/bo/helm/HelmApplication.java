@@ -1,5 +1,6 @@
 package com.capillary.ops.bo.helm;
 
+import com.capillary.ops.bo.codebuild.CodeBuildApplication;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 
@@ -20,6 +21,7 @@ public class HelmApplication {
       Map<String, String> configs,
       List<String> domains,
       ExposureType exposureType,
+      CodeBuildApplication.ApplicationSource applicationSource,
       String repositoryUrl,
       String pathFromRoot,
       List<Port> portMapping) {
@@ -30,6 +32,7 @@ public class HelmApplication {
     this.configs = configs;
     this.domains = domains;
     this.exposureType = exposureType;
+    this.applicationSource = applicationSource;
     this.repositoryUrl = repositoryUrl;
     this.pathFromRoot = pathFromRoot;
     this.setPortMapping(portMapping);
@@ -63,6 +66,8 @@ public class HelmApplication {
   private List<String> domains = new ArrayList<>();
 
   private ExposureType exposureType = ExposureType.INTERNAL;
+
+  private CodeBuildApplication.ApplicationSource applicationSource;
 
   private String repositoryUrl;
 
@@ -166,5 +171,13 @@ public class HelmApplication {
 
   public void setPathFromRoot(String pathFromRoot) {
     this.pathFromRoot = pathFromRoot;
+  }
+
+  public CodeBuildApplication.ApplicationSource getApplicationSource() {
+    return applicationSource;
+  }
+
+  public void setApplicationSource(CodeBuildApplication.ApplicationSource applicationSource) {
+    this.applicationSource = applicationSource;
   }
 }
