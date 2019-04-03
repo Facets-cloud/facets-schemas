@@ -47,7 +47,7 @@ spec:
           - name: {{ $k }}
             valueFrom:
               secretKeyRef:
-                name: {{ $releaseName  }}
+                name: "{{ $releaseName }}-configs"
                 key: {{ $k }}
 {{- end }}
     {{- with .Values.nodeSelector }}
