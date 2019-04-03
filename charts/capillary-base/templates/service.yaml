@@ -2,17 +2,25 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}
+  {{- if and .Values.lbType (eq .Values.lbType "internal") }}
+  {{ "annotations:" }}
+    {{ "service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0" }}
+  {{- end }}
   labels:
     app: {{ .Release.Name  }}
     chart: {{ template "capillary-base.chart" . }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.serviceType }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+      {{- range .Values.ports }}
+      {{- with . }}
+    - port: {{ .lbPort }}
+      targetPort: {{ .containerPort }}
+      protocol: {{ .protocol }}
+      name: {{ .name }}
+      {{- end }}
+      {{- end }}
   selector:
-    app: {{ .Release.Name  }}
+    app: {{ .Release.Name }}
     release: {{ .Release.Name }}

@@ -9,9 +9,7 @@ image:
   tag: stable
   pullPolicy: IfNotPresent
 
-service:
-  type: ClusterIP
-  port: 80
+serviceType: ClusterIP
 
 ingress:
   enabled: false
@@ -52,11 +50,11 @@ ports:
   - name: "http"
     containerPort: 8080
     lbPort: 80
-    portocol: "HTTP"
+    protocol: "HTTP"
   - name: "thrift"
     containerPort: 9999
     lbPort: 9999
-    portocol: "TCP"
+    protocol: "TCP"
 
 lbType: "internal"
 
