@@ -1,12 +1,12 @@
-{{- $fullName := include "capillary-base.fullname" . -}}
+{{- $releaseName := .Release.Name}}
+
   apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "capillary-base.fullname" . }}
+  name: {{ .Release.Name  }}
   labels:
-    app: {{ template "capillary-base.name" . }}
+    app: {{ .Release.Name  }}
     chart: {{ template "capillary-base.chart" . }}
-    release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
@@ -43,7 +43,7 @@ spec:
           - name: {{ $k }}
             valueFrom:
               secretKeyRef:
-                name: "{{$fullName}}-configs"
+                name: {{ $releaseName  }}
                 key: {{ $k }}
 {{- end }}
     {{- with .Values.nodeSelector }}
