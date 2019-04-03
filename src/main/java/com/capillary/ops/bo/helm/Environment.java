@@ -8,6 +8,8 @@ public class Environment {
 
   private String nodeGroup;
 
+  private String applicationFamily;
+
   public String getName() {
     return name;
   }
@@ -30,5 +32,13 @@ public class Environment {
 
   public void setNodeGroup(String nodeGroup) {
     this.nodeGroup = nodeGroup;
+  }
+
+  public String getApplicationFamily() {
+    return applicationFamily;
+  }
+
+  public void setApplicationFamily(String applicationFamily) {
+    this.applicationFamily = applicationFamily;
   }
 }
