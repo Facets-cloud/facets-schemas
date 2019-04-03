@@ -5,24 +5,22 @@ import com.capillary.ops.bo.helm.ApplicationFamily;
 import com.capillary.ops.bo.helm.BuildStatus;
 import com.capillary.ops.bo.helm.HelmApplication;
 import com.capillary.ops.service.helm.build.BuildService;
-import com.capillary.ops.service.helm.impl.HelmEnvironmentService;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
 import software.amazon.awssdk.services.ecr.model.CreateRepositoryRequest;
 import software.amazon.awssdk.services.ecr.model.SetRepositoryPolicyRequest;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+
 @Service
 public class HelmBuildServiceImpl implements BuildService {
 
   @Autowired private EcrClient ecrClient;
-
-  @Autowired private HelmEnvironmentService helmEnvironmentService;
 
   @Override
   public BuildStatus triggerBuild(String appName, String branch) {
