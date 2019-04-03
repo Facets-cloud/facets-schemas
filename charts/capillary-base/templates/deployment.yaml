@@ -1,4 +1,5 @@
-apiVersion: apps/v1beta2
+{{- $fullName := include "capillary-base.fullname" . -}}
+  apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: {{ template "capillary-base.fullname" . }}
@@ -37,6 +38,14 @@ spec:
               port: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+          env:
+{{- range $k, $v := .Values.configurations }}
+          - name: {{ $k }}
+            valueFrom:
+              secretKeyRef:
+                name: "{{$fullName}}-configs"
+                key: {{ $k }}
+{{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
