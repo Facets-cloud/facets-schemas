@@ -22,24 +22,16 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.image }}"
+          imagePullPolicy: IfNotPresent
           ports:
               {{- range .Values.ports }}
               {{- with . }}
             - name: {{ .name }}
               containerPort: {{ .containerPort }}
-              protocol: {{ .protocol }}
+              protocol: TCP
               {{- end }}
               {{- end }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           env:

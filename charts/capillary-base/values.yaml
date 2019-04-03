@@ -4,12 +4,9 @@
 
 replicaCount: 1
 
-image:
-  repository: nginx
-  tag: stable
-  pullPolicy: IfNotPresent
+image: 486456986266.dkr.ecr.us-east-1.amazonaws.com/capillary/fileservice:1.1-SNAPSHOT
 
-serviceType: ClusterIP
+serviceType: LoadBalancer
 
 ingress:
   enabled: false
@@ -43,18 +40,12 @@ tolerations: []
 affinity: {}
 
 configurations:
-    key: "value"
-    key2: "values"
+    TZ: "Asia/Kolkata"
 
 ports:
   - name: "http"
     containerPort: 8080
     lbPort: 80
     protocol: "HTTP"
-  - name: "thrift"
-    containerPort: 9999
-    lbPort: 9999
-    protocol: "TCP"
 
 lbType: "internal"
-
