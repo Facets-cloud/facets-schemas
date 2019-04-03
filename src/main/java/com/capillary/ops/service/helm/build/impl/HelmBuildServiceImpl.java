@@ -39,10 +39,10 @@ public class HelmBuildServiceImpl implements BuildService {
 
   @Override
   public void createEcrRepository(HelmApplication application) {
-    String repositoryName = application.getName();
+    String repositoryName = application.getApplicationFamily().getName().toLowerCase() + "/" + application.getName();
     System.out.println("creating repository with name = " + repositoryName);
     CreateRepositoryRequest createRepositoryRequest =
-        CreateRepositoryRequest.builder().repositoryName(application.getName()).build();
+        CreateRepositoryRequest.builder().repositoryName(repositoryName).build();
 
     ecrClient.createRepository(createRepositoryRequest);
     setEcrPolicy(application, repositoryName);
