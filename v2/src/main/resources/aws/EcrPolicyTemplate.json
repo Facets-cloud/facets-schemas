@@ -1,0 +1,13 @@
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Sid": "new statement",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::{{ACCOUNT_ID}}:root"
+      },
+      "Action": "ecr:*"
+    }
+  ]
+}

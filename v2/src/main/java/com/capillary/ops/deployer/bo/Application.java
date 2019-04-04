@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.bo;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ public class Application {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String name;
 
     private VCSProvider vcsProvider;

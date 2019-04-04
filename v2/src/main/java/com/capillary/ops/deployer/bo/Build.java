@@ -1,5 +1,7 @@
 package com.capillary.ops.deployer.bo;
 
+import org.springframework.data.annotation.Id;
+
 public class Build {
 
     public static enum BuildStatus {
@@ -8,6 +10,8 @@ public class Build {
         FAILED
     }
 
+    @Id
+    private String id;
     private String applicationName;
     private String tag;
     private BuildStatus status;
@@ -37,4 +41,19 @@ public class Build {
         this.status = status;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getLogs() {
+        return logs;
+    }
+
+    public void setLogs(String logs) {
+        this.logs = logs;
+    }
 }

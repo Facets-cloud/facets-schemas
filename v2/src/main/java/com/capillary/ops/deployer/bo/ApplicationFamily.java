@@ -31,4 +31,8 @@ public enum ApplicationFamily {
         environment.setName(environmentName);
         return environment;
     }
+
+    public String getAwsAccountId() {
+        return System.getenv(this.name() + "_AWS_ACCOUNT_ID");
+    }
 }
