@@ -5,18 +5,21 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Component
 public class FreestyleDockerBuildSpec extends BuildSpec {
 
+    public FreestyleDockerBuildSpec(Application application) {
+        super(application);
+    }
+
     @Override
-    protected List<String> getPostBuildCommands(Application application) {
+    protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
         postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
         return postBuildCommands;
     }
 
     @Override
-    protected List<String> getBuildCommands(Application application) {
+    protected List<String> getBuildCommands() {
         List<String> buildCommands = new ArrayList<>();
         buildCommands.add("docker build -t $APP_NAME:$TAG .");
         buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
@@ -24,7 +27,7 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
     }
 
     @Override
-    protected List<String> getPreBuildCommands(Application application) {
+    protected List<String> getPreBuildCommands() {
         String ECR_REPO = "486456986266.dkr.ecr.us-east-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
@@ -35,7 +38,7 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
     }
 
     @Override
-    protected List<String> getCachePaths(Application application) {
+    protected List<String> getCachePaths() {
         return Arrays.asList();
     }
 

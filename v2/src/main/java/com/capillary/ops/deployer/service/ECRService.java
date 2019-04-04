@@ -49,7 +49,7 @@ public class ECRService {
                             new InputStreamReader(
                                     App.class.getClassLoader().getResourceAsStream("aws/EcrPolicyTemplate.json"),
                                     Charsets.UTF_8));
-            return template.replace("{{ACCOUNT_ID}}", applicationFamily.getAwsAccountId());
+            return template;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

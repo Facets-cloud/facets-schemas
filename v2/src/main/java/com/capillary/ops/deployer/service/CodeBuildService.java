@@ -1,7 +1,6 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.BuildType;
 import com.capillary.ops.deployer.service.buildspecs.BuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.MavenBuildSpec;
@@ -16,11 +15,6 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
 public class CodeBuildService {
 
@@ -31,19 +25,16 @@ public class CodeBuildService {
     @Autowired
     Environment environment;
 
-    @Autowired
-    private MavenBuildSpec mavenBuildSpec;
-
     public void createProject(Application application) {
         ProjectSource projectSource = ProjectSource.builder()
                 .type(SourceType.valueOf(application.getVcsProvider().toString()))
-                .location(application.getRepositoryName())
+                .location(application.getRepositoryUrl())
                 .buildspec(createBuildSpec(application))
                 .build();
 
         ProjectEnvironment projectEnvironment = ProjectEnvironment.builder()
                 .type(EnvironmentType.LINUX_CONTAINER)
-                .image(getBuildSpec(application.getBuildType()).getBuildEnvironmentImage())
+                .image(getBuildSpec(application).getBuildEnvironmentImage())
                 .imagePullCredentialsType(ImagePullCredentialsType.CODEBUILD)
                 .privilegedMode(true)
                 .build();
@@ -80,7 +71,7 @@ public class CodeBuildService {
     }
 
     private String createBuildSpec(Application application) {
-        BuildSpec buildSpec = getBuildSpec(application.getBuildType());
+        BuildSpec buildSpec = getBuildSpec(application);
         YAMLMapper yamlMapper = new YAMLMapper();
         yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
         yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
@@ -92,10 +83,10 @@ public class CodeBuildService {
         }
     }
 
-    private BuildSpec getBuildSpec(BuildType buildType) {
-        switch (buildType) {
+    private BuildSpec getBuildSpec(Application application) {
+        switch (application.getBuildType()) {
             case MVN:
-                return mavenBuildSpec;
+                return new MavenBuildSpec(application);
             case FREESTYLE_DOCKER:
                 return null;
             default:

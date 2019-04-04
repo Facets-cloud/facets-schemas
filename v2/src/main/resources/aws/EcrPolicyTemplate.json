@@ -2,10 +2,26 @@
   "Version": "2008-10-17",
   "Statement": [
     {
-      "Sid": "new statement",
+      "Sid": "ecom",
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::{{ACCOUNT_ID}}:root"
+        "AWS": "arn:aws:iam::909374411237:root"
+      },
+      "Action": "ecr:*"
+    },
+    {
+      "Sid": "integrations",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::538938394727:root"
+      },
+      "Action": "ecr:*"
+    },
+    {
+      "Sid": "crm",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::502812779267:root"
       },
       "Action": "ecr:*"
     }

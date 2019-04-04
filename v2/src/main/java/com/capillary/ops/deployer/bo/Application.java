@@ -14,7 +14,7 @@ public class Application {
 
     private VCSProvider vcsProvider;
 
-    private String repositoryName;
+    private String repositoryUrl;
 
     private String applicationRootDirectory;
 
@@ -50,12 +50,12 @@ public class Application {
         this.vcsProvider = vcsProvider;
     }
 
-    public String getRepositoryName() {
-        return repositoryName;
+    public String getRepositoryUrl() {
+        return repositoryUrl;
     }
 
-    public void setRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
     }
 
     public String getApplicationRootDirectory() {
