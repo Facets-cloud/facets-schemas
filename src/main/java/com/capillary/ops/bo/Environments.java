@@ -30,7 +30,7 @@ public enum Environments {
   }
 
   public String getDomain(String appName) {
-    String baseDomain = System.getenv().get(String.format("%s_BASEDOMAIN", this.name()));
+    String baseDomain = System.getenv().get("BASEDOMAIN");
     String deisAppName = generateAppName(appName);
     return deisAppName + "." + baseDomain;
   }
