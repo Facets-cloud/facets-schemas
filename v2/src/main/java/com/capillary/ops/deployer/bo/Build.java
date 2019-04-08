@@ -1,28 +1,26 @@
 package com.capillary.ops.deployer.bo;
 
 import org.springframework.data.annotation.Id;
+import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
+import software.amazon.awssdk.services.codebuild.model.StatusType;
+
+import java.util.List;
 
 public class Build {
 
-    public static enum BuildStatus {
-        RUNNING,
-        COMPLETED,
-        FAILED
-    }
-
     @Id
     private String id;
-    private String applicationName;
+    private String codeBuildId;
+    private String applicationId;
     private String tag;
-    private BuildStatus status;
-    private String logs;
+    private StatusType status;
 
-    public String getApplicationName() {
-        return applicationName;
+    public String getApplicationId() {
+        return applicationId;
     }
 
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getTag() {
@@ -33,11 +31,11 @@ public class Build {
         this.tag = tag;
     }
 
-    public BuildStatus getStatus() {
+    public StatusType getStatus() {
         return status;
     }
 
-    public void setStatus(BuildStatus status) {
+    public void setStatus(StatusType status) {
         this.status = status;
     }
 
@@ -49,11 +47,12 @@ public class Build {
         this.id = id;
     }
 
-    public String getLogs() {
-        return logs;
+    public String getCodeBuildId() {
+        return codeBuildId;
     }
 
-    public void setLogs(String logs) {
-        this.logs = logs;
+    public void setCodeBuildId(String codeBuildId) {
+        this.codeBuildId = codeBuildId;
     }
+
 }

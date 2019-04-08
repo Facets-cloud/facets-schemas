@@ -1,7 +1,8 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.BuildType;
+import com.capillary.ops.deployer.bo.Build;
+import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.service.buildspecs.BuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.MavenBuildSpec;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,9 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
+import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CodeBuildService {
@@ -24,6 +31,9 @@ public class CodeBuildService {
 
     @Autowired
     Environment environment;
+
+    @Autowired
+    private CloudWatchLogsClient cloudWatchLogsClient;
 
     public void createProject(Application application) {
         ProjectSource projectSource = ProjectSource.builder()
@@ -92,5 +102,37 @@ public class CodeBuildService {
             default:
                 throw new NotImplementedException();
         }
+    }
+
+    public String triggerBuild(Application application, Build build) {
+        StartBuildRequest startBuildRequest =
+                StartBuildRequest.builder()
+                        .projectName(application.getName())
+                        .sourceVersion(build.getTag())
+                        .build();
+        StartBuildResponse startBuildResponse = codeBuildClient.startBuild(startBuildRequest);
+        return startBuildResponse.build().id();
+    }
+
+    public List<LogEvent> getBuildLogs(String codeBuildId) {
+        software.amazon.awssdk.services.codebuild.model.Build build = getBuild(codeBuildId);
+        String groupName = build.logs().groupName();
+        String streamName = build.logs().streamName();
+        List<OutputLogEvent> logEvents = cloudWatchLogsClient.getLogEvents(
+                GetLogEventsRequest.builder()
+                        .logGroupName(groupName)
+                        .logStreamName(streamName)
+                        .startFromHead(false)
+                        .build()).events();
+        return logEvents.stream().map(x -> new LogEvent(x.timestamp(), x.message())).collect(Collectors.toList());
+    }
+
+    public software.amazon.awssdk.services.codebuild.model.Build getBuild(String codeBuildId) {
+        BatchGetBuildsResponse batchGetBuildsResponse =
+                codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder().ids(codeBuildId).build());
+        List<software.amazon.awssdk.services.codebuild.model.Build> builds = batchGetBuildsResponse.builds();
+        if (builds.isEmpty()) return null;
+        software.amazon.awssdk.services.codebuild.model.Build build = builds.get(0);
+        return build;
     }
 }
