@@ -42,9 +42,9 @@ spec:
                 name: "{{ $releaseName }}-configs"
                 key: {{ $k }}
 {{- end }}
-    {{- with .Values.nodeSelector }}
+    {{- if .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+        environment: {{ .Values.nodeSelector }}
     {{- end }}
     {{- with .Values.affinity }}
       affinity:
