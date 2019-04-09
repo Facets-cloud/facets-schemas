@@ -75,6 +75,8 @@ public class CodeBuildService {
                         .serviceRole(serviceRole)
                         .timeoutInMinutes(10)
                         .logsConfig(logsConfig)
+                        // TODO
+                        .vpcConfig(VpcConfig.builder().subnets(/* something */).securityGroupIds(/* something */).build())
                         .build();
 
         codeBuildClient.createProject(createProjectRequest);

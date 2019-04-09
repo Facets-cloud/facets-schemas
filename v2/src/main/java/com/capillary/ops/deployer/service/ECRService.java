@@ -6,13 +6,17 @@ import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
 import software.amazon.awssdk.services.ecr.model.CreateRepositoryRequest;
+import software.amazon.awssdk.services.ecr.model.ListImagesRequest;
 import software.amazon.awssdk.services.ecr.model.SetRepositoryPolicyRequest;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ECRService {
@@ -20,12 +24,26 @@ public class ECRService {
     @Autowired
     private EcrClient ecrClient;
 
+    @Autowired
+    private Environment environment;
+
     public void createRepository(Application application) {
         String repositoryName = getRepositoryName(application);
         CreateRepositoryRequest createRepositoryRequest =
                 CreateRepositoryRequest.builder().repositoryName(repositoryName).build();
         ecrClient.createRepository(createRepositoryRequest);
         setEcrPolicy(application);
+    }
+
+    public List<String> listImages(Application application) {
+        String repositoryName = getRepositoryName(application);
+        List<String> images
+                = ecrClient.listImages(ListImagesRequest.builder()
+                .repositoryName(repositoryName).maxResults(1000).build())
+                .imageIds().stream()
+                .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTag())
+                .collect(Collectors.toList());
+        return images;
     }
 
     private String getRepositoryName(Application application) {

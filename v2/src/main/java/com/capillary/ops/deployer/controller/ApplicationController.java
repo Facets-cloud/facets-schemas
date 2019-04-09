@@ -48,6 +48,11 @@ public class ApplicationController {
         return applicationFacade.getBuilds();
     }
 
+    @GetMapping("/applications/{applicationId}/images")
+    public List<String> getImages(@PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getImages(applicationId);
+    }
+
     @PostMapping("/applications/{applicationId}/deployments")
     public Deployment createApplication(@RequestBody Deployment deployment,
                                         @PathVariable("applicationId") String applicationId) {

@@ -87,4 +87,9 @@ public class ApplicationFacade {
         helmService.deploy(application, deployment);
         return deployment;
     }
+
+    public List<String> getImages(String applicationId) {
+        Application application = applicationRepository.findById(applicationId).get();
+        return ecrService.listImages(application);
+    }
 }
