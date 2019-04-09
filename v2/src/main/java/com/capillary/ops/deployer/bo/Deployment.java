@@ -2,19 +2,22 @@ package com.capillary.ops.deployer.bo;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.Map;
+
 public class Deployment {
     @Id
     private String id;
-    private String applicationName;
+    private String applicationId;
     private String image;
     private String environment;
+    private Map<String, String> configurations;
 
-    public String getApplicationName() {
-        return applicationName;
+    public String getApplicationId() {
+        return applicationId;
     }
 
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getImage() {
@@ -39,5 +42,13 @@ public class Deployment {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Map<String, String> getConfigurations() {
+        return configurations;
+    }
+
+    public void setConfigurations(Map<String, String> configurations) {
+        this.configurations = configurations;
     }
 }

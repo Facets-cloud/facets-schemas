@@ -2,9 +2,11 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
+import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
+import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.service.CodeBuildService;
 import com.capillary.ops.deployer.service.ECRService;
 import com.capillary.ops.deployer.service.HelmService;
@@ -14,6 +16,7 @@ import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +35,9 @@ public class ApplicationFacade {
 
     @Autowired
     private HelmService helmService;
+
+    @Autowired
+    private DeploymentRepository deploymentRepository;
 
     public Application createApplication(Application application) {
         applicationRepository.save(application);
@@ -73,5 +79,12 @@ public class ApplicationFacade {
     public List<LogEvent> getBuildLogs(String buildId) {
         Build build = getBuild(buildId);
         return codeBuildService.getBuildLogs(build.getCodeBuildId());
+    }
+
+    public Deployment createDeployment(Deployment deployment) {
+        deploymentRepository.save(deployment);
+        Application application = applicationRepository.findById(deployment.getApplicationId()).get();
+        helmService.deploy(application, deployment);
+        return deployment;
     }
 }

@@ -49,8 +49,10 @@ public class ApplicationController {
     }
 
     @PostMapping("/applications/{applicationId}/deployments")
-    public Deployment createApplication(@RequestBody Deployment deployment) {
-        return null;
+    public Deployment createApplication(@RequestBody Deployment deployment,
+                                        @PathVariable("applicationId") String applicationId) {
+        deployment.setApplicationId(applicationId);
+        return applicationFacade.createDeployment(deployment);
     }
 
 }

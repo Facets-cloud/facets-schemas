@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
+import java.util.Map;
 
 public class Application {
     @Id
