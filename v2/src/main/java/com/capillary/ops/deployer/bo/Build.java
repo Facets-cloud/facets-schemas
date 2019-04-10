@@ -1,10 +1,9 @@
 package com.capillary.ops.deployer.bo;
 
 import org.springframework.data.annotation.Id;
-import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import java.util.List;
+import java.util.Map;
 
 public class Build {
 
@@ -14,6 +13,7 @@ public class Build {
     private String applicationId;
     private String tag;
     private StatusType status;
+    private Map<String, String> environmentVariable;
 
     public String getApplicationId() {
         return applicationId;
@@ -55,4 +55,11 @@ public class Build {
         this.codeBuildId = codeBuildId;
     }
 
+    public Map<String, String> getEnvironmentVariable() {
+        return environmentVariable;
+    }
+
+    public void setEnvironmentVariable(Map<String, String> environmentVariable) {
+        this.environmentVariable = environmentVariable;
+    }
 }
