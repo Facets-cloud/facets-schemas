@@ -55,13 +55,13 @@ public class ECRService {
         SetRepositoryPolicyRequest policyRequest =
                 SetRepositoryPolicyRequest.builder()
                         .repositoryName(getRepositoryName(application))
-                        .policyText(getEcrPolicyForFamily(application.getApplicationFamily()))
+                        .policyText(getPolicy())
                         .build();
 
         ecrClient.setRepositoryPolicy(policyRequest);
     }
 
-    private String getEcrPolicyForFamily(ApplicationFamily applicationFamily) {
+    private String getPolicy() {
         try {
             String template =
                     CharStreams.toString(
