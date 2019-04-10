@@ -41,6 +41,7 @@ public class ECRService {
                 = ecrClient.listImages(ListImagesRequest.builder()
                 .repositoryName(repositoryName).maxResults(1000).build())
                 .imageIds().stream()
+                .filter(x-> x.imageTag() != null)
                 .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTag())
                 .collect(Collectors.toList());
         return images;
