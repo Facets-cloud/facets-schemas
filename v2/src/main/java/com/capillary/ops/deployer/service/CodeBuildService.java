@@ -19,6 +19,8 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,10 +109,24 @@ public class CodeBuildService {
     }
 
     public String triggerBuild(Application application, Build build) {
+
+        List<EnvironmentVariable> environmentVariables = new ArrayList<>();
+        if(build.getEnvironmentVariable() != null) {
+            build.getEnvironmentVariable().entrySet().stream().forEach( x -> {
+                EnvironmentVariable environmentVariable =
+                        EnvironmentVariable.builder()
+                                .name(x.getKey())
+                                .value(x.getValue())
+                                .type(EnvironmentVariableType.PLAINTEXT)
+                                .build();
+                environmentVariables.add(environmentVariable);
+            });
+        }
         StartBuildRequest startBuildRequest =
                 StartBuildRequest.builder()
                         .projectName(application.getName())
                         .sourceVersion(build.getTag())
+                        .environmentVariablesOverride(environmentVariables)
                         .build();
         StartBuildResponse startBuildResponse = codeBuildClient.startBuild(startBuildRequest);
         return startBuildResponse.build().id();
