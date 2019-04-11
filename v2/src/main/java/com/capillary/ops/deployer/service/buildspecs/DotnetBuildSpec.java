@@ -15,24 +15,34 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPostBuildCommands() {
-        throw new NotImplementedException();
+        List<String> postBuildCommands = new ArrayList<>();
+        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        return postBuildCommands;
     }
 
     @Override
     protected List<String> getBuildCommands() {
-        throw new NotImplementedException();
+        List<String> buildCommands = new ArrayList<>();
+        buildCommands.add("dotnet clean");
+        buildCommands.add("dotnet publish");
+        buildCommands.add("docker build -t $APP_NAME:$TAG .");
+        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        return buildCommands;
     }
 
     @Override
     protected List<String> getPreBuildCommands() {
-        throw new NotImplementedException();
-
+        String ECR_REPO = "486456986266.dkr.ecr.us-east-1.amazonaws.com";
+        List<String> preBuildCommands = new ArrayList<>();
+        preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
+        preBuildCommands.add("REPO=" + ECR_REPO);
+        preBuildCommands.add("APP_NAME=" + application.getName());
+        return preBuildCommands;
     }
 
     @Override
     protected List<String> getCachePaths() {
-        throw new NotImplementedException();
-
+        return Arrays.asList("/root/.nuget/NuGet/packages/*");
     }
 
     @Override

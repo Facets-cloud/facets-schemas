@@ -31,7 +31,6 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
         String ECR_REPO = "486456986266.dkr.ecr.us-east-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
-        preBuildCommands.add("echo $TAG");
         preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getName());
         return preBuildCommands;
