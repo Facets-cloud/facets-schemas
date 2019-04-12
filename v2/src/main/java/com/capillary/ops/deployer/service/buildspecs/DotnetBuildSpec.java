@@ -47,6 +47,6 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     public String getBuildEnvironmentImage() {
-        throw new NotImplementedException();
+        return  "486456986266.dkr.ecr.us-east-1.amazonaws.com/dotnetcore:v1.0";
     }
 }

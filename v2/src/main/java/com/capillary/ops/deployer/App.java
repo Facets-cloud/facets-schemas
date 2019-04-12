@@ -72,7 +72,7 @@ public class App {
   public CodeBuildClient codeBuildClient() throws Exception {
     CodeBuildClient codeBuildClient =
         CodeBuildClient.builder()
-            .region(Region.US_EAST_1)
+            .region(Region.US_WEST_1)
             .credentialsProvider(DefaultCredentialsProvider.create())
             .build();
     return codeBuildClient;
@@ -82,7 +82,7 @@ public class App {
   public CloudWatchLogsClient cloudWatchLogsClient() throws Exception {
     CloudWatchLogsClient cloudWatchClient =
         CloudWatchLogsClient.builder()
-            .region(Region.US_EAST_1)
+            .region(Region.US_WEST_1)
             .credentialsProvider(DefaultCredentialsProvider.create())
             .build();
     return cloudWatchClient;
