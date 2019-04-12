@@ -1,13 +1,9 @@
 package com.capillary.ops.deployer.controller;
 
-import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.Build;
-import com.capillary.ops.deployer.bo.Deployment;
-import com.capillary.ops.deployer.bo.LogEvent;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 
 import java.util.List;
 
@@ -17,47 +13,56 @@ public class ApplicationController {
     @Autowired
     private ApplicationFacade applicationFacade;
 
-    @PostMapping("/applications")
-    public Application createApplication(@RequestBody  Application application) {
+    @PostMapping("/{applicationFamily}/applications")
+    public Application createApplication(@RequestBody  Application application,
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+        application.setApplicationFamily(applicationFamily);
         return applicationFacade.createApplication(application);
     }
 
-    @GetMapping("/applications")
-    public List<Application> getApplications() {
-        return applicationFacade.getApplications();
+    @GetMapping("/{applicationFamily}/applications")
+    public List<Application> getApplications(@PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+        return applicationFacade.getApplications(applicationFamily);
     }
 
-    @PostMapping("/applications/{applicationId}/builds")
-    public Build createApplication(@PathVariable("applicationId") String applicationId, @RequestBody Build build) {
+    @PostMapping("/{applicationFamily}/applications/{applicationId}/builds")
+    public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                       @PathVariable("applicationId") String applicationId, @RequestBody Build build) {
         build.setApplicationId(applicationId);
-        return applicationFacade.createBuild(build);
+        return applicationFacade.createBuild(applicationFamily, build);
     }
 
-    @GetMapping("/applications/{applicationId}/builds/{buildId}")
-    public Build getBuild(@PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
-        return applicationFacade.getBuild(buildId);
+    @GetMapping("/{applicationFamily}/applications/{applicationId}/builds/{buildId}")
+    public Build getBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
+        return applicationFacade.getBuild(applicationFamily, applicationId, buildId);
     }
 
-    @GetMapping("/applications/{applicationId}/builds/{buildId}/logs")
-    public List<LogEvent> getBuildLogs(@PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
-        return applicationFacade.getBuildLogs(buildId);
+    @GetMapping("/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs")
+    public List<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                       @PathVariable("applicationId") String applicationId,
+                                       @PathVariable String buildId) {
+        return applicationFacade.getBuildLogs(applicationFamily, applicationId, buildId);
     }
 
-    @GetMapping("/applications/{applicationId}/builds")
-    public List<Build> getBuild(@PathVariable("applicationId") String applicationId) {
-        return applicationFacade.getBuilds();
+    @GetMapping("/{applicationFamily}/applications/{applicationId}/builds")
+    public List<Build> getBuilds(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getBuilds(applicationFamily, applicationId);
     }
 
-    @GetMapping("/applications/{applicationId}/images")
-    public List<String> getImages(@PathVariable("applicationId") String applicationId) {
-        return applicationFacade.getImages(applicationId);
+    @GetMapping("/{applicationFamily}/applications/{applicationId}/images")
+    public List<String> getImages(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                  @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getImages(applicationFamily, applicationId);
     }
 
-    @PostMapping("/applications/{applicationId}/deployments")
-    public Deployment createApplication(@RequestBody Deployment deployment,
+    @PostMapping("/{applicationFamily}/{environment}/applications/{applicationId}/deployments")
+    public Deployment deploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                        @PathVariable("environment") String environment,
+                                        @RequestBody Deployment deployment,
                                         @PathVariable("applicationId") String applicationId) {
         deployment.setApplicationId(applicationId);
-        return applicationFacade.createDeployment(deployment);
+        return applicationFacade.createDeployment(applicationFamily, environment, applicationId, deployment);
     }
-
 }

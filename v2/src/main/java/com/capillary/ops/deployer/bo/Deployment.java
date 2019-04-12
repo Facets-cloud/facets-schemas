@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.bo;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
 import java.util.Map;
 
 public class Deployment {
@@ -11,6 +12,7 @@ public class Deployment {
     private String image;
     private String environment;
     private Map<String, String> configurations;
+    private Date timestamp;
 
     public String getApplicationId() {
         return applicationId;
@@ -50,5 +52,13 @@ public class Deployment {
 
     public void setConfigurations(Map<String, String> configurations) {
         this.configurations = configurations;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 }
