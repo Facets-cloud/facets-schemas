@@ -36,7 +36,7 @@ public class DotnetBuildSpec extends BuildSpec {
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
         preBuildCommands.add("REPO=" + ECR_REPO);
-        preBuildCommands.add("APP_NAME=" + application.getName());
+        preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name() + "/" + application.getName());
         return preBuildCommands;
     }
 
