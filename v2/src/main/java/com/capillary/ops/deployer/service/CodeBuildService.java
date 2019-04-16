@@ -4,6 +4,7 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.service.buildspecs.BuildSpec;
+import com.capillary.ops.deployer.service.buildspecs.DotnetBuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.MavenBuildSpec;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -67,6 +68,11 @@ public class CodeBuildService {
                                 .build())
                 .s3Logs(S3LogsConfig.builder().status(LogsConfigStatusType.DISABLED).build())
                 .build();
+        VpcConfig vpcConfig = VpcConfig.builder()
+                .subnets(environment.getProperty("codebuild.subnet"))
+                .securityGroupIds(environment.getProperty("codebuild.securityGroup"))
+                .vpcId(environment.getProperty("codebuild.vpcId"))
+                .build();
         CreateProjectRequest createProjectRequest =
                 CreateProjectRequest.builder()
                         .name(application.getName())
@@ -77,8 +83,7 @@ public class CodeBuildService {
                         .serviceRole(serviceRole)
                         .timeoutInMinutes(10)
                         .logsConfig(logsConfig)
-                        // TODO
-                        .vpcConfig(VpcConfig.builder().subnets(environment.getProperty("codebuild.subnet")).securityGroupIds(environment.getProperty("codebuild.securityGroup")).build())
+                        .vpcConfig(vpcConfig)
                         .build();
 
         codeBuildClient.createProject(createProjectRequest);
@@ -103,6 +108,8 @@ public class CodeBuildService {
                 return new MavenBuildSpec(application);
             case FREESTYLE_DOCKER:
                 return null;
+            case DOTNET_CORE:
+                return new DotnetBuildSpec(application);
             default:
                 throw new NotImplementedException();
         }

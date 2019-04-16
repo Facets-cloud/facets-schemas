@@ -33,6 +33,6 @@ public class MavenBuildSpec extends BuildSpec {
 
     @Override
     public String getBuildEnvironmentImage() {
-        return "486456986266.dkr.ecr.us-east-1.amazonaws.com/mavendocker:v1.4";
+        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/mavendocker:v1.4";
     }
 }

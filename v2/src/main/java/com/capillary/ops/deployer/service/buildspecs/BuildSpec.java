@@ -43,7 +43,7 @@ public abstract class BuildSpec {
     private Map<String, Object> getBuildPhase() {
         List<String> buildCommands = new ArrayList<>();
         Map<String, Object> buildPhase = new HashMap<>();
-        buildCommands.add("$(aws ecr get-login --region us-east-1 --no-include-email)");
+        buildCommands.add("$(aws ecr get-login --region us-west-1 --no-include-email)");
         buildCommands.add(String.format("cd %s", application.getApplicationRootDirectory()));
         buildCommands.addAll(getBuildCommands());
         buildPhase.put("commands", buildCommands);

@@ -28,7 +28,7 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommands() {
-        String ECR_REPO = "486456986266.dkr.ecr.us-east-1.amazonaws.com";
+        String ECR_REPO = "486456986266.dkr.ecr.us-west-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
         preBuildCommands.add("REPO=" + ECR_REPO);
@@ -43,6 +43,6 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     public String getBuildEnvironmentImage() {
-        return "486456986266.dkr.ecr.us-east-1.amazonaws.com/mavendocker:v1.4";
+        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/mavendocker:v1.4";
     }
 }

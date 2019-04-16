@@ -63,6 +63,6 @@ public class App {
 
   @Bean
   public EcrClient getEcrClient() {
-    return EcrClient.builder().region(Region.US_EAST_1).build();
+    return EcrClient.builder().region(Region.US_WEST_1).build();
   }
 }
