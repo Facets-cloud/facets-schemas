@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y wget python-pip
-RUN pip install awscli --upgrade --user
+RUN pip install awscli --upgrade
 RUN wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
 RUN dpkg -i packages-microsoft-prod.deb
 RUN apt-get -y install apt-transport-https
