@@ -19,7 +19,7 @@ Deployment
 
 Pods
 ----
-For every pod list down the following details:
+
  - Labels
  - Stauts
  - Namespace
