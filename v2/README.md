@@ -19,7 +19,6 @@ Deployment
 
 Pods
 ----
-
  - Labels
  - Stauts
  - Namespace
@@ -30,7 +29,7 @@ Pods
 Status API
 ----------
 
-Request Url: [/{applicationFamily}/{environment}/applications/applicationId/stauts?namespace=default](Status)
+Request Url: [/{applicationFamily}/{environment}/applications/applicationId/stauts?applicationFamily=CRM&environment=NIGHTLY&applicationId=123](Status)
 
 Response:
 ```json
@@ -69,7 +68,7 @@ Response:
     },
     "creationTimestamp": "2019-04-16T09:06:28Z"
   },
-  "pods": [
+  "pods": {
     "lumpy-gopher-mongodb-6dc4648d97-plc28": {
       "labels": {
         "app": "mongodb",
@@ -84,6 +83,6 @@ Response:
       "imageID": "docker-pullable://bitnami/mongodb@sha256:f06a3c8adf3cf4ea2a4205763262b4584a13abca6bd230fb3b0d2a1de4a015fe",
       "creationTimestamp": "2019-04-16T09:06:28Z"
     }
-  ]
+  }
 }
 ```
