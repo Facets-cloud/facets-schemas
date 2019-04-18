@@ -10,24 +10,21 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
-  //@Autowired
+  @Autowired
   private UserAuthorizationService userAuthorizationService;
 
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.inMemoryAuthentication()
-            .passwordEncoder(
-                    org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance())
-            .withUser(System.getenv().get("APP_USER"))
-            .password(System.getenv().get("APP_PASSWORD"))
-            .roles("ADMIN");
+    auth.userDetailsService(userAuthorizationService);
   }
 
   protected void configure(HttpSecurity http) throws Exception {
     http.httpBasic()
             .and()
             .authorizeRequests()
-            .antMatchers("/**")
-            .hasRole("ADMIN")
+            .anyRequest()
+            .authenticated()
+            .anyRequest()
+            .hasRole("ADMIN2")
             .and()
             .csrf()
             .disable()
