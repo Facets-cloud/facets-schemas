@@ -46,6 +46,10 @@ public class HelmService {
         }
     }
 
+    public String getReleaseName(Application application, String environment) {
+        return application.getApplicationFamily().getEnvironment(environment).getName() + "-" + application.getName();
+    }
+
     private void install(Application application, Deployment deployment) throws Exception {
         DirectoryChartLoader chartLoader = new DirectoryChartLoader();
         Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));

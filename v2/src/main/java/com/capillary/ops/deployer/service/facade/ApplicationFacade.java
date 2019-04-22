@@ -7,6 +7,7 @@ import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.service.CodeBuildService;
 import com.capillary.ops.deployer.service.ECRService;
 import com.capillary.ops.deployer.service.HelmService;
+import com.capillary.ops.deployer.service.KubectlService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
@@ -34,6 +35,9 @@ public class ApplicationFacade {
 
     @Autowired
     private DeploymentRepository deploymentRepository;
+
+    @Autowired
+    private KubectlService kubectlService;
 
     public Application createApplication(Application application) {
         applicationRepository.save(application);
@@ -93,6 +97,16 @@ public class ApplicationFacade {
         deploymentRepository.save(deployment);
         helmService.deploy(application, deployment);
         return deployment;
+    }
+
+    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environment, String applicationId) {
+        Optional<Application> existingApplication = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId);
+        if (!existingApplication.isPresent()) {
+            throw new RuntimeException("application with id: " + applicationId + "does not exist in family: " + applicationFamily);
+        }
+
+        Application application = existingApplication.get();
+        return kubectlService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
     }
 
     public List<String> getImages(ApplicationFamily applicationFamily, String applicationId) {

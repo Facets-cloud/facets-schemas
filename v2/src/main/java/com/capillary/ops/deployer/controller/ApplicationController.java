@@ -95,4 +95,11 @@ public class ApplicationController {
     public List<User> getUsers() {
         return userFacade.getAllUsers();
     }
+
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/deployments/status")
+    public DeploymentStatusDetails getDeploymentStatus(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                      @PathVariable("environment") String environment,
+                                      @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
+    }
 }
