@@ -26,7 +26,8 @@ public class UserAuthorizationService implements UserDetailsService {
         User.UserBuilder userBuilder = User.withDefaultPasswordEncoder();
 
         if(username.equalsIgnoreCase(appAdminUser)) {
-            return userBuilder.username(appAdminUser).password(appAdminPassword).roles("ADMIN").build();
+            return userBuilder.username(appAdminUser).password(appAdminPassword)
+                    .roles("ADMIN", "BUILDERS", "DEPLOYERS").build();
         }
 
         try {

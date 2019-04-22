@@ -24,7 +24,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .anyRequest()
             .authenticated()
             .anyRequest()
-            .hasRole("ADMIN2")
+            .hasRole("ADMIN")
             .and()
             .csrf()
             .disable()
