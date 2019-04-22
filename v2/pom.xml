@@ -90,5 +90,47 @@
             <version>2.5.22</version>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>docker-cibuild</id>
+            <activation>
+                <property>
+                    <name>env.ENV_BUILD</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.27.1</version>
 
+                        <configuration>
+                            <pushRegistry>486456986266.dkr.ecr.us-west-1.amazonaws.com</pushRegistry>
+                            <images>
+                                <image>
+                                    <name>capillary/${project.artifactId}:${project.version}-${maven.build.timestamp}</name>
+                                    <build>
+                                        <dockerFileDir>${basedir}</dockerFileDir>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>docker:build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                    <goal>push</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
