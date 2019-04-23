@@ -4,41 +4,41 @@ import java.util.List;
 
 public class DeploymentStatusDetails {
 
-    private ServiceCheckDetails service;
+    private ApplicationServiceDetails service;
 
-    private DeploymentCheckDetails deplyment;
+    private ApplicationDeploymentDetails deplyment;
 
-    private List<PodCheckDetails> pods;
+    private List<ApplicationPodDetails> pods;
 
     public DeploymentStatusDetails() {}
 
-    public DeploymentStatusDetails(ServiceCheckDetails service, DeploymentCheckDetails deplyment, List<PodCheckDetails> pods) {
+    public DeploymentStatusDetails(ApplicationServiceDetails service, ApplicationDeploymentDetails deplyment, List<ApplicationPodDetails> pods) {
         this.service = service;
         this.deplyment = deplyment;
         this.pods = pods;
     }
 
-    public ServiceCheckDetails getService() {
+    public ApplicationServiceDetails getService() {
         return service;
     }
 
-    public void setService(ServiceCheckDetails service) {
+    public void setService(ApplicationServiceDetails service) {
         this.service = service;
     }
 
-    public DeploymentCheckDetails getDeplyment() {
+    public ApplicationDeploymentDetails getDeplyment() {
         return deplyment;
     }
 
-    public void setDeplyment(DeploymentCheckDetails deplyment) {
+    public void setDeplyment(ApplicationDeploymentDetails deplyment) {
         this.deplyment = deplyment;
     }
 
-    public List<PodCheckDetails> getPods() {
+    public List<ApplicationPodDetails> getPods() {
         return pods;
     }
 
-    public void setPods(List<PodCheckDetails> pods) {
+    public void setPods(List<ApplicationPodDetails> pods) {
         this.pods = pods;
     }
 }

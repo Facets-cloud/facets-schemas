@@ -3,7 +3,18 @@ package com.capillary.ops.deployer.bo;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PodCheckDetails {
+public class ApplicationPodDetails {
+
+    public ApplicationPodDetails() {}
+
+    public ApplicationPodDetails(String name, Map<String, String> labels, String podStauts, String image, String imageID, String creationTimestamp) {
+        this.name = name;
+        this.labels = labels;
+        this.podStauts = podStauts;
+        this.image = image;
+        this.imageID = imageID;
+        this.creationTimestamp = creationTimestamp;
+    }
 
     private String name;
 

@@ -100,12 +100,7 @@ public class ApplicationFacade {
     }
 
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environment, String applicationId) {
-        Optional<Application> existingApplication = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId);
-        if (!existingApplication.isPresent()) {
-            throw new RuntimeException("application with id: " + applicationId + "does not exist in family: " + applicationFamily);
-        }
-
-        Application application = existingApplication.get();
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         return kubectlService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
     }
 

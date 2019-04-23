@@ -7,7 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceCheckDetails {
+public class ApplicationServiceDetails {
+
+    public ApplicationServiceDetails() {}
+
+    public ApplicationServiceDetails(String name, ServiceType serviceType, List<PortMapping> internalEndpoints, List<PortMapping> externalEndpoints, Map<String, String> labels, Map<String, String> selectors, String creationTimestamp) {
+        this.name = name;
+        this.serviceType = serviceType;
+        this.internalEndpoints = internalEndpoints;
+        this.externalEndpoints = externalEndpoints;
+        this.labels = labels;
+        this.selectors = selectors;
+        this.creationTimestamp = creationTimestamp;
+    }
 
     public enum ServiceType {
         ClusterIP,
@@ -26,6 +38,22 @@ public class ServiceCheckDetails {
         String protocol;
 
         String endpoint;
+
+        public String getProtocol() {
+            return protocol;
+        }
+
+        public void setProtocol(String protocol) {
+            this.protocol = protocol;
+        }
+
+        public String getEndpoint() {
+            return endpoint;
+        }
+
+        public void setEndpoint(String endpoint) {
+            this.endpoint = endpoint;
+        }
     }
 
     private String name;

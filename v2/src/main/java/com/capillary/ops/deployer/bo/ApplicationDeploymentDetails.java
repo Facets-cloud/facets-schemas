@@ -3,11 +3,20 @@ package com.capillary.ops.deployer.bo;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeploymentCheckDetails {
+public class ApplicationDeploymentDetails {
+
+    public ApplicationDeploymentDetails() {}
+
+    public ApplicationDeploymentDetails(String name, PodReplicationDetails replicas, Map<String, String> labels, String creationTimestamp) {
+        this.name = name;
+        this.replicas = replicas;
+        this.labels = labels;
+        this.creationTimestamp = creationTimestamp;
+    }
 
     private String name;
 
-    private Map<String, Integer> replicas = new HashMap<>();
+    private PodReplicationDetails replicas;
 
     private Map<String, String> labels = new HashMap<>();
 
@@ -21,11 +30,11 @@ public class DeploymentCheckDetails {
         this.name = name;
     }
 
-    public Map<String, Integer> getReplicas() {
+    public PodReplicationDetails getReplicas() {
         return replicas;
     }
 
-    public void setReplicas(Map<String, Integer> replicas) {
+    public void setReplicas(PodReplicationDetails replicas) {
         this.replicas = replicas;
     }
 
