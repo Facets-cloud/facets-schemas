@@ -80,8 +80,6 @@ public class HelmService {
     private String getValuesYaml(Application application, Deployment deployment) {
         final Map<String, Object> yaml = new LinkedHashMap<>();
         yaml.put("image", deployment.getImage());
-        yaml.put("podCPULimit",deployment.getPodSize().getCpu());
-        yaml.put("podMemoryLimit",deployment.getPodSize().getMemory());
         String nodeGroup = application.getApplicationFamily().getEnvironment(deployment.getEnvironment()).getNodeGroup();
         if(!nodeGroup.isEmpty()) {
             yaml.put("nodeSelector", nodeGroup);

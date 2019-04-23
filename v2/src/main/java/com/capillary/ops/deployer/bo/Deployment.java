@@ -13,7 +13,6 @@ public class Deployment {
     private String environment;
     private Map<String, String> configurations;
     private Date timestamp;
-    private PodSize podSize;
 
     public String getApplicationId() {
         return applicationId;
@@ -61,13 +60,5 @@ public class Deployment {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public PodSize getPodSize() {
-        return podSize;
-    }
-
-    public void setPodSize(PodSize podSize) {
-        this.podSize = podSize;
     }
 }

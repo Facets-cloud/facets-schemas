@@ -32,16 +32,8 @@ spec:
               protocol: TCP
               {{- end }}
               {{- end }}
-{{- if or .Values.podCPULimit .Values.podMemoryLimit }}
           resources:
-            limits:
-            {{- if .Values.podCPULimit }}
-              cpu: {{ .Values.podCPULimit }}
-            {{- end}}
-            {{- if .Values.podMemoryLimit }}
-              memory: {{ .Values.podMemoryLimit }}Gi
-            {{- end}}
-{{- end }}
+{{ toYaml .Values.resources | indent 12 }}
           env:
 {{- range $k, $v := .Values.configurations }}
           - name: {{ $k }}
