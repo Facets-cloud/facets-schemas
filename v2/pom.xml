@@ -8,6 +8,17 @@
     <artifactId>deployer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>oss-sonatype</id>
+            <name>oss-sonatype</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -60,7 +71,7 @@
         <dependency>
             <groupId>org.microbean</groupId>
             <artifactId>microbean-helm</artifactId>
-            <version>2.8.2.1.1.0</version>
+            <version>2.12.3.0.0.1-SNAPSHOT</version>
             <type>jar</type>
             <exclusions>
                 <exclusion>
