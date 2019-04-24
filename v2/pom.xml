@@ -118,7 +118,7 @@
                             <pushRegistry>486456986266.dkr.ecr.us-west-1.amazonaws.com</pushRegistry>
                             <images>
                                 <image>
-                                    <name>capillary/${project.artifactId}:${project.version}-${maven.build.timestamp}</name>
+                                    <name>ops/${project.artifactId}:${project.version}-${maven.build.timestamp}</name>
                                     <build>
                                         <dockerFileDir>${basedir}</dockerFileDir>
                                     </build>
