@@ -57,7 +57,7 @@ public class HelmService {
         final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
         requestBuilder.setName(releaseName); // Set the Helm release name
-        requestBuilder.setWait(true); // Wait for Pods to be ready
+        requestBuilder.setWait(false); // Wait for Pods to be ready
         requestBuilder.getValuesBuilder().setRaw(valuesYaml);
         final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chart);
         final Release release = releaseFuture.get().getRelease();
