@@ -12,7 +12,8 @@ import java.util.Map;
 public enum ApplicationFamily {
     CRM,
     ECOMMERCE,
-    INTEGRATIONS;
+    INTEGRATIONS,
+    OPS;
 
     public Environment getEnvironment(String environmentName) {
         Gson gson = new Gson();
