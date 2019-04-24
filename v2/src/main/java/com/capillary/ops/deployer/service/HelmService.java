@@ -36,8 +36,10 @@ public class HelmService {
 
         try {
             if (listReleasesResponseIterator.hasNext() && listReleasesResponseIterator.next().getReleasesCount() > 0) {
+                releaseManager.close();
                 upgrade(application, deployment);
             } else {
+                releaseManager.close();
                 install(application, deployment);
             }
         } catch (Exception e) {
@@ -59,6 +61,7 @@ public class HelmService {
         requestBuilder.getValuesBuilder().setRaw(valuesYaml);
         final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chart);
         final Release release = releaseFuture.get().getRelease();
+        releaseManager.close();
     }
 
     private void upgrade(Application application, Deployment deployment) throws Exception {
@@ -75,6 +78,7 @@ public class HelmService {
         requestBuilder.getValuesBuilder().setRaw(valuesYaml);
         final Future<UpdateReleaseResponse> releaseFuture = releaseManager.update(requestBuilder, chart);
         final Release release = releaseFuture.get().getRelease();
+        releaseManager.close();
     }
 
     private String getValuesYaml(Application application, Deployment deployment) {
