@@ -74,7 +74,7 @@ public class HelmService {
         final UpdateReleaseRequest.Builder requestBuilder = UpdateReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
         requestBuilder.setName(releaseName); // Set the Helm release name
-        requestBuilder.setWait(true); // Wait for Pods to be ready
+        requestBuilder.setWait(false); // Wait for Pods to be ready
         requestBuilder.getValuesBuilder().setRaw(valuesYaml);
         final Future<UpdateReleaseResponse> releaseFuture = releaseManager.update(requestBuilder, chart);
         final Release release = releaseFuture.get().getRelease();
