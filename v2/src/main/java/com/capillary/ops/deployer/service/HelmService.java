@@ -111,6 +111,8 @@ public class HelmService {
                         .withMasterUrl(environment.getKubernetesApiEndpoint())
                         .withOauthToken(environment.getKubernetesToken())
                         .withTrustCerts(true)
+                        .withWebsocketTimeout(60*1000)
+                        .withConnectionTimeout(30*1000)
                         .build());
         try {
             ReleaseManager releaseManager = new ReleaseManager(new Tiller(kubernetesClient));
