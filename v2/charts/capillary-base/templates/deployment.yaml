@@ -1,4 +1,5 @@
 {{- $releaseName := .Release.Name}}
+{{- $crmModuleName := .Values.crmModuleName}}
 
   apiVersion: apps/v1beta2
 kind: Deployment
@@ -20,6 +21,9 @@ spec:
         app: {{ .Release.Name }}
         release: {{ .Release.Name }}
     spec:
+{{- if .Values.crmModuleName}}
+{{- template "crmConfigVolumes" . }}
+{{- end }}
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
@@ -42,6 +46,9 @@ spec:
               memory: {{ .Values.podMemoryLimit }}Gi
             {{- end}}
 {{- end }}
+{{- if .Values.crmModuleName}}
+{{- template "crmConfigVolumesMounts" . }}
+{{- end }}
           env:
 {{- range $k, $v := .Values.configurations }}
           - name: {{ $k }}
@@ -50,6 +57,7 @@ spec:
                 name: "{{ $releaseName }}-configs"
                 key: {{ $k }}
 {{- end }}
+{{- template "crmConfigurations" . }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
         environment: {{ .Values.nodeSelector }}

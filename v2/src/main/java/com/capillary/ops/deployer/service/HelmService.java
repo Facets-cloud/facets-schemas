@@ -1,9 +1,7 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.Deployment;
-import com.capillary.ops.deployer.bo.Environment;
-import com.capillary.ops.deployer.bo.Port;
+import com.capillary.ops.deployer.bo.*;
+import com.google.gson.Gson;
 import hapi.chart.ChartOuterClass;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.release.ReleaseOuterClass;
@@ -18,7 +16,8 @@ import org.microbean.helm.chart.DirectoryChartLoader;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -94,8 +93,19 @@ public class HelmService {
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
         yaml.put("configurations", deployment.getConfigurations());
+        yaml.entrySet().addAll(getFamilySpecificAttributes(application).entrySet());
         final String yamlString = new Yaml().dump(yaml);
         return yamlString;
+    }
+
+    private Map<String, Object> getFamilySpecificAttributes(Application application) {
+        Map<String, Object> valueFields = new HashMap<>();
+        switch (application.getApplicationFamily()) {
+            case CRM:
+                valueFields.put("crmModuleName", application.getCrmModuleName());
+                valueFields.put("crmConfigurations", getCRMConfigsFromModule(application.getCrmModuleName()));
+        }
+        return valueFields;
     }
 
     private Map<String, Object> getPortMap(Port port) {
@@ -105,6 +115,7 @@ public class HelmService {
         out.put("lbPort", port.getLbPort());
         return out;
     }
+
     private ReleaseManager getReleaseManager(Environment environment) {
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
                 new ConfigBuilder()
@@ -121,6 +132,29 @@ public class HelmService {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<String> getCRMConfigsFromModule(String crmModuleName) {
+        HashMap<String, List<String>> moduleDependencyList = new HashMap<>();
+        Gson gson = new Gson();
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader("/etc/deployer/conf/sd-auth-conf.json"));
+        } catch (Exception ex) {
+            return Collections.emptyList();
+        }
+        Map<String, Object> jsonObject = (Map) gson.fromJson(br, Object.class);
+        for (Object service : jsonObject.keySet()) {
+            for (Object module : ((Map) jsonObject.get(service)).keySet()) {
+                List<String> serviceList = new ArrayList<>();
+                if (moduleDependencyList.get(module.toString()) != null) {
+                    serviceList = moduleDependencyList.get(module.toString());
+                }
+                serviceList.add(service.toString());
+                moduleDependencyList.put(module.toString(), serviceList);
+            }
+        }
+        return moduleDependencyList.get(crmModuleName);
     }
 
 }
