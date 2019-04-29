@@ -96,7 +96,7 @@ public class ApplicationController {
         return userFacade.getAllUsers();
     }
 
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/deployments/status")
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus")
     public DeploymentStatusDetails getDeploymentStatus(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                       @PathVariable("environment") String environment,
                                       @PathVariable("applicationId") String applicationId) {

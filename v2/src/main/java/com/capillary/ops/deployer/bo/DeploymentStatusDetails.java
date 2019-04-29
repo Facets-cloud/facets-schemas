@@ -6,15 +6,15 @@ public class DeploymentStatusDetails {
 
     private ApplicationServiceDetails service;
 
-    private ApplicationDeploymentDetails deplyment;
+    private ApplicationDeploymentDetails deployment;
 
     private List<ApplicationPodDetails> pods;
 
     public DeploymentStatusDetails() {}
 
-    public DeploymentStatusDetails(ApplicationServiceDetails service, ApplicationDeploymentDetails deplyment, List<ApplicationPodDetails> pods) {
+    public DeploymentStatusDetails(ApplicationServiceDetails service, ApplicationDeploymentDetails deployment, List<ApplicationPodDetails> pods) {
         this.service = service;
-        this.deplyment = deplyment;
+        this.deployment = deployment;
         this.pods = pods;
     }
 
@@ -26,12 +26,12 @@ public class DeploymentStatusDetails {
         this.service = service;
     }
 
-    public ApplicationDeploymentDetails getDeplyment() {
-        return deplyment;
+    public ApplicationDeploymentDetails getDeployment() {
+        return deployment;
     }
 
-    public void setDeplyment(ApplicationDeploymentDetails deplyment) {
-        this.deplyment = deplyment;
+    public void setDeployment(ApplicationDeploymentDetails deployment) {
+        this.deployment = deployment;
     }
 
     public List<ApplicationPodDetails> getPods() {
