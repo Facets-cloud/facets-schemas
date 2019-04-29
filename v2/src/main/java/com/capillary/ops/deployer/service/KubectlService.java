@@ -19,8 +19,7 @@ public class KubectlService {
 
     private static final String NAMESPACE = "default";
 
-    public DeploymentStatusDetails getDeploymentStatus(Application application, String environmentName, String deploymentName) {
-        Environment environment = application.getApplicationFamily().getEnvironment(environmentName);
+    public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
 
         ApplicationServiceDetails applicationServiceDetails = getServiceCheckDetails(deploymentName, kubernetesClient);

@@ -29,7 +29,7 @@ public class HelmService {
     public void deploy(Application application, Deployment deployment) {
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
-        String releaseName = environment.getName() + "-" + application.getName();
+        String releaseName = getReleaseName(application, environment);
         Iterator<ListReleasesResponse> listReleasesResponseIterator =
                 releaseManager.list(ListReleasesRequest.newBuilder().setFilter("^" + releaseName + "$").build());
 
@@ -46,8 +46,10 @@ public class HelmService {
         }
     }
 
-    public String getReleaseName(Application application, String environment) {
-        return application.getApplicationFamily().getEnvironment(environment).getName() + "-" + application.getName();
+    public String getReleaseName(Application application, Environment environment) {
+        return environment.getNodeGroup().isEmpty() ?
+                application.getName() :
+                environment.getNodeGroup() + "-" + application.getName();
     }
 
     private void install(Application application, Deployment deployment) throws Exception {

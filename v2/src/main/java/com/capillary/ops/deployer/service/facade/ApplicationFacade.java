@@ -99,8 +99,9 @@ public class ApplicationFacade {
         return deployment;
     }
 
-    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environment, String applicationId) {
+    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = applicationFamily.getEnvironment(environmentName);
         return kubectlService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
     }
 
