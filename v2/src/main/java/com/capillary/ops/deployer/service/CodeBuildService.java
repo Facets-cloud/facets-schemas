@@ -82,7 +82,7 @@ public class CodeBuildService {
                         .artifacts(ProjectArtifacts.builder().type(ArtifactsType.NO_ARTIFACTS).build())
                         .cache(projectCache)
                         .serviceRole(serviceRole)
-                        .timeoutInMinutes(10)
+                        .timeoutInMinutes(60)
                         .logsConfig(logsConfig)
                         .vpcConfig(vpcConfig)
                         .build();
