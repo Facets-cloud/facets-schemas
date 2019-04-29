@@ -1,0 +1,53 @@
+{{- $releaseName := .Release.Name}}
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: scheduled-s3-uploader
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: scheduled_s3_uploader
+spec:
+  selector:
+    matchLabels:
+      app: scheduled_s3_uploader
+  template:
+    metadata:
+      labels:
+        app: scheduled_s3_uploader
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: scheduled-s3-uploader
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: DUMP_DIR
+          value: "{{ .Values.dumpDirMountPath }}"
+        - name: CLUSTER
+          value: "{{ .Values.cluster }}"
+{{- range $k, $v := .Values.configurations }}
+        - name: {{ $k }}
+          valueFrom:
+            secretKeyRef:
+              name: "{{ $releaseName }}-configs"
+              key: {{ $k }}
+{{- end }}
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+        volumeMounts:
+        - mountPath: {{ .Values.dumpDirMountPath }}
+          name: k8s-dump
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: k8s-dump
+          hostPath:
+            path: {{ .Values.dumpDirHostPath }}
+            type: Directory
