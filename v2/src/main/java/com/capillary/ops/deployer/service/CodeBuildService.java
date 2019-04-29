@@ -5,6 +5,7 @@ import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.service.buildspecs.BuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.DotnetBuildSpec;
+import com.capillary.ops.deployer.service.buildspecs.FreestyleDockerBuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.MavenBuildSpec;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -107,7 +108,7 @@ public class CodeBuildService {
             case MVN:
                 return new MavenBuildSpec(application);
             case FREESTYLE_DOCKER:
-                return null;
+                return new FreestyleDockerBuildSpec(application);
             case DOTNET_CORE:
                 return new DotnetBuildSpec(application);
             default:
