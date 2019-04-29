@@ -27,8 +27,6 @@ public class Application {
 
     private ApplicationFamily applicationFamily;
 
-    private String crmModuleName;
-
     public String getId() {
         return id;
     }
@@ -101,11 +99,4 @@ public class Application {
         this.applicationFamily = applicationFamily;
     }
 
-    public String getCrmModuleName() {
-        return crmModuleName;
-    }
-
-    public void setCrmModuleName(String crmModuleName) {
-        this.crmModuleName = crmModuleName;
-    }
 }

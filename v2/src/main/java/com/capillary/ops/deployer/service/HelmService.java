@@ -93,17 +93,19 @@ public class HelmService {
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
         yaml.put("configurations", deployment.getConfigurations());
-        yaml.entrySet().addAll(getFamilySpecificAttributes(application).entrySet());
+        yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
         final String yamlString = new Yaml().dump(yaml);
         return yamlString;
     }
 
-    private Map<String, Object> getFamilySpecificAttributes(Application application) {
+    private Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {
         Map<String, Object> valueFields = new HashMap<>();
         switch (application.getApplicationFamily()) {
             case CRM:
-                valueFields.put("crmModuleName", application.getCrmModuleName());
-                valueFields.put("crmConfigurations", getCRMConfigsFromModule(application.getCrmModuleName()));
+                if(deployment.getConfigurations().containsKey("crmModuleName")) {
+                    String crmModuleName = deployment.getConfigurations().get("crmModuleName");
+                    valueFields.put("crmConfigurations", getCRMConfigsFromModule(crmModuleName));
+                }
         }
         return valueFields;
     }
