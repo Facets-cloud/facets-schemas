@@ -58,7 +58,7 @@ public class HelmService {
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = getValuesYaml(application, deployment);
-        String releaseName = environment.getName() + "-" + application.getName();
+        String releaseName = getReleaseName(application, environment);
         final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
         requestBuilder.setName(releaseName); // Set the Helm release name
@@ -75,7 +75,7 @@ public class HelmService {
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = getValuesYaml(application, deployment);
-        String releaseName = environment.getName() + "-" + application.getName();
+        String releaseName = getReleaseName(application, environment);
         final UpdateReleaseRequest.Builder requestBuilder = UpdateReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
         requestBuilder.setName(releaseName); // Set the Helm release name
