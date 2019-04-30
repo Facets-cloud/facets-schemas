@@ -4,16 +4,12 @@ import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
-import com.capillary.ops.deployer.service.CodeBuildService;
-import com.capillary.ops.deployer.service.ECRService;
-import com.capillary.ops.deployer.service.HelmService;
-import com.capillary.ops.deployer.service.KubectlService;
+import com.capillary.ops.deployer.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +34,9 @@ public class ApplicationFacade {
 
     @Autowired
     private KubectlService kubectlService;
+
+    @Autowired
+    private S3DumpService s3DumpService;
 
     public Application createApplication(Application application) {
         applicationRepository.save(application);
@@ -108,5 +107,13 @@ public class ApplicationFacade {
     public List<String> getImages(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         return ecrService.listImages(application);
+    }
+
+    public byte[] downloadDumpFileFromS3(String applicationName, String environment, String path) {
+        return s3DumpService.downloadObject(path);
+    }
+
+    public List<String> listDumpFilesFromS3(String environment, String applicationName, String date) {
+        return s3DumpService.listObjects(environment, applicationName, date);
     }
 }

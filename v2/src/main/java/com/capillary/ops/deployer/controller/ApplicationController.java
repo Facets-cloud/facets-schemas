@@ -3,13 +3,21 @@ package com.capillary.ops.deployer.controller;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import java.util.Arrays;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 @RestController
@@ -20,6 +28,8 @@ public class ApplicationController {
 
     @Autowired
     private UserFacade userFacade;
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     @RolesAllowed("ADMIN")
     @PostMapping("/{applicationFamily}/applications")
@@ -101,5 +111,59 @@ public class ApplicationController {
                                       @PathVariable("environment") String environment,
                                       @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
+    }
+
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/logs")
+    public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                   @PathVariable("environment") String environment,
+                                                   @PathVariable String applicationName,
+                                                   @RequestParam(required = false) String date) {
+        if (date != null && !isDateValid(date)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(environment, applicationName, getDateForDump(date)), HttpStatus.OK);
+    }
+
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/logs/download")
+    public ResponseEntity<byte[]> downloadDumpFile(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                   @PathVariable("environment") String environment,
+                                                   @RequestParam("path") String path,
+                                                   @PathVariable String applicationName) {
+        String fileName = String.join("_", path.split("/"));
+        byte[] dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(environment, applicationName, path);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentLength(dumpFileFromS3.length);
+        headers.setContentDispositionFormData("attachment", fileName);
+
+        return new ResponseEntity<>(dumpFileFromS3, headers, HttpStatus.OK);
+    }
+
+    private String getDateForDump(String date) {
+        if (date != null) {
+            return date;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(Calendar.getInstance().getTime());
+    }
+
+    private boolean isDateValid(@RequestParam(required = false) String date) {
+        if (date == null) {
+            return false;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(date);
+        } catch (ParseException e) {
+            logger.error("error parsing the date in yyyy-MM-dd format", e);
+            return false;
+        }
+
+        return true;
     }
 }

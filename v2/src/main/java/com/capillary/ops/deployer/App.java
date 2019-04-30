@@ -15,6 +15,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.ecr.EcrClient;
+import software.amazon.awssdk.services.s3.S3Client;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -64,5 +65,10 @@ public class App {
   @Bean
   public EcrClient getEcrClient() {
     return EcrClient.builder().region(Region.US_WEST_1).build();
+  }
+
+  @Bean
+  public S3Client getS3Clinet() {
+    return S3Client.builder().region(Region.AP_SOUTHEAST_1).build();
   }
 }
