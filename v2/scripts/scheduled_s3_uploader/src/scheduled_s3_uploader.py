@@ -25,14 +25,14 @@ s3_client = boto3.client('s3')
 
 
 def get_current_hour_folder():
-    now = dt.datetime.now()
-    return "{}-{}-{}H{}".format(now.year, now.month, now.day, now.hour)
+    today = dt.datetime.today().strftime('%Y-%m-%d')
+    return today.strftime("%Y-%m-%dH%H")
 
 
 def file_age_in_minutes(pathname):
-    '''
+    """
     Return the age of file to the nearest minute
-    '''
+    """
     age_seconds = time.time() - os.stat(pathname)[stat.ST_MTIME]
     return round(age_seconds / 60)
 
@@ -50,9 +50,9 @@ def upload_file_to_s3(module, path):
     
 
 def filter_files_in_dir(dirpath):
-    '''
+    """
     Filter only files from the provided directory path
-    '''
+    """
     all_files = [dirpath + "/" + i for i in os.listdir(dirpath)]
     filtered_files = list(filter(os.path.isfile, all_files))
     return [i.split('/')[-1] for i in filtered_files]
