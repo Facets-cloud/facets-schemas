@@ -35,6 +35,13 @@ spec:
               name: "{{ $releaseName }}-configs"
               key: {{ $k }}
 {{- end }}
+        livenessProbe:
+          exec:
+            command:
+              - python
+              - /app/health_check.py
+          initialDelaySeconds: 5
+          periodSeconds: 10
         resources:
           limits:
             cpu: {{ .Values.resources.limits.cpu }}
