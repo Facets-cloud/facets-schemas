@@ -6,14 +6,19 @@ import com.capillary.ops.deployer.service.facade.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import javax.annotation.security.RolesAllowed;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -113,57 +118,30 @@ public class ApplicationController {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
     }
 
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/logs")
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/dumps")
     public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
                                                    @PathVariable String applicationName,
                                                    @RequestParam(required = false) String date) {
-        if (date != null && !isDateValid(date)) {
+        if (date != null && !applicationFacade.isDateValid(date)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(environment, applicationName, getDateForDump(date)), HttpStatus.OK);
+        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(environment, applicationName, date), HttpStatus.OK);
     }
 
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/logs/download")
-    public ResponseEntity<byte[]> downloadDumpFile(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download")
+    public ResponseEntity<InputStreamResource> downloadDumpFile(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
                                                    @RequestParam("path") String path,
                                                    @PathVariable String applicationName) {
-        String fileName = String.join("_", path.split("/"));
-        byte[] dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(environment, applicationName, path);
+        InputStreamResource dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(environment, applicationName, path);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentLength(dumpFileFromS3.length);
+        String fileName = String.join("_", path.split("/"));
         headers.setContentDispositionFormData("attachment", fileName);
 
         return new ResponseEntity<>(dumpFileFromS3, headers, HttpStatus.OK);
-    }
-
-    private String getDateForDump(String date) {
-        if (date != null) {
-            return date;
-        }
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return dateFormat.format(Calendar.getInstance().getTime());
-    }
-
-    private boolean isDateValid(@RequestParam(required = false) String date) {
-        if (date == null) {
-            return false;
-        }
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormat.setLenient(false);
-        try {
-            dateFormat.parse(date);
-        } catch (ParseException e) {
-            logger.error("error parsing the date in yyyy-MM-dd format", e);
-            return false;
-        }
-
-        return true;
     }
 }

@@ -5,10 +5,18 @@ import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +45,8 @@ public class ApplicationFacade {
 
     @Autowired
     private S3DumpService s3DumpService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
     public Application createApplication(Application application) {
         applicationRepository.save(application);
@@ -109,11 +119,37 @@ public class ApplicationFacade {
         return ecrService.listImages(application);
     }
 
-    public byte[] downloadDumpFileFromS3(String applicationName, String environment, String path) {
+    public InputStreamResource downloadDumpFileFromS3(String applicationName, String environment, String path) {
         return s3DumpService.downloadObject(path);
     }
 
     public List<String> listDumpFilesFromS3(String environment, String applicationName, String date) {
-        return s3DumpService.listObjects(environment, applicationName, date);
+        return s3DumpService.listObjects(environment, applicationName, getDateForDump(date));
+    }
+
+    private String getDateForDump(String date) {
+        if (date != null) {
+            return date;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(Calendar.getInstance().getTime());
+    }
+
+     public boolean isDateValid(@RequestParam(required = false) String date) {
+        if (date == null) {
+            return false;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        try {
+            dateFormat.parse(date);
+        } catch (ParseException e) {
+            logger.error("error parsing the date in yyyy-MM-dd format", e);
+            return false;
+        }
+
+        return true;
     }
 }
