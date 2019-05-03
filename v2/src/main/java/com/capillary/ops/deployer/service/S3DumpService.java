@@ -1,17 +1,17 @@
 package com.capillary.ops.deployer.service;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.capillary.ops.deployer.bo.S3DumpFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.core.sync.ResponseTransformer;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ public class S3DumpService {
     private static final String BUCKET_NAME = "k8s-file-dumps";
 
     @Autowired
-    private S3Client s3Client;
+    private AmazonS3 amazonS3;
 
     Logger logger = LoggerFactory.getLogger(S3DumpService.class);
 
@@ -30,18 +30,24 @@ public class S3DumpService {
     }
 
     public List<String> listObjects(String environment, String module, String date) {
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
         String s3Prefix = getS3Prefix(environment, module, date);
-        ListObjectsRequest listObjectsRequest = ListObjectsRequest.builder().bucket(BUCKET_NAME).prefix(s3Prefix).build();
-        ListObjectsResponse listObjectsResponse = s3Client.listObjects(listObjectsRequest);
-        logger.info("fetched objects from s3 with size: {}", listObjectsResponse.contents().size());
+        ObjectListing objectListing = amazonS3.listObjects(BUCKET_NAME, s3Prefix);
+        List<String> keyList = objectListing.getObjectSummaries().stream()
+                .map(S3ObjectSummary::getKey)
+                .collect(Collectors.toList());
+        logger.info("fetched objects from s3 with size: {}", keyList.size());
 
-        return listObjectsResponse.contents().stream().map(S3Object::key).collect(Collectors.toList());
+        return keyList;
     }
 
-    public InputStreamResource downloadObject(String path) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(BUCKET_NAME).key(path).build();
-        ResponseInputStream<GetObjectResponse> inputStream = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
+    public S3DumpFile downloadObject(String path) {
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
+        com.amazonaws.services.s3.model.S3Object s3Object = amazonS3.getObject(BUCKET_NAME, path);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        long contentLength = s3Object.getObjectMetadata().getContentLength();
+        logger.info("returning object with content length: {}", contentLength);
 
-        return new InputStreamResource(inputStream);
+        return new S3DumpFile(inputStream, contentLength);
     }
 }

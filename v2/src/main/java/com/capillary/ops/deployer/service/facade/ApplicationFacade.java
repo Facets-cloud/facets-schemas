@@ -8,7 +8,6 @@ import com.capillary.ops.deployer.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
@@ -119,7 +118,7 @@ public class ApplicationFacade {
         return ecrService.listImages(application);
     }
 
-    public InputStreamResource downloadDumpFileFromS3(String applicationName, String environment, String path) {
+    public S3DumpFile downloadDumpFileFromS3(String applicationName, String environment, String path) {
         return s3DumpService.downloadObject(path);
     }
 

@@ -13,16 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 import javax.annotation.security.RolesAllowed;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 @RestController
@@ -135,13 +127,14 @@ public class ApplicationController {
                                                    @PathVariable("environment") String environment,
                                                    @RequestParam("path") String path,
                                                    @PathVariable String applicationName) {
-        InputStreamResource dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(environment, applicationName, path);
+        S3DumpFile dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(environment, applicationName, path);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentLength(dumpFileFromS3.getContentLength());
         String fileName = String.join("_", path.split("/"));
         headers.setContentDispositionFormData("attachment", fileName);
 
-        return new ResponseEntity<>(dumpFileFromS3, headers, HttpStatus.OK);
+        return new ResponseEntity<>(new InputStreamResource(dumpFileFromS3.getInputStream()), headers, HttpStatus.OK);
     }
 }
