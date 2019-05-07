@@ -2,10 +2,12 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.ApplicationFamily;
+import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
@@ -19,7 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ECRService {
+@Profile("!dev")
+public class ECRService implements IECRService {
 
     @Autowired
     private EcrClient ecrClient;
@@ -27,6 +30,7 @@ public class ECRService {
     @Autowired
     private Environment environment;
 
+    @Override
     public void createRepository(Application application) {
         String repositoryName = getRepositoryName(application);
         CreateRepositoryRequest createRepositoryRequest =
@@ -35,6 +39,7 @@ public class ECRService {
         setEcrPolicy(application);
     }
 
+    @Override
     public List<String> listImages(Application application) {
         String repositoryName = getRepositoryName(application);
         List<String> images

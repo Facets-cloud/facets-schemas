@@ -15,9 +15,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
+@RequestMapping("api")
 public class ApplicationController {
 
     @Autowired
@@ -29,53 +31,60 @@ public class ApplicationController {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     @RolesAllowed("ADMIN")
-    @PostMapping("/{applicationFamily}/applications")
+    @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application createApplication(@RequestBody  Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
         application.setApplicationFamily(applicationFamily);
         return applicationFacade.createApplication(application);
     }
 
-    @GetMapping("/{applicationFamily}/applications")
+    @GetMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public List<Application> getApplications(@PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
         return applicationFacade.getApplications(applicationFamily);
     }
 
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}", produces = "application/json")
+    public Application getApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                            @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getApplication(applicationFamily, applicationId);
+    }
+
+
     @RolesAllowed("BUILDERS")
-    @PostMapping("/{applicationFamily}/applications/{applicationId}/builds")
+    @PostMapping(value = "/{applicationFamily}/applications/{applicationId}/builds", produces = "application/json")
     public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                        @PathVariable("applicationId") String applicationId, @RequestBody Build build) {
         build.setApplicationId(applicationId);
         return applicationFacade.createBuild(applicationFamily, build);
     }
 
-    @GetMapping("/{applicationFamily}/applications/{applicationId}/builds/{buildId}")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
     public Build getBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                           @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
         return applicationFacade.getBuild(applicationFamily, applicationId, buildId);
     }
 
-    @GetMapping("/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")
     public List<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                        @PathVariable("applicationId") String applicationId,
                                        @PathVariable String buildId) {
         return applicationFacade.getBuildLogs(applicationFamily, applicationId, buildId);
     }
 
-    @GetMapping("/{applicationFamily}/applications/{applicationId}/builds")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds", produces = "application/json")
     public List<Build> getBuilds(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                 @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getBuilds(applicationFamily, applicationId);
     }
 
-    @GetMapping("/{applicationFamily}/applications/{applicationId}/images")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/images", produces = "application/json")
     public List<String> getImages(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                   @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getImages(applicationFamily, applicationId);
     }
 
     @PreAuthorize("hasAnyRole('DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
-    @PostMapping("/{applicationFamily}/{environment}/applications/{applicationId}/deployments")
+    @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployments", produces = "application/json")
     public Deployment deploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                         @PathVariable("environment") String environment,
                                         @RequestBody Deployment deployment,
@@ -85,32 +94,32 @@ public class ApplicationController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/users")
+    @PostMapping(value = "/users", produces = "application/json")
     public User createUser(@RequestBody  User user) {
         return userFacade.createUser(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/users/{userId}")
+    @PutMapping(value = "/users/{userId}", produces = "application/json")
     public User updateUser(@RequestBody User user, @PathVariable("userId") String userId) {
         user.setId(userId);
         return userFacade.createUser(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users")
+    @GetMapping(value = "/users", produces = "application/json")
     public List<User> getUsers() {
         return userFacade.getAllUsers();
     }
 
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus", produces = "application/json")
     public DeploymentStatusDetails getDeploymentStatus(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                       @PathVariable("environment") String environment,
                                       @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
     }
 
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/dumps")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationName}/dumps", produces = "application/json")
     public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
                                                    @PathVariable String applicationName,
@@ -122,7 +131,7 @@ public class ApplicationController {
         return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(environment, applicationName, date), HttpStatus.OK);
     }
 
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download")
     public ResponseEntity<InputStreamResource> downloadDumpFile(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
                                                    @RequestParam("path") String path,
@@ -136,5 +145,10 @@ public class ApplicationController {
         headers.setContentDispositionFormData("attachment", fileName);
 
         return new ResponseEntity<>(new InputStreamResource(dumpFileFromS3.getInputStream()), headers, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/applicationFamilies", produces = "application/json")
+    public ResponseEntity<List<ApplicationFamily>> getApplicationFamilies() {
+        return new ResponseEntity<>(Arrays.asList(ApplicationFamily.values()), HttpStatus.OK);
     }
 }

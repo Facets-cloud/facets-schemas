@@ -5,6 +5,9 @@ import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.service.*;
+import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
+import com.capillary.ops.deployer.service.interfaces.IECRService;
+import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +28,16 @@ public class ApplicationFacade {
     private ApplicationRepository applicationRepository;
 
     @Autowired
-    private ECRService ecrService;
+    private IECRService ecrService;
 
     @Autowired
-    private CodeBuildService codeBuildService;
+    private ICodeBuildService codeBuildService;
 
     @Autowired
     private BuildRepository buildRepository;
 
     @Autowired
-    private HelmService helmService;
+    private IHelmService helmService;
 
     @Autowired
     private DeploymentRepository deploymentRepository;
@@ -54,6 +57,9 @@ public class ApplicationFacade {
         return application;
     }
 
+    public Application getApplication(ApplicationFamily applicationFamily, String applicationId) {
+        return applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+    }
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String applicationId = build.getApplicationId();
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();

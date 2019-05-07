@@ -7,11 +7,14 @@ import com.capillary.ops.deployer.service.buildspecs.BuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.DotnetBuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.FreestyleDockerBuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.MavenBuildSpec;
+import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
@@ -22,12 +25,12 @@ import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Profile("!dev")
 @Service
-public class CodeBuildService {
+public class CodeBuildService implements ICodeBuildService {
 
     @Qualifier("codeBuildClient")
     @Autowired
@@ -39,6 +42,7 @@ public class CodeBuildService {
     @Autowired
     private CloudWatchLogsClient cloudWatchLogsClient;
 
+    @Override
     public void createProject(Application application) {
         ProjectSource projectSource = ProjectSource.builder()
                 .type(SourceType.valueOf(application.getVcsProvider().toString()))
@@ -116,6 +120,7 @@ public class CodeBuildService {
         }
     }
 
+    @Override
     public String triggerBuild(Application application, Build build) {
 
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
@@ -140,6 +145,7 @@ public class CodeBuildService {
         return startBuildResponse.build().id();
     }
 
+    @Override
     public List<LogEvent> getBuildLogs(String codeBuildId) {
         software.amazon.awssdk.services.codebuild.model.Build build = getBuild(codeBuildId);
         String groupName = build.logs().groupName();
@@ -153,6 +159,7 @@ public class CodeBuildService {
         return logEvents.stream().map(x -> new LogEvent(x.timestamp(), x.message())).collect(Collectors.toList());
     }
 
+    @Override
     public software.amazon.awssdk.services.codebuild.model.Build getBuild(String codeBuildId) {
         BatchGetBuildsResponse batchGetBuildsResponse =
                 codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder().ids(codeBuildId).build());

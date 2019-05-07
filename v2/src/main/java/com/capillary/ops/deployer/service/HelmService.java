@@ -1,18 +1,18 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.google.gson.Gson;
-import hapi.chart.ChartOuterClass;
 import hapi.chart.ChartOuterClass.Chart;
-import hapi.release.ReleaseOuterClass;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -25,7 +25,9 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
-public class HelmService {
+@Profile("!dev")
+public class HelmService implements IHelmService {
+    @Override
     public void deploy(Application application, Deployment deployment) {
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
@@ -46,6 +48,7 @@ public class HelmService {
         }
     }
 
+    @Override
     public String getReleaseName(Application application, Environment environment) {
         return environment.getNodeGroup().isEmpty() ?
                 application.getName() :
