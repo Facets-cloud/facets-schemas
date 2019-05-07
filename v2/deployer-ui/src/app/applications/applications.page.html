@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>applications</ion-title>
+    <ion-button slot="end" href="/{{applicationFamily}}/createapp"><ion-icon name="add"></ion-icon></ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item button *ngFor="let application of applications" href = "/{{application.applicationFamily}}/applications/{{application.id}}">
+      {{ application.name }}
+    </ion-item>
+  </ion-list>
+</ion-content>

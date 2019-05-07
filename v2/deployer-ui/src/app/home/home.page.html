@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Application Families
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item button *ngFor="let family of applicationFamilies" href = "/{{family}}/applications">
+        <ion-label>
+            {{ family }}
+        </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
