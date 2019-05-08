@@ -1,20 +1,26 @@
 package com.capillary.ops.deployer.bo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicationDeploymentDetails {
 
     public ApplicationDeploymentDetails() {}
 
-    public ApplicationDeploymentDetails(String name, PodReplicationDetails replicas, Map<String, String> labels, String creationTimestamp) {
+    public ApplicationDeploymentDetails(String name, Map<String, String> environmentConfigs, PodReplicationDetails replicas, Map<String, String> labels, String creationTimestamp) {
         this.name = name;
+        this.environmentConfigs = environmentConfigs;
         this.replicas = replicas;
         this.labels = labels;
         this.creationTimestamp = creationTimestamp;
     }
 
     private String name;
+
+    private Map<String, String> environmentConfigs;
 
     private PodReplicationDetails replicas;
 
@@ -24,6 +30,14 @@ public class ApplicationDeploymentDetails {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, String> getEnvironmentConfigs() {
+        return environmentConfigs;
+    }
+
+    public void setEnvironmentConfigs(Map<String, String> environmentConfigs) {
+        this.environmentConfigs = environmentConfigs;
     }
 
     public void setName(String name) {
