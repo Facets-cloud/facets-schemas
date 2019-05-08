@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
+import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentStatus;
@@ -110,8 +111,9 @@ public class KubectlService {
     }
 
     private static Map<String, String> decodeConfigValues(Secret secret) {
-        Map<String, String> envConfigs = new HashMap<>();
-        secret.getData().forEach((key, value) -> {
+        Map<String, String> secretData = secret.getData();
+        Map<String, String> envConfigs = Maps.newHashMapWithExpectedSize(secretData.size());
+        secretData.forEach((key, value) -> {
             String configValue = StringUtils.newStringUtf8(Base64.decodeBase64(value));
             envConfigs.put(key, configValue);
         });
