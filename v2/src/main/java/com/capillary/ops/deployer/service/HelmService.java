@@ -2,7 +2,6 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
-import com.capillary.ops.deployer.repository.ApplicationSecretsRepository;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import hapi.chart.ChartOuterClass.Chart;
@@ -13,7 +12,6 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,13 +106,13 @@ public class HelmService implements IHelmService {
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
         yaml.put("configurations", deployment.getConfigurations());
-        yaml.put("credentials", getSecretMap(application));
+        yaml.put("credentials", getCredentialsMap(application));
         yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
         final String yamlString = new Yaml().dump(yaml);
         return yamlString;
     }
 
-    private Map<String, String> getSecretMap(Application application) {
+    private Map<String, String> getCredentialsMap(Application application) {
         List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
                 application.getApplicationFamily(),
                 application.getId());

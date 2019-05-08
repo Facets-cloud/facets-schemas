@@ -45,15 +45,15 @@ public class KubectlService {
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
 
-        ApplicationServiceDetails applicationServiceDetails = getServiceCheckDetails(deploymentName, kubernetesClient);
-        ApplicationDeploymentDetails applicationDeploymentDetails = getDeploymentCheckDetails(deploymentName, kubernetesClient);
-        List<ApplicationPodDetails> applicationPodDetails = getPodCheckDetails(deploymentName,
+        ApplicationServiceDetails applicationServiceDetails = getApplicationServiceDetails(deploymentName, kubernetesClient);
+        ApplicationDeploymentDetails applicationDeploymentDetails = getApplicationDeploymentDetails(deploymentName, kubernetesClient);
+        List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(deploymentName,
                 applicationServiceDetails.getSelectors(), kubernetesClient);
 
         return new DeploymentStatusDetails(applicationServiceDetails, applicationDeploymentDetails, applicationPodDetails);
     }
 
-    private ApplicationServiceDetails getServiceCheckDetails(String deploymentName, KubernetesClient kubernetesClient) {
+    private ApplicationServiceDetails getApplicationServiceDetails(String deploymentName, KubernetesClient kubernetesClient) {
         io.fabric8.kubernetes.api.model.Service service = kubernetesClient.services()
                 .inNamespace(NAMESPACE)
                 .withName(deploymentName)
@@ -77,7 +77,7 @@ public class KubectlService {
                 serviceMetadata.getLabels(), serviceSpec.getSelector(), serviceMetadata.getCreationTimestamp());
     }
 
-    private ApplicationDeploymentDetails getDeploymentCheckDetails(String deploymentName, KubernetesClient kubernetesClient) {
+    private ApplicationDeploymentDetails getApplicationDeploymentDetails(String deploymentName, KubernetesClient kubernetesClient) {
         Deployment deployment = kubernetesClient.extensions()
                 .deployments().
                 inNamespace(NAMESPACE)
@@ -98,7 +98,7 @@ public class KubectlService {
                 deploymentStatus.getUpdatedReplicas());
     }
 
-    private List<ApplicationPodDetails> getPodCheckDetails(String deploymentName, Map<String, String> selectors, KubernetesClient kubernetesClient) {
+    private List<ApplicationPodDetails> getApplicationPodDetails(String deploymentName, Map<String, String> selectors, KubernetesClient kubernetesClient) {
         PodList podList = kubernetesClient.pods().inNamespace(NAMESPACE).list();
         List<Pod> filteredPodList = podList.getItems().stream()
                 .filter(x -> x.getMetadata().getName().startsWith(deploymentName))
