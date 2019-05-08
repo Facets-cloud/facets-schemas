@@ -105,13 +105,12 @@ public class KubectlService {
     }
 
     private Map<String, String> getEnvironmentConfigs(KubernetesClient kubernetesClient, String deploymentName) {
-        Map<String, String> envConfigs = new HashMap<>();
         Secret secret = kubernetesClient.secrets().inNamespace("default").withName(deploymentName + "-configs").get();
-
-        return secret == null ? null : decodeConfigValues(envConfigs, secret);
+        return secret == null ? null : decodeConfigValues(secret);
     }
 
-    private static Map<String, String> decodeConfigValues(Map<String, String> envConfigs, Secret secret) {
+    private static Map<String, String> decodeConfigValues(Secret secret) {
+        Map<String, String> envConfigs = new HashMap<>();
         secret.getData().forEach((key, value) -> {
             String configValue = StringUtils.newStringUtf8(Base64.decodeBase64(value));
             envConfigs.put(key, configValue);
