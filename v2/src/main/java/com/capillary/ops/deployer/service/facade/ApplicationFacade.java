@@ -4,7 +4,9 @@ import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
-import com.capillary.ops.deployer.service.*;
+import com.capillary.ops.deployer.service.KubectlService;
+import com.capillary.ops.deployer.service.S3DumpService;
+import com.capillary.ops.deployer.service.SecretService;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
@@ -47,6 +49,9 @@ public class ApplicationFacade {
 
     @Autowired
     private S3DumpService s3DumpService;
+
+    @Autowired
+    private SecretService secretService;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
@@ -156,5 +161,30 @@ public class ApplicationFacade {
         }
 
         return true;
+    }
+
+    public List<ApplicationSecret> initializeApplicaitonSecrets(ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        return secretService.initializeApplicationSecrets(applicationFamily, applicationId, applicationSecrets);
+    }
+
+    public List<ApplicationSecret> getApplicaitonSecrets(ApplicationFamily applicationFamily, String applicationId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(applicationFamily, applicationId);
+        applicationSecrets.forEach(x -> x.setSecretValue(""));
+
+        return applicationSecrets;
+    }
+
+    public List<ApplicationSecret> updateApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = applicationFamily.getEnvironment(environmentName);
+
+        if (!secretService.doSecretsExist(applicationFamily, applicationId, applicationSecrets)) {
+            throw new RuntimeException("some secrets have not been created");
+        }
+        String releaseName = helmService.getReleaseName(application, environment);
+        kubectlService.createOrUpdateSecrets(environment, releaseName, applicationSecrets);
+        return secretService.authorizeApplicationSecrets(applicationFamily, applicationId, applicationSecrets);
     }
 }

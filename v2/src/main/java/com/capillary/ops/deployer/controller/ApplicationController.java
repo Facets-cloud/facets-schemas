@@ -11,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -150,5 +152,31 @@ public class ApplicationController {
     @GetMapping(value = "/applicationFamilies", produces = "application/json")
     public ResponseEntity<List<ApplicationFamily>> getApplicationFamilies() {
         return new ResponseEntity<>(Arrays.asList(ApplicationFamily.values()), HttpStatus.OK);
+    }
+
+    @JsonView(UserView.SecretName.class)
+    @PostMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets")
+    public List<ApplicationSecret> initializeApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                                @PathVariable("environment") String environment,
+                                                                @PathVariable("applicationId") String applicationId,
+                                                                @RequestBody List<ApplicationSecret> applicationSecrets) {
+        return applicationFacade.initializeApplicaitonSecrets(applicationFamily, applicationId, applicationSecrets);
+    }
+
+    @JsonView(UserView.SecretName.class)
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets")
+    public List<ApplicationSecret> getApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                            @PathVariable("environment") String environment,
+                                                            @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getApplicaitonSecrets(applicationFamily, applicationId);
+    }
+
+    @JsonView(UserView.SecretName.class)
+    @PutMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets")
+    public List<ApplicationSecret> updateApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                            @PathVariable("environment") String environment,
+                                                            @PathVariable("applicationId") String applicationId,
+                                                            @RequestBody List<ApplicationSecret> applicationSecrets) {
+        return applicationFacade.updateApplicaitonSecrets(environment, applicationFamily, applicationId, applicationSecrets);
     }
 }

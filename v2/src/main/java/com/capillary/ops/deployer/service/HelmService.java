@@ -2,6 +2,8 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
+import com.capillary.ops.deployer.repository.ApplicationSecretsRepository;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.release.ReleaseOuterClass.Release;
@@ -13,6 +15,7 @@ import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -27,6 +30,9 @@ import java.util.stream.Collectors;
 @Service
 @Profile("!dev")
 public class HelmService implements IHelmService {
+    @Autowired
+    private SecretService secretService;
+
     @Override
     public void deploy(Application application, Deployment deployment) {
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
@@ -102,9 +108,21 @@ public class HelmService implements IHelmService {
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
         yaml.put("configurations", deployment.getConfigurations());
+        yaml.put("credentials", getSecretMap(application));
         yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
         final String yamlString = new Yaml().dump(yaml);
         return yamlString;
+    }
+
+    private Map<String, String> getSecretMap(Application application) {
+        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
+                application.getApplicationFamily(),
+                application.getId());
+
+        Map<String, String> secretMap = Maps.newHashMapWithExpectedSize(savedSecrets.size());
+        savedSecrets.forEach(x -> secretMap.put(x.getSecretName(), ""));
+
+        return secretMap;
     }
 
     private Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {

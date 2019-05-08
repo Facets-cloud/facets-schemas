@@ -7,6 +7,8 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentStatus;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,7 +19,28 @@ import java.util.stream.Collectors;
 @Service
 public class KubectlService {
 
+    private static final Logger logger = LoggerFactory.getLogger(KubectlService.class);
+
     private static final String NAMESPACE = "default";
+
+    public void createOrUpdateSecrets(Environment environment, String releaseName, List<ApplicationSecret> applicationSecrets) {
+        String secretName = releaseName + "-credentials";
+        logger.info("creating kubernetes secret with name: {}", secretName);
+
+        Map<String, String> secretMap = applicationSecrets.parallelStream()
+                .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
+
+        Secret secret = new SecretBuilder()
+                .withNewMetadata()
+                .withName(secretName)
+                .addToLabels("name", secretName)
+                .endMetadata()
+                .addToData(secretMap)
+                .withType("Opaque")
+                .build();
+
+        getKubernetesClient(environment).secrets().inNamespace("default").createOrReplace(secret);
+    }
 
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);

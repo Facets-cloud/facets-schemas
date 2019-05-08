@@ -57,6 +57,12 @@ spec:
                 name: "{{ $releaseName }}-configs"
                 key: {{ $k }}
 {{- end }}
+{{- range $k, $v := .Values.credentials }}
+          - name: {{ $k }}
+            valueFrom:
+              secretKeyRef:
+                name: "{{ $releaseName }}-credentials"
+                key: {{ $k }}
 {{- template "crmConfigurations" . }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
