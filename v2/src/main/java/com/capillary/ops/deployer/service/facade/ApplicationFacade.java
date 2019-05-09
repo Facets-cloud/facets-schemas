@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.facade;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
@@ -21,6 +23,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,14 +166,25 @@ public class ApplicationFacade {
         return true;
     }
 
-    public List<ApplicationSecret> initializeApplicaitonSecrets(ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+    public List<ApplicationSecret> initializeApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        return secretService.initializeApplicationSecrets(applicationFamily, applicationId, applicationSecrets);
+        Environment environment = applicationFamily.getEnvironment(environmentName);
+        applicationSecrets.parallelStream().forEach(x -> {
+            x.setEnvironmentName(environmentName);
+            x.setApplicationFamily(applicationFamily);
+            x.setApplicationId(applicationId);
+        });
+
+        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(environment.getName(), applicationFamily, applicationId);
+        if (!Collections.disjoint(savedSecrets, applicationSecrets)) {
+            throw new AlreadyExistsException("some secrets have already been created");
+        }
+        return secretService.initializeApplicationSecrets(applicationSecrets);
     }
 
-    public List<ApplicationSecret> getApplicaitonSecrets(ApplicationFamily applicationFamily, String applicationId) {
+    public List<ApplicationSecret> getApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(applicationFamily, applicationId);
+        List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(environmentName, applicationFamily, applicationId);
         applicationSecrets.forEach(x -> x.setSecretValue(""));
 
         return applicationSecrets;
@@ -180,11 +194,17 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = applicationFamily.getEnvironment(environmentName);
 
-        if (!secretService.doSecretsExist(applicationFamily, applicationId, applicationSecrets)) {
-            throw new RuntimeException("some secrets have not been created");
+        if (!doSecretsExist(environmentName, applicationFamily, applicationId, applicationSecrets)) {
+            throw new NotFoundException("some secrets have not been created");
         }
         String releaseName = helmService.getReleaseName(application, environment);
-        kubectlService.createOrUpdateSecrets(environment, releaseName, applicationSecrets);
-        return secretService.authorizeApplicationSecrets(applicationFamily, applicationId, applicationSecrets);
+        kubectlService.createOrUpdateSecrets(environment, releaseName + "-credentials", applicationSecrets);
+        return secretService.updateApplicationSecrets(environmentName, applicationFamily, applicationId, applicationSecrets);
+    }
+
+    private boolean doSecretsExist(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(environmentName, applicationFamily, applicationId);
+        return savedSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList())
+                .containsAll(applicationSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList()));
     }
 }

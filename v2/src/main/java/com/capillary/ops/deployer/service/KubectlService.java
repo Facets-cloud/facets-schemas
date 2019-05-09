@@ -23,12 +23,17 @@ public class KubectlService {
 
     private static final String NAMESPACE = "default";
 
-    public void createOrUpdateSecrets(Environment environment, String releaseName, List<ApplicationSecret> applicationSecrets) {
-        String secretName = releaseName + "-credentials";
+    public void createOrUpdateSecrets(Environment environment, String secretName, List<ApplicationSecret> applicationSecrets) {
         logger.info("creating kubernetes secret with name: {}", secretName);
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
 
         Map<String, String> secretMap = applicationSecrets.parallelStream()
                 .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
+
+        Secret existingSecrets = kubernetesClient.secrets().inNamespace("default").withName(secretName).get();
+        if (existingSecrets != null) {
+            secretMap.putAll(existingSecrets.getData());
+        }
 
         Secret secret = new SecretBuilder()
                 .withNewMetadata()
@@ -39,7 +44,7 @@ public class KubectlService {
                 .withType("Opaque")
                 .build();
 
-        getKubernetesClient(environment).secrets().inNamespace("default").createOrReplace(secret);
+        kubernetesClient.secrets().inNamespace("default").createOrReplace(secret);
     }
 
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {

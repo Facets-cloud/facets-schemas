@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ApplicationSecretsRepository extends MongoRepository<ApplicationSecret, String> {
 
-    public List<ApplicationSecret> findByApplicationFamilyAndApplicationId(ApplicationFamily applicationFamily, String applicationId);
+    public List<ApplicationSecret> findByEnvironmentNameAndApplicationFamilyAndApplicationId(String environmentName, ApplicationFamily applicationFamily, String applicationId);
 }

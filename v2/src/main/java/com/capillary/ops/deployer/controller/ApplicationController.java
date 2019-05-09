@@ -160,7 +160,7 @@ public class ApplicationController {
                                                                 @PathVariable("environment") String environment,
                                                                 @PathVariable("applicationId") String applicationId,
                                                                 @RequestBody List<ApplicationSecret> applicationSecrets) {
-        return applicationFacade.initializeApplicaitonSecrets(applicationFamily, applicationId, applicationSecrets);
+        return applicationFacade.initializeApplicaitonSecrets(environment, applicationFamily, applicationId, applicationSecrets);
     }
 
     @JsonView(UserView.SecretName.class)
@@ -168,7 +168,7 @@ public class ApplicationController {
     public List<ApplicationSecret> getApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                             @PathVariable("environment") String environment,
                                                             @PathVariable("applicationId") String applicationId) {
-        return applicationFacade.getApplicaitonSecrets(applicationFamily, applicationId);
+        return applicationFacade.getApplicaitonSecrets(environment, applicationFamily, applicationId);
     }
 
     @JsonView(UserView.SecretName.class)

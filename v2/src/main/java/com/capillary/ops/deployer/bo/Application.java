@@ -1,16 +1,22 @@
 package com.capillary.ops.deployer.bo;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.Map;
 
+@CompoundIndexes({
+        @CompoundIndex(name = "unique_application", unique = true, def = "{'name':1, 'applicationFamily':1}")
+})
+@Document
 public class Application {
     @Id
     private String id;
 
-    @Indexed(unique = true)
     private String name;
 
     private VCSProvider vcsProvider;

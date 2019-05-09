@@ -3,12 +3,14 @@ package com.capillary.ops.deployer;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 import javax.servlet.http.HttpServletResponse;
 
+@Profile("!apidev")
 @Configuration
 public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 

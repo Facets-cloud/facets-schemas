@@ -64,7 +64,7 @@ public class HelmService implements IHelmService {
         Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
-        String valuesYaml = getValuesYaml(application, deployment);
+        String valuesYaml = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
         final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
@@ -81,7 +81,7 @@ public class HelmService implements IHelmService {
         Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
-        String valuesYaml = getValuesYaml(application, deployment);
+        String valuesYaml = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
         final UpdateReleaseRequest.Builder requestBuilder = UpdateReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
@@ -93,7 +93,7 @@ public class HelmService implements IHelmService {
         releaseManager.close();
     }
 
-    private String getValuesYaml(Application application, Deployment deployment) {
+    private String getValuesYaml(Environment environment, Application application, Deployment deployment) {
         final Map<String, Object> yaml = new LinkedHashMap<>();
         yaml.put("image", deployment.getImage());
         yaml.put("podCPULimit",deployment.getPodSize().getCpu());
@@ -106,14 +106,15 @@ public class HelmService implements IHelmService {
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
         yaml.put("configurations", deployment.getConfigurations());
-        yaml.put("credentials", getCredentialsMap(application));
+        yaml.put("credentials", getCredentialsMap(environment, application));
         yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
         final String yamlString = new Yaml().dump(yaml);
         return yamlString;
     }
 
-    private Map<String, String> getCredentialsMap(Application application) {
+    private Map<String, String> getCredentialsMap(Environment environment, Application application) {
         List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
+                environment.getName(),
                 application.getApplicationFamily(),
                 application.getId());
 
