@@ -51,8 +51,8 @@ public class Route53SyncService {
     }
 
     private void createSyncIfAbsent(Environment environment, String zoneType) {
-        if (!isDnsSyncPresent(environment, zoneType) && createAwsSecret(environment)) {
-            String releaseName = environment.getName() + "-" + zoneType + "-route53-dns";
+        String releaseName = environment.getName() + "-" + zoneType + "-route53-dns";
+        if (!isDnsSyncPresent(environment, zoneType, releaseName) && createAwsSecret(environment)) {
             Map<String, Object> valueMap = getValuesMap(environment, zoneType);
             helmService.deploy(environment, releaseName, "route53-dns", valueMap);
         }
@@ -86,10 +86,10 @@ public class Route53SyncService {
         return true;
     }
 
-    private boolean isDnsSyncPresent(Environment environment, String zoneType) {
+    private boolean isDnsSyncPresent(Environment environment, String zoneType, String releaseName) {
         DeploymentList deployments = kubectlService.getDeployments(environment);
         for (Deployment deployment : deployments.getItems()) {
-            if (deployment.getMetadata().getName().equals(environment.getName() + "-" + zoneType + "-route53-dns")) {
+            if (deployment.getMetadata().getName().equals(releaseName)) {
                 return true;
             }
         }
