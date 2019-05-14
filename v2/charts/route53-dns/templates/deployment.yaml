@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: route53-dns
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: route53-dns
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: ["extensions"] 
+  resources: ["ingresses"] 
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: route53-dns-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: route53-dns
+subjects:
+- kind: ServiceAccount
+  name: route53-dns
+  namespace: default
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns
+    spec:
+      serviceAccountName: route53-dns
+      containers:
+      - name: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        args:
+        - --source=service
+        - --zone-id-filter={{ .Values.aws.zoneId }}
+        - --provider=aws
+        - --policy=upsert-only
+        - --aws-zone-type={{ .Values.aws.zoneType }}
+        - --registry=noop
+        env:
+        - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: "IAM_CREDENTIALS"
+                key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "IAM_CREDENTIALS"
+                key: AWS_SECRET_ACCESS_KEY
