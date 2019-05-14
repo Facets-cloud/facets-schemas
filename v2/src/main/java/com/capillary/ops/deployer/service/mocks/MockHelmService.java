@@ -8,12 +8,19 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Profile("dev")
 @Service
 public class MockHelmService implements IHelmService {
 
     @Override
     public void deploy(Application application, Deployment deployment) {
+
+    }
+
+    @Override
+    public void deploy(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) {
 
     }
 

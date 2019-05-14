@@ -4,6 +4,7 @@ import com.capillary.ops.deployer.bo.*;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
+import io.fabric8.kubernetes.api.model.extensions.DeploymentList;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentStatus;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -26,16 +27,40 @@ public class KubectlService {
 
     private static final String NAMESPACE = "default";
 
-    public void createOrUpdateSecrets(Environment environment, String secretName, List<ApplicationSecret> applicationSecrets) {
-        logger.info("creating kubernetes secret with name: {}", secretName);
+    public DeploymentList getDeployments(Environment environment, String namespace) {
+        if (namespace == null) {
+            namespace = "default";
+        }
+
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        return kubernetesClient.extensions().deployments().inNamespace(namespace).list();
+    }
+
+    public DeploymentList getDeployments(Environment environment) {
+        return getDeployments(environment, "default");
+    }
+
+    public Secret getSecretWithName(Environment environment, String secretName, String namespace) {
+        return getKubernetesClient(environment).secrets().inNamespace(namespace).withName(secretName).get();
+    }
+
+    public Secret getSecretWithName(Environment environment, String secretName) {
+        return getSecretWithName(environment, secretName, "default");
+    }
+
+    public void createOrUpdateApplicationSecrets(Environment environment, String secretName, List<ApplicationSecret> applicationSecrets) {
+        logger.info("creating kubernetes secret with name: {}", secretName);
 
         Map<String, String> secretMap = applicationSecrets.parallelStream()
                 .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
 
-        Secret existingSecrets = kubernetesClient.secrets().inNamespace("default").withName(secretName).get();
-        if (existingSecrets != null) {
-            secretMap.putAll(existingSecrets.getData());
+        createOrUpdateSecret(environment, secretName, secretMap);
+    }
+
+    public void createOrUpdateSecret(Environment environment, String secretName, Map<String, String> secretMap) {
+        Secret existingSecret = getSecretWithName(environment, secretName);
+        if (existingSecret != null) {
+            secretMap.putAll(existingSecret.getData());
         }
 
         Secret secret = new SecretBuilder()
@@ -47,7 +72,7 @@ public class KubectlService {
                 .withType("Opaque")
                 .build();
 
-        kubernetesClient.secrets().inNamespace("default").createOrReplace(secret);
+        getKubernetesClient(environment).secrets().inNamespace("default").createOrReplace(secret);
     }
 
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {

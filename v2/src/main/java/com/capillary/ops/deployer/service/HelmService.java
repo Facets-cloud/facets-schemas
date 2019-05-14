@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,6 +35,26 @@ public class HelmService implements IHelmService {
     private SecretService secretService;
 
     private static final Logger logger = LoggerFactory.getLogger(HelmService.class);
+
+    @Override
+    public void deploy(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) {
+        ReleaseManager releaseManager = getReleaseManager(environment);
+        Iterator<ListReleasesResponse> listReleasesResponseIterator =
+                releaseManager.list(ListReleasesRequest.newBuilder().setFilter("^" + releaseName + "$").build());
+
+        try {
+            if (listReleasesResponseIterator.hasNext() && listReleasesResponseIterator.next().getReleasesCount() > 0) {
+                releaseManager.close();
+                upgrade(environment, releaseName, chartName, valueMap);
+            } else {
+                releaseManager.close();
+                install(environment, releaseName, chartName, valueMap);
+            }
+        } catch (Exception e) {
+            logger.error("error happened while trying to install or upgrade application", e);
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public void deploy(Application application, Deployment deployment) {
@@ -71,6 +92,24 @@ public class HelmService implements IHelmService {
                 environment.getNodeGroup() + "-" + application.getName();
     }
 
+    private void install(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
+        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
+        Chart.Builder chart = chartLoader.load(Paths.get("/charts/" + chartName));
+        ReleaseManager releaseManager = getReleaseManager(environment);
+        String valuesYaml = new Yaml().dump(valueMap);
+
+        final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
+        requestBuilder.setTimeout(300L);
+        requestBuilder.setName(releaseName); // Set the Helm release name
+        requestBuilder.setWait(false); // Wait for Pods to be ready
+        requestBuilder.getValuesBuilder().setRaw(valuesYaml);
+
+        final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chart);
+        final Release release = releaseFuture.get().getRelease();
+
+        releaseManager.close();
+    }
+
     private void install(Application application, Deployment deployment) throws Exception {
         DirectoryChartLoader chartLoader = new DirectoryChartLoader();
         Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
@@ -90,6 +129,24 @@ public class HelmService implements IHelmService {
         requestBuilder.getValuesBuilder().setRaw(valuesYaml);
         final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chart);
         final Release release = releaseFuture.get().getRelease();
+        releaseManager.close();
+    }
+
+    private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
+        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
+        Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
+        ReleaseManager releaseManager = getReleaseManager(environment);
+        String valuesYaml = new Yaml().dump(valueMap);
+
+        final UpdateReleaseRequest.Builder requestBuilder = UpdateReleaseRequest.newBuilder();
+        requestBuilder.setTimeout(300L);
+        requestBuilder.setName(releaseName); // Set the Helm release name
+        requestBuilder.setWait(false); // Wait for Pods to be ready
+        requestBuilder.getValuesBuilder().setRaw(valuesYaml);
+
+        final Future<UpdateReleaseResponse> releaseFuture = releaseManager.update(requestBuilder, chart);
+        final Release release = releaseFuture.get().getRelease();
+
         releaseManager.close();
     }
 

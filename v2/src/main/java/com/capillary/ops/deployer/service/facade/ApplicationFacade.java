@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -203,8 +204,12 @@ public class ApplicationFacade {
         if (!doSecretsExist(environmentName, applicationFamily, applicationId, applicationSecrets)) {
             throw new NotFoundException("some secrets have not been created");
         }
+
         String releaseName = helmService.getReleaseName(application, environment);
-        kubectlService.createOrUpdateSecrets(environment, releaseName + "-credentials", applicationSecrets);
+        Map<String, String> secretMap = applicationSecrets.parallelStream()
+                .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
+        kubectlService.createOrUpdateSecret(environment, releaseName + "-credentials", secretMap);
+
         return secretService.updateApplicationSecrets(environmentName, applicationFamily, applicationId, applicationSecrets);
     }
 
