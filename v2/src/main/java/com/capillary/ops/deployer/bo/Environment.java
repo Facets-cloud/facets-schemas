@@ -12,6 +12,7 @@ public class Environment {
     private String clusterPrefix;
     private String awsAccessKey;
     private String awsSecretKey;
+    private String adPassword;
 
     public String getName() {
         return name;
@@ -99,5 +100,13 @@ public class Environment {
 
     public void setAwsSecretKey(String awsSecretKey) {
         this.awsSecretKey = awsSecretKey;
+    }
+
+    public String getAdPassword() {
+        return adPassword;
+    }
+
+    public void setAdPassword(String adPassword) {
+        this.adPassword = adPassword;
     }
 }

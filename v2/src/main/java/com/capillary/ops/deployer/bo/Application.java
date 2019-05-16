@@ -7,8 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CompoundIndexes({
         @CompoundIndex(name = "unique_application", unique = true, def = "{'name':1, 'applicationFamily':1}")
@@ -49,6 +50,8 @@ public class Application {
     private String dnsPrefix;
 
     private DnsType dnsType;
+
+    private Map<String, String> additionalParams = new HashMap<>();
 
     public String getId() {
         return id;
@@ -136,5 +139,13 @@ public class Application {
 
     public void setDnsType(DnsType dnsType) {
         this.dnsType = dnsType;
+    }
+
+    public Map<String, String> getAdditionalParams() {
+        return additionalParams;
+    }
+
+    public void setAdditionalParams(Map<String, String> additionalParams) {
+        this.additionalParams = additionalParams;
     }
 }

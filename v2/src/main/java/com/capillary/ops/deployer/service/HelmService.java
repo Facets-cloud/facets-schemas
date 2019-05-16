@@ -1,7 +1,10 @@
 package com.capillary.ops.deployer.service;
 
+import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import hapi.chart.ChartOuterClass.Chart;
@@ -156,7 +159,7 @@ public class HelmService implements IHelmService {
         yaml.put("ports", ports);
         logger.info("loaded values for release: {}", yaml);
 
-        yaml.put("configurations", deployment.getConfigurations());
+        yaml.put("configurations", getConfigMap(environment, application, deployment));
         yaml.put("credentials", getCredentialsMap(environment, application));
 
         String dnsPrefix = application.getDnsPrefix();
@@ -175,6 +178,13 @@ public class HelmService implements IHelmService {
         }
     }
 
+    private Map<String, String> getConfigMap(Environment environment, Application application, Deployment deployment) {
+        Map<String, String> configMap = new HashMap<>();
+        configMap.putAll(deployment.getConfigurations());
+        configMap.putAll(getFamilySpecificEnvVariables(application, environment));
+        return configMap;
+    }
+
     private Map<String, String> getCredentialsMap(Environment environment, Application application) {
         List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
                 environment.getName(),
@@ -187,6 +197,23 @@ public class HelmService implements IHelmService {
         return secretMap;
     }
 
+    private Map<String, String> getFamilySpecificEnvVariables(Application application, Environment environment) {
+        Map<String, String> envMap = new HashMap<>();
+        switch (application.getApplicationFamily()) {
+            case ECOMMERCE:
+                if (shouldMountCifs(application)) {
+                    if (environment.getAdPassword() == null) {
+                        throw new NotFoundException("cannot find CIFS password");
+                    }
+                    envMap.put("ADPASS", environment.getAdPassword());
+                    envMap.put("MOUNT_CIFS", "true");
+                }
+                break;
+        }
+
+        return envMap;
+    }
+
     private Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {
         Map<String, Object> valueFields = new HashMap<>();
         switch (application.getApplicationFamily()) {
@@ -196,8 +223,21 @@ public class HelmService implements IHelmService {
                     String crmModuleName = deployment.getConfigurations().get("crmModuleName");
                     valueFields.put("crmConfigurations", getCRMConfigsFromModule(crmModuleName));
                 }
+                break;
+            case ECOMMERCE:
+                if (shouldMountCifs(application)) {
+                    Map<String, Object> capabilities = new HashMap<>();
+                    capabilities.put("add", Lists.newArrayList("SYS_ADMIN", "DAC_READ_SEARCH"));
+                    valueFields.put("capabilities", capabilities);
+                }
+                break;
         }
         return valueFields;
+    }
+
+    private boolean shouldMountCifs(Application application) {
+        String mountCifs = application.getAdditionalParams().get("mountCifs");
+        return mountCifs != null && Boolean.valueOf(mountCifs);
     }
 
     private Map<String, Object> getPortMap(Port port) {
