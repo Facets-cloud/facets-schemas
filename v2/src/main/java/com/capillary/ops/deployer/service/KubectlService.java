@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
@@ -68,28 +69,33 @@ public class KubectlService {
                 .inNamespace(NAMESPACE)
                 .withName(deploymentName)
                 .get();
-        String serviceName = service.getMetadata().getName();
 
-        ObjectMeta serviceMetadata = service.getMetadata();
-        ServiceSpec serviceSpec = service.getSpec();
-        ApplicationServiceDetails.ServiceType serviceType = ApplicationServiceDetails.ServiceType.valueOf(serviceSpec.getType());
+        if (service != null) {
+            String serviceName = service.getMetadata().getName();
 
-        List<ApplicationServiceDetails.PortMapping> internalPortList = new ArrayList<>();
-        logger.info("fetching port mapping from service spec");
-        serviceSpec.getPorts().forEach(x -> internalPortList.add(
-                new ApplicationServiceDetails.PortMapping(
-                        x.getProtocol(), deploymentName + "." + NAMESPACE + x.getPort())));
-        logger.info("found internal port mapping: {}", internalPortList);
+            ObjectMeta serviceMetadata = service.getMetadata();
+            ServiceSpec serviceSpec = service.getSpec();
+            ApplicationServiceDetails.ServiceType serviceType = ApplicationServiceDetails.ServiceType.valueOf(serviceSpec.getType());
 
-        List<ApplicationServiceDetails.PortMapping> externalPortList = new ArrayList<>();
-        logger.info("fetching external port mapping for service: {}", serviceName);
-        List<LoadBalancerIngress> ingresses = service.getStatus().getLoadBalancer().getIngress();
-        ingresses.forEach(x -> internalPortList.forEach(p -> externalPortList.add(
-                new ApplicationServiceDetails.PortMapping(p.getProtocol(), x.getHostname() + ":" + p))));
-        logger.info("found external port mapping: {}", externalPortList);
+            List<ApplicationServiceDetails.PortMapping> internalPortList = new ArrayList<>();
+            logger.info("fetching port mapping from service spec");
+            serviceSpec.getPorts().forEach(x -> internalPortList.add(
+                    new ApplicationServiceDetails.PortMapping(
+                            x.getProtocol(), deploymentName + "." + NAMESPACE + x.getPort())));
+            logger.info("found internal port mapping: {}", internalPortList);
 
-        return new ApplicationServiceDetails(serviceMetadata.getName(), serviceType, internalPortList, externalPortList,
-                serviceMetadata.getLabels(), serviceSpec.getSelector(), serviceMetadata.getCreationTimestamp());
+            List<ApplicationServiceDetails.PortMapping> externalPortList = new ArrayList<>();
+            logger.info("fetching external port mapping for service: {}", serviceName);
+            List<LoadBalancerIngress> ingresses = service.getStatus().getLoadBalancer().getIngress();
+            ingresses.forEach(x -> internalPortList.forEach(p -> externalPortList.add(
+                    new ApplicationServiceDetails.PortMapping(p.getProtocol(), x.getHostname() + ":" + p))));
+            logger.info("found external port mapping: {}", externalPortList);
+
+            return new ApplicationServiceDetails(serviceMetadata.getName(), serviceType, internalPortList, externalPortList,
+                    serviceMetadata.getLabels(), serviceSpec.getSelector(), serviceMetadata.getCreationTimestamp());
+        }
+
+        return null;
     }
 
     private ApplicationDeploymentDetails getApplicationDeploymentDetails(String deploymentName, KubernetesClient kubernetesClient) {
@@ -100,19 +106,23 @@ public class KubectlService {
                 .withName(deploymentName)
                 .get();
 
-        ObjectMeta deploymentMetadata = deployment.getMetadata();
-        PodReplicationDetails replicationDetails = getReplicationDetails(deployment);
-        logger.info("found pod replication details for deployment: {}", deploymentName);
+        if (deployment != null) {
+            ObjectMeta deploymentMetadata = deployment.getMetadata();
+            PodReplicationDetails replicationDetails = getReplicationDetails(deployment);
+            logger.info("found pod replication details for deployment: {}", deploymentName);
 
-        Map<String, String> environmentConfigs = getEnvironmentConfigs(kubernetesClient, deploymentName);
-        logger.info("found environment configs for deployment: {}", deploymentName);
+            Map<String, String> environmentConfigs = getEnvironmentConfigs(kubernetesClient, deploymentName);
+            logger.info("found environment configs for deployment: {}", deploymentName);
 
-        return new ApplicationDeploymentDetails(
-                deploymentMetadata.getName(),
-                environmentConfigs,
-                replicationDetails,
-                deploymentMetadata.getLabels(),
-                deploymentMetadata.getCreationTimestamp());
+            return new ApplicationDeploymentDetails(
+                    deploymentMetadata.getName(),
+                    environmentConfigs,
+                    replicationDetails,
+                    deploymentMetadata.getLabels(),
+                    deploymentMetadata.getCreationTimestamp());
+        }
+
+        return null;
     }
 
     private Map<String, String> getEnvironmentConfigs(KubernetesClient kubernetesClient, String deploymentName) {

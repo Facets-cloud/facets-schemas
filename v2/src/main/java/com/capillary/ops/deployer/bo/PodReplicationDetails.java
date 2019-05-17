@@ -4,7 +4,7 @@ public class PodReplicationDetails {
 
     public PodReplicationDetails() {}
 
-    public PodReplicationDetails(int total, int ready, int unavailable, int available, int updated) {
+    public PodReplicationDetails(Integer total, Integer ready, Integer unavailable, Integer available, Integer updated) {
         this.total = total;
         this.ready = ready;
         this.unavailable = unavailable;
@@ -12,53 +12,53 @@ public class PodReplicationDetails {
         this.updated = updated;
     }
 
-    private int total;
+    private Integer total;
 
-    private int ready;
+    private Integer ready;
 
-    private int unavailable;
+    private Integer unavailable;
 
-    private int available;
+    private Integer available;
 
-    private int updated;
+    private Integer updated;
 
-    public int getTotal() {
+    public Integer getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(Integer total) {
         this.total = total;
     }
 
-    public int getReady() {
+    public Integer getReady() {
         return ready;
     }
 
-    public void setReady(int ready) {
+    public void setReady(Integer ready) {
         this.ready = ready;
     }
 
-    public int getUnavailable() {
+    public Integer getUnavailable() {
         return unavailable;
     }
 
-    public void setUnavailable(int unavailable) {
+    public void setUnavailable(Integer unavailable) {
         this.unavailable = unavailable;
     }
 
-    public int getAvailable() {
+    public Integer getAvailable() {
         return available;
     }
 
-    public void setAvailable(int available) {
+    public void setAvailable(Integer available) {
         this.available = available;
     }
 
-    public int getUpdated() {
+    public Integer getUpdated() {
         return updated;
     }
 
-    public void setUpdated(int updated) {
+    public void setUpdated(Integer updated) {
         this.updated = updated;
     }
 }
