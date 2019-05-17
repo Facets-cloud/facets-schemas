@@ -11,7 +11,7 @@ public class ApplicationServiceDetails {
 
     public ApplicationServiceDetails() {}
 
-    public ApplicationServiceDetails(String name, ServiceType serviceType, List<PortMapping> internalEndpoints, List<PortMapping> externalEndpoints, Map<String, String> labels, Map<String, String> selectors, String creationTimestamp) {
+    public ApplicationServiceDetails(String name, ServiceType serviceType, List<Endpoint> internalEndpoints, List<Endpoint> externalEndpoints, Map<String, String> labels, Map<String, String> selectors, String creationTimestamp) {
         this.name = name;
         this.serviceType = serviceType;
         this.internalEndpoints = internalEndpoints;
@@ -29,8 +29,8 @@ public class ApplicationServiceDetails {
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class PortMapping {
-        public PortMapping(String protocol, String endpoint) {
+    public static class Endpoint {
+        public Endpoint(String protocol, String endpoint) {
             this.protocol = protocol;
             this.endpoint = endpoint;
         }
@@ -60,9 +60,9 @@ public class ApplicationServiceDetails {
 
     private ServiceType serviceType;
 
-    private List<PortMapping> internalEndpoints = new ArrayList<>();
+    private List<Endpoint> internalEndpoints = new ArrayList<>();
 
-    private List<PortMapping> externalEndpoints = new ArrayList<>();
+    private List<Endpoint> externalEndpoints = new ArrayList<>();
 
     private Map<String, String> labels = new HashMap<>();
 
@@ -86,19 +86,19 @@ public class ApplicationServiceDetails {
         this.serviceType = serviceType;
     }
 
-    public List<PortMapping> getInternalEndpoints() {
+    public List<Endpoint> getInternalEndpoints() {
         return internalEndpoints;
     }
 
-    public void setInternalEndpoints(List<PortMapping> internalEndpoints) {
+    public void setInternalEndpoints(List<Endpoint> internalEndpoints) {
         this.internalEndpoints = internalEndpoints;
     }
 
-    public List<PortMapping> getExternalEndpoints() {
+    public List<Endpoint> getExternalEndpoints() {
         return externalEndpoints;
     }
 
-    public void setExternalEndpoints(List<PortMapping> externalEndpoints) {
+    public void setExternalEndpoints(List<Endpoint> externalEndpoints) {
         this.externalEndpoints = externalEndpoints;
     }
 

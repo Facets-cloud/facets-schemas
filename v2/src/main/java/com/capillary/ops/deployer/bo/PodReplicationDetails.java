@@ -23,7 +23,7 @@ public class PodReplicationDetails {
     private Integer updated;
 
     public Integer getTotal() {
-        return total;
+        return total == null ? 0 : total;
     }
 
     public void setTotal(Integer total) {
@@ -31,7 +31,7 @@ public class PodReplicationDetails {
     }
 
     public Integer getReady() {
-        return ready;
+        return ready == null ? 0 : ready;
     }
 
     public void setReady(Integer ready) {
@@ -39,7 +39,7 @@ public class PodReplicationDetails {
     }
 
     public Integer getUnavailable() {
-        return unavailable;
+        return unavailable == null ? 0 : unavailable;
     }
 
     public void setUnavailable(Integer unavailable) {
@@ -47,7 +47,7 @@ public class PodReplicationDetails {
     }
 
     public Integer getAvailable() {
-        return available;
+        return available == null ? 0 : available;
     }
 
     public void setAvailable(Integer available) {
@@ -55,7 +55,7 @@ public class PodReplicationDetails {
     }
 
     public Integer getUpdated() {
-        return updated;
+        return updated == null ? 0 : updated;
     }
 
     public void setUpdated(Integer updated) {

@@ -33,6 +33,8 @@ public class Application {
 
     private ApplicationFamily applicationFamily;
 
+    private String dnsPrefix;
+
     public String getId() {
         return id;
     }
@@ -105,4 +107,11 @@ public class Application {
         this.applicationFamily = applicationFamily;
     }
 
+    public String getDnsPrefix() {
+        return dnsPrefix;
+    }
+
+    public void setDnsPrefix(String dnsPrefix) {
+        this.dnsPrefix = dnsPrefix;
+    }
 }

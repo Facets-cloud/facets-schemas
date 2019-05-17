@@ -1,7 +1,6 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
-import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,18 +75,18 @@ public class KubectlService {
             ServiceSpec serviceSpec = service.getSpec();
             ApplicationServiceDetails.ServiceType serviceType = ApplicationServiceDetails.ServiceType.valueOf(serviceSpec.getType());
 
-            List<ApplicationServiceDetails.PortMapping> internalPortList = new ArrayList<>();
+            List<ApplicationServiceDetails.Endpoint> internalPortList = new ArrayList<>();
             logger.info("fetching port mapping from service spec");
             serviceSpec.getPorts().forEach(x -> internalPortList.add(
-                    new ApplicationServiceDetails.PortMapping(
-                            x.getProtocol(), deploymentName + "." + NAMESPACE + x.getPort())));
+                    new ApplicationServiceDetails.Endpoint(
+                            x.getProtocol(), deploymentName + "." + NAMESPACE + ":" + x.getPort())));
             logger.info("found internal port mapping: {}", internalPortList);
 
-            List<ApplicationServiceDetails.PortMapping> externalPortList = new ArrayList<>();
+            List<ApplicationServiceDetails.Endpoint> externalPortList = new ArrayList<>();
             logger.info("fetching external port mapping for service: {}", serviceName);
             List<LoadBalancerIngress> ingresses = service.getStatus().getLoadBalancer().getIngress();
             ingresses.forEach(x -> internalPortList.forEach(p -> externalPortList.add(
-                    new ApplicationServiceDetails.PortMapping(p.getProtocol(), x.getHostname() + ":" + p))));
+                    new ApplicationServiceDetails.Endpoint(p.getProtocol(), x.getHostname() + ":" + p.getEndpoint().split(":")[1]))));
             logger.info("found external port mapping: {}", externalPortList);
 
             return new ApplicationServiceDetails(serviceMetadata.getName(), serviceType, internalPortList, externalPortList,
