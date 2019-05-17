@@ -12,6 +12,8 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,23 +33,33 @@ public class HelmService implements IHelmService {
     @Autowired
     private SecretService secretService;
 
+    private static final Logger logger = LoggerFactory.getLogger(HelmService.class);
+
     @Override
     public void deploy(Application application, Deployment deployment) {
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
+        String applicationName = application.getName();
+
+        logger.info("deploying application: {}, for environment: {}", applicationName, environment.getName());
         ReleaseManager releaseManager = getReleaseManager(environment);
+        logger.debug("fetching the helm release manager");
         String releaseName = getReleaseName(application, environment);
+        logger.info("deploying with release name: {}", releaseName);
         Iterator<ListReleasesResponse> listReleasesResponseIterator =
                 releaseManager.list(ListReleasesRequest.newBuilder().setFilter("^" + releaseName + "$").build());
 
         try {
             if (listReleasesResponseIterator.hasNext() && listReleasesResponseIterator.next().getReleasesCount() > 0) {
+                logger.info("application {} already exists, upgrading", applicationName);
                 releaseManager.close();
                 upgrade(application, deployment);
             } else {
+                logger.info("deploying application {} for the first time", applicationName);
                 releaseManager.close();
                 install(application, deployment);
             }
         } catch (Exception e) {
+            logger.error("got error while deploying application: {}", applicationName, e);
             throw new RuntimeException(e);
         }
     }
@@ -62,10 +74,15 @@ public class HelmService implements IHelmService {
     private void install(Application application, Deployment deployment) throws Exception {
         DirectoryChartLoader chartLoader = new DirectoryChartLoader();
         Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
+        logger.debug("loaded the base chart");
+
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = getValuesYaml(environment, application, deployment);
+        logger.info("fetched the values for helm chart");
+
         String releaseName = getReleaseName(application, environment);
+        logger.info("deploying with release name: {}", releaseName);
         final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
         requestBuilder.setName(releaseName); // Set the Helm release name
@@ -79,10 +96,16 @@ public class HelmService implements IHelmService {
     private void upgrade(Application application, Deployment deployment) throws Exception {
         DirectoryChartLoader chartLoader = new DirectoryChartLoader();
         Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
+        logger.debug("loaded the base chart for upgrade step");
+
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = getValuesYaml(environment, application, deployment);
+        logger.info("fetched the values for helm chart for upgrade step");
+
         String releaseName = getReleaseName(application, environment);
+        logger.info("deploying the upgrade with release name: {}", releaseName);
+
         final UpdateReleaseRequest.Builder requestBuilder = UpdateReleaseRequest.newBuilder();
         requestBuilder.setTimeout(300L);
         requestBuilder.setName(releaseName); // Set the Helm release name
@@ -105,6 +128,8 @@ public class HelmService implements IHelmService {
         yaml.put("lbType", application.getLoadBalancerType().name().toLowerCase());
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
+        logger.info("loaded values for release: {}", yaml);
+
         yaml.put("configurations", deployment.getConfigurations());
         yaml.put("credentials", getCredentialsMap(environment, application));
         yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
@@ -128,6 +153,7 @@ public class HelmService implements IHelmService {
         Map<String, Object> valueFields = new HashMap<>();
         switch (application.getApplicationFamily()) {
             case CRM:
+                logger.info("loading CRM specific attributes");
                 if(deployment.getConfigurations().containsKey("crmModuleName")) {
                     String crmModuleName = deployment.getConfigurations().get("crmModuleName");
                     valueFields.put("crmConfigurations", getCRMConfigsFromModule(crmModuleName));
