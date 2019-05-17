@@ -111,25 +111,10 @@ public class HelmService implements IHelmService {
     }
 
     private void install(Application application, Deployment deployment) throws Exception {
-        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
-        logger.debug("loaded the base chart");
-
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
-        ReleaseManager releaseManager = getReleaseManager(environment);
-        String valuesYaml = getValuesYaml(environment, application, deployment);
-        logger.info("fetched the values for helm chart");
-
+        Map<String, Object> valueMap = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
-        logger.info("deploying with release name: {}", releaseName);
-        final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
-        requestBuilder.setTimeout(300L);
-        requestBuilder.setName(releaseName); // Set the Helm release name
-        requestBuilder.setWait(false); // Wait for Pods to be ready
-        requestBuilder.getValuesBuilder().setRaw(valuesYaml);
-        final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chart);
-        final Release release = releaseFuture.get().getRelease();
-        releaseManager.close();
+        install(environment, releaseName, "capillary-base", valueMap);
     }
 
     private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
@@ -151,29 +136,13 @@ public class HelmService implements IHelmService {
     }
 
     private void upgrade(Application application, Deployment deployment) throws Exception {
-        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
-        logger.debug("loaded the base chart for upgrade step");
-
         Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
-        ReleaseManager releaseManager = getReleaseManager(environment);
-        String valuesYaml = getValuesYaml(environment, application, deployment);
-        logger.info("fetched the values for helm chart for upgrade step");
-
+        Map<String, Object> valueMap = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
-        logger.info("deploying the upgrade with release name: {}", releaseName);
-
-        final UpdateReleaseRequest.Builder requestBuilder = UpdateReleaseRequest.newBuilder();
-        requestBuilder.setTimeout(300L);
-        requestBuilder.setName(releaseName); // Set the Helm release name
-        requestBuilder.setWait(false); // Wait for Pods to be ready
-        requestBuilder.getValuesBuilder().setRaw(valuesYaml);
-        final Future<UpdateReleaseResponse> releaseFuture = releaseManager.update(requestBuilder, chart);
-        final Release release = releaseFuture.get().getRelease();
-        releaseManager.close();
+        upgrade(environment, releaseName, "capillary-base", valueMap);
     }
 
-    private String getValuesYaml(Environment environment, Application application, Deployment deployment) {
+    private Map<String, Object> getValuesYaml(Environment environment, Application application, Deployment deployment) {
         final Map<String, Object> yaml = new LinkedHashMap<>();
         yaml.put("image", deployment.getImage());
         yaml.put("podCPULimit",deployment.getPodSize().getCpu());
@@ -190,8 +159,7 @@ public class HelmService implements IHelmService {
         yaml.put("configurations", deployment.getConfigurations());
         yaml.put("credentials", getCredentialsMap(environment, application));
         yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
-        final String yamlString = new Yaml().dump(yaml);
-        return yamlString;
+        return yaml;
     }
 
     private Map<String, String> getCredentialsMap(Environment environment, Application application) {

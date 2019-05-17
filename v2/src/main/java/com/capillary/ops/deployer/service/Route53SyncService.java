@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Environment;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.ImmutableMap;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentList;
@@ -40,11 +41,19 @@ public class Route53SyncService {
 
             environments.parallelStream().forEach(environment -> {
                 if (environment.getPrivateZoneId() != null) {
-                    createSyncIfAbsent(environment, "private");
+                    try {
+                        createSyncIfAbsent(environment, "private");
+                    } catch (NotFoundException e) {
+                        logger.error("error while creating dns sync", e);
+                    }
                 }
 
                 if (environment.getPublicZoneId() != null) {
-                    createSyncIfAbsent(environment, "public");
+                    try {
+                        createSyncIfAbsent(environment, "public");
+                    } catch (NotFoundException e) {
+                        logger.error("error while creating dns sync", e);
+                    }
                 }
             });
         }
@@ -52,19 +61,25 @@ public class Route53SyncService {
 
     private void createSyncIfAbsent(Environment environment, String zoneType) {
         String releaseName = environment.getName() + "-" + zoneType + "-route53-dns";
-        if (!isDnsSyncPresent(environment, zoneType, releaseName) && createAwsSecret(environment)) {
+        if (!isDnsSyncPresent(environment, zoneType, releaseName)) {
             Map<String, Object> valueMap = getValuesMap(environment, zoneType);
             helmService.deploy(environment, releaseName, "route53-dns", valueMap);
         }
     }
 
     private Map<String, Object> getValuesMap(Environment environment, String zoneType) {
+        if (environment.getAwsAccessKey() == null || environment.getAwsSecretKey() == null) {
+            throw new NotFoundException("cannot read aws secrets, please update the access and secret keys in cluster details");
+        }
+
         Map<String, Object> app = new LinkedHashMap<>();
         app.put("environment", environment.getName());
 
         Map<String, Object> aws = new LinkedHashMap<>();
         aws.put("zoneId", environment.getPrivateZoneId());
         aws.put("zoneType", zoneType);
+        aws.put("accessKey", environment.getAwsAccessKey());
+        aws.put("secretKey", environment.getAwsSecretKey());
 
         Map<String, Object> valueMap = new LinkedHashMap<>();
         valueMap.put("app", app);
