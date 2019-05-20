@@ -158,8 +158,21 @@ public class HelmService implements IHelmService {
 
         yaml.put("configurations", deployment.getConfigurations());
         yaml.put("credentials", getCredentialsMap(environment, application));
+
+        String dnsPrefix = application.getDnsPrefix();
+        addZoneDns(application, yaml, Application.DnsType.PRIVATE, getPrivateZoneDns(environment, dnsPrefix));
+        addZoneDns(application, yaml, Application.DnsType.PUBLIC, getPublicZoneDns(environment, dnsPrefix));
+
         yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
         return yaml;
+    }
+
+    private void addZoneDns(Application application, Map<String, Object> yaml, Application.DnsType dnsType, String zoneDns) {
+        if (dnsType.equals(application.getDnsType()) && zoneDns != null) {
+            Map<String, Object> aws = new HashMap<>();
+            aws.put("domainName", zoneDns);
+            yaml.put("aws", aws);
+        }
     }
 
     private Map<String, String> getCredentialsMap(Environment environment, Application application) {
@@ -234,6 +247,32 @@ public class HelmService implements IHelmService {
             }
         }
         return moduleDependencyList.get(crmModuleName);
+    }
+
+    public String getPublicZoneDns(Environment environment, String applicationPrefix) {
+        List<String> items = Arrays.asList(applicationPrefix, environment.getPublicZoneDns(), environment.getPublicZoneId(), environment.getClusterPrefix());
+        if (anyItemNullOrEmpty(items)) return null;
+
+        return environment.getClusterPrefix() + "-" +
+                new StringJoiner(".")
+                .add(applicationPrefix)
+                .add(environment.getPublicZoneDns())
+                .toString();
+    }
+
+    public String getPrivateZoneDns(Environment environment, String applicationPrefix) {
+        List<String> items = Arrays.asList(applicationPrefix, environment.getPrivateZoneId(), environment.getPrivateZoneDns());
+        if (anyItemNullOrEmpty(items)) return null;
+
+        return applicationPrefix + "." + environment.getPrivateZoneDns();
+    }
+
+    private boolean anyItemNullOrEmpty(List<String> items) {
+        if (items.contains(null) || items.contains("")) {
+            logger.info("found one of the fields null or empty");
+            return true;
+        }
+        return false;
     }
 
 }

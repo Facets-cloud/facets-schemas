@@ -3,20 +3,23 @@ package com.capillary.ops.deployer.bo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Map;
 
 @CompoundIndexes({
         @CompoundIndex(name = "unique_application", unique = true, def = "{'name':1, 'applicationFamily':1}")
 })
 @Document
 public class Application {
+    public enum DnsType {
+        PUBLIC,
+        PRIVATE
+    }
+
     @Id
     private String id;
 
@@ -44,6 +47,8 @@ public class Application {
     private ApplicationFamily applicationFamily;
 
     private String dnsPrefix;
+
+    private DnsType dnsType;
 
     public String getId() {
         return id;
@@ -123,5 +128,13 @@ public class Application {
 
     public void setDnsPrefix(String dnsPrefix) {
         this.dnsPrefix = dnsPrefix;
+    }
+
+    public DnsType getDnsType() {
+        return dnsType;
+    }
+
+    public void setDnsType(DnsType dnsType) {
+        this.dnsType = dnsType;
     }
 }

@@ -6,6 +6,10 @@ metadata:
   {{ "annotations:" }}
     {{ "service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0" }}
   {{- end }}
+  {{- if not .Values.aws.domainName }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.aws.domainName }}
+  {{- end }}
   labels:
     app: {{ .Release.Name  }}
     chart: {{ template "capillary-base.chart" . }}
