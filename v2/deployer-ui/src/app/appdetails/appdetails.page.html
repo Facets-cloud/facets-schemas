@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{application.name}}</ion-title>
+    <ion-button slot="end" href="/{{application.applicationFamily}}/applications/{{application.id}}/build"><ion-icon name="build"></ion-icon></ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-card class="ion-justify-content-center">
+        <ion-card-header><b>Application Details</b></ion-card-header>
+        <ion-item>
+          <ion-label><b>Name</b></ion-label>
+          {{application.name}}
+        </ion-item>
+        <ion-item>
+            <ion-label><b>VCS</b></ion-label>
+            <a href="{{application.repositoryUrl}}">{{application.vcsProvider | lowercase}}</a>
+        </ion-item>
+        <ion-item>
+            <ion-label><b>Application Subdirectory</b></ion-label>
+            {{application.applicationRootDirectory}}
+        </ion-item>
+        <ion-item>
+            <ion-label><b>Application Type</b></ion-label>
+            {{application.buildType}}
+        </ion-item>
+        <ion-item>
+            <ion-label><b>Loadbalancer Type</b></ion-label>
+            {{application.loadBalancerType}}
+        </ion-item>
+      </ion-card>
+      <ion-card *ngFor="let port of application.ports">
+          <ion-card-header><b>{{port.name | uppercase}} Port</b></ion-card-header>
+          <ion-item>
+              <ion-label><b>Container Port</b></ion-label>
+              {{port.containerPort}}
+          </ion-item>
+          <ion-item>
+              <ion-label><b>Loadbalancer Port</b></ion-label>
+              {{port.lbPort}}
+          </ion-item>
+      </ion-card>
+</ion-content>

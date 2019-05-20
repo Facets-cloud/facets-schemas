@@ -1,0 +1,13 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder">
+            <timestampPattern>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <requestHeaders>request_headers</requestHeaders>
+                <responseHeaders>response_headers</responseHeaders>
+            </fieldNames>
+        </encoder>
+    </appender>
+    <appender-ref ref="CONSOLE" />
+</configuration>

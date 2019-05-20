@@ -1,0 +1,79 @@
+{{- $releaseName := .Release.Name}}
+{{- $crmModuleName := .Values.crmModuleName}}
+
+  apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Release.Name  }}
+  labels:
+    app: {{ .Release.Name  }}
+    chart: {{ template "capillary-base.chart" . }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        release: {{ .Release.Name }}
+    spec:
+{{- if .Values.crmModuleName}}
+{{- template "crmConfigVolumes" . }}
+{{- end }}
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+              {{- range .Values.ports }}
+              {{- with . }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+              protocol: TCP
+              {{- end }}
+              {{- end }}
+{{- if or .Values.podCPULimit .Values.podMemoryLimit }}
+          resources:
+            limits:
+            {{- if .Values.podCPULimit }}
+              cpu: {{ .Values.podCPULimit }}
+            {{- end}}
+            {{- if .Values.podMemoryLimit }}
+              memory: {{ .Values.podMemoryLimit }}Gi
+            {{- end}}
+{{- end }}
+{{- if .Values.crmModuleName}}
+{{- template "crmConfigVolumesMounts" . }}
+{{- end }}
+          env:
+{{- range $k, $v := .Values.configurations }}
+          - name: {{ $k }}
+            valueFrom:
+              secretKeyRef:
+                name: "{{ $releaseName }}-configs"
+                key: {{ $k }}
+{{- end }}
+{{- range $k, $v := .Values.credentials }}
+          - name: {{ $k }}
+            valueFrom:
+              secretKeyRef:
+                name: "{{ $releaseName }}-credentials"
+                key: {{ $k }}
+{{- end }}
+{{- template "crmConfigurations" . }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+        environment: {{ .Values.nodeSelector }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

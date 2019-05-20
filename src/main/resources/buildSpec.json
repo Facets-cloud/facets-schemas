@@ -1,0 +1,30 @@
+{
+  "version": 0.2,
+  "phases": {
+    "install": {
+      "commands": [
+        "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&",
+        "timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\""
+      ]
+    },
+    "pre_build": {
+      "commands": []
+    },
+    "build": {
+      "commands": [
+        "$(aws ecr get-login --region us-east-1 --no-include-email)",
+        "cd prototype",
+        "mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U -Pdocker-cibuild"
+      ]
+    },
+    "post_build": {
+      "commands": []
+    }
+  },
+  "artifacts": {},
+  "cache": {
+    "paths": [
+      "/root/.m2/**/*"
+    ]
+  }
+}

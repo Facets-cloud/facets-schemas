@@ -6,7 +6,9 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.Map;
@@ -26,6 +28,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.client.RestTemplate;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.codebuild.CodeBuildClient;
+import software.amazon.awssdk.services.ecr.EcrClient;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -117,5 +124,32 @@ public class App {
   public ExecutorService executorServicePool() {
     ExecutorService pool = Executors.newFixedThreadPool(20);
     return pool;
+  }
+
+  @Bean(name = "codeBuildClient")
+  public CodeBuildClient codeBuildClient() throws Exception {
+    CodeBuildClient codeBuildClient =
+        CodeBuildClient.builder()
+            .region(Region.US_EAST_1)
+            .credentialsProvider(
+                ProfileCredentialsProvider.builder().profileName("freemium").build())
+            .build();
+    return codeBuildClient;
+  }
+
+  @Bean(name = "cloudWatchLogsClient")
+  public CloudWatchLogsClient cloudWatchLogsClient() throws Exception {
+    CloudWatchLogsClient cloudWatchClient =
+        CloudWatchLogsClient.builder()
+            .region(Region.US_EAST_1)
+            .credentialsProvider(
+                ProfileCredentialsProvider.builder().profileName("freemium").build())
+            .build();
+    return cloudWatchClient;
+  }
+
+  @Bean
+  public EcrClient getEcrClient() {
+    return EcrClient.builder().region(Region.US_EAST_1).build();
   }
 }
