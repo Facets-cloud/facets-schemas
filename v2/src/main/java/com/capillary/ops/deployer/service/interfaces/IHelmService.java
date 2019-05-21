@@ -12,4 +12,6 @@ public interface IHelmService {
     public void deploy(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap);
 
     String getReleaseName(Application application, Environment environment);
+
+    void rollback(Application application, Environment environmentName);
 }

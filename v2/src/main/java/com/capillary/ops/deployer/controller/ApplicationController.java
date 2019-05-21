@@ -93,6 +93,10 @@ public class ApplicationController {
                                         @RequestBody Deployment deployment,
                                         @PathVariable("applicationId") String applicationId) {
         deployment.setApplicationId(applicationId);
+        if(deployment.isRollbackEnabled()){
+            applicationFacade.rollbackDeployment(applicationFamily, environment, applicationId);
+            return null;
+        }
         return applicationFacade.createDeployment(applicationFamily, environment, applicationId, deployment);
     }
 

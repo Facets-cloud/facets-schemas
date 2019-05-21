@@ -218,4 +218,10 @@ public class ApplicationFacade {
         return savedSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList())
                 .containsAll(applicationSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList()));
     }
+
+    public void rollbackDeployment(ApplicationFamily applicationFamily, String environmentName, String applicationId){
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = applicationFamily.getEnvironment(environmentName);
+        helmService.rollback(application,environment);
+    }
 }
