@@ -14,6 +14,7 @@ public class Deployment {
     private Map<String, String> configurations;
     private Date timestamp;
     private PodSize podSize;
+    private boolean rollbackEnabled;
 
     public String getApplicationId() {
         return applicationId;
@@ -69,5 +70,13 @@ public class Deployment {
 
     public void setPodSize(PodSize podSize) {
         this.podSize = podSize;
+    }
+
+    public boolean isRollbackEnabled() {
+        return rollbackEnabled;
+    }
+
+    public void setRollbackEnabled(boolean rollbackEnabled) {
+        this.rollbackEnabled = rollbackEnabled;
     }
 }

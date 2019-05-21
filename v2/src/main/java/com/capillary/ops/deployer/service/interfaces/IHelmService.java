@@ -8,4 +8,6 @@ public interface IHelmService {
     void deploy(Application application, Deployment deployment);
 
     String getReleaseName(Application application, Environment environment);
+
+    void rollback(Application application, Environment environmentName);
 }

@@ -21,4 +21,9 @@ public class MockHelmService implements IHelmService {
     public String getReleaseName(Application application, Environment environment) {
         return application.getName();
     }
+
+    @Override
+    public void rollback(Application application, Environment environmentName){
+
+    }
 }

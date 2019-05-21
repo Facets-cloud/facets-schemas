@@ -211,4 +211,31 @@ public class HelmService implements IHelmService {
         return moduleDependencyList.get(crmModuleName);
     }
 
+    @Override
+    public void rollback(Application application, Environment environment) {
+        ReleaseManager releaseManager = getReleaseManager(environment);
+        String releaseName = getReleaseName(application,environment);
+        Iterator<ListReleasesResponse> listReleasesResponseIterator =
+                releaseManager.list(ListReleasesRequest.newBuilder().setFilter("^" + releaseName + "$").build());
+        int releaseStatus = listReleasesResponseIterator.next().getReleasesCount();
+
+        try {
+            if (releaseStatus > 0) {
+                logger.info("rollback {} to previous release",releaseName);
+                final RollbackReleaseRequest.Builder rollbackRequest = RollbackReleaseRequest.newBuilder();
+                rollbackRequest.setName(releaseName);
+                rollbackRequest.setTimeout(300L);
+                rollbackRequest.setWait(false);
+                rollbackRequest.setRecreate(true);
+                rollbackRequest.setVersion(0); // 0 -> Rollback to previous revision
+                final Future<RollbackReleaseResponse> rollbackFuture = releaseManager.rollback(rollbackRequest.build());
+                final Release release = rollbackFuture.get().getRelease();
+                releaseManager.close();
+            } else {
+                releaseManager.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
