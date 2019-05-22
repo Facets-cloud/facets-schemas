@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class ApplicationController {
 
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
-    public Application createApplication(@RequestBody  Application application,
+    public Application createApplication(@Valid @RequestBody  Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
         application.setApplicationFamily(applicationFamily);
         return applicationFacade.createApplication(application);
@@ -52,10 +53,10 @@ public class ApplicationController {
     }
 
 
-    @RolesAllowed("BUILDERS")
+    @RolesAllowed({"BUILDERS", "ADMIN"})
     @PostMapping(value = "/{applicationFamily}/applications/{applicationId}/builds", produces = "application/json")
     public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                       @PathVariable("applicationId") String applicationId, @RequestBody Build build) {
+                       @PathVariable("applicationId") String applicationId, @Valid @RequestBody Build build) {
         build.setApplicationId(applicationId);
         return applicationFacade.createBuild(applicationFamily, build);
     }
