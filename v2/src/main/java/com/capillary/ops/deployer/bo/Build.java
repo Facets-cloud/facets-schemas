@@ -19,6 +19,7 @@ public class Build {
     private StatusType status;
     private Map<String, String> environmentVariable;
     private Long timestamp = new Date().getTime();
+    private String image;
 
     public String getApplicationId() {
         return applicationId;
@@ -74,5 +75,13 @@ public class Build {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

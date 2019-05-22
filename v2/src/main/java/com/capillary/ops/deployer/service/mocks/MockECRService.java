@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,5 +22,10 @@ public class MockECRService implements IECRService {
     @Override
     public List<String> listImages(Application application) {
         return Arrays.asList("someimage");
+    }
+
+    @Override
+    public String findImageBetweenTimes(Application application, Instant from, Instant to) {
+        return "someimage";
     }
 }
