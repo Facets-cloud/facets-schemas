@@ -42,7 +42,7 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getCachePaths() {
-        return Arrays.asList("/root/.nuget/NuGet/packages/*");
+        return Arrays.asList("/root/.nuget/NuGet/packages/**/*");
     }
 
     @Override
