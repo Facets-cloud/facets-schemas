@@ -6,18 +6,18 @@ import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
-import software.amazon.awssdk.services.ecr.model.CreateRepositoryRequest;
-import software.amazon.awssdk.services.ecr.model.ListImagesRequest;
-import software.amazon.awssdk.services.ecr.model.SetRepositoryPolicyRequest;
+import software.amazon.awssdk.services.ecr.model.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,13 +43,27 @@ public class ECRService implements IECRService {
     public List<String> listImages(Application application) {
         String repositoryName = getRepositoryName(application);
         List<String> images
-                = ecrClient.listImages(ListImagesRequest.builder()
-                .repositoryName(repositoryName).maxResults(1000).build())
-                .imageIds().stream()
-                .filter(x-> x.imageTag() != null)
-                .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTag())
+                = ecrClient.describeImages(DescribeImagesRequest.builder()
+                .repositoryName(repositoryName).maxResults(10).build())
+                .imageDetails().stream()
+                .filter(x-> x.imageTags() != null && ! x.imageTags().isEmpty())
+                .sorted(Comparator.comparing(ImageDetail::imagePushedAt).reversed())
+                .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTags().get(0))
                 .collect(Collectors.toList());
         return images;
+    }
+
+    @Override
+    public String findImageBetweenTimes(Application application, Instant from, Instant to) {
+        String repositoryName = getRepositoryName(application);
+        Optional<String> imageOptional = ecrClient.describeImages(DescribeImagesRequest.builder()
+                .repositoryName(repositoryName).maxResults(10).build())
+                .imageDetails().stream()
+                .filter(x -> x.imageTags() != null && !x.imageTags().isEmpty())
+                .filter(x -> x.imagePushedAt().isAfter(from) && x.imagePushedAt().isBefore(to))
+                .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTags().get(0))
+                .findFirst();
+        return imageOptional.isPresent() ? imageOptional.get() : null;
     }
 
     private String getRepositoryName(Application application) {

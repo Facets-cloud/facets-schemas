@@ -19,7 +19,6 @@ public class MockCodeBuildService implements ICodeBuildService {
 
     @Override
     public void createProject(Application application) {
-
     }
 
     @Override

@@ -3,11 +3,12 @@ package com.capillary.ops.deployer.controller;
 import com.capillary.ops.deployer.bo.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -19,5 +20,17 @@ public class ErrorController {
           NoSuchElementException ex, WebRequest request) {
     return new ResponseEntity<>(
         new ErrorDetails("Requested resource not found", "404"), HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorDetails> applicationAlreadyExists(
+          Exception ex, WebRequest request) throws Exception {
+    throw ex;
+  }
+
+  @ResponseStatus(HttpStatus.NOT_FOUND)  // 404
+  @ExceptionHandler(NoHandlerFoundException.class)
+  public ModelAndView handleNoHandlerFoundException() {
+    return new ModelAndView("/");
   }
 }

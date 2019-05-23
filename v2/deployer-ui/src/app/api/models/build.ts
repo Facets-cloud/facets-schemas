@@ -6,4 +6,5 @@ export interface Build {
   id?: string;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
   tag?: string;
+  timestamp?: number;
 }

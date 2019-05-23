@@ -13,6 +13,7 @@ import { Build } from '../models/build';
 import { LogEvent } from '../models/log-event';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { Deployment } from '../models/deployment';
+import { ApplicationSecret } from '../models/application-secret';
 import { InputStreamResource } from '../models/input-stream-resource';
 
 /**
@@ -36,6 +37,9 @@ class ApplicationControllerService extends __BaseService {
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getDeploymentStatusUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus';
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
+  static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
+  static readonly initializeApplicationSecretsUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
+  static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
   static readonly getDumpFileListUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationName}/dumps';
   static readonly downloadDumpFileUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download';
 
@@ -685,6 +689,172 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetApplicationSecretsUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationSecretsUsingGETResponse(params: ApplicationControllerService.GetApplicationSecretsUsingGETParams): __Observable<__StrictHttpResponse<Array<ApplicationSecret>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ApplicationSecret>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetApplicationSecretsUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationSecretsUsingGET(params: ApplicationControllerService.GetApplicationSecretsUsingGETParams): __Observable<Array<ApplicationSecret>> {
+    return this.getApplicationSecretsUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<ApplicationSecret>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.InitializeApplicationSecretsUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationSecrets`: applicationSecrets
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  initializeApplicationSecretsUsingPOSTResponse(params: ApplicationControllerService.InitializeApplicationSecretsUsingPOSTParams): __Observable<__StrictHttpResponse<Array<ApplicationSecret>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.applicationSecrets;
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ApplicationSecret>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.InitializeApplicationSecretsUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationSecrets`: applicationSecrets
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  initializeApplicationSecretsUsingPOST(params: ApplicationControllerService.InitializeApplicationSecretsUsingPOSTParams): __Observable<Array<ApplicationSecret>> {
+    return this.initializeApplicationSecretsUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as Array<ApplicationSecret>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationSecrets`: applicationSecrets
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  updateApplicationSecretsUsingPUTResponse(params: ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams): __Observable<__StrictHttpResponse<Array<ApplicationSecret>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.applicationSecrets;
+
+
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ApplicationSecret>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationSecrets`: applicationSecrets
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  updateApplicationSecretsUsingPUT(params: ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams): __Observable<Array<ApplicationSecret>> {
+    return this.updateApplicationSecretsUsingPUTResponse(params).pipe(
+      __map(_r => _r.body as Array<ApplicationSecret>)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -979,6 +1149,79 @@ module ApplicationControllerService {
      * deployment
      */
     deployment: Deployment;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getApplicationSecretsUsingGET
+   */
+  export interface GetApplicationSecretsUsingGETParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for initializeApplicationSecretsUsingPOST
+   */
+  export interface InitializeApplicationSecretsUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationSecrets
+     */
+    applicationSecrets: Array<ApplicationSecret>;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for updateApplicationSecretsUsingPUT
+   */
+  export interface UpdateApplicationSecretsUsingPUTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationSecrets
+     */
+    applicationSecrets: Array<ApplicationSecret>;
 
     /**
      * applicationId

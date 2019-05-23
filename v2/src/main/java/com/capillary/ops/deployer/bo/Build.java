@@ -3,6 +3,8 @@ package com.capillary.ops.deployer.bo;
 import org.springframework.data.annotation.Id;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.Map;
 
 public class Build {
@@ -10,10 +12,14 @@ public class Build {
     @Id
     private String id;
     private String codeBuildId;
+    @NotNull
     private String applicationId;
+    @NotNull
     private String tag;
     private StatusType status;
     private Map<String, String> environmentVariable;
+    private Long timestamp = new Date().getTime();
+    private String image;
 
     public String getApplicationId() {
         return applicationId;
@@ -61,5 +67,21 @@ public class Build {
 
     public void setEnvironmentVariable(Map<String, String> environmentVariable) {
         this.environmentVariable = environmentVariable;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

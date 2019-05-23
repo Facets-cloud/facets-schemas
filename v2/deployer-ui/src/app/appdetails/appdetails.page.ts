@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
 import { Application } from '../api/models';
-import { NavController } from '@ionic/angular';
+import { NavController, MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-appdetails',
@@ -14,9 +14,10 @@ export class AppdetailsPage implements OnInit {
   application: Application;
 
   constructor(private applicationControllerService: ApplicationControllerService, private activatedRoute: ActivatedRoute,
-    private navController: NavController) { }
+    private navController: NavController, private menuController: MenuController) { }
 
   ngOnInit() {
+    this.menuController.enable(true);
     this.activatedRoute.paramMap.subscribe(
       params => {
         var applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");

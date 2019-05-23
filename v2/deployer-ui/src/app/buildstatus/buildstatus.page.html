@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Build Status</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- <ion-card class="ion-justify-content-center">
+    <ion-item>
+      <ion-label><b>Status</b></ion-label>
+      {{build?.status | uppercase}}
+    </ion-item> -->
+  <ion-grid>
+      <ion-row>
+          <ion-col size="4"><b>Status</b></ion-col>
+          <ion-col>{{build?.status | uppercase}}</ion-col>
+        </ion-row>
+      <ion-row *ngFor="let log of logs">
+        <ion-col size="4">{{log.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</ion-col>
+        <ion-col>{{log.message}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  <!-- </ion-card> -->
+</ion-content>

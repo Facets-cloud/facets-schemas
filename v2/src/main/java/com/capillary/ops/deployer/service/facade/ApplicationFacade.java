@@ -85,19 +85,25 @@ public class ApplicationFacade {
     public Build getBuild(ApplicationFamily applicationFamily, String applicationId, String buildId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build build = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
-        return getBuildDetails(build);
+        return getBuildDetails(application, build);
     }
 
-    private Build getBuildDetails(Build build) {
-        StatusType status = codeBuildService.getBuild(build.getCodeBuildId()).buildStatus();
+    private Build getBuildDetails(Application application, Build build) {
+        software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
+                codeBuildService.getBuild(build.getCodeBuildId());
+        StatusType status = codeBuildServiceBuild.buildStatus();
         build.setStatus(status);
+        if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED)) {
+            build.setImage(ecrService.findImageBetweenTimes(application,
+                    codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+        }
         return build;
     }
 
     public List<Build> getBuilds(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         List<Build> builds = buildRepository.findByApplicationId(application.getId());
-        builds = builds.stream().parallel().map(x -> getBuildDetails(x)).collect(Collectors.toList());
+        builds = builds.stream().parallel().map(x -> getBuildDetails(application, x)).collect(Collectors.toList());
         return builds;
     }
 

@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;
 
@@ -19,18 +22,25 @@ public class Application {
 
     private String name;
 
+    @NotNull
     private VCSProvider vcsProvider;
 
+    @NotNull
     private String repositoryUrl;
 
+    @NotBlank
     private String applicationRootDirectory;
 
+    @NotNull
     private List<Port> ports;
 
+    @NotNull
     private LoadBalancerType loadBalancerType;
 
+    @NotNull
     private BuildType buildType;
 
+    @NotNull
     private ApplicationFamily applicationFamily;
 
     private String dnsPrefix;
