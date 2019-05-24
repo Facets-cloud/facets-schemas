@@ -142,3 +142,52 @@ Mount standard config volumes for CRM Apps
           - mountPath: /etc/capillary/service-discovery/timeline-sharding-policy
             name: timeline-sharding-policy
 {{- end -}}
+
+{{/*
+Liveness and readiness probes
+*/}}
+{{- define "livenessTCP" }}
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.livenessInitialDelay }}
+            periodSeconds: {{ .Values.livenessPeriod }}
+            successThreshold: 1
+            tcpSocket:
+              port: {{ .Values.livenessPort }}
+            timeoutSeconds: 1
+{{- end -}}
+
+{{- define "livenessHTTPGet" }}
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.livenessInitialDelay }}
+            periodSeconds: {{ .Values.livenessPeriod }}
+            successThreshold: 1
+            httpGet:
+              path: {{ .Values.livenessHTTPEndpoint }}
+              port: {{ .Values.livenessPort }}
+            timeoutSeconds: 1
+{{- end -}}
+
+{{- define "readinessTCP" }}
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.readinessInitialDelay }}
+            periodSeconds: {{ .Values.readinessPeriod }}
+            successThreshold: 1
+            tcpSocket:
+              port: {{ .Values.readinessPort }}
+            timeoutSeconds: 1
+{{- end -}}
+
+{{- define "readinessHTTPGet" }}
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.readinessInitialDelay }}
+            periodSeconds: {{ .Values.readinessPeriod }}
+            successThreshold: 1
+            httpGet:
+              path: {{ .Values.readinessHTTPEndpoint }}
+              port: {{ .Values.readinessPort }}
+            timeoutSeconds: 1
+{{- end -}}

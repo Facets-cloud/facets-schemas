@@ -21,6 +21,7 @@ public class Deployment {
     private List<EnvironmentVariable> configurations;
     private Date timestamp = new Date();
     private PodSize podSize;
+    private HPA horizontalPodAutoscaler;
     private boolean rollbackEnabled;
     private String deployedBy;
 
@@ -78,6 +79,14 @@ public class Deployment {
 
     public void setPodSize(PodSize podSize) {
         this.podSize = podSize;
+    }
+
+    public HPA getHorizontalPodAutoscaler() {
+        return horizontalPodAutoscaler;
+    }
+
+    public void setHorizontalPodAutoscaler(HPA horizontalPodAutoscaler) {
+        this.horizontalPodAutoscaler = horizontalPodAutoscaler;
     }
 
     public boolean isRollbackEnabled() {

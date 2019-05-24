@@ -81,6 +81,18 @@ spec:
                 key: {{ $k }}
 {{- end }}
 {{- template "crmConfigurations" . }}
+{{- if .Values.enableLivenessTCP}}
+{{- template "livenessTCP" . }}
+{{- end }}
+{{- if .Values.enableLivenessHTTP}}
+{{- template "livenessHTTPGet" . }}
+{{- end }}
+{{- if .Values.enableReadinessTCP}}
+{{- template "readinessTCP" . }}
+{{- end }}
+{{- if .Values.enableReadinessHTTP}}
+{{- template "readinessHTTPGet" . }}
+{{- end }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
         environment: {{ .Values.nodeSelector }}

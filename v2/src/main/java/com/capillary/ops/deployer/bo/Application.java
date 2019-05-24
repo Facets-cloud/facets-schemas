@@ -49,6 +49,8 @@ public class Application {
 
     private String dnsPrefix;
 
+    private HealthCheck healthCheck;
+
     private DnsType dnsType;
 
     private Map<String, String> additionalParams = new HashMap<>();
@@ -131,6 +133,14 @@ public class Application {
 
     public void setDnsPrefix(String dnsPrefix) {
         this.dnsPrefix = dnsPrefix;
+    }
+
+    public HealthCheck getHealthCheck() {
+        return healthCheck;
+    }
+
+    public void setHealthCheck(HealthCheck healthCheck) {
+        this.healthCheck = healthCheck;
     }
 
     public DnsType getDnsType() {

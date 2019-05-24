@@ -182,6 +182,9 @@ public class HelmService implements IHelmService {
         addZoneDns(application, yaml, Application.DnsType.PUBLIC, getPublicZoneDns(environment, dnsPrefix));
 
         yaml.putAll(getFamilySpecificAttributes(application, deployment));
+        yaml.putAll(getHPAConfigs(deployment));
+        yaml.putAll(getHealthCheckConfigs(application));
+
         logger.info("loaded values for release: {}", yaml);
         return yaml;
     }
@@ -251,6 +254,52 @@ public class HelmService implements IHelmService {
                 }
                 valueFields.put("capabilities", capabilities);
                 break;
+        }
+        return valueFields;
+    }
+
+    private Map<String, Object> getHPAConfigs(Deployment deployment){
+        Map<String, Object> valueFields = new HashMap<>();
+        if(deployment.getHorizontalPodAutoscaler() != null){
+            valueFields.put("hpaEnabled","true");
+            valueFields.put("hpaMinReplicas",deployment.getHorizontalPodAutoscaler().getMinReplicas());
+            valueFields.put("hpaMaxReplicas",deployment.getHorizontalPodAutoscaler().getMaxReplicas());
+            valueFields.put("hpaMetricThreshold",deployment.getHorizontalPodAutoscaler().getThreshold());
+        }
+        return valueFields;
+    }
+
+    private Map<String, Object> getHealthCheckConfigs(Application application){
+        Map<String, Object> valueFields = new HashMap<>();
+        HealthCheck healthCheck = application.getHealthCheck();
+        if(healthCheck.getLivenessProbe() != null){
+            if(healthCheck.getLivenessProbe().getHttpCheckEndpoint() != null){
+                valueFields.put("enableLivenessHTTP","true");
+                valueFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
+                valueFields.put("livenessHTTPEndpoint",healthCheck.getLivenessProbe().getHttpCheckEndpoint());
+                valueFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
+                valueFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
+            }else {
+                valueFields.put("enableLivenessTCP","true");
+                valueFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
+                valueFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
+                valueFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
+            }
+        }
+
+        if(healthCheck.getReadinessProbe() != null){
+            if(healthCheck.getReadinessProbe().getHttpCheckEndpoint() != null){
+                valueFields.put("enableReadinessHTTP","true");
+                valueFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
+                valueFields.put("readinessHTTPEndpoint",healthCheck.getReadinessProbe().getHttpCheckEndpoint());
+                valueFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
+                valueFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
+            }else {
+                valueFields.put("enableReadinessTCP","true");
+                valueFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
+                valueFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
+                valueFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
+            }
         }
         return valueFields;
     }
