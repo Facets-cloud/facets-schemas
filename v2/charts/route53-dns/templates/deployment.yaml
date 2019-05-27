@@ -19,8 +19,8 @@ spec:
         - --zone-id-filter={{ .Values.aws.zoneId }}
         - --provider=aws
         - --policy=upsert-only
-{{- if not (eq .Values.aws.domainName "") }}
-        - --domain-filter={{ .Values.aws.domainName }}
+{{- if not (eq .Values.aws.zoneDns "") }}
+        - --domain-filter={{ .Values.aws.zoneDns }}
 {{- end}}
         - --aws-zone-type={{ .Values.aws.zoneType }}
         - --registry=noop
