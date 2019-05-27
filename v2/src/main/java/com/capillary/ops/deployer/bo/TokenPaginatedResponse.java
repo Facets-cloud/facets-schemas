@@ -2,25 +2,25 @@ package com.capillary.ops.deployer.bo;
 
 import java.util.List;
 
-public class LogsResponse {
+public class TokenPaginatedResponse<T> {
 
-    public LogsResponse() {
+    public TokenPaginatedResponse() {
     }
 
-    public LogsResponse(List<LogEvent> logEventList, String nextToken) {
-        this.logEventList = logEventList;
+    public TokenPaginatedResponse(List<T> logEventList, String nextToken) {
+        this.data = logEventList;
         this.nextToken = nextToken;
     }
 
-    List<LogEvent> logEventList;
+    List<T> data;
     String nextToken;
 
-    public List<LogEvent> getLogEventList() {
-        return logEventList;
+    public List<T> getLogEventList() {
+        return data;
     }
 
-    public void setLogEventList(List<LogEvent> logEventList) {
-        this.logEventList = logEventList;
+    public void setLogEventList(List<T> logEventList) {
+        this.data = logEventList;
     }
 
     public String getNextToken() {

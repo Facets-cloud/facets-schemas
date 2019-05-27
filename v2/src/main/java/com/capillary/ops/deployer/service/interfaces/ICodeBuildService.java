@@ -3,15 +3,14 @@ package com.capillary.ops.deployer.service.interfaces;
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
-
-import java.util.List;
+import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 
 public interface ICodeBuildService {
     void createProject(Application application);
 
     String triggerBuild(Application application, Build build);
 
-    List<LogEvent> getBuildLogs(String codeBuildId);
+    TokenPaginatedResponse<LogEvent> getBuildLogs(String codeBuildId, String nextToken);
 
     software.amazon.awssdk.services.codebuild.model.Build getBuild(String codeBuildId);
 }

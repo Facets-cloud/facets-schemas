@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service;
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
+import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.capillary.ops.deployer.service.buildspecs.BuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.DotnetBuildSpec;
 import com.capillary.ops.deployer.service.buildspecs.FreestyleDockerBuildSpec;
@@ -13,12 +14,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
+import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsResponse;
 import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
@@ -146,17 +147,24 @@ public class CodeBuildService implements ICodeBuildService {
     }
 
     @Override
-    public List<LogEvent> getBuildLogs(String codeBuildId) {
+    public TokenPaginatedResponse<LogEvent> getBuildLogs(String codeBuildId, String nextToken) {
         software.amazon.awssdk.services.codebuild.model.Build build = getBuild(codeBuildId);
         String groupName = build.logs().groupName();
         String streamName = build.logs().streamName();
-        List<OutputLogEvent> logEvents = cloudWatchLogsClient.getLogEvents(
-                GetLogEventsRequest.builder()
-                        .logGroupName(groupName)
-                        .logStreamName(streamName)
-                        .startFromHead(false)
-                        .build()).events();
-        return logEvents.stream().map(x -> new LogEvent(x.timestamp(), x.message())).collect(Collectors.toList());
+        GetLogEventsRequest.Builder builder = GetLogEventsRequest.builder()
+                .logGroupName(groupName)
+                .logStreamName(streamName)
+                .limit(100);
+        if(nextToken == null || nextToken.isEmpty()) {
+            builder.startFromHead(true);
+        } else {
+            builder.nextToken(nextToken);
+        }
+        GetLogEventsResponse cloudWatchResponse = cloudWatchLogsClient.getLogEvents(builder.build());
+        List<OutputLogEvent> logEvents = cloudWatchResponse.events();
+        List<LogEvent> logEventList = logEvents.stream()
+                .map(x -> new LogEvent(x.timestamp(), x.message())).collect(Collectors.toList());
+        return new TokenPaginatedResponse(logEventList, cloudWatchResponse.nextForwardToken());
     }
 
     @Override

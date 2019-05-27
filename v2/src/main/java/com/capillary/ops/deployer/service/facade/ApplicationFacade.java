@@ -114,9 +114,11 @@ public class ApplicationFacade {
     }
 
 
-    public List<LogEvent> getBuildLogs(ApplicationFamily applicationFamily, String applicationId, String buildId) {
+    public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,
+                                                         String applicationId, String buildId,
+                                                         String nextToken) {
         Build build = getBuild(applicationFamily, applicationId, buildId);
-        return codeBuildService.getBuildLogs(build.getCodeBuildId());
+        return codeBuildService.getBuildLogs(build.getCodeBuildId(), nextToken);
     }
 
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {

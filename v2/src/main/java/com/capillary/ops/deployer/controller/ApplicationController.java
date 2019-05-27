@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +19,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api")
@@ -68,10 +68,10 @@ public class ApplicationController {
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")
-    public List<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                       @PathVariable("applicationId") String applicationId,
-                                       @PathVariable String buildId) {
-        return applicationFacade.getBuildLogs(applicationFamily, applicationId, buildId);
+    public TokenPaginatedResponse<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                               @PathVariable("applicationId") String applicationId,
+                                               @PathVariable String buildId, @RequestParam Optional<String> nextToken) {
+        return applicationFacade.getBuildLogs(applicationFamily, applicationId, buildId, nextToken.orElse(""));
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds", produces = "application/json")
