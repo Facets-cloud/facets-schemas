@@ -1,6 +1,10 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:2.1
+<<<<<<< HEAD
 
 COPY src/ /app/
+=======
+WORKDIR /app
+>>>>>>> corrected Dockerfile
 
 RUN chmod -R 755 /app/
 RUN /app/create_bulkupload_folder.sh
