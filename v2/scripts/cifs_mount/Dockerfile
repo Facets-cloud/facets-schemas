@@ -12,4 +12,4 @@ CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
 CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
 CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so
 
-ENTRYPOINT ["/bin/bash", "./cifs_mount.sh"]
+ENTRYPOINT ["/bin/bash", "/app/cifs_mount.sh"]
