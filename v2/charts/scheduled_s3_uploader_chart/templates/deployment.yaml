@@ -28,13 +28,23 @@ spec:
           value: "{{ .Values.dumpDirMountPath }}"
         - name: CLUSTER
           value: "{{ .Values.cluster }}"
-{{- range $k, $v := .Values.configurations }}
-        - name: {{ $k }}
+        - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
-              name: "{{ $releaseName }}-configs"
-              key: {{ $k }}
-{{- end }}
+              name: "IAM_CREDENTIALS"
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "IAM_CREDENTIALS"
+              key: AWS_SECRET_ACCESS_KEY
+#{{- range $k, $v := .Values.configurations }}
+#        - name: {{ $k }}
+#          valueFrom:
+#            secretKeyRef:
+#              name: "{{ $releaseName }}-configs"
+#              key: {{ $k }}
+#{{- end }}
         livenessProbe:
           exec:
             command:

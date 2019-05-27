@@ -10,8 +10,8 @@ public class Environment {
     private String privateZoneDns;
     private String publicZoneDns;
     private String clusterPrefix;
-    private String awsAccessKey;
-    private String awsSecretKey;
+    private String awsAccessKeyId;
+    private String awsSecretAccessKey;
     private String adPassword;
 
     public String getName() {
@@ -86,20 +86,20 @@ public class Environment {
         this.clusterPrefix = clusterPrefix;
     }
 
-    public String getAwsAccessKey() {
-        return awsAccessKey;
+    public String getAwsAccessKeyId() {
+        return awsAccessKeyId;
     }
 
-    public void setAwsAccessKey(String awsAccessKey) {
-        this.awsAccessKey = awsAccessKey;
+    public void setAwsAccessKeyId(String awsAccessKeyId) {
+        this.awsAccessKeyId = awsAccessKeyId;
     }
 
-    public String getAwsSecretKey() {
-        return awsSecretKey;
+    public String getAwsSecretAccessKey() {
+        return awsSecretAccessKey;
     }
 
-    public void setAwsSecretKey(String awsSecretKey) {
-        this.awsSecretKey = awsSecretKey;
+    public void setAwsSecretAccessKey(String awsSecretAccessKey) {
+        this.awsSecretAccessKey = awsSecretAccessKey;
     }
 
     public String getAdPassword() {

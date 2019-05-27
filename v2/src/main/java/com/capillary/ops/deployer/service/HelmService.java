@@ -88,6 +88,16 @@ public class HelmService implements IHelmService {
         }
     }
 
+    public boolean doesReleaseExist(ApplicationFamily applicationFamily, Environment environment, String releaseName) {
+        ReleaseManager releaseManager = getReleaseManager(environment);
+        Iterator<ListReleasesResponse> responseIterator = releaseManager.list(ListReleasesRequest.newBuilder()
+                .setFilter("^" + releaseName + "$")
+                .setNamespace("default")
+                .build());
+
+        return responseIterator.hasNext();
+    }
+
     @Override
     public String getReleaseName(Application application, Environment environment) {
         return environment.getNodeGroup().isEmpty() ?

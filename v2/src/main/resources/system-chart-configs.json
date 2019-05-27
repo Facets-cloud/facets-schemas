@@ -1,0 +1,12 @@
+{
+  "route53-dns": {
+    "configs": [
+      {
+        "zoneType": "public"
+      },
+      {
+        "zoneType": "private"
+      }
+    ]
+  }
+}
