@@ -30,7 +30,6 @@ public class ScheduledSystemChartSyncService {
 
     @Scheduled(fixedRate = 900)
     public void syncSystemCharts() {
-        JsonNode chartConfigs = loadSystemChartConfigs();
         for (ApplicationFamily applicationFamily : ApplicationFamily.values()) {
             List<Environment> environments;
             try {
@@ -42,44 +41,11 @@ public class ScheduledSystemChartSyncService {
 
             environments.parallelStream().forEach(environment -> {
                 logger.info("syncing charts for environment: {}", environment.getName());
-                syncSystemChartsPerEnvironmentAndFamily(applicationFamily, environment, chartConfigs);
+                systemCharts.parallelStream().forEach(chart -> {
+                    deployIfNotPresent(applicationFamily, environment, chart);
+                });
             });
         }
-    }
-
-    private JsonNode loadSystemChartConfigs() {
-        File file = new File(getClass().getResource("system-chart-configs.json").getFile());
-        JsonNode configRoot = null;
-        try {
-            configRoot = new ObjectMapper().readTree(file);
-        } catch (IOException e) {
-            logger.info("cannot read the system chart config file");
-        }
-
-        return configRoot;
-    }
-
-    private void syncSystemChartsPerEnvironmentAndFamily(ApplicationFamily applicationFamily, Environment environment, JsonNode chartConfigs) {
-        systemCharts.parallelStream().forEach(chart -> {
-            String chartName = chart.getName();
-            JsonNode chartNode = chartConfigs.path(chartName);
-            JsonNode configs = chartNode.path("configs");
-
-            if (!chartNode.isMissingNode() && !configs.isMissingNode()) {
-                logger.info("found multiple config variations for chart: {}", chartName);
-                deployIfNotPresentWithConfig(applicationFamily, environment, chart, configs);
-            } else {
-                logger.info("no config variation was found for chart: {}", chartName);
-                deployIfNotPresent(applicationFamily, environment, chart);
-            }
-        });
-    }
-
-    private void deployIfNotPresentWithConfig(ApplicationFamily applicationFamily, Environment environment, AbstractSystemChart chart, JsonNode configs) {
-        configs.forEach(config -> {
-            chart.setConfig(new ObjectMapper().convertValue(config, Map.class));
-            deployIfNotPresent(applicationFamily, environment, chart);
-        });
     }
 
     private void deployIfNotPresent(ApplicationFamily applicationFamily, Environment environment, AbstractSystemChart chart) {

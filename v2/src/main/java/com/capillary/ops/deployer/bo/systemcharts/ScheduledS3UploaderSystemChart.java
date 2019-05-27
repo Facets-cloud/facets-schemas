@@ -18,11 +18,6 @@ public class ScheduledS3UploaderSystemChart extends AbstractSystemChart {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledS3UploaderSystemChart.class);
 
     @Override
-    public String getName() {
-        return "scheduled-s3-uploader";
-    }
-
-    @Override
     public String getChartPath() {
         return "scheduled_s3_uploader_chart";
     }

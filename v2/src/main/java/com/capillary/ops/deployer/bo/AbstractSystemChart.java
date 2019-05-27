@@ -5,16 +5,8 @@ import java.util.Map;
 
 public abstract class AbstractSystemChart {
 
-    protected String name;
     protected String chartPath;
     protected Map<String, Object> values = new HashMap<>();
-    protected Map<String, Object> config = new HashMap<>();
-
-    public abstract String getName();
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public abstract String getChartPath();
 
@@ -26,14 +18,6 @@ public abstract class AbstractSystemChart {
 
     public void setValues(Map<String, Object> values) {
         this.values = values;
-    }
-
-    public Map<String, Object> getConfig() {
-        return config;
-    }
-
-    public void setConfig(Map<String, Object> config) {
-        this.config = config;
     }
 
     public abstract String getReleaseName(ApplicationFamily applicationFamily, Environment environment);
