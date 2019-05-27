@@ -41,7 +41,7 @@ public class ScheduledSystemChartSyncService {
 
             environments.parallelStream().forEach(environment -> {
                 logger.info("syncing charts for environment: {}", environment.getName());
-                systemCharts.parallelStream().forEach(chart -> {
+                systemCharts.stream().forEach(chart -> {
                     deployIfNotPresent(applicationFamily, environment, chart);
                 });
             });
@@ -52,6 +52,9 @@ public class ScheduledSystemChartSyncService {
                                     Environment environment, AbstractSystemChart chart) {
         try {
             Map<String, Object> valueMap = chart.getValues(applicationFamily, environment);
+            if(valueMap == null) {
+                return;
+            }
             String releaseName = chart.getReleaseName(applicationFamily, environment);
             logger.info("looking for deployment with name: {}", releaseName);
             if (!helmService.doesReleaseExist(applicationFamily, environment, releaseName)) {

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 public class S3DumpService {
 
     private static final String BUCKET_NAME = "k8s-file-dumps";
