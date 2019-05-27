@@ -10,3 +10,6 @@ if [[ "$MOUNT_CIFS" = "true" ]] ; then
 else
     echo "MOUNT_CIFS was false, not mounting"
 fi
+
+echo $@
+$@
