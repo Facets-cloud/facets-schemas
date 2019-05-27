@@ -48,13 +48,18 @@ public class ScheduledSystemChartSyncService {
         }
     }
 
-    private void deployIfNotPresent(ApplicationFamily applicationFamily, Environment environment, AbstractSystemChart chart) {
-        Map<String, Object> valueMap = chart.getValues(applicationFamily, environment);
-        String releaseName = chart.getReleaseName(applicationFamily, environment);
-        logger.info("looking for deployment with name: {}", releaseName);
-        if (!helmService.doesReleaseExist(applicationFamily, environment, releaseName)) {
-            logger.info("chart is not deployed, going to deply chart with release name: {}" ,releaseName);
-            helmService.deploy(environment, releaseName, chart.getChartPath(), valueMap);
+    private void deployIfNotPresent(ApplicationFamily applicationFamily,
+                                    Environment environment, AbstractSystemChart chart) {
+        try {
+            Map<String, Object> valueMap = chart.getValues(applicationFamily, environment);
+            String releaseName = chart.getReleaseName(applicationFamily, environment);
+            logger.info("looking for deployment with name: {}", releaseName);
+            if (!helmService.doesReleaseExist(applicationFamily, environment, releaseName)) {
+                logger.info("chart is not deployed, going to deply chart with release name: {}", releaseName);
+                helmService.deploy(environment, releaseName, chart.getChartPath(), valueMap);
+            }
+        } catch (Throwable t) {
+            logger.error("Could not sync chart for " + environment.getName(), t);
         }
     }
 }
