@@ -1,9 +1,9 @@
 /* tslint:disable */
-import { PortMapping } from './port-mapping';
+import { Endpoint } from './endpoint';
 export interface ApplicationServiceDetails {
   creationTimestamp?: string;
-  externalEndpoints?: Array<PortMapping>;
-  internalEndpoints?: Array<PortMapping>;
+  externalEndpoints?: Array<Endpoint>;
+  internalEndpoints?: Array<Endpoint>;
   labels?: {[key: string]: string};
   name?: string;
   selectors?: {[key: string]: string};

@@ -1,5 +1,5 @@
 /* tslint:disable */
-export interface PortMapping {
+export interface Endpoint {
   endpoint?: string;
   protocol?: string;
 }

@@ -10,7 +10,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 import { User } from '../models/user';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
-import { LogEvent } from '../models/log-event';
+import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { Deployment } from '../models/deployment';
 import { ApplicationSecret } from '../models/application-secret';
@@ -489,15 +489,18 @@ class ApplicationControllerService extends __BaseService {
    *
    * - `applicationFamily`: applicationFamily
    *
+   * - `nextToken`: nextToken
+   *
    * @return OK
    */
-  getBuildLogsUsingGETResponse(params: ApplicationControllerService.GetBuildLogsUsingGETParams): __Observable<__StrictHttpResponse<Array<LogEvent>>> {
+  getBuildLogsUsingGETResponse(params: ApplicationControllerService.GetBuildLogsUsingGETParams): __Observable<__StrictHttpResponse<TokenPaginatedResponseLogEvent>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
 
 
 
+    if (params.nextToken != null) __params = __params.set('nextToken', params.nextToken.toString());
     let req = new HttpRequest<any>(
       'GET',
       this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}/logs`,
@@ -511,7 +514,7 @@ class ApplicationControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<LogEvent>>;
+        return _r as __StrictHttpResponse<TokenPaginatedResponseLogEvent>;
       })
     );
   }
@@ -524,11 +527,13 @@ class ApplicationControllerService extends __BaseService {
    *
    * - `applicationFamily`: applicationFamily
    *
+   * - `nextToken`: nextToken
+   *
    * @return OK
    */
-  getBuildLogsUsingGET(params: ApplicationControllerService.GetBuildLogsUsingGETParams): __Observable<Array<LogEvent>> {
+  getBuildLogsUsingGET(params: ApplicationControllerService.GetBuildLogsUsingGETParams): __Observable<TokenPaginatedResponseLogEvent> {
     return this.getBuildLogsUsingGETResponse(params).pipe(
-      __map(_r => _r.body as Array<LogEvent>)
+      __map(_r => _r.body as TokenPaginatedResponseLogEvent)
     );
   }
 
@@ -1096,6 +1101,11 @@ module ApplicationControllerService {
      * applicationFamily
      */
     applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+
+    /**
+     * nextToken
+     */
+    nextToken?: string;
   }
 
   /**
