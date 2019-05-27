@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:2.1
-WORKDIR /app
 
-COPY src/* ./
+COPY src/ /app/
 
 RUN chmod -R 755 .
 RUN ./create_bulkupload_folder.sh
