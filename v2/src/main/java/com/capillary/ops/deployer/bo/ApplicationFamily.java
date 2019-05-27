@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,10 @@ public enum ApplicationFamily {
         String fileName = String.format("/etc/capillary/clusterdetails/%s.json", this.name().toLowerCase());
         reader = new JsonReader(new FileReader(fileName));
         Map<String, Environment> environments = gson.fromJson(reader, REVIEW_TYPE);
-        return (List<Environment>) environments.values();
+        List<Environment> environmentList = new ArrayList<>(environments.values().size());
+        environments.forEach((k, v) -> {
+            environmentList.add(v);
+        });
+        return environmentList;
     }
 }
