@@ -26,10 +26,10 @@ spec:
         - name: AWS_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: "IAM_CREDENTIALS"
+              name: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns-secrets
               key: AWS_ACCESS_KEY
         - name: AWS_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: "IAM_CREDENTIALS"
+              name: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns-secrets
               key: AWS_SECRET_KEY
