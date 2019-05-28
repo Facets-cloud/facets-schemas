@@ -7,6 +7,7 @@ import com.capillary.ops.deployer.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class PublicExternalDnsSystemChart extends AbstractExternalDnsSystemChart
     @Override
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
         String publicZoneId = environment.getPublicZoneId();
-        if (publicZoneId != null) {
+        if (!StringUtils.isEmpty(publicZoneId)) {
             return getValuesMap(environment, environment.getPublicZoneDns(), publicZoneId);
         }
 

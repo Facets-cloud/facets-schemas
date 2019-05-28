@@ -20,7 +20,7 @@ public class PrivateExternalDnsSystemChart extends AbstractExternalDnsSystemChar
     @Override
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
         String privateZoneId = environment.getPrivateZoneId();
-        if (privateZoneId != null) {
+        if (!StringUtils.isEmpty(privateZoneId)) {
             return getValuesMap(environment, environment.getPrivateZoneDns(), privateZoneId);
         }
 
