@@ -24,12 +24,12 @@ spec:
         - --registry=noop
         env:
         - name: AWS_ACCESS_KEY
-            valueFrom:
-              secretKeyRef:
-                name: "IAM_CREDENTIALS"
-                key: AWS_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "IAM_CREDENTIALS"
+              key: AWS_ACCESS_KEY
         - name: AWS_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: "IAM_CREDENTIALS"
-                key: AWS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "IAM_CREDENTIALS"
+              key: AWS_SECRET_KEY
