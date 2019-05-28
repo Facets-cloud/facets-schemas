@@ -10,7 +10,7 @@ spec:
       labels:
         app: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns
     spec:
-      serviceAccountName: route53-dns
+      serviceAccountName: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns-sa
       containers:
       - name: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
