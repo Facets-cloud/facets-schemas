@@ -28,7 +28,7 @@ public class ScheduledSystemChartSyncService {
     @Autowired
     private HelmService helmService;
 
-    @Scheduled(fixedRate = 900)
+    @Scheduled(fixedRate = 900*1000)
     public void syncSystemCharts() {
         for (ApplicationFamily applicationFamily : ApplicationFamily.values()) {
             List<Environment> environments;
