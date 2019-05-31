@@ -86,7 +86,7 @@ public class ApplicationController {
         return applicationFacade.getImages(applicationFamily, applicationId);
     }
 
-    @PreAuthorize("hasAnyRole('DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployments", produces = "application/json")
     public Deployment deploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                         @PathVariable("environment") String environment,
