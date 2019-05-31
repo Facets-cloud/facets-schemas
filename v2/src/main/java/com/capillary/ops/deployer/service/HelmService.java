@@ -182,7 +182,7 @@ public class HelmService implements IHelmService {
         addZoneDns(application, yaml, Application.DnsType.PRIVATE, getPrivateZoneDns(environment, dnsPrefix));
         addZoneDns(application, yaml, Application.DnsType.PUBLIC, getPublicZoneDns(environment, dnsPrefix));
 
-        yaml.entrySet().addAll(getFamilySpecificAttributes(application, deployment).entrySet());
+        yaml.putAll(getFamilySpecificAttributes(application, deployment));
         return yaml;
     }
 
