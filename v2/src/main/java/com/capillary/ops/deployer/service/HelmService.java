@@ -25,6 +25,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.*;
@@ -94,8 +95,13 @@ public class HelmService implements IHelmService {
                 .setFilter("^" + releaseName + "$")
                 .setNamespace("default")
                 .build());
-
-        return responseIterator.hasNext();
+        boolean ret = responseIterator.hasNext();
+        try {
+            releaseManager.close();
+        } catch (IOException e) {
+            logger.error("error closing releasemanager", e);
+        }
+        return ret;
     }
 
     @Override
