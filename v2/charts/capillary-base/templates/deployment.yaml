@@ -30,10 +30,10 @@ spec:
 {{- if or (gt (len .Values.capabilites.add) 0) (gt (len .Values.capibilities.drop) 0) }}
           securityContext:
             capabilities:
-              {{- if (gt (len .Values.capabilities.add) 0}}
+              {{- if (gt (len .Values.capabilities.add) 0)}}
               add: {{ .Values.capabilities.add }}
               {{- end}}
-              {{- if (gt (len .Values.capabilities.drop) 0}}
+              {{- if (gt (len .Values.capabilities.drop) 0)}}
               drop: {{ .Values.capabilities.drop }}
               {{- end}}
 {{- end }}
