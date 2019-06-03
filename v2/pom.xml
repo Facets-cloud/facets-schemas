@@ -222,6 +222,8 @@
                                     <executable>ionic</executable>
                                     <arguments>
                                         <argument>build</argument>
+                                        <argument>--release</argument>
+                                        <argument>--prod</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
