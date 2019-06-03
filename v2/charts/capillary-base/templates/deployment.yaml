@@ -27,16 +27,22 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
-{{- if or (gt (len .Values.capabilites.add) 0) (gt (len .Values.capibilities.drop) 0) }}
+{{- if .Values.capabilities }}
           securityContext:
             capabilities:
-              {{- if (gt (len .Values.capabilities.add) 0)}}
-              add: {{ .Values.capabilities.add }}
+              add:
+              {{- range .Values.capabilities.add }}
+              {{- with . }}
+              - {{ . }}
               {{- end}}
-              {{- if (gt (len .Values.capabilities.drop) 0)}}
-              drop: {{ .Values.capabilities.drop }}
               {{- end}}
-{{- end }}
+              drop:
+              {{- range .Values.capabilities.drop }}
+              {{- with . }}
+              - {{ . }}
+              {{- end}}
+              {{- end}}
+  {{- end }}
           imagePullPolicy: IfNotPresent
           ports:
               {{- range .Values.ports }}
