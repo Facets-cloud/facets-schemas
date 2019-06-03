@@ -197,6 +197,21 @@
                                 </configuration>
                             </execution>
                             <execution><!-- Run our version calculation script -->
+                                <id>npm-rebuild-node-sass</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>deployer-ui</workingDirectory>
+                                    <executable>npm</executable>
+                                    <arguments>
+                                        <argument>rebuild</argument>
+                                        <argument>node-sass</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution><!-- Run our version calculation script -->
                                 <id>generate-ui</id>
                                 <phase>generate-sources</phase>
                                 <goals>
