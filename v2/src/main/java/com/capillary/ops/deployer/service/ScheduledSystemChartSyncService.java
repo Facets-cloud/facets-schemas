@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service;
 import com.capillary.ops.deployer.bo.AbstractSystemChart;
 import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Environment;
+import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class ScheduledSystemChartSyncService {
     private List<AbstractSystemChart> systemCharts;
 
     @Autowired
-    private HelmService helmService;
+    private IHelmService helmService;
 
     @Scheduled(fixedRate = 900*1000)
     public void syncSystemCharts() {

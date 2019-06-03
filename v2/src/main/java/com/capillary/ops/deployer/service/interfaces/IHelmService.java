@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.interfaces;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.bo.Environment;
 
@@ -14,4 +15,6 @@ public interface IHelmService {
     String getReleaseName(Application application, Environment environment);
 
     void rollback(Application application, Environment environmentName);
+
+    boolean doesReleaseExist(ApplicationFamily applicationFamily, Environment environment, String releaseName);
 }

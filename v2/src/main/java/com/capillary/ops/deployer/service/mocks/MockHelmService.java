@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.mocks;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.bo.Environment;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
@@ -32,5 +33,10 @@ public class MockHelmService implements IHelmService {
     @Override
     public void rollback(Application application, Environment environmentName){
 
+    }
+
+    @Override
+    public boolean doesReleaseExist(ApplicationFamily applicationFamily, Environment environment, String releaseName) {
+        return true;
     }
 }
