@@ -183,6 +183,22 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <executions>
                             <execution><!-- Run our version calculation script -->
+                                <id>set-base-url</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>deployer-ui</workingDirectory>
+                                    <executable>sed</executable>
+                                    <arguments>
+                                        <argument>-i</argument>
+                                        <argument>s/localhost:8000/deployer.capillary.in/g</argument>
+                                        <argument>src/app/api/api-configuration.ts</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution><!-- Run our version calculation script -->
                                 <id>npm-install</id>
                                 <phase>generate-sources</phase>
                                 <goals>
