@@ -1,11 +1,9 @@
-<ion-header>
-  <ion-toolbar>
+<ion-grid fixed>
+  <ion-toolbar color=dark>
     <ion-title>Build {{application?.name}}</ion-title>
   </ion-toolbar>
-</ion-header>
 
 <ion-content>
-  <ion-card>
     <ion-item>
       <ion-label position="stacked"><b>Branch/Tag</b></ion-label>
       <ion-input placeholder="origin/master" type="text" [(ngModel)]="build.tag" ></ion-input>
@@ -16,5 +14,5 @@
         <ion-icon name="arrow-dropright"></ion-icon>
       </ion-button>
     </ion-item>
-  </ion-card>
 </ion-content>
+</ion-grid>
