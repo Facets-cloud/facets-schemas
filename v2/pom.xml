@@ -190,7 +190,7 @@
                                 </goals>
                                 <configuration>
                                     <workingDirectory>deployer-ui</workingDirectory>
-                                    <executable>gsed</executable>
+                                    <executable>sed</executable>
                                     <arguments>
                                         <argument>-i</argument>
                                         <argument>s/localhost:8100/deployer.capillary.in/g</argument>
