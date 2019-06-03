@@ -241,11 +241,15 @@ public class HelmService implements IHelmService {
                 }
                 break;
             case ECOMMERCE:
+                Map<String, Object> capabilities = new HashMap<>();
                 if (shouldMountCifs(application)) {
-                    Map<String, Object> capabilities = new HashMap<>();
                     capabilities.put("add", Lists.newArrayList("SYS_ADMIN", "DAC_READ_SEARCH"));
-                    valueFields.put("capabilities", capabilities);
+                    capabilities.put("drop", Lists.newArrayList());
+                } else {
+                    capabilities.put("add", Lists.newArrayList());
+                    capabilities.put("drop", Lists.newArrayList());
                 }
+                valueFields.put("capabilities", capabilities);
                 break;
         }
         return valueFields;
