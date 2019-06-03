@@ -173,7 +173,6 @@ public class HelmService implements IHelmService {
         yaml.put("lbType", application.getLoadBalancerType().name().toLowerCase());
         List<Map<String, Object>> ports = application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
         yaml.put("ports", ports);
-        logger.info("loaded values for release: {}", yaml);
 
         yaml.put("configurations", getConfigMap(environment, application, deployment));
         yaml.put("credentials", getCredentialsMap(environment, application));
@@ -183,6 +182,7 @@ public class HelmService implements IHelmService {
         addZoneDns(application, yaml, Application.DnsType.PUBLIC, getPublicZoneDns(environment, dnsPrefix));
 
         yaml.putAll(getFamilySpecificAttributes(application, deployment));
+        logger.info("loaded values for release: {}", yaml);
         return yaml;
     }
 
