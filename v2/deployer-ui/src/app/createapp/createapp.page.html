@@ -1,13 +1,11 @@
-<ion-header>
-  <ion-toolbar>
+<ion-grid fixed>
+  <ion-toolbar color=dark>
     <ion-title>Create Application</ion-title>
     <ion-button slot="end" (click)="createApplication()"><ion-icon name="save"></ion-icon></ion-button>
   </ion-toolbar>
-</ion-header>
 
 <ion-content>
   <ion-card>
-    <ion-card-header>Details</ion-card-header>
     <ion-item>
       <ion-label position="stacked"><b>Name</b></ion-label>
       <ion-input placeholder="myapp" type="text" [(ngModel)]="application.name" ></ion-input>
@@ -63,3 +61,4 @@
     </ion-item>
   </ion-card>
 </ion-content>
+</ion-grid>

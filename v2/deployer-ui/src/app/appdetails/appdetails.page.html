@@ -1,7 +1,7 @@
 <ion-grid fixed>
     <ion-toolbar color=dark>
         <ion-title>{{application?.name}}</ion-title>
-        <ion-button slot="end" href="/{{application?.applicationFamily}}/applications/{{application?.id}}/build"><ion-icon name="build"></ion-icon></ion-button>
+        <ion-button slot="end" (click)="presentModal()"><ion-icon name="build"></ion-icon></ion-button>
       </ion-toolbar>
 <ion-content>
         <ion-card-header color=light><b>Application Details</b></ion-card-header>

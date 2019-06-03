@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Application, Build } from '../api/models';
 import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController, ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-build',
@@ -11,24 +11,13 @@ import { NavController } from '@ionic/angular';
 })
 export class BuildPage implements OnInit {
 
-  application: Application;
+  @Input() application: Application;
   build: Build = {}
 
   constructor(private applicationControllerService: ApplicationControllerService, private activatedRoute: ActivatedRoute,
-    private navController: NavController) { }
+    private navController: NavController, private modalController: ModalController) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(
-      params => {
-        var applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
-        var applicationId: string = params.get("applicationId");
-        this.applicationControllerService.getApplicationUsingGET({applicationFamily: applicationFamily,
-          applicationId: applicationId})
-        .subscribe(application => this.application = application,
-          err => {console.log(err); this.navController.navigateForward("/signin");
-        });
-      }
-    );
   }
 
   startBuild() {
@@ -39,9 +28,11 @@ export class BuildPage implements OnInit {
       applicationFamily: this.application.applicationFamily,
       build: this.build
     }).subscribe(
-      (build: Build) =>
+      (build: Build) => {
+        this.modalController.dismiss();
         this.navController.navigateForward(`/${this.application.applicationFamily}/applications/${this.application.id}/builds/${build.id}`),
       err => {console.log(err); this.navController.navigateForward("/signin");}
+      }
     );
   }
 

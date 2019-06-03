@@ -3,7 +3,8 @@ import { Application } from '../api/models';
 import { ApplicationControllerService } from '../api/services';
 import { AppRoutingModule } from '../app-routing.module';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController, ModalController } from '@ionic/angular';
+import { CreateappPage } from '../createapp/createapp.page';
 
 @Component({
   selector: 'app-applications',
@@ -16,7 +17,8 @@ export class ApplicationsPage implements OnInit {
   applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
 
   constructor(private applicationControllerService: ApplicationControllerService,
-    private activatedRoute: ActivatedRoute, private navController: NavController) {
+    private activatedRoute: ActivatedRoute, private navController: NavController,
+    private modalController: ModalController) {
   }
 
   ngOnInit() {
@@ -27,6 +29,23 @@ export class ApplicationsPage implements OnInit {
       .subscribe(applications => this.applications = applications,
         err => {console.log(err); this.navController.navigateForward("/signin");});
     });
+  }
+
+  async presentModal() {
+    const modal = await this.modalController.create(
+      {
+        component: CreateappPage,
+        componentProps: {
+          applicationFamily: this.applicationFamily
+        },
+        cssClass: "createApp"
+      }
+    );
+    return await modal.present();
+  }
+
+  showAppDetails(appId) {
+    this.navController.navigateForward(`/${this.applicationFamily}/applications/${appId}`);
   }
 
 }

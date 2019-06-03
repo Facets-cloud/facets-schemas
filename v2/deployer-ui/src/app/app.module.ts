@@ -10,11 +10,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { LoginPipe } from './login.pipe';
 import { HttpClientModule } from '@angular/common/http';
+import { BuildPageModule } from './build/build.module';
+import { CreateappPageModule } from './createapp/createapp.module';
 
 @NgModule({
   declarations: [AppComponent, LoginPipe],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule],
   providers: [
     StatusBar,
     SplashScreen,

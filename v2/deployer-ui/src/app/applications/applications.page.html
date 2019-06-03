@@ -1,12 +1,12 @@
 <ion-grid fixed>
   <ion-toolbar color=dark>
     <ion-title>Applications</ion-title>
-    <ion-button slot="end" href="/{{applicationFamily}}/createapp"><ion-icon name="add"></ion-icon></ion-button>
+    <ion-button slot="end" (click)="presentModal()"><ion-icon name="add"></ion-icon></ion-button>
   </ion-toolbar>
 
 <ion-content>
     <ion-list>
-      <ion-item button *ngFor="let application of applications; let i = index" href = "/{{application.applicationFamily}}/applications/{{application.id}}">
+      <ion-item button *ngFor="let application of applications; let i = index" (click)="showAppDetails(application.id)">
         {{ application.name }}
       </ion-item>
     </ion-list>

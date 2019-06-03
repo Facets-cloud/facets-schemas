@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
 import { Application } from '../api/models';
-import { NavController, MenuController } from '@ionic/angular';
+import { NavController, MenuController, ModalController } from '@ionic/angular';
+import { BuildPage } from '../build/build.page';
+import { BuildComponentComponent } from '../build-component/build-component.component';
 
 @Component({
   selector: 'app-appdetails',
@@ -14,10 +16,9 @@ export class AppdetailsPage implements OnInit {
   application: Application;
 
   constructor(private applicationControllerService: ApplicationControllerService, private activatedRoute: ActivatedRoute,
-    private navController: NavController, private menuController: MenuController) { }
+    private navController: NavController, private modalController: ModalController) { }
 
   ngOnInit() {
-    this.menuController.enable(true);
     this.activatedRoute.paramMap.subscribe(
       params => {
         var applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
@@ -27,6 +28,18 @@ export class AppdetailsPage implements OnInit {
         .subscribe(application => this.application = application,err => {console.log(err); this.navController.navigateForward("/signin");});
       }
     );
+  }
+
+  async presentModal() {
+    const modal = await this.modalController.create(
+      {
+        component: BuildPage,
+        componentProps: {
+          application: this.application
+        }
+      }
+    );
+    return await modal.present();
   }
 
 }

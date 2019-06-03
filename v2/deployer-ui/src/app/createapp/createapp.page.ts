@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
 import { Application } from '../api/models';
-import { LoadingController, NavController } from '@ionic/angular';
+import { LoadingController, NavController, ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-createapp',
@@ -13,18 +13,14 @@ export class CreateappPage implements OnInit {
 
   @Input() application: Application = {ports: []};
 
-  applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  @Input() applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
 
   constructor(private applicationControllerService: ApplicationControllerService,
     private activatedRoute: ActivatedRoute, private loadingController: LoadingController,
-    private navController: NavController) {
+    private navController: NavController, private modalController: ModalController) {
   }
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(
-      params => {
-        this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
-    });
   }
 
   createApplication() {
@@ -36,6 +32,7 @@ export class CreateappPage implements OnInit {
       this.application.applicationFamily = this.applicationFamily;
       this.applicationControllerService.createApplicationUsingPOST({application: this.application, applicationFamily: this.applicationFamily})
       .subscribe((app: Application) => {
+        this.modalController.dismiss();
         this.navController.navigateForward(`/${this.applicationFamily}/applications/${app.id}`);
         res.remove();
       }, err => {

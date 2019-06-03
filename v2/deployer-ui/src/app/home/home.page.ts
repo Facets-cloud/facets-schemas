@@ -19,4 +19,8 @@ export class HomePage {
         err => {console.log(err); this.navController.navigateForward("/signin");});
   }
 
+  showApplications(family) {
+    this.navController.navigateForward(`/${family}/applications`);
+  }
+
 }

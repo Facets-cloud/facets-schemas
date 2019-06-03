@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ApiConfiguration {
-  rootUrl: string = '//localhost:8100';
+  rootUrl: string = '//deployer.capillary.in';
 }
 
 export interface ApiConfigurationInterface {

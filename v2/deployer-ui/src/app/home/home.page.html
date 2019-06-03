@@ -7,7 +7,7 @@
 
 <ion-content>
   <ion-list>
-    <ion-item button *ngFor="let family of applicationFamilies" href = "/{{family}}/applications">
+    <ion-item button *ngFor="let family of applicationFamilies" (click) = "showApplications(family)">
         <ion-label>
             {{ family }}
         </ion-label>
