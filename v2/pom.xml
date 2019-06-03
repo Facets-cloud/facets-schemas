@@ -190,7 +190,7 @@
                                 </goals>
                                 <configuration>
                                     <workingDirectory>deployer-ui</workingDirectory>
-                                    <executable>ionic</executable>
+                                    <executable>/usr/bin/ionic</executable>
                                     <arguments>
                                         <argument>build</argument>
                                     </arguments>
