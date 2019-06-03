@@ -8,7 +8,6 @@ import { IonicModule } from '@ionic/angular';
 import { AppdetailsPage } from './appdetails.page';
 import { BuildPage } from '../build/build.page';
 import { BuildPageModule } from '../build/build.module';
-import { BuildComponentComponent } from '../build-component/build-component.component';
 
 const routes: Routes = [
   {

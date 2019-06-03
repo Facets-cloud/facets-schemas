@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Application } from '../api/models';
 import { NavController, MenuController, ModalController } from '@ionic/angular';
 import { BuildPage } from '../build/build.page';
-import { BuildComponentComponent } from '../build-component/build-component.component';
 
 @Component({
   selector: 'app-appdetails',
