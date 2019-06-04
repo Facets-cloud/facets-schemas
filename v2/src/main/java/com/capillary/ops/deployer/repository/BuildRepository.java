@@ -9,6 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface BuildRepository extends MongoRepository<Build, String> {
-    List<Build> findByApplicationId(String applicationId);
+    List<Build> findByApplicationIdOrderByTimestampDesc(String applicationId);
     Optional<Build> findOneByApplicationIdAndId(String applicationId, String buildId);
 }

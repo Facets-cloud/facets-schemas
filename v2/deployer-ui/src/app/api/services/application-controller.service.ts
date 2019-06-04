@@ -35,6 +35,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getBuildUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
   static readonly getBuildLogsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
+  static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
   static readonly getDeploymentStatusUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus';
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
@@ -580,6 +581,42 @@ class ApplicationControllerService extends __BaseService {
    */
   getImagesUsingGET(params: ApplicationControllerService.GetImagesUsingGETParams): __Observable<Array<string>> {
     return this.getImagesUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<string>)
+    );
+  }
+
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getEnvironmentsUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<string>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${applicationFamily}/environments`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<string>>;
+      })
+    );
+  }
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getEnvironmentsUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<string>> {
+    return this.getEnvironmentsUsingGETResponse(applicationFamily).pipe(
       __map(_r => _r.body as Array<string>)
     );
   }

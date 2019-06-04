@@ -22,7 +22,7 @@ export class BuildPage implements OnInit {
 
   startBuild() {
     this.build.applicationId = this.application.id
-    this.build.environmentVariable = {}
+    this.build.environmentVariables = {}
     this.applicationControllerService.buildUsingPOST({
       applicationId: this.application.id,
       applicationFamily: this.application.applicationFamily,

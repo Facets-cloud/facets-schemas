@@ -1,9 +1,35 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>BuildList</ion-title>
+<ion-grid fixed>
+  <ion-toolbar color=dark>
+    <ion-title>Builds</ion-title>
   </ion-toolbar>
-</ion-header>
 
 <ion-content>
-
+  <ion-list>
+<div href="#" ngClass="builddiv" (click)="showBuild(build)" *ngFor="let build of builds">
+  <ion-row>
+    <ion-col size=2><b>Time</b></ion-col>
+    <ion-col size=4>{{build.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</ion-col>
+    <ion-col size=1><b>Status</b></ion-col>
+    <ion-col size=4>{{ build?.status }}</ion-col>
+  </ion-row>
+  <ion-row></ion-row>
+  <ion-row>
+      <ion-col size=2><b>Tag/Branch</b></ion-col>
+      <ion-col size=8>{{ build?.tag }}</ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size=2><b>Description</b></ion-col>
+    <ion-col size=8>{{ build?.description }}</ion-col>
+  </ion-row>
+  <ion-row>
+      <ion-col size=2><b>Image</b></ion-col>
+      <ion-col size=8>{{ build?.image }}</ion-col>
+  </ion-row>
+    <ion-row>
+        <ion-col size=2><b>Triggered By</b></ion-col>
+        <ion-col size=8>{{ build?.triggeredBy }}</ion-col>
+    </ion-row>
+</div>
+</ion-list>
 </ion-content>
+</ion-grid>

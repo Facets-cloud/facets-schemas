@@ -42,7 +42,7 @@ export class AppdetailsPage implements OnInit {
   }
 
   listBuilds() {
-
+    this.navController.navigateForward(`/${this.application.applicationFamily}/applications/${this.application.id}/builds`);
   }
 
 }

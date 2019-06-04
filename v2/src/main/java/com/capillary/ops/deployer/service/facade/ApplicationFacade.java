@@ -17,10 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -107,7 +109,7 @@ public class ApplicationFacade {
 
     public List<Build> getBuilds(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        List<Build> builds = buildRepository.findByApplicationId(application.getId());
+        List<Build> builds = buildRepository.findByApplicationIdOrderByTimestampDesc(application.getId());
         builds = builds.stream().parallel().map(x -> getBuildDetails(application, x)).collect(Collectors.toList());
         return builds;
     }
@@ -234,11 +236,15 @@ public class ApplicationFacade {
     private String getUserName() {
         String username = "";
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails)principal).getUsername();
+        if (principal instanceof OAuth2User) {
+            username = ((OAuth2User)principal).getName();
         } else {
             username = principal.toString();
         }
         return username;
+    }
+
+    public List<String> getEnvironments(ApplicationFamily applicationFamily) throws FileNotFoundException {
+        return applicationFamily.getEnvironments().stream().map(x->x.getName()).collect(Collectors.toList());
     }
 }

@@ -7,6 +7,8 @@
     <ion-item>
       <ion-label position="stacked"><b>Branch/Tag</b></ion-label>
       <ion-input placeholder="origin/master" type="text" [(ngModel)]="build.tag" ></ion-input>
+      <ion-label position="stacked"><b>Description</b></ion-label>
+      <ion-input placeholder="fix for #1234" type="text" [(ngModel)]="build.description" ></ion-input>
     </ion-item>
     <ion-item>
       <ion-button (click)="startBuild()">

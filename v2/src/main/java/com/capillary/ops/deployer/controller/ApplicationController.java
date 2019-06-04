@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -183,5 +184,11 @@ public class ApplicationController {
                                                             @PathVariable("applicationId") String applicationId,
                                                             @RequestBody List<ApplicationSecret> applicationSecrets) {
         return applicationFacade.updateApplicaitonSecrets(environment, applicationFamily, applicationId, applicationSecrets);
+    }
+
+    @GetMapping("/{applicationFamily}/environments")
+    public ResponseEntity<List<String>> getEnvironments(
+            @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {
+        return new ResponseEntity<>(applicationFacade.getEnvironments(applicationFamily), HttpStatus.OK);
     }
 }
