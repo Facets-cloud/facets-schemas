@@ -41,4 +41,8 @@ export class AppdetailsPage implements OnInit {
     return await modal.present();
   }
 
+  listBuilds() {
+
+  }
+
 }
