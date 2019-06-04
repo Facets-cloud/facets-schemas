@@ -4,17 +4,15 @@
   </ion-toolbar>
 
 <ion-content>
-    <ion-item>
+    <div style="padding: 2%">
       <ion-label position="stacked"><b>Branch/Tag</b></ion-label>
       <ion-input placeholder="origin/master" type="text" [(ngModel)]="build.tag" ></ion-input>
       <ion-label position="stacked"><b>Description</b></ion-label>
       <ion-input placeholder="fix for #1234" type="text" [(ngModel)]="build.description" ></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-button (click)="startBuild()">
+      <ion-button slot=start (click)="startBuild()">
         build
         <ion-icon name="arrow-dropright"></ion-icon>
       </ion-button>
-    </ion-item>
+    </div>
 </ion-content>
 </ion-grid>

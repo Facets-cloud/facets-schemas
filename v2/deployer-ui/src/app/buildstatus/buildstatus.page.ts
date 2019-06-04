@@ -58,4 +58,8 @@ export class BuildstatusPage implements OnInit {
     });
   }
 
+  deploy() {
+
+  }
+
 }

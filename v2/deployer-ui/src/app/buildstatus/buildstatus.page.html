@@ -1,6 +1,7 @@
 <ion-grid fixed>
   <ion-toolbar color=dark>
     <ion-title>Build Status</ion-title>
+    <ion-button (click)="deploy()" *ngIf="build.status === 'SUCCEEDED'" color=light fill=clear slot=end><ion-icon name="paper-plane"></ion-icon></ion-button>
   </ion-toolbar>
 
 <ion-content>

@@ -5,58 +5,40 @@
   </ion-toolbar>
 
 <ion-content>
-    <ion-item>
+  <div style="padding: 2%; width: 100%;">
       <ion-label position="stacked"><b>Name</b></ion-label>
       <ion-input placeholder="myapp" type="text" [(ngModel)]="application.name" ></ion-input>
-    </ion-item>
-    <ion-item>
         <ion-label position="stacked"><b>VCS Provider</b></ion-label>
         <ion-select interface="popover" placeholder="GITHUB" type="text" [(ngModel)]="application.vcsProvider" >
           <ion-select-option value="GITHUB">GITHUB</ion-select-option>
           <ion-select-option value="BITBUCKET">BITBUCKET</ion-select-option>
         </ion-select>
-    </ion-item>
-    <ion-item>
         <ion-label position="stacked"><b>Repository URL</b></ion-label>
         <ion-input placeholder="https://github.com/myorganization/myapp" type="text" [(ngModel)]="application.repositoryUrl" ></ion-input>
-    </ion-item>
-    <ion-item>
         <ion-label position="stacked"><b>Subdirectory</b></ion-label>
         <ion-input placeholder="." type="text" [(ngModel)]="application.applicationRootDirectory" ></ion-input>
-    </ion-item>
-    <ion-item>
         <ion-label position="stacked"><b>Build Type</b></ion-label>
         <ion-select interface="popover" placeholder="Maven" type="text" [(ngModel)]="application.buildType" >
           <ion-select-option value="MVN">Maven</ion-select-option>
           <ion-select-option value="DOTNET_CORE">Dotnet Core</ion-select-option>
           <ion-select-option value="FREESTYLE_DOCKER">Freestyle Docker</ion-select-option>
         </ion-select>
-    </ion-item>
-    <ion-item>
         <ion-label position="stacked"><b>LoadBalancer Type</b></ion-label>
         <ion-select interface="popover" placeholder="INTERNAL" type="text" [(ngModel)]="application.loadBalancerType" >
           <ion-select-option value="INTERNAL">INTERNAL</ion-select-option>
           <ion-select-option value="EXTERNAL">EXTERNAL</ion-select-option>
         </ion-select>
-    </ion-item>
-    <ion-item>
+        <ion-row>
         <ion-col *ngFor="let port of application?.ports; index as i">
-            <ion-item>
                 <ion-label position="stacked"><b>Name</b></ion-label>
                 <ion-input placeholder="http" type="text" [(ngModel)]="port.name" ></ion-input>
-              </ion-item>
-              <ion-item>
                   <ion-label position="stacked"><b>Container Port</b></ion-label>
                   <ion-input placeholder="8080" type="number" [(ngModel)]="port.containerPort" ></ion-input>
-                </ion-item>
-                <ion-item>
                     <ion-label position="stacked"><b>LoadBalancer Port</b></ion-label>
                     <ion-input placeholder="80" type="number" [(ngModel)]="port.lbPort" ></ion-input>
-                </ion-item>
         </ion-col>
-    </ion-item>
-    <ion-item>
+      </ion-row>
         <ion-button color=dark (click)="addPort()">Add Ports</ion-button>
-    </ion-item>
+  </div>
 </ion-content>
 </ion-grid>
