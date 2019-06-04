@@ -31,17 +31,8 @@ export class ApplicationsPage implements OnInit {
     });
   }
 
-  async presentModal() {
-    const modal = await this.modalController.create(
-      {
-        component: CreateappPage,
-        componentProps: {
-          applicationFamily: this.applicationFamily
-        },
-        cssClass: "createApp"
-      }
-    );
-    return await modal.present();
+  goToCreatePage() {
+    this.navController.navigateForward(`/${this.applicationFamily}/createapp`);
   }
 
   showAppDetails(appId) {

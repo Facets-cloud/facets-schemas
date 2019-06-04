@@ -15,6 +15,8 @@ import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
@@ -70,6 +72,8 @@ public class ApplicationFacade {
         return applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
     }
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
+        String username = getUserName();
+        build.setTriggeredBy(username);
         String applicationId = build.getApplicationId();
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         buildRepository.save(build);
@@ -225,5 +229,16 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = applicationFamily.getEnvironment(environmentName);
         helmService.rollback(application,environment);
+    }
+
+    private String getUserName() {
+        String username = "";
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            username = ((UserDetails)principal).getUsername();
+        } else {
+            username = principal.toString();
+        }
+        return username;
     }
 }

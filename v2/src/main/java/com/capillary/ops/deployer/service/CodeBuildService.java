@@ -125,8 +125,8 @@ public class CodeBuildService implements ICodeBuildService {
     public String triggerBuild(Application application, Build build) {
 
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
-        if(build.getEnvironmentVariable() != null) {
-            build.getEnvironmentVariable().entrySet().stream().forEach( x -> {
+        if(build.getEnvironmentVariables() != null) {
+            build.getEnvironmentVariables().entrySet().stream().forEach(x -> {
                 EnvironmentVariable environmentVariable =
                         EnvironmentVariable.builder()
                                 .name(x.getKey())

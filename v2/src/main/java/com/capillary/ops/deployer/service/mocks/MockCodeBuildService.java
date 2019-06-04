@@ -32,7 +32,10 @@ public class MockCodeBuildService implements ICodeBuildService {
     public TokenPaginatedResponse<LogEvent> getBuildLogs(String codeBuildId, String nextToken) {
         List<LogEvent> logs = logsStorage.getOrDefault(codeBuildId, new ArrayList<>());
         if(logs.size() < 10) {
-            logs.add(new LogEvent(new Date().getTime(), UUID.randomUUID().toString()));
+            String l = UUID.randomUUID().toString() + UUID.randomUUID().toString() +
+                    UUID.randomUUID().toString() + UUID.randomUUID().toString() +
+                    UUID.randomUUID().toString() + UUID.randomUUID().toString();
+            logs.add(new LogEvent(new Date().getTime(), l));
             logsStorage.put(codeBuildId, logs);
         }
         return new TokenPaginatedResponse<>(logs, "");

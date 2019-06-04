@@ -21,6 +21,11 @@ export class CreateappPage implements OnInit {
   }
 
   ngOnInit() {
+    this.activatedRoute.paramMap.subscribe(
+      params => {
+        this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
+      }
+    );
   }
 
   createApplication() {
@@ -30,9 +35,9 @@ export class CreateappPage implements OnInit {
     }).then((res) => {
       res.present();
       this.application.applicationFamily = this.applicationFamily;
-      this.applicationControllerService.createApplicationUsingPOST({application: this.application, applicationFamily: this.applicationFamily})
+      this.applicationControllerService.createApplicationUsingPOST({application: this.application,
+        applicationFamily: this.applicationFamily})
       .subscribe((app: Application) => {
-        this.modalController.dismiss();
         this.navController.navigateForward(`/${this.applicationFamily}/applications/${app.id}`);
         res.remove();
       }, err => {

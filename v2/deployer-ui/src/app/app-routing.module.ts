@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: ':applicationFamily/applications/:applicationId/build', loadChildren: './build/build.module#BuildPageModule' },
   { path: ':applicationFamily/applications/:applicationId/builds/:buildId',
     loadChildren: './buildstatus/buildstatus.module#BuildstatusPageModule' },
+  { path: ':applicationFamily/applications/:applicationId/builds', loadChildren: './build-list/build-list.module#BuildListPageModule' }
 ];
 
 @NgModule({

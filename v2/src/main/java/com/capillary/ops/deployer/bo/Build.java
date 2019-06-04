@@ -17,9 +17,11 @@ public class Build {
     @NotNull
     private String tag;
     private StatusType status;
-    private Map<String, String> environmentVariable;
+    private Map<String, String> environmentVariables;
     private Long timestamp = new Date().getTime();
     private String image;
+    private String triggeredBy;
+    private String description;
 
     public String getApplicationId() {
         return applicationId;
@@ -61,12 +63,12 @@ public class Build {
         this.codeBuildId = codeBuildId;
     }
 
-    public Map<String, String> getEnvironmentVariable() {
-        return environmentVariable;
+    public Map<String, String> getEnvironmentVariables() {
+        return environmentVariables;
     }
 
-    public void setEnvironmentVariable(Map<String, String> environmentVariable) {
-        this.environmentVariable = environmentVariable;
+    public void setEnvironmentVariables(Map<String, String> environmentVariables) {
+        this.environmentVariables = environmentVariables;
     }
 
     public Long getTimestamp() {
@@ -83,5 +85,21 @@ public class Build {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getTriggeredBy() {
+        return triggeredBy;
+    }
+
+    public void setTriggeredBy(String triggeredBy) {
+        this.triggeredBy = triggeredBy;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
