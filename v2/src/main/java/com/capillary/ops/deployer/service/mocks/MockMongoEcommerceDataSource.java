@@ -48,7 +48,7 @@ public class MockMongoEcommerceDataSource {
     private Application createApplication() {
         Application application = new Application();
         application.setApplicationFamily(ApplicationFamily.ECOMMERCE);
-        application.setName("api");
+        application.setName("deployer");
         application.setVcsProvider(VCSProvider.BITBUCKET);
         application.setRepositoryUrl("https://bitbucket.org/capillarymartjack/deisdeployer.git");
         application.setBuildType(BuildType.MVN);
