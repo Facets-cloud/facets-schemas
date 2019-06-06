@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Application, Deployment, Build } from '../api/models';
 import { ApplicationControllerService } from '../api/services';
+import { NavController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-deploy',
@@ -19,7 +20,8 @@ export class DeployPage implements OnInit {
     configurations: []
   };
 
-  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService) { }
+  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
+    private navController: NavController, private loadingController: LoadingController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(
@@ -48,14 +50,25 @@ export class DeployPage implements OnInit {
   }
 
   deploy() {
-    console.log(this.deployment);
-    this.deployment.buildId = this.buildId;
-    this.applicationControllerService.deployUsingPOST({
-      applicationFamily: this.application.applicationFamily,
-      applicationId: this.application.id,
-      environment: this.deployment.environment,
-      deployment: this.deployment
-    }).subscribe(deployment => console.log(deployment));
+    this.loadingController.create({
+      message: 'Creating...',
+      duration: 60000
+    }).then(
+      res => {
+        res.present();
+        this.deployment.buildId = this.buildId;
+        this.applicationControllerService.deployUsingPOST({
+          applicationFamily: this.application.applicationFamily,
+          applicationId: this.application.id,
+          environment: this.deployment.environment,
+          deployment: this.deployment
+        }).subscribe(
+          (deployment: Deployment) => {
+            res.remove();
+            this.navController.navigateForward(`/${this.application.applicationFamily}/applications/${this.application.id}/deployments/${this.deployment.environment}`);
+          }
+        )
+    });
   }
 
 }

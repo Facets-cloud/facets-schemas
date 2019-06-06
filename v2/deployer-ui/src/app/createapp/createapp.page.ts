@@ -11,6 +11,7 @@ import { LoadingController, NavController, ModalController } from '@ionic/angula
 })
 export class CreateappPage implements OnInit {
 
+  @Input() enableCifsMount: boolean;
   @Input() application: Application = {ports: []};
 
   @Input() applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
@@ -34,6 +35,7 @@ export class CreateappPage implements OnInit {
       duration: 60000
     }).then((res) => {
       res.present();
+      this.application.additionalParams = this.enableCifsMount ? {"mountCifs": "true"} : {};
       this.application.dnsType = this.application.loadBalancerType === 'INTERNAL' ? 'PRIVATE' : 'PUBLIC';
       this.application.applicationFamily = this.applicationFamily;
       this.applicationControllerService.createApplicationUsingPOST({application: this.application,

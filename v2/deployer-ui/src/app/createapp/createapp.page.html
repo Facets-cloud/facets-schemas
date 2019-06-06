@@ -30,7 +30,11 @@
         </ion-select>
         <ion-label position="stacked"><b>DNS Prefix</b></ion-label>
         <ion-input placeholder="someprefix" type="text" [(ngModel)]="application.dnsPrefix" ></ion-input>
+          <ion-label *ngIf="applicationFamily === 'ECOMMERCE'" position="stacked"><b>Mount CP Shared Volume</b></ion-label>
         <ion-row>
+          <ion-toggle color=dark *ngIf="applicationFamily === 'ECOMMERCE'" [(ngModel)]="enableCifsMount"></ion-toggle>
+        </ion-row>
+        <div>
         <ion-col *ngFor="let port of application?.ports; index as i">
                 <ion-label position="stacked"><b>Name</b></ion-label>
                 <ion-input placeholder="http" type="text" [(ngModel)]="port.name" ></ion-input>
@@ -39,7 +43,7 @@
                     <ion-label position="stacked"><b>LoadBalancer Port</b></ion-label>
                     <ion-input placeholder="80" type="number" [(ngModel)]="port.lbPort" ></ion-input>
         </ion-col>
-      </ion-row>
+      </div>
       <ion-row>
         <ion-button color=dark (click)="addPort()">Add Ports</ion-button>
       </ion-row>

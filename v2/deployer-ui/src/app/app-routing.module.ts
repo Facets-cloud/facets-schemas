@@ -12,7 +12,8 @@ const routes: Routes = [
   { path: ':applicationFamily/applications/:applicationId/builds/:buildId',
     loadChildren: './buildstatus/buildstatus.module#BuildstatusPageModule' },
   { path: ':applicationFamily/applications/:applicationId/builds', loadChildren: './build-list/build-list.module#BuildListPageModule' },
-  { path: ':applicationFamily/applications/:applicationId/builds/:buildId/deploy', loadChildren: './deploy/deploy.module#DeployPageModule' }
+  { path: ':applicationFamily/applications/:applicationId/builds/:buildId/deploy', loadChildren: './deploy/deploy.module#DeployPageModule' },
+  { path: ':applicationFamily/applications/:applicationId/deployments/:environment', loadChildren: './deploymentstatus/deploymentstatus.module#DeploymentstatusPageModule' }
 ];
 
 @NgModule({

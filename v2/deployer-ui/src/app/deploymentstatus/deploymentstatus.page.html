@@ -1,0 +1,44 @@
+<ion-grid fixed>
+<ion-toolbar color=dark>
+  <ion-title>Deployment Details</ion-title>
+</ion-toolbar>
+
+<ion-content>
+    <ion-card-header color=light><b>Pods</b></ion-card-header>
+<div ngClass="poddiv">
+  <div *ngFor="let pod of deploymentStatus?.pods">
+        <ion-row>
+          <ion-col>
+            <ion-label><b>Name</b></ion-label>
+            {{pod.name}}
+          </ion-col>
+          <ion-col>
+              <ion-label><b>Status</b></ion-label>
+              {{pod.podStauts}}
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-label><b>Image</b></ion-label>
+            {{pod.image}}
+          </ion-col>
+        </ion-row>
+      </div>
+    </div>
+    <ion-card-header color=light><b>Environment Variables</b></ion-card-header>
+    <div ngClass="poddiv">
+        <div *ngFor="let env of deploymentStatus?.deployment.environmentConfigs | keyvalue">
+              <ion-row>
+                <ion-col>
+                  <ion-label><b>Name</b></ion-label>
+                  {{env.key}}
+                </ion-col>
+                <ion-col>
+                    <ion-label><b>Value</b></ion-label>
+                    {{env.value}}
+                </ion-col>
+              </ion-row>
+            </div>
+          </div>
+</ion-content>
+</ion-grid>
