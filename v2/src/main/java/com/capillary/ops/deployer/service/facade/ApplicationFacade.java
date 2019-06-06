@@ -16,6 +16,7 @@ import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -93,6 +94,14 @@ public class ApplicationFacade {
         return getBuildDetails(application, build);
     }
 
+    public Build promoteBuild(ApplicationFamily applicationFamily, String applicationId, String buildId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Build build = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
+        build.setPromoted(true);
+        buildRepository.save(build);
+        return getBuildDetails(application, build);
+    }
+
     private Build getBuildDetails(Application application, Build build) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
                 codeBuildService.getBuild(build.getCodeBuildId());
@@ -125,6 +134,13 @@ public class ApplicationFacade {
     }
 
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
+        Environment env = applicationFamily.getEnvironment(environment);
+        if(env.getEnvironmentType().equals(EnvironmentType.PRODUCTION)){
+            if(getBuildPromotionStatus(applicationId,deployment.getImage()) == false) {
+                logger.info("Build with image {} is not promoted", deployment.getImage());
+                return null;
+            }
+        }
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         deployment.setApplicationId(application.getId());
         deployment.setApplicationFamily(applicationFamily);
@@ -138,6 +154,11 @@ public class ApplicationFacade {
         deploymentRepository.save(deployment);
         helmService.deploy(application, deployment);
         return deployment;
+    }
+
+    private boolean getBuildPromotionStatus(String applicationId, String image) {
+        List<Build> builds = buildRepository.findByApplicationId(applicationId);
+        return builds.stream().anyMatch(b -> (b.getImage().equals(image) && b.isPromoted()));
     }
 
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {

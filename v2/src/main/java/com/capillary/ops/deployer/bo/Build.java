@@ -22,6 +22,7 @@ public class Build {
     private String image;
     private String triggeredBy;
     private String description;
+    private boolean promoted;
 
     public String getApplicationId() {
         return applicationId;
@@ -101,5 +102,13 @@ public class Build {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isPromoted() {
+        return promoted;
+    }
+
+    public void setPromoted(boolean promoted) {
+        this.promoted = promoted;
     }
 }

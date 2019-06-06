@@ -13,6 +13,7 @@ public class Environment {
     private String awsAccessKeyId;
     private String awsSecretAccessKey;
     private String adPassword;
+    private EnvironmentType environmentType;
 
     public String getName() {
         return name;
@@ -108,5 +109,13 @@ public class Environment {
 
     public void setAdPassword(String adPassword) {
         this.adPassword = adPassword;
+    }
+
+    public EnvironmentType getEnvironmentType() {
+        return environmentType;
+    }
+
+    public void setEnvironmentType(EnvironmentType environmentType) {
+        this.environmentType = environmentType;
     }
 }

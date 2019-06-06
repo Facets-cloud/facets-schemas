@@ -68,6 +68,13 @@ public class ApplicationController {
         return applicationFacade.getBuild(applicationFamily, applicationId, buildId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
+    public Build promoteBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
+        return applicationFacade.promoteBuild(applicationFamily, applicationId, buildId);
+    }
+
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")
     public TokenPaginatedResponse<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                @PathVariable("applicationId") String applicationId,
