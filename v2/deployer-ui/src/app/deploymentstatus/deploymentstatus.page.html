@@ -23,6 +23,12 @@
             {{pod.image}}
           </ion-col>
         </ion-row>
+        <ion-row>
+            <ion-col>
+              <ion-label><b>Created At</b></ion-label>
+              {{pod.creationTimestamp}}
+            </ion-col>
+          </ion-row>
       </div>
     </div>
     <ion-card-header color=light><b>Environment Variables</b></ion-card-header>
