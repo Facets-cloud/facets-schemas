@@ -6,17 +6,17 @@ import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
-import com.capillary.ops.deployer.service.KubectlService;
+import com.capillary.ops.deployer.service.KubernetesService;
 import com.capillary.ops.deployer.service.S3DumpService;
 import com.capillary.ops.deployer.service.SecretService;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
+import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -54,7 +54,7 @@ public class ApplicationFacade {
     private DeploymentRepository deploymentRepository;
 
     @Autowired
-    private KubectlService kubectlService;
+    private IKubernetesService kubernetesService;
 
     @Autowired
     private S3DumpService s3DumpService;
@@ -145,7 +145,7 @@ public class ApplicationFacade {
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = applicationFamily.getEnvironment(environmentName);
-        return kubectlService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+        return kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
     }
 
     public List<String> getImages(ApplicationFamily applicationFamily, String applicationId) {
@@ -222,7 +222,7 @@ public class ApplicationFacade {
         String releaseName = helmService.getReleaseName(application, environment);
         Map<String, String> secretMap = applicationSecrets.parallelStream()
                 .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
-        kubectlService.createOrUpdateSecret(environment, releaseName + "-credentials", secretMap);
+        kubernetesService.createOrUpdateSecret(environment, releaseName + "-credentials", secretMap);
 
         return secretService.updateApplicationSecrets(environmentName, applicationFamily, applicationId, applicationSecrets);
     }
