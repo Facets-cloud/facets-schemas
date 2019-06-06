@@ -151,6 +151,11 @@ public class CodeBuildService implements ICodeBuildService {
         software.amazon.awssdk.services.codebuild.model.Build build = getBuild(codeBuildId);
         String groupName = build.logs().groupName();
         String streamName = build.logs().streamName();
+
+        if (groupName == null || streamName == null) {
+            return new TokenPaginatedResponse<>(new ArrayList<>(), "");
+        }
+
         GetLogEventsRequest.Builder builder = GetLogEventsRequest.builder()
                 .logGroupName(groupName)
                 .logStreamName(streamName)
