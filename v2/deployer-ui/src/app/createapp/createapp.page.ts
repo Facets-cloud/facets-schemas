@@ -34,6 +34,7 @@ export class CreateappPage implements OnInit {
       duration: 60000
     }).then((res) => {
       res.present();
+      this.application.dnsType = this.application.loadBalancerType === 'INTERNAL' ? 'PRIVATE' : 'PUBLIC';
       this.application.applicationFamily = this.applicationFamily;
       this.applicationControllerService.createApplicationUsingPOST({application: this.application,
         applicationFamily: this.applicationFamily})

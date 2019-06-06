@@ -59,7 +59,7 @@ export class BuildstatusPage implements OnInit {
   }
 
   deploy() {
-
+    this.navController.navigateForward(`/${this.applicationFamily}/applications/${this.applicationId}/builds/${this.buildId}/deploy`);
   }
 
 }

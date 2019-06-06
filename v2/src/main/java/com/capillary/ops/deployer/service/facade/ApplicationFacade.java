@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
@@ -131,6 +132,11 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         deployment.setApplicationId(application.getId());
         deployment.setEnvironment(environment);
+        Build build = getBuild(applicationFamily, applicationId, deployment.getBuildId());
+        if(StringUtils.isEmpty(build.getImage())) {
+            throw new NotFoundException("No image");
+        }
+        deployment.setImage(build.getImage());
         deploymentRepository.save(deployment);
         helmService.deploy(application, deployment);
         return deployment;

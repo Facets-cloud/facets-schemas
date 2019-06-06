@@ -14,5 +14,13 @@
   "/v2/api-docs": {
     "target": "http://localhost:8080",
     "secure": false
+  },
+  "/swagger": {
+    "target": "http://localhost:8080",
+    "secure": false
+  },
+  "/webjars": {
+    "target": "http://localhost:8080",
+    "secure": false
   }
 }

@@ -1,0 +1,34 @@
+<ion-grid fixed>
+<ion-toolbar color=dark>
+  <ion-title>Deploy {{ application?.name }} </ion-title>
+  <ion-button (click)="deploy()" *ngIf="build?.status === 'SUCCEEDED'" color=light fill=clear slot=end><ion-icon name="paper-plane"></ion-icon></ion-button>
+</ion-toolbar>
+
+<ion-content>
+  <div style="padding: 2%; width: 100%;">
+      <ion-label position="stacked"><b>Cluster</b></ion-label>
+      <ion-select interface="popover" type="text" placeholder="cluster" [(ngModel)]="deployment.environment" >
+          <ion-select-option *ngFor="let cluster of environments" value="{{ cluster }}" >
+            {{ cluster }}
+          </ion-select-option>
+      </ion-select>
+      <ion-label position="stacked"><b>Pod Size</b></ion-label>
+      <ion-select interface="popover" type="text" placeholder="SMALL" [(ngModel)]="deployment.podSize" >
+          <ion-select-option value="SMALL">SMALL</ion-select-option>
+          <ion-select-option value="LARGE">LARGE</ion-select-option>
+          <ion-select-option value="XLARGE">XLARGE</ion-select-option>
+      </ion-select>
+      <ion-row>
+      <ion-col size=6 *ngFor="let conf of deployment.configurations">
+          <ion-label position="stacked"><b>Name</b></ion-label>
+          <ion-input placeholder="key" type="text" [(ngModel)]="conf.name" ></ion-input>
+            <ion-label position="stacked"><b>Value</b></ion-label>
+            <ion-input placeholder="value" type="text" [(ngModel)]="conf.value" ></ion-input>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-button color=dark (click)="addConf()">Add Environment Variable</ion-button>
+      </ion-row>
+  </div>
+</ion-content>
+</ion-grid>

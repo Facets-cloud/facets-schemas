@@ -1,7 +1,7 @@
 <ion-grid fixed>
   <ion-toolbar color=dark>
     <ion-title>Build Status</ion-title>
-    <ion-button (click)="deploy()" *ngIf="build.status === 'SUCCEEDED'" color=light fill=clear slot=end><ion-icon name="paper-plane"></ion-icon></ion-button>
+    <ion-button (click)="deploy()" *ngIf="build?.status === 'SUCCEEDED'" color=light fill=clear slot=end><ion-icon name="paper-plane"></ion-icon></ion-button>
   </ion-toolbar>
 
 <ion-content>
@@ -22,7 +22,7 @@
         <ion-col size="2"><b>Image</b></ion-col>
         <ion-col>{{build?.image}}</ion-col>
       </ion-item>
-      <ion-item *ngFor="let log of logs.logEventList">
+      <ion-item *ngFor="let log of logs?.logEventList">
         <ion-col size="2">{{log.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</ion-col>
         <ion-col>{{log.message}}</ion-col>
       </ion-item>

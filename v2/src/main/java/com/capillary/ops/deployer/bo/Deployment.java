@@ -1,17 +1,23 @@
 package com.capillary.ops.deployer.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Deployment {
     @Id
     private String id;
     private String applicationId;
+    @JsonIgnore
     private String image;
+    private String buildId;
     private String environment;
-    private Map<String, String> configurations;
+    private List<EnvironmentVariable> configurations;
     private Date timestamp;
     private PodSize podSize;
     private boolean rollbackEnabled;
@@ -48,11 +54,11 @@ public class Deployment {
         this.id = id;
     }
 
-    public Map<String, String> getConfigurations() {
+    public List<EnvironmentVariable> getConfigurations() {
         return configurations;
     }
 
-    public void setConfigurations(Map<String, String> configurations) {
+    public void setConfigurations(List<EnvironmentVariable> configurations) {
         this.configurations = configurations;
     }
 
@@ -79,4 +85,21 @@ public class Deployment {
     public void setRollbackEnabled(boolean rollbackEnabled) {
         this.rollbackEnabled = rollbackEnabled;
     }
+
+    public String getBuildId() {
+        return buildId;
+    }
+
+    public void setBuildId(String buildId) {
+        this.buildId = buildId;
+    }
+
+    public Map<String, String> getConfigurationsMap() {
+        if(configurations == null) {
+            return new HashMap<>();
+        }
+        return configurations.stream()
+                .collect(Collectors.toMap(EnvironmentVariable::getName, EnvironmentVariable::getValue));
+    }
+
 }

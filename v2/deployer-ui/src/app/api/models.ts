@@ -7,6 +7,7 @@ export { Build } from './models/build';
 export { Deployment } from './models/deployment';
 export { DeploymentStatusDetails } from './models/deployment-status-details';
 export { Endpoint } from './models/endpoint';
+export { EnvironmentVariable } from './models/environment-variable';
 export { File } from './models/file';
 export { InputStream } from './models/input-stream';
 export { InputStreamResource } from './models/input-stream-resource';

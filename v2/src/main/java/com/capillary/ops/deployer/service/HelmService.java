@@ -196,7 +196,7 @@ public class HelmService implements IHelmService {
 
     private Map<String, String> getConfigMap(Environment environment, Application application, Deployment deployment) {
         Map<String, String> configMap = new HashMap<>();
-        configMap.putAll(deployment.getConfigurations());
+        configMap.putAll(deployment.getConfigurationsMap());
         configMap.putAll(getFamilySpecificEnvVariables(application, environment));
         return configMap;
     }
@@ -235,8 +235,8 @@ public class HelmService implements IHelmService {
         switch (application.getApplicationFamily()) {
             case CRM:
                 logger.info("loading CRM specific attributes");
-                if(deployment.getConfigurations().containsKey("crmModuleName")) {
-                    String crmModuleName = deployment.getConfigurations().get("crmModuleName");
+                if(deployment.getConfigurationsMap().containsKey("crmModuleName")) {
+                    String crmModuleName = deployment.getConfigurationsMap().get("crmModuleName");
                     valueFields.put("crmConfigurations", getCRMConfigsFromModule(crmModuleName));
                 }
                 break;

@@ -19,8 +19,7 @@ import { CreateappPageModule } from './createapp/createapp.module';
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule],
   providers: [
     StatusBar,
-    SplashScreen,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
+    SplashScreen
   ],
   bootstrap: [AppComponent]
 })
