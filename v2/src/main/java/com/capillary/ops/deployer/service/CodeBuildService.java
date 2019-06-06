@@ -12,6 +12,8 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -42,6 +44,8 @@ public class CodeBuildService implements ICodeBuildService {
 
     @Autowired
     private CloudWatchLogsClient cloudWatchLogsClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(CodeBuildService.class);
 
     @Override
     public void createProject(Application application) {
@@ -153,6 +157,7 @@ public class CodeBuildService implements ICodeBuildService {
         String streamName = build.logs().streamName();
 
         if (groupName == null || streamName == null) {
+            logger.info("group name or stream name was null, returning empty response");
             return new TokenPaginatedResponse<>(new ArrayList<>(), "");
         }
 
