@@ -36,15 +36,11 @@
         <div *ngFor="let env of deploymentStatus?.deployment.environmentConfigs | keyvalue">
               <ion-row>
                 <ion-col>
-                  <ion-label><b>Name</b></ion-label>
-                  {{env.key}}
-                </ion-col>
-                <ion-col>
-                    <ion-label><b>Value</b></ion-label>
-                    {{env.value}}
+                  <ion-label><b>{{env.key}}</b></ion-label>
+                  {{env.value}}
                 </ion-col>
               </ion-row>
             </div>
-          </div>
+        </div>
 </ion-content>
 </ion-grid>

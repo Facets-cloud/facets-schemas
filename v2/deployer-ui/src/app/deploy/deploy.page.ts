@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Application, Deployment, Build } from '../api/models';
+import { Application, Deployment, Build, EnvironmentVariable } from '../api/models';
 import { ApplicationControllerService } from '../api/services';
 import { NavController, LoadingController } from '@ionic/angular';
 
@@ -15,9 +15,9 @@ export class DeployPage implements OnInit {
   build: Build;
   buildId: string;
   environments: string[];
-  deployment: Deployment = {
+  @Input() deployment: Deployment = {
     environment: "",
-    configurations: []
+    configurations: [{}]
   };
 
   constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
@@ -43,6 +43,24 @@ export class DeployPage implements OnInit {
         this.applicationControllerService.getEnvironmentsUsingGET(applicationFamily).subscribe(e => this.environments = e);
       }
     );
+  }
+
+  envSelected(environment: string) {
+    this.applicationControllerService.getDeploymentStatusUsingGET(
+      {
+        applicationFamily: this.application.applicationFamily,
+        applicationId: this.application.id,
+        environment: environment
+      }
+    ).subscribe(
+      deploymentStatus => {
+        var configurations: EnvironmentVariable[] = [];
+        console.log(deploymentStatus.deployment.environmentConfigs);
+        for (let key in deploymentStatus.deployment.environmentConfigs) {
+          configurations.push({name: key, value: deploymentStatus.deployment.environmentConfigs[key]})
+        }
+        this.deployment.configurations = configurations;
+      });
   }
 
   addConf() {
