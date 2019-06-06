@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service.facade;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.exceptions.NotPromotedException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
@@ -136,9 +137,9 @@ public class ApplicationFacade {
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
         Environment env = applicationFamily.getEnvironment(environment);
         if(env.getEnvironmentType().equals(EnvironmentType.PRODUCTION)){
-            if(getBuildPromotionStatus(applicationId,deployment.getImage()) == false) {
-                logger.info("Build with image {} is not promoted", deployment.getImage());
-                return null;
+            if(getBuildPromotionStatus(applicationId,deployment.getBuildId()) == false) {
+                logger.info("Build {} is not promoted", deployment.getBuildId());
+                throw new NotPromotedException("Build " + deployment.getBuildId() + " is not promoted");
             }
         }
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
@@ -156,9 +157,9 @@ public class ApplicationFacade {
         return deployment;
     }
 
-    private boolean getBuildPromotionStatus(String applicationId, String image) {
-        List<Build> builds = buildRepository.findByApplicationId(applicationId);
-        return builds.stream().anyMatch(b -> (b.getImage().equals(image) && b.isPromoted()));
+    private boolean getBuildPromotionStatus(String applicationId, String buildId) {
+        Optional<Build> build = buildRepository.findOneByApplicationIdAndId(applicationId,buildId);
+        return build.get().isPromoted();
     }
 
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
