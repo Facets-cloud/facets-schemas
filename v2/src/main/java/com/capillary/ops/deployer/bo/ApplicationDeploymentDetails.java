@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.bo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -10,9 +11,10 @@ public class ApplicationDeploymentDetails {
 
     public ApplicationDeploymentDetails() {}
 
-    public ApplicationDeploymentDetails(String name, Map<String, String> environmentConfigs, PodReplicationDetails replicas, Map<String, String> labels, String creationTimestamp) {
+    public ApplicationDeploymentDetails(String name, Map<String, String> environmentConfigs, List<String> credentialsList, PodReplicationDetails replicas, Map<String, String> labels, String creationTimestamp) {
         this.name = name;
         this.environmentConfigs = environmentConfigs;
+        this.credentialsList = credentialsList;
         this.replicas = replicas;
         this.labels = labels;
         this.creationTimestamp = creationTimestamp;
@@ -21,6 +23,8 @@ public class ApplicationDeploymentDetails {
     private String name;
 
     private Map<String, String> environmentConfigs;
+
+    private List<String> credentialsList;
 
     private PodReplicationDetails replicas;
 
@@ -66,5 +70,13 @@ public class ApplicationDeploymentDetails {
 
     public void setCreationTimestamp(String creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
+    }
+
+    public List<String> getCredentialsList() {
+        return credentialsList;
+    }
+
+    public void setCredentialsList(List<String> credentialsList) {
+        this.credentialsList = credentialsList;
     }
 }

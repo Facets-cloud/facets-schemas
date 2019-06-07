@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.extensions.Deployment;
@@ -147,9 +148,13 @@ public class KubernetesService implements IKubernetesService {
             Map<String, String> environmentConfigs = getEnvironmentConfigs(kubernetesClient, deploymentName);
             logger.info("found environment configs for deployment: {}", deploymentName);
 
+            List<String> credentialsList = getCredentialsList(kubernetesClient, deploymentName);
+            logger.info("found credentials list for deployment: {}", deploymentName);
+
             return new ApplicationDeploymentDetails(
                     deploymentMetadata.getName(),
                     environmentConfigs,
+                    credentialsList,
                     replicationDetails,
                     deploymentMetadata.getLabels(),
                     deploymentMetadata.getCreationTimestamp());
@@ -161,6 +166,21 @@ public class KubernetesService implements IKubernetesService {
     private Map<String, String> getEnvironmentConfigs(KubernetesClient kubernetesClient, String deploymentName) {
         Secret secret = kubernetesClient.secrets().inNamespace("default").withName(deploymentName + "-configs").get();
         return secret == null ? null : decodeConfigValues(secret);
+    }
+
+    private List<String> getCredentialsList(KubernetesClient kubernetesClient, String deploymentName) {
+        Secret secret = kubernetesClient.secrets().inNamespace("default").withName(deploymentName + "-credentials").get();
+        return secret == null ? null : getSecretKeys(secret);
+    }
+
+    private List<String> getSecretKeys(Secret secret) {
+        Map<String, String> secretData = secret.getData();
+        List<String> credentialsList = Lists.newArrayListWithExpectedSize(secretData.size());
+        secretData.forEach((k,v) -> {
+            credentialsList.add(k);
+        });
+
+        return credentialsList;
     }
 
     private static Map<String, String> decodeConfigValues(Secret secret) {
