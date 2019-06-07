@@ -7,7 +7,7 @@
     <ion-list>
       <div *ngFor="let item of deployments | keyvalue">
         <ion-card-header color=light><b>{{ item.value.environment }}</b></ion-card-header>
-  <div href="#" ngClass="builddiv" (click)="showBuild(build)">
+  <div href="#" ngClass="builddiv" (click)="showDeploymentStatus(item.value)">
     <ion-row>
       <ion-col size=2><b>Image</b></ion-col>
       <ion-col size=8>{{ builds[item.key]?.image }}</ion-col>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApplicationControllerService } from '../api/services';
 import { Deployment, Build } from '../api/models';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-deployments-list',
@@ -15,7 +16,8 @@ export class DeploymentsListPage implements OnInit {
   environments: string[];
   deployments: { [environment: string]: Deployment; } = {};
   builds: { [environment: string]: Build; } = {};
-  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService) { }
+  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
+    private navController: NavController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(
@@ -52,6 +54,10 @@ export class DeploymentsListPage implements OnInit {
         );
       }
     );
+  }
+
+  showDeploymentStatus(deployment: Deployment) {
+    this.navController.navigateForward(`/${this.applicationFamily}/applications/${this.applicationId}/deployments/${deployment.environment}`);
   }
 
 }
