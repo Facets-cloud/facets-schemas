@@ -12,11 +12,12 @@ import { LoginPipe } from './login.pipe';
 import { HttpClientModule } from '@angular/common/http';
 import { BuildPageModule } from './build/build.module';
 import { CreateappPageModule } from './createapp/createapp.module';
+import { AppMenuPageModule } from './app-menu/app-menu.module';
 
 @NgModule({
   declarations: [AppComponent, LoginPipe],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule, AppMenuPageModule],
   providers: [
     StatusBar,
     SplashScreen

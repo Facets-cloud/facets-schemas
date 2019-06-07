@@ -191,4 +191,11 @@ public class ApplicationController {
             @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {
         return new ResponseEntity<>(applicationFacade.getEnvironments(applicationFamily), HttpStatus.OK);
     }
+
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current", produces = "application/json")
+    public Deployment getCurrentDeployment(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                 @PathVariable("applicationId") String applicationId, @PathVariable("environment") String environment) {
+        return applicationFacade.getCurrentDeployment(applicationFamily, applicationId, environment);
+    }
+
 }

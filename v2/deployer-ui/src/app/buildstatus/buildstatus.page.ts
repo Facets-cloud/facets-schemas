@@ -53,7 +53,14 @@ export class BuildstatusPage implements OnInit {
       applicationId: this.applicationId,
       buildId: this.buildId
     }).subscribe(
-      (logs: TokenPaginatedResponseLogEvent) => this.logs = logs,
+      (logs: TokenPaginatedResponseLogEvent) => {
+        if(! this.logs) {
+          this.logs = logs;
+        }
+        logs.logEventList.forEach(e => {
+          this.logs.logEventList.push(e);
+        });
+      },
       err => {console.log(err); this.navController.navigateForward("/signin");
     });
   }

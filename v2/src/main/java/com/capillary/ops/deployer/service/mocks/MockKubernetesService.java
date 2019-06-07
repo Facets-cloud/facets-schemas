@@ -1,17 +1,15 @@
 package com.capillary.ops.deployer.service.mocks;
 
-import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.ApplicationSecret;
-import com.capillary.ops.deployer.bo.DeploymentStatusDetails;
-import com.capillary.ops.deployer.bo.Environment;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import com.google.common.collect.ImmutableMap;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.extensions.DeploymentList;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +48,22 @@ public class MockKubernetesService implements IKubernetesService {
 
     @Override
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
-        PodamFactory podamFactory = new PodamFactoryImpl();
-        return podamFactory.manufacturePojo(DeploymentStatusDetails.class);
+        ApplicationPodDetails pod1 =
+                new ApplicationPodDetails(application.getName() + "-old", new HashMap<>(),
+                        "Running", "oldimage", "", "2019-06-07T06:46:21Z");
+        ApplicationPodDetails pod2 =
+                new ApplicationPodDetails(application.getName() + "-new", new HashMap<>(),
+                        "Pending", "oldimage", "", "2019-06-07T10:46:21Z");
+
+        DeploymentStatusDetails deploymentStatusDetails = new DeploymentStatusDetails(
+                new ApplicationServiceDetails(),
+                new ApplicationDeploymentDetails(application.getName(),
+                        ImmutableMap.of("key1", "value1",
+                                "key2", "value2",
+                                "key3", "value3"), new PodReplicationDetails(), new HashMap<>(),
+                        "2019-06-07T06:46:21Z"),
+                Arrays.asList(pod1, pod2)
+        );
+        return deploymentStatusDetails;
     }
 }

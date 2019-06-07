@@ -5,8 +5,8 @@
 
 <ion-content>
     <ion-card-header color=light><b>Pods</b></ion-card-header>
-<div ngClass="poddiv">
-  <div *ngFor="let pod of deploymentStatus?.pods">
+<div>
+  <div ngClass="poddiv" *ngFor="let pod of deploymentStatus?.pods">
         <ion-row>
           <ion-col>
             <ion-label><b>Name</b></ion-label>
@@ -26,7 +26,7 @@
         <ion-row>
             <ion-col>
               <ion-label><b>Created At</b></ion-label>
-              {{pod.creationTimestamp}}
+              {{pod.creationTimestamp | date: 'medium'}}
             </ion-col>
           </ion-row>
       </div>

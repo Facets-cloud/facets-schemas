@@ -12,15 +12,17 @@ import java.util.stream.Collectors;
 public class Deployment {
     @Id
     private String id;
+    private ApplicationFamily applicationFamily;
     private String applicationId;
     @JsonIgnore
     private String image;
     private String buildId;
     private String environment;
     private List<EnvironmentVariable> configurations;
-    private Date timestamp;
+    private Date timestamp = new Date();
     private PodSize podSize;
     private boolean rollbackEnabled;
+    private String deployedBy;
 
     public String getApplicationId() {
         return applicationId;
@@ -102,4 +104,19 @@ public class Deployment {
                 .collect(Collectors.toMap(EnvironmentVariable::getName, EnvironmentVariable::getValue));
     }
 
+    public ApplicationFamily getApplicationFamily() {
+        return applicationFamily;
+    }
+
+    public void setApplicationFamily(ApplicationFamily applicationFamily) {
+        this.applicationFamily = applicationFamily;
+    }
+
+    public String getDeployedBy() {
+        return deployedBy;
+    }
+
+    public void setDeployedBy(String deployedBy) {
+        this.deployedBy = deployedBy;
+    }
 }

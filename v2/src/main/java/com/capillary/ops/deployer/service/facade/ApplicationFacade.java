@@ -27,10 +27,7 @@ import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,11 +112,10 @@ public class ApplicationFacade {
         return builds;
     }
 
-    public List<Deployment> getDeployments(String applicationId, String environment) {
-        List<Deployment> deployments = deploymentRepository.findByApplicationIdAndEnvironmentOrderByTimestampDesc(applicationId, environment);
-        return deployments;
+    public Deployment getCurrentDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
+        Optional<Deployment> deployment = deploymentRepository.findTopOneByApplicationFamilyAndApplicationIdAndEnvironmentOrderByTimestampDesc(applicationFamily, applicationId, environment);
+        return deployment.isPresent() ? deployment.get() : null;
     }
-
 
     public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,
                                                          String applicationId, String buildId,
@@ -131,7 +127,9 @@ public class ApplicationFacade {
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         deployment.setApplicationId(application.getId());
+        deployment.setApplicationFamily(applicationFamily);
         deployment.setEnvironment(environment);
+        deployment.setDeployedBy(getUserName());
         Build build = getBuild(applicationFamily, applicationId, deployment.getBuildId());
         if(StringUtils.isEmpty(build.getImage())) {
             throw new NotFoundException("No image");

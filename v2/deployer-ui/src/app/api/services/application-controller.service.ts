@@ -11,8 +11,8 @@ import { User } from '../models/user';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
 import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
-import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { Deployment } from '../models/deployment';
+import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { ApplicationSecret } from '../models/application-secret';
 import { InputStreamResource } from '../models/input-stream-resource';
 
@@ -36,6 +36,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getBuildLogsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
+  static readonly getCurrentDeploymentUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current';
   static readonly getDeploymentStatusUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus';
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
@@ -622,6 +623,58 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetCurrentDeploymentUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getCurrentDeploymentUsingGETResponse(params: ApplicationControllerService.GetCurrentDeploymentUsingGETParams): __Observable<__StrictHttpResponse<Deployment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/deployment/current`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Deployment>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetCurrentDeploymentUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getCurrentDeploymentUsingGET(params: ApplicationControllerService.GetCurrentDeploymentUsingGETParams): __Observable<Deployment> {
+    return this.getCurrentDeploymentUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Deployment)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetDeploymentStatusUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1149,6 +1202,27 @@ module ApplicationControllerService {
    * Parameters for getImagesUsingGET
    */
   export interface GetImagesUsingGETParams {
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getCurrentDeploymentUsingGET
+   */
+  export interface GetCurrentDeploymentUsingGETParams {
+
+    /**
+     * environment
+     */
+    environment: string;
 
     /**
      * applicationId

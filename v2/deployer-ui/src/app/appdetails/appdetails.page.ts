@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
 import { Application } from '../api/models';
-import { NavController, MenuController, ModalController } from '@ionic/angular';
+import { NavController, MenuController, ModalController, PopoverController } from '@ionic/angular';
 import { BuildPage } from '../build/build.page';
+import { AppMenuPage } from '../app-menu/app-menu.page';
 
 @Component({
   selector: 'app-appdetails',
@@ -15,7 +16,8 @@ export class AppdetailsPage implements OnInit {
   application: Application;
 
   constructor(private applicationControllerService: ApplicationControllerService, private activatedRoute: ActivatedRoute,
-    private navController: NavController, private modalController: ModalController) { }
+    private navController: NavController, private modalController: ModalController,
+    private popoverController: PopoverController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(
@@ -41,8 +43,39 @@ export class AppdetailsPage implements OnInit {
     return await modal.present();
   }
 
-  listBuilds() {
-    this.navController.navigateForward(`/${this.application.applicationFamily}/applications/${this.application.id}/builds`);
+  async presentPopover(ev) {
+    const popover = await this.popoverController.create({
+      component: AppMenuPage,
+      componentProps: {
+        menuItems: [
+          {
+            name: "Build",
+            icon: "construct",
+            modal: await this.modalController.create(
+              {
+                component: BuildPage,
+                componentProps: {
+                  application: this.application
+                }
+              }
+            )
+          },
+          {
+            name: "List Builds",
+            icon: "list",
+            url: `/${this.application.applicationFamily}/applications/${this.application.id}/builds`
+          },
+          {
+            name: "Current Deployments",
+            icon: "apps",
+            url: `/${this.application.applicationFamily}/applications/${this.application.id}/currentdeployments`
+          }
+        ]
+      },
+      event: ev,
+      translucent: true
+    });
+    return await popover.present();
   }
 
 }
