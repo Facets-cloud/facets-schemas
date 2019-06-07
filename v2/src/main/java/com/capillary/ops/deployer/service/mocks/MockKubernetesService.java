@@ -8,10 +8,7 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentList;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Profile("dev")
 @Service
@@ -60,7 +57,8 @@ public class MockKubernetesService implements IKubernetesService {
                 new ApplicationDeploymentDetails(application.getName(),
                         ImmutableMap.of("key1", "value1",
                                 "key2", "value2",
-                                "key3", "value3"), new PodReplicationDetails(), new HashMap<>(),
+                                "key3", "value3"), new ArrayList<>(),
+                        new PodReplicationDetails(), new HashMap<>(),
                         "2019-06-07T06:46:21Z"),
                 Arrays.asList(pod1, pod2)
         );
