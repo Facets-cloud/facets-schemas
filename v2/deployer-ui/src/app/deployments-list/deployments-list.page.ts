@@ -42,6 +42,9 @@ export class DeploymentsListPage implements OnInit {
       }
     ).subscribe(
       d => {
+        if (d == null) {
+          return;
+        }
         this.deployments[environment] = d;
         this.applicationControllerService.getBuildUsingGET(
           {

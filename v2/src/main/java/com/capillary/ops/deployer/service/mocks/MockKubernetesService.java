@@ -62,6 +62,7 @@ public class MockKubernetesService implements IKubernetesService {
                         "2019-06-07T06:46:21Z"),
                 Arrays.asList(pod1, pod2)
         );
+
         return deploymentStatusDetails;
     }
 }

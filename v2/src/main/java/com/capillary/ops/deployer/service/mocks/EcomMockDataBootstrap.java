@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Profile("dev")
 @Component
-public class MockMongoCrmDataSource {
+public class EcomMockDataBootstrap {
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -47,10 +47,10 @@ public class MockMongoCrmDataSource {
 
     private Application createApplication() {
         Application application = new Application();
-        application.setApplicationFamily(ApplicationFamily.CRM);
-        application.setName("api");
-        application.setVcsProvider(VCSProvider.GITHUB);
-        application.setRepositoryUrl("https://github.com/Capillary/api.git");
+        application.setApplicationFamily(ApplicationFamily.ECOMMERCE);
+        application.setName("deployer");
+        application.setVcsProvider(VCSProvider.BITBUCKET);
+        application.setRepositoryUrl("https://bitbucket.org/capillarymartjack/deisdeployer.git");
         application.setBuildType(BuildType.MVN);
         application.setLoadBalancerType(LoadBalancerType.INTERNAL);
         application.setPorts(new ArrayList<>(getPorts()));
