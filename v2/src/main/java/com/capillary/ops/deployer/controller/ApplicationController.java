@@ -70,9 +70,9 @@ public class ApplicationController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
-    public Build promoteBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
-        return applicationFacade.promoteBuild(applicationFamily, applicationId, buildId);
+    public Build updateBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId, @RequestBody Build build) {
+        return applicationFacade.updateBuild(applicationFamily, applicationId, buildId, build);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")

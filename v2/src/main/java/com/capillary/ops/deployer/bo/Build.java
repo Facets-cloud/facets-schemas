@@ -22,7 +22,7 @@ public class Build {
     private String image;
     private String triggeredBy;
     private String description;
-    private boolean promoted;
+    private boolean promoted = false;
 
     public String getApplicationId() {
         return applicationId;

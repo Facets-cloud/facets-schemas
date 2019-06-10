@@ -1,7 +1,7 @@
 <ion-grid fixed>
   <ion-toolbar color=dark>
     <ion-title>Build Status</ion-title>
-    <ion-button (click)="deploy()" *ngIf="build?.status === 'SUCCEEDED'" color=light fill=clear slot=end><ion-icon name="paper-plane"></ion-icon></ion-button>
+    <ion-button *ngIf="build?.status==='SUCCEEDED'" color=light fill=clear slot="end" (click)="presentPopover($event)"><ion-icon name="menu"></ion-icon></ion-button>
   </ion-toolbar>
 
 <ion-content>
@@ -18,6 +18,10 @@
         <ion-col size="2"><b>Branch/Tag</b></ion-col>
         <ion-col>{{build?.tag}}</ion-col>
       </ion-item>
+      <ion-item>
+          <ion-col size="2"><b>Promotion Status</b></ion-col>
+          <ion-col>{{build?.promoted ? 'PROMOTED' : 'NOT PROMOTED'}}</ion-col>
+        </ion-item>
       <ion-item *ngIf="build?.status === 'SUCCEEDED'">
         <ion-col size="2"><b>Image</b></ion-col>
         <ion-col>{{build?.image}}</ion-col>

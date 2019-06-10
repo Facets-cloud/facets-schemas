@@ -1,0 +1,14 @@
+<ion-grid fixed>
+  <ion-toolbar color=dark>
+    <ion-title>{{title}}</ion-title>
+  </ion-toolbar>
+
+<ion-content>
+    <div style="padding: 2%">
+      <p>{{infoText}}</p>
+      <p>Please confirm.</p>
+      <ion-button (click)="callback()" slot="start" color="dark">Confirm</ion-button>
+    </div>
+</ion-content>
+</ion-grid>
+

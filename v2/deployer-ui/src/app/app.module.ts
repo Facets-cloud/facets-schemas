@@ -14,11 +14,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { BuildPageModule } from './build/build.module';
 import { CreateappPageModule } from './createapp/createapp.module';
 import { AppMenuPageModule } from './app-menu/app-menu.module';
+import { ConfirmationDialogPageModule } from './confirmation-dialog/confirmation-dialog.module';
 
 @NgModule({
   declarations: [AppComponent, LoginPipe],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule, AppMenuPageModule, ErrorPageModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule, AppMenuPageModule, ConfirmationDialogPageModule, ErrorPageModule],
   providers: [
     StatusBar,
     SplashScreen

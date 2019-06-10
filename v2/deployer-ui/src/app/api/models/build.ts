@@ -6,6 +6,7 @@ export interface Build {
   environmentVariables?: {[key: string]: string};
   id?: string;
   image?: string;
+  promoted?: boolean;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
   tag?: string;
   timestamp?: number;

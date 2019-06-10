@@ -33,6 +33,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getBuildsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly buildUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly getBuildUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
+  static readonly updateBuildUsingPUTPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
   static readonly getBuildLogsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
@@ -478,6 +479,63 @@ class ApplicationControllerService extends __BaseService {
    */
   getBuildUsingGET(params: ApplicationControllerService.GetBuildUsingGETParams): __Observable<Build> {
     return this.getBuildUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Build)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.UpdateBuildUsingPUTParams` containing the following parameters:
+   *
+   * - `buildId`: buildId
+   *
+   * - `build`: build
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  updateBuildUsingPUTResponse(params: ApplicationControllerService.UpdateBuildUsingPUTParams): __Observable<__StrictHttpResponse<Build>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.build;
+
+
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Build>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.UpdateBuildUsingPUTParams` containing the following parameters:
+   *
+   * - `buildId`: buildId
+   *
+   * - `build`: build
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  updateBuildUsingPUT(params: ApplicationControllerService.UpdateBuildUsingPUTParams): __Observable<Build> {
+    return this.updateBuildUsingPUTResponse(params).pipe(
       __map(_r => _r.body as Build)
     );
   }
@@ -1160,6 +1218,32 @@ module ApplicationControllerService {
      * buildId
      */
     buildId: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for updateBuildUsingPUT
+   */
+  export interface UpdateBuildUsingPUTParams {
+
+    /**
+     * buildId
+     */
+    buildId: string;
+
+    /**
+     * build
+     */
+    build: Build;
 
     /**
      * applicationId

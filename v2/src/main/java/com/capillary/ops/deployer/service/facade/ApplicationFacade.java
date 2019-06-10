@@ -95,10 +95,11 @@ public class ApplicationFacade {
         return getBuildDetails(application, build);
     }
 
-    public Build promoteBuild(ApplicationFamily applicationFamily, String applicationId, String buildId) {
+    public Build updateBuild(ApplicationFamily applicationFamily, String applicationId, String buildId, Build build) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Build build = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
-        build.setPromoted(true);
+        Build existingBuild = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
+        build.setApplicationId(existingBuild.getApplicationId());
+        build.setId(existingBuild.getId());
         buildRepository.save(build);
         return getBuildDetails(application, build);
     }
