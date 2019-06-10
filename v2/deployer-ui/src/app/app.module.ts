@@ -1,3 +1,4 @@
+import { ErrorPageModule } from './error/error.module';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -17,7 +18,7 @@ import { AppMenuPageModule } from './app-menu/app-menu.module';
 @NgModule({
   declarations: [AppComponent, LoginPipe],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule, AppMenuPageModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, BuildPageModule, CreateappPageModule, AppMenuPageModule, ErrorPageModule],
   providers: [
     StatusBar,
     SplashScreen

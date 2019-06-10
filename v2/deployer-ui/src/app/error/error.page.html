@@ -1,14 +1,17 @@
-<ion-grid fixed>
+<ion-grid fixed class="error-outer-grid">
   <ion-toolbar color=dark>
     <ion-title>Error</ion-title>
   </ion-toolbar>
 
 
 <ion-content>
-<div class="main-content">
-  <ion-label>Encountered an error. Please contact the system admin.</ion-label>
-  <br />
-  <ion-label>Details: {{errorMessage}}</ion-label>
-</div>
+  <div class="image-div">
+    <img src = "assets/icon/error-icon.png">
+  </div>
+  <div class="main-content">
+    <ion-label>Encountered an error. Please contact the system admin.</ion-label>
+    <br />
+    <ion-label>Details: {{errorMessage}}</ion-label>
+  </div>
 </ion-content>
 </ion-grid>

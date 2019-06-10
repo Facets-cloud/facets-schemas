@@ -1,8 +1,10 @@
+import { ErrorPage } from './../error/error.page';
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Application, Deployment, Build, EnvironmentVariable } from '../api/models';
 import { ApplicationControllerService } from '../api/services';
-import { NavController, LoadingController } from '@ionic/angular';
+import { NavController, LoadingController, ModalController } from '@ionic/angular';
+import { CssSelector } from '@angular/compiler';
 
 @Component({
   selector: 'app-deploy',
@@ -21,7 +23,7 @@ export class DeployPage implements OnInit {
   };
 
   constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
-    private navController: NavController, private loadingController: LoadingController) { }
+    private navController: NavController, private loadingController: LoadingController, private modalController:ModalController) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(
@@ -84,6 +86,17 @@ export class DeployPage implements OnInit {
           (deployment: Deployment) => {
             res.remove();
             this.navController.navigateForward(`/${this.application.applicationFamily}/applications/${this.application.id}/deployments/${this.deployment.environment}`);
+          },
+          err => {
+            res.remove();
+            this.modalController.create(
+              {
+                component: ErrorPage,
+                componentProps: {
+                  errorMessage: 'Failed'
+                }
+              }
+            ).then(x => x.present());
           }
         )
     });
