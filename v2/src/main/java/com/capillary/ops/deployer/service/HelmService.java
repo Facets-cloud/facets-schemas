@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
@@ -273,7 +274,7 @@ public class HelmService implements IHelmService {
         Map<String, Object> valueFields = new HashMap<>();
         HealthCheck healthCheck = application.getHealthCheck();
         if(healthCheck.getLivenessProbe() != null){
-            if(healthCheck.getLivenessProbe().getHttpCheckEndpoint() != null){
+            if(StringUtils.isEmpty(healthCheck.getLivenessProbe().getHttpCheckEndpoint())){
                 valueFields.put("enableLivenessHTTP","true");
                 valueFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
                 valueFields.put("livenessHTTPEndpoint",healthCheck.getLivenessProbe().getHttpCheckEndpoint());
@@ -288,7 +289,7 @@ public class HelmService implements IHelmService {
         }
 
         if(healthCheck.getReadinessProbe() != null){
-            if(healthCheck.getReadinessProbe().getHttpCheckEndpoint() != null){
+            if(StringUtils.isEmpty(healthCheck.getReadinessProbe().getHttpCheckEndpoint())){
                 valueFields.put("enableReadinessHTTP","true");
                 valueFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
                 valueFields.put("readinessHTTPEndpoint",healthCheck.getReadinessProbe().getHttpCheckEndpoint());
