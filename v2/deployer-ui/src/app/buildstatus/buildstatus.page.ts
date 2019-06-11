@@ -46,6 +46,7 @@ export class BuildstatusPage implements OnInit {
       (build: Build) => {
         this.build = build;
         if (this.build.status === 'SUCCEEDED' || this.build.status === 'FAILED') {
+          this.getLogs();
           this.subscription.unsubscribe();
         }
       },
