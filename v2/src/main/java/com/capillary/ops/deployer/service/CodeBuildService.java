@@ -166,8 +166,9 @@ public class CodeBuildService implements ICodeBuildService {
                 .logStreamName(streamName)
                 .limit(100);
         if(nextToken == null || nextToken.isEmpty()) {
-            builder.startFromHead(true);
+            builder.startFromHead(false);
         } else {
+            builder.startFromHead(false);
             builder.nextToken(nextToken);
         }
         GetLogEventsResponse cloudWatchResponse = cloudWatchLogsClient.getLogEvents(builder.build());

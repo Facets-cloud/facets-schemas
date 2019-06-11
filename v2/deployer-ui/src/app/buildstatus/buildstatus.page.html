@@ -26,10 +26,12 @@
         <ion-col size="2"><b>Image</b></ion-col>
         <ion-col>{{build?.image}}</ion-col>
       </ion-item>
-      <ion-item *ngFor="let log of logs?.logEventList">
+      <div *ngFor="let token of logTokens">
+      <ion-item *ngFor="let log of logsMap[token]">
         <ion-col size="2">{{log.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</ion-col>
         <ion-col>{{log.message}}</ion-col>
       </ion-item>
+    </div>
   <!-- </ion-card> -->
 </ion-content>
 </ion-grid>

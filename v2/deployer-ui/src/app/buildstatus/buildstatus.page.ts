@@ -15,11 +15,12 @@ import { ConfirmationDialogPage } from '../confirmation-dialog/confirmation-dial
 export class BuildstatusPage implements OnInit {
 
   build: Build;
-  logs: TokenPaginatedResponseLogEvent;
   applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationId: string;
   buildId: string;
   subscription: any;
+  logTokens: string[] = [""];
+  logsMap: { [token: string]: LogEvent[]; } = {};
 
   constructor(private applicationControllerService: ApplicationControllerService, private activatedRoute: ActivatedRoute,
     private navController: NavController, private popoverController: PopoverController, private modalController: ModalController) { }
@@ -30,7 +31,7 @@ export class BuildstatusPage implements OnInit {
         this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
         this.applicationId = params.get("applicationId");
         this.buildId = params.get("buildId");
-        this.subscription = timer(0, 1000).subscribe(() => this.loadBuild());
+        this.subscription = timer(0, 5000).subscribe(() => this.loadBuild());
       }
     );
   }
@@ -51,20 +52,27 @@ export class BuildstatusPage implements OnInit {
       err => {console.log(err); this.navController.navigateForward("/signin");
     });
 
+    this.getLogs();
+  }
+
+  private getLogs() {
     this.applicationControllerService.getBuildLogsUsingGET({
       applicationFamily: this.applicationFamily,
       applicationId: this.applicationId,
-      buildId: this.buildId
-    }).subscribe(
-      (logs: TokenPaginatedResponseLogEvent) => {
-        if(! this.logs) {
-          this.logs = logs;
-        }
-        logs.logEventList.forEach(e => {
-          this.logs.logEventList.push(e);
-        });
-      },
-      err => {console.log(err); this.navController.navigateForward("/signin");
+      buildId: this.buildId,
+      nextToken: this.logTokens[this.logTokens.length - 1]
+    }).subscribe((logs: TokenPaginatedResponseLogEvent) => {
+      this.logsMap[this.logTokens[this.logTokens.length - 1]] = logs.logEventList;
+      if (logs.nextToken === this.logTokens[this.logTokens.length - 1]) {
+        console.log("Logs so far fetched");
+      }
+      else {
+        this.logTokens.push(logs.nextToken);
+        this.getLogs();
+      }
+    }, err => {
+      console.log(err);
+      this.navController.navigateForward("/signin");
     });
   }
 
