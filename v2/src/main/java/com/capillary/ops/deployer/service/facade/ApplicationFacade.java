@@ -274,4 +274,14 @@ public class ApplicationFacade {
     public List<String> getEnvironments(ApplicationFamily applicationFamily) throws FileNotFoundException {
         return applicationFamily.getEnvironments().stream().map(x->x.getName()).collect(Collectors.toList());
     }
+
+    public Application updateApplication(Application application) {
+        Application existingApplication =
+                applicationRepository
+                        .findOneByApplicationFamilyAndId(application.getApplicationFamily(),
+                                application.getId()).get();
+        application.setName(existingApplication.getName());
+        application.setBuildType(existingApplication.getBuildType());
+        return applicationRepository.save(application);
+    }
 }

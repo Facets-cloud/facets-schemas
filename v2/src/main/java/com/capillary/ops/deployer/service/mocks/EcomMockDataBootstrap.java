@@ -48,6 +48,7 @@ public class EcomMockDataBootstrap {
     private Application createApplication() {
         Application application = new Application();
         application.setApplicationFamily(ApplicationFamily.ECOMMERCE);
+        application.setApplicationRootDirectory("v2");
         application.setName("deployer");
         application.setVcsProvider(VCSProvider.BITBUCKET);
         application.setRepositoryUrl("https://bitbucket.org/capillarymartjack/deisdeployer.git");

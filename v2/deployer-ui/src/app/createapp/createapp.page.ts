@@ -3,6 +3,7 @@ import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
 import { Application } from '../api/models';
 import { LoadingController, NavController, ModalController } from '@ionic/angular';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-createapp',
@@ -31,6 +32,25 @@ export class CreateappPage implements OnInit {
     this.activatedRoute.paramMap.subscribe(
       params => {
         this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
+        if(params.has("applicationId")) {
+          this.applicationControllerService.getApplicationUsingGET({
+            applicationFamily: this.applicationFamily,
+            applicationId: params.get("applicationId")
+          }).subscribe(
+            app => {
+              this.application = app;
+              if (!this.application.healthCheck) {
+                this.application.healthCheck = {
+                  livenessProbe: {},
+                  readinessProbe: {}
+                };
+              }
+              if (app.additionalParams['mountCifs']) {
+                this.enableCifsMount = app.additionalParams["mountCifs"] === "true";
+              }
+            }
+          );
+        }
       }
     );
   }
@@ -44,9 +64,15 @@ export class CreateappPage implements OnInit {
       this.application.additionalParams = this.enableCifsMount ? {"mountCifs": "true"} : {};
       this.application.dnsType = this.application.loadBalancerType === 'INTERNAL' ? 'PRIVATE' : 'PUBLIC';
       this.application.applicationFamily = this.applicationFamily;
-      this.applicationControllerService.createApplicationUsingPOST({application: this.application,
-        applicationFamily: this.applicationFamily})
-      .subscribe((app: Application) => {
+      let response: Observable<Application> = null;
+      if(!this.application.id) {
+        response = this.applicationControllerService.createApplicationUsingPOST({application: this.application,
+          applicationFamily: this.applicationFamily});
+      } else {
+        response = this.applicationControllerService.updateApplicationUsingPUT({application: this.application,
+          applicationFamily: this.applicationFamily});
+      }
+      response.subscribe((app: Application) => {
         this.navController.navigateForward(`/${this.applicationFamily}/applications/${app.id}`);
         res.remove();
       }, err => {

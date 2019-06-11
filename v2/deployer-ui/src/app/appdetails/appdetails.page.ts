@@ -66,6 +66,11 @@ export class AppdetailsPage implements OnInit {
             url: `/${this.application.applicationFamily}/applications/${this.application.id}/builds`
           },
           {
+            name: "Update Application",
+            icon: "create",
+            url: `/${this.application.applicationFamily}/applications/${this.application.id}/update`
+          },
+          {
             name: "Current Deployments",
             icon: "apps",
             url: `/${this.application.applicationFamily}/applications/${this.application.id}/currentdeployments`

@@ -29,6 +29,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly updateUserUsingPUTPath = '/api/users/{userId}';
   static readonly getApplicationsUsingGETPath = '/api/{applicationFamily}/applications';
   static readonly createApplicationUsingPOSTPath = '/api/{applicationFamily}/applications';
+  static readonly updateApplicationUsingPUTPath = '/api/{applicationFamily}/applications';
   static readonly getApplicationUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}';
   static readonly getBuildsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly buildUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
@@ -281,6 +282,53 @@ class ApplicationControllerService extends __BaseService {
    */
   createApplicationUsingPOST(params: ApplicationControllerService.CreateApplicationUsingPOSTParams): __Observable<Application> {
     return this.createApplicationUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as Application)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.UpdateApplicationUsingPUTParams` containing the following parameters:
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `application`: application
+   *
+   * @return OK
+   */
+  updateApplicationUsingPUTResponse(params: ApplicationControllerService.UpdateApplicationUsingPUTParams): __Observable<__StrictHttpResponse<Application>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.application;
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/api/${params.applicationFamily}/applications`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Application>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.UpdateApplicationUsingPUTParams` containing the following parameters:
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `application`: application
+   *
+   * @return OK
+   */
+  updateApplicationUsingPUT(params: ApplicationControllerService.UpdateApplicationUsingPUTParams): __Observable<Application> {
+    return this.updateApplicationUsingPUTResponse(params).pipe(
       __map(_r => _r.body as Application)
     );
   }
@@ -1144,6 +1192,22 @@ module ApplicationControllerService {
    * Parameters for createApplicationUsingPOST
    */
   export interface CreateApplicationUsingPOSTParams {
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+
+    /**
+     * application
+     */
+    application: Application;
+  }
+
+  /**
+   * Parameters for updateApplicationUsingPUT
+   */
+  export interface UpdateApplicationUsingPUTParams {
 
     /**
      * applicationFamily

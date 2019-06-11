@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: ':applicationFamily/applications', loadChildren: './applications/applications.module#ApplicationsPageModule' },
   { path: ':applicationFamily/applications/:applicationId', loadChildren: './appdetails/appdetails.module#AppdetailsPageModule' },
   { path: ':applicationFamily/createapp', loadChildren: './createapp/createapp.module#CreateappPageModule' },
+  { path: ':applicationFamily/applications/:applicationId/update', loadChildren: './createapp/createapp.module#CreateappPageModule' },
   { path: ':applicationFamily/applications/:applicationId/build', loadChildren: './build/build.module#BuildPageModule' },
   { path: ':applicationFamily/applications/:applicationId/builds/:buildId',
     loadChildren: './buildstatus/buildstatus.module#BuildstatusPageModule' },

@@ -47,6 +47,7 @@ public class CRMMockDataBootstrap {
 
     private Application createApplication() {
         Application application = new Application();
+        application.setApplicationRootDirectory("v2");
         application.setApplicationFamily(ApplicationFamily.CRM);
         application.setName("api");
         application.setVcsProvider(VCSProvider.GITHUB);
@@ -61,13 +62,13 @@ public class CRMMockDataBootstrap {
     private List<Port> getPorts() {
         Port port1 = new Port();
         port1.setName("http");
-        port1.setContainerPort(8080L);
+        port1.setContainerPort(1900L);
         port1.setLbPort(80L);
 
         Port port2 = new Port();
-        port2.setName("http");
-        port2.setContainerPort(8080L);
-        port2.setLbPort(80L);
+        port2.setName("thrift");
+        port2.setContainerPort(9999L);
+        port2.setLbPort(9999L);
 
         return Lists.newArrayList(port1, port2);
     }

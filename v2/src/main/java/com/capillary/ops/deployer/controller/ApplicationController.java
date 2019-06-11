@@ -42,6 +42,14 @@ public class ApplicationController {
         return applicationFacade.createApplication(application);
     }
 
+    @RolesAllowed("ADMIN")
+    @PutMapping(value = "/{applicationFamily}/applications", produces = "application/json")
+    public Application updateApplication(@Valid @RequestBody  Application application,
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+        application.setApplicationFamily(applicationFamily);
+        return applicationFacade.updateApplication(application);
+    }
+
     @GetMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public List<Application> getApplications(@PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
         return applicationFacade.getApplications(applicationFamily);
