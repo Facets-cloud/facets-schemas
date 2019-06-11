@@ -184,7 +184,9 @@ public class HelmService implements IHelmService {
 
         yaml.putAll(getFamilySpecificAttributes(application, deployment));
         yaml.putAll(getHPAConfigs(deployment));
-        yaml.putAll(getHealthCheckConfigs(application));
+        if(application.getHealthCheck() != null) {
+            yaml.putAll(getHealthCheckConfigs(application));
+        }
 
         logger.info("loaded values for release: {}", yaml);
         return yaml;
