@@ -12,7 +12,13 @@ import { LoadingController, NavController, ModalController } from '@ionic/angula
 export class CreateappPage implements OnInit {
 
   @Input() enableCifsMount: boolean;
-  @Input() application: Application = {ports: []};
+  @Input() application: Application = {
+    ports: [],
+    healthCheck: {
+      livenessProbe: {},
+      readinessProbe: {}
+    },
+  };
 
   @Input() applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
 

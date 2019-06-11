@@ -19,7 +19,8 @@ export class DeployPage implements OnInit {
   environments: string[];
   @Input() deployment: Deployment = {
     environment: "",
-    configurations: [{}]
+    configurations: [{}],
+    horizontalPodAutoscaler: {}
   };
 
   constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,

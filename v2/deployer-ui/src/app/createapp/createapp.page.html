@@ -1,11 +1,11 @@
+<ion-content ngClass="graybackground">
 <ion-grid fixed>
   <ion-toolbar color=dark>
     <ion-title>Create Application</ion-title>
     <ion-button color=light fill=clear slot="end" (click)="createApplication()"><ion-icon name="save"></ion-icon></ion-button>
   </ion-toolbar>
 
-<ion-content>
-  <div style="padding: 2%; width: 100%;">
+  <div style="padding: 2%; width: 100%; background: white">
       <ion-label position="stacked"><b>Name</b></ion-label>
       <ion-input placeholder="myapp" type="text" [(ngModel)]="application.name" ></ion-input>
         <ion-label position="stacked"><b>VCS Provider</b></ion-label>
@@ -34,19 +34,57 @@
         <ion-row>
           <ion-toggle color=dark *ngIf="applicationFamily === 'ECOMMERCE'" [(ngModel)]="enableCifsMount"></ion-toggle>
         </ion-row>
-        <div>
-        <ion-col *ngFor="let port of application?.ports; index as i">
+        <ion-toolbar ngClass="subtoolbar" color=light>
+            <ion-card-header color=light><b>Ports</b></ion-card-header>
+            <ion-button (click)="addPort()" color=dark fill=clear slot=end><ion-icon name="add"></ion-icon></ion-button>
+        </ion-toolbar>
+        <div style="padding: 2%">
+          <ion-row>
+              <ion-col *ngFor="let port of application?.ports; index as i">
                 <ion-label position="stacked"><b>Name</b></ion-label>
                 <ion-input placeholder="http" type="text" [(ngModel)]="port.name" ></ion-input>
-                  <ion-label position="stacked"><b>Container Port</b></ion-label>
-                  <ion-input placeholder="8080" type="number" [(ngModel)]="port.containerPort" ></ion-input>
-                    <ion-label position="stacked"><b>LoadBalancer Port</b></ion-label>
-                    <ion-input placeholder="80" type="number" [(ngModel)]="port.lbPort" ></ion-input>
-        </ion-col>
+                <ion-label position="stacked"><b>Container Port</b></ion-label>
+                <ion-input placeholder="8080" type="number" [(ngModel)]="port.containerPort" ></ion-input>
+                <ion-label position="stacked"><b>LoadBalancer Port</b></ion-label>
+                <ion-input placeholder="80" type="number" [(ngModel)]="port.lbPort" ></ion-input>
+          </ion-col>
+          </ion-row>
+        </div>
+        <ion-toolbar ngClass="subtoolbar" color=light>
+            <ion-card-header color=light><b>Liveliness Probes</b></ion-card-header>
+        </ion-toolbar>
+        <div style="padding: 2%">
+          <ion-row>
+            <ion-col>
+            <ion-label position="stacked"><b>Port</b></ion-label>
+            <ion-input placeholder="8080" type="number" [(ngModel)]="application.healthCheck.livenessProbe.port" ></ion-input>
+            <ion-label position="stacked"><b>HTTP Endpoint</b></ion-label>
+            <ion-input placeholder="/test" type="text" [(ngModel)]="application.healthCheck.livenessProbe.httpCheckEndpoint" ></ion-input>
+            <ion-label position="stacked"><b>Initial Delay</b></ion-label>
+            <ion-input placeholder="300" type="number" [(ngModel)]="application.healthCheck.livenessProbe.initialDelaySeconds" ></ion-input>
+            <ion-label position="stacked"><b>Interval</b></ion-label>
+            <ion-input placeholder="60" type="number" [(ngModel)]="application.healthCheck.livenessProbe.periodSeconds" ></ion-input>
+          </ion-col>
+          </ion-row>
       </div>
-      <ion-row>
-        <ion-button color=dark (click)="addPort()">Add Ports</ion-button>
-      </ion-row>
-  </div>
-</ion-content>
+      <ion-toolbar ngClass="subtoolbar" color=light>
+          <ion-card-header color=light><b>Readiness Probes</b></ion-card-header>
+      </ion-toolbar>
+      <div style="padding: 2%">
+        <ion-row>
+          <ion-col>
+          <ion-label position="stacked"><b>Port</b></ion-label>
+          <ion-input placeholder="8080" type="number" [(ngModel)]="application.healthCheck.readinessProbe.port" ></ion-input>
+          <ion-label position="stacked"><b>HTTP Endpoint</b></ion-label>
+          <ion-input placeholder="/test" type="text" [(ngModel)]="application.healthCheck.readinessProbe.httpCheckEndpoint" ></ion-input>
+          <ion-label position="stacked"><b>Initial Delay</b></ion-label>
+          <ion-input placeholder="300" type="number" [(ngModel)]="application.healthCheck.readinessProbe.initialDelaySeconds" ></ion-input>
+          <ion-label position="stacked"><b>Interval</b></ion-label>
+          <ion-input placeholder="60" type="number" [(ngModel)]="application.healthCheck.readinessProbe.periodSeconds" ></ion-input>
+        </ion-col>
+        </ion-row>
+    </div>
+    </div>
 </ion-grid>
+</ion-content>
+

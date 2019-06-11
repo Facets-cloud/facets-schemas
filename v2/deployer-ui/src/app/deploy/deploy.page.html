@@ -1,11 +1,11 @@
+<ion-content ngClass="graybackground">
 <ion-grid fixed>
 <ion-toolbar color=dark>
   <ion-title>Deploy {{ application?.name }} </ion-title>
   <ion-button (click)="deploy()" *ngIf="build?.status === 'SUCCEEDED'" color=light fill=clear slot=end><ion-icon name="paper-plane"></ion-icon></ion-button>
 </ion-toolbar>
 
-<ion-content>
-  <div style="padding: 2%; width: 100%;">
+  <div style="padding: 2%; width: 100%; background: white; min-height: -webkit-fill-available;">
       <ion-label position="stacked"><b>Cluster</b></ion-label>
       <ion-select (ngModelChange)="envSelected($event)" interface="popover" type="text" placeholder="cluster" [(ngModel)]="deployment.environment" >
           <ion-select-option *ngFor="let cluster of environments" value="{{ cluster }}" >
@@ -21,13 +21,28 @@
       <ion-toolbar ngClass="subtoolbar" color=light>
           <ion-card-header color=light><b>Environment Variables</b></ion-card-header>
           <ion-button (click)="addConf()" *ngIf="build?.status === 'SUCCEEDED'" color=dark fill=clear slot=end><ion-icon name="add"></ion-icon></ion-button>
-        </ion-toolbar>
-      <div *ngFor="let conf of deployment.configurations" style="padding: 2%">
+      </ion-toolbar>
+      <ion-row>
+        <ion-col size=6 *ngFor="let conf of deployment.configurations">
+      <div style="padding: 2%">
           <ion-label position="stacked"><b>Name</b></ion-label>
           <ion-input placeholder="key" type="text" [(ngModel)]="conf.name" ></ion-input>
           <ion-label position="stacked"><b>Value</b></ion-label>
           <ion-input placeholder="value" type="text" [(ngModel)]="conf.value"></ion-input>
+      </div>
+    </ion-col>
+    </ion-row>
+    <ion-toolbar ngClass="subtoolbar" color=light>
+        <ion-card-header color=light><b>Scaling</b></ion-card-header>
+    </ion-toolbar>
+    <div style="padding: 2%">
+    <ion-label position="stacked"><b>Minimum Replics</b></ion-label>
+    <ion-input placeholder="1" type="number" [(ngModel)]="deployment.horizontalPodAutoscaler.minReplicas" ></ion-input>
+    <ion-label position="stacked"><b>Maximum Replics</b></ion-label>
+    <ion-input placeholder="1" type="number" [(ngModel)]="deployment.horizontalPodAutoscaler.maxReplicas" ></ion-input>
+    <ion-label position="stacked"><b>CPU % Threshold</b></ion-label>
+    <ion-input placeholder="60" type="number" [(ngModel)]="deployment.horizontalPodAutoscaler.threshold" ></ion-input>
     </div>
   </div>
-</ion-content>
 </ion-grid>
+</ion-content>
