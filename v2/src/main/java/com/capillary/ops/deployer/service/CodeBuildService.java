@@ -12,6 +12,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -171,11 +174,13 @@ public class CodeBuildService implements ICodeBuildService {
             builder.startFromHead(false);
             builder.nextToken(nextToken);
         }
+
         GetLogEventsResponse cloudWatchResponse = cloudWatchLogsClient.getLogEvents(builder.build());
         List<OutputLogEvent> logEvents = cloudWatchResponse.events();
         List<LogEvent> logEventList = logEvents.stream()
-                .map(x -> new LogEvent(x.timestamp(), x.message())).collect(Collectors.toList());
-        return new TokenPaginatedResponse(logEventList, cloudWatchResponse.nextForwardToken());
+                .map(x -> new LogEvent(x.timestamp(), x.message()))
+                .collect(Collectors.toList());
+        return new TokenPaginatedResponse(Lists.reverse(logEventList), cloudWatchResponse.nextBackwardToken());
     }
 
     @Override
