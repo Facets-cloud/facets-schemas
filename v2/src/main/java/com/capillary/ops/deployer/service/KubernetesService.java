@@ -140,9 +140,17 @@ public class KubernetesService implements IKubernetesService {
                 .withName(deploymentName)
                 .get();
 
+        logger.info("getting HPA with name: {}", deploymentName);
+        HorizontalPodAutoscaler hpa = kubernetesClient.autoscaling()
+                .horizontalPodAutoscalers()
+                .inNamespace(NAMESPACE)
+                .withName(deploymentName)
+                .get();
+
         if (deployment != null) {
             ObjectMeta deploymentMetadata = deployment.getMetadata();
             PodReplicationDetails replicationDetails = getReplicationDetails(deployment);
+            HPADetails hpaDetails = null;
             logger.info("found pod replication details for deployment: {}", deploymentName);
 
             Map<String, String> environmentConfigs = getEnvironmentConfigs(kubernetesClient, deploymentName);
@@ -151,16 +159,30 @@ public class KubernetesService implements IKubernetesService {
             List<String> credentialsList = getCredentialsList(kubernetesClient, deploymentName);
             logger.info("found credentials list for deployment: {}", deploymentName);
 
+            if(hpa != null){
+                hpaDetails = getHPADetails(hpa);
+            }
+
             return new ApplicationDeploymentDetails(
                     deploymentMetadata.getName(),
                     environmentConfigs,
                     credentialsList,
                     replicationDetails,
                     deploymentMetadata.getLabels(),
+                    hpaDetails,
                     deploymentMetadata.getCreationTimestamp());
         }
 
         return null;
+    }
+
+    private HPADetails getHPADetails(HorizontalPodAutoscaler hpa) {
+        return new HPADetails(hpa.getSpec().getMinReplicas(),
+                hpa.getSpec().getMaxReplicas(),
+                hpa.getStatus().getCurrentReplicas(),
+                hpa.getStatus().getDesiredReplicas(),
+                hpa.getSpec().getTargetCPUUtilizationPercentage(),
+                hpa.getStatus().getCurrentCPUUtilizationPercentage());
     }
 
     private Map<String, String> getEnvironmentConfigs(KubernetesClient kubernetesClient, String deploymentName) {

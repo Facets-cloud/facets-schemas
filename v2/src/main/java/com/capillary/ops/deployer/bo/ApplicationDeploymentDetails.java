@@ -11,12 +11,13 @@ public class ApplicationDeploymentDetails {
 
     public ApplicationDeploymentDetails() {}
 
-    public ApplicationDeploymentDetails(String name, Map<String, String> environmentConfigs, List<String> credentialsList, PodReplicationDetails replicas, Map<String, String> labels, String creationTimestamp) {
+    public ApplicationDeploymentDetails(String name, Map<String, String> environmentConfigs, List<String> credentialsList, PodReplicationDetails replicas, Map<String, String> labels, HPADetails hpaDetails, String creationTimestamp) {
         this.name = name;
         this.environmentConfigs = environmentConfigs;
         this.credentialsList = credentialsList;
         this.replicas = replicas;
         this.labels = labels;
+        this.hpaStatus = hpaDetails;
         this.creationTimestamp = creationTimestamp;
     }
 
@@ -29,6 +30,8 @@ public class ApplicationDeploymentDetails {
     private PodReplicationDetails replicas;
 
     private Map<String, String> labels = new HashMap<>();
+
+    private HPADetails hpaStatus;
 
     private String creationTimestamp;
 
@@ -78,5 +81,13 @@ public class ApplicationDeploymentDetails {
 
     public void setCredentialsList(List<String> credentialsList) {
         this.credentialsList = credentialsList;
+    }
+
+    public HPADetails getHpaStatus() {
+        return hpaStatus;
+    }
+
+    public void setHpaStatus(HPADetails hpaStatus) {
+        this.hpaStatus = hpaStatus;
     }
 }
