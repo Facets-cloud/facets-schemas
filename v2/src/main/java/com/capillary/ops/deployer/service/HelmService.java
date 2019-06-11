@@ -276,7 +276,7 @@ public class HelmService implements IHelmService {
         Map<String, Object> valueFields = new HashMap<>();
         HealthCheck healthCheck = application.getHealthCheck();
         if(healthCheck.getLivenessProbe() != null){
-            if(StringUtils.isEmpty(healthCheck.getLivenessProbe().getHttpCheckEndpoint())){
+            if(!StringUtils.isEmpty(healthCheck.getLivenessProbe().getHttpCheckEndpoint())){
                 valueFields.put("enableLivenessHTTP","true");
                 valueFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
                 valueFields.put("livenessHTTPEndpoint",healthCheck.getLivenessProbe().getHttpCheckEndpoint());
@@ -291,7 +291,7 @@ public class HelmService implements IHelmService {
         }
 
         if(healthCheck.getReadinessProbe() != null){
-            if(StringUtils.isEmpty(healthCheck.getReadinessProbe().getHttpCheckEndpoint())){
+            if(!StringUtils.isEmpty(healthCheck.getReadinessProbe().getHttpCheckEndpoint())){
                 valueFields.put("enableReadinessHTTP","true");
                 valueFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
                 valueFields.put("readinessHTTPEndpoint",healthCheck.getReadinessProbe().getHttpCheckEndpoint());
