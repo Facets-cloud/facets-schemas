@@ -25,6 +25,10 @@
             <ion-label>Loadbalancer Type</ion-label>
             {{application?.loadBalancerType}}
         </ion-item>
+        <ion-item>
+            <ion-label>DNS Prefix</ion-label>
+            {{application?.dnsPrefix}}
+        </ion-item>
         <ion-item *ngIf="application.applicationFamily === 'ECOMMERCE'">
             <ion-label>Mount CP Shared Volume</ion-label>
             {{application?.additionalParams["mountCifs"] ? application?.additionalParams["mountCifs"] : "false"}}
