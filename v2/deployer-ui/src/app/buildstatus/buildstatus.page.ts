@@ -56,25 +56,36 @@ export class BuildstatusPage implements OnInit {
     this.getLogs();
   }
 
+  // private getLogs() {
+  //   this.applicationControllerService.getBuildLogsUsingGET({
+  //     applicationFamily: this.applicationFamily,
+  //     applicationId: this.applicationId,
+  //     buildId: this.buildId,
+  //     nextToken: this.logTokens[this.logTokens.length - 1]
+  //   }).subscribe((logs: TokenPaginatedResponseLogEvent) => {
+  //     this.logsMap[this.logTokens[this.logTokens.length - 1]] = logs.logEventList;
+  //     if (logs.nextToken === this.logTokens[this.logTokens.length - 1]) {
+  //       console.log("Logs so far fetched");
+  //     }
+  //     else {
+  //       this.logTokens.push(logs.nextToken);
+  //       this.getLogs();
+  //     }
+  //   }, err => {
+  //     console.log(err);
+  //     this.navController.navigateForward("/signin");
+  //   });
+  // }
+
   private getLogs() {
-    this.applicationControllerService.getBuildLogsUsingGET({
-      applicationFamily: this.applicationFamily,
-      applicationId: this.applicationId,
-      buildId: this.buildId,
-      nextToken: this.logTokens[this.logTokens.length - 1]
-    }).subscribe((logs: TokenPaginatedResponseLogEvent) => {
-      this.logsMap[this.logTokens[this.logTokens.length - 1]] = logs.logEventList;
-      if (logs.nextToken === this.logTokens[this.logTokens.length - 1]) {
-        console.log("Logs so far fetched");
-      }
-      else {
-        this.logTokens.push(logs.nextToken);
-        this.getLogs();
-      }
-    }, err => {
-      console.log(err);
-      this.navController.navigateForward("/signin");
-    });
+    this.applicationControllerService.getBuildLogsUsingGET(
+      {
+        applicationFamily: this.applicationFamily,
+        applicationId: this.applicationId,
+        buildId: this.buildId
+      }).subscribe(
+        logs => this.logsMap[""] = logs.logEventList
+      );
   }
 
   async presentPopover(ev) {
