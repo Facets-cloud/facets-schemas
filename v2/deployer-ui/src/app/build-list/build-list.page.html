@@ -5,7 +5,7 @@
 
 <ion-content>
   <ion-list>
-<div href="#" ngClass="builddiv" (click)="showBuild(build)" *ngFor="let build of builds">
+<div href="#" ngClass="builddiv" routerLink="/{{applicationFamily}}/applications/{{applicationId}}/builds/{{build.id}}" *ngFor="let build of builds">
   <ion-row>
     <ion-col size=2><b>Time</b></ion-col>
     <ion-col size=4>{{build.timestamp | date : 'yyyy-MM-dd HH:mm:ss'}}</ion-col>

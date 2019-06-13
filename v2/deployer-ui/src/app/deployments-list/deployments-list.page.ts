@@ -58,9 +58,4 @@ export class DeploymentsListPage implements OnInit {
       }
     );
   }
-
-  showDeploymentStatus(deployment: Deployment) {
-    this.navController.navigateForward(`/${this.applicationFamily}/applications/${this.applicationId}/deployments/${deployment.environment}`);
-  }
-
 }

@@ -31,18 +31,6 @@ export class AppdetailsPage implements OnInit {
     );
   }
 
-  async presentModal() {
-    const modal = await this.modalController.create(
-      {
-        component: BuildPage,
-        componentProps: {
-          application: this.application
-        }
-      }
-    );
-    return await modal.present();
-  }
-
   async presentPopover(ev) {
     const popover = await this.popoverController.create({
       component: AppMenuPage,

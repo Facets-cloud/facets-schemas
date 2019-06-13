@@ -18,9 +18,4 @@ export class HomePage {
       .subscribe(applicationFamily => this.applicationFamilies = applicationFamily,
         err => {console.log(err); this.navController.navigateForward("/signin");});
   }
-
-  showApplications(family) {
-    this.navController.navigateForward(`/${family}/applications`);
-  }
-
 }

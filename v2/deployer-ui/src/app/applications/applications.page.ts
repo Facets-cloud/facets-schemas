@@ -31,12 +31,4 @@ export class ApplicationsPage implements OnInit {
     });
   }
 
-  goToCreatePage() {
-    this.navController.navigateForward(`/${this.applicationFamily}/createapp`);
-  }
-
-  showAppDetails(appId) {
-    this.navController.navigateForward(`/${this.applicationFamily}/applications/${appId}`);
-  }
-
 }

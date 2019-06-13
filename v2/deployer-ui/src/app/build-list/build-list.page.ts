@@ -30,9 +30,4 @@ export class BuildListPage implements OnInit {
       }
     );
   }
-
-  showBuild(build: Build) {
-    this.navController.navigateForward(`/${this.applicationFamily}/applications/${this.applicationId}/builds/${build.id}`);
-  }
-
 }
