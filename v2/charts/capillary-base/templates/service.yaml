@@ -8,6 +8,7 @@ metadata:
   {{- end }}
   {{- if and .Values.lbType (eq .Values.lbType "internal") }}
     service.beta.kubernetes.io/aws-load-balancer-internal: "0.0.0.0/0"
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   {{- end }}
     heritage: "deployer"
   labels:
