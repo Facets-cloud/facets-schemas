@@ -3,7 +3,7 @@ import { ApplicationControllerService } from '../api/services';
 import { ActivatedRoute } from '@angular/router';
 import { NavController, PopoverController, ModalController } from '@ionic/angular';
 import { Build, LogEvent, TokenPaginatedResponseLogEvent } from '../api/models';
-import { timer } from 'rxjs';
+import { timer, Observable } from 'rxjs';
 import { AppMenuPage } from '../app-menu/app-menu.page';
 import { ConfirmationDialogPage } from '../confirmation-dialog/confirmation-dialog.page';
 
@@ -19,8 +19,7 @@ export class BuildstatusPage implements OnInit {
   applicationId: string;
   buildId: string;
   subscription: any;
-  logTokens: string[] = [""];
-  logsMap: { [token: string]: LogEvent[]; } = {};
+  logs: LogEvent[];
 
   constructor(private applicationControllerService: ApplicationControllerService, private activatedRoute: ActivatedRoute,
     private navController: NavController, private popoverController: PopoverController, private modalController: ModalController) { }
@@ -43,17 +42,15 @@ export class BuildstatusPage implements OnInit {
       buildId: this.buildId
     })
     .subscribe(
-      (build: Build) => {
+      async (build: Build) => {
         this.build = build;
+        await this.getLogs();
         if (this.build.status === 'SUCCEEDED' || this.build.status === 'FAILED') {
-          this.getLogs();
           this.subscription.unsubscribe();
         }
       },
       err => {console.log(err); this.navController.navigateForward("/signin");
     });
-
-    this.getLogs();
   }
 
   // private getLogs() {
@@ -77,15 +74,13 @@ export class BuildstatusPage implements OnInit {
   //   });
   // }
 
-  private getLogs() {
-    this.applicationControllerService.getBuildLogsUsingGET(
+  async getLogs() {
+    this.logs = (await this.applicationControllerService.getBuildLogsUsingGET(
       {
         applicationFamily: this.applicationFamily,
         applicationId: this.applicationId,
         buildId: this.buildId
-      }).subscribe(
-        logs => this.logsMap[""] = logs.logEventList
-      );
+      }).toPromise()).logEventList;
   }
 
   async presentPopover(ev) {
