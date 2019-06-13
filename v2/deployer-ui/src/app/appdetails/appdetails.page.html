@@ -1,9 +1,9 @@
+<ion-content ngClass="graybackground">
 <ion-grid fixed>
     <ion-toolbar color=dark>
         <ion-title>{{application?.name}}</ion-title>
         <ion-button color=light fill=clear slot="end" (click)="presentPopover($event)"><ion-icon name="menu"></ion-icon></ion-button>
       </ion-toolbar>
-<ion-content>
         <ion-card-header color=light><b>Application Details</b></ion-card-header>
         <ion-item>
           <ion-label>Name</ion-label>
@@ -25,6 +25,10 @@
             <ion-label>Loadbalancer Type</ion-label>
             {{application?.loadBalancerType}}
         </ion-item>
+        <ion-item *ngIf="application.applicationFamily === 'ECOMMERCE'">
+            <ion-label>Mount CP Shared Volume</ion-label>
+            {{application?.additionalParams["mountCifs"] ? application?.additionalParams["mountCifs"] : "false"}}
+        </ion-item>
       <div *ngFor="let port of application?.ports">
           <ion-card-header color=light><b>{{port.name | uppercase}} Port</b></ion-card-header>
           <ion-item>
@@ -36,5 +40,43 @@
               {{port.lbPort}}
           </ion-item>
         </div>
-</ion-content>
+        <div>
+            <ion-card-header color=light><b>Liveliness Probe</b></ion-card-header>
+            <ion-item>
+                <ion-label>Port</ion-label>
+                {{application.healthCheck?.livenessProbe?.port}}
+            </ion-item>
+            <ion-item>
+                <ion-label>HTTP Path</ion-label>
+                {{application.healthCheck?.livenessProbe?.httpCheckEndpoint}}
+            </ion-item>
+            <ion-item>
+                <ion-label>Initial Delay</ion-label>
+                {{application.healthCheck?.livenessProbe?.initialDelaySeconds}}
+            </ion-item>
+            <ion-item>
+                <ion-label>Interval</ion-label>
+                {{application.healthCheck?.livenessProbe?.periodSeconds}}
+            </ion-item>
+        </div>
+        <div>
+            <ion-card-header color=light><b>Readiness Probe</b></ion-card-header>
+            <ion-item>
+                <ion-label>Port</ion-label>
+                {{application.healthCheck?.readinessProbe?.port}}
+            </ion-item>
+            <ion-item>
+                <ion-label>HTTP Path</ion-label>
+                {{application.healthCheck?.readinessProbe?.httpCheckEndpoint}}
+            </ion-item>
+            <ion-item>
+                <ion-label>Initial Delay</ion-label>
+                {{application.healthCheck?.readinessProbe?.initialDelaySeconds}}
+            </ion-item>
+            <ion-item>
+                <ion-label>Interval</ion-label>
+                {{application.healthCheck?.readinessProbe?.periodSeconds}}
+            </ion-item>
+        </div>
 </ion-grid>
+</ion-content>
