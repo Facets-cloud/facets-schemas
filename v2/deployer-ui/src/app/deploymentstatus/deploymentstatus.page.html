@@ -42,5 +42,30 @@
               </ion-row>
             </div>
         </div>
+    <ion-card-header color=light><b>Autoscaling Configuration</b></ion-card-header>
+    <div ngClass="poddiv">
+        <ion-row>
+            <ion-col>
+              <ion-label><b>Minimum Replicas</b></ion-label>
+              {{deploymentStatus.deployment.hpaStatus?.minReplicas}}
+            </ion-col>
+            <ion-col>
+                <ion-label><b>Maximum Replicas</b></ion-label>
+                {{deploymentStatus.deployment.hpaStatus?.maxReplicas}}
+            </ion-col>
+            <ion-col>
+                <ion-label><b>CPU Threshold</b></ion-label>
+                {{deploymentStatus.deployment.hpaStatus?.targetCPUAvg}}%
+            </ion-col>
+            <ion-col>
+                <ion-label><b>Current Replicas</b></ion-label>
+                {{deploymentStatus.deployment.hpaStatus?.currentReplicas}}%
+            </ion-col>
+            <ion-col>
+                <ion-label><b>Desired Replicas</b></ion-label>
+                {{deploymentStatus.deployment.hpaStatus?.desiredReplicas}}%
+            </ion-col>
+          </ion-row>
+    </div>
 </ion-content>
 </ion-grid>

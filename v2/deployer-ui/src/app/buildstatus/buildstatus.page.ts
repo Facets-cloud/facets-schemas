@@ -31,7 +31,7 @@ export class BuildstatusPage implements OnInit {
         this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
         this.applicationId = params.get("applicationId");
         this.buildId = params.get("buildId");
-        this.subscription = timer(0, 5000).subscribe(() => this.loadBuild());
+        this.subscription = timer(0, 1000).subscribe(() => this.loadBuild());
       }
     );
   }

@@ -63,6 +63,11 @@ export class DeployPage implements OnInit {
           configurations.push({name: key, value: deploymentStatus.deployment.environmentConfigs[key]})
         }
         this.deployment.configurations = configurations;
+        if(deploymentStatus.deployment.hpaStatus) {
+          this.deployment.horizontalPodAutoscaler.minReplicas = deploymentStatus.deployment.hpaStatus.minReplicas;
+          this.deployment.horizontalPodAutoscaler.maxReplicas = deploymentStatus.deployment.hpaStatus.maxReplicas;
+          this.deployment.horizontalPodAutoscaler.threshold = deploymentStatus.deployment.hpaStatus.targetCPUAvg;
+        }
       });
   }
 
