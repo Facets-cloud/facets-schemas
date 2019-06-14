@@ -31,7 +31,7 @@
       <ion-label>DNS Prefix</ion-label>
       {{application?.dnsPrefix}}
     </ion-item>
-    <ion-item *ngIf="application.applicationFamily === 'ECOMMERCE'">
+    <ion-item *ngIf="application?.applicationFamily === 'ECOMMERCE'">
       <ion-label>Mount CP Shared Volume</ion-label>
       {{application?.additionalParams["mountCifs"] ? application?.additionalParams["mountCifs"] : "false"}}
     </ion-item>
@@ -50,38 +50,38 @@
       <ion-card-header color=light><b>Liveliness Probe</b></ion-card-header>
       <ion-item>
         <ion-label>Port</ion-label>
-        {{application.healthCheck?.livenessProbe?.port}}
+        {{application?.healthCheck?.livenessProbe?.port}}
       </ion-item>
       <ion-item>
         <ion-label>HTTP Path</ion-label>
-        {{application.healthCheck?.livenessProbe?.httpCheckEndpoint}}
+        {{application?.healthCheck?.livenessProbe?.httpCheckEndpoint}}
       </ion-item>
       <ion-item>
         <ion-label>Initial Delay</ion-label>
-        {{application.healthCheck?.livenessProbe?.initialDelaySeconds}}
+        {{application?.healthCheck?.livenessProbe?.initialDelaySeconds}}
       </ion-item>
       <ion-item>
         <ion-label>Interval</ion-label>
-        {{application.healthCheck?.livenessProbe?.periodSeconds}}
+        {{application?.healthCheck?.livenessProbe?.periodSeconds}}
       </ion-item>
     </div>
     <div>
       <ion-card-header color=light><b>Readiness Probe</b></ion-card-header>
       <ion-item>
         <ion-label>Port</ion-label>
-        {{application.healthCheck?.readinessProbe?.port}}
+        {{application?.healthCheck?.readinessProbe?.port}}
       </ion-item>
       <ion-item>
         <ion-label>HTTP Path</ion-label>
-        {{application.healthCheck?.readinessProbe?.httpCheckEndpoint}}
+        {{application?.healthCheck?.readinessProbe?.httpCheckEndpoint}}
       </ion-item>
       <ion-item>
         <ion-label>Initial Delay</ion-label>
-        {{application.healthCheck?.readinessProbe?.initialDelaySeconds}}
+        {{application?.healthCheck?.readinessProbe?.initialDelaySeconds}}
       </ion-item>
       <ion-item>
         <ion-label>Interval</ion-label>
-        {{application.healthCheck?.readinessProbe?.periodSeconds}}
+        {{application?.healthCheck?.readinessProbe?.periodSeconds}}
       </ion-item>
     </div>
   </ion-grid>

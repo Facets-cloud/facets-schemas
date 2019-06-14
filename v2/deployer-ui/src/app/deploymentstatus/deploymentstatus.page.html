@@ -47,23 +47,23 @@
         <ion-row>
             <ion-col size=4>
               <ion-label><b>Minimum Replicas</b></ion-label>
-              {{deploymentStatus.deployment.hpaStatus?.minReplicas}}
+              {{deploymentStatus?.deployment?.hpaStatus?.minReplicas}}
             </ion-col>
             <ion-col size=4>
                 <ion-label><b>Maximum Replicas</b></ion-label>
-                {{deploymentStatus.deployment.hpaStatus?.maxReplicas}}
+                {{deploymentStatus?.deployment?.hpaStatus?.maxReplicas}}
             </ion-col>
             <ion-col size=4>
                 <ion-label><b>CPU Threshold</b></ion-label>
-                {{deploymentStatus.deployment.hpaStatus?.targetCPUAvg}}%
+                {{deploymentStatus?.deployment?.hpaStatus?.targetCPUAvg}}%
             </ion-col>
             <ion-col size=4>
                 <ion-label><b>Current Replicas</b></ion-label>
-                {{deploymentStatus.deployment.hpaStatus?.currentReplicas}}
+                {{deploymentStatus?.deployment?.hpaStatus?.currentReplicas}}
             </ion-col>
             <ion-col size=4>
                 <ion-label><b>Desired Replicas</b></ion-label>
-                {{deploymentStatus.deployment.hpaStatus?.desiredReplicas}}
+                {{deploymentStatus?.deployment?.hpaStatus?.desiredReplicas}}
             </ion-col>
           </ion-row>
     </div>

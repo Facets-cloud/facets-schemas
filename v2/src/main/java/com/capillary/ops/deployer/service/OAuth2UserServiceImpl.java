@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.io.Serializable;
 import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
-    private static class SimpleOauth2User implements OAuth2User {
+    private static class SimpleOauth2User implements OAuth2User, Serializable {
 
         private Collection<? extends GrantedAuthority> grantedAuthorities;
         private Map<String, Object> attributes;
