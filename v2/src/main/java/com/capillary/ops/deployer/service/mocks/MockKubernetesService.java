@@ -47,10 +47,10 @@ public class MockKubernetesService implements IKubernetesService {
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
         ApplicationPodDetails pod1 =
                 new ApplicationPodDetails(application.getName() + "-old", new HashMap<>(),
-                        "Running", "oldimage", "", "2019-06-07T06:46:21Z");
+                        "Running", "oldimage", "", "2019-06-07T06:46:21Z", true);
         ApplicationPodDetails pod2 =
                 new ApplicationPodDetails(application.getName() + "-new", new HashMap<>(),
-                        "Pending", "oldimage", "", "2019-06-07T10:46:21Z");
+                        "Pending", "oldimage", "", "2019-06-07T10:46:21Z", true);
 
         HPADetails hpaDetails = new HPADetails(1, 2,
                 1, 1, 60, 30);

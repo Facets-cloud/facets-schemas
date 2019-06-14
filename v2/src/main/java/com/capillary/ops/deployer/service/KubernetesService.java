@@ -11,12 +11,16 @@ import io.fabric8.kubernetes.api.model.extensions.DeploymentStatus;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -240,6 +244,8 @@ public class KubernetesService implements IKubernetesService {
         List<ApplicationPodDetails> applicationPodDetailsList = new ArrayList<>(filteredPodList.size());
         filteredPodList.parallelStream().forEach(x -> applicationPodDetailsList.add(getIndividualPodDetails(x)));
 
+        applicationPodDetailsList.replaceAll(p -> p.setResourceUsage(getResourceUsage(p.getName(),kubernetesClient)));
+
         return applicationPodDetailsList;
     }
 
@@ -247,9 +253,13 @@ public class KubernetesService implements IKubernetesService {
         ObjectMeta podMetadata = pod.getMetadata();
         PodStatus podStatus = pod.getStatus();
         String image = pod.getSpec().getContainers().get(0).getImage();
+        boolean ready = false;
+        if(podStatus.getContainerStatuses().size() > 0) {
+            ready = podStatus.getContainerStatuses().get(0).getReady();
+        }
 
         return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), podStatus.getPhase(),
-                image, image, podMetadata.getCreationTimestamp());
+                image, image, podMetadata.getCreationTimestamp(), ready);
     }
 
     private KubernetesClient getKubernetesClient(Environment environment) {
@@ -259,5 +269,39 @@ public class KubernetesService implements IKubernetesService {
                         .withOauthToken(environment.getEnvironmentConfiguration().getKubernetesToken())
                         .withTrustCerts(true)
                         .build());
+    }
+
+    private OkHttpClient getHttpK8sClient(KubernetesClient client){
+        return ((DefaultKubernetesClient) client).getHttpClient();
+    }
+
+    private Request buildPodMetricsHttpGETRequest(String podName, String masterUrl){
+        return new Request
+                .Builder()
+                .get()
+                .url(masterUrl + "apis/metrics.k8s.io/v1beta1/namespaces/default/pods/" + podName)
+                .build();
+    }
+
+    private PodResource getResourceUsage(String podName, KubernetesClient kubernetesClient) {
+        OkHttpClient httpClient = getHttpK8sClient(kubernetesClient);
+        JSONObject jsonObject = new JSONObject();
+        Response response = null;
+        try {
+            response = httpClient
+                    .newCall(buildPodMetricsHttpGETRequest(podName, kubernetesClient.getMasterUrl().toString()))
+                    .execute();
+            jsonObject = new JSONObject(response.body().bytes());
+            String cpuUsage = jsonObject.getJSONArray("containers").getJSONObject(0).getJSONObject("usage").getString("cpu");
+            String memoryUsage = jsonObject.getJSONArray("containers").getJSONObject(0).getJSONObject("usage").getString("memory");
+            return new PodResource(cpuUsage, memoryUsage);
+        } catch (Throwable e) {
+            logger.error("Exception getting pod resource usage", e.getMessage());
+            return null;
+        } finally {
+            if(response != null) {
+                response.close();
+            }
+        }
     }
 }
