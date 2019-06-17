@@ -196,7 +196,13 @@ public class KubernetesService implements IKubernetesService {
     }
 
     private List<String> getSecretKeys(Secret secret) {
+        if(secret==null) {
+            return new ArrayList<>();
+        }
         Map<String, String> secretData = secret.getData();
+        if(secretData == null) {
+            return new ArrayList<>();
+        }
         List<String> credentialsList = Lists.newArrayListWithExpectedSize(secretData.size());
         secretData.forEach((k,v) -> {
             credentialsList.add(k);

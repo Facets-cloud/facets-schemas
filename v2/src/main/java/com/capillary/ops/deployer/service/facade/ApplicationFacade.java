@@ -242,10 +242,10 @@ public class ApplicationFacade {
             throw new NotFoundException("some secrets have not been created");
         }
 
-        String releaseName = helmService.getReleaseName(application, environment);
-        Map<String, String> secretMap = applicationSecrets.parallelStream()
-                .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
-        kubernetesService.createOrUpdateSecret(environment, releaseName + "-credentials", secretMap);
+//        String releaseName = helmService.getReleaseName(application, environment);
+//        Map<String, String> secretMap = applicationSecrets.parallelStream()
+//                .collect(Collectors.toMap(ApplicationSecret::getSecretName, ApplicationSecret::getSecretValue));
+//        kubernetesService.createOrUpdateSecret(environment, releaseName + "-credentials", secretMap);
 
         return secretService.updateApplicationSecrets(environmentName, applicationFamily, applicationId, applicationSecrets);
     }
