@@ -3,5 +3,6 @@ package com.capillary.ops.deployer.bo;
 public enum BuildType {
     MVN,
     FREESTYLE_DOCKER,
-    DOTNET_CORE
+    DOTNET_CORE,
+    MVN_IONIC
 }
