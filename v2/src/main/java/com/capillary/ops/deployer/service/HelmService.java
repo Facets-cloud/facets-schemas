@@ -223,7 +223,11 @@ public class HelmService implements IHelmService {
                 application.getId());
 
         Map<String, String> secretMap = Maps.newHashMapWithExpectedSize(savedSecrets.size());
-        savedSecrets.forEach(x -> secretMap.put(x.getSecretName(), ""));
+        if(savedSecrets != null) {
+            savedSecrets.stream().filter(x -> x.getSecretStatus()
+                    .equals(ApplicationSecret.SecretStatus.FULFILLED))
+                    .forEach(x -> secretMap.put(x.getSecretName(), x.getSecretValue()));
+        }
         secretMap.putAll(environment.getEnvironmentConfiguration().getCommonCredentials());
         return secretMap;
     }
