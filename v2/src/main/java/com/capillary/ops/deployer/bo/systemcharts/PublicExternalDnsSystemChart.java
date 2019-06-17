@@ -43,7 +43,7 @@ public class PublicExternalDnsSystemChart implements ISystemChart {
 
     @Override
     public String getReleaseName(ApplicationFamily applicationFamily, Environment environment) {
-        return environment.getEnvironmentMetaData().getName() + "-private-route53-dns";
+        return environment.getEnvironmentMetaData().getName() + "-public-route53-dns";
     }
 
 }
