@@ -33,7 +33,7 @@
     </ion-item>
     <ion-item *ngIf="application?.applicationFamily === 'ECOMMERCE'">
       <ion-label>Mount CP Shared Volume</ion-label>
-      {{application?.additionalParams["mountCifs"] ? application?.additionalParams["mountCifs"] : "false"}}
+      {{application?.commonConfigs && application?.commonConfigs["MOUNT_CIFS"] ? application?.commonConfigs["MOUNT_CIFS"] : "false"}}
     </ion-item>
     <div *ngFor="let port of application?.ports">
       <ion-card-header color=light><b>{{port.name | uppercase}} Port</b></ion-card-header>

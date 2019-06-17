@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import javax.xml.ws.Response;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
@@ -201,10 +202,10 @@ public class ApplicationController {
         return applicationFacade.updateApplicaitonSecrets(environment, applicationFamily, applicationId, applicationSecrets);
     }
 
-    @GetMapping("/{applicationFamily}/environments")
-    public ResponseEntity<List<String>> getEnvironments(
+    @GetMapping("/{applicationFamily}/environmentMetaData")
+    public ResponseEntity<List<EnvironmentMetaData>> getEnvironmentMetaData(
             @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {
-        return new ResponseEntity<>(applicationFacade.getEnvironments(applicationFamily), HttpStatus.OK);
+        return new ResponseEntity<>(applicationFacade.getEnvironmentMetaData(applicationFamily), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current", produces = "application/json")
@@ -213,4 +214,27 @@ public class ApplicationController {
         return applicationFacade.getCurrentDeployment(applicationFamily, applicationId, environment);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/{applicationFamily}/environments")
+    public ResponseEntity<List<Environment>> getEnvironments(@PathVariable ApplicationFamily applicationFamily) {
+        List<Environment> result = applicationFacade.getEnvironments(applicationFamily);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/{applicationFamily}/environments/{id}")
+    public ResponseEntity<Environment> getEnvironment(@PathVariable ApplicationFamily applicationFamily,
+                                                       @PathVariable String id) {
+        Environment result = applicationFacade.getEnvironment(applicationFamily, id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/{applicationFamily}/environments")
+    public ResponseEntity<Environment> upsertEnvironment(@RequestBody Environment environment,
+                                                         @PathVariable ApplicationFamily applicationFamily) {
+        environment.getEnvironmentMetaData().setApplicationFamily(applicationFamily);
+        Environment result = applicationFacade.upsertEnvironment(applicationFamily, environment);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

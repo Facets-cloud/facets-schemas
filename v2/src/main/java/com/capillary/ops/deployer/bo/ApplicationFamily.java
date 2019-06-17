@@ -16,37 +16,4 @@ public enum ApplicationFamily {
     ECOMMERCE,
     INTEGRATIONS,
     OPS;
-
-    public Environment getEnvironment(String environmentName) {
-        Gson gson = new Gson();
-        Type REVIEW_TYPE = new TypeToken<Map<String, Environment>>() {}.getType();
-        JsonReader reader = null;
-        try {
-            String fileName = String.format("/etc/capillary/clusterdetails/%s.json", this.name().toLowerCase());
-            reader = new JsonReader(new FileReader(fileName));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        Map<String, Environment> environments = gson.fromJson(reader, REVIEW_TYPE);
-        Environment environment = environments.get(environmentName);
-        if(environment == null) {
-            throw new RuntimeException("Unknown environment {0}".format(environmentName));
-        }
-        environment.setName(environmentName);
-        return environment;
-    }
-
-    public List<Environment> getEnvironments() throws FileNotFoundException {
-        Gson gson = new Gson();
-        Type REVIEW_TYPE = new TypeToken<Map<String, Environment>>() {}.getType();
-        JsonReader reader = null;
-        String fileName = String.format("/etc/capillary/clusterdetails/%s.json", this.name().toLowerCase());
-        reader = new JsonReader(new FileReader(fileName));
-        Map<String, Environment> environments = gson.fromJson(reader, REVIEW_TYPE);
-        List<Environment> environmentList = new ArrayList<>(environments.values().size());
-        environments.forEach((k, v) -> {
-            environmentList.add(v);
-        });
-        return environmentList;
-    }
 }

@@ -26,7 +26,7 @@ export class DeploymentsListPage implements OnInit {
         this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> params.get("applicationFamily");
         this.applicationControllerService.getEnvironmentsUsingGET(this.applicationFamily).subscribe(
           environments => {
-            this.environments = environments;
+            this.environments = environments.map(x=>x.environmentMetaData.name);
             this.environments.forEach(e => this.getDeploymentSatus(e));
           }
         )

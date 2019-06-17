@@ -1,40 +1,49 @@
 package com.capillary.ops.deployer.bo.systemcharts;
 
-import com.capillary.ops.deployer.bo.AbstractSystemChart;
 import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Environment;
+import com.capillary.ops.deployer.bo.ExternalDnsConfiguration;
+import com.capillary.ops.deployer.bo.ISystemChart;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
-public class PublicExternalDnsSystemChart extends AbstractExternalDnsSystemChart {
+public class PublicExternalDnsSystemChart implements ISystemChart {
 
     private static final Logger logger = LoggerFactory.getLogger(PublicExternalDnsSystemChart.class);
-
-    @Override
-    public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
-        String publicZoneId = environment.getPublicZoneId();
-        if (!StringUtils.isEmpty(publicZoneId)) {
-            return getValuesMap(environment, environment.getPublicZoneDns(), publicZoneId);
-        }
-
-        logger.error("could not find public or public zone id, returning null");
-        return null;
-    }
-
-    @Override
-    protected String getZoneType() {
-        return "public";
-    }
 
     @Override
     public String getChartPath() {
         return "route53-dns";
     }
+
+    @Override
+    public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
+        ExternalDnsConfiguration publicDnsConfiguration =
+                environment.getEnvironmentConfiguration().getPublicDnsConfiguration();
+        if(publicDnsConfiguration == null) {
+            return new HashMap<>();
+        }
+        Map<String, Object> publicDnsConfigurationMap = new ObjectMapper()
+                .convertValue(publicDnsConfiguration, Map.class);
+        Map<String, Object> ret = new HashMap<String, Object>();
+        ret.putAll(publicDnsConfigurationMap);
+        ret.put("environment", environment.getEnvironmentMetaData().getName());
+        ret.put("zoneType", "public");
+        return ret;
+    }
+
+    @Override
+    public String getReleaseName(ApplicationFamily applicationFamily, Environment environment) {
+        return environment.getEnvironmentMetaData().getName() + "-private-route53-dns";
+    }
+
 }

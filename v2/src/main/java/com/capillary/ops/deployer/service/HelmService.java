@@ -1,8 +1,8 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
@@ -38,6 +37,9 @@ import java.util.stream.Collectors;
 public class HelmService implements IHelmService {
     @Autowired
     private SecretService secretService;
+
+    @Autowired
+    private EnvironmentRepository environmentRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(HelmService.class);
 
@@ -63,10 +65,12 @@ public class HelmService implements IHelmService {
 
     @Override
     public void deploy(Application application, Deployment deployment) {
-        Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
+        ApplicationFamily applicationFamily = application.getApplicationFamily();
+        String environmentName = deployment.getEnvironment();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String applicationName = application.getName();
 
-        logger.info("deploying application: {}, for environment: {}", applicationName, environment.getName());
+        logger.info("deploying application: {}, for environment: {}", applicationName, environmentName);
         ReleaseManager releaseManager = getReleaseManager(environment);
         logger.debug("fetching the helm release manager");
         String releaseName = getReleaseName(application, environment);
@@ -107,9 +111,9 @@ public class HelmService implements IHelmService {
 
     @Override
     public String getReleaseName(Application application, Environment environment) {
-        return environment.getNodeGroup().isEmpty() ?
+        return environment.getEnvironmentConfiguration().getNodeGroup().isEmpty() ?
                 application.getName() :
-                environment.getNodeGroup() + "-" + application.getName();
+                environment.getEnvironmentConfiguration().getNodeGroup() + "-" + application.getName();
     }
 
     private void install(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
@@ -131,7 +135,9 @@ public class HelmService implements IHelmService {
     }
 
     private void install(Application application, Deployment deployment) throws Exception {
-        Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
+        ApplicationFamily applicationFamily = application.getApplicationFamily();
+        String environmentName = deployment.getEnvironment();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         Map<String, Object> valueMap = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
         install(environment, releaseName, "capillary-base", valueMap);
@@ -156,7 +162,9 @@ public class HelmService implements IHelmService {
     }
 
     private void upgrade(Application application, Deployment deployment) throws Exception {
-        Environment environment = application.getApplicationFamily().getEnvironment(deployment.getEnvironment());
+        ApplicationFamily applicationFamily = application.getApplicationFamily();
+        String environmentName = deployment.getEnvironment();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         Map<String, Object> valueMap = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
         upgrade(environment, releaseName, "capillary-base", valueMap);
@@ -167,7 +175,7 @@ public class HelmService implements IHelmService {
         yaml.put("image", deployment.getImage());
         yaml.put("podCPULimit",deployment.getPodSize().getCpu());
         yaml.put("podMemoryLimit",deployment.getPodSize().getMemory());
-        String nodeGroup = application.getApplicationFamily().getEnvironment(deployment.getEnvironment()).getNodeGroup();
+        String nodeGroup = environment.getEnvironmentConfiguration().getNodeGroup();
         if(!nodeGroup.isEmpty()) {
             yaml.put("nodeSelector", nodeGroup);
         }
@@ -203,37 +211,21 @@ public class HelmService implements IHelmService {
     private Map<String, String> getConfigMap(Environment environment, Application application, Deployment deployment) {
         Map<String, String> configMap = new HashMap<>();
         configMap.putAll(deployment.getConfigurationsMap());
-        configMap.putAll(getFamilySpecificEnvVariables(application, environment));
+        configMap.putAll(application.getCommonConfigs());
+        configMap.putAll(environment.getEnvironmentConfiguration().getCommonConfigs());
         return configMap;
     }
 
     private Map<String, String> getCredentialsMap(Environment environment, Application application) {
         List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
-                environment.getName(),
+                environment.getEnvironmentMetaData().getName(),
                 application.getApplicationFamily(),
                 application.getId());
 
         Map<String, String> secretMap = Maps.newHashMapWithExpectedSize(savedSecrets.size());
         savedSecrets.forEach(x -> secretMap.put(x.getSecretName(), ""));
-
+        secretMap.putAll(environment.getEnvironmentConfiguration().getCommonCredentials());
         return secretMap;
-    }
-
-    private Map<String, String> getFamilySpecificEnvVariables(Application application, Environment environment) {
-        Map<String, String> envMap = new HashMap<>();
-        switch (application.getApplicationFamily()) {
-            case ECOMMERCE:
-                if (shouldMountCifs(application)) {
-                    if (environment.getAdPassword() == null) {
-                        throw new NotFoundException("cannot find CIFS password");
-                    }
-                    envMap.put("ADPASS", environment.getAdPassword());
-                    envMap.put("MOUNT_CIFS", "true");
-                }
-                break;
-        }
-
-        return envMap;
     }
 
     private Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {
@@ -308,7 +300,7 @@ public class HelmService implements IHelmService {
     }
 
     private boolean shouldMountCifs(Application application) {
-        String mountCifs = application.getAdditionalParams().get("mountCifs");
+        String mountCifs = application.getCommonConfigs().get("MOUNT_CIFS");
         return mountCifs != null && Boolean.valueOf(mountCifs);
     }
 
@@ -323,8 +315,8 @@ public class HelmService implements IHelmService {
     private ReleaseManager getReleaseManager(Environment environment) {
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
                 new ConfigBuilder()
-                        .withMasterUrl(environment.getKubernetesApiEndpoint())
-                        .withOauthToken(environment.getKubernetesToken())
+                        .withMasterUrl(environment.getEnvironmentConfiguration().getKubernetesApiEndpoint())
+                        .withOauthToken(environment.getEnvironmentConfiguration().getKubernetesToken())
                         .withTrustCerts(true)
                         .withWebsocketTimeout(60*1000)
                         .withConnectionTimeout(30*1000)
@@ -389,21 +381,26 @@ public class HelmService implements IHelmService {
         }
     }
     public String getPublicZoneDns(Environment environment, String applicationPrefix) {
-        List<String> items = Arrays.asList(applicationPrefix, environment.getPublicZoneDns(), environment.getPublicZoneId(), environment.getClusterPrefix());
-        if (anyItemNullOrEmpty(items)) return null;
+        ExternalDnsConfiguration publicDnsConfiguration = environment.getEnvironmentConfiguration().getPublicDnsConfiguration();
+        if(publicDnsConfiguration == null) {
+            return null;
+        }
 
-        return environment.getClusterPrefix() + "-" +
+        return environment.getEnvironmentMetaData().getName() + "-" +
                 new StringJoiner(".")
                 .add(applicationPrefix)
-                .add(environment.getPublicZoneDns())
+                .add(publicDnsConfiguration.getZoneDns())
                 .toString();
     }
 
     public String getPrivateZoneDns(Environment environment, String applicationPrefix) {
-        List<String> items = Arrays.asList(applicationPrefix, environment.getPrivateZoneId(), environment.getPrivateZoneDns());
-        if (anyItemNullOrEmpty(items)) return null;
+        ExternalDnsConfiguration privateDnsConfiguration =
+                environment.getEnvironmentConfiguration().getPrivateDnsConfiguration();
+        if(privateDnsConfiguration == null) {
+            return null;
+        }
 
-        return applicationPrefix + "." + environment.getPrivateZoneDns();
+        return applicationPrefix + "." + privateDnsConfiguration.getZoneDns();
     }
 
     private boolean anyItemNullOrEmpty(List<String> items) {

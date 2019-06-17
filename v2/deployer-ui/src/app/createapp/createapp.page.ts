@@ -45,8 +45,8 @@ export class CreateappPage implements OnInit {
                   readinessProbe: {}
                 };
               }
-              if (app.additionalParams['mountCifs']) {
-                this.enableCifsMount = app.additionalParams["mountCifs"] === "true";
+              if (app.commonConfigs['MOUNT_CIFS']) {
+                this.enableCifsMount = app.commonConfigs["MOUNT_CIFS"] === "true";
               }
             }
           );
@@ -61,7 +61,7 @@ export class CreateappPage implements OnInit {
       duration: 60000
     }).then((res) => {
       res.present();
-      this.application.additionalParams = this.enableCifsMount ? {"mountCifs": "true"} : {};
+      this.application.commonConfigs = this.enableCifsMount ? {"MOUNT_CIFS": "true"} : {};
       this.application.dnsType = this.application.loadBalancerType === 'INTERNAL' ? 'PRIVATE' : 'PUBLIC';
       this.application.applicationFamily = this.applicationFamily;
       let response: Observable<Application> = null;

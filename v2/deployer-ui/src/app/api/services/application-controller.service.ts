@@ -11,6 +11,8 @@ import { User } from '../models/user';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
 import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
+import { EnvironmentMetaData } from '../models/environment-meta-data';
+import { Environment } from '../models/environment';
 import { Deployment } from '../models/deployment';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { ApplicationSecret } from '../models/application-secret';
@@ -37,7 +39,10 @@ class ApplicationControllerService extends __BaseService {
   static readonly updateBuildUsingPUTPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
   static readonly getBuildLogsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
+  static readonly getEnvironmentMetaDataUsingGETPath = '/api/{applicationFamily}/environmentMetaData';
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
+  static readonly upsertEnvironmentUsingPOSTPath = '/api/{applicationFamily}/environments';
+  static readonly getEnvironmentUsingGETPath = '/api/{applicationFamily}/environments/{id}';
   static readonly getCurrentDeploymentUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current';
   static readonly getDeploymentStatusUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus';
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
@@ -696,7 +701,43 @@ class ApplicationControllerService extends __BaseService {
    * @param applicationFamily applicationFamily
    * @return OK
    */
-  getEnvironmentsUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<string>>> {
+  getEnvironmentMetaDataUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<EnvironmentMetaData>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${applicationFamily}/environmentMetaData`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<EnvironmentMetaData>>;
+      })
+    );
+  }
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getEnvironmentMetaDataUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<EnvironmentMetaData>> {
+    return this.getEnvironmentMetaDataUsingGETResponse(applicationFamily).pipe(
+      __map(_r => _r.body as Array<EnvironmentMetaData>)
+    );
+  }
+
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getEnvironmentsUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<Environment>>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -714,7 +755,7 @@ class ApplicationControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<string>>;
+        return _r as __StrictHttpResponse<Array<Environment>>;
       })
     );
   }
@@ -722,9 +763,103 @@ class ApplicationControllerService extends __BaseService {
    * @param applicationFamily applicationFamily
    * @return OK
    */
-  getEnvironmentsUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<string>> {
+  getEnvironmentsUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<Environment>> {
     return this.getEnvironmentsUsingGETResponse(applicationFamily).pipe(
-      __map(_r => _r.body as Array<string>)
+      __map(_r => _r.body as Array<Environment>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.UpsertEnvironmentUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  upsertEnvironmentUsingPOSTResponse(params: ApplicationControllerService.UpsertEnvironmentUsingPOSTParams): __Observable<__StrictHttpResponse<Environment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.environment;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/environments`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Environment>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.UpsertEnvironmentUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  upsertEnvironmentUsingPOST(params: ApplicationControllerService.UpsertEnvironmentUsingPOSTParams): __Observable<Environment> {
+    return this.upsertEnvironmentUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as Environment)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.GetEnvironmentUsingGETParams` containing the following parameters:
+   *
+   * - `id`: id
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getEnvironmentUsingGETResponse(params: ApplicationControllerService.GetEnvironmentUsingGETParams): __Observable<__StrictHttpResponse<Environment>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/environments/${params.id}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Environment>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetEnvironmentUsingGETParams` containing the following parameters:
+   *
+   * - `id`: id
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getEnvironmentUsingGET(params: ApplicationControllerService.GetEnvironmentUsingGETParams): __Observable<Environment> {
+    return this.getEnvironmentUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Environment)
     );
   }
 
@@ -1355,6 +1490,38 @@ module ApplicationControllerService {
      * applicationId
      */
     applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for upsertEnvironmentUsingPOST
+   */
+  export interface UpsertEnvironmentUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: Environment;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getEnvironmentUsingGET
+   */
+  export interface GetEnvironmentUsingGETParams {
+
+    /**
+     * id
+     */
+    id: string;
 
     /**
      * applicationFamily

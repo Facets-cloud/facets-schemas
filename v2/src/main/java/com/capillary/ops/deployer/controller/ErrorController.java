@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.ErrorDetails;
+import com.mongodb.MongoWriteException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,13 @@ public class ErrorController {
           NoSuchElementException ex, WebRequest request) {
     return new ResponseEntity<>(
         new ErrorDetails("Requested resource not found", "404"), HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(MongoWriteException.class)
+  public ResponseEntity<ErrorDetails> alreadyExists(
+          MongoWriteException ex, WebRequest request) {
+    return new ResponseEntity<>(
+            new ErrorDetails(ex.getMessage(), "400"), HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)

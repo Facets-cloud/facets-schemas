@@ -1,121 +1,42 @@
 package com.capillary.ops.deployer.bo;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@CompoundIndexes({
+        @CompoundIndex(name = "unique_applicationFamilyAndName", unique = true,
+                def = "{'environmentMetaData.name':1, 'environmentMetaData.applicationFamily':1}")
+})
+@Document
 public class Environment {
-    private String name;
-    private String kubernetesApiEndpoint;
-    private String kubernetesToken;
-    private String nodeGroup;
-    private String privateZoneId;
-    private String publicZoneId;
-    private String privateZoneDns;
-    private String publicZoneDns;
-    private String clusterPrefix;
-    private String awsAccessKeyId;
-    private String awsSecretAccessKey;
-    private String adPassword;
-    private EnvironmentType environmentType;
+    @Id
+    private String id;
+    private EnvironmentMetaData environmentMetaData;
+    private EnvironmentConfiguration environmentConfiguration;
 
-    public String getName() {
-        return name;
+    public EnvironmentMetaData getEnvironmentMetaData() {
+        return environmentMetaData;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEnvironmentMetaData(EnvironmentMetaData environmentMetaData) {
+        this.environmentMetaData = environmentMetaData;
     }
 
-    public String getKubernetesApiEndpoint() {
-        return kubernetesApiEndpoint;
+    public EnvironmentConfiguration getEnvironmentConfiguration() {
+        return environmentConfiguration;
     }
 
-    public void setKubernetesApiEndpoint(String kubernetesApiEndpoint) {
-        this.kubernetesApiEndpoint = kubernetesApiEndpoint;
+    public void setEnvironmentConfiguration(EnvironmentConfiguration environmentConfiguration) {
+        this.environmentConfiguration = environmentConfiguration;
     }
 
-    public String getKubernetesToken() {
-        return kubernetesToken;
+    public String getId() {
+        return id;
     }
 
-    public void setKubernetesToken(String kubernetesToken) {
-        this.kubernetesToken = kubernetesToken;
-    }
-
-    public String getNodeGroup() {
-        return nodeGroup;
-    }
-
-    public void setNodeGroup(String nodeGroup) {
-        this.nodeGroup = nodeGroup;
-    }
-
-    public String getPrivateZoneId() {
-        return privateZoneId;
-    }
-
-    public void setPrivateZoneId(String privateZoneId) {
-        this.privateZoneId = privateZoneId;
-    }
-
-    public String getPublicZoneId() {
-        return publicZoneId;
-    }
-
-    public void setPublicZoneId(String publicZoneId) {
-        this.publicZoneId = publicZoneId;
-    }
-
-    public String getPrivateZoneDns() {
-        return privateZoneDns == null ? "" : privateZoneDns;
-    }
-
-    public void setPrivateZoneDns(String privateZoneDns) {
-        this.privateZoneDns = privateZoneDns;
-    }
-
-    public String getPublicZoneDns() {
-        return publicZoneDns;
-    }
-
-    public void setPublicZoneDns(String publicZoneDns) {
-        this.publicZoneDns = publicZoneDns;
-    }
-
-    public String getClusterPrefix() {
-        return clusterPrefix;
-    }
-
-    public void setClusterPrefix(String clusterPrefix) {
-        this.clusterPrefix = clusterPrefix;
-    }
-
-    public String getAwsAccessKeyId() {
-        return awsAccessKeyId;
-    }
-
-    public void setAwsAccessKeyId(String awsAccessKeyId) {
-        this.awsAccessKeyId = awsAccessKeyId;
-    }
-
-    public String getAwsSecretAccessKey() {
-        return awsSecretAccessKey;
-    }
-
-    public void setAwsSecretAccessKey(String awsSecretAccessKey) {
-        this.awsSecretAccessKey = awsSecretAccessKey;
-    }
-
-    public String getAdPassword() {
-        return adPassword;
-    }
-
-    public void setAdPassword(String adPassword) {
-        this.adPassword = adPassword;
-    }
-
-    public EnvironmentType getEnvironmentType() {
-        return environmentType;
-    }
-
-    public void setEnvironmentType(EnvironmentType environmentType) {
-        this.environmentType = environmentType;
+    public void setId(String id) {
+        this.id = id;
     }
 }

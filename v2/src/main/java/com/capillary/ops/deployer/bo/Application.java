@@ -53,7 +53,7 @@ public class Application {
 
     private DnsType dnsType;
 
-    private Map<String, String> additionalParams = new HashMap<>();
+    private Map<String, String> commonConfigs = new HashMap<>();
 
     public String getId() {
         return id;
@@ -151,11 +151,11 @@ public class Application {
         this.dnsType = dnsType;
     }
 
-    public Map<String, String> getAdditionalParams() {
-        return additionalParams;
+    public Map<String, String> getCommonConfigs() {
+        return commonConfigs;
     }
 
-    public void setAdditionalParams(Map<String, String> additionalParams) {
-        this.additionalParams = additionalParams;
+    public void setCommonConfigs(Map<String, String> commonConfigs) {
+        this.commonConfigs = commonConfigs;
     }
 }

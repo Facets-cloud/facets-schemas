@@ -7,7 +7,7 @@ import com.capillary.ops.deployer.exceptions.NotPromotedException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
-import com.capillary.ops.deployer.service.KubernetesService;
+import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.S3DumpService;
 import com.capillary.ops.deployer.service.SecretService;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
@@ -17,7 +17,6 @@ import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -60,6 +58,9 @@ public class ApplicationFacade {
 
     @Autowired
     private SecretService secretService;
+
+    @Autowired
+    private EnvironmentRepository environmentRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
@@ -136,8 +137,8 @@ public class ApplicationFacade {
     }
 
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
-        Environment env = applicationFamily.getEnvironment(environment);
-        if(env.getEnvironmentType().equals(EnvironmentType.PRODUCTION)){
+        Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
+        if(env.getEnvironmentMetaData().getEnvironmentType().equals(EnvironmentType.PRODUCTION)){
             if(getBuildPromotionStatus(applicationId,deployment.getBuildId()) == false) {
                 logger.info("Build {} is not promoted", deployment.getBuildId());
                 throw new NotPromotedException("Build " + deployment.getBuildId() + " is not promoted");
@@ -165,8 +166,9 @@ public class ApplicationFacade {
 
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = applicationFamily.getEnvironment(environmentName);
-        return kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+        return deploymentStatus;
     }
 
     public List<String> getImages(ApplicationFamily applicationFamily, String applicationId) {
@@ -210,14 +212,14 @@ public class ApplicationFacade {
 
     public List<ApplicationSecret> initializeApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = applicationFamily.getEnvironment(environmentName);
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         applicationSecrets.parallelStream().forEach(x -> {
             x.setEnvironmentName(environmentName);
             x.setApplicationFamily(applicationFamily);
             x.setApplicationId(applicationId);
         });
 
-        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(environment.getName(), applicationFamily, applicationId);
+        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(environment.getEnvironmentMetaData().getName(), applicationFamily, applicationId);
         if (!Collections.disjoint(savedSecrets, applicationSecrets)) {
             throw new AlreadyExistsException("some secrets have already been created");
         }
@@ -234,7 +236,7 @@ public class ApplicationFacade {
 
     public List<ApplicationSecret> updateApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = applicationFamily.getEnvironment(environmentName);
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
 
         if (!doSecretsExist(environmentName, applicationFamily, applicationId, applicationSecrets)) {
             throw new NotFoundException("some secrets have not been created");
@@ -256,7 +258,7 @@ public class ApplicationFacade {
 
     public void rollbackDeployment(ApplicationFamily applicationFamily, String environmentName, String applicationId){
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = applicationFamily.getEnvironment(environmentName);
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         helmService.rollback(application,environment);
     }
 
@@ -271,8 +273,14 @@ public class ApplicationFacade {
         return username;
     }
 
-    public List<String> getEnvironments(ApplicationFamily applicationFamily) throws FileNotFoundException {
-        return applicationFamily.getEnvironments().stream().map(x->x.getName()).collect(Collectors.toList());
+    public List<EnvironmentMetaData> getEnvironmentMetaData(ApplicationFamily applicationFamily) {
+        return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
+                .stream().map(x->x.getEnvironmentMetaData()).collect(Collectors.toList());
+    }
+
+    public List<Environment> getEnvironments(ApplicationFamily applicationFamily) {
+        return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
+                .stream().collect(Collectors.toList());
     }
 
     public Application updateApplication(Application application) {
@@ -283,5 +291,13 @@ public class ApplicationFacade {
         application.setName(existingApplication.getName());
         application.setBuildType(existingApplication.getBuildType());
         return applicationRepository.save(application);
+    }
+
+    public Environment upsertEnvironment(ApplicationFamily applicationFamily, Environment environment) {
+        return environmentRepository.save(environment);
+    }
+
+    public Environment getEnvironment(ApplicationFamily applicationFamily, String id) {
+        return environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndId(applicationFamily, id).get();
     }
 }

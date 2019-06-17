@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: {{ .Values.app.environment }}-{{ .Values.aws.zoneType }}-route53-dns-cluster-role
+  name: {{ .Values.environment }}-{{ .Values.zoneType }}-route53-dns-cluster-role
 rules:
   - apiGroups: [""]
     resources: ["services"]

@@ -2,10 +2,10 @@
 import { HealthCheck } from './health-check';
 import { Port } from './port';
 export interface Application {
-  additionalParams?: {[key: string]: string};
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationRootDirectory?: string;
   buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE';
+  commonConfigs?: {[key: string]: string};
   dnsPrefix?: string;
   dnsType?: 'PUBLIC' | 'PRIVATE';
   healthCheck?: HealthCheck;

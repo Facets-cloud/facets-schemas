@@ -1,8 +1,8 @@
 package com.capillary.ops.deployer.bo.systemcharts;
 
-import com.capillary.ops.deployer.bo.AbstractSystemChart;
 import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Environment;
+import com.capillary.ops.deployer.bo.ISystemChart;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //@Component
-public class ScheduledS3UploaderSystemChart extends AbstractSystemChart {
+public class ScheduledS3UploaderSystemChart implements ISystemChart {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledS3UploaderSystemChart.class);
 
@@ -24,8 +24,8 @@ public class ScheduledS3UploaderSystemChart extends AbstractSystemChart {
 
     @Override
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
-        String awsAccessKeyId = environment.getAwsAccessKeyId();
-        String awsSecretAccessKey = environment.getAwsSecretAccessKey();
+        String awsAccessKeyId = ""; // environment.getAwsAccessKeyId();
+        String awsSecretAccessKey = ""; //environment.getAwsSecretAccessKey();
 
         if (awsAccessKeyId == null || awsSecretAccessKey == null) {
             logger.error("could not find one of the aws keys");

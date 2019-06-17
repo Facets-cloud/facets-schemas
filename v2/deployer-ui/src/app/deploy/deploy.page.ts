@@ -43,31 +43,22 @@ export class DeployPage implements OnInit {
           applicationId: applicationId,
           buildId: this.buildId
         }).subscribe(build => this.build = build);
-        this.applicationControllerService.getEnvironmentsUsingGET(applicationFamily).subscribe(e => this.environments = e);
+        this.applicationControllerService.getEnvironmentMetaDataUsingGET(applicationFamily).subscribe(e => this.environments = e.map(x=>x.name));
       }
     );
   }
 
   envSelected(environment: string) {
-    this.applicationControllerService.getDeploymentStatusUsingGET(
+    this.applicationControllerService.getCurrentDeploymentUsingGET(
       {
         applicationFamily: this.application.applicationFamily,
         applicationId: this.application.id,
         environment: environment
       }
     ).subscribe(
-      deploymentStatus => {
-        var configurations: EnvironmentVariable[] = [];
-        console.log(deploymentStatus.deployment.environmentConfigs);
-        for (let key in deploymentStatus.deployment.environmentConfigs) {
-          configurations.push({name: key, value: deploymentStatus.deployment.environmentConfigs[key]})
-        }
-        this.deployment.configurations = configurations;
-        if(deploymentStatus.deployment.hpaStatus) {
-          this.deployment.horizontalPodAutoscaler.minReplicas = deploymentStatus.deployment.hpaStatus.minReplicas;
-          this.deployment.horizontalPodAutoscaler.maxReplicas = deploymentStatus.deployment.hpaStatus.maxReplicas;
-          this.deployment.horizontalPodAutoscaler.threshold = deploymentStatus.deployment.hpaStatus.targetCPUAvg;
-        }
+      deployment => {
+        if(deployment)
+          this.deployment = deployment;
       });
   }
 

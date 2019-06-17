@@ -249,8 +249,8 @@ public class KubernetesService implements IKubernetesService {
     private KubernetesClient getKubernetesClient(Environment environment) {
         return new DefaultKubernetesClient(
                 new ConfigBuilder()
-                        .withMasterUrl(environment.getKubernetesApiEndpoint())
-                        .withOauthToken(environment.getKubernetesToken())
+                        .withMasterUrl(environment.getEnvironmentConfiguration().getKubernetesApiEndpoint())
+                        .withOauthToken(environment.getEnvironmentConfiguration().getKubernetesToken())
                         .withTrustCerts(true)
                         .build());
     }
