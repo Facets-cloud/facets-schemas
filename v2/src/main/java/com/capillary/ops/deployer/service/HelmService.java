@@ -45,7 +45,7 @@ public class HelmService implements IHelmService {
 
     @Override
     public void deploy(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) {
-        logger.info("Installing " + chartName + " with values ", valueMap);
+        logger.info("Installing " + chartName + " with values " + valueMap.toString());
         ReleaseManager releaseManager = getReleaseManager(environment);
         Iterator<ListReleasesResponse> listReleasesResponseIterator =
                 releaseManager.list(ListReleasesRequest.newBuilder().setFilter("^" + releaseName + "$").build());

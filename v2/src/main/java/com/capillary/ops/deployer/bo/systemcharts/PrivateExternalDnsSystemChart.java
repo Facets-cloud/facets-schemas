@@ -30,7 +30,7 @@ public class PrivateExternalDnsSystemChart implements ISystemChart {
         ExternalDnsConfiguration privateDnsConfiguration =
                 environment.getEnvironmentConfiguration().getPrivateDnsConfiguration();
         if(privateDnsConfiguration == null) {
-            return new HashMap<>();
+            return null;
         }
         Map<String, Object> publicDnsConfigurationMap = new ObjectMapper()
                 .convertValue(privateDnsConfiguration, Map.class);
