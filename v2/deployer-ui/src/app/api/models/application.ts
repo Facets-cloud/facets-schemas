@@ -4,7 +4,7 @@ import { Port } from './port';
 export interface Application {
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationRootDirectory?: string;
-  buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE';
+  buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC';
   commonConfigs?: {[key: string]: string};
   dnsPrefix?: string;
   dnsType?: 'PUBLIC' | 'PRIVATE';

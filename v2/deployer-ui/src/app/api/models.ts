@@ -19,7 +19,6 @@ export { HealthCheck } from './models/health-check';
 export { InputStream } from './models/input-stream';
 export { InputStreamResource } from './models/input-stream-resource';
 export { LogEvent } from './models/log-event';
-export { ModelAndView } from './models/model-and-view';
 export { PodReplicationDetails } from './models/pod-replication-details';
 export { Port } from './models/port';
 export { Probe } from './models/probe';
@@ -27,4 +26,3 @@ export { TokenPaginatedResponseLogEvent } from './models/token-paginated-respons
 export { URI } from './models/uri';
 export { URL } from './models/url';
 export { User } from './models/user';
-export { View } from './models/view';
