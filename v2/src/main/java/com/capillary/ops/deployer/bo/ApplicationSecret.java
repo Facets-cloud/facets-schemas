@@ -60,7 +60,6 @@ public class ApplicationSecret {
     @JsonView(UserView.SecretName.class)
     private String secretName;
 
-    @Transient
     private String secretValue = "";
 
     private String description = "";
