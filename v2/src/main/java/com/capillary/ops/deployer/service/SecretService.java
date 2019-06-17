@@ -39,6 +39,7 @@ public class SecretService {
         applicationSecrets.parallelStream().forEach(x -> {
             ApplicationSecret secret = secretMap.get(x.getSecretName());
             secret.setSecretStatus(ApplicationSecret.SecretStatus.FULFILLED);
+            secret.setSecretValue(x.getSecretValue());
         });
 
         return applicationSecretsRepository.saveAll(savedSecrets);
