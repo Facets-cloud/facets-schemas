@@ -246,10 +246,10 @@ public class KubernetesService implements IKubernetesService {
     private ApplicationPodDetails getIndividualPodDetails(Pod pod) {
         ObjectMeta podMetadata = pod.getMetadata();
         PodStatus podStatus = pod.getStatus();
-        ContainerStatus containerStatus = podStatus.getContainerStatuses().get(0);
+        String image = pod.getSpec().getContainers().get(0).getImage();
 
         return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), podStatus.getPhase(),
-                containerStatus.getImage(), containerStatus.getImageID(), podMetadata.getCreationTimestamp());
+                image, image, podMetadata.getCreationTimestamp());
     }
 
     private KubernetesClient getKubernetesClient(Environment environment) {
