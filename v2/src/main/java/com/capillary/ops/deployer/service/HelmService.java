@@ -173,6 +173,8 @@ public class HelmService implements IHelmService {
 
     private Map<String, Object> getValuesYaml(Environment environment, Application application, Deployment deployment) {
         final Map<String, Object> yaml = new LinkedHashMap<>();
+        yaml.put("deploymentId", deployment.getId());
+        yaml.put("buildId", deployment.getBuildId());
         yaml.put("image", deployment.getImage());
         yaml.put("podCPULimit",deployment.getPodSize().getCpu());
         yaml.put("podMemoryLimit",deployment.getPodSize().getMemory());

@@ -20,6 +20,9 @@ spec:
       labels:
         app: {{ .Release.Name }}
         release: {{ .Release.Name }}
+      annotations:
+        deploymentId: {{ .Values.deploymentId }}
+        buildId: {{ .Values.buildId }}
     spec:
 {{- if .Values.crmModuleName}}
 {{- template "crmConfigVolumes" . }}
