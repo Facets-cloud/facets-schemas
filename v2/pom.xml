@@ -166,134 +166,91 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution><!-- Run our version calculation script -->
+                        <id>set-base-url</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>deployer-ui</workingDirectory>
+                            <executable>sed</executable>
+                            <arguments>
+                                <argument>-i</argument>
+                                <argument>s/localhost:8100/deployer.capillary.in/g</argument>
+                                <argument>src/app/api/api-configuration.ts</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>npm-install</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>deployer-ui</workingDirectory>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>npm-rebuild-node-sass</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>deployer-ui</workingDirectory>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>rebuild</argument>
+                                <argument>node-sass</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>generate-ui</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>deployer-ui</workingDirectory>
+                            <executable>ionic</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>--release</argument>
+                                <argument>--prod</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>copy-ui</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <executable>mv</executable>
+                            <arguments>
+                                <argument>deployer-ui/www</argument>
+                                <argument>src/main/resources/static</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
-    <profiles>
-        <profile>
-            <id>docker-cibuild</id>
-            <activation>
-                <property>
-                    <name>env.ENV_BUILD</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <executions>
-                            <execution><!-- Run our version calculation script -->
-                                <id>set-base-url</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <workingDirectory>deployer-ui</workingDirectory>
-                                    <executable>sed</executable>
-                                    <arguments>
-                                        <argument>-i</argument>
-                                        <argument>s/localhost:8100/deployer.capillary.in/g</argument>
-                                        <argument>src/app/api/api-configuration.ts</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution><!-- Run our version calculation script -->
-                                <id>npm-install</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <workingDirectory>deployer-ui</workingDirectory>
-                                    <executable>npm</executable>
-                                    <arguments>
-                                        <argument>install</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution><!-- Run our version calculation script -->
-                                <id>npm-rebuild-node-sass</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <workingDirectory>deployer-ui</workingDirectory>
-                                    <executable>npm</executable>
-                                    <arguments>
-                                        <argument>rebuild</argument>
-                                        <argument>node-sass</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution><!-- Run our version calculation script -->
-                                <id>generate-ui</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <workingDirectory>deployer-ui</workingDirectory>
-                                    <executable>ionic</executable>
-                                    <arguments>
-                                        <argument>build</argument>
-                                        <argument>--release</argument>
-                                        <argument>--prod</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution><!-- Run our version calculation script -->
-                                <id>copy-ui</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <workingDirectory>${basedir}</workingDirectory>
-                                    <executable>mv</executable>
-                                    <arguments>
-                                        <argument>deployer-ui/www</argument>
-                                        <argument>src/main/resources/static</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>0.27.1</version>
-
-                        <configuration>
-                            <pushRegistry>486456986266.dkr.ecr.us-west-1.amazonaws.com</pushRegistry>
-                            <images>
-                                <image>
-                                    <name>ops/${project.artifactId}:${project.version}-${maven.build.timestamp}</name>
-                                    <build>
-                                        <dockerFileDir>${basedir}</dockerFileDir>
-                                    </build>
-                                </image>
-                            </images>
-                        </configuration>
-
-                        <executions>
-                            <execution>
-                                <id>docker:build</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                    <goal>push</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
