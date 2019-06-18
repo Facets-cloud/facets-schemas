@@ -1,6 +1,6 @@
-FROM openjdk:8-jre
+FROM 486456986266.dkr.ecr.us-west-1.amazonaws.com/ecommerce/openjdk8-with-newrelic:5ad24aa
 EXPOSE 8080
-EXPOSE 9999
-COPY target/*jar .
-COPY charts /charts
-CMD java -agentlib:jdwp=transport=dt_socket,server=y,address=9999,suspend=n -jar *.jar
+COPY target/ /application/
+COPY charts/ /charts/
+WORKDIR /application
+CMD java -jar *.jar
