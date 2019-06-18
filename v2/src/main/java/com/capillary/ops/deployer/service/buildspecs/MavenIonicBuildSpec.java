@@ -6,30 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MavenIonicBuildSpec extends BuildSpec {
+public class MavenIonicBuildSpec extends MavenBuildSpec {
 
     public MavenIonicBuildSpec(Application application) {
         super(application);
-    }
-
-    @Override
-    protected List<String> getPostBuildCommands() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    protected List<String> getBuildCommands() {
-        return Arrays.asList("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U -Pdocker-cibuild");
-    }
-
-    @Override
-    protected List<String> getPreBuildCommands() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    protected List<String> getCachePaths() {
-        return Arrays.asList("/root/.m2/**/*");
     }
 
     @Override
