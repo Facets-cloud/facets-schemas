@@ -156,6 +156,7 @@ public class HelmService implements IHelmService {
         requestBuilder.setWait(false); // Wait for Pods to be ready
         requestBuilder.getValuesBuilder().setRaw(valuesYaml);
         requestBuilder.setForce(true);
+        requestBuilder.setRecreate(true);
 
         final Future<UpdateReleaseResponse> releaseFuture = releaseManager.update(requestBuilder, chart);
         final Release release = releaseFuture.get().getRelease();
