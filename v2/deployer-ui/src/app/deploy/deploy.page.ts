@@ -59,6 +59,7 @@ export class DeployPage implements OnInit {
       deployment => {
         if(deployment)
           this.deployment = deployment;
+          this.deployment.id = null;
       });
   }
 
