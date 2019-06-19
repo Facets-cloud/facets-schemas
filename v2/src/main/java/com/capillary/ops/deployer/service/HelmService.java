@@ -207,9 +207,7 @@ public class HelmService implements IHelmService {
 
     private void addZoneDns(Application application, Map<String, Object> yaml, Application.DnsType dnsType, String zoneDns) {
         if (dnsType.equals(application.getDnsType()) && zoneDns != null) {
-            Map<String, Object> aws = new HashMap<>();
-            aws.put("domainName", zoneDns);
-            yaml.put("aws", aws);
+            yaml.put("domainName", zoneDns);
         }
     }
 

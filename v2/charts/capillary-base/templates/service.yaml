@@ -3,8 +3,8 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}
   annotations:
-  {{- if .Values.aws.domainName }}
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.aws.domainName }}
+  {{- if .Values.domainName }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
   {{- end }}
   {{- if and .Values.lbType (eq .Values.lbType "internal") }}
     service.beta.kubernetes.io/aws-load-balancer-internal: "0.0.0.0/0"
