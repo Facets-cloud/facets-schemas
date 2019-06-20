@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service.mocks;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
+import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,25 @@ public class EcomMockDataBootstrap {
     @Autowired
     private BuildRepository buildRepository;
 
+    @Autowired
+    private EnvironmentRepository environmentRepository;
+
     @PostConstruct
     private void init() {
+        createNightlyEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
+        createNightlyEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.CRM);
         Application application = createApplication();
         createBuild(application);
+    }
+
+    private void createNightlyEnvironment(String name, EnvironmentType type, ApplicationFamily applicationFamily) {
+        Environment nightly = new Environment();
+        EnvironmentMetaData nightlyMetaData = new EnvironmentMetaData();
+        nightlyMetaData.setApplicationFamily(applicationFamily);
+        nightlyMetaData.setName(name);
+        nightlyMetaData.setEnvironmentType(type);
+        nightly.setEnvironmentMetaData(nightlyMetaData);
+        environmentRepository.save(nightly);
     }
 
     private void createBuild(Application application) {

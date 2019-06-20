@@ -22,8 +22,16 @@
       <ion-col size=8>{{ item.value.podSize }}</ion-col>
     </ion-row>
     <ion-row>
-        <ion-col size=2><b>Replicas</b></ion-col>
-        <ion-col size=8>1</ion-col>
+        <ion-col size=2><b>Min Replicas</b></ion-col>
+        <ion-col size=8>{{ item.value?.horizontalPodAutoscaler?.minReplicas }}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size=2><b>Max Replicas</b></ion-col>
+      <ion-col size=8>{{ item.value?.horizontalPodAutoscaler?.maxReplicas }}</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size=2><b>CPU Threshold</b></ion-col>
+      <ion-col size=8>{{ item.value?.horizontalPodAutoscaler?.threshold }}%</ion-col>
     </ion-row>
       <ion-row>
           <ion-col size=2><b>Deployed By</b></ion-col>
