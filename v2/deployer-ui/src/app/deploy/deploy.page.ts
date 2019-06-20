@@ -57,9 +57,16 @@ export class DeployPage implements OnInit {
       }
     ).subscribe(
       deployment => {
-        if(deployment)
+        if(deployment) {
           this.deployment = deployment;
           this.deployment.id = null;
+        } else {
+          this.deployment = {
+            environment: environment,
+            configurations: [{}],
+            horizontalPodAutoscaler: {}
+          };
+        }
       });
   }
 

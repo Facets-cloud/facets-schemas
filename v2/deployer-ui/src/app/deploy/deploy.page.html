@@ -2,7 +2,7 @@
   <ion-grid fixed>
     <ion-toolbar color=dark>
       <ion-title>Deploy {{ application?.name }} </ion-title>
-      <ion-button (click)="deploy()" *ngIf="build?.status === 'SUCCEEDED'" color=light fill=clear slot=end>
+      <ion-button (click)="deploy()" *ngIf="build?.status === 'SUCCEEDED' && deployment.environment != ''" color=light fill=clear slot=end>
         <ion-icon name="paper-plane"></ion-icon>
       </ion-button>
     </ion-toolbar>
@@ -15,6 +15,7 @@
           {{ cluster }}
         </ion-select-option>
       </ion-select>
+      <div *ngIf="deployment.environment != ''">
       <ion-label position="stacked"><b>Pod Size</b></ion-label>
       <ion-select interface="popover" type="text" placeholder="SMALL" [(ngModel)]="deployment.podSize">
         <ion-select-option value="SMALL">SMALL</ion-select-option>
@@ -51,6 +52,7 @@
         <ion-input placeholder="60" type="number" [(ngModel)]="deployment.horizontalPodAutoscaler.threshold">
         </ion-input>
       </div>
+    </div>
     </div>
   </ion-grid>
 </ion-content>
