@@ -57,7 +57,7 @@ public class ECRService implements IECRService {
     public String findImageBetweenTimes(Application application, Instant from, Instant to) {
         String repositoryName = getRepositoryName(application);
         Optional<String> imageOptional = ecrClient.describeImages(DescribeImagesRequest.builder()
-                .repositoryName(repositoryName).maxResults(10).build())
+                .repositoryName(repositoryName).maxResults(1000).build())
                 .imageDetails().stream()
                 .filter(x -> x.imageTags() != null && !x.imageTags().isEmpty())
                 .filter(x -> x.imagePushedAt().isAfter(from) && x.imagePushedAt().isBefore(to))
