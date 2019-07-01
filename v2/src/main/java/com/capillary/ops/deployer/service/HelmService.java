@@ -114,7 +114,7 @@ public class HelmService implements IHelmService {
     public String getReleaseName(Application application, Environment environment) {
         return environment.getEnvironmentConfiguration().getNodeGroup().isEmpty() ?
                 application.getName() :
-                environment.getEnvironmentConfiguration().getNodeGroup() + "-" + application.getName();
+                environment.getEnvironmentMetaData().getName() + "-" + application.getName();
     }
 
     private void install(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
