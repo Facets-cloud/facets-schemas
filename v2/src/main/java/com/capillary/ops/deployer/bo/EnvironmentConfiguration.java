@@ -10,6 +10,7 @@ public class EnvironmentConfiguration {
     private ExternalDnsConfiguration publicDnsConfiguration;
     private Map<String, String> commonConfigs;
     private Map<String, String> commonCredentials;
+    private SSLConfigs sslConfigs;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -65,5 +66,13 @@ public class EnvironmentConfiguration {
 
     public void setCommonCredentials(Map<String, String> commonCredentials) {
         this.commonCredentials = commonCredentials;
+    }
+
+    public SSLConfigs getSslConfigs() {
+        return sslConfigs;
+    }
+
+    public void setSslConfigs(SSLConfigs sslConfigs) {
+        this.sslConfigs = sslConfigs;
     }
 }

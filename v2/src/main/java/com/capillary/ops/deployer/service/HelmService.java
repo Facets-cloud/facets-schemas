@@ -190,6 +190,11 @@ public class HelmService implements IHelmService {
         yaml.put("configurations", getConfigMap(environment, application, deployment));
         yaml.put("credentials", getCredentialsMap(environment, application));
 
+        if(ports.stream().anyMatch(p -> p.get("name").equals("https"))){
+            yaml.put("httpsPortExists",true);
+            yaml.put("sslCertName", environment.getEnvironmentConfiguration().getSslConfigs().getSSLCertName());
+        }
+
         String dnsPrefix = application.getDnsPrefix();
         addZoneDns(application, yaml, Application.DnsType.PRIVATE, getPrivateZoneDns(environment, dnsPrefix));
         addZoneDns(application, yaml, Application.DnsType.PUBLIC, getPublicZoneDns(environment, dnsPrefix));

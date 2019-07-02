@@ -10,6 +10,10 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-internal: "0.0.0.0/0"
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
   {{- end }}
+  {{- if .Values.httpsPortExists }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.sslCertName }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+  {{- end}}
     heritage: "deployer"
   labels:
     app: {{ .Release.Name  }}
