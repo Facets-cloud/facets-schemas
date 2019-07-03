@@ -263,7 +263,6 @@ public class KubernetesService implements IKubernetesService {
     }
 
     private String getPodLifecycleState(PodStatus podStatus) {
-        logger.info("Pod phase and message:" + podStatus.getPhase() + podStatus.getMessage());
         switch (podStatus.getPhase()) {
             case "Running": {
                 ContainerState state = podStatus.getContainerStatuses().get(0).getState();
@@ -275,11 +274,67 @@ public class KubernetesService implements IKubernetesService {
                     if (running != null) {
                         return podStatus.getPhase();
                     } else if (terminated != null) {
-                        return terminated.getMessage() + ": " + terminated.getReason();
+                        StringBuilder returnStr = new StringBuilder("Terminated");
+                        if(terminated.getReason()!=null){
+                            returnStr.append(": ");
+                            returnStr.append(terminated.getReason());
+                        }
+                        if(terminated.getMessage() != null){
+                            returnStr.append(": ");
+                            returnStr.append(terminated.getMessage());
+                        }
+                        return returnStr.toString();
                     } else if (waiting != null) {
-                        return waiting.getMessage() + ": " + waiting.getReason();
+                        StringBuilder returnStr = new StringBuilder("Waiting");
+                        if(waiting.getReason()!=null){
+                            returnStr.append(": ");
+                            returnStr.append(waiting.getReason());
+                        }
+                        if(waiting.getMessage() != null){
+                            returnStr.append(": ");
+                            returnStr.append(waiting.getMessage());
+                        }
+                        return returnStr.toString();
                     }
                 } else {
+                    return podStatus.getPhase();
+                }
+            }
+            case "Pending": {
+                //Check failed conditions
+                List<PodCondition> podConditionList  = podStatus.getConditions().stream()
+                        .filter(c -> (c.getStatus().equals("False") || c.getStatus().equals("Unknown")))
+                        .collect(Collectors.toList());
+                if(!podConditionList.isEmpty()) {
+                    PodCondition podScheduledCondition = podConditionList.get(0);
+                    //If container is not ready, check container status
+                    if (podScheduledCondition.getType().equals("Ready")) {
+                        ContainerStateWaiting waiting = podStatus.getContainerStatuses().get(0).getState().getWaiting();
+                        if (waiting != null) {
+                            StringBuilder returnStr = new StringBuilder("Pending");
+                            if (waiting.getReason() != null) {
+                                returnStr.append(": ");
+                                returnStr.append(waiting.getReason());
+                            }
+                            if (waiting.getMessage() != null) {
+                                returnStr.append(": ");
+                                returnStr.append(waiting.getMessage());
+                            }
+                            return returnStr.toString();
+                        }
+                    } else {
+                        StringBuilder returnStr = new StringBuilder("Pending");
+                        if (podScheduledCondition.getReason() != null) {
+                            returnStr.append(": ");
+                            returnStr.append(podScheduledCondition.getReason());
+                        }
+                        if (podScheduledCondition.getMessage() != null) {
+                            returnStr.append(": ");
+                            returnStr.append(podScheduledCondition.getMessage());
+                        }
+                        return returnStr.toString();
+                    }
+                }else {
                     return podStatus.getPhase();
                 }
             }
