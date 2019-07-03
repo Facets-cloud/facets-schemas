@@ -12,10 +12,6 @@
             <ion-label><b>Name</b></ion-label>
             {{pod.name}}
           </ion-col>
-          <ion-col>
-              <ion-label><b>Status</b></ion-label>
-              {{pod.podStauts}}
-          </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
@@ -28,6 +24,16 @@
               <ion-label><b>Created At</b></ion-label>
               {{pod.creationTimestamp | date: 'medium'}}
             </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col>
+              <ion-label><b>Status</b></ion-label>
+              {{pod.podStatus}}
+          </ion-col>
+          <ion-col>
+            <ion-label><b>Ready</b></ion-label>
+            {{pod.ready}}
+          </ion-col>
           </ion-row>
       </div>
     </div>

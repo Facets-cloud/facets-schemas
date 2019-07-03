@@ -1,13 +1,13 @@
 /* tslint:disable */
 export interface File {
+  freeSpace?: number;
   absolute?: boolean;
-  absoluteFile?: File;
   absolutePath?: string;
   canonicalFile?: File;
   canonicalPath?: string;
   directory?: boolean;
   file?: boolean;
-  freeSpace?: number;
+  absoluteFile?: File;
   hidden?: boolean;
   name?: string;
   parent?: string;

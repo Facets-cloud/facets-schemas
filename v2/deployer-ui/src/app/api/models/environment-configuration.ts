@@ -1,5 +1,6 @@
 /* tslint:disable */
 import { ExternalDnsConfiguration } from './external-dns-configuration';
+import { SSLConfigs } from './sslconfigs';
 export interface EnvironmentConfiguration {
   commonConfigs?: {[key: string]: string};
   commonCredentials?: {[key: string]: string};
@@ -8,4 +9,5 @@ export interface EnvironmentConfiguration {
   nodeGroup?: string;
   privateDnsConfiguration?: ExternalDnsConfiguration;
   publicDnsConfiguration?: ExternalDnsConfiguration;
+  sslConfigs?: SSLConfigs;
 }

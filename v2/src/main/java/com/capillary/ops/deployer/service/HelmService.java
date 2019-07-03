@@ -190,7 +190,8 @@ public class HelmService implements IHelmService {
         yaml.put("configurations", getConfigMap(environment, application, deployment));
         yaml.put("credentials", getCredentialsMap(environment, application));
 
-        if(ports.stream().anyMatch(p -> p.get("name").equals("https"))){
+        if(ports.stream().anyMatch(p -> p.get("name").equals("https"))
+                && environment.getEnvironmentConfiguration().getSslConfigs() !=null){
             yaml.put("httpsPortExists",true);
             yaml.put("sslCertName", environment.getEnvironmentConfiguration().getSslConfigs().getSSLCertName());
         }
