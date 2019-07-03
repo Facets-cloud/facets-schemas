@@ -7,10 +7,10 @@ public class ApplicationPodDetails {
 
     public ApplicationPodDetails() {}
 
-    public ApplicationPodDetails(String name, Map<String, String> labels, String podStauts, String image, String imageID, String creationTimestamp, Boolean ready) {
+    public ApplicationPodDetails(String name, Map<String, String> labels, String podStatus, String image, String imageID, String creationTimestamp, Boolean ready) {
         this.name = name;
         this.labels = labels;
-        this.podStauts = podStauts;
+        this.podStatus = podStatus;
         this.image = image;
         this.imageID = imageID;
         this.creationTimestamp = creationTimestamp;
@@ -21,7 +21,7 @@ public class ApplicationPodDetails {
 
     private Map<String, String> labels = new HashMap<>();
 
-    private String podStauts;
+    private String podStatus;
 
     private String image;
 
@@ -49,12 +49,12 @@ public class ApplicationPodDetails {
         this.labels = labels;
     }
 
-    public String getPodStauts() {
-        return podStauts;
+    public String getPodStatus() {
+        return podStatus;
     }
 
-    public void setPodStauts(String podStauts) {
-        this.podStauts = podStauts;
+    public void setPodStatus(String podStauts) {
+        this.podStatus = podStauts;
     }
 
     public String getImage() {

@@ -16,11 +16,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -258,8 +258,34 @@ public class KubernetesService implements IKubernetesService {
             ready = podStatus.getContainerStatuses().get(0).getReady();
         }
 
-        return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), podStatus.getPhase(),
+        return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), getPodLifecycleState(podStatus),
                 image, image, podMetadata.getCreationTimestamp(), ready);
+    }
+
+    private String getPodLifecycleState(PodStatus podStatus) {
+        logger.info("Pod phase and message:" + podStatus.getPhase() + podStatus.getMessage());
+        switch (podStatus.getPhase()) {
+            case "Running": {
+                ContainerState state = podStatus.getContainerStatuses().get(0).getState();
+                if (state != null) {
+                    ContainerStateRunning running = state.getRunning();
+                    ContainerStateTerminated terminated = state.getTerminated();
+                    ContainerStateWaiting waiting = state.getWaiting();
+
+                    if (running != null) {
+                        return podStatus.getPhase();
+                    } else if (terminated != null) {
+                        return terminated.getMessage() + ": " + terminated.getReason();
+                    } else if (waiting != null) {
+                        return waiting.getMessage() + ": " + waiting.getReason();
+                    }
+                } else {
+                    return podStatus.getPhase();
+                }
+            }
+            default:
+                return podStatus.getPhase();
+        }
     }
 
     private KubernetesClient getKubernetesClient(Environment environment) {
