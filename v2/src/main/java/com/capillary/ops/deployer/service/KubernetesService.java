@@ -257,40 +257,48 @@ public class KubernetesService implements IKubernetesService {
         if(podStatus.getContainerStatuses().size() > 0) {
             ready = podStatus.getContainerStatuses().get(0).getReady();
         }
+        String podLifecycleState= "Unknown";
+        try {
+             podLifecycleState = getPodLifecycleState(podStatus);
+        }catch (Exception e){
+            logger.error("Error fetching pod status:", e.getMessage() + e.getStackTrace());
+        }
 
-        return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), getPodLifecycleState(podStatus),
+        return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), podLifecycleState,
                 image, image, podMetadata.getCreationTimestamp(), ready);
     }
 
-    private String getPodLifecycleState(PodStatus podStatus) {
+    private String getPodLifecycleState(PodStatus podStatus) throws Exception {
         switch (podStatus.getPhase()) {
             case "Running": {
+                if (podStatus.getContainerStatuses().isEmpty()) {
+                    return "Unknown";
+                }
                 ContainerState state = podStatus.getContainerStatuses().get(0).getState();
                 if (state != null) {
                     ContainerStateRunning running = state.getRunning();
                     ContainerStateTerminated terminated = state.getTerminated();
                     ContainerStateWaiting waiting = state.getWaiting();
-
                     if (running != null) {
                         return podStatus.getPhase();
                     } else if (terminated != null) {
                         StringBuilder returnStr = new StringBuilder("Terminated");
-                        if(terminated.getReason()!=null){
+                        if (terminated.getReason() != null) {
                             returnStr.append(": ");
                             returnStr.append(terminated.getReason());
                         }
-                        if(terminated.getMessage() != null){
+                        if (terminated.getMessage() != null) {
                             returnStr.append(": ");
                             returnStr.append(terminated.getMessage());
                         }
                         return returnStr.toString();
                     } else if (waiting != null) {
                         StringBuilder returnStr = new StringBuilder("Waiting");
-                        if(waiting.getReason()!=null){
+                        if (waiting.getReason() != null) {
                             returnStr.append(": ");
                             returnStr.append(waiting.getReason());
                         }
-                        if(waiting.getMessage() != null){
+                        if (waiting.getMessage() != null) {
                             returnStr.append(": ");
                             returnStr.append(waiting.getMessage());
                         }
@@ -302,25 +310,33 @@ public class KubernetesService implements IKubernetesService {
             }
             case "Pending": {
                 //Check failed conditions
-                List<PodCondition> podConditionList  = podStatus.getConditions().stream()
+                List<PodCondition> podConditionList = podStatus.getConditions().stream()
                         .filter(c -> (c.getStatus().equals("False") || c.getStatus().equals("Unknown")))
                         .collect(Collectors.toList());
-                if(!podConditionList.isEmpty()) {
+                if (!podConditionList.isEmpty()) {
                     PodCondition podScheduledCondition = podConditionList.get(0);
                     //If container is not ready, check container status
                     if (podScheduledCondition.getType().equals("Ready")) {
-                        ContainerStateWaiting waiting = podStatus.getContainerStatuses().get(0).getState().getWaiting();
-                        if (waiting != null) {
-                            StringBuilder returnStr = new StringBuilder("Pending");
-                            if (waiting.getReason() != null) {
-                                returnStr.append(": ");
-                                returnStr.append(waiting.getReason());
+                        if (podStatus.getContainerStatuses().isEmpty()) {
+                            return "Unknown";
+                        }
+                        ContainerState state = podStatus.getContainerStatuses().get(0).getState();
+                        if (state != null) {
+                            ContainerStateWaiting waiting = state.getWaiting();
+                            if (waiting != null) {
+                                StringBuilder returnStr = new StringBuilder("Pending");
+                                if (waiting.getReason() != null) {
+                                    returnStr.append(": ");
+                                    returnStr.append(waiting.getReason());
+                                }
+                                if (waiting.getMessage() != null) {
+                                    returnStr.append(": ");
+                                    returnStr.append(waiting.getMessage());
+                                }
+                                return returnStr.toString();
                             }
-                            if (waiting.getMessage() != null) {
-                                returnStr.append(": ");
-                                returnStr.append(waiting.getMessage());
-                            }
-                            return returnStr.toString();
+                        } else {
+                            return podStatus.getPhase();
                         }
                     } else {
                         StringBuilder returnStr = new StringBuilder("Pending");
@@ -334,7 +350,7 @@ public class KubernetesService implements IKubernetesService {
                         }
                         return returnStr.toString();
                     }
-                }else {
+                } else {
                     return podStatus.getPhase();
                 }
             }
