@@ -253,19 +253,37 @@ public class KubernetesService implements IKubernetesService {
         ObjectMeta podMetadata = pod.getMetadata();
         PodStatus podStatus = pod.getStatus();
         String image = pod.getSpec().getContainers().get(0).getImage();
-        boolean ready = false;
-        if(podStatus.getContainerStatuses().size() > 0) {
-            ready = podStatus.getContainerStatuses().get(0).getReady();
-        }
         String podLifecycleState= "Unknown";
+        boolean ready = false;
+        int podRestarts = 0;
+        String restartReason = "NA";
+
         try {
-             podLifecycleState = getPodLifecycleState(podStatus);
-        }catch (Exception e){
+            if (podStatus.getContainerStatuses().size() > 0) {
+                ContainerStatus containerStatus = podStatus.getContainerStatuses().get(0);
+                ContainerStateTerminated terminatedState = containerStatus.getLastState().getTerminated();
+                ready = containerStatus.getReady();
+                podRestarts = containerStatus.getRestartCount();
+                if (terminatedState != null) {
+                    StringBuilder returnStr = new StringBuilder("Terminated");
+                    if (terminatedState.getReason() != null) {
+                        returnStr.append(": ");
+                        returnStr.append(terminatedState.getReason());
+                    }
+                    if (terminatedState.getMessage() != null) {
+                        returnStr.append(": ");
+                        returnStr.append(terminatedState.getMessage());
+                    }
+                    restartReason = returnStr.toString();
+                }
+            }
+            podLifecycleState = getPodLifecycleState(podStatus);
+        } catch (Exception e){
             logger.error("Error fetching pod status:", e.getMessage() + e.getStackTrace());
         }
 
         return new ApplicationPodDetails(podMetadata.getName(), podMetadata.getLabels(), podLifecycleState,
-                image, image, podMetadata.getCreationTimestamp(), ready);
+                image, image, podMetadata.getCreationTimestamp(), ready, podRestarts, restartReason);
     }
 
     private String getPodLifecycleState(PodStatus podStatus) throws Exception {
@@ -393,7 +411,7 @@ public class KubernetesService implements IKubernetesService {
             String memoryUsage = jsonObject.getJSONArray("containers").getJSONObject(0).getJSONObject("usage").getString("memory");
             return new PodResource(cpuUsage, memoryUsage);
         } catch (Throwable e) {
-            logger.error("Exception getting pod resource usage", e.getMessage());
+            logger.error("Exception getting pod resource usage", e.getStackTrace());
             return null;
         } finally {
             if(response != null) {

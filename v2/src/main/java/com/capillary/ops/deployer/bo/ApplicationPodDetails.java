@@ -7,7 +7,7 @@ public class ApplicationPodDetails {
 
     public ApplicationPodDetails() {}
 
-    public ApplicationPodDetails(String name, Map<String, String> labels, String podStatus, String image, String imageID, String creationTimestamp, Boolean ready) {
+    public ApplicationPodDetails(String name, Map<String, String> labels, String podStatus, String image, String imageID, String creationTimestamp, Boolean ready, int restarts, String restartReason) {
         this.name = name;
         this.labels = labels;
         this.podStatus = podStatus;
@@ -15,6 +15,8 @@ public class ApplicationPodDetails {
         this.imageID = imageID;
         this.creationTimestamp = creationTimestamp;
         this.ready = ready;
+        this.restarts = restarts;
+        this.restartReason = restartReason;
     }
 
     private String name;
@@ -32,6 +34,10 @@ public class ApplicationPodDetails {
     private PodResource resourceUsage;
 
     private Boolean ready;
+
+    private int restarts;
+
+    private String restartReason;
 
     public String getName() {
         return name;
@@ -96,5 +102,21 @@ public class ApplicationPodDetails {
 
     public void setReady(Boolean ready) {
         this.ready = ready;
+    }
+
+    public int getRestarts() {
+        return restarts;
+    }
+
+    public void setRestarts(int restarts) {
+        this.restarts = restarts;
+    }
+
+    public String getRestartReason() {
+        return restartReason;
+    }
+
+    public void setRestartReason(String restartReason) {
+        this.restartReason = restartReason;
     }
 }

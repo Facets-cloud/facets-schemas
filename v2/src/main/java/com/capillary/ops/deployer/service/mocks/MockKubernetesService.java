@@ -47,10 +47,10 @@ public class MockKubernetesService implements IKubernetesService {
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
         ApplicationPodDetails pod1 =
                 new ApplicationPodDetails(application.getName() + "-old", new HashMap<>(),
-                        "Running", "1111111122222.dkr.ecr.us-west-1.amazonaws.com/OPS/someappname:version1", "", "2019-06-07T06:46:21Z", true);
+                        "Running", "1111111122222.dkr.ecr.us-west-1.amazonaws.com/OPS/someappname:version1", "", "2019-06-07T06:46:21Z", true, 0, "NA");
         ApplicationPodDetails pod2 =
                 new ApplicationPodDetails(application.getName() + "-new", new HashMap<>(),
-                        "Pending", "1111111122222.dkr.ecr.us-west-1.amazonaws.com/OPS/someappname:version2", "", "2019-06-07T10:46:21Z", true);
+                        "Pending", "1111111122222.dkr.ecr.us-west-1.amazonaws.com/OPS/someappname:version2", "", "2019-06-07T10:46:21Z", true, 0, "NA");
         pod1.setResourceUsage(new PodResource("1200m", "1024M"));
         pod1.setResourceUsage(new PodResource("1100m", "1096M"));
 

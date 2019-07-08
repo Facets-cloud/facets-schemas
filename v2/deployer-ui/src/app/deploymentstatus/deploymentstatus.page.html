@@ -34,7 +34,17 @@
             <ion-label><b>Ready</b></ion-label>
             {{pod.ready}}
           </ion-col>
-          </ion-row>
+        </ion-row>
+        <ion-row>
+            <ion-col>
+              <ion-label><b>Restarts</b></ion-label>
+              {{pod.restarts}}
+          </ion-col>
+          <ion-col>
+            <ion-label><b>Restart reason</b></ion-label>
+              {{pod.restartReason}}
+          </ion-col>
+        </ion-row>
       </div>
     </div>
     <ion-card-header color=light><b>Environment Variables</b></ion-card-header>

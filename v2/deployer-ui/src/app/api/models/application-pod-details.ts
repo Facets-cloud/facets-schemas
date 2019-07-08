@@ -9,4 +9,6 @@ export interface ApplicationPodDetails {
   podStatus?: string;
   ready?: boolean;
   resourceUsage?: PodResource;
+  restartReason?: string;
+  restarts?: number;
 }
