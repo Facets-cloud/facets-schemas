@@ -1,14 +1,14 @@
 /* tslint:disable */
 export interface URI {
-  rawAuthority?: string;
   absolute?: boolean;
+  authority?: string;
   fragment?: string;
   host?: string;
   opaque?: boolean;
   path?: string;
   port?: number;
   query?: string;
-  authority?: string;
+  rawAuthority?: string;
   rawFragment?: string;
   rawPath?: string;
   rawQuery?: string;

@@ -122,6 +122,8 @@ public class CodeBuildService implements ICodeBuildService {
                 return new DotnetBuildSpec(application);
             case MVN_IONIC:
                 return new MavenIonicBuildSpec(application);
+            case JDK6_MAVEN2:
+                return new JDK6Maven2BuildSpec(application);
             default:
                 throw new NotImplementedException();
         }
