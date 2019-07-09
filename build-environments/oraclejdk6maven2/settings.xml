@@ -1,0 +1,39 @@
+<settings>
+<servers>
+    <server>
+      <id>capillarymavensnapshotrepo</id>
+      <username>capillary</username>
+      <password>PASSWORD</password>
+    </server>
+    <server>
+      <id>capillarymavenrepo</id>
+      <username>capillary</username>
+      <password>PASSWORD</password>
+    </server>
+</servers>
+
+<profiles>
+  <profile>
+    <id>capillaryrepo</id>
+
+    <activation>
+      <activeByDefault>true</activeByDefault>
+    </activation>
+
+    <repositories>
+      <repository>
+        <id>capillarymavensnapshotrepo</id>
+        <name>Capillary Maven Snapshot Repo</name>
+        <url>scp://reporead@mvnrepo.capillary.co.in/data/mvn/snapshots</url>
+        <layout>default</layout>
+      </repository>
+      <repository>
+        <id>capillarymavenrepo</id>
+        <name>Capillary Maven Release Repo</name>
+        <url>scp://reporead@mvnrepo.capillary.co.in/data/mvn/releases</url>
+        <layout>default</layout>
+      </repository>
+    </repositories>
+  </profile>
+</profiles>
+</settings>
