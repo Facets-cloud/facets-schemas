@@ -1,6 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update
-RUN apt-get install wget unzip openssh-client -y
+RUN apt-get install wget unzip openssh-client python-pip -y
+RUN pip install awscli
 COPY jdk-6u45-linux-x64.bin /
 RUN chmod +x /jdk-6u45-linux-x64.bin
 RUN /jdk-6u45-linux-x64.bin
