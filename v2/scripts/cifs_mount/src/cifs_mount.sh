@@ -1,6 +1,7 @@
 #!/bin/bash
 
-if [[ "$MOUNT_CIFS" = "true" ]] ; then
+if [[ "$MOUNT_CIFS" = "true" ]] && [[ -n "$ADPASS" ]]
+then
     echo "Trying to mount CIFS volume"
     SHARE_IP=`dig +short cp-nav-picklist-app-0.martjack.internal`
 
