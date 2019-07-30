@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service.mocks;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
+import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,42 @@ public class CRMMockDataBootstrap {
     @Autowired
     private BuildRepository buildRepository;
 
+    @Autowired
+    private EnvironmentRepository environmentRepository;
+
     @PostConstruct
     private void init() {
-        Application application = createApplication();
-        createBuild(application);
+        createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
+        createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.CRM);
+
+        createApplication("intouch-api", ApplicationFamily.CRM);
+        createApplication("api-rate-limiter", ApplicationFamily.CRM);
+        createApplication("emf", ApplicationFamily.CRM);
+
+        createApplication("catalog-service", ApplicationFamily.ECOMMERCE);
+        createApplication("catalog", ApplicationFamily.ECOMMERCE);
+        createApplication("navigation-panel-app", ApplicationFamily.ECOMMERCE);
+        createApplication("fileservice", ApplicationFamily.ECOMMERCE);
+
+        for(int i=0; i < 100; i++) {
+            createApplication("some-integration-app" + String.valueOf(i+1), ApplicationFamily.INTEGRATIONS);
+        }
+        createApplication("some-integration-api", ApplicationFamily.INTEGRATIONS);
+        createApplication("some-integration-app", ApplicationFamily.INTEGRATIONS);
+        createApplication("some-integration-india", ApplicationFamily.INTEGRATIONS);
+
+        createApplication("deployer", ApplicationFamily.OPS);
+
+    }
+
+    private void createEnvironment(String name, EnvironmentType type, ApplicationFamily applicationFamily) {
+        Environment nightly = new Environment();
+        EnvironmentMetaData nightlyMetaData = new EnvironmentMetaData();
+        nightlyMetaData.setApplicationFamily(applicationFamily);
+        nightlyMetaData.setName(name);
+        nightlyMetaData.setEnvironmentType(type);
+        nightly.setEnvironmentMetaData(nightlyMetaData);
+        environmentRepository.save(nightly);
     }
 
     private void createBuild(Application application) {
@@ -45,18 +78,19 @@ public class CRMMockDataBootstrap {
         buildRepository.save(build);
     }
 
-    private Application createApplication() {
+    private Application createApplication(String name, ApplicationFamily applicationFamily) {
         Application application = new Application();
         application.setApplicationRootDirectory("v2");
-        application.setApplicationFamily(ApplicationFamily.CRM);
-        application.setName("api");
+        application.setApplicationFamily(applicationFamily);
+        application.setName(name);
         application.setVcsProvider(VCSProvider.GITHUB);
         application.setRepositoryUrl("https://github.com/Capillary/api.git");
         application.setBuildType(BuildType.MVN);
         application.setLoadBalancerType(LoadBalancerType.INTERNAL);
         application.setPorts(new ArrayList<>(getPorts()));
-
-        return applicationRepository.save(application);
+        Application result = applicationRepository.save(application);
+        createBuild(result);
+        return result;
     }
 
     private List<Port> getPorts() {
