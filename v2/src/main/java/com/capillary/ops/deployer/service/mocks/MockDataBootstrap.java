@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Profile("dev")
 @Component
-public class CRMMockDataBootstrap {
+public class MockDataBootstrap {
 
     @Autowired
     private ApplicationRepository applicationRepository;
