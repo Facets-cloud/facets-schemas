@@ -1,0 +1,78 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "fluntd-es.name" . }}
+    helm.sh/chart: {{ include "fluntd-es.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ include "fluntd-es.fullname" . }}
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "fluntd-es.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "fluntd-es.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - env:
+        - name: FLUENTD_ARGS
+          value: --no-supervisor -v
+        image: {{ .Values.image }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Chart.Name }}
+        resources:
+          limits:
+            cpu: {{ .Values.cpuResourceLimit }}
+            memory: {{ .Values.memoryResourceLimit }}
+          requests:
+            cpu: 150m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/log
+          name: varlog
+        - mountPath: /var/lib/docker/containers
+          name: varlibdockercontainers
+          readOnly: true
+        - mountPath: /host/lib
+          name: libsystemddir
+          readOnly: true
+        - mountPath: /etc/fluent/config.d
+          name: config-volume
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: fluentd
+      serviceAccountName: fluentd
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /var/log
+          type: ""
+        name: varlog
+      - hostPath:
+          path: /var/lib/docker/containers
+          type: ""
+        name: varlibdockercontainers
+      - hostPath:
+          path: /usr/lib64
+          type: ""
+        name: libsystemddir
+      - configMap:
+          defaultMode: 420
+          name: fluentd-config
+        name: config-volume
+  templateGeneration: 9
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 5
+    type: RollingUpdate
