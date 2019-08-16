@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -237,4 +239,10 @@ public class ApplicationController {
         Environment result = applicationFacade.upsertEnvironment(applicationFamily, environment);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/me")
+    public OAuth2UserServiceImpl.SimpleOauth2User me() {
+        return (OAuth2UserServiceImpl.SimpleOauth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
 }

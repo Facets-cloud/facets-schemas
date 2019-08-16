@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
-    private static class SimpleOauth2User implements OAuth2User, Serializable {
+    public static class SimpleOauth2User implements OAuth2User, Serializable {
 
         private Collection<? extends GrantedAuthority> grantedAuthorities;
         private Map<String, Object> attributes;
