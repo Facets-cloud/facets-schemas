@@ -5,5 +5,6 @@ public enum BuildType {
     FREESTYLE_DOCKER,
     DOTNET_CORE,
     MVN_IONIC,
-    JDK6_MAVEN2
+    JDK6_MAVEN2,
+    MJ_NUGET
 }

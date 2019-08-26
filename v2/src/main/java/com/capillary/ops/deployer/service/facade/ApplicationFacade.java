@@ -107,7 +107,7 @@ public class ApplicationFacade {
 
     private Build getBuildDetails(Application application, Build build) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
-                codeBuildService.getBuild(build.getCodeBuildId());
+                codeBuildService.getBuild(application, build.getCodeBuildId());
         StatusType status = codeBuildServiceBuild.buildStatus();
         build.setStatus(status);
         if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED)) {
@@ -132,8 +132,9 @@ public class ApplicationFacade {
     public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,
                                                          String applicationId, String buildId,
                                                          String nextToken) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build build = getBuild(applicationFamily, applicationId, buildId);
-        return codeBuildService.getBuildLogs(build.getCodeBuildId(), nextToken);
+        return codeBuildService.getBuildLogs(application, build.getCodeBuildId(), nextToken);
     }
 
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {

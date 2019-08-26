@@ -2,6 +2,8 @@ package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.Application;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
 
 import java.util.*;
 
@@ -43,7 +45,9 @@ public abstract class BuildSpec {
     private Map<String, Object> getBuildPhase() {
         List<String> buildCommands = new ArrayList<>();
         Map<String, Object> buildPhase = new HashMap<>();
-        buildCommands.add("$(aws ecr get-login --region us-west-1 --no-include-email)");
+        if(configureDockerBuildSteps()) {
+            buildCommands.add("$(aws ecr get-login --region us-west-1 --no-include-email)");
+        }
         buildCommands.add(String.format("cd %s", application.getApplicationRootDirectory()));
         buildCommands.addAll(getBuildCommands());
         buildPhase.put("commands", buildCommands);
@@ -64,9 +68,11 @@ public abstract class BuildSpec {
     private Map<String, Object> getInstallPhase() {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
-        installCommands.add(
-                "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
-        installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
+        if(configureDockerBuildSteps()) {
+            installCommands.add(
+                    "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
+            installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
+        }
         installPhase.put("commands", installCommands);
         return installPhase;
     }
@@ -82,4 +88,24 @@ public abstract class BuildSpec {
     protected abstract List<String> getCachePaths();
 
     public abstract String getBuildEnvironmentImage();
+
+    public EnvironmentType getBuildEnvironmentType() {
+        return EnvironmentType.LINUX_CONTAINER;
+    }
+
+    public boolean buildInVpc() {
+        return true;
+    }
+
+    public Region getAwsRegion() {
+        return Region.US_WEST_1;
+    }
+
+    public boolean useCache() {
+        return true;
+    }
+
+    public boolean configureDockerBuildSteps() {
+        return true;
+    }
 }

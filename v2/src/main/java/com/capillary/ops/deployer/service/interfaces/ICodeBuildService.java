@@ -10,7 +10,7 @@ public interface ICodeBuildService {
 
     String triggerBuild(Application application, Build build);
 
-    TokenPaginatedResponse<LogEvent> getBuildLogs(String codeBuildId, String nextToken);
+    TokenPaginatedResponse<LogEvent> getBuildLogs(Application application, String codeBuildId, String nextToken);
 
-    software.amazon.awssdk.services.codebuild.model.Build getBuild(String codeBuildId);
+    software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId);
 }

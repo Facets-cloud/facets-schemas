@@ -29,7 +29,7 @@ public class MockCodeBuildService implements ICodeBuildService {
     }
 
     @Override
-    public TokenPaginatedResponse<LogEvent> getBuildLogs(String codeBuildId, String nextToken) {
+    public TokenPaginatedResponse<LogEvent> getBuildLogs(Application application, String codeBuildId, String nextToken) {
         List<LogEvent> logs = logsStorage.getOrDefault(codeBuildId, new ArrayList<>());
         if(logs.size() < 10) {
             String l = UUID.randomUUID().toString() + UUID.randomUUID().toString() +
@@ -42,7 +42,7 @@ public class MockCodeBuildService implements ICodeBuildService {
     }
 
     @Override
-    public software.amazon.awssdk.services.codebuild.model.Build getBuild(String codeBuildId) {
+    public software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId) {
         List<LogEvent> logs = logsStorage.getOrDefault(codeBuildId, new ArrayList<>());
         StatusType status = StatusType.IN_PROGRESS;
         if (logs.size() >= 10) {
