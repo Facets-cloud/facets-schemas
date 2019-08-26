@@ -56,7 +56,7 @@ public class CodeBuildService implements ICodeBuildService {
                 .type(buildSpec.getBuildEnvironmentType())
                 .image(buildSpec.getBuildEnvironmentImage())
                 .imagePullCredentialsType(ImagePullCredentialsType.CODEBUILD)
-                .privilegedMode(buildSpec.getBuildEnvironmentImage().equals(EnvironmentType.LINUX_CONTAINER))
+                .privilegedMode(buildSpec.getBuildEnvironmentType().equals(EnvironmentType.LINUX_CONTAINER))
                 .build();
 
         ProjectCache projectCache = ProjectCache.builder()
