@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.impl;
 
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.VcsService;
+import com.google.common.collect.Lists;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -38,8 +39,7 @@ public class BitbucketVcsService implements VcsService {
         return HttpClients.custom().build();
     }
 
-    private void getPaginatedResponse(List<JSONObject> jsonValues, String requestUri, String username, String password) throws IOException {
-
+    private JSONObject makeRequest(String requestUri, String username, String password) throws IOException {
         CloseableHttpClient httpClient = this.getGETClient();
 
         logger.debug("constructing base64 encoded credentials");
@@ -63,17 +63,36 @@ public class BitbucketVcsService implements VcsService {
 
         logger.debug("converting http response to json string with encoding: {}", encoding);
         String json = EntityUtils.toString(entity, encoding);
+        httpClient.close();
 
-        JSONObject responseJson = new JSONObject(json);
-        JSONArray values = responseJson.getJSONArray("values");
-        addPaginatedValuesToList(jsonValues, values);
+        return new JSONObject(json);
+    }
 
-        if (!responseJson.has("next") || (values.length() == 0)) {
-            return;
+    private List<JSONObject> getPaginatedResponse(String requestUri, String username, String password) throws IOException {
+        List<JSONObject> jsonValues = new ArrayList<>();
+
+        JSONObject currentPage = makeRequest(requestUri, username, password);
+        List<JSONObject> responseValues = convertJsonArrayToList(currentPage);
+        jsonValues.addAll(responseValues);
+
+        for (int page = 2; page <= currentPage.getInt("pagelen") ; page++) {
+            if (responseValues.size() > 0 && currentPage.has("next")) {
+                currentPage = makeRequest(currentPage.getString("next"), username, password);
+                jsonValues.addAll(convertJsonArrayToList(currentPage));
+            }
         }
 
-        getPaginatedResponse(jsonValues, responseJson.getString("next"), username, password);
-        httpResponse.close();
+        return jsonValues;
+    }
+
+    private List<JSONObject> convertJsonArrayToList(JSONObject jsonObject) {
+        JSONArray responseValues = jsonObject.getJSONArray("values");
+        List<JSONObject> values = Lists.newArrayListWithExpectedSize(responseValues.length());
+        for (Object object : responseValues) {
+            values.add((JSONObject) object);
+        }
+
+        return values;
     }
 
     private void addPaginatedValuesToList(List<JSONObject> jsonValues, JSONArray values) {
@@ -95,7 +114,6 @@ public class BitbucketVcsService implements VcsService {
             throw new NotFoundException("Please fulfill the Bitbucket credentials to use this api");
         }
 
-        CloseableHttpClient httpClient = this.getGETClient();
         String requestUri = new StringJoiner("/")
                 .add(this.baseUri)
                 .add("repositories")
@@ -105,11 +123,8 @@ public class BitbucketVcsService implements VcsService {
                 .add("branches")
                 .toString();
 
-        List<JSONObject> jsonValues = new ArrayList<>();
-        this.getPaginatedResponse(jsonValues, requestUri, username, password);
-
+        List<JSONObject> jsonValues = this.getPaginatedResponse(requestUri, username, password);
         List<String> branchList = jsonValues.parallelStream().map(x -> x.getString("name")).collect(Collectors.toList());
-        httpClient.close();
 
         return branchList;
     }
@@ -124,7 +139,6 @@ public class BitbucketVcsService implements VcsService {
             throw new NotFoundException("Please fulfill the Bitbucket credentials to use this api");
         }
 
-        CloseableHttpClient httpClient = this.getGETClient();
         String requestUri = new StringJoiner("/")
                 .add(this.baseUri)
                 .add("repositories")
@@ -134,12 +148,17 @@ public class BitbucketVcsService implements VcsService {
                 .add("tags")
                 .toString();
 
-        List<JSONObject> jsonValues = new ArrayList<>();
-        this.getPaginatedResponse(jsonValues, requestUri, username, password);
-
+        List<JSONObject> jsonValues = this.getPaginatedResponse(requestUri, username, password);
         List<String> tagList = jsonValues.parallelStream().map(x -> x.getString("name")).collect(Collectors.toList());
-        httpClient.close();
 
         return tagList;
+    }
+
+    public static void main(String[] args) throws IOException {
+        BitbucketVcsService vcsService = new BitbucketVcsService();
+        List<String> branches = vcsService.getBranches("capillarymartjack", "deisdeployer");
+        List<String> tags = vcsService.getTags("capillarymartjack", "deisdeployer");
+        System.out.println("branches = " + branches);
+        System.out.println("tags = " + tags);
     }
 }

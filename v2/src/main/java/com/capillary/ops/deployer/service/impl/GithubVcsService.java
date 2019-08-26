@@ -20,8 +20,8 @@ public class GithubVcsService implements VcsService {
 
     @Override
     public List<String> getBranches(String owner, String repository) throws IOException {
-        String username = System.getenv("GIT_USERNAME");
-        String password = System.getenv("GIT_PASSWORD");
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             logger.error("github credentials not found, please fulfill the credentials to use this api");
@@ -41,8 +41,8 @@ public class GithubVcsService implements VcsService {
 
     @Override
     public List<String> getTags(String owner, String repository) throws IOException {
-        String username = System.getenv("GIT_USERNAME");
-        String password = System.getenv("GIT_PASSWORD");
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             logger.error("github credentials not found, please fulfill the credentials to use this api");
