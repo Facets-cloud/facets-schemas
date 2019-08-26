@@ -10,6 +10,8 @@ import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.S3DumpService;
 import com.capillary.ops.deployer.service.SecretService;
+import com.capillary.ops.deployer.service.VcsService;
+import com.capillary.ops.deployer.service.VcsServiceSelector;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
@@ -24,11 +26,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ApplicationFacade {
@@ -61,6 +65,9 @@ public class ApplicationFacade {
 
     @Autowired
     private EnvironmentRepository environmentRepository;
+
+    @Autowired
+    private VcsServiceSelector vcsServiceSelector;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
@@ -103,6 +110,29 @@ public class ApplicationFacade {
         build.setId(existingBuild.getId());
         buildRepository.save(build);
         return getBuildDetails(application, build);
+    }
+
+    public List<String> getApplicationBranches(ApplicationFamily applicationFamily, String applicationId) throws IOException {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+
+        String repositoryName = getRepositoryName(application);
+        String repositoryOwner = getRepositoryOwner(application);
+
+        List<String> branches = vcsService.getBranches(repositoryOwner, repositoryName);
+        List<String> tags = vcsService.getTags(repositoryOwner, repositoryName);
+
+        return Stream.concat(branches.stream(), tags.stream()).collect(Collectors.toList());
+    }
+
+    private String getRepositoryName(Application application) {
+        String[] repositoryUrlParts = application.getRepositoryUrl().split("/");
+        return repositoryUrlParts[repositoryUrlParts.length - 1];
+    }
+
+    private String getRepositoryOwner(Application application) {
+        String[] repositoryUrlParts = application.getRepositoryUrl().split("/");
+        return repositoryUrlParts[repositoryUrlParts.length - 2];
     }
 
     private Build getBuildDetails(Application application, Build build) {

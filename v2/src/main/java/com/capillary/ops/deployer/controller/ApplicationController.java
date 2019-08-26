@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
-import javax.xml.ws.Response;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -84,6 +84,12 @@ public class ApplicationController {
     public Build updateBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                           @PathVariable("applicationId") String applicationId, @PathVariable String buildId, @RequestBody Build build) {
         return applicationFacade.updateBuild(applicationFamily, applicationId, buildId, build);
+    }
+
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/branches", produces = "application/json")
+    public List<String> getApplicationBranches(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                       @PathVariable("applicationId") String applicationId) throws IOException {
+        return applicationFacade.getApplicationBranches(applicationFamily, applicationId);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")
