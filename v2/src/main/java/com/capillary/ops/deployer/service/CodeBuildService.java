@@ -128,6 +128,8 @@ public class CodeBuildService implements ICodeBuildService {
                 return new MavenIonicBuildSpec(application);
             case JDK6_MAVEN2:
                 return new JDK6Maven2BuildSpec(application);
+            case MJ_NUGET:
+                return new MJNugetBuildSpec(application);
             default:
                 throw new NotImplementedException();
         }
