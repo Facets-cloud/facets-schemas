@@ -67,5 +67,9 @@ public class MJNugetBuildSpec extends BuildSpec {
         return false;
     }
 
+    @Override
+    public boolean configureDockerBuildSteps() {
+        return false;
+    }
 
 }
