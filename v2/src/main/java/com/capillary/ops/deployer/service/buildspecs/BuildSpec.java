@@ -2,6 +2,8 @@ package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.Application;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
 
 import java.util.*;
 
@@ -82,4 +84,20 @@ public abstract class BuildSpec {
     protected abstract List<String> getCachePaths();
 
     public abstract String getBuildEnvironmentImage();
+
+    public EnvironmentType getBuildEnvironmentType() {
+        return EnvironmentType.LINUX_CONTAINER;
+    }
+
+    public boolean buildInVpc() {
+        return true;
+    }
+
+    public Region getAwsRegion() {
+        return Region.US_WEST_1;
+    }
+
+    public boolean useCache() {
+        return true;
+    }
 }
