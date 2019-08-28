@@ -1,5 +1,5 @@
 FROM rastasheep/ubuntu-sshd:latest
-RUN useradd -p $(openssl passwd -1 capk8s) capk8s -m
+RUN useradd -p $(openssl passwd -1 capk8s) capk8s -m -s /bin/bash
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     less jq python2.7 curl python-dateutil
