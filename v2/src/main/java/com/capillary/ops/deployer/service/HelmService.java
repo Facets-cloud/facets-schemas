@@ -287,17 +287,17 @@ public class HelmService implements IHelmService {
                 valueFields.put("livenessHTTPEndpoint",healthCheck.getLivenessProbe().getHttpCheckEndpoint());
                 valueFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
                 valueFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
-                valueFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
                 valueFields.put("livenessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                valueFields.put("livenessTimeout",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("livenessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }else {
                 valueFields.put("enableLivenessTCP","true");
                 valueFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
                 valueFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
                 valueFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
-                valueFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
                 valueFields.put("livenessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                valueFields.put("livenessTimeout",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("livenessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }
         }
 
@@ -308,17 +308,17 @@ public class HelmService implements IHelmService {
                 valueFields.put("readinessHTTPEndpoint",healthCheck.getReadinessProbe().getHttpCheckEndpoint());
                 valueFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
                 valueFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
-                valueFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
                 valueFields.put("readinessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                valueFields.put("readinessTimeout",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }else {
                 valueFields.put("enableReadinessTCP","true");
                 valueFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
                 valueFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
                 valueFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
-                valueFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
                 valueFields.put("readinessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                valueFields.put("readinessTimeout",healthCheck.getLivenessProbe().getPeriodSeconds());
+                valueFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }
         }
         return valueFields;
