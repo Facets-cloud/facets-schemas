@@ -4,7 +4,7 @@ import { Port } from './port';
 export interface Application {
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationRootDirectory?: string;
-  buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2';
+  buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET';
   commonConfigs?: {[key: string]: string};
   dnsPrefix?: string;
   dnsType?: 'PUBLIC' | 'PRIVATE';

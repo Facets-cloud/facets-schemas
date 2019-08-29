@@ -8,12 +8,14 @@ import org.eclipse.egit.github.core.RepositoryTag;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class GithubVcsService implements VcsService {
 
     private static final Logger logger = LoggerFactory.getLogger(GithubVcsService.class);

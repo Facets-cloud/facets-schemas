@@ -64,6 +64,19 @@
         <ion-label>Interval</ion-label>
         {{application?.healthCheck?.livenessProbe?.periodSeconds}}
       </ion-item>
+      <ion-item>
+        <ion-label>Success Threshold</ion-label>
+        {{application?.healthCheck?.livenessProbe?.successThreshold}}
+      </ion-item>
+      <ion-item>
+        <ion-label>Failure Threshold</ion-label>
+        {{application?.healthCheck?.livenessProbe?.failureThreshold}}
+      </ion-item>
+      <ion-item>
+        <ion-label>Timeout</ion-label>
+        {{application?.healthCheck?.livenessProbe?.timeout}}
+      </ion-item>
+
     </div>
     <div>
       <ion-card-header color=light><b>Readiness Probe</b></ion-card-header>
@@ -82,6 +95,18 @@
       <ion-item>
         <ion-label>Interval</ion-label>
         {{application?.healthCheck?.readinessProbe?.periodSeconds}}
+      </ion-item>
+      <ion-item>
+        <ion-label>Success Threshold</ion-label>
+        {{application?.healthCheck?.readinessProbe?.successThreshold}}
+      </ion-item>
+      <ion-item>
+        <ion-label>Failure Threshold</ion-label>
+        {{application?.healthCheck?.readinessProbe?.failureThreshold}}
+      </ion-item>
+      <ion-item>
+        <ion-label>Timeout</ion-label>
+        {{application?.healthCheck?.readinessProbe?.timeout}}
       </ion-item>
     </div>
   </ion-grid>

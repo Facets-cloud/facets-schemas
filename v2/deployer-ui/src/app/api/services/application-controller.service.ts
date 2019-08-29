@@ -7,6 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
+import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { User } from '../models/user';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
@@ -26,6 +27,7 @@ import { InputStreamResource } from '../models/input-stream-resource';
 })
 class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
+  static readonly meUsingGETPath = '/api/me';
   static readonly getUsersUsingGETPath = '/api/users';
   static readonly createUserUsingPOSTPath = '/api/users';
   static readonly updateUserUsingPUTPath = '/api/users/{userId}';
@@ -33,6 +35,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly createApplicationUsingPOSTPath = '/api/{applicationFamily}/applications';
   static readonly updateApplicationUsingPUTPath = '/api/{applicationFamily}/applications';
   static readonly getApplicationUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}';
+  static readonly getApplicationBranchesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/branches';
   static readonly getBuildsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly buildUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly getBuildUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
@@ -89,6 +92,39 @@ class ApplicationControllerService extends __BaseService {
   getApplicationFamiliesUsingGET(): __Observable<Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>> {
     return this.getApplicationFamiliesUsingGETResponse().pipe(
       __map(_r => _r.body as Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>)
+    );
+  }
+
+  /**
+   * @return OK
+   */
+  meUsingGETResponse(): __Observable<__StrictHttpResponse<SimpleOauth2User>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/me`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<SimpleOauth2User>;
+      })
+    );
+  }
+  /**
+   * @return OK
+   */
+  meUsingGET(): __Observable<SimpleOauth2User> {
+    return this.meUsingGETResponse().pipe(
+      __map(_r => _r.body as SimpleOauth2User)
     );
   }
 
@@ -382,6 +418,53 @@ class ApplicationControllerService extends __BaseService {
   getApplicationUsingGET(params: ApplicationControllerService.GetApplicationUsingGETParams): __Observable<Application> {
     return this.getApplicationUsingGETResponse(params).pipe(
       __map(_r => _r.body as Application)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.GetApplicationBranchesUsingGETParams` containing the following parameters:
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationBranchesUsingGETResponse(params: ApplicationControllerService.GetApplicationBranchesUsingGETParams): __Observable<__StrictHttpResponse<Array<string>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/branches`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<string>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetApplicationBranchesUsingGETParams` containing the following parameters:
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationBranchesUsingGET(params: ApplicationControllerService.GetApplicationBranchesUsingGETParams): __Observable<Array<string>> {
+    return this.getApplicationBranchesUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<string>)
     );
   }
 
@@ -1359,6 +1442,22 @@ module ApplicationControllerService {
    * Parameters for getApplicationUsingGET
    */
   export interface GetApplicationUsingGETParams {
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getApplicationBranchesUsingGET
+   */
+  export interface GetApplicationBranchesUsingGETParams {
 
     /**
      * applicationId
