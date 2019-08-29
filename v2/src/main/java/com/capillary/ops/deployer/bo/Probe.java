@@ -10,6 +10,12 @@ public class Probe {
 
     private String httpCheckEndpoint;
 
+    private int successThreshold;
+
+    private int failureThreshold;
+
+    private int timeout;
+
     public int getPort() {
         return port;
     }
@@ -42,4 +48,36 @@ public class Probe {
         this.httpCheckEndpoint = httpCheckEndpoint;
     }
 
+    public int getSuccessThreshold() {
+        if(successThreshold == 0) {
+            return 1;
+        }
+        return successThreshold;
+    }
+
+    public void setSuccessThreshold(int successThreshold) {
+        this.successThreshold = successThreshold;
+    }
+
+    public int getFailureThreshold() {
+        if(failureThreshold == 0) {
+            return 3;
+        }
+        return failureThreshold;
+    }
+
+    public void setFailureThreshold(int failureThreshold) {
+        this.failureThreshold = failureThreshold;
+    }
+
+    public int getTimeout() {
+        if(timeout == 0) {
+            return 1;
+        }
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
 }
