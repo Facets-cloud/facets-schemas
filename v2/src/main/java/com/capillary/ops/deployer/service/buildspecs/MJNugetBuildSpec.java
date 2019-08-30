@@ -33,18 +33,17 @@ public class MJNugetBuildSpec extends BuildSpec {
     @Override
     protected List<String> getPreBuildCommands() {
         List<String> preBuildCommands = new ArrayList<>();
-        preBuildCommands.add("$package = ($(Get-ChildItem -Filter \"*.*proj\")[0]).Name ");
+        preBuildCommands.add("$package = ($(Get-ChildItem -Filter \"*.*proj\")[0]).Name");
         //preBuildCommands.add("$versionSuffix = 'alpha-' + [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\"))" +
                 // ".TotalMilliseconds");
-        preBuildCommands.add("| \n" +
-                "       if ($env:CODEBUILD_SOURCE_VERSION -eq \"origin/production\") {\n" +
-                "        $versionSuffix = \"RELEASE\"\n" +
-                "       }\n" +
-                "       elseif ($env:CODEBUILD_SOURCE_VERSION.StartsWith.(\"origin/hotfix\") -or  $env:CODEBUILD_SOURCE_VERSION.StartsWith.(\"origin/release\") ) {\n" +
-                "         $versionSuffix = 'beta-'+ [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds\n" +
-                "       }\n" +
-                "       else { \n" +
-                "       $versionSuffix = 'alpha-' + [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds \n" +
+        preBuildCommands.add("if ($env:CODEBUILD_SOURCE_VERSION -eq \"origin/production\") {" +
+                "        $versionSuffix = \"RELEASE\"" +
+                "       }" +
+                "       elseif ($env:CODEBUILD_SOURCE_VERSION.StartsWith.(\"origin/hotfix\") -or  $env:CODEBUILD_SOURCE_VERSION.StartsWith.(\"origin/release\") ) {" +
+                "         $versionSuffix = 'beta-'+ [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds" +
+                "       }" +
+                "       else { " +
+                "       $versionSuffix = 'alpha-' + [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds " +
                 "       }");
         return preBuildCommands;
     }
