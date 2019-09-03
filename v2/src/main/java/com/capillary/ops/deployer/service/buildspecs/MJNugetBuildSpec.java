@@ -37,9 +37,9 @@ public class MJNugetBuildSpec extends BuildSpec {
         //preBuildCommands.add("$versionSuffix = 'alpha-' + [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\"))" +
                 // ".TotalMilliseconds");
         preBuildCommands.add("if ($env:CODEBUILD_SOURCE_VERSION -eq \"origin/production\") {" +
-                "        $versionSuffix = \"RELEASE\"" +
+                "        $versionSuffix = \"\"" +
                 "       }" +
-                "       elseif ($env:CODEBUILD_SOURCE_VERSION.StartsWith.(\"origin/hotfix\") -or  $env:CODEBUILD_SOURCE_VERSION.StartsWith.(\"origin/release\") ) {" +
+                "       elseif ($env:CODEBUILD_SOURCE_VERSION.StartsWith(\"origin/hotfix\") -or  $env:CODEBUILD_SOURCE_VERSION.StartsWith(\"origin/release\") ) {" +
                 "         $versionSuffix = 'beta-'+ [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds" +
                 "       }" +
                 "       else { " +
