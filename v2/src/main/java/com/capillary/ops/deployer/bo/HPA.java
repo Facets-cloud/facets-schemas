@@ -1,7 +1,5 @@
 package com.capillary.ops.deployer.bo;
 
-import java.util.List;
-
 public class HPA {
 
     private String metricName;

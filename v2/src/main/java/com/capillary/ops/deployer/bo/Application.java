@@ -41,6 +41,8 @@ public class Application {
     @NotNull
     private LoadBalancerType loadBalancerType;
 
+    private List<PVC> pvcList;
+
     @NotNull
     private BuildType buildType;
 
@@ -109,6 +111,14 @@ public class Application {
 
     public void setLoadBalancerType(LoadBalancerType loadBalancerType) {
         this.loadBalancerType = loadBalancerType;
+    }
+
+    public List<PVC> getPvcList() {
+        return pvcList;
+    }
+
+    public void setPvcList(List<PVC> pvcList) {
+        this.pvcList = pvcList;
     }
 
     public BuildType getBuildType() {

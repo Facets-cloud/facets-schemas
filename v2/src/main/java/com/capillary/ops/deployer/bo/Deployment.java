@@ -3,10 +3,7 @@ package com.capillary.ops.deployer.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Deployment {
@@ -22,6 +19,7 @@ public class Deployment {
     private Date timestamp = new Date();
     private PodSize podSize;
     private HPA horizontalPodAutoscaler;
+    private List<SecretFileMount> secretFileMounts;
     private boolean rollbackEnabled;
     private String deployedBy;
 
@@ -119,6 +117,14 @@ public class Deployment {
 
     public void setApplicationFamily(ApplicationFamily applicationFamily) {
         this.applicationFamily = applicationFamily;
+    }
+
+    public List<SecretFileMount> getSecretFileMounts() {
+        return secretFileMounts;
+    }
+
+    public void setSecretFileMounts(List<SecretFileMount> secretFileMounts) {
+        this.secretFileMounts = secretFileMounts;
     }
 
     public String getDeployedBy() {

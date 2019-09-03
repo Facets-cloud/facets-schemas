@@ -1,20 +1,23 @@
 {{- $releaseName := .Release.Name}}
 {{- $crmModuleName := .Values.crmModuleName}}
 
-  apiVersion: apps/v1beta2
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: {{ .Release.Name  }}
   labels:
     app: {{ .Release.Name  }}
-    chart: {{ template "capillary-base.chart" . }}
+    chart: {{ template "capillary-base-statefulset.chart" . }}
     heritage: {{ .Release.Service }}
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}
       release: {{ .Release.Name }}
+  serviceName: {{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -25,36 +28,18 @@ spec:
         buildId: {{ .Values.buildId }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      containers:
       volumes:
-        - name: dump-vol
-          hostPath:
-            path: /var/log/dumps/{{ .Release.Name }}
-            type: DirectoryOrCreate
-        {{- if .Values.secretFileMounts }}
-          {{- range .Values.secretFileMounts }}
-          {{- with . }}
+        {{- range .Values.secretFileMounts }}
+        {{- with . }}
         - name: "{{ .name }}-vol"
           secret:
             secretName: "{{ .Release.Name  }}-file-credentials"
             items:
               - key: {{ .name }}
                 path: "."
-          {{- end }}
-          {{- end }}
         {{- end }}
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - {{ .Release.Name }}
-              topologyKey: kubernetes.io/hostname
+        {{- end }}
+      containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
 {{- if .Values.capabilities }}
@@ -74,23 +59,19 @@ spec:
               {{- end}}
   {{- end }}
           imagePullPolicy: IfNotPresent
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - sh
-                  - -c
-                  - sleep 30
-          {{- if .Values.secretFileMounts }}
           volumeMounts:
-            - mountPath: /var/log/dumps
-              name: dump-vol
           {{- range .Values.secretFileMounts }}
-            {{- with . }}
+          {{- with . }}
             - name: "{{ .name }}-vol"
               mountPath: {{ .mountPath }}
-            {{- end }}
-            {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- range .Values.persistentVolumeClaims }}
+          {{- with . }}
+            - name: "{{ .name }}"
+              mountPath: {{ .mountPath }}
+              subPath: {{ .volumeDirectory }}
+          {{- end }}
           {{- end }}
           ports:
               {{- range .Values.ports }}
@@ -125,7 +106,6 @@ spec:
                 name: "{{ $releaseName }}-credentials"
                 key: {{ $k }}
 {{- end }}
-{{- template "crmConfigurations" . }}
 {{- if .Values.enableLivenessTCP}}
 {{- template "livenessTCP" . }}
 {{- end }}
@@ -150,3 +130,16 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+  volumeClaimTemplates:
+  {{- range .Values.persistentVolumeClaims }}
+  {{- with . }}
+    - metadata:
+        name: "{{ .name }}-vol"
+      spec:
+        accessModes:
+          - {{ .accessMode }}
+        resources:
+          requests:
+            storage: {{ .storageSize }}Gi
+  {{- end }}
+  {{- end }}

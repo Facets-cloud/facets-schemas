@@ -42,6 +42,11 @@ public class ApplicationSecret {
         PENDING
     }
 
+    public enum SecretType {
+        ENVIRONMENT,
+        FILE
+    }
+
     @Id
     @JsonIgnore
     private String id;
@@ -58,7 +63,12 @@ public class ApplicationSecret {
     @JsonView(UserView.SecretName.class)
     private String secretName;
 
+    @JsonView(UserView.SecretName.class)
+    private SecretType secretType = SecretType.ENVIRONMENT;
+
     private String secretValue = "";
+
+    private String mountPath;
 
     private String description = "";
 
@@ -103,6 +113,22 @@ public class ApplicationSecret {
 
     public void setSecretValue(String secretValue) {
         this.secretValue = secretValue;
+    }
+
+    public SecretType getSecretType() {
+        return secretType;
+    }
+
+    public void setSecretType(SecretType secretType) {
+        this.secretType = secretType;
+    }
+
+    public String getMountPath() {
+        return mountPath;
+    }
+
+    public void setMountPath(String mountPath) {
+        this.mountPath = mountPath;
     }
 
     public ApplicationFamily getApplicationFamily() {

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+  {{- if .Values.domainName }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
+  {{- end }}
+  {{- if and .Values.lbType (eq .Values.lbType "internal") }}
+    service.beta.kubernetes.io/aws-load-balancer-internal: "0.0.0.0/0"
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  {{- end }}
+  {{- if .Values.httpsPortExists }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.sslCertName }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+  {{- end}}
+    heritage: "deployer"
+  labels:
+    app: {{ .Release.Name  }}
+    chart: {{ template "capillary-base-statefulset.chart" . }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.serviceType }}
+  ports:
+      {{- range .Values.ports }}
+      {{- with . }}
+    - port: {{ .lbPort }}
+      targetPort: {{ .containerPort }}
+      protocol: TCP
+      name: {{ .name }}
+      {{- end }}
+      {{- end }}
+  selector:
+    app: {{ .Release.Name }}
+    release: {{ .Release.Name }}

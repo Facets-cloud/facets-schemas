@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "capillary-base.name" -}}
+{{- define "capillary-base-statefulset.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "capillary-base.fullname" -}}
+{{- define "capillary-base-statefulset.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,7 +27,7 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "capillary-base.chart" -}}
+{{- define "capillary-base-statefulset.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -36,46 +36,46 @@ Liveness and readiness probes
 */}}
 {{- define "livenessTCP" }}
           livenessProbe:
-            failureThreshold: {{ .Values.livenessFailureThreshold }}
+            failureThreshold: 3
             initialDelaySeconds: {{ .Values.livenessInitialDelay }}
             periodSeconds: {{ .Values.livenessPeriod }}
-            successThreshold: {{ .Values.livenessSuccessThreshold }}
+            successThreshold: 1
             tcpSocket:
               port: {{ .Values.livenessPort }}
-            timeoutSeconds: {{ .Values.livenessTimeout }}
+            timeoutSeconds: 1
 {{- end -}}
 
 {{- define "livenessHTTPGet" }}
           livenessProbe:
-            failureThreshold: {{ .Values.livenessFailureThreshold }}
+            failureThreshold: 3
             initialDelaySeconds: {{ .Values.livenessInitialDelay }}
             periodSeconds: {{ .Values.livenessPeriod }}
-            successThreshold: {{ .Values.livenessSuccessThreshold }}
+            successThreshold: 1
             httpGet:
               path: {{ .Values.livenessHTTPEndpoint }}
               port: {{ .Values.livenessPort }}
-            timeoutSeconds: {{ .Values.livenessTimeout }}
+            timeoutSeconds: 1
 {{- end -}}
 
 {{- define "readinessTCP" }}
           readinessProbe:
-            failureThreshold: {{ .Values.readinessFailureThreshold }}
+            failureThreshold: 3
             initialDelaySeconds: {{ .Values.readinessInitialDelay }}
             periodSeconds: {{ .Values.readinessPeriod }}
-            successThreshold: {{ .Values.readinessSuccessThreshold }}
+            successThreshold: 1
             tcpSocket:
               port: {{ .Values.readinessPort }}
-            timeoutSeconds: {{ .Values.readinessTimeout }}
+            timeoutSeconds: 1
 {{- end -}}
 
 {{- define "readinessHTTPGet" }}
           readinessProbe:
-            failureThreshold: {{ .Values.readinessFailureThreshold }}
+            failureThreshold: 3
             initialDelaySeconds: {{ .Values.readinessInitialDelay }}
             periodSeconds: {{ .Values.readinessPeriod }}
-            successThreshold: {{ .Values.readinessSuccessThreshold }}
+            successThreshold: 1
             httpGet:
               path: {{ .Values.readinessHTTPEndpoint }}
               port: {{ .Values.readinessPort }}
-            timeoutSeconds: {{ .Values.readinessTimeout }}
+            timeoutSeconds: 1
 {{- end -}}

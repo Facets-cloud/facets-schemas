@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -138,13 +139,29 @@ public class HelmService implements IHelmService {
         releaseManager.close();
     }
 
+    private String getChartName(Application application, Deployment deployment) {
+        if (doesPvcExist(application)) {
+            return "capillary-base-statefulset";
+        }
+
+        return "capillary-base";
+    }
+
+    private boolean doesPvcExist(Application application) {
+        if (application.getPvcList() != null && application.getPvcList().size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     private void install(Application application, Deployment deployment) throws Exception {
         ApplicationFamily applicationFamily = application.getApplicationFamily();
         String environmentName = deployment.getEnvironment();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         Map<String, Object> valueMap = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
-        install(environment, releaseName, "capillary-base", valueMap);
+        String chartName = getChartName(application, deployment);
+        install(environment, releaseName, chartName, valueMap);
     }
 
     private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
@@ -172,7 +189,8 @@ public class HelmService implements IHelmService {
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         Map<String, Object> valueMap = getValuesYaml(environment, application, deployment);
         String releaseName = getReleaseName(application, environment);
-        upgrade(environment, releaseName, "capillary-base", valueMap);
+        String chartName = getChartName(application, deployment);
+        upgrade(environment, releaseName, chartName, valueMap);
     }
 
     private Map<String, Object> getValuesYaml(Environment environment, Application application, Deployment deployment) {
@@ -214,8 +232,60 @@ public class HelmService implements IHelmService {
             yaml.putAll(getHealthCheckConfigs(application));
         }
 
+        if (doesPvcExist(application)) {
+            List<Map<String, Object>> pvcYamlList = application.getPvcList()
+                    .parallelStream()
+                    .map(this::getPvcValues)
+                    .collect(Collectors.toList());
+            yaml.put("persistentVolumeClaims", pvcYamlList);
+        }
+
+        if (secretVolumesExist(deployment)) {
+            List<Map<String, Object>> secretFileMounts = getSecretFileMounts(environment, application,
+                    deployment.getSecretFileMounts());
+            yaml.put("secretFileMounts", secretFileMounts);
+        }
+
         logger.info("loaded values for release: {}", yaml);
         return yaml;
+    }
+
+    private List<Map<String, Object>> getSecretFileMounts(Environment environment, Application application, List<SecretFileMount> secretFileMounts) {
+        List<Map<String, Object>> secretFileMountsList = new ArrayList<>();
+
+        List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(
+                environment.getEnvironmentMetaData().getName(), application.getApplicationFamily(), application.getId());
+        Map<String, ApplicationSecret> fileSecrets = applicationSecrets.parallelStream()
+                .filter(x -> x.getSecretType() != null && x.getSecretType().equals(ApplicationSecret.SecretType.FILE))
+                .collect(Collectors.toMap(ApplicationSecret::getSecretName, Function.identity()));
+
+        secretFileMounts.parallelStream().forEach(x -> {
+            if (fileSecrets.containsKey(x.getSecretRef())) {
+                Map<String, Object> secretFileMountYaml = new HashMap<>();
+                secretFileMountYaml.put("name", x.getSecretRef());
+                secretFileMountYaml.put("mountPath", x.getMountPath());
+                secretFileMountYaml.put("value", fileSecrets.get(x.getSecretRef()).getSecretValue());
+                secretFileMountsList.add(secretFileMountYaml);
+            }
+        });
+
+        return secretFileMountsList;
+    }
+
+    private boolean secretVolumesExist(Deployment deployment) {
+        List<SecretFileMount> secretFileMounts = deployment.getSecretFileMounts();
+        return secretFileMounts != null && secretFileMounts.size() > 0;
+    }
+
+    private Map<String, Object> getPvcValues(PVC pvc) {
+        Map<String, Object> pvcYaml = new HashMap<>();
+        pvcYaml.put("name", pvc.getName());
+        pvcYaml.put("accessMode", pvc.getAccessMode());
+        pvcYaml.put("storageSize", pvc.getStorageSize());
+        pvcYaml.put("volumeDirectory", pvc.getVolumeDirectory());
+        pvcYaml.put("mountPath", pvc.getMountPath());
+
+        return pvcYaml;
     }
 
     private void addZoneDns(Application application, Map<String, Object> yaml, Application.DnsType dnsType, String zoneDns) {
@@ -341,11 +411,11 @@ public class HelmService implements IHelmService {
     }
 
     private Map<String, Object> getPortMap(Port port) {
-        final Map<String, Object> out = new LinkedHashMap<>();
-        out.put("name", port.getName());
-        out.put("containerPort", port.getContainerPort());
-        out.put("lbPort", port.getLbPort());
-        return out;
+        final Map<String, Object> portMap = new LinkedHashMap<>();
+        portMap.put("name", port.getName());
+        portMap.put("containerPort", port.getContainerPort());
+        portMap.put("lbPort", port.getLbPort());
+        return portMap;
     }
 
     private ReleaseManager getReleaseManager(Environment environment) {
@@ -438,13 +508,4 @@ public class HelmService implements IHelmService {
 
         return applicationPrefix + "." + privateDnsConfiguration.getZoneDns();
     }
-
-    private boolean anyItemNullOrEmpty(List<String> items) {
-        if (items.contains(null) || items.contains("")) {
-            logger.info("found one of the fields null or empty");
-            return true;
-        }
-        return false;
-    }
-
 }
