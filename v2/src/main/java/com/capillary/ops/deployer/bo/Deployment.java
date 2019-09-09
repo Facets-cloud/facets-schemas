@@ -7,6 +7,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Deployment {
+
+    public enum ConcurrencyPolicy {
+        Allow,
+        Forbid,
+        Replace
+    }
+
     @Id
     private String id;
     private ApplicationFamily applicationFamily;
@@ -20,6 +27,8 @@ public class Deployment {
     private PodSize podSize;
     private HPA horizontalPodAutoscaler;
     private List<SecretFileMount> secretFileMounts;
+    private String schedule;
+    private ConcurrencyPolicy concurrencyPolicy = ConcurrencyPolicy.Allow;
     private boolean rollbackEnabled;
     private String deployedBy;
 
@@ -125,6 +134,22 @@ public class Deployment {
 
     public void setSecretFileMounts(List<SecretFileMount> secretFileMounts) {
         this.secretFileMounts = secretFileMounts;
+    }
+
+    public String getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(String schedule) {
+        this.schedule = schedule;
+    }
+
+    public ConcurrencyPolicy getConcurrencyPolicy() {
+        return concurrencyPolicy;
+    }
+
+    public void setConcurrencyPolicy(ConcurrencyPolicy concurrencyPolicy) {
+        this.concurrencyPolicy = concurrencyPolicy;
     }
 
     public String getDeployedBy() {

@@ -1,0 +1,88 @@
+{{- $releaseName := .Release.Name}}
+{{- $crmModuleName := .Values.crmModuleName}}
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name  }}
+  labels:
+    app: {{ .Release.Name  }}
+    chart: {{ template "capillary-base-cronjob.chart" . }}
+spec:
+  schedule: {{ .Values.schedule }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          concurrencyPolicy: {{ .Values.concurrencyPolicy }}
+          {{- if .Values.secretFileMounts }}
+          volumes:
+            {{- range .Values.secretFileMounts }}
+              {{- with . }}
+              - name: "{{ .name }}-vol"
+                secret:
+                  secretName: "{{ .Release.Name  }}-file-credentials"
+                  items:
+                    - key: {{ .name }}
+                      path: "."
+              {{- end }}
+              {{- end }}
+          {{- end }}
+          containers:
+            - name: {{ .Release.Name }}
+              image: "{{ .Values.image }}"
+              imagePullPolicy: IfNotPresent
+              {{- if .Values.secretFileMounts }}
+              volumeMounts:
+                {{- range .Values.secretFileMounts }}
+                  {{- with . }}
+                  - name: "{{ .name }}-vol"
+                    mountPath: {{ .mountPath }}
+                  {{- end }}
+                  {{- end }}
+              {{- end }}
+              ports:
+                  {{- range .Values.ports }}
+                  {{- with . }}
+                - name: {{ .name }}
+                  containerPort: {{ .containerPort }}
+                  protocol: TCP
+                  {{- end }}
+                  {{- end }}
+              {{- if or .Values.podCPULimit .Values.podMemoryLimit }}
+              resources:
+                limits:
+                {{- if .Values.podCPULimit }}
+                  cpu: {{ .Values.podCPULimit }}
+                {{- end}}
+                {{- if .Values.podMemoryLimit }}
+                  memory: {{ .Values.podMemoryLimit }}Gi
+                {{- end}}
+              {{- end }}
+              env:
+              {{- range $k, $v := .Values.configurations }}
+              - name: {{ $k }}
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ $releaseName }}-configs"
+                    key: {{ $k }}
+              {{- end }}
+              {{- range $k, $v := .Values.credentials }}
+              - name: {{ $k }}
+                valueFrom:
+                  secretKeyRef:
+                    name: "{{ $releaseName }}-credentials"
+                    key: {{ $k }}
+              {{- end }}
+          {{- if .Values.nodeSelector }}
+          nodeSelector:
+            environment: {{ .Values.nodeSelector }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+            {{ toYaml . | indent 8 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{ toYaml . | indent 8 }}
+          {{- end }}

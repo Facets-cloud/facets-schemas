@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
+import com.capillary.ops.deployer.exceptions.InvalidScheduleException;
 import com.capillary.ops.deployer.exceptions.InvalidSecretException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.exceptions.NotPromotedException;
@@ -17,6 +18,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import org.quartz.CronExpression;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -228,6 +230,13 @@ public class ApplicationFacade {
         if(StringUtils.isEmpty(build.getImage())) {
             throw new NotFoundException("No image");
         }
+
+        String deploymentSchedule = deployment.getSchedule();
+        if (!StringUtils.isEmpty(deploymentSchedule) && !CronExpression.isValidExpression(deploymentSchedule)) {
+            logger.error("invalid cron expression for schedule: {}", deploymentSchedule);
+            throw new InvalidScheduleException("Invalid cron expression for schedule");
+        }
+
         deployment.setImage(build.getImage());
         deploymentRepository.save(deployment);
         helmService.deploy(application, deployment);
