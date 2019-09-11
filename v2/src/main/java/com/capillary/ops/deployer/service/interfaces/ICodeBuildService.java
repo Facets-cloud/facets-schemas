@@ -5,6 +5,8 @@ import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 
+import java.util.List;
+
 public interface ICodeBuildService {
     void createProject(Application application);
 
@@ -13,4 +15,6 @@ public interface ICodeBuildService {
     TokenPaginatedResponse<LogEvent> getBuildLogs(Application application, String codeBuildId, String nextToken);
 
     software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId);
+
+    List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds);
 }

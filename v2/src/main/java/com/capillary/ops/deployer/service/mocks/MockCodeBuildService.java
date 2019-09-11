@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Profile("dev")
 @Service
@@ -50,5 +51,10 @@ public class MockCodeBuildService implements ICodeBuildService {
         }
         return software.amazon.awssdk.services.codebuild.model.Build.builder()
                 .buildStatus(status).build();
+    }
+
+    @Override
+    public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
+        return codeBuildIds.parallelStream().map(x -> getBuild(application, x)).collect(Collectors.toList());
     }
 }
