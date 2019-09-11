@@ -3,7 +3,8 @@ package com.capillary.ops.deployer.bo;
 public enum PodSize {
     SMALL(1,2),
     LARGE(2,4),
-    XLARGE(3,6);
+    XLARGE(3,6),
+    XXLARGE(7,14);
 
     private int cpu;
     private int memory;
