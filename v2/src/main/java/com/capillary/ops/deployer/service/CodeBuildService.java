@@ -202,6 +202,21 @@ public class CodeBuildService implements ICodeBuildService {
         return build;
     }
 
+    @Override
+    public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
+        BuildSpec buildSpec = getBuildSpec(application);
+        BatchGetBuildsResponse batchGetBuildsResponse =
+                getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
+                        .ids(codeBuildIds)
+                        .build());
+        List<software.amazon.awssdk.services.codebuild.model.Build> builds = batchGetBuildsResponse.builds();
+        if (builds.isEmpty()) {
+            return null;
+        }
+
+        return builds;
+    }
+
     private CodeBuildClient getCodeBuildClient(Region region) {
         return CodeBuildClient.builder()
                         .region(region)

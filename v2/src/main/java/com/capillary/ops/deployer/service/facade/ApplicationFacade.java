@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -147,11 +148,24 @@ public class ApplicationFacade {
         return build;
     }
 
+    private List<Build> getBuildDetails(Application application, List<Build> builds) {
+        Map<String, Build> codeBuildToBuildMap = builds.parallelStream()
+                .collect(Collectors.toMap(Build::getCodeBuildId, Function.identity()));
+        List<software.amazon.awssdk.services.codebuild.model.Build> codeBuildServiceBuilds =
+                codeBuildService.getBuilds(application, new ArrayList<>(codeBuildToBuildMap.keySet()));
+
+        if (codeBuildServiceBuilds != null) {
+            codeBuildServiceBuilds.parallelStream()
+                    .forEach(x -> codeBuildToBuildMap.get(x.id()).setStatus(x.buildStatus()));
+        }
+
+        return builds;
+    }
+
     public List<Build> getBuilds(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         List<Build> builds = buildRepository.findByApplicationIdOrderByTimestampDesc(application.getId());
-        builds = builds.stream().parallel().map(x -> getBuildDetails(application, x)).collect(Collectors.toList());
-        return builds;
+        return getBuildDetails(application, builds);
     }
 
     public Deployment getCurrentDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
