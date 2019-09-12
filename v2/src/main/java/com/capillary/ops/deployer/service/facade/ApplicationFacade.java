@@ -259,7 +259,7 @@ public class ApplicationFacade {
 
     public List<ApplicationSecret> initializeApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
         applicationSecrets.parallelStream().forEach(x -> {
-            if (x.getSecretName() == null) {
+            if (StringUtils.isEmpty(x.getSecretName())) {
                 logger.error("secret name cannot be null {}", x);
                 throw new InvalidSecretException("secret name cannot be empty");
             }
@@ -290,7 +290,7 @@ public class ApplicationFacade {
 
     public List<ApplicationSecret> updateApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
         applicationSecrets.parallelStream().forEach(x -> {
-            if (x.getSecretName() == null || x.getSecretValue() == null) {
+            if (StringUtils.isEmpty(x.getSecretName()) || StringUtils.isEmpty(x.getSecretValue())) {
                 throw new InvalidSecretException("secret name and value cannot be empty");
             }
         });
