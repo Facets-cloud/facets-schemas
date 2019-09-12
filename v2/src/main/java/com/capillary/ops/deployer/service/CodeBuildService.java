@@ -211,7 +211,7 @@ public class CodeBuildService implements ICodeBuildService {
         partition.forEach(x -> {
             BatchGetBuildsResponse batchGetBuildsResponse =
                     getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
-                            .ids(codeBuildIds)
+                            .ids(x)
                             .build());
             batchedBuilds.addAll(batchGetBuildsResponse.builds());
         });
