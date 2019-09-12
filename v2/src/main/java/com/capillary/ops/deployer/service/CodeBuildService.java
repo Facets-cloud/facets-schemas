@@ -206,6 +206,7 @@ public class CodeBuildService implements ICodeBuildService {
     public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
         BuildSpec buildSpec = getBuildSpec(application);
         List<List<String>> partition = Lists.partition(codeBuildIds, 100);
+        logger.info("total size of builds: {}, total partitions created: {}", codeBuildIds.size(), partition.size());
         List<software.amazon.awssdk.services.codebuild.model.Build> batchedBuilds = Lists.newArrayListWithExpectedSize(codeBuildIds.size());
         partition.forEach(x -> {
             BatchGetBuildsResponse batchGetBuildsResponse =
