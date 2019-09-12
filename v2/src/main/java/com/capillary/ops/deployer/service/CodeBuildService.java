@@ -205,16 +205,17 @@ public class CodeBuildService implements ICodeBuildService {
     @Override
     public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
         BuildSpec buildSpec = getBuildSpec(application);
-        BatchGetBuildsResponse batchGetBuildsResponse =
-                getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
-                        .ids(codeBuildIds)
-                        .build());
-        List<software.amazon.awssdk.services.codebuild.model.Build> builds = batchGetBuildsResponse.builds();
-        if (builds.isEmpty()) {
-            return null;
-        }
+        List<List<String>> partition = Lists.partition(codeBuildIds, 100);
+        List<software.amazon.awssdk.services.codebuild.model.Build> batchedBuilds = Lists.newArrayListWithExpectedSize(codeBuildIds.size());
+        partition.forEach(x -> {
+            BatchGetBuildsResponse batchGetBuildsResponse =
+                    getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
+                            .ids(codeBuildIds)
+                            .build());
+            batchedBuilds.addAll(batchGetBuildsResponse.builds());
+        });
 
-        return builds;
+        return batchedBuilds;
     }
 
     private CodeBuildClient getCodeBuildClient(Region region) {
