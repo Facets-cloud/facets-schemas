@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
+import com.capillary.ops.deployer.exceptions.InvalidSecretException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.exceptions.NotPromotedException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
@@ -257,6 +258,13 @@ public class ApplicationFacade {
     }
 
     public List<ApplicationSecret> initializeApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+        applicationSecrets.parallelStream().forEach(x -> {
+            if (x.getSecretName() == null) {
+                logger.error("secret name cannot be null {}", x);
+                throw new InvalidSecretException("secret name cannot be empty");
+            }
+        });
+
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         applicationSecrets.parallelStream().forEach(x -> {
@@ -281,6 +289,11 @@ public class ApplicationFacade {
     }
 
     public List<ApplicationSecret> updateApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+        applicationSecrets.parallelStream().forEach(x -> {
+            if (x.getSecretName() == null || x.getSecretValue() == null) {
+                throw new InvalidSecretException("secret name and value cannot be empty");
+            }
+        });
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
 
