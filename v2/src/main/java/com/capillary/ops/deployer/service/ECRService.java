@@ -5,12 +5,23 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
-import software.amazon.awssdk.services.ecr.model.*;
+import software.amazon.awssdk.services.ecr.model.CreateRepositoryRequest;
+import software.amazon.awssdk.services.ecr.model.DescribeImagesRequest;
+import software.amazon.awssdk.services.ecr.model.ImageDetail;
+import software.amazon.awssdk.services.ecr.model.SetRepositoryPolicyRequest;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,6 +29,7 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +41,12 @@ public class ECRService implements IECRService {
 
     @Autowired
     private Environment environment;
+
+    @Qualifier("ECRChinaSyncPool")
+    @Autowired
+    private ExecutorService executorServicePool;
+
+    private static final Logger logger = LoggerFactory.getLogger(ECRService.class);
 
     @Override
     public void createRepository(Application application) {
@@ -64,6 +82,34 @@ public class ECRService implements IECRService {
                 .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTags().get(0))
                 .findFirst();
         return imageOptional.isPresent() ? imageOptional.get() : null;
+    }
+
+    @Override
+    public void syncToChinaECR(String ImageURL) {
+        String baseURL = "http://dregsync.capillary.in/sync?id=";
+        String finalURL = baseURL + ImageURL;
+        executorServicePool.submit(
+                () -> {
+                    try {
+                        makeRequest(finalURL);
+                    } catch (Exception e) {
+                        logger.error("Error with China ECR sync {}", e.getMessage());
+                    }
+                });
+    }
+
+    private CloseableHttpClient getGETClient() {
+        return HttpClients.custom().build();
+    }
+
+    private void makeRequest(String requestUri) throws Exception {
+        CloseableHttpClient httpClient = this.getGETClient();
+        HttpUriRequest request = RequestBuilder.get()
+                .setUri(requestUri)
+                .build();
+        CloseableHttpResponse httpResponse = httpClient.execute(request);
+        httpClient.close();
+        logger.info("Sync request sent - {}",requestUri);
     }
 
     private String getRepositoryName(Application application) {
