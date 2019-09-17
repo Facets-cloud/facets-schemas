@@ -23,11 +23,6 @@
         <ion-select-option value="XLARGE">XLARGE</ion-select-option>
         <ion-select-option value="XXLARGE">2XLARGE</ion-select-option>
       </ion-select>
-      <ion-label position="stacked"><b>Strategy</b></ion-label>
-      <ion-select interface="popover" type="text" placeholder="RollingUpdate" [(ngModel)]="deployment.deploymentStrategy">
-        <ion-select-option value="RollingUpdate">RollingUpdate</ion-select-option>
-        <ion-select-option value="Recreate">Recreate</ion-select-option>
-      </ion-select>
       <ion-toolbar ngClass="subtoolbar" color=light>
         <ion-card-header color=light><b>Environment Variables</b></ion-card-header>
         <ion-button (click)="addConf()" *ngIf="build?.status === 'SUCCEEDED'" color=dark fill=clear slot=end>
