@@ -85,6 +85,8 @@ public class Application {
 
     private Map<String, String> commonConfigs = new HashMap<>();
 
+    private DeploymentStrategy deploymentStrategy = DeploymentStrategy.RollingUpdate;
+
     public String getId() {
         return id;
     }
@@ -195,6 +197,14 @@ public class Application {
 
     public void setCommonConfigs(Map<String, String> commonConfigs) {
         this.commonConfigs = commonConfigs;
+    }
+
+    public DeploymentStrategy getDeploymentStrategy() {
+        return deploymentStrategy;
+    }
+
+    public void setDeploymentStrategy(DeploymentStrategy deploymentStrategy) {
+        this.deploymentStrategy = deploymentStrategy;
     }
 
     public ApplicationType getApplicationType() {

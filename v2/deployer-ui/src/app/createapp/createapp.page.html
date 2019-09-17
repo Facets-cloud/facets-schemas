@@ -26,6 +26,11 @@
           <ion-select-option value="JDK6_MAVEN2">JDK6 with Maven 2.2</ion-select-option>
           <ion-select-option value="MJ_NUGET">Martjack Nugetrun</ion-select-option>
         </ion-select>
+        <ion-label position="stacked"><b>Deployment Strategy</b></ion-label>
+         <ion-select interface="popover" type="text" placeholder="RollingUpdate" [(ngModel)]="application.deploymentStrategy">
+         <ion-select-option value="RollingUpdate">RollingUpdate</ion-select-option>
+         <ion-select-option value="Recreate">Recreate</ion-select-option>
+        </ion-select>
         <ion-label position="stacked"><b>LoadBalancer Type</b></ion-label>
         <ion-select interface="popover" placeholder="INTERNAL" type="text" [(ngModel)]="application.loadBalancerType" >
           <ion-select-option value="INTERNAL">INTERNAL</ion-select-option>

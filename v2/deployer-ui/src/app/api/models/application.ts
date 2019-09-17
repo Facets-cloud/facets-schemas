@@ -2,13 +2,14 @@
 import { HealthCheck } from './health-check';
 import { Port } from './port';
 export interface Application {
+  healthCheck?: HealthCheck;
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
-  applicationRootDirectory?: string;
   buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET';
   commonConfigs?: {[key: string]: string};
+  deploymentStrategy?: 'Recreate' | 'RollingUpdate';
   dnsPrefix?: string;
   dnsType?: 'PUBLIC' | 'PRIVATE';
-  healthCheck?: HealthCheck;
+  applicationRootDirectory?: string;
   id?: string;
   loadBalancerType?: 'INTERNAL' | 'EXTERNAL';
   name?: string;

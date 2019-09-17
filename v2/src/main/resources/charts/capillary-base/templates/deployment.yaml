@@ -11,6 +11,8 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: {{ .Values.deploymentStrategy | default "RollingUpdate" }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}

@@ -2,16 +2,16 @@
 import { EnvironmentVariable } from './environment-variable';
 import { HPA } from './hpa';
 export interface Deployment {
+  environment?: string;
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
-  applicationId?: string;
   buildId?: string;
   configurations?: Array<EnvironmentVariable>;
   configurationsMap?: {[key: string]: string};
   deployedBy?: string;
-  environment?: string;
+  applicationId?: string;
   horizontalPodAutoscaler?: HPA;
   id?: string;
-  podSize?: 'SMALL' | 'LARGE' | 'XLARGE';
+  podSize?: 'SMALL' | 'LARGE' | 'XLARGE' | 'XXLARGE';
   rollbackEnabled?: boolean;
   timestamp?: string;
 }
