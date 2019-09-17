@@ -17,6 +17,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,12 +78,21 @@ public class ApplicationFacade {
         applicationRepository.save(application);
         ecrService.createRepository(application);
         codeBuildService.createProject(application);
+
+        try {
+            vcsServiceSelector.selectVcsService(application.getVcsProvider())
+                    .createPullRequestWebhook(application, getRepositoryOwner(application), getRepositoryName(application));
+        } catch (IOException e) {
+            logger.error("could not access the project repository");
+        }
+
         return application;
     }
 
     public Application getApplication(ApplicationFamily applicationFamily, String applicationId) {
         return applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
     }
+
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String username = getUserName();
         build.setTriggeredBy(username);

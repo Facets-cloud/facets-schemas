@@ -1,8 +1,12 @@
 package com.capillary.ops.deployer.service.impl;
 
+import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.VcsService;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.eclipse.egit.github.core.RepositoryBranch;
+import org.eclipse.egit.github.core.RepositoryHook;
 import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.RepositoryTag;
 import org.eclipse.egit.github.core.service.RepositoryService;
@@ -19,6 +23,8 @@ import java.util.stream.Collectors;
 public class GithubVcsService implements VcsService {
 
     private static final Logger logger = LoggerFactory.getLogger(GithubVcsService.class);
+
+    private static final String PR_WEBHOOK_URL = "https://deployer.capillary.in/api/%s/applications/%s/webhooks/pr/github";
 
     @Override
     public List<String> getBranches(String owner, String repository) throws IOException {
@@ -60,5 +66,26 @@ public class GithubVcsService implements VcsService {
         logger.info("fetched {} tags from github for this application", tags.size());
 
         return tags.parallelStream().map(x -> x.getName()).collect(Collectors.toList());
+    }
+
+    @Override
+    public void createPullRequestWebhook(Application application, String owner, String repository) throws IOException {
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
+
+        RepositoryId repositoryId = new RepositoryId(owner, repository);
+        RepositoryService repositoryService = new RepositoryService();
+        repositoryService.getClient().setCredentials(username, password);
+
+        String webhookURL = String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId());
+        RepositoryHook repositoryHook = new RepositoryHook()
+                .setName("web")
+                .setEvents(Lists.newArrayList("pull_request", "repository"))
+                .setActive(true)
+                .setConfig(ImmutableMap.of(
+                        "url", webhookURL,
+                        "content_type", "json",
+                        "insecure_ssl", "0"));
+        repositoryService.createHook(repositoryId, repositoryHook);
     }
 }

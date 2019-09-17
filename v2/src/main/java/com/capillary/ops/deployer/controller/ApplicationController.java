@@ -40,7 +40,7 @@ public class ApplicationController {
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application createApplication(@Valid @RequestBody  Application application,
-                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws IOException {
         application.setApplicationFamily(applicationFamily);
         return applicationFacade.createApplication(application);
     }
