@@ -131,7 +131,7 @@ public class App {
 
   @Bean(name = "ECRChinaSyncPool")
   public ExecutorService executorServicePool() {
-    ExecutorService pool = Executors.newFixedThreadPool(30);
+    ExecutorService pool = Executors.newFixedThreadPool(5);
     return pool;
   }
 

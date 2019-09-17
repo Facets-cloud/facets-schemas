@@ -85,15 +85,15 @@ public class ECRService implements IECRService {
     }
 
     @Override
-    public void syncToChinaECR(String ImageURL) {
+    public void syncToChinaECR(String imageURL) {
         String baseURL = "http://dregsync.capillary.in/sync?id=";
-        String finalURL = baseURL + ImageURL;
+        String finalURL = baseURL + imageURL;
         executorServicePool.submit(
                 () -> {
                     try {
                         makeRequest(finalURL);
-                    } catch (Exception e) {
-                        logger.error("Error with China ECR sync {}", e.getMessage());
+                    } catch (IOException e) {
+                        logger.error("Error with China ECR sync {}", e);
                     }
                 });
     }
@@ -102,7 +102,7 @@ public class ECRService implements IECRService {
         return HttpClients.custom().build();
     }
 
-    private void makeRequest(String requestUri) throws Exception {
+    private void makeRequest(String requestUri) throws IOException {
         CloseableHttpClient httpClient = this.getGETClient();
         HttpUriRequest request = RequestBuilder.get()
                 .setUri(requestUri)
