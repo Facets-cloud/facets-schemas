@@ -250,6 +250,10 @@ public class HelmService implements IHelmService {
                     String crmModuleName = deployment.getConfigurationsMap().get("crmModuleName");
                     valueFields.put("crmConfigurations", getCRMConfigsFromModule(crmModuleName));
                 }
+                if(deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
+                    valueFields.put("zkPublish", deployment.getConfigurationsMap().get("zkPublish"));
+                    valueFields.put("zkName", deployment.getConfigurationsMap().get("zkName"));
+                }
                 break;
             case ECOMMERCE:
                 Map<String, Object> capabilities = new HashMap<>();
