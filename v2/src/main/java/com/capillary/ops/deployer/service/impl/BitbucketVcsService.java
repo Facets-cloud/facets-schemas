@@ -1,5 +1,6 @@
 package com.capillary.ops.deployer.service.impl;
 
+import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.VcsService;
 import com.google.common.collect.Lists;
@@ -8,8 +9,11 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -35,14 +39,39 @@ public class BitbucketVcsService implements VcsService {
 
     private static final Logger logger = LoggerFactory.getLogger(BitbucketVcsService.class);
 
-    private String baseUri = "https://api.bitbucket.org/2.0";
+    private static final String BASE_URI = "https://api.bitbucket.org/2.0";
+    private static final String PR_WEBHOOK_URL = "https://deployer.capillary.in/api/%s/applications/%s/webhooks/pr/bitbucket";
 
-    private CloseableHttpClient getGETClient() {
+    private CloseableHttpClient getHTTPClient() {
         return HttpClients.custom().build();
     }
 
-    private JSONObject makeRequest(String requestUri, String username, String password) throws IOException {
-        CloseableHttpClient httpClient = this.getGETClient();
+    private JSONObject makePOSTRequest(String requestUri, String body, String username, String password) throws IOException {
+        CloseableHttpClient httpClient = this.getHTTPClient();
+
+        String authHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+        Header authorization = new BasicHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        Header contentType = new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+        HttpPost post = new HttpPost(requestUri);
+        post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+        post.addHeader(authorization);
+        post.addHeader(contentType);
+
+        CloseableHttpResponse httpResponse = httpClient.execute(post);
+        HttpEntity entity = httpResponse.getEntity();
+        Header encodingHeader = entity.getContentEncoding();
+        Charset encoding = encodingHeader == null ? StandardCharsets.UTF_8 : Charsets.toCharset(encodingHeader.getValue());
+
+        logger.debug("converting http response to json string with encoding: {}", encoding);
+        String json = EntityUtils.toString(entity, encoding);
+        httpClient.close();
+
+        return new JSONObject(json);
+    }
+
+    private JSONObject makeGETRequest(String requestUri, String username, String password) throws IOException {
+        CloseableHttpClient httpClient = this.getHTTPClient();
 
         logger.debug("constructing base64 encoded credentials");
         String authHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
@@ -73,13 +102,13 @@ public class BitbucketVcsService implements VcsService {
     private List<JSONObject> getPaginatedResponse(String requestUri, String username, String password) throws IOException {
         List<JSONObject> jsonValues = new ArrayList<>();
 
-        JSONObject currentPage = makeRequest(requestUri, username, password);
+        JSONObject currentPage = makeGETRequest(requestUri, username, password);
         List<JSONObject> responseValues = convertJsonArrayToList(currentPage);
         jsonValues.addAll(responseValues);
 
         for (int page = 2; page <= currentPage.getInt("pagelen") ; page++) {
             if (responseValues.size() > 0 && currentPage.has("next")) {
-                currentPage = makeRequest(currentPage.getString("next"), username, password);
+                currentPage = makeGETRequest(currentPage.getString("next"), username, password);
                 jsonValues.addAll(convertJsonArrayToList(currentPage));
             }
         }
@@ -117,7 +146,7 @@ public class BitbucketVcsService implements VcsService {
         }
 
         String requestUri = new StringJoiner("/")
-                .add(this.baseUri)
+                .add(BASE_URI)
                 .add("repositories")
                 .add(owner)
                 .add(repository)
@@ -142,7 +171,7 @@ public class BitbucketVcsService implements VcsService {
         }
 
         String requestUri = new StringJoiner("/")
-                .add(this.baseUri)
+                .add(BASE_URI)
                 .add("repositories")
                 .add(owner)
                 .add(repository)
@@ -156,11 +185,30 @@ public class BitbucketVcsService implements VcsService {
         return tagList;
     }
 
-    public static void main(String[] args) throws IOException {
-        BitbucketVcsService vcsService = new BitbucketVcsService();
-        List<String> branches = vcsService.getBranches("capillarymartjack", "deisdeployer");
-        List<String> tags = vcsService.getTags("capillarymartjack", "deisdeployer");
-        System.out.println("branches = " + branches);
-        System.out.println("tags = " + tags);
+    public String getPRWebhookBody(Application application) {
+        JSONObject webhook = new JSONObject();
+        webhook.put("description", "web");
+        webhook.put("active", true);
+        webhook.put("url", String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId()));
+        webhook.put("events", Lists.newArrayList("pullrequest:created", "pullrequest:updated"));
+
+        return webhook.toString();
+    }
+
+    @Override
+    public void createPullRequestWebhook(Application application, String owner, String repository) throws IOException {
+        String username = System.getenv("BITBUCKET_USERNAME");
+        String password = System.getenv("BITBUCKET_PASSWORD");
+
+        String requestUri = new StringJoiner("/")
+                .add(BASE_URI)
+                .add("repositories")
+                .add(owner)
+                .add(repository)
+                .add("hooks")
+                .toString();
+
+        String webhookBody = getPRWebhookBody(application);
+        makePOSTRequest(requestUri, webhookBody, username, password);
     }
 }

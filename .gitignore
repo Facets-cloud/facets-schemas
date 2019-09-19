@@ -35,3 +35,7 @@ UserInterfaceState.xcuserstate
 *.iml
 target
 v2/src/main/resources/static/
+*.classpath
+*.factorypath
+*.project
+

@@ -161,7 +161,7 @@
         <dependency>
             <groupId>org.eclipse.mylyn.github</groupId>
             <artifactId>org.eclipse.egit.github.core</artifactId>
-            <version>2.1.5</version>
+            <version>5.5.0.201908280940-m3</version>
         </dependency>
     </dependencies>
     <build>
@@ -263,4 +263,11 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>springlib</id>
+            <name>springlib repo</name>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+    </repositories>
 </project>
