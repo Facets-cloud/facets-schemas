@@ -70,22 +70,23 @@ public class GithubVcsService implements VcsService {
 
     @Override
     public void createPullRequestWebhook(Application application, String owner, String repository) throws IOException {
-        String username = System.getenv("GITHUB_USERNAME");
-        String password = System.getenv("GITHUB_PASSWORD");
-
-        RepositoryId repositoryId = new RepositoryId(owner, repository);
-        RepositoryService repositoryService = new RepositoryService();
-        repositoryService.getClient().setCredentials(username, password);
-
-        String webhookURL = String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId());
-        RepositoryHook repositoryHook = new RepositoryHook()
-                .setName("web")
-                .setEvents(Lists.newArrayList("pull_request", "repository"))
-                .setActive(true)
-                .setConfig(ImmutableMap.of(
-                        "url", webhookURL,
-                        "content_type", "json",
-                        "insecure_ssl", "0"));
-        repositoryService.createHook(repositoryId, repositoryHook);
+        return;
+//        String username = System.getenv("GITHUB_USERNAME");
+//        String password = System.getenv("GITHUB_PASSWORD");
+//
+//        RepositoryId repositoryId = new RepositoryId(owner, repository);
+//        RepositoryService repositoryService = new RepositoryService();
+//        repositoryService.getClient().setCredentials(username, password);
+//
+//        String webhookURL = String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId());
+//        RepositoryHook repositoryHook = new RepositoryHook()
+//                .setName("web")
+//                .setEvents(Lists.newArrayList("pull_request", "repository"))
+//                .setActive(true)
+//                .setConfig(ImmutableMap.of(
+//                        "url", webhookURL,
+//                        "content_type", "json",
+//                        "insecure_ssl", "0"));
+//        repositoryService.createHook(repositoryId, repositoryHook);
     }
 }
