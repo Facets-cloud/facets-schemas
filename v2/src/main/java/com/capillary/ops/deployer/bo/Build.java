@@ -25,6 +25,9 @@ public class Build {
     private String description;
     private boolean promoted = false;
 
+    public Build() {
+    }
+
     public String getApplicationId() {
         return applicationId;
     }

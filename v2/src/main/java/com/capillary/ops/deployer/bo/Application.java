@@ -85,6 +85,8 @@ public class Application {
 
     private Map<String, String> commonConfigs = new HashMap<>();
 
+    private boolean ciEnabled = false;
+
     private DeploymentStrategy deploymentStrategy = DeploymentStrategy.RollingUpdate;
 
     public String getId() {
@@ -197,6 +199,14 @@ public class Application {
 
     public void setCommonConfigs(Map<String, String> commonConfigs) {
         this.commonConfigs = commonConfigs;
+    }
+
+    public boolean isCiEnabled() {
+        return ciEnabled;
+    }
+
+    public void setCiEnabled(boolean ciEnabled) {
+        this.ciEnabled = ciEnabled;
     }
 
     public DeploymentStrategy getDeploymentStrategy() {

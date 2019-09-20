@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
+
 
 @RestController
 @RequestMapping("api")
@@ -64,14 +68,20 @@ public class ApplicationController {
         return applicationFacade.getApplication(applicationFamily, applicationId);
     }
 
+    @PostMapping(value = "/{applicationFamily}/applications/{applicationId}/webhooks/pr/github", produces = "application/json")
+    public ResponseEntity<Object> processWebhookPRGithub(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                         @PathVariable("applicationId") String applicationId, @RequestBody GithubPREvent webhook) {
+        boolean buildTriggered = applicationFacade.processWebhookPRGithub(applicationFamily, applicationId, webhook);
+        BodyBuilder responseBuilder = buildTriggered ? ResponseEntity.ok() : ResponseEntity.badRequest();
+        return responseBuilder.build();
+    }
 
     @RolesAllowed({"BUILDERS", "ADMIN"})
     @PostMapping(value = "/{applicationFamily}/applications/{applicationId}/builds", produces = "application/json")
     public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                        @PathVariable("applicationId") String applicationId, @Valid @RequestBody Build build) {
         build.setApplicationId(applicationId);
-        build.setApplicationFamily(applicationFamily);
-        return applicationFacade.createBuild(applicationFamily, build);
+        return applicationFacade.createBuild(applicationFamily, build, false);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
@@ -180,6 +190,24 @@ public class ApplicationController {
         headers.setContentLength(dumpFileFromS3.getContentLength());
         String fileName = String.join("_", path.split("/"));
         headers.setContentDispositionFormData("attachment", fileName);
+
+        return new ResponseEntity<>(new InputStreamResource(dumpFileFromS3.getInputStream()), headers, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationName}/tests/{buildId}")
+    public ResponseEntity<InputStreamResource> downloadTestReport(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                                  @PathVariable String applicationName,
+                                                                  @PathVariable String buildId) {
+        S3DumpFile dumpFileFromS3 = applicationFacade.downloadTestReport(applicationName, buildId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentLength(dumpFileFromS3.getContentLength());
+        StringJoiner path = new StringJoiner("/")
+                .add(applicationName)
+                .add(buildId)
+                .add(".zip");
+        headers.setContentDispositionFormData("attachment", path.toString());
 
         return new ResponseEntity<>(new InputStreamResource(dumpFileFromS3.getInputStream()), headers, HttpStatus.OK);
     }
