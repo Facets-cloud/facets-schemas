@@ -21,8 +21,8 @@ metadata:
     heritage: {{ .Release.Service }}
   {{- if .Values.zkPublish }}
     origin: k8s-cluster
-    zk-name: {{ .Values.zkName }}
-    zk-publish: {{ .Values.zkPublish }}
+    zk-name: "{{ .Values.zkName }}"
+    zk-publish: "{{ .Values.zkPublish }}"
   {{- end}}
 spec:
   type: {{ .Values.serviceType }}
