@@ -11,18 +11,26 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
         super(application);
     }
 
+    public FreestyleDockerBuildSpec(Application application, boolean testBuild) {
+        super(application, testBuild);
+    }
+
     @Override
     protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        if (!this.isTestBuild()) {
+            postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        }
         return postBuildCommands;
     }
 
     @Override
     protected List<String> getBuildCommands() {
         List<String> buildCommands = new ArrayList<>();
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        if (!this.isTestBuild()) {
+            buildCommands.add("docker build -t $APP_NAME:$TAG .");
+            buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        }
         return buildCommands;
     }
 
@@ -34,6 +42,11 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
         preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
         return preBuildCommands;
+    }
+
+    @Override
+    protected List<String> getArtifactSpec() {
+        return null;
     }
 
     @Override

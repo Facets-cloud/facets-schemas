@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -11,19 +12,30 @@ public class MavenBuildSpec extends BuildSpec {
         super(application);
     }
 
+    public MavenBuildSpec(Application application, boolean testBuild) {
+        super(application, testBuild);
+    }
+
     @Override
     protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        if (!this.isTestBuild()) {
+            postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        }
         return postBuildCommands;
     }
 
     @Override
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U");
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        if (!this.isTestBuild()) {
+            buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U");
+            buildCommands.add("docker build -t $APP_NAME:$TAG .");
+            buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        } else {
+            buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -U");
+            buildCommands.add("mvn clean test");
+        }
         return buildCommands;
     }
 
@@ -31,10 +43,17 @@ public class MavenBuildSpec extends BuildSpec {
     protected List<String> getPreBuildCommands() {
         String ECR_REPO = "486456986266.dkr.ecr.us-west-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
-        preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
-        preBuildCommands.add("REPO=" + ECR_REPO);
-        preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
+        if (!this.isTestBuild()) {
+            preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
+            preBuildCommands.add("REPO=" + ECR_REPO);
+            preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
+        }
         return preBuildCommands;
+    }
+
+    @Override
+    protected List<String> getArtifactSpec() {
+        return Lists.newArrayList("target/site/**/*");
     }
 
     @Override

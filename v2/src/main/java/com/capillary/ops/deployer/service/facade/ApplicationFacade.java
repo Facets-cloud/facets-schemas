@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.facade;
 
+import com.amazonaws.regions.Regions;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
 import com.capillary.ops.deployer.exceptions.InvalidScheduleException;
 import com.capillary.ops.deployer.exceptions.InvalidSecretException;
@@ -39,6 +41,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 @Service
 public class ApplicationFacade {
@@ -90,7 +93,14 @@ public class ApplicationFacade {
         applicationRepository.save(application);
         ecrService.createRepository(application);
         codeBuildService.createProject(application);
+        if (application.isCiEnabled()) {
+            createPullRequestWebhook(application);
+        }
 
+        return application;
+    }
+
+    private void createPullRequestWebhook(Application application) {
         try {
             vcsServiceSelector.selectVcsService(application.getVcsProvider())
                     .createPullRequestWebhook(application, getRepositoryOwner(application), getRepositoryName(application));
@@ -99,21 +109,57 @@ public class ApplicationFacade {
         } catch (Exception e) {
             logger.error("unknown error happened while creating webhook", e);
         }
-
-        return application;
     }
 
     public Application getApplication(ApplicationFamily applicationFamily, String applicationId) {
         return applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
     }
 
-    public Build createBuild(ApplicationFamily applicationFamily, Build build) {
+    public boolean processWebhookPRGithub(ApplicationFamily applicationFamily, String applicationId, GithubPREvent webhook) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+        try {
+            PullRequest pullRequest = webhook.toPullRequest();
+            if (!vcsService.shouldTriggerBuild(application, pullRequest)) {
+                return true;
+            }
+
+            processPullRequest(application, pullRequest);
+        } catch (ParseException e) {
+            logger.error("error happened while parsing pull request date", e);
+        }
+
+        logger.error("could not build application");
+        return false;
+    }
+
+    private boolean processPullRequest(Application application, PullRequest pullRequest) {
+        Build build = new Build();
+        int pullRequestNumber = pullRequest.getNumber();
+        build.setApplicationId(application.getId());
+        build.setTag(pullRequest.getSourceBranch());
+        build.setDescription("Built via pull request " + pullRequestNumber);
+        build.setTriggeredBy("capbuilder");
+        buildRepository.save(build);
+
+        String testBuildId = codeBuildService.triggerBuild(application, build, true);
+        build.setCodeBuildId(testBuildId);
+        buildRepository.save(build);
+
+        VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+        vcsService.processPullRequest(pullRequest, build);
+        vcsService.commentOnPullRequest(pullRequest, "Build started");
+
+        return true;
+    }
+
+    public Build createBuild(ApplicationFamily applicationFamily, Build build, boolean testBuild) {
         String username = getUserName();
         build.setTriggeredBy(username);
         String applicationId = build.getApplicationId();
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         buildRepository.save(build);
-        String codeBuildId = codeBuildService.triggerBuild(application, build);
+        String codeBuildId = codeBuildService.triggerBuild(application, build, testBuild);
         build.setCodeBuildId(codeBuildId);
         buildRepository.save(build);
         return build;
@@ -274,6 +320,11 @@ public class ApplicationFacade {
         return s3DumpService.downloadObject(path);
     }
 
+    public S3DumpFile downloadTestReport(String applicationName, String buildId) {
+        String path = buildId + "/" + applicationName;
+        return s3DumpService.downloadObject("deployer-test-build-output", path, Regions.US_WEST_1);
+    }
+
     public List<String> listDumpFilesFromS3(String environment, String applicationName, String date) {
         return s3DumpService.listObjects(environment, applicationName, getDateForDump(date));
     }
@@ -383,6 +434,10 @@ public class ApplicationFacade {
                 applicationRepository
                         .findOneByApplicationFamilyAndId(application.getApplicationFamily(),
                                 application.getId()).get();
+        if (!existingApplication.isCiEnabled() && application.isCiEnabled()) {
+            createPullRequestWebhook(application);
+        }
+
         application.setName(existingApplication.getName());
         application.setBuildType(existingApplication.getBuildType());
         return applicationRepository.save(application);

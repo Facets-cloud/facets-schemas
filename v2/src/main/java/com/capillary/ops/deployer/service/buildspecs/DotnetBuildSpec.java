@@ -13,10 +13,16 @@ public class DotnetBuildSpec extends BuildSpec {
         super(application);
     }
 
+    public DotnetBuildSpec(Application application, boolean testBuild) {
+        super(application, testBuild);
+    }
+
     @Override
     protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        if (!this.isTestBuild()) {
+            postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        }
         return postBuildCommands;
     }
 
@@ -25,8 +31,10 @@ public class DotnetBuildSpec extends BuildSpec {
         List<String> buildCommands = new ArrayList<>();
         buildCommands.add("dotnet clean");
         buildCommands.add("dotnet publish");
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        if (!this.isTestBuild()) {
+            buildCommands.add("docker build -t $APP_NAME:$TAG .");
+            buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        }
         return buildCommands;
     }
 
@@ -38,6 +46,11 @@ public class DotnetBuildSpec extends BuildSpec {
         preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
         return preBuildCommands;
+    }
+
+    @Override
+    protected List<String> getArtifactSpec() {
+        return null;
     }
 
     @Override

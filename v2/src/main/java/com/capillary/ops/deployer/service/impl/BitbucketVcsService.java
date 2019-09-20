@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.impl;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Build;
+import com.capillary.ops.deployer.bo.PullRequest;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.VcsService;
 import com.google.common.collect.Lists;
@@ -136,6 +138,11 @@ public class BitbucketVcsService implements VcsService {
     }
 
     @Override
+    public String getName() {
+        return "BITBUCKET";
+    }
+
+    @Override
     public List<String> getBranches(String owner, String repository) throws IOException {
         String username = System.getenv("BITBUCKET_USERNAME");
         String password = System.getenv("BITBUCKET_PASSWORD");
@@ -210,5 +217,23 @@ public class BitbucketVcsService implements VcsService {
 
         String webhookBody = getPRWebhookBody(application);
         makePOSTRequest(requestUri, webhookBody, username, password);
+    }
+
+    @Override
+    public void processPullRequest(PullRequest pullRequest, Build build) {
+    }
+
+    @Override
+    public void commentOnPullRequest(PullRequest pullRequest, String content) {
+    }
+
+    @Override
+    public boolean shouldTriggerBuild(Application application, PullRequest pullRequest) {
+        return false;
+    }
+
+    @Override
+    public List<String> getSupportedActions() {
+        return new ArrayList<>();
     }
 }

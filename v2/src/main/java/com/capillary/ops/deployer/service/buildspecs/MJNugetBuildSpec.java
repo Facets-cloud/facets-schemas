@@ -13,10 +13,16 @@ public class MJNugetBuildSpec extends BuildSpec {
         super(application);
     }
 
+    public MJNugetBuildSpec(Application application, boolean testBuild) {
+        super(application, testBuild);
+    }
+
     @Override
     protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("nuget push bin\\Release\\*.nupkg -Source mj-snapshot");
+        if (!this.isTestBuild()) {
+            postBuildCommands.add("nuget push bin\\Release\\*.nupkg -Source mj-snapshot");
+        }
         return postBuildCommands;
     }
 
@@ -46,6 +52,11 @@ public class MJNugetBuildSpec extends BuildSpec {
                 "       $versionSuffix = 'alpha-' + [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds " +
                 "       }");
         return preBuildCommands;
+    }
+
+    @Override
+    protected List<String> getArtifactSpec() {
+        return null;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.capillary.ops.deployer.service;
 
-import com.amazonaws.regions.Regions;
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
@@ -14,7 +13,6 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -29,8 +27,6 @@ import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +45,7 @@ public class CodeBuildService implements ICodeBuildService {
         ProjectSource projectSource = ProjectSource.builder()
                 .type(SourceType.valueOf(application.getVcsProvider().toString()))
                 .location(application.getRepositoryUrl())
-                .buildspec(createBuildSpec(application))
+                .buildspec(createBuildSpec(application, false))
                 .build();
 
         ProjectEnvironment projectEnvironment = ProjectEnvironment.builder()
@@ -82,11 +78,18 @@ public class CodeBuildService implements ICodeBuildService {
                 .vpcId(environment.getProperty("codebuild.vpcId"))
                 .build();
 
+        ProjectArtifacts projectArtifacts = ProjectArtifacts.builder()
+                .type(ArtifactsType.S3)
+                .namespaceType(ArtifactNamespace.BUILD_ID)
+                .location("deployer-test-build-output")
+                .packaging(ArtifactPackaging.ZIP)
+                .build();
+
         CreateProjectRequest.Builder createProjectRequestBuilder = CreateProjectRequest.builder()
                 .name(application.getName())
                 .source(projectSource)
                 .environment(projectEnvironment)
-                .artifacts(ProjectArtifacts.builder().type(ArtifactsType.NO_ARTIFACTS).build())
+                .artifacts(projectArtifacts)
                 .serviceRole(serviceRole)
                 .timeoutInMinutes(60)
                 .logsConfig(logsConfig);
@@ -103,8 +106,8 @@ public class CodeBuildService implements ICodeBuildService {
         getCodeBuildClient(buildSpec.getAwsRegion()).createProject(createProjectRequest);
     }
 
-    private String createBuildSpec(Application application) {
-        BuildSpec buildSpec = getBuildSpec(application);
+    private String createBuildSpec(Application application, boolean testSpec) {
+        BuildSpec buildSpec = getBuildSpec(application, testSpec);
         YAMLMapper yamlMapper = new YAMLMapper();
         yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
         yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
@@ -135,9 +138,28 @@ public class CodeBuildService implements ICodeBuildService {
         }
     }
 
+    private BuildSpec getBuildSpec(Application application, boolean testBuild) {
+        switch (application.getBuildType()) {
+            case MVN:
+                return new MavenBuildSpec(application, testBuild);
+            case FREESTYLE_DOCKER:
+                return new FreestyleDockerBuildSpec(application, testBuild);
+            case DOTNET_CORE:
+                return new DotnetBuildSpec(application, testBuild);
+            case MVN_IONIC:
+                return new MavenIonicBuildSpec(application, testBuild);
+            case JDK6_MAVEN2:
+                return new JDK6Maven2BuildSpec(application, testBuild);
+            case MJ_NUGET:
+                return new MJNugetBuildSpec(application, testBuild);
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
     @Override
-    public String triggerBuild(Application application, Build build) {
-        BuildSpec buildSpec = getBuildSpec(application);
+    public String triggerBuild(Application application, Build build, boolean testBuild) {
+        BuildSpec buildSpec = getBuildSpec(application, testBuild);
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         if(build.getEnvironmentVariables() != null) {
             build.getEnvironmentVariables().entrySet().stream().forEach(x -> {
@@ -155,9 +177,9 @@ public class CodeBuildService implements ICodeBuildService {
                         .projectName(application.getName())
                         .sourceVersion(build.getTag())
                         .environmentVariablesOverride(environmentVariables)
+                        .buildspecOverride(createBuildSpec(application, true))
                         .build();
-        StartBuildResponse startBuildResponse = getCodeBuildClient(buildSpec.getAwsRegion()).startBuild(startBuildRequest);
-        return startBuildResponse.build().id();
+        return getCodeBuildClient(buildSpec.getAwsRegion()).startBuild(startBuildRequest).build().id();
     }
 
     @Override

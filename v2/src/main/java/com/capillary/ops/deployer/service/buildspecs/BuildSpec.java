@@ -1,18 +1,27 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
-import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.Application;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class BuildSpec {
 
     protected Application application;
 
+    protected boolean testBuild = false;
+
     public BuildSpec(Application application) {
         this.application = application;
+    }
+
+    public BuildSpec(Application application, boolean testBuild) {
+        this.application = application;
+        this.testBuild = testBuild;
     }
 
     public String getVersion() {
@@ -45,7 +54,7 @@ public abstract class BuildSpec {
     private Map<String, Object> getBuildPhase() {
         List<String> buildCommands = new ArrayList<>();
         Map<String, Object> buildPhase = new HashMap<>();
-        if(configureDockerBuildSteps()) {
+        if(configureDockerBuildSteps() && !this.isTestBuild()) {
             buildCommands.add("$(aws ecr get-login --region us-west-1 --no-include-email)");
         }
         buildCommands.add(String.format("cd %s", application.getApplicationRootDirectory()));
@@ -63,12 +72,21 @@ public abstract class BuildSpec {
         return preBuildPhase;
     }
 
+    public Map<String, Object> getArtifacts() {
+        List<String> artifactSpec = getArtifactSpec();
+        Map<String, Object> artifacts = new HashMap<>();
+        artifacts.put("files", artifactSpec);
+        return artifacts;
+    }
+
     protected abstract List<String> getPreBuildCommands();
+
+    protected abstract List<String> getArtifactSpec();
 
     private Map<String, Object> getInstallPhase() {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
-        if(configureDockerBuildSteps()) {
+        if(configureDockerBuildSteps() && !this.isTestBuild()) {
             installCommands.add(
                     "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
             installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
@@ -76,7 +94,6 @@ public abstract class BuildSpec {
         installPhase.put("commands", installCommands);
         return installPhase;
     }
-
 
     public Map<String, Object> getCache() {
         Map<String, Object> cache = new HashMap<>();
@@ -107,5 +124,13 @@ public abstract class BuildSpec {
 
     public boolean configureDockerBuildSteps() {
         return true;
+    }
+
+    public boolean isTestBuild() {
+        return testBuild;
+    }
+
+    public void setTestBuild(boolean testBuild) {
+        this.testBuild = testBuild;
     }
 }
