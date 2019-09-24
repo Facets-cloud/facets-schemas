@@ -84,6 +84,8 @@ public class ApplicationFacade {
                     .createPullRequestWebhook(application, getRepositoryOwner(application), getRepositoryName(application));
         } catch (IOException e) {
             logger.error("could not access the project repository");
+        } catch (Exception e) {
+            logger.error("unknown error happened while creating webhook", e);
         }
 
         return application;
