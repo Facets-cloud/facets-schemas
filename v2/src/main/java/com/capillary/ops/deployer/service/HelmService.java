@@ -1,7 +1,6 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
-import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.google.common.collect.Lists;

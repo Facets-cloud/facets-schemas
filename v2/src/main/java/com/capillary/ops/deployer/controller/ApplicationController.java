@@ -70,19 +70,24 @@ public class ApplicationController {
     public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                        @PathVariable("applicationId") String applicationId, @Valid @RequestBody Build build) {
         build.setApplicationId(applicationId);
+        build.setApplicationFamily(applicationFamily);
         return applicationFacade.createBuild(applicationFamily, build);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
     public Build getBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                           @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
-        return applicationFacade.getBuild(applicationFamily, applicationId, buildId);
+        Build build = applicationFacade.getBuild(applicationFamily, applicationId, buildId);
+        build.setApplicationFamily(applicationFamily);
+        return build;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
     public Build updateBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                           @PathVariable("applicationId") String applicationId, @PathVariable String buildId, @RequestBody Build build) {
+        build.setApplicationId(applicationId);
+        build.setApplicationFamily(applicationFamily);
         return applicationFacade.updateBuild(applicationFamily, applicationId, buildId, build);
     }
 
@@ -185,20 +190,26 @@ public class ApplicationController {
     }
 
     @JsonView(UserView.SecretName.class)
-    @PostMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets")
-    public List<ApplicationSecret> initializeApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                                @PathVariable("environment") String environment,
+    @PostMapping("/{applicationFamily}/applications/{applicationId}/secretRequests")
+    public List<ApplicationSecretRequest> createAppSecretRequest(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                                 @PathVariable("applicationId") String applicationId,
-                                                                @RequestBody List<ApplicationSecret> applicationSecrets) {
-        return applicationFacade.initializeApplicaitonSecrets(environment, applicationFamily, applicationId, applicationSecrets);
+                                                                @RequestBody List<ApplicationSecretRequest> applicationSecretRequests) {
+        return applicationFacade.createApplicaitonSecretRequest(applicationFamily, applicationId, applicationSecretRequests);
     }
 
-    @JsonView(UserView.SecretName.class)
-    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets")
-    public List<ApplicationSecret> getApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                            @PathVariable("environment") String environment,
+    @GetMapping("/{applicationFamily}/applications/{applicationId}/secretRequests")
+    public List<ApplicationSecretRequest> getApplicationSecretRequests(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                             @PathVariable("applicationId") String applicationId) {
-        return applicationFacade.getApplicaitonSecrets(environment, applicationFamily, applicationId);
+        return applicationFacade.getApplicaitonSecretRequests(applicationFamily, applicationId);
+    }
+
+
+    @JsonView(UserView.SecretName.class)
+    @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests")
+    public List<ApplicationSecret> getApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                                       @PathVariable("environment") String environment,
+                                                                       @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getApplicationSecrets(environment, applicationFamily, applicationId);
     }
 
     @JsonView(UserView.SecretName.class)

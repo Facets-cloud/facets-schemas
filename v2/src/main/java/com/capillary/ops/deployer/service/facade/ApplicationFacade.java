@@ -114,16 +114,15 @@ public class ApplicationFacade {
     public Build getBuild(ApplicationFamily applicationFamily, String applicationId, String buildId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build build = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
-        return getBuildDetails(application, build);
+        return getBuildDetails(application, build, true);
     }
 
     public Build updateBuild(ApplicationFamily applicationFamily, String applicationId, String buildId, Build build) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build existingBuild = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
-        build.setApplicationId(existingBuild.getApplicationId());
-        build.setId(existingBuild.getId());
-        buildRepository.save(build);
-        return getBuildDetails(application, build);
+        existingBuild.setPromoted(build.isPromoted());
+        buildRepository.save(existingBuild);
+        return getBuildDetails(application, existingBuild);
     }
 
     public List<String> getApplicationBranches(ApplicationFamily applicationFamily, String applicationId) throws IOException {
@@ -149,12 +148,12 @@ public class ApplicationFacade {
         return repositoryUrlParts[repositoryUrlParts.length - 2];
     }
 
-    private Build getBuildDetails(Application application, Build build) {
+    private Build getBuildDetails(Application application, Build build, boolean includeImage) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
                 codeBuildService.getBuild(application, build.getCodeBuildId());
         StatusType status = codeBuildServiceBuild.buildStatus();
         build.setStatus(status);
-        if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED)) {
+        if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED) && includeImage) {
             build.setImage(ecrService.findImageBetweenTimes(application,
                     codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
         }
@@ -178,7 +177,13 @@ public class ApplicationFacade {
     public List<Build> getBuilds(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         List<Build> builds = buildRepository.findByApplicationIdOrderByTimestampDesc(application.getId());
-        return getBuildDetails(application, builds);
+        builds = builds.stream().parallel().map(x -> getBuildDetails(application, x)).collect(Collectors.toList());
+        builds.stream().forEach(x->x.setApplicationFamily(applicationFamily));
+        return builds;
+    }
+
+    private Build getBuildDetails(Application application, Build build) {
+        return getBuildDetails(application, build, false);
     }
 
     public Deployment getCurrentDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
@@ -269,34 +274,23 @@ public class ApplicationFacade {
         return true;
     }
 
-    public List<ApplicationSecret> initializeApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
-        applicationSecrets.parallelStream().forEach(x -> {
-            if (StringUtils.isEmpty(x.getSecretName())) {
-                logger.error("secret name cannot be null {}", x);
-                throw new InvalidSecretException("secret name cannot be empty");
-            }
-        });
-
+    public List<ApplicationSecretRequest> createApplicaitonSecretRequest(ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecretRequest> applicationSecretRequests) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
-        applicationSecrets.parallelStream().forEach(x -> {
-            x.setEnvironmentName(environmentName);
+        applicationSecretRequests.parallelStream().forEach(x -> {
             x.setApplicationFamily(applicationFamily);
             x.setApplicationId(applicationId);
         });
 
-        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(environment.getEnvironmentMetaData().getName(), applicationFamily, applicationId);
-        if (!Collections.disjoint(savedSecrets, applicationSecrets)) {
+        List<ApplicationSecretRequest> savedSecrets = secretService.getApplicationSecretRequests(applicationFamily, applicationId);
+        if (!Collections.disjoint(savedSecrets, applicationSecretRequests)) {
             throw new AlreadyExistsException("some secrets have already been created");
         }
-        return secretService.initializeApplicationSecrets(applicationSecrets);
+        return secretService.initializeApplicationSecrets(applicationSecretRequests);
     }
 
-    public List<ApplicationSecret> getApplicaitonSecrets(String environmentName, ApplicationFamily applicationFamily, String applicationId) {
+    public List<ApplicationSecretRequest> getApplicaitonSecretRequests(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(environmentName, applicationFamily, applicationId);
-        applicationSecrets.forEach(x -> x.setSecretValue(""));
-
+        List<ApplicationSecretRequest> applicationSecrets = secretService.getApplicationSecretRequests(applicationFamily, applicationId);
         return applicationSecrets;
     }
 
@@ -309,7 +303,7 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
 
-        if (!doSecretsExist(environmentName, applicationFamily, applicationId, applicationSecrets)) {
+        if (!doSecretsExist(applicationFamily, applicationId, applicationSecrets)) {
             throw new NotFoundException("some secrets have not been created");
         }
 
@@ -321,9 +315,9 @@ public class ApplicationFacade {
         return secretService.updateApplicationSecrets(environmentName, applicationFamily, applicationId, applicationSecrets);
     }
 
-    private boolean doSecretsExist(String environmentName, ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
-        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(environmentName, applicationFamily, applicationId);
-        return savedSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList())
+    private boolean doSecretsExist(ApplicationFamily applicationFamily, String applicationId, List<ApplicationSecret> applicationSecrets) {
+        List<ApplicationSecretRequest> savedSecrets = secretService.getApplicationSecretRequests(applicationFamily, applicationId);
+        return savedSecrets.parallelStream().map(ApplicationSecretRequest::getSecretName).collect(Collectors.toList())
                 .containsAll(applicationSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList()));
     }
 
@@ -370,5 +364,14 @@ public class ApplicationFacade {
 
     public Environment getEnvironment(ApplicationFamily applicationFamily, String id) {
         return environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndId(applicationFamily, id).get();
+    }
+
+    public List<ApplicationSecret> getApplicationSecrets(String environmentName, ApplicationFamily applicationFamily,
+                                                        String applicationId) {
+        Application existingApplication =
+                applicationRepository
+                        .findOneByApplicationFamilyAndId(applicationFamily,
+                                applicationId).get();
+        return secretService.getApplicationSecrets(environmentName, applicationFamily, applicationId);
     }
 }

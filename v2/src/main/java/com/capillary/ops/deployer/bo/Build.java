@@ -14,6 +14,7 @@ public class Build {
     private String codeBuildId;
     @NotNull
     private String applicationId;
+    private ApplicationFamily applicationFamily;
     @NotNull
     private String tag;
     private StatusType status;
@@ -110,5 +111,13 @@ public class Build {
 
     public void setPromoted(boolean promoted) {
         this.promoted = promoted;
+    }
+
+    public ApplicationFamily getApplicationFamily() {
+        return applicationFamily;
+    }
+
+    public void setApplicationFamily(ApplicationFamily applicationFamily) {
+        this.applicationFamily = applicationFamily;
     }
 }

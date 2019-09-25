@@ -1,9 +1,7 @@
 package com.capillary.ops.deployer.service.mocks;
 
 import com.capillary.ops.deployer.bo.*;
-import com.capillary.ops.deployer.repository.ApplicationRepository;
-import com.capillary.ops.deployer.repository.BuildRepository;
-import com.capillary.ops.deployer.repository.EnvironmentRepository;
+import com.capillary.ops.deployer.repository.*;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +27,19 @@ public class MockDataBootstrap {
     @Autowired
     private EnvironmentRepository environmentRepository;
 
+    @Autowired
+    ApplicationSecretsRepository applicationSecretsRepository;
+
+    @Autowired
+    ApplicationSecretRequestsRepository applicationSecretRequestsRepository;
+
     @PostConstruct
     private void init() {
         createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
+        createEnvironment("stage", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
+        createEnvironment("sg", EnvironmentType.PRODUCTION, ApplicationFamily.ECOMMERCE);
+        createEnvironment("eu", EnvironmentType.PRODUCTION, ApplicationFamily.ECOMMERCE);
+
         createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.CRM);
 
         createApplication("intouch-api", ApplicationFamily.CRM);
@@ -90,6 +98,14 @@ public class MockDataBootstrap {
         application.setPorts(new ArrayList<>(getPorts()));
         Application result = applicationRepository.save(application);
         createBuild(result);
+        ApplicationSecretRequest request = new ApplicationSecretRequest();
+        request.setSecretName("DB_PASSWORD");
+        request.setDescription("DB PASSWORD");
+        request.setApplicationFamily(applicationFamily);
+        request.setApplicationId(application.getId());
+        applicationSecretRequestsRepository.save(request);
+        applicationSecretsRepository.save(new ApplicationSecret("nightly", applicationFamily, application.getId(),
+                request.getSecretName(), "somevalue", request.getDescription(), ApplicationSecret.SecretStatus.FULFILLED));
         return result;
     }
 
