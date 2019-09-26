@@ -74,7 +74,6 @@ export class DeploymentPageComponent implements OnInit {
         this.applicationId = params.get('applicationId');
         this.buildId = params.get('buildId');
         this.loadBuild();
-        this.loadEnvironments();
         this.loadApplication();
       },
     );
@@ -85,7 +84,10 @@ export class DeploymentPageComponent implements OnInit {
       applicationFamily: this.appFamily,
       applicationId: this.applicationId,
       buildId: this.buildId,
-    }).subscribe(build => this.build = build);
+    }).subscribe(build => {
+      this.build = build;
+      this.loadEnvironments();
+    });
   }
 
   loadEnvironments() {
