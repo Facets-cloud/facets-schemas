@@ -1,0 +1,119 @@
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Application } from '../../api/models';
+import { ApplicationControllerService } from '../../api/services';
+import { NumberComponentDynamicComponent } from './number-component-dynamic/number-component-dynamic.component';
+import { NbToastrService, NbStepperComponent } from '@nebular/theme';
+import { Router } from '@angular/router';
+import { ApplicationsMenuComponent } from '../applications-menu/applications-menu.component';
+import { MessageBus } from '../../@core/message-bus';
+
+@Component({
+  selector: 'create-application-page',
+  templateUrl: './create-application-page.component.html',
+  styleUrls: ['./create-application-page.component.scss']
+})
+export class CreateApplicationPageComponent implements OnInit {
+
+  application: Application = {
+    ports: [],
+    healthCheck: {
+      livenessProbe: {},
+      readinessProbe: {},
+    },
+  };
+
+  appFamilies = [];
+
+  settings = {
+    columns: {
+      name: {
+        title: 'Name',
+        filter: false,
+        width: '34%',
+      },
+      containerPort: {
+        title: 'Container Port',
+        filter: false,
+        width: '33%',
+        editor: { type: 'custom', component: NumberComponentDynamicComponent },
+      },
+      lbPort: {
+        title: 'LoadBalancer Port',
+        filter: false,
+        width: '33%',
+        editor: { type: 'custom', component: NumberComponentDynamicComponent },
+      },
+    },
+    noDataMessage: '',
+    add: {
+      addButtonContent: '<i class="nb-plus"></i>',
+      createButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true,
+    },
+    delete: {
+      deleteButtonContent: '<i class="nb-trash"></i>',
+      confirmDelete: false,
+    },
+    edit: {
+      editButtonContent: '<i class="nb-edit"></i>',
+      saveButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+    },
+    pager: {
+      display: true,
+      perPage: 5,
+    },
+    actions: {
+      position: 'right',
+    },
+  };
+
+  constructor(private applicationControllerService: ApplicationControllerService,
+    private nbToastrService: NbToastrService, private router: Router, private messageBus: MessageBus) { }
+
+  ngOnInit() {
+    this.populateAppFamilies();
+  }
+
+  populateAppFamilies() {
+    this.applicationControllerService.getApplicationFamiliesUsingGET().subscribe(
+      appFamilies => {
+        this.appFamilies = appFamilies;
+      },
+    );
+  }
+
+  appFamilySelected(stepper: any) {
+
+  }
+
+  validatePort(event) {
+    if (this.application.ports.map(x => x.name).includes(event.newData['name'])) {
+      this.nbToastrService.danger('Duplicate port name not allowed', 'Error');
+      event.confirm.reject();
+    }
+    event.confirm.resolve(event.newData);
+  }
+
+  skipLiveliness(stepper: NbStepperComponent) {
+    this.application.healthCheck.livenessProbe = {};
+    stepper.next();
+  }
+
+  skipReadiness(stepper: NbStepperComponent) {
+    this.application.healthCheck.readinessProbe = {};
+    stepper.next();
+  }
+
+  createApplication() {
+    this.applicationControllerService.createApplicationUsingPOST({
+      applicationFamily: this.application.applicationFamily,
+      application: this.application,
+    }).subscribe(app => {
+      this.messageBus.application.next(true);
+      this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
+    });
+  }
+
+}

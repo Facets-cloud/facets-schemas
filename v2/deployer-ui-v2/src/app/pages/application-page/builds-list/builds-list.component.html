@@ -1,0 +1,4 @@
+<div style="margin-bottom: 1rem">
+    <button nbButton (click)=showBuildDialog()>Build Now</button>
+</div>
+<ng2-smart-table [settings]="settings" [source]="builds" (custom)="onCustom($event)"></ng2-smart-table>

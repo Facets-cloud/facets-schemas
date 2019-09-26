@@ -1,0 +1,15 @@
+<div style="width: 1000px;">
+  <nb-card class="own-scroll" size="giant">
+    <nb-card-header>
+      <div> Build Logs <a style="float: right;" href="javascript:">
+          <nb-icon *ngIf="build.status === 'IN_PROGRESS'" (click)="paused ? resume() : pause()" pack="eva" icon="{{paused ? 'play-circle-outline' : 'pause-circle-outline'}}"></nb-icon>
+        </a>
+      </div>
+    </nb-card-header>
+    <nb-list nbInfiniteList [threshold]="500">
+      <nb-list-item *ngFor="let log of logs">
+        <b>{{ log.timestamp | date:'medium' }}</b> &emsp; {{ log.message }}
+      </nb-list-item>
+    </nb-list>
+  </nb-card>
+</div>

@@ -1,0 +1,43 @@
+<div style="text-align: center;" class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <tr>
+        <th class="text-nowrap" scope="row">Name</th>
+        <th class="text-nowrap" scope="row">Build Type</th>
+        <th class="text-nowrap" scope="row">Source</th>
+        <th class="text-nowrap" scope="row">Subdirectory</th>
+      </tr>
+      <tr>
+        <td>{{ application?.name }}</td>
+        <td>{{ application?.buildType }}</td>
+        <td>{{ application?.vcsProvider }}</td>
+        <td>{{ application?.applicationRootDirectory }}</td>
+      </tr>
+      <tr>
+        <th class="text-nowrap" scope="row">Load Balancer Type</th>
+        <th class="text-nowrap" scope="row">DNS Prefix</th>
+      </tr>
+      <td>{{ application?.loadBalancerType }}</td>
+      <td>{{ application?.dnsPrefix }}</td>
+      <tr>
+    </tbody>
+  </table>
+</div>
+
+  <div style="text-align: center;" class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <tbody>
+          <ng-template ngFor let-port [ngForOf]="application?.ports">
+        <tr>
+          <th colspan="6" class="text-nowrap" scope="row">{{port.name | uppercase}}</th>
+        </tr>
+        <tr>
+          <th class="text-nowrap" scope="row">Application Port</th>
+          <td>{{ port.containerPort }}</td>
+          <th class="text-nowrap" scope="row">Load Balancer Port</th>
+          <td>{{ port.lbPort }}</td>
+        </tr>
+      </ng-template>
+      </tbody>
+    </table>
+  </div>

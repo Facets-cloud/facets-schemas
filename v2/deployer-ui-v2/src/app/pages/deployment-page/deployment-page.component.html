@@ -1,0 +1,71 @@
+<nb-card size="huge">
+  <nb-card-header>
+    Deploying build <i>"{{build?.description}}"</i> of application <i>"{{application?.name}}"</i> {{deployment.environment ? 'to ' + deployment.environment + ' cluster': ''}}
+  </nb-card-header>
+  <nb-card-body>
+    <nb-stepper #stepper disableStepNavigation=true linear=true>
+      <nb-step [stepControl]="cluster" label="Select Cluster">
+        <nb-alert size="tiny" *ngIf="!build?.promoted" accent="warning" style="text-align: center">Unpromoted builds may only be deployed to QA environments</nb-alert>
+        <div style="width:10%; margin: auto; min-width: 100px;">
+          <nb-select required [(ngModel)]="deployment.environment" #cluster="ngModel" name="cluster" id="cluster"
+            placeholder="Select Cluster" fixedWidth>
+            <nb-option #cluster *ngFor="let environment of environments" value="{{environment.name}}">
+              {{environment.name}}
+            </nb-option>
+          </nb-select>
+        </div>
+        <div style="padding-top: 1rem; float: right;">
+          <button nbButton (click)="environmentSelected(stepper)">next</button>
+        </div>
+      </nb-step>
+      <nb-step [stepControl]="podSize" label="Configure Pod Size">
+        <div style="width:10%; margin: auto; min-width: 100px;">
+          <nb-select required [(ngModel)]="deployment.podSize" #podSize="ngModel" name="podSize" id="podSize"
+            placeholder="Select Pod Size" fixedWidth>
+            <nb-option value="SMALL">
+              SMALL (1core/2GiB)
+            </nb-option>
+            <nb-option value="LARGE">
+              LARGE (2core/4GiB)
+            </nb-option>
+            <nb-option value="XLARGE">
+              XLARGE (3core/6GiB)
+            </nb-option>
+          </nb-select>
+        </div>
+        <div style="padding-top: 1rem; float: right;">
+          <button [disabled]="podSize.invalid" nbButton nbStepperNext>Next</button>
+        </div>
+      </nb-step>
+      <nb-step label="Configure Environment Variables">
+        <ng2-smart-table (createConfirm)="validateConfig($event)" [settings]="settings" [source]="deployment.configurations"></ng2-smart-table>
+        <div style="padding-top: 1rem; float: right;">
+          <button nbButton nbStepperNext>next</button>
+        </div>
+      </nb-step>
+      <nb-step label="Configure Autoscaling">
+        <div style="width: 25%; margin: auto; min-width: 300px;">
+          <label for="minReplicas" class="label">Minimum Replicas</label>
+          <input type=number #minReplicas="ngModel" required nbInput fullWidth name="minReplicas" id="minReplicas"
+            [(ngModel)]="deployment.horizontalPodAutoscaler.minReplicas">
+          <label for="maxReplicas" class="label">Maximum Replicas</label>
+          <input type=number #maxReplicas="ngModel" required nbInput fullWidth name="maxReplicas" id="maxReplicas"
+            [(ngModel)]="deployment.horizontalPodAutoscaler.maxReplicas">
+          <label for="threshold" class="label">CPU Threshold (%)</label>
+          <input type=number #threshold="ngModel" required nbInput fullWidth name="threshold" id="threshold"
+            [(ngModel)]="deployment.horizontalPodAutoscaler.threshold">
+        </div>
+        <div style="padding-top: 1rem; float: right;">
+          <button nbButton (click)="deploy(stepper)" >Deploy</button>
+        </div>
+      </nb-step>
+      <nb-step #deployStep label="Deploy">
+        <nb-card *ngIf="loading" [nbSpinner]="loading" status="info">
+        </nb-card>
+      </nb-step>
+      <nb-step [hidden]=true>
+        <nb-alert size="tiny" *ngIf="!build?.promoted" status="success" style="text-align: center">Successfully Deployed!!</nb-alert>
+      </nb-step>
+    </nb-stepper>
+  </nb-card-body>
+</nb-card>

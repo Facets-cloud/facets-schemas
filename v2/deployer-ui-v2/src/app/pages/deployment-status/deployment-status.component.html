@@ -1,0 +1,42 @@
+<nb-card>
+  <nb-accordion>
+    <nb-accordion-item collapsed=false>
+        <nb-accordion-item-header>Pods</nb-accordion-item-header>
+        <nb-accordion-item-body>
+      <ng2-smart-table [settings]="settings" [source]="deploymentStatus?.pods"></ng2-smart-table>
+    </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item>
+        <nb-accordion-item-header>Environment Variables</nb-accordion-item-header>
+      <nb-accordion-item-body>
+      <ng2-smart-table *ngIf="deploymentStatus" [settings]="envTableSettings" [source]="environmentVariables">
+      </ng2-smart-table>
+    </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item>
+      <nb-accordion-item-header>Autoscaling Status</nb-accordion-item-header>
+      <nb-accordion-item-body>
+      <div class="row">
+        <div style="padding-top: 0.25rem" class="col-3">Minimum Replicas</div>
+        <div style="padding-top: 0.5rem" class="col-4">{{deploymentStatus?.deployment?.hpaStatus?.minReplicas}}</div>
+      </div>
+      <div class="row">
+        <div style="padding-top: 0.25rem" class="col-3">Maximum Replicas</div>
+        <div style="padding-top: 0.5rem" class="col-4">{{deploymentStatus?.deployment?.hpaStatus?.maxReplicas}}</div>
+      </div>
+      <div class="row">
+        <div style="padding-top: 0.5rem" class="col-3">Target CPU Utilization</div>
+        <div style="padding-top: 0.5rem" class="col-4">{{deploymentStatus?.deployment?.hpaStatus?.targetCPUAvg}}%</div>
+      </div>
+      <div class="row">
+        <div style="padding-top: 0.5rem" class="col-3">Current CPU Utilization</div>
+        <div style="padding-top: 0.5rem" class="col-4">{{deploymentStatus?.deployment?.hpaStatus?.currentCPUAvg}}%</div>
+      </div>
+      <div class="row">
+        <div style="padding-top: 0.5rem" class="col-3">Current Replicas</div>
+        <div style="padding-top: 0.5rem" class="col-4">{{deploymentStatus?.deployment?.hpaStatus?.currentReplicas}}</div>
+      </div>
+    </nb-accordion-item-body>
+    </nb-accordion-item>
+  </nb-accordion>
+</nb-card>

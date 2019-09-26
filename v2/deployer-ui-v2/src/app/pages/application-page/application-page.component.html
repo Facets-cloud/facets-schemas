@@ -1,0 +1,26 @@
+<nb-accordion>
+  <nb-accordion-item>
+    <nb-accordion-item-header>Application Details</nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <app-info [application]="application"></app-info>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  <nb-accordion-item>
+    <nb-accordion-item-header>Current Deployments</nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <current-deployments [application]="application"></current-deployments>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  <nb-accordion-item>
+    <nb-accordion-item-header>Credential Management</nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <credential-management [application]="application"></credential-management>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  <nb-accordion-item collapsed=false>
+    <nb-accordion-item-header>Builds</nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <builds-list [application]="application"></builds-list>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>
