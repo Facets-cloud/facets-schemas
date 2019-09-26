@@ -38,4 +38,4 @@ v2/src/main/resources/static/
 *.classpath
 *.factorypath
 *.project
-
+v2/deployer-ui-v2/package-lock.json
