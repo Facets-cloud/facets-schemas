@@ -27,6 +27,9 @@ export class DeploymentStatusComponent implements OnInit {
       podStatus: {
         title: 'Status',
       },
+      ready: {
+        title: 'Ready',
+      },
       image: {
         title: 'Image',
       },
