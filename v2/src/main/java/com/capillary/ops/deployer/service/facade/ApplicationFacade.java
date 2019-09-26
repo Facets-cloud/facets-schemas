@@ -177,6 +177,9 @@ public class ApplicationFacade {
     public List<Build> getBuilds(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         List<Build> builds = buildRepository.findByApplicationIdOrderByTimestampDesc(application.getId());
+        builds.parallelStream().forEach(x -> {
+            x.setApplicationFamily(applicationFamily);
+        });
         return getBuildDetails(application, builds);
     }
 
