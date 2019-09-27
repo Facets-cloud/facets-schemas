@@ -75,6 +75,12 @@ public class ApplicationFacade {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
     public Application createApplication(Application application) {
+        if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
+            application.getHealthCheck().setLivenessProbe(null);
+        }
+        if(application.getHealthCheck().getReadinessProbe().getPort() == 0) {
+            application.getHealthCheck().setReadinessProbe(null);
+        }
         applicationRepository.save(application);
         ecrService.createRepository(application);
         codeBuildService.createProject(application);

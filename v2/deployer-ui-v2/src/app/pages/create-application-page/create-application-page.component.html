@@ -1,11 +1,14 @@
 <nb-card size="huge">
-  <nb-card-header>
+  <nb-card-header *ngIf="! application?.id">
     Create Application
+  </nb-card-header>
+  <nb-card-header *ngIf="application?.id">
+    Update Application ({{application?.name}})
   </nb-card-header>
   <nb-card-body>
     <div style="margin-left: 5rem; margin-right: 5rem;">
       <nb-stepper #stepper linear=true>
-        <nb-step [stepControl]="appFamily" label="Select Application Family">
+        <nb-step *ngIf="! application?.id" [stepControl]="appFamily" label="Select Application Family">
           <div style="margin: auto; width: 35%;">
             <nb-select required [(ngModel)]="application.applicationFamily" #appFamily="ngModel" name="appFamily"
               id="appFamily" placeholder="Select Application Family" fixedWidth>
@@ -24,14 +27,14 @@
               <div class="form-group row">
                 <label for="appName" class="label col-form-label col-sm-4">Name</label>
                 <div class="col-sm-8">
-                  <input fieldSize="small" type=text #appName="ngModel" required nbInput fullWidth name="appName"
+                  <input [disabled]="application?.id" fieldSize="small" type=text #appName="ngModel" required nbInput fullWidth name="appName"
                     id="appName" [(ngModel)]="application.name" placeholder="myapp">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="buildType" class="label col-sm-4">Build Type</label>
                 <div class="col-sm-8">
-                  <nb-select fullWidth size="small" required [(ngModel)]="application.buildType" #buildType="ngModel"
+                  <nb-select [disabled]="application?.id" fullWidth size="small" required [(ngModel)]="application.buildType" #buildType="ngModel"
                     name="buildType" id="buildType" placeholder="Build Type" fixedWidth>
                     <nb-option value="MVN">Maven</nb-option>
                     <nb-option value="DOTNET_CORE">Dotnet Core</nb-option>
@@ -44,7 +47,7 @@
               <div class="form-group row">
                 <label for="vcsProvider" class="label col-sm-4">VCS Provider</label>
                 <div class="col-sm-8">
-                  <nb-select fullWidth size="small" required [(ngModel)]="application.vcsProvider"
+                  <nb-select [disabled]="application?.id" fullWidth size="small" required [(ngModel)]="application.vcsProvider"
                     #vcsProvider="ngModel" name="vcsProvider" id="vcsProvider" placeholder="VCS Provider" fixedWidth>
                     <nb-option value="GITHUB">Github</nb-option>
                     <nb-option value="BITBUCKET">Bitbucket</nb-option>
@@ -54,7 +57,7 @@
               <div class="form-group row">
                 <label for="repositoryUrl" class="label col-sm-4">Repository URL</label>
                 <div class="col-sm-8">
-                  <input fieldSize="small" type=text #repositoryUrl="ngModel" required nbInput fullWidth
+                  <input [disabled]="application?.id" fieldSize="small" type=text #repositoryUrl="ngModel" required nbInput fullWidth
                     name="repositoryUrl" id="repositoryUrl" [(ngModel)]="application.repositoryUrl"
                     placeholder="https://github.com/Capillary/myapp">
                 </div>
@@ -62,7 +65,7 @@
               <div class="form-group row">
                 <label for="applicationRootDirectory" class="label col-sm-4">Application Directory</label>
                 <div class="col-sm-8">
-                  <input fieldSize="small" type=text #applicationRootDirectory="ngModel" required nbInput fullWidth
+                  <input [disabled]="application?.id" fieldSize="small" type=text #applicationRootDirectory="ngModel" required nbInput fullWidth
                     name="applicationRootDirectory" id="applicationRootDirectory"
                     [(ngModel)]="application.applicationRootDirectory" placeholder="subDirectory">
                 </div>
@@ -241,7 +244,8 @@
         </nb-step>
         <nb-step label="Create Application">
             <div style="margin: auto; width: 30%; min-width: 300px;">
-            <button nbButton [disabled]="!appDetailsForm.valid" (click)=createApplication()>Create Application</button>
+            <button *ngIf="!application?.id"  nbButton [disabled]="!appDetailsForm.valid" (click)=createApplication()>Create Application</button>
+            <button *ngIf="application?.id"  nbButton [disabled]="!appDetailsForm.valid" (click)=createApplication()>Update Application</button>
             </div>
         </nb-step>
       </nb-stepper>

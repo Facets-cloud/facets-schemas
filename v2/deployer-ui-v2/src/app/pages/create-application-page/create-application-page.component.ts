@@ -3,7 +3,7 @@ import { Application } from '../../api/models';
 import { ApplicationControllerService } from '../../api/services';
 import { NumberComponentDynamicComponent } from './number-component-dynamic/number-component-dynamic.component';
 import { NbToastrService, NbStepperComponent } from '@nebular/theme';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ApplicationsMenuComponent } from '../applications-menu/applications-menu.component';
 import { MessageBus } from '../../@core/message-bus';
 
@@ -70,9 +70,39 @@ export class CreateApplicationPageComponent implements OnInit {
   };
 
   constructor(private applicationControllerService: ApplicationControllerService,
-    private nbToastrService: NbToastrService, private router: Router, private messageBus: MessageBus) { }
+    private nbToastrService: NbToastrService, private router: Router,
+    private messageBus: MessageBus, private activatedRoute: ActivatedRoute) { }
 
   ngOnInit() {
+    this.activatedRoute.paramMap.subscribe(
+      paramMap => {
+        if (paramMap.has('appFamily') && paramMap.has('applicationId')) {
+          this.applicationControllerService.getApplicationUsingGET({
+            applicationFamily: <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> paramMap.get('appFamily'),
+            applicationId: paramMap.get('applicationId'),
+          }).subscribe(app => {
+            if (! app.ports) {
+              app.ports = [];
+            }
+            if (! app.healthCheck) {
+              app.healthCheck = {
+                livenessProbe: {},
+                readinessProbe: {},
+              };
+            }
+            if (! app.healthCheck.livenessProbe) {
+              app.healthCheck.livenessProbe = {
+              };
+            }
+            if (! app.healthCheck.readinessProbe) {
+              app.healthCheck.readinessProbe = {
+              };
+            }
+            this.application = app;
+          });
+        }
+      },
+    );
     this.populateAppFamilies();
   }
 

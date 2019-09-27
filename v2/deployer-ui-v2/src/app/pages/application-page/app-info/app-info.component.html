@@ -1,5 +1,8 @@
-<div style="text-align: center;" class="table-responsive">
-  <table class="table table-bordered table-striped">
+<div class="table-responsive">
+  <div style="margin-bottom: 1rem;">
+    <button (click)='updateApplication()' nbButton>Update Application</button>
+  </div>
+  <table style="text-align: center;" class="table table-bordered table-striped">
     <tbody>
       <tr>
         <th class="text-nowrap" scope="row">Name</th>
@@ -24,10 +27,10 @@
   </table>
 </div>
 
-  <div style="text-align: center;" class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <tbody>
-          <ng-template ngFor let-port [ngForOf]="application?.ports">
+<div style="text-align: center;" class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <tbody>
+      <ng-template ngFor let-port [ngForOf]="application?.ports">
         <tr>
           <th colspan="6" class="text-nowrap" scope="row">{{port.name | uppercase}}</th>
         </tr>
@@ -38,6 +41,6 @@
           <td>{{ port.lbPort }}</td>
         </tr>
       </ng-template>
-      </tbody>
-    </table>
-  </div>
+    </tbody>
+  </table>
+</div>

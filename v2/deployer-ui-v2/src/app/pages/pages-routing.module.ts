@@ -36,7 +36,11 @@ const routes: Routes = [{
     {
       path: 'applications/create',
       component: CreateApplicationPageComponent,
-    }
+    },
+    {
+      path: 'applications/:appFamily/:applicationId/edit',
+      component: CreateApplicationPageComponent,
+    },
   ],
 }];
 
