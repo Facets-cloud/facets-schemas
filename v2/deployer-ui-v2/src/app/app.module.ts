@@ -30,7 +30,7 @@ import { SecretStatusColumnComponent } from './pages/application-page/secret-sta
 import { RequestCredentialDialogComponent } from './pages/application-page/request-credential-dialog/request-credential-dialog.component';
 import { SetCredentialValueDialogComponent } from './pages/application-page/set-credential-value-dialog/set-credential-value-dialog.component';
 import { NumberComponentDynamicComponent } from './pages/create-application-page/number-component-dynamic/number-component-dynamic.component';
-import { ActionsColumn, DeploymentDetailsDialog } from './pages/application-page/current-deployments/current-deployments.component';
+import { ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './pages/application-page/current-deployments/current-deployments.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -65,6 +65,7 @@ import { ActionsColumn, DeploymentDetailsDialog } from './pages/application-page
     NumberComponentDynamicComponent,
     ActionsColumn,
     DeploymentDetailsDialog,
+    CurrentStatusColumn,
   ],
 })
 export class AppModule {

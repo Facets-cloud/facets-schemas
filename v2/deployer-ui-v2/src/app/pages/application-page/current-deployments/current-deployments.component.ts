@@ -4,6 +4,7 @@ import { ApplicationControllerService } from '../../../api/services';
 import { environment } from '../../../../environments/environment.prod';
 import { NbDialogService } from '@nebular/theme';
 import { MessageBus } from '../../../@core/message-bus';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'current-deployments',
@@ -26,6 +27,11 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
       },
       buildId: {
         title: 'Build Id',
+      },
+      currentStatus: {
+        title: "Current Status",
+        type: 'custom',
+        renderComponent: CurrentStatusColumn,
       },
       deployedBy: {
         title: 'Deployed By',
@@ -115,4 +121,19 @@ export class ActionsColumn {
 })
 export class DeploymentDetailsDialog {
   @Input() deployment: Deployment;
+}
+
+@Component({
+  selector: 'current-status-colum',
+  template: `<button style="width: 100%; margin: auto;" (click)="showCurrentPods()" nbTooltip="Show Current Status" nbButton appearance="ghost"><nb-icon pack="eva" icon="layers-outline"></nb-icon></button>
+  `,
+})
+export class CurrentStatusColumn {
+  @Input() rowData: Deployment;
+
+  constructor(private router: Router) {}
+
+  showCurrentPods() {
+    this.router.navigate(['pages', 'applications', this.rowData.applicationFamily, this.rowData.applicationId, 'deploymentStatus', this.rowData.environment]);
+  }
 }
