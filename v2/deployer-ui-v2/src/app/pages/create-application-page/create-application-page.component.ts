@@ -78,23 +78,23 @@ export class CreateApplicationPageComponent implements OnInit {
       paramMap => {
         if (paramMap.has('appFamily') && paramMap.has('applicationId')) {
           this.applicationControllerService.getApplicationUsingGET({
-            applicationFamily: <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'> paramMap.get('appFamily'),
+            applicationFamily: <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>paramMap.get('appFamily'),
             applicationId: paramMap.get('applicationId'),
           }).subscribe(app => {
-            if (! app.ports) {
+            if (!app.ports) {
               app.ports = [];
             }
-            if (! app.healthCheck) {
+            if (!app.healthCheck) {
               app.healthCheck = {
                 livenessProbe: {},
                 readinessProbe: {},
               };
             }
-            if (! app.healthCheck.livenessProbe) {
+            if (!app.healthCheck.livenessProbe) {
               app.healthCheck.livenessProbe = {
               };
             }
-            if (! app.healthCheck.readinessProbe) {
+            if (!app.healthCheck.readinessProbe) {
               app.healthCheck.readinessProbe = {
               };
             }
@@ -137,13 +137,23 @@ export class CreateApplicationPageComponent implements OnInit {
   }
 
   createApplication() {
-    this.applicationControllerService.createApplicationUsingPOST({
-      applicationFamily: this.application.applicationFamily,
-      application: this.application,
-    }).subscribe(app => {
-      this.messageBus.application.next(true);
-      this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
-    });
+    if (this.application.id) {
+      this.applicationControllerService.updateApplicationUsingPUT({
+        applicationFamily: this.application.applicationFamily,
+        application: this.application,
+      }).subscribe(app => {
+        this.messageBus.application.next(true);
+        this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
+      });
+    } else {
+      this.applicationControllerService.createApplicationUsingPOST({
+        applicationFamily: this.application.applicationFamily,
+        application: this.application,
+      }).subscribe(app => {
+        this.messageBus.application.next(true);
+        this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
+      });
+    }
   }
 
 }
