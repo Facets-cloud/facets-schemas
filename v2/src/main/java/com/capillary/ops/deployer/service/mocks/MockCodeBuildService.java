@@ -49,7 +49,7 @@ public class MockCodeBuildService implements ICodeBuildService {
         if (logs.size() >= 10) {
             status = StatusType.SUCCEEDED;
         }
-        return software.amazon.awssdk.services.codebuild.model.Build.builder()
+        return software.amazon.awssdk.services.codebuild.model.Build.builder().id(codeBuildId)
                 .buildStatus(status).build();
     }
 
