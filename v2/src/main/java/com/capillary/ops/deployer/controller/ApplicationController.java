@@ -262,4 +262,8 @@ public class ApplicationController {
         return (OAuth2UserServiceImpl.SimpleOauth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
+    @GetMapping(value = "/stats")
+    public GlobalStats globalStats() {
+        return applicationFacade.getGlobalStats();
+    }
 }

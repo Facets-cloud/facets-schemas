@@ -14,6 +14,7 @@ export { EnvironmentMetaData } from './models/environment-meta-data';
 export { EnvironmentVariable } from './models/environment-variable';
 export { ExternalDnsConfiguration } from './models/external-dns-configuration';
 export { File } from './models/file';
+export { GlobalStats } from './models/global-stats';
 export { GrantedAuthority } from './models/granted-authority';
 export { HPA } from './models/hpa';
 export { HPADetails } from './models/hpadetails';

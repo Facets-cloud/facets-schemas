@@ -381,4 +381,11 @@ public class ApplicationFacade {
                                 applicationId).get();
         return secretService.getApplicationSecrets(environmentName, applicationFamily, applicationId);
     }
+
+    public GlobalStats getGlobalStats() {
+        long applicationCount = this.applicationRepository.count();
+        long buildCount = this.buildRepository.count();
+        long deploymentCount = this.deploymentRepository.count();
+        return new GlobalStats(applicationCount, buildCount, deploymentCount);
+    }
 }

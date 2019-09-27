@@ -5,6 +5,15 @@ public class GlobalStats {
     private long totalBuilds;
     private long totalDeployments;
 
+    public GlobalStats() {
+    }
+
+    public GlobalStats(long applicationCount, long totalBuilds, long totalDeployments) {
+        this.applicationCount = applicationCount;
+        this.totalBuilds = totalBuilds;
+        this.totalDeployments = totalDeployments;
+    }
+
     public long getApplicationCount() {
         return applicationCount;
     }

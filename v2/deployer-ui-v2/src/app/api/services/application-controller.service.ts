@@ -8,6 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
+import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
@@ -29,6 +30,7 @@ import { InputStreamResource } from '../models/input-stream-resource';
 class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
   static readonly meUsingGETPath = '/api/me';
+  static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
   static readonly createUserUsingPOSTPath = '/api/users';
   static readonly updateUserUsingPUTPath = '/api/users/{userId}';
@@ -127,6 +129,39 @@ class ApplicationControllerService extends __BaseService {
   meUsingGET(): __Observable<SimpleOauth2User> {
     return this.meUsingGETResponse().pipe(
       __map(_r => _r.body as SimpleOauth2User)
+    );
+  }
+
+  /**
+   * @return OK
+   */
+  globalStatsUsingGETResponse(): __Observable<__StrictHttpResponse<GlobalStats>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/stats`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<GlobalStats>;
+      })
+    );
+  }
+  /**
+   * @return OK
+   */
+  globalStatsUsingGET(): __Observable<GlobalStats> {
+    return this.globalStatsUsingGETResponse().pipe(
+      __map(_r => _r.body as GlobalStats)
     );
   }
 
