@@ -137,6 +137,11 @@ export class CreateApplicationPageComponent implements OnInit {
   }
 
   createApplication() {
+    if (this.application.loadBalancerType === 'EXTERNAL') {
+      this.application.dnsType = 'PUBLIC';
+    } else {
+      this.application.dnsType = 'PRIVATE';
+    }
     if (this.application.id) {
       this.applicationControllerService.updateApplicationUsingPUT({
         applicationFamily: this.application.applicationFamily,
