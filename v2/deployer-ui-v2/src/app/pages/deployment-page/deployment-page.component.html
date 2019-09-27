@@ -38,7 +38,7 @@
         </div>
       </nb-step>
       <nb-step label="Configure Environment Variables">
-        <ng2-smart-table (createConfirm)="validateConfig($event)" [settings]="settings" [source]="deployment.configurations"></ng2-smart-table>
+        <ng2-smart-table (deleteConfirm)="onDeleteConfirm($event)" (createConfirm)="validateConfig($event)" [settings]="settings" [source]="deployment.configurations"></ng2-smart-table>
         <div style="padding-top: 1rem; float: right;">
           <button nbButton nbStepperNext>next</button>
         </div>

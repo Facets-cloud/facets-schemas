@@ -47,7 +47,7 @@ export class DeploymentPageComponent implements OnInit {
     },
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: false,
+      confirmDelete: true,
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
@@ -140,7 +140,7 @@ export class DeploymentPageComponent implements OnInit {
       deployment => {
         if (deployment) {
           this.deployment.podSize = deployment.podSize,
-          this.deployment.configurations = deployment.configurations;
+            this.deployment.configurations = deployment.configurations;
           this.deployment.horizontalPodAutoscaler = deployment.horizontalPodAutoscaler;
         }
         stepper.next();
@@ -150,11 +150,21 @@ export class DeploymentPageComponent implements OnInit {
 
   validateConfig(event) {
 
-    if (this.deployment.configurations.map(x=>x.name).includes(event.newData['name'])) {
+    if (this.deployment.configurations.map(x => x.name).includes(event.newData['name'])) {
       event.confirm.reject();
       this.nbToastrService.danger('Duplicate keys not allowed', 'Error');
     } else {
       event.confirm.resolve(event.newData);
     }
+  }
+
+  onDeleteConfirm(event) {
+    console.log(event);
+    for (let i = 0; i < this.deployment.configurations.length; i++) {
+      if (this.deployment.configurations[i].name === event.data['name']) {
+        this.deployment.configurations.splice(i, 1);
+      }
+    }
+    event.confirm.resolve(event.data);
   }
 }
