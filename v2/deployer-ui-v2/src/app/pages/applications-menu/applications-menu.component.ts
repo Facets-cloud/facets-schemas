@@ -19,6 +19,11 @@ export class ApplicationsMenuComponent implements OnInit {
       icon: 'plus-outline',
       link: 'applications/create',
     },
+    {
+      title: 'User Management',
+      icon: 'people-outline',
+      link: 'users',
+    },
   ];
   isAdmin: boolean = false;
 

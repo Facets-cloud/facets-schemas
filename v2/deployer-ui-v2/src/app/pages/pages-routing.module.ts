@@ -7,6 +7,7 @@ import { ApplicationPageComponent } from './application-page/application-page.co
 import { DeploymentPageComponent } from './deployment-page/deployment-page.component';
 import { DeploymentStatusComponent } from './deployment-status/deployment-status.component';
 import { CreateApplicationPageComponent } from './create-application-page/create-application-page.component';
+import { UserManagementComponent } from './user-management/user-management.component';
 
 const routes: Routes = [{
   path: '',
@@ -40,6 +41,10 @@ const routes: Routes = [{
     {
       path: 'applications/:appFamily/:applicationId/edit',
       component: CreateApplicationPageComponent,
+    },
+    {
+      path: 'users',
+      component: UserManagementComponent,
     },
   ],
 }];

@@ -39,7 +39,7 @@ export class DeploymentStatusComponent implements OnInit {
       restartReason: {
         title: 'Last Restart Reason',
       },
-    },
+s    },
     actions: false,
     hideSubHeader: true,
   };

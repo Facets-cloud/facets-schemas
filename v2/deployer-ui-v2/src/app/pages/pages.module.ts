@@ -23,6 +23,7 @@ import { SetCredentialValueDialogComponent } from './application-page/set-creden
 import { CreateApplicationPageComponent } from './create-application-page/create-application-page.component';
 import { NumberComponentDynamicComponent } from './create-application-page/number-component-dynamic/number-component-dynamic.component';
 import { CurrentDeploymentsComponent, ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './application-page/current-deployments/current-deployments.component';
+import { UserManagementComponent } from './user-management/user-management.component';
 
 @NgModule({
   imports: [
@@ -72,6 +73,7 @@ import { CurrentDeploymentsComponent, ActionsColumn, DeploymentDetailsDialog, Cu
     ActionsColumn,
     DeploymentDetailsDialog,
     CurrentStatusColumn,
+    UserManagementComponent,
   ],
   entryComponents: [BuildDialogComponent],
 })
