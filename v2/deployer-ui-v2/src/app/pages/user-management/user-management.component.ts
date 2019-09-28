@@ -9,6 +9,7 @@ import { User } from '../../api/models';
 })
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
+  allUsers: User[] = [];
 
   settings = {
     columns: {
@@ -38,7 +39,7 @@ export class UserManagementComponent implements OnInit {
     },
     pager: {
       display: true,
-      perPage: 5,
+      perPage: 10,
     },
     actions: {
       position: 'right',
@@ -57,6 +58,7 @@ export class UserManagementComponent implements OnInit {
       users => {
         users.forEach(u => u['rolesString'] = u.roles.join(','));
         this.users = users;
+        this.allUsers = users;
       },
     );
   }
@@ -94,4 +96,7 @@ export class UserManagementComponent implements OnInit {
     );
   }
 
+  search(input) {
+    this.users = this.allUsers.filter(x => x.userName.startsWith(input));
+  }
 }

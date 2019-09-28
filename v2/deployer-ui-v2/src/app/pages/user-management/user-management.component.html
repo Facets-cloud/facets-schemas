@@ -3,6 +3,9 @@
     Users
   </nb-card-header>
   <nb-card-body>
+    <div style="margin-bottom: 1rem;">
+    <input type="text" nbInput shape="round" placeholder="Search" (input)="search($event.target.value)">
+  </div>
     <ng2-smart-table (editConfirm)="onEditConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" (createConfirm)="onCreateConfirm($event)" [settings]='settings' [source]='users'></ng2-smart-table>
   </nb-card-body>
 </nb-card>
