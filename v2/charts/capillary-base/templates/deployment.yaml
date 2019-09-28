@@ -103,14 +103,6 @@ spec:
 {{- if .Values.enableReadinessHTTP}}
 {{- template "readinessHTTPGet" . }}
 {{- end }}
-       volumeMounts:
-       - mountPath: {{ .Values.dumpDirMountPath | default "/var/log/dumps" }}
-         name: dump-vol
-      volumes:
-        - name: dump-vol
-          hostPath:
-            path: {{ .Values.dumpDirHostPath | default "/var/log/dumps" }}
-            type: Directory
     {{- if .Values.nodeSelector }}
       nodeSelector:
         environment: {{ .Values.nodeSelector }}
