@@ -1,13 +1,9 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
-import com.capillary.ops.deployer.component.BaseChartValueFactory;
-import com.capillary.ops.deployer.component.HelmValuesAdapter;
+import com.capillary.ops.deployer.service.helm.HelmValueProviderFactory;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.*;
@@ -25,15 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @Profile("!dev")
@@ -45,7 +37,7 @@ public class HelmService implements IHelmService {
     private EnvironmentRepository environmentRepository;
 
     @Autowired
-    private HelmValuesAdapter helmValuesAdapter;
+    private HelmValueProviderFactory helmValueProviderFactory;
 
     private static final Logger logger = LoggerFactory.getLogger(HelmService.class);
 
@@ -163,7 +155,7 @@ public class HelmService implements IHelmService {
         String environmentName = deployment.getEnvironment();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String chartName = getChartName(application, deployment);
-        Map<String, Object> valueMap = helmValuesAdapter.getValues(chartName, application, environment, deployment);
+        Map<String, Object> valueMap = helmValueProviderFactory.getValues(chartName, application, environment, deployment);
         String releaseName = getReleaseName(application, environment);
         install(environment, releaseName, chartName, valueMap);
     }
@@ -192,7 +184,7 @@ public class HelmService implements IHelmService {
         String environmentName = deployment.getEnvironment();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String chartName = getChartName(application, deployment);
-        Map<String, Object> valueMap = helmValuesAdapter.getValues(chartName, application, environment, deployment);
+        Map<String, Object> valueMap = helmValueProviderFactory.getValues(chartName, application, environment, deployment);
         String releaseName = getReleaseName(application, environment);
         upgrade(environment, releaseName, chartName, valueMap);
     }

@@ -1,4 +1,4 @@
-package com.capillary.ops.deployer.component;
+package com.capillary.ops.deployer.service.helm;
 
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Deployment;
@@ -10,20 +10,20 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class HelmValuesAdapter {
+public class HelmValueProviderFactory {
 
     @Lookup
-    public BaseChartValueFactory getHelmValuesBuilder() {
+    public BaseChartValueProvider getHelmValuesBuilder() {
         return null;
     }
 
     @Lookup
-    public StatefulSetChartValueFactory getStatefulSetValuesBuilder() {
+    public StatefulSetChartValueProvider getStatefulSetValuesBuilder() {
         return null;
     }
 
     @Lookup
-    public CronJobChartValueFactory getCronJobBuilder() {
+    public CronJobChartValueProvider getCronJobBuilder() {
         return null;
     }
 

@@ -1,7 +1,7 @@
-package com.capillary.ops.deployer.component.impl;
+package com.capillary.ops.deployer.service.helm.impl;
 
 import com.capillary.ops.deployer.bo.*;
-import com.capillary.ops.deployer.component.IHelmValueComponents;
+import com.capillary.ops.deployer.service.helm.IHelmValueComponents;
 import com.capillary.ops.deployer.service.SecretService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -16,53 +16,45 @@ import java.util.stream.Collectors;
 import static com.capillary.ops.deployer.bo.Deployment.*;
 
 @Component
-public class HelmValueComponents implements IHelmValueComponents {
+public abstract class AbstractValueProvider {
 
     @Autowired
     private SecretService secretService;
-
-    @Override
+    
     public String getDeploymentId(Deployment deployment) {
         return deployment.getId();
     }
 
-    @Override
     public String getBuildId(Deployment deployment) {
         return deployment.getBuildId();
     }
 
-    @Override
+    
     public String getImage(Deployment deployment) {
         return deployment.getImage();
     }
 
-    @Override
     public Integer getPodCPULimit(Deployment deployment) {
         return deployment.getPodSize().getCpu();
     }
 
-    @Override
     public Integer getPodMemoryLimit(Deployment deployment) {
         return deployment.getPodSize().getMemory();
     }
-
-    @Override
+    
     public String getNodeGroup(Environment environment) {
         String nodeGroup = environment.getEnvironmentConfiguration().getNodeGroup();
         return StringUtils.isEmpty(nodeGroup) ? null : nodeGroup;
     }
 
-    @Override
     public String getLbType(Application application) {
         return application.getLoadBalancerType().name().toLowerCase();
     }
-
-    @Override
+    
     public List<Map<String, Object>> getPorts(Application application) {
         return application.getPorts().stream().map(this::getPortMap).collect(Collectors.toList());
     }
-
-    @Override
+    
     public Map<String, String> getConfigMap(Environment environment, Application application, Deployment deployment) {
         Map<String, String> configMap = new HashMap<>();
         configMap.putAll(deployment.getConfigurationsMap());
@@ -71,7 +63,6 @@ public class HelmValueComponents implements IHelmValueComponents {
         return configMap;
     }
 
-    @Override
     public Map<String, String> getCredentialsMap(Environment environment, Application application) {
         List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
                 environment.getEnvironmentMetaData().getName(),
@@ -88,7 +79,6 @@ public class HelmValueComponents implements IHelmValueComponents {
         return secretMap;
     }
 
-    @Override
     public String getSSLCertificateName(Application application, Environment environment) {
         List<Map<String, Object>> ports = this.getPorts(application);
         if (ports.stream().anyMatch(p -> p.get("name").equals("https"))
@@ -100,7 +90,6 @@ public class HelmValueComponents implements IHelmValueComponents {
         return null;
     }
 
-    @Override
     public String getPrivateZoneDns(Application application, Environment environment) {
         String dnsPrefix = application.getDnsPrefix();
         ExternalDnsConfiguration privateDnsConfiguration =
@@ -112,7 +101,6 @@ public class HelmValueComponents implements IHelmValueComponents {
         return null;
     }
 
-    @Override
     public String getPublicZoneDns(Application application, Environment environment) {
         String dnsPrefix = application.getDnsPrefix();
         ExternalDnsConfiguration publicDnsConfiguration =
@@ -127,8 +115,7 @@ public class HelmValueComponents implements IHelmValueComponents {
 
         return null;
     }
-
-    @Override
+    
     public Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {
         Map<String, Object> valueFields = new HashMap<>();
         switch (application.getApplicationFamily()) {
@@ -147,8 +134,7 @@ public class HelmValueComponents implements IHelmValueComponents {
 
         return valueFields;
     }
-
-    @Override
+    
     public Map<String, Object> getHPAConfigs(Deployment deployment) {
         Map<String, Object> valueFields = new HashMap<>();
         if(deployment.getHorizontalPodAutoscaler() != null){
@@ -159,8 +145,7 @@ public class HelmValueComponents implements IHelmValueComponents {
         }
         return valueFields;
     }
-
-    @Override
+    
     public Map<String, Object> getHealthCheckConfigs(Application application) {
         if (application.getHealthCheck() == null) {
             return null;
@@ -212,7 +197,7 @@ public class HelmValueComponents implements IHelmValueComponents {
         return probeFields;
     }
 
-    @Override
+    
     public List<Map<String, Object>> getPVCList(Application application) {
         if (application.getPvcList() == null || application.getPvcList().isEmpty()) {
             return null;
@@ -224,7 +209,7 @@ public class HelmValueComponents implements IHelmValueComponents {
                 .collect(Collectors.toList());
     }
 
-    @Override
+    
     public List<Map<String, Object>> getSecretFileMounts(Application application, Environment environment, Deployment deployment) {
         if (!secretVolumesExist(deployment)) {
             return null;
@@ -251,12 +236,12 @@ public class HelmValueComponents implements IHelmValueComponents {
         return secretFileMountsList;
     }
 
-    @Override
+    
     public String getSchedule(Deployment deployment) {
         return deployment.getSchedule();
     }
 
-    @Override
+    
     public String getConcurrencyPolicy(Deployment deployment) {
         ConcurrencyPolicy concurrencyPolicy = deployment.getConcurrencyPolicy();
         return concurrencyPolicy == null ? null : concurrencyPolicy.name();
@@ -290,4 +275,37 @@ public class HelmValueComponents implements IHelmValueComponents {
         portMap.put("lbPort", port.getLbPort());
         return portMap;
     }
+
+    protected boolean addField(String key, Object value, Map<String, Object> yaml) {
+        if (key != null) {
+            yaml.put(key, value);
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean addFields(Map<String, Object> value, Map<String, Object> yaml) {
+        if (value != null) {
+            yaml.putAll(value);
+            return true;
+        }
+        return false;
+    }
+
+    public Map<String, Object> addBaseDetails(Application application, Environment environment, Deployment deployment) {
+        Map<String, Object> yaml = new HashMap<>();
+        this.addField("deploymentId", getDeploymentId(deployment), yaml);
+        this.addField("buildId", getBuildId(deployment), yaml);
+        this.addField("image", getImage(deployment), yaml);
+        this.addField("podCPULimit", getPodCPULimit(deployment), yaml);
+        this.addField("podMemoryLimit", getPodMemoryLimit(deployment), yaml);
+        this.addField("nodeSelector", getNodeGroup(environment), yaml);
+        this.addField("ports", getPorts(application), yaml);
+        this.addField("configurations", getConfigMap(environment, application, deployment), yaml);
+        this.addField("credentials", getCredentialsMap(environment, application), yaml);
+        this.addField("secretFileMounts", getSecretFileMounts(application, environment, deployment), yaml);
+        return yaml;
+    }
+
+    abstract public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment);
 }

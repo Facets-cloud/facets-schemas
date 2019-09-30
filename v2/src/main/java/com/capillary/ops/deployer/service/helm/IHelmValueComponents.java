@@ -1,4 +1,4 @@
-package com.capillary.ops.deployer.component;
+package com.capillary.ops.deployer.service.helm;
 
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Deployment;
