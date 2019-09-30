@@ -11,6 +11,7 @@ public class EnvironmentConfiguration {
     private Map<String, String> commonConfigs;
     private Map<String, String> commonCredentials;
     private SSLConfigs sslConfigs;
+    private String ecrMirrorRepo;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -74,5 +75,13 @@ public class EnvironmentConfiguration {
 
     public void setSslConfigs(SSLConfigs sslConfigs) {
         this.sslConfigs = sslConfigs;
+    }
+
+    public String getEcrMirrorRepo() {
+        return ecrMirrorRepo;
+    }
+
+    public void setEcrMirrorRepo(String ecrMirrorRepo) {
+        this.ecrMirrorRepo = ecrMirrorRepo;
     }
 }

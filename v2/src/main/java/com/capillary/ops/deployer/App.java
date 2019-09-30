@@ -36,6 +36,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootApplication(exclude = {EmbeddedMongoAutoConfiguration.class})
 @EnableSwagger2
@@ -125,6 +127,12 @@ public class App {
     filterRegistrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
 
     return filterRegistrationBean;
+  }
+
+  @Bean(name = "ECRChinaSyncPool")
+  public ExecutorService executorServicePool() {
+    ExecutorService pool = Executors.newFixedThreadPool(5);
+    return pool;
   }
 
 }

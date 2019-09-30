@@ -10,4 +10,6 @@ public interface IECRService {
     List<String> listImages(Application application);
 
     String findImageBetweenTimes(Application application, Instant from, Instant to);
+
+    void syncToChinaECR(String ImageURL);
 }
