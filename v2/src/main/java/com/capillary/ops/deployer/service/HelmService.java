@@ -16,6 +16,7 @@ import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class HelmService implements IHelmService {
 
     @Autowired
     private EnvironmentRepository environmentRepository;
+
+    @Value("${ecr.registry}")
+    private String ecrRepoUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(HelmService.class);
 
@@ -175,6 +179,10 @@ public class HelmService implements IHelmService {
         final Map<String, Object> yaml = new LinkedHashMap<>();
         yaml.put("deploymentId", deployment.getId());
         yaml.put("buildId", deployment.getBuildId());
+        String mirror = environment.getEnvironmentConfiguration().getEcrMirrorRepo();
+        if(mirror != null && ! mirror.isEmpty()) {
+            deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
+        }
         yaml.put("image", deployment.getImage());
         yaml.put("podCPULimit",deployment.getPodSize().getCpu());
         yaml.put("podMemoryLimit",deployment.getPodSize().getMemory());
