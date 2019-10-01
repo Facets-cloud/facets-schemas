@@ -14,22 +14,18 @@ import java.util.Map;
 @Component
 public class StatefulSetChartValueProvider extends BaseChartValueProvider {
 
-    @Autowired
-    IHelmValueComponents helmValueComponents;
-
     @Override
     public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment) {
         Map<String, Object> yaml = new HashMap<>();
-        IHelmValueComponents components = this.helmValueComponents;
         this.addBaseDetails(application, environment, deployment);
-        this.addField("persistentVolumeClaims", components.getPVCList(application), yaml);
-        this.addField("lbType", components.getLbType(application), yaml);
-        this.addField("sslCertName", components.getSSLCertificateName(application, environment), yaml);
-        this.addField("domainName", components.getPrivateZoneDns(application, environment), yaml);
-        this.addField("domainName", components.getPublicZoneDns(application, environment), yaml);
-        this.addFields(components.getFamilySpecificAttributes(application, deployment), yaml);
-        this.addFields(components.getHPAConfigs(deployment), yaml);
-        this.addFields(components.getHealthCheckConfigs(application), yaml);
+        this.addField("persistentVolumeClaims", getPVCList(application), yaml);
+        this.addField("lbType", getLbType(application), yaml);
+        this.addField("sslCertName", getSSLCertificateName(application, environment), yaml);
+        this.addField("domainName", getPrivateZoneDns(application, environment), yaml);
+        this.addField("domainName", getPublicZoneDns(application, environment), yaml);
+        this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
+        this.addFields(getHPAConfigs(deployment), yaml);
+        this.addFields(getHealthCheckConfigs(application), yaml);
         return yaml;
     }
 }
