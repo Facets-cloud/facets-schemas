@@ -126,7 +126,7 @@ public class ApplicationFacade {
     public Build updateBuild(ApplicationFamily applicationFamily, String applicationId, String buildId, Build build) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build existingBuild = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
-        if(applicationFamily.name().equals(ApplicationFamily.CRM) && !existingBuild.isPromoted() && build.isPromoted()){
+        if(applicationFamily.equals(ApplicationFamily.CRM) && !existingBuild.isPromoted() && build.isPromoted()){
             ecrService.syncToChinaECR(build.getImage());
         }
         existingBuild.setPromoted(build.isPromoted());
