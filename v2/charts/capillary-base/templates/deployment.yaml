@@ -23,10 +23,23 @@ spec:
       annotations:
         deploymentId: {{ .Values.deploymentId }}
         buildId: {{ .Values.buildId }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-{{- if .Values.crmModuleName}}
-{{- template "crmConfigVolumes" . }}
-{{- end }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ .Release.Name }}
+            topologyKey: kubernetes.io/hostname
+      volumes:
+        - name: dump-vol
+          hostPath:
+            path: /var/log/dumps
+            type: Directory
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
@@ -72,9 +85,9 @@ spec:
               memory: {{ .Values.podMemoryLimit }}Gi
             {{- end}}
 {{- end }}
-{{- if .Values.crmModuleName}}
-{{- template "crmConfigVolumesMounts" . }}
-{{- end }}
+          volumeMounts:
+          - mountPath: /var/log/dumps
+            name: dump-vol
           env:
 {{- range $k, $v := .Values.configurations }}
           - name: {{ $k }}
