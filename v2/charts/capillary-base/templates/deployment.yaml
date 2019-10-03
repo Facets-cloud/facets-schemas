@@ -39,7 +39,7 @@ spec:
         - name: dump-vol
           hostPath:
             path: /var/log/dumps
-            type: Directory
+            type: DirectoryOrCreate
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
