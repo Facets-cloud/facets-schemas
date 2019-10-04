@@ -82,7 +82,7 @@ public class ApplicationController {
         return build;
     }
 
-    @PreAuthorize("hasRole('ADMIN', 'QA')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROMOTERS')")
     @PutMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
     public Build updateBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                           @PathVariable("applicationId") String applicationId, @PathVariable String buildId, @RequestBody Build build) {
