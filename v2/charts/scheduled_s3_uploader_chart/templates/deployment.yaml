@@ -67,4 +67,4 @@ spec:
         - name: k8s-dump
           hostPath:
             path: {{ .Values.dumpDirHostPath }}
-            type: Directory
+            type: DirectoryOrCreate
