@@ -31,12 +31,12 @@ spec:
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
-              name: "IAM_CREDENTIALS"
+              name: "iam-credentials"
               key: AWS_ACCESS_KEY_ID
         - name: AWS_SECRET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: "IAM_CREDENTIALS"
+              name: "iam-credentials"
               key: AWS_SECRET_ACCESS_KEY
 #{{- range $k, $v := .Values.configurations }}
 #        - name: {{ $k }}
