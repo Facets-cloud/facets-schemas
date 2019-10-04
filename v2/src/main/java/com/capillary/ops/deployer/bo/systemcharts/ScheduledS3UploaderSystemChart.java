@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.bo.systemcharts;
 import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Environment;
 import com.capillary.ops.deployer.bo.ISystemChart;
+import com.capillary.ops.deployer.bo.S3DumpAwsConfig;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-//@Component
+@Component
 public class ScheduledS3UploaderSystemChart implements ISystemChart {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledS3UploaderSystemChart.class);
@@ -24,17 +25,17 @@ public class ScheduledS3UploaderSystemChart implements ISystemChart {
 
     @Override
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
-        String awsAccessKeyId = ""; // environment.getAwsAccessKeyId();
-        String awsSecretAccessKey = ""; //environment.getAwsSecretAccessKey();
 
-        if (awsAccessKeyId == null || awsSecretAccessKey == null) {
+        S3DumpAwsConfig s3DumpAwsConfig = environment.getEnvironmentConfiguration().getS3DumpAwsConfig();
+        if (s3DumpAwsConfig == null || s3DumpAwsConfig.getAwsAccessKeyId() == null
+                || s3DumpAwsConfig.getAwsSecretAccessKey() == null) {
             logger.error("could not find one of the aws keys");
             throw new NotFoundException("aws access key id or secret access key not found");
         }
 
         Map<String, String> aws = Maps.newHashMapWithExpectedSize(2);
-        aws.put("awsAccessKeyId", awsAccessKeyId);
-        aws.put("awsSecretAccessId", awsSecretAccessKey);
+        aws.put("awsAccessKeyId", s3DumpAwsConfig.getAwsAccessKeyId());
+        aws.put("awsSecretAccessId", s3DumpAwsConfig.getAwsSecretAccessKey());
 
         logger.info("added aws keys to scheduled_s3_uploader value map");
 

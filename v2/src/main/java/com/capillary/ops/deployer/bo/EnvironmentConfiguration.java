@@ -8,6 +8,7 @@ public class EnvironmentConfiguration {
     private String kubernetesApiEndpoint;
     private ExternalDnsConfiguration privateDnsConfiguration;
     private ExternalDnsConfiguration publicDnsConfiguration;
+    private S3DumpAwsConfig s3DumpAwsConfig;
     private Map<String, String> commonConfigs;
     private Map<String, String> commonCredentials;
     private SSLConfigs sslConfigs;
@@ -51,6 +52,14 @@ public class EnvironmentConfiguration {
 
     public void setPublicDnsConfiguration(ExternalDnsConfiguration publicDnsConfiguration) {
         this.publicDnsConfiguration = publicDnsConfiguration;
+    }
+
+    public S3DumpAwsConfig getS3DumpAwsConfig() {
+        return s3DumpAwsConfig;
+    }
+
+    public void setS3DumpAwsConfig(S3DumpAwsConfig s3DumpAwsConfig) {
+        this.s3DumpAwsConfig = s3DumpAwsConfig;
     }
 
     public Map<String, String> getCommonConfigs() {
