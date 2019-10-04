@@ -40,7 +40,7 @@ spec:
       volumes:
         - name: dump-vol
           hostPath:
-            path: /var/log/dumps
+            path: /var/log/dumps/{{ .Release.Name }}
             type: DirectoryOrCreate
       containers:
         - name: {{ .Release.Name }}
