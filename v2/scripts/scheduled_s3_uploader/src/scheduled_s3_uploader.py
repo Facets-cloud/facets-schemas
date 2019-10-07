@@ -30,7 +30,7 @@ s3_client = boto3.client('s3')
 
 
 def get_current_hour_folder():
-    today = dt.datetime.today().strftime('%Y-%m-%d')
+    today = dt.datetime.today()
     return today.strftime("%Y-%m-%dH%H")
 
 
