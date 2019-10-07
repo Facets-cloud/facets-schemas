@@ -21,7 +21,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: scheduled-s3-uploader
-        image: "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/scheduled_s3_uploader:0d1f28d"
+        image: "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/scheduled_s3_uploader:3f7d7b5"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: DUMP_DIR
