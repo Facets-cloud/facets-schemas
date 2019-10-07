@@ -35,7 +35,7 @@ public class ScheduledS3UploaderSystemChart implements ISystemChart {
 
         Map<String, String> aws = Maps.newHashMapWithExpectedSize(2);
         aws.put("awsAccessKeyId", s3DumpAwsConfig.getAwsAccessKeyId());
-        aws.put("awsSecretAccessId", s3DumpAwsConfig.getAwsSecretAccessKey());
+        aws.put("awsSecretAccessKey", s3DumpAwsConfig.getAwsSecretAccessKey());
 
         logger.info("added aws keys to scheduled_s3_uploader value map");
 
