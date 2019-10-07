@@ -1,9 +1,6 @@
 package com.capillary.ops.deployer.bo.systemcharts;
 
-import com.capillary.ops.deployer.bo.ApplicationFamily;
-import com.capillary.ops.deployer.bo.Environment;
-import com.capillary.ops.deployer.bo.ISystemChart;
-import com.capillary.ops.deployer.bo.S3DumpAwsConfig;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -41,6 +38,10 @@ public class ScheduledS3UploaderSystemChart implements ISystemChart {
 
         Map<String, Object> values = new HashMap<>();
         values.put("aws", aws);
+
+        EnvironmentMetaData environmentMetaData = environment.getEnvironmentMetaData();
+        String cluster = environmentMetaData.getApplicationFamily() + "/" + environmentMetaData.getName();
+        values.put("cluster", cluster);
 
         return values;
     }
