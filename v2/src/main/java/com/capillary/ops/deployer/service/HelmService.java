@@ -9,6 +9,7 @@ import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
@@ -109,6 +110,17 @@ public class HelmService implements IHelmService {
     }
 
     @Override
+    public void purge(Application application, Environment environment) {
+        try {
+            getReleaseManager(environment)
+                    .uninstall(UninstallReleaseRequest.newBuilder()
+                            .setName(getReleaseName(application, environment)).build());
+        } catch (Throwable e) {
+            logger.warn("Exception uninstalling", e);
+        }
+    }
+
+    @Override
     public String getReleaseName(Application application, Environment environment) {
         return environment.getEnvironmentConfiguration().getNodeGroup().isEmpty() ?
                 application.getName() :
@@ -134,9 +146,9 @@ public class HelmService implements IHelmService {
     }
 
     private String getChartName(Application application, Deployment deployment) {
-        if (doesPvcExist(application)) {
+        if (application.getApplicationType().equals(Application.ApplicationType.STATEFUL_SET)) {
             return "capillary-base-statefulset";
-        } else if (!StringUtils.isEmpty(deployment.getSchedule())) {
+        } else if (application.getApplicationType().equals(Application.ApplicationType.SCHEDULED_JOB)) {
             return "capillary-base-cronjob";
         }
 
@@ -155,7 +167,7 @@ public class HelmService implements IHelmService {
         String environmentName = deployment.getEnvironment();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String chartName = getChartName(application, deployment);
-        Map<String, Object> valueMap = helmValueProviderFactory.getValues(chartName, application, environment, deployment);
+        Map<String, Object> valueMap = helmValueProviderFactory.getValues(application, environment, deployment);
         String releaseName = getReleaseName(application, environment);
         install(environment, releaseName, chartName, valueMap);
     }
@@ -184,7 +196,7 @@ public class HelmService implements IHelmService {
         String environmentName = deployment.getEnvironment();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String chartName = getChartName(application, deployment);
-        Map<String, Object> valueMap = helmValueProviderFactory.getValues(chartName, application, environment, deployment);
+        Map<String, Object> valueMap = helmValueProviderFactory.getValues(application, environment, deployment);
         String releaseName = getReleaseName(application, environment);
         upgrade(environment, releaseName, chartName, valueMap);
     }

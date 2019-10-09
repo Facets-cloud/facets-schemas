@@ -18,10 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ecr.EcrClient;
-import software.amazon.awssdk.services.ecr.model.CreateRepositoryRequest;
-import software.amazon.awssdk.services.ecr.model.DescribeImagesRequest;
-import software.amazon.awssdk.services.ecr.model.ImageDetail;
-import software.amazon.awssdk.services.ecr.model.SetRepositoryPolicyRequest;
+import software.amazon.awssdk.services.ecr.model.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -96,6 +93,12 @@ public class ECRService implements IECRService {
                         logger.error("Error with China ECR sync {}", e);
                     }
                 });
+    }
+
+    @Override
+    public void deleteRepository(Application application) {
+        String repositoryName = getRepositoryName(application);
+        ecrClient.deleteRepository(DeleteRepositoryRequest.builder().repositoryName(repositoryName).build());
     }
 
     private CloseableHttpClient getGETClient() {

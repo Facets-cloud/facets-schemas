@@ -1,4 +1,4 @@
-package com.capillary.ops.deployer.service.helm.impl;
+package com.capillary.ops.deployer.service.helm;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.SecretService;
@@ -118,6 +118,12 @@ public abstract class AbstractValueProvider {
     public Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {
         Map<String, Object> valueFields = new HashMap<>();
         switch (application.getApplicationFamily()) {
+            case CRM:
+                if(deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
+                    valueFields.put("zkPublish", deployment.getConfigurationsMap().get("zkPublish"));
+                    valueFields.put("zkName", deployment.getConfigurationsMap().get("zkName"));
+                }
+                break;
             case ECOMMERCE:
                 Map<String, Object> capabilities = new HashMap<>();
                 if (shouldMountCifs(application)) {
@@ -210,10 +216,6 @@ public abstract class AbstractValueProvider {
 
     
     public List<Map<String, Object>> getSecretFileMounts(Application application, Environment environment, Deployment deployment) {
-        if (!secretVolumesExist(deployment)) {
-            return null;
-        }
-
         List<Map<String, Object>> secretFileMountsList = new ArrayList<>();
         List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(
                 environment.getEnvironmentMetaData().getName(), application.getApplicationFamily(), application.getId());
@@ -221,13 +223,12 @@ public abstract class AbstractValueProvider {
                 .filter(x -> x.getSecretType() != null && x.getSecretType().equals(ApplicationSecret.SecretType.FILE))
                 .collect(Collectors.toMap(ApplicationSecret::getSecretName, Function.identity()));
 
-        List<SecretFileMount> secretFileMounts = deployment.getSecretFileMounts();
-        secretFileMounts.parallelStream().forEach(x -> {
-            if (fileSecrets.containsKey(x.getSecretRef())) {
+        fileSecrets.values().stream().forEach(x -> {
+            if (fileSecrets.containsKey(x.getSecretName())) {
                 Map<String, Object> secretFileMountYaml = new HashMap<>();
-                secretFileMountYaml.put("name", x.getSecretRef());
+                secretFileMountYaml.put("name", x.getSecretName());
                 secretFileMountYaml.put("mountPath", x.getMountPath());
-                secretFileMountYaml.put("value", fileSecrets.get(x.getSecretRef()).getSecretValue());
+                secretFileMountYaml.put("value", fileSecrets.get(x.getSecretName()).getSecretValue());
                 secretFileMountsList.add(secretFileMountYaml);
             }
         });
@@ -238,17 +239,6 @@ public abstract class AbstractValueProvider {
     
     public String getSchedule(Deployment deployment) {
         return deployment.getSchedule();
-    }
-
-    
-    public String getConcurrencyPolicy(Deployment deployment) {
-        ConcurrencyPolicy concurrencyPolicy = deployment.getConcurrencyPolicy();
-        return concurrencyPolicy == null ? null : concurrencyPolicy.name();
-    }
-
-    private boolean secretVolumesExist(Deployment deployment) {
-        List<SecretFileMount> secretFileMounts = deployment.getSecretFileMounts();
-        return secretFileMounts != null && secretFileMounts.size() > 0;
     }
 
     private Map<String, Object> getPvcValues(PVC pvc) {

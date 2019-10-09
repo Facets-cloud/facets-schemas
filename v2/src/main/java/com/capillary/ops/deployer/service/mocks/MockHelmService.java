@@ -39,4 +39,9 @@ public class MockHelmService implements IHelmService {
     public boolean doesReleaseExist(ApplicationFamily applicationFamily, Environment environment, String releaseName) {
         return true;
     }
+
+    @Override
+    public void purge(Application application, Environment environment) {
+        return;
+    }
 }

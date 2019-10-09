@@ -4,6 +4,7 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.bo.Environment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 
@@ -12,28 +13,28 @@ import java.util.Map;
 @Component
 public class HelmValueProviderFactory {
 
-    @Lookup
+    @Autowired
     public BaseChartValueProvider getHelmValuesBuilder() {
         return null;
     }
 
-    @Lookup
+    @Autowired
     public StatefulSetChartValueProvider getStatefulSetValuesBuilder() {
         return null;
     }
 
-    @Lookup
+    @Autowired
     public CronJobChartValueProvider getCronJobBuilder() {
         return null;
     }
 
-    public Map<String, Object> getValues(String chart, Application application, Environment environment, Deployment deployment) {
-        switch (chart) {
-            case "capillary-base":
+    public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment) {
+        switch (application.getApplicationType()) {
+            case SERVICE:
                 return getHelmValuesBuilder().getValues(application, environment, deployment);
-            case "capillary-base-statefulset":
+            case STATEFUL_SET:
                 return getStatefulSetValuesBuilder().getValues(application, environment, deployment);
-            case "capillary-base-cronjob":
+            case SCHEDULED_JOB:
                 return getCronJobBuilder().getValues(application, environment, deployment);
         }
 

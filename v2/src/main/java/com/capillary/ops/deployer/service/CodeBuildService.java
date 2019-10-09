@@ -220,6 +220,12 @@ public class CodeBuildService implements ICodeBuildService {
         return batchedBuilds;
     }
 
+    @Override
+    public void deleteProject(Application application) {
+        getCodeBuildClient(getBuildSpec(application).getAwsRegion())
+                .deleteProject(DeleteProjectRequest.builder().name(application.getName()).build());
+    }
+
     private CodeBuildClient getCodeBuildClient(Region region) {
         return CodeBuildClient.builder()
                         .region(region)

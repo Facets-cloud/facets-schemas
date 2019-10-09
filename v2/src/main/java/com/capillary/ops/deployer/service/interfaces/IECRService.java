@@ -12,4 +12,5 @@ public interface IECRService {
     String findImageBetweenTimes(Application application, Instant from, Instant to);
 
     void syncToChinaECR(String ImageURL);
+    void deleteRepository(Application application);
 }

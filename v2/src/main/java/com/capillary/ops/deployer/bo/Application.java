@@ -21,8 +21,16 @@ public class Application {
         PRIVATE
     }
 
+    public enum ApplicationType {
+        SERVICE,
+        SCHEDULED_JOB,
+        STATEFUL_SET
+    }
+
     @Id
     private String id;
+
+    private ApplicationType applicationType;
 
     private String name;
 
@@ -167,5 +175,13 @@ public class Application {
 
     public void setCommonConfigs(Map<String, String> commonConfigs) {
         this.commonConfigs = commonConfigs;
+    }
+
+    public ApplicationType getApplicationType() {
+        return applicationType;
+    }
+
+    public void setApplicationType(ApplicationType applicationType) {
+        this.applicationType = applicationType;
     }
 }

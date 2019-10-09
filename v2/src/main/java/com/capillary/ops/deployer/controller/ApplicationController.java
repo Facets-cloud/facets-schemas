@@ -266,4 +266,10 @@ public class ApplicationController {
     public GlobalStats globalStats() {
         return applicationFacade.getGlobalStats();
     }
+
+    @DeleteMapping(value = "/{applicationFamily}/applications/{applicationId}", produces = "application/json")
+    public boolean deleteApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                     @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.deleteApplication(applicationFamily, applicationId);
+    }
 }

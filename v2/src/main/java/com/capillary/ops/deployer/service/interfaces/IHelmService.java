@@ -17,4 +17,6 @@ public interface IHelmService {
     void rollback(Application application, Environment environmentName);
 
     boolean doesReleaseExist(ApplicationFamily applicationFamily, Environment environment, String releaseName);
+
+    void purge(Application application, Environment environment);
 }

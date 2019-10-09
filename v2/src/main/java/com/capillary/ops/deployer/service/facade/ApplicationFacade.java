@@ -401,4 +401,12 @@ public class ApplicationFacade {
         long deploymentCount = this.deploymentRepository.count();
         return new GlobalStats(applicationCount, buildCount, deploymentCount);
     }
+
+    public boolean deleteApplication(ApplicationFamily applicationFamily, String applicationId) {
+        Application application =
+                applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        applicationRepository.delete(application);
+        ecrService.deleteRepository(application);
+        return false;
+    }
 }

@@ -26,9 +26,7 @@ public class Deployment {
     private Date timestamp = new Date();
     private PodSize podSize;
     private HPA horizontalPodAutoscaler;
-    private List<SecretFileMount> secretFileMounts;
     private String schedule;
-    private ConcurrencyPolicy concurrencyPolicy = ConcurrencyPolicy.Allow;
     private boolean rollbackEnabled;
     private String deployedBy;
 
@@ -128,28 +126,12 @@ public class Deployment {
         this.applicationFamily = applicationFamily;
     }
 
-    public List<SecretFileMount> getSecretFileMounts() {
-        return secretFileMounts;
-    }
-
-    public void setSecretFileMounts(List<SecretFileMount> secretFileMounts) {
-        this.secretFileMounts = secretFileMounts;
-    }
-
     public String getSchedule() {
         return schedule;
     }
 
     public void setSchedule(String schedule) {
         this.schedule = schedule;
-    }
-
-    public ConcurrencyPolicy getConcurrencyPolicy() {
-        return concurrencyPolicy;
-    }
-
-    public void setConcurrencyPolicy(ConcurrencyPolicy concurrencyPolicy) {
-        this.concurrencyPolicy = concurrencyPolicy;
     }
 
     public String getDeployedBy() {

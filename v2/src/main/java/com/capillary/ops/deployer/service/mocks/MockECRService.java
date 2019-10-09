@@ -30,4 +30,9 @@ public class MockECRService implements IECRService {
 
     @Override
     public void syncToChinaECR(String ImageURL) {}
+
+    @Override
+    public void deleteRepository(Application application) {
+        return;
+    }
 }

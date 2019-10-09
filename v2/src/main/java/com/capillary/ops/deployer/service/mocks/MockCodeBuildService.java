@@ -57,4 +57,9 @@ public class MockCodeBuildService implements ICodeBuildService {
     public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
         return codeBuildIds.parallelStream().map(x -> getBuild(application, x)).collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteProject(Application application) {
+        return;
+    }
 }

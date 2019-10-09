@@ -17,4 +17,6 @@ public interface ICodeBuildService {
     software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId);
 
     List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds);
+
+    void deleteProject(Application application);
 }
