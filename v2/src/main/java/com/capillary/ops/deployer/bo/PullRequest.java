@@ -22,6 +22,8 @@ public class PullRequest {
     @Id
     private String id;
 
+    private String host;
+
     private String applicationId;
 
     private String action;
@@ -55,6 +57,14 @@ public class PullRequest {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
     public String getApplicationId() {

@@ -23,8 +23,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests()
             .antMatchers("/api/*/applications/*/webhooks/**")
-            .access("hasIpAddress('192.30.252.0/22') or hasIpAddress('185.199.108.0/22') or hasIpAddress('192.30.252.0/22')")
-            .anyRequest().authenticated()
+            .permitAll()
+//            .access("hasIpAddress('192.30.252.0/22') or hasIpAddress('185.199.108.0/22') or hasIpAddress('192.30.252.0/22') or hasIpAddress('18.205.93.0/25') or hasIpAddress('18.234.32.128/25') or hasIpAddress('13.52.5.0/25')")
+//            .authenticated()
             .antMatchers("/api/**")
             .authenticated()
             .and()

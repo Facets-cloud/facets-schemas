@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
 import com.capillary.ops.deployer.exceptions.InvalidScheduleException;
@@ -115,16 +116,46 @@ public class ApplicationFacade {
         return applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
     }
 
-    public boolean processWebhookPRGithub(ApplicationFamily applicationFamily, String applicationId, GithubPREvent webhook) {
+    public boolean processWebhookPRGithub(ApplicationFamily applicationFamily, String applicationId,
+                                          GithubPREvent webhook, String host) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
         try {
             PullRequest pullRequest = webhook.toPullRequest();
+            pullRequest.setHost(host);
             if (!vcsService.shouldTriggerBuild(application, pullRequest)) {
                 return true;
             }
 
-            processPullRequest(application, pullRequest);
+            return processPullRequest(application, pullRequest);
+        } catch (ParseException e) {
+            logger.error("error happened while parsing pull request date", e);
+        }
+
+        logger.error("could not build application");
+        return false;
+    }
+
+    public boolean processWebhookPRBitbucket(ApplicationFamily applicationFamily, String applicationId,
+                                             BitbucketPREvent webhook, String eventKey, String host) {
+        String webhookType = eventKey.split(":")[0];
+        String webhookAction = eventKey.split(":")[1];
+
+        if (!webhookType.equals("pullrequest")) {
+            return false;
+        }
+
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+        try {
+            PullRequest pullRequest = webhook.toPullRequest();
+            pullRequest.setHost(host);
+            pullRequest.setAction(webhookAction);
+            if (!vcsService.shouldTriggerBuild(application, pullRequest)) {
+                return true;
+            }
+
+            return processPullRequest(application, pullRequest);
         } catch (ParseException e) {
             logger.error("error happened while parsing pull request date", e);
         }

@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
@@ -70,8 +71,22 @@ public class ApplicationController {
 
     @PostMapping(value = "/{applicationFamily}/applications/{applicationId}/webhooks/pr/github", produces = "application/json")
     public ResponseEntity<Object> processWebhookPRGithub(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                         @PathVariable("applicationId") String applicationId, @RequestBody GithubPREvent webhook) {
-        boolean buildTriggered = applicationFacade.processWebhookPRGithub(applicationFamily, applicationId, webhook);
+                                                         @PathVariable("applicationId") String applicationId,
+                                                         @RequestBody GithubPREvent webhook,
+                                                         @RequestHeader("Host") String host) {
+        boolean buildTriggered = applicationFacade.processWebhookPRGithub(applicationFamily, applicationId, webhook, host);
+        BodyBuilder responseBuilder = buildTriggered ? ResponseEntity.ok() : ResponseEntity.badRequest();
+        return responseBuilder.build();
+    }
+
+    @PostMapping(value = "/{applicationFamily}/applications/{applicationId}/webhooks/pr/bitbucket", produces = "application/json")
+    public ResponseEntity<Object> processWebhookPRBitbucket(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                            @PathVariable("applicationId") String applicationId,
+                                                            @RequestBody BitbucketPREvent webhook,
+                                                            @RequestHeader("X-Event-Key") String eventKey,
+                                                            @RequestHeader("Host") String host) {
+        boolean buildTriggered = applicationFacade.processWebhookPRBitbucket(applicationFamily, applicationId, webhook,
+                eventKey, host);
         BodyBuilder responseBuilder = buildTriggered ? ResponseEntity.ok() : ResponseEntity.badRequest();
         return responseBuilder.build();
     }
