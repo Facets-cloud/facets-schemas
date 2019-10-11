@@ -39,6 +39,10 @@ public class PullRequestScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PullRequestScheduler.class);
 
+    private static final String BASE_REPORTS_URL = "https://%s/api/%s/applications/%s/tests/%s";
+
+    private static final String DEFAULT_HOST = "deployer.capillary.in";
+
     @Scheduled(fixedRate = 300 * 1000)
     public void pollInProgressPullRequests() {
         logger.info("checking for pending pull requests for the last 2 days");
@@ -49,10 +53,13 @@ public class PullRequestScheduler {
         processInProgressPullRequest(openPullRequests);
     }
 
-    private String getTestOutputLink(Application application, Build build) {
-        String baseReportsUrl = "https://deployer.capillary.in/api/%s/applications/%s/tests/%s";
+    private String getTestOutputLink(String host, Application application, Build build) {
+        if (host == null) {
+            host = DEFAULT_HOST;
+        }
+
         String buildRef = build.getCodeBuildId().split(":")[1];
-        return String.format(baseReportsUrl, application.getApplicationFamily().name(), application.getName(), buildRef);
+        return String.format(host, BASE_REPORTS_URL, application.getApplicationFamily().name(), application.getName(), buildRef);
     }
 
     private void processInProgressPullRequest(List<PullRequest> openPullRequests) {
@@ -102,7 +109,7 @@ public class PullRequestScheduler {
         }
 
         if (!StringUtils.isEmpty(codeBuild.artifacts().md5sum())) {
-            comment = comment + ". Test Report Output: " + getTestOutputLink(application, build);
+            comment = comment + ". Test Report Output: " + getTestOutputLink(pullRequest.getHost(), application, build);
         }
 
         vcsServiceSelector.selectVcsService(application.getVcsProvider()).commentOnPullRequest(pullRequest, comment);

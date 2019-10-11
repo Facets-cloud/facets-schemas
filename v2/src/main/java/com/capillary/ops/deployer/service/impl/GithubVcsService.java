@@ -160,10 +160,12 @@ public class GithubVcsService implements VcsService {
             return false;
         }
 
-        List<PullRequest> existingPullRequests = pullRequestRepository.findAllByApplicationIdAndSha(application.getId(), pullRequest.getSha());
+        List<PullRequest> existingPullRequests = pullRequestRepository.findAllByApplicationIdAndSha(application.getId(),
+                pullRequest.getSha());
         if (!existingPullRequests.isEmpty()) {
             logger.error("pull request with same sha already exists: {}", pullRequest);
-            this.commentOnPullRequest(pullRequest, "Pull request with same diff is already present, not triggering build");
+            this.commentOnPullRequest(pullRequest, "Pull request with same diff is already present, " +
+                    "not triggering build");
             return false;
         }
 
