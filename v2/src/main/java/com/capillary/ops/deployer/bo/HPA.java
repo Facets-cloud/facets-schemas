@@ -2,6 +2,15 @@ package com.capillary.ops.deployer.bo;
 
 public class HPA {
 
+    public HPA() {
+    }
+
+    public HPA(int threshold, int minReplicas, int maxReplicas) {
+        this.threshold = threshold;
+        this.minReplicas = minReplicas;
+        this.maxReplicas = maxReplicas;
+    }
+
     private String metricName;
 
     private int threshold;

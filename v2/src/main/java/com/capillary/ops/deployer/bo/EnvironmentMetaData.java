@@ -1,6 +1,16 @@
 package com.capillary.ops.deployer.bo;
 
 public class EnvironmentMetaData {
+
+    public EnvironmentMetaData(EnvironmentType environmentType, String name, ApplicationFamily applicationFamily) {
+        this.environmentType = environmentType;
+        this.name = name;
+        this.applicationFamily = applicationFamily;
+    }
+
+    public EnvironmentMetaData() {
+    }
+
     private EnvironmentType environmentType;
     private String name;
     private ApplicationFamily applicationFamily;

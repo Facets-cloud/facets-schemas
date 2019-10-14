@@ -11,6 +11,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 })
 @Document
 public class Environment {
+
+    public Environment() {
+    }
+
+    public Environment(EnvironmentMetaData environmentMetaData, EnvironmentConfiguration environmentConfiguration) {
+        this.environmentMetaData = environmentMetaData;
+        this.environmentConfiguration = environmentConfiguration;
+    }
+
     @Id
     private String id;
     private EnvironmentMetaData environmentMetaData;

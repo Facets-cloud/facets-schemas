@@ -1,6 +1,16 @@
 package com.capillary.ops.deployer.bo;
 
 public class Port {
+
+    public Port() {
+    }
+
+    public Port(String name, Long containerPort, Long lbPort) {
+        this.name = name;
+        this.containerPort = containerPort;
+        this.lbPort = lbPort;
+    }
+
     String name;
     Long containerPort;
     Long lbPort;

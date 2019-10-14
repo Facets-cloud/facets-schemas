@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Profile("dev")
+@Profile("dev && !helminttest")
 @Service
 public class MockHelmService implements IHelmService {
 

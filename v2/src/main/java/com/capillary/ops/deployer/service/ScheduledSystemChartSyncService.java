@@ -8,12 +8,14 @@ import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Profile("!dev")
 @Service
 public class ScheduledSystemChartSyncService {
 

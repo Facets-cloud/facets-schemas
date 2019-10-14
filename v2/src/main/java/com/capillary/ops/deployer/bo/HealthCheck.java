@@ -2,6 +2,14 @@ package com.capillary.ops.deployer.bo;
 
 public class HealthCheck {
 
+    public HealthCheck() {
+    }
+
+    public HealthCheck(Probe livenessProbe, Probe readinessProbe) {
+        this.livenessProbe = livenessProbe;
+        this.readinessProbe = readinessProbe;
+    }
+
     private Probe livenessProbe;
 
     private Probe readinessProbe;

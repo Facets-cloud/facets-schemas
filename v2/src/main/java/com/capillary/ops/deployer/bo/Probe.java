@@ -2,6 +2,19 @@ package com.capillary.ops.deployer.bo;
 
 public class Probe {
 
+    public Probe() {
+    }
+
+    public Probe(int port, int initialDelaySeconds, int periodSeconds, String httpCheckEndpoint, int successThreshold, int failureThreshold, int timeout) {
+        this.port = port;
+        this.initialDelaySeconds = initialDelaySeconds;
+        this.periodSeconds = periodSeconds;
+        this.httpCheckEndpoint = httpCheckEndpoint;
+        this.successThreshold = successThreshold;
+        this.failureThreshold = failureThreshold;
+        this.timeout = timeout;
+    }
+
     private int port;
 
     private int initialDelaySeconds;

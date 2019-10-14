@@ -1,6 +1,15 @@
 package com.capillary.ops.deployer.bo;
 
 public class EnvironmentVariable {
+
+    public EnvironmentVariable() {
+    }
+
+    public EnvironmentVariable(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     private String name;
     private String value;
 

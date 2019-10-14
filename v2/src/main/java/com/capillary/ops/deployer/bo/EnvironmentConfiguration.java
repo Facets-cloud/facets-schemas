@@ -3,6 +3,26 @@ package com.capillary.ops.deployer.bo;
 import java.util.Map;
 
 public class EnvironmentConfiguration {
+
+    public EnvironmentConfiguration(String kubernetesToken, String nodeGroup, String kubernetesApiEndpoint,
+                                    ExternalDnsConfiguration privateDnsConfiguration,
+                                    ExternalDnsConfiguration publicDnsConfiguration,
+                                    Map<String, String> commonConfigs, Map<String, String> commonCredentials,
+                                    SSLConfigs sslConfigs, String ecrMirrorRepo) {
+        this.kubernetesToken = kubernetesToken;
+        this.nodeGroup = nodeGroup;
+        this.kubernetesApiEndpoint = kubernetesApiEndpoint;
+        this.privateDnsConfiguration = privateDnsConfiguration;
+        this.publicDnsConfiguration = publicDnsConfiguration;
+        this.commonConfigs = commonConfigs;
+        this.commonCredentials = commonCredentials;
+        this.sslConfigs = sslConfigs;
+        this.ecrMirrorRepo = ecrMirrorRepo;
+    }
+
+    public EnvironmentConfiguration() {
+    }
+
     private String kubernetesToken;
     private String nodeGroup;
     private String kubernetesApiEndpoint;

@@ -14,6 +14,24 @@ public class Deployment {
         Replace
     }
 
+    public Deployment() {
+    }
+
+    public Deployment(ApplicationFamily applicationFamily, String applicationId, String image, String buildId, String environment, List<EnvironmentVariable> configurations, Date timestamp, PodSize podSize, HPA horizontalPodAutoscaler, String schedule, boolean rollbackEnabled, String deployedBy) {
+        this.applicationFamily = applicationFamily;
+        this.applicationId = applicationId;
+        this.image = image;
+        this.buildId = buildId;
+        this.environment = environment;
+        this.configurations = configurations;
+        this.timestamp = timestamp;
+        this.podSize = podSize;
+        this.horizontalPodAutoscaler = horizontalPodAutoscaler;
+        this.schedule = schedule;
+        this.rollbackEnabled = rollbackEnabled;
+        this.deployedBy = deployedBy;
+    }
+
     @Id
     private String id;
     private ApplicationFamily applicationFamily;

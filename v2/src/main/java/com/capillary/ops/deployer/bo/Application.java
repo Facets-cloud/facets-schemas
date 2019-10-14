@@ -27,6 +27,26 @@ public class Application {
         STATEFUL_SET
     }
 
+    public Application(ApplicationType applicationType, String name, @NotNull VCSProvider vcsProvider, @NotNull String repositoryUrl, @NotBlank String applicationRootDirectory, @NotNull List<Port> ports, @NotNull LoadBalancerType loadBalancerType, List<PVC> pvcList, @NotNull BuildType buildType, @NotNull ApplicationFamily applicationFamily, String dnsPrefix, HealthCheck healthCheck, DnsType dnsType, Map<String, String> commonConfigs) {
+        this.applicationType = applicationType;
+        this.name = name;
+        this.vcsProvider = vcsProvider;
+        this.repositoryUrl = repositoryUrl;
+        this.applicationRootDirectory = applicationRootDirectory;
+        this.ports = ports;
+        this.loadBalancerType = loadBalancerType;
+        this.pvcList = pvcList;
+        this.buildType = buildType;
+        this.applicationFamily = applicationFamily;
+        this.dnsPrefix = dnsPrefix;
+        this.healthCheck = healthCheck;
+        this.dnsType = dnsType;
+        this.commonConfigs = commonConfigs;
+    }
+
+    public Application() {
+    }
+
     @Id
     private String id;
 

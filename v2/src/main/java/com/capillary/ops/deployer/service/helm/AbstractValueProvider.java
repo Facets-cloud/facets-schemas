@@ -19,7 +19,7 @@ public abstract class AbstractValueProvider {
 
     @Autowired
     private SecretService secretService;
-    
+
     public String getDeploymentId(Deployment deployment) {
         return deployment.getId();
     }
@@ -58,7 +58,9 @@ public abstract class AbstractValueProvider {
         Map<String, String> configMap = new HashMap<>();
         configMap.putAll(deployment.getConfigurationsMap());
         configMap.putAll(application.getCommonConfigs());
-        configMap.putAll(environment.getEnvironmentConfiguration().getCommonConfigs());
+        if(environment.getEnvironmentConfiguration().getCommonConfigs() != null) {
+            configMap.putAll(environment.getEnvironmentConfiguration().getCommonConfigs());
+        }
         return configMap;
     }
 
@@ -74,7 +76,9 @@ public abstract class AbstractValueProvider {
                     .equals(ApplicationSecret.SecretStatus.FULFILLED))
                     .forEach(x -> secretMap.put(x.getSecretName(), x.getSecretValue()));
         }
-        secretMap.putAll(environment.getEnvironmentConfiguration().getCommonCredentials());
+        if(environment.getEnvironmentConfiguration().getCommonCredentials() != null) {
+            secretMap.putAll(environment.getEnvironmentConfiguration().getCommonCredentials());
+        }
         return secretMap;
     }
 

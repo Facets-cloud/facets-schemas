@@ -10,6 +10,7 @@ import hapi.services.tiller.Tiller.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import net.bytebuddy.implementation.bytecode.Throw;
+import org.apache.commons.lang3.StringUtils;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -29,10 +29,8 @@ import java.util.*;
 import java.util.concurrent.Future;
 
 @Service
-@Profile("!dev")
+@Profile("!dev || helminttest")
 public class HelmService implements IHelmService {
-    @Autowired
-    private SecretService secretService;
 
     @Autowired
     private EnvironmentRepository environmentRepository;
@@ -122,7 +120,7 @@ public class HelmService implements IHelmService {
 
     @Override
     public String getReleaseName(Application application, Environment environment) {
-        return environment.getEnvironmentConfiguration().getNodeGroup().isEmpty() ?
+        return StringUtils.isEmpty(environment.getEnvironmentConfiguration().getNodeGroup()) ?
                 application.getName() :
                 environment.getEnvironmentMetaData().getName() + "-" + application.getName();
     }
@@ -206,6 +204,11 @@ public class HelmService implements IHelmService {
                 new ConfigBuilder()
                         .withMasterUrl(environment.getEnvironmentConfiguration().getKubernetesApiEndpoint())
                         .withOauthToken(environment.getEnvironmentConfiguration().getKubernetesToken())
+                        .withClientCertData(null)
+                        .withCaCertData(null)
+                        .withClientKeyData(null)
+                        .withUsername(null)
+                        .withPassword(null)
                         .withTrustCerts(true)
                         .withWebsocketTimeout(60*1000)
                         .withConnectionTimeout(30*1000)

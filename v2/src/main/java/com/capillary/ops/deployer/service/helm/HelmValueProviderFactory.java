@@ -14,28 +14,22 @@ import java.util.Map;
 public class HelmValueProviderFactory {
 
     @Autowired
-    public BaseChartValueProvider getHelmValuesBuilder() {
-        return null;
-    }
+    private BaseChartValueProvider baseChartValueProvider;
 
     @Autowired
-    public StatefulSetChartValueProvider getStatefulSetValuesBuilder() {
-        return null;
-    }
+    private StatefulSetChartValueProvider statefulSetChartValueProvider;
 
     @Autowired
-    public CronJobChartValueProvider getCronJobBuilder() {
-        return null;
-    }
+    public CronJobChartValueProvider cronJobChartValueProvider;
 
     public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment) {
         switch (application.getApplicationType()) {
             case SERVICE:
-                return getHelmValuesBuilder().getValues(application, environment, deployment);
+                return baseChartValueProvider.getValues(application, environment, deployment);
             case STATEFUL_SET:
-                return getStatefulSetValuesBuilder().getValues(application, environment, deployment);
+                return statefulSetChartValueProvider.getValues(application, environment, deployment);
             case SCHEDULED_JOB:
-                return getCronJobBuilder().getValues(application, environment, deployment);
+                return cronJobChartValueProvider.getValues(application, environment, deployment);
         }
 
         throw new  NotFoundException("could not find a valid deployment configuration");

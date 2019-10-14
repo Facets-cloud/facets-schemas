@@ -40,3 +40,4 @@ v2/src/main/resources/static/
 *.project
 package-lock.json
 dist/
+.helm
