@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  finalizers:
+  - kubernetes.io/pv-protection
+  name: logs-efs-pv
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 500Gi
+  nfs:
+    path: /
+    server: {{ .Values.nfsHost }}
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: gp2
