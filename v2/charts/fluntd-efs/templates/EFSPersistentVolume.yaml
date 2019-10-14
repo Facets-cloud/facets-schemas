@@ -11,6 +11,6 @@ spec:
     storage: 500Gi
   nfs:
     path: /
-    server: {{ .Values.nfsHost }}
+    server: {{ .Values.efsHost }}
   persistentVolumeReclaimPolicy: Retain
   storageClassName: gp2
