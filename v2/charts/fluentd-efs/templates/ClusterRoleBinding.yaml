@@ -1,12 +1,12 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: fluentd
+  name: fluentd-efs
 roleRef:
   kind: ClusterRole
-  name: fluentd
+  name: fluentd-efs
   apiGroup: rbac.authorization.k8s.io
 subjects:
 - kind: ServiceAccount
-  name: fluentd
+  name: fluentd-efs
   namespace: default
