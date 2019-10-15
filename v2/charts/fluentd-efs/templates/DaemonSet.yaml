@@ -48,8 +48,8 @@ spec:
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
-      serviceAccount: fluentd
-      serviceAccountName: fluentd
+      serviceAccount: fluentd-efs
+      serviceAccountName: fluentd-efs
       terminationGracePeriodSeconds: 10
       volumes:
       - hostPath:
