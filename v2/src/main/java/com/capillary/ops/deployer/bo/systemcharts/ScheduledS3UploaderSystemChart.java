@@ -26,7 +26,7 @@ public class ScheduledS3UploaderSystemChart implements ISystemChart {
         S3DumpAwsConfig s3DumpAwsConfig = environment.getEnvironmentConfiguration().getS3DumpAwsConfig();
         if (s3DumpAwsConfig == null || s3DumpAwsConfig.getAwsAccessKeyId() == null
                 || s3DumpAwsConfig.getAwsSecretAccessKey() == null) {
-            logger.error("could not find one of the aws keys");
+            logger.warn("could not find one of the aws keys");
             throw new NotFoundException("aws access key id or secret access key not found");
         }
 
