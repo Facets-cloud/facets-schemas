@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})
@@ -103,6 +104,11 @@ public class HelmServiceIntegrationTest {
         List<ContainerPort> ports = k8sdeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts();
         Assert.assertTrue(ports.stream().anyMatch(x -> x.getContainerPort().equals(application.getPorts().get(0).getContainerPort().intValue())));
         Assert.assertTrue(ports.stream().anyMatch(x -> x.getContainerPort().equals(application.getPorts().get(1).getContainerPort().intValue())));
+        List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
+                pod -> pod.getMetadata().getAnnotations() != null &&
+                        deployment.getId().equalsIgnoreCase(pod.getMetadata().getAnnotations().get("deploymentId"))
+        ).collect(Collectors.toList());
+        Assert.assertEquals(1, pods.size());
     }
 
     @After
@@ -227,7 +233,7 @@ public class HelmServiceIntegrationTest {
                 new EnvironmentVariable("TZ", "Asia/Kolkata"),
                 new EnvironmentVariable("KEY1", "VALUE1"));
         HPA hpa = new HPA(50, 1, 4);
-        Deployment dep = new Deployment(application.getApplicationFamily(), application.getId(), "nginx:latest", "",
+        Deployment dep = new Deployment(application.getApplicationFamily(), application.getId(), "nginx:latest", "xyz",
                 clusterName, environmentVariables, new Date(), PodSize.LARGE, hpa, null,
                 false, "me");
         deploymentRepository.save(dep);

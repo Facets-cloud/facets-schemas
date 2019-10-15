@@ -19,15 +19,6 @@ public abstract class AbstractValueProvider {
 
     @Autowired
     private SecretService secretService;
-
-    public String getDeploymentId(Deployment deployment) {
-        return deployment.getId();
-    }
-
-    public String getBuildId(Deployment deployment) {
-        return deployment.getBuildId();
-    }
-
     
     public String getImage(Deployment deployment) {
         return deployment.getImage();
@@ -287,8 +278,8 @@ public abstract class AbstractValueProvider {
 
     public Map<String, Object> addBaseDetails(Application application, Environment environment, Deployment deployment) {
         Map<String, Object> yaml = new HashMap<>();
-        this.addField("deploymentId", getDeploymentId(deployment), yaml);
-        this.addField("buildId", getBuildId(deployment), yaml);
+        this.addField("deploymentId", deployment.getId(), yaml);
+        this.addField("buildId", deployment.getBuildId(), yaml);
         this.addField("image", getImage(deployment), yaml);
         this.addField("podCPULimit", getPodCPULimit(deployment), yaml);
         this.addField("podMemoryLimit", getPodMemoryLimit(deployment), yaml);
