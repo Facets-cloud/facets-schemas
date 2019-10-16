@@ -1,6 +1,17 @@
 package com.capillary.ops.deployer.bo;
 
 public class ExternalDnsConfiguration {
+
+    public ExternalDnsConfiguration() {
+    }
+
+    public ExternalDnsConfiguration(String awsAccessKeyId, String awsSecretAccessKey, String zoneId, String zoneDns) {
+        this.awsAccessKeyId = awsAccessKeyId;
+        this.awsSecretAccessKey = awsSecretAccessKey;
+        this.zoneId = zoneId;
+        this.zoneDns = zoneDns;
+    }
+
     private String awsAccessKeyId;
     private String awsSecretAccessKey;
     private String zoneId;

@@ -261,7 +261,7 @@ public abstract class AbstractValueProvider {
     }
 
     protected boolean addField(String key, Object value, Map<String, Object> yaml) {
-        if (key != null) {
+        if (value != null) {
             yaml.put(key, value);
             return true;
         }

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
@@ -107,7 +108,13 @@ public class HelmServiceIntegrationTest {
         List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
                 pod -> pod.getMetadata().getAnnotations() != null &&
                         deployment.getId().equalsIgnoreCase(pod.getMetadata().getAnnotations().get("deploymentId"))
-        ).collect(Collectors.toList());
+        ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(deployment.getBuildId()))
+                .filter(pod -> pod.getMetadata().getLabels().get("app").equalsIgnoreCase(application.getName()))
+                .collect(Collectors.toList());
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Assert.assertEquals("0.0.0.0/0", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-internal"));
+        Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
+        Assert.assertEquals("helmint-test-1-dns.local.internal", service.getMetadata().getAnnotations().get("external-dns.alpha.kubernetes.io/hostname"));
         Assert.assertEquals(1, pods.size());
     }
 
@@ -197,6 +204,7 @@ public class HelmServiceIntegrationTest {
         EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
         environmentConfiguration.setKubernetesApiEndpoint(apiEndpoint);
         environmentConfiguration.setKubernetesToken(k8sToken);
+        environmentConfiguration.setPrivateDnsConfiguration(new ExternalDnsConfiguration("", "", "", "local.internal"));
         Environment environment = new Environment(environmentMetaData, environmentConfiguration);
         environmentRepository.save(environment);
         return environment;
@@ -222,7 +230,7 @@ public class HelmServiceIntegrationTest {
                 VCSProvider.GITHUB, "", "",
                 Arrays.asList(port1, port2), LoadBalancerType.INTERNAL,
                 new ArrayList<>(),
-                BuildType.MVN, applicationFamily, "", healthCheck,
+                BuildType.MVN, applicationFamily, name + "-dns", healthCheck,
                 Application.DnsType.PRIVATE, new HashMap<>());
         applicationRepository.save(app);
         return app;
