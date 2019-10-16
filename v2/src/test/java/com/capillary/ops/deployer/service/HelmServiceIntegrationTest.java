@@ -214,8 +214,8 @@ public class HelmServiceIntegrationTest {
         Port port1 = new Port("http", 8080L, 80L);
         Port port2 = new Port("https", 8081L, 443L);
 
-        Probe readinessProbe = new Probe(8080, 1, 2, null, 3, 4, 5);
-        Probe livelinessProbe = new Probe(8081, 6, 7, null, 8, 9, 10);
+        Probe readinessProbe = new Probe(8080, 1, 2, null, 1, 4, 5);
+        Probe livelinessProbe = new Probe(8081, 6, 7, null, 1, 9, 10);
 
         HealthCheck healthCheck = new HealthCheck(livelinessProbe, readinessProbe);
         Application app = new Application(Application.ApplicationType.SERVICE, name,

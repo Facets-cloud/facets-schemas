@@ -1,7 +1,7 @@
 {{- $releaseName := .Release.Name}}
 {{- $crmModuleName := .Values.crmModuleName}}
 
-  apiVersion: apps/v1beta2
+apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   name: {{ .Release.Name  }}
@@ -26,35 +26,6 @@ spec:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
       containers:
-      volumes:
-        - name: dump-vol
-          hostPath:
-            path: /var/log/dumps/{{ .Release.Name }}
-            type: DirectoryOrCreate
-        {{- if .Values.secretFileMounts }}
-          {{- range .Values.secretFileMounts }}
-          {{- with . }}
-        - name: "{{ .name }}-vol"
-          secret:
-            secretName: "{{ .Release.Name  }}-file-credentials"
-            items:
-              - key: {{ .name }}
-                path: "."
-          {{- end }}
-          {{- end }}
-        {{- end }}
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - {{ .Release.Name }}
-              topologyKey: kubernetes.io/hostname
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
 {{- if .Values.capabilities }}
@@ -82,6 +53,37 @@ spec:
                   - -c
                   - sleep 30
           {{- if .Values.secretFileMounts }}
+
+          volumes:
+            - name: dump-vol
+              hostPath:
+                path: /var/log/dumps/{{ .Release.Name }}
+                type: DirectoryOrCreate
+            {{- if .Values.secretFileMounts }}
+            {{- range .Values.secretFileMounts }}
+            {{- with . }}
+            - name: "{{ .name }}-vol"
+              secret:
+                secretName: "{{ .Release.Name  }}-file-credentials"
+                items:
+                  - key: {{ .name }}
+                    path: "."
+              {{- end }}
+              {{- end }}
+            {{- end }}
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: app
+                          operator: In
+                          values:
+                            - {{ .Release.Name }}
+                    topologyKey: kubernetes.io/hostname
+
           volumeMounts:
             - mountPath: /var/log/dumps
               name: dump-vol
@@ -125,7 +127,6 @@ spec:
                 name: "{{ $releaseName }}-credentials"
                 key: {{ $k }}
 {{- end }}
-{{- template "crmConfigurations" . }}
 {{- if .Values.enableLivenessTCP}}
 {{- template "livenessTCP" . }}
 {{- end }}

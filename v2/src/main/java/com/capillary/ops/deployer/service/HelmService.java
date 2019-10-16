@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
+import org.microbean.helm.chart.URLChartLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,8 +127,8 @@ public class HelmService implements IHelmService {
     }
 
     private void install(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        Chart.Builder chart = chartLoader.load(Paths.get("/charts/" + chartName));
+        URLChartLoader chartLoader = new URLChartLoader();
+        Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/" + chartName));
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
@@ -171,8 +172,8 @@ public class HelmService implements IHelmService {
     }
 
     private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        Chart.Builder chart = chartLoader.load(Paths.get("/charts/capillary-base"));
+        URLChartLoader chartLoader = new URLChartLoader();
+        Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/" + chartName));
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
