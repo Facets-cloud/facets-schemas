@@ -25,7 +25,7 @@ public class CapTransferLogsSystemChart implements ISystemChart {
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
         Map<String, Object> values = new HashMap<>();
         K8sLoggingConfiguration logConfigs = environment.getEnvironmentConfiguration().getK8sLoggingConfiguration();
-        if(logConfigs == null) {
+        if(logConfigs.getLogsS3Bucket() == null) {
             return null;
         }
         values.put("awsAccessKeyID",logConfigs.getAwsAccessKeyID());
