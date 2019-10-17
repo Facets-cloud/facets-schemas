@@ -17,6 +17,13 @@ public class ApplicationSecretRequest {
 
     public ApplicationSecretRequest() {}
 
+    public ApplicationSecretRequest(ApplicationFamily applicationFamily, String applicationId, String secretName, String description) {
+        this.applicationFamily = applicationFamily;
+        this.applicationId = applicationId;
+        this.secretName = secretName;
+        this.description = description;
+    }
+
     @Id
     @JsonIgnore
     private String id;

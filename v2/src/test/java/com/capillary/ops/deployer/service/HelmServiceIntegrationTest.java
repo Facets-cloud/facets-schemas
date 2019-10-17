@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.Probe;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
@@ -9,9 +10,7 @@ import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
-import io.fabric8.kubernetes.api.model.ContainerPort;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
@@ -55,6 +54,9 @@ public class HelmServiceIntegrationTest {
 
     @Autowired
     private DeploymentRepository deploymentRepository;
+
+    @Autowired
+    private SecretService secretService;
 
     private String clusterName;
     private File kindExecutable;
@@ -105,7 +107,7 @@ public class HelmServiceIntegrationTest {
         List<ContainerPort> ports = k8sdeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts();
         Assert.assertTrue(ports.stream().anyMatch(x -> x.getContainerPort().equals(application.getPorts().get(0).getContainerPort().intValue())));
         Assert.assertTrue(ports.stream().anyMatch(x -> x.getContainerPort().equals(application.getPorts().get(1).getContainerPort().intValue())));
-        List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
+        final List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
                 pod -> pod.getMetadata().getAnnotations() != null &&
                         deployment.getId().equalsIgnoreCase(pod.getMetadata().getAnnotations().get("deploymentId"))
         ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(deployment.getBuildId()))
@@ -116,6 +118,74 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
         Assert.assertEquals("helmint-test-1-dns.local.internal", service.getMetadata().getAnnotations().get("external-dns.alpha.kubernetes.io/hostname"));
         Assert.assertEquals(1, pods.size());
+
+        deployment.getConfigurations().forEach(
+                config -> {
+                List <EnvVar> env1 = pods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                        .filter(x -> config.getName().equals(x.getName()))
+                        .collect(Collectors.toList());
+                Assert.assertEquals(1, env1.size());
+                String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                Assert.assertEquals("helmint-test-1-configs", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                Assert.assertEquals(config.getValue(),
+                        new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
+        });
+
+        // update secrets and env
+
+        secretService.initializeApplicationSecrets(
+                Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
+                        application.getId(), "CREDENTIAL1", "")));
+        secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
+                application.getId(),
+                Arrays.asList(
+                        new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
+                                "CREDENTIAL1", "CREDENTIAL_VALUE1", "",
+                                ApplicationSecret.SecretStatus.FULFILLED)));
+        Deployment updatedDeployment = createDeployment(application);
+        ArrayList<EnvironmentVariable> updatedEnvironmentVariables = new ArrayList<>(deployment.getConfigurations());
+        updatedEnvironmentVariables.get(0).setValue("UTC");
+        updatedEnvironmentVariables.add(new EnvironmentVariable("NEWCONFIG",  "NEWCONFIGVALUE"));
+        deployment.setConfigurations(updatedEnvironmentVariables);
+        updatedDeployment.setBuildId("newbuild");
+        helmService.deploy(application, updatedDeployment);
+
+        List<Pod> updatedPods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
+                pod -> pod.getMetadata().getAnnotations() != null &&
+                        updatedDeployment.getId().equalsIgnoreCase(pod.getMetadata().getAnnotations().get("deploymentId"))
+        ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(updatedDeployment.getBuildId()))
+                .filter(pod -> pod.getMetadata().getLabels().get("app").equalsIgnoreCase(application.getName()))
+                .collect(Collectors.toList());
+
+        updatedDeployment.getConfigurations().forEach(
+                config -> {
+                    List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                            .filter(x -> config.getName().equals(x.getName()))
+                            .collect(Collectors.toList());
+                    Assert.assertEquals(1, env1.size());
+                    String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                    Assert.assertEquals("helmint-test-1-configs", env1SecretName);
+                    Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                    Assert.assertEquals(config.getValue(),
+                            new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
+                });
+
+        secretService.getApplicationSecrets(clusterName, application.getApplicationFamily(), application.getId())
+                .stream().filter(x -> x.getSecretStatus().equals(ApplicationSecret.SecretStatus.FULFILLED))
+                .forEach(
+                credential -> {
+                    List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                            .filter(x -> credential.getSecretName().equals(x.getName()))
+                            .collect(Collectors.toList());
+                    Assert.assertEquals(1, env1.size());
+                    String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                    Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
+                    Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
+                    Assert.assertEquals(credential.getSecretValue(),
+                            new String(Base64.getDecoder().decode(configsSecret.getData().get(credential.getSecretName()))));
+                });
+
     }
 
     @After

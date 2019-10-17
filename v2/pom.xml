@@ -185,10 +185,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>4.3.2.RELEASE</version>
-                <scope>test</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>4.3.2.RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
