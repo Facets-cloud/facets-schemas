@@ -214,15 +214,17 @@ public abstract class AbstractValueProvider {
         List<Map<String, Object>> secretFileMountsList = new ArrayList<>();
         List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(
                 environment.getEnvironmentMetaData().getName(), application.getApplicationFamily(), application.getId());
-        Map<String, ApplicationSecret> fileSecrets = applicationSecrets.parallelStream()
-                .filter(x -> x.getSecretType() != null && x.getSecretType().equals(ApplicationSecret.SecretType.FILE))
+        Map<String, ApplicationSecretRequest> requests = secretService.getApplicationSecretRequests(application.getApplicationFamily(), application.getId())
+                .stream().collect(Collectors.toMap(ApplicationSecretRequest::getSecretName, Function.identity()));
+        Map<String, ApplicationSecret> fileSecrets = applicationSecrets.stream()
+                .filter(x -> requests.get(x.getSecretName()).getSecretType() != null && requests.get(x.getSecretName()).equals(ApplicationSecretRequest.SecretType.FILE))
                 .collect(Collectors.toMap(ApplicationSecret::getSecretName, Function.identity()));
 
         fileSecrets.values().stream().forEach(x -> {
             if (fileSecrets.containsKey(x.getSecretName())) {
                 Map<String, Object> secretFileMountYaml = new HashMap<>();
                 secretFileMountYaml.put("name", x.getSecretName());
-                secretFileMountYaml.put("mountPath", x.getMountPath());
+                secretFileMountYaml.put("mountPath", requests.get(x.getSecretName()).getMountPath());
                 secretFileMountYaml.put("value", fileSecrets.get(x.getSecretName()).getSecretValue());
                 secretFileMountsList.add(secretFileMountYaml);
             }

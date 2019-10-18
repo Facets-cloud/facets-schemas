@@ -15,6 +15,11 @@ import java.util.Objects;
 @Document
 public class ApplicationSecretRequest {
 
+    public enum SecretType {
+        ENVIRONMENT,
+        FILE
+    }
+
     public ApplicationSecretRequest() {}
 
     public ApplicationSecretRequest(ApplicationFamily applicationFamily, String applicationId, String secretName, String description) {
@@ -38,6 +43,10 @@ public class ApplicationSecretRequest {
     private String secretName;
 
     private String description = "";
+
+    private SecretType secretType = SecretType.ENVIRONMENT;
+
+    private String mountPath;
 
     public String getId() {
         return id;
@@ -77,6 +86,22 @@ public class ApplicationSecretRequest {
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public SecretType getSecretType() {
+        return secretType;
+    }
+
+    public void setSecretType(SecretType secretType) {
+        this.secretType = secretType;
+    }
+
+    public String getMountPath() {
+        return mountPath;
+    }
+
+    public void setMountPath(String mountPath) {
+        this.mountPath = mountPath;
     }
 
     @Override

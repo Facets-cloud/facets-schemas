@@ -105,7 +105,7 @@ public class MockDataBootstrap {
         request.setApplicationId(application.getId());
         applicationSecretRequestsRepository.save(request);
         applicationSecretsRepository.save(new ApplicationSecret("nightly", applicationFamily, application.getId(),
-                request.getSecretName(), "somevalue", request.getDescription(), ApplicationSecret.SecretStatus.FULFILLED));
+                request.getSecretName(), "somevalue", ApplicationSecret.SecretStatus.FULFILLED));
         return result;
     }
 

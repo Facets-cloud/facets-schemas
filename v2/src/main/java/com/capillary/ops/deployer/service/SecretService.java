@@ -40,10 +40,10 @@ public class SecretService {
         Map<String, ApplicationSecretRequest> secretMap = Maps.newHashMapWithExpectedSize(savedSecrets.size());
         savedSecrets.forEach(x -> secretMap.put(x.getSecretName(), x));
         List<ApplicationSecret> secrets = new ArrayList<>();
-        applicationSecrets.parallelStream().forEach(x -> {
+        applicationSecrets.stream().forEach(x -> {
             ApplicationSecretRequest request = secretMap.get(x.getSecretName());
             Optional<ApplicationSecret> savedSecret = applicationSecretsRepository.findOneByEnvironmentNameAndApplicationFamilyAndApplicationIdAndSecretName(environmentName, applicationFamily, applicationId, x.getSecretName());
-            ApplicationSecret secret = new ApplicationSecret(environmentName, applicationFamily, applicationId, request.getSecretName(), x.getSecretValue(), request.getDescription(), ApplicationSecret.SecretStatus.FULFILLED);
+            ApplicationSecret secret = new ApplicationSecret(environmentName, applicationFamily, applicationId, request.getSecretName(), x.getSecretValue(), ApplicationSecret.SecretStatus.FULFILLED);
             secret.setSecretStatus(ApplicationSecret.SecretStatus.FULFILLED);
             if(savedSecret.isPresent()) {
                 secret.setId(savedSecret.get().getId());

@@ -17,34 +17,27 @@ public class ApplicationSecret {
 
     public ApplicationSecret() {}
 
-    public ApplicationSecret(String environmentName, ApplicationFamily applicationFamily, String applicationId, String secretName, String description, SecretStatus secretStatus) {
+    public ApplicationSecret(String environmentName, ApplicationFamily applicationFamily, String applicationId, String secretName, SecretStatus secretStatus) {
         this.environmentName = environmentName;
         this.applicationFamily = applicationFamily;
         this.applicationId = applicationId;
         this.secretName = secretName;
         this.secretStatus = secretStatus;
-        this.description = description;
     }
 
-    public ApplicationSecret(String environmentName, ApplicationFamily applicationFamily, String applicationId, String secretName, String secretValue, String description, SecretStatus secretStatus) {
+    public ApplicationSecret(String environmentName, ApplicationFamily applicationFamily, String applicationId, String secretName, String secretValue, SecretStatus secretStatus) {
         this.environmentName = environmentName;
         this.applicationFamily = applicationFamily;
         this.applicationId = applicationId;
         this.secretName = secretName;
         this.secretValue = secretValue;
         this.secretStatus = secretStatus;
-        this.description = description;
     }
 
     public enum SecretStatus {
         FULFILLED,
         UNFULFILLED,
         PENDING
-    }
-
-    public enum SecretType {
-        ENVIRONMENT,
-        FILE
     }
 
     @Id
@@ -63,14 +56,7 @@ public class ApplicationSecret {
     @JsonView(UserView.SecretName.class)
     private String secretName;
 
-    @JsonView(UserView.SecretName.class)
-    private SecretType secretType = SecretType.ENVIRONMENT;
-
     private String secretValue = "";
-
-    private String mountPath;
-
-    private String description = "";
 
     @JsonView(UserView.SecretName.class)
     private SecretStatus secretStatus = SecretStatus.UNFULFILLED;
@@ -99,36 +85,12 @@ public class ApplicationSecret {
         this.secretName = secretName;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getSecretValue() {
         return secretValue;
     }
 
     public void setSecretValue(String secretValue) {
         this.secretValue = secretValue;
-    }
-
-    public SecretType getSecretType() {
-        return secretType;
-    }
-
-    public void setSecretType(SecretType secretType) {
-        this.secretType = secretType;
-    }
-
-    public String getMountPath() {
-        return mountPath;
-    }
-
-    public void setMountPath(String mountPath) {
-        this.mountPath = mountPath;
     }
 
     public ApplicationFamily getApplicationFamily() {

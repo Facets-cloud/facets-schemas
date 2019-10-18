@@ -145,7 +145,7 @@ public class HelmServiceIntegrationTest {
                 application.getId(),
                 Arrays.asList(
                         new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
-                                "CREDENTIAL1", "CREDENTIAL_VALUE1", "",
+                                "CREDENTIAL1", "CREDENTIAL_VALUE1",
                                 ApplicationSecret.SecretStatus.FULFILLED)));
         secretService.initializeApplicationSecrets(
                 Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
@@ -154,7 +154,7 @@ public class HelmServiceIntegrationTest {
                 application.getId(),
                 Arrays.asList(
                         new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
-                                "CREDENTIALFILE1", Base64.getEncoder().encodeToString("CREDENTIALFILE1".getBytes()), "",
+                                "CREDENTIALFILE1", Base64.getEncoder().encodeToString("CREDENTIALFILE1".getBytes()),
                                 ApplicationSecret.SecretStatus.FULFILLED)));
 
         Deployment updatedDeployment = createDeployment(application);
