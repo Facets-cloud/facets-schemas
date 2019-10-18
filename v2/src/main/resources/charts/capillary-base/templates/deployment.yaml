@@ -52,25 +52,6 @@ spec:
                   - sh
                   - -c
                   - sleep 30
-          {{- if .Values.secretFileMounts }}
-
-          volumes:
-            - name: dump-vol
-              hostPath:
-                path: /var/log/dumps/{{ .Release.Name }}
-                type: DirectoryOrCreate
-            {{- if .Values.secretFileMounts }}
-            {{- range .Values.secretFileMounts }}
-            {{- with . }}
-            - name: "{{ .name }}-vol"
-              secret:
-                secretName: "{{ .Release.Name  }}-file-credentials"
-                items:
-                  - key: {{ .name }}
-                    path: "."
-              {{- end }}
-              {{- end }}
-            {{- end }}
           affinity:
             podAntiAffinity:
               preferredDuringSchedulingIgnoredDuringExecution:
@@ -91,7 +72,6 @@ spec:
             {{- with . }}
             - name: "{{ .name }}-vol"
               mountPath: {{ .mountPath }}
-            {{- end }}
             {{- end }}
           {{- end }}
           ports:
@@ -151,3 +131,21 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      volumes:
+        - name: dump-vol
+          hostPath:
+            path: /var/log/dumps/{{ .Release.Name }}
+            type: DirectoryOrCreate
+        {{- if .Values.secretFileMounts }}
+        {{- range .Values.secretFileMounts }}
+        {{- with . }}
+        - name: "{{ .name }}-vol"
+          secret:
+            secretName: "{{ .Release.Name  }}-file-credentials"
+            items:
+              - key: {{ .name }}
+                path: "."
+        {{- end }}
+        {{- end }}
+        {{- end }}
+

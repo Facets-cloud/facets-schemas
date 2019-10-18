@@ -233,6 +233,16 @@ public class HelmServiceIntegrationTest {
                             new String(Base64.getDecoder().decode(configsSecret.getData().get(credential.getSecretName()))));
                 });
 
+        Optional<VolumeMount> dumpsVolumeCreated = updatedPods.get(0).getSpec().getContainers().get(0).getVolumeMounts().stream()
+                .filter(x -> x.getMountPath().equals("/var/log/dumps"))
+                .findFirst();
+        Assert.assertTrue(dumpsVolumeCreated.isPresent());
+        Assert.assertEquals(dumpsVolumeCreated.get().getName(), "dump-vol");
+        Optional<Volume> logVolumeOptional = updatedPods.get(0).getSpec().getVolumes().stream().filter(x -> x.getName().equals("dump-vol")).findFirst();
+        Assert.assertTrue(logVolumeOptional.isPresent());
+        Assert.assertEquals("/var/log/dumps/" + application.getName(), logVolumeOptional.get().getHostPath().getPath());
+        System.out.println(logVolumeOptional.get().getHostPath().getAdditionalProperties().get("type"));
+
         // update to public app, check ssl and annotations
         application.setLoadBalancerType(LoadBalancerType.EXTERNAL);
         application.setDnsType(Application.DnsType.PUBLIC);
