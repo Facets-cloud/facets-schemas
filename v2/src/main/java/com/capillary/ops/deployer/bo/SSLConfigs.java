@@ -2,6 +2,13 @@ package com.capillary.ops.deployer.bo;
 
 public class SSLConfigs {
 
+    public SSLConfigs() {
+    }
+
+    public SSLConfigs(String SSLCertName) {
+        this.SSLCertName = SSLCertName;
+    }
+
     private String SSLCertName;
 
     public String getSSLCertName() {
