@@ -37,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -149,12 +150,23 @@ public class HelmServiceIntegrationTest {
                                 ApplicationSecret.SecretStatus.FULFILLED)));
         secretService.initializeApplicationSecrets(
                 Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
-                        application.getId(), "CREDENTIALFILE1", "")));
+                        application.getId(), "CREDENTIALFILE1", "",
+                        ApplicationSecretRequest.SecretType.FILE, "/etc/nginx/nginx2.conf")));
         secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
                 application.getId(),
                 Arrays.asList(
                         new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
                                 "CREDENTIALFILE1", Base64.getEncoder().encodeToString("CREDENTIALFILE1".getBytes()),
+                                ApplicationSecret.SecretStatus.FULFILLED)));
+        secretService.initializeApplicationSecrets(
+                Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
+                        application.getId(), "CREDENTIALFILE2", "",
+                        ApplicationSecretRequest.SecretType.FILE, "/etc/nginx/nginx.conf")));
+        secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
+                application.getId(),
+                Arrays.asList(
+                        new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
+                                "CREDENTIALFILE2", Base64.getEncoder().encodeToString("CREDENTIALFILE2".getBytes()),
                                 ApplicationSecret.SecretStatus.FULFILLED)));
 
         Deployment updatedDeployment = createDeployment(application);
@@ -174,64 +186,68 @@ public class HelmServiceIntegrationTest {
 
         // provided configs
         updatedDeployment.getConfigurations().forEach(
-                config -> {
-                    List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
-                            .filter(x -> config.getName().equals(x.getName()))
-                            .collect(Collectors.toList());
-                    Assert.assertEquals(1, env1.size());
-                    String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                    Assert.assertEquals("helmint-test-1-configs", env1SecretName);
-                    Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
-                    Assert.assertEquals(config.getValue(),
-                            new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
-                });
+            config -> {
+                List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                        .filter(x -> config.getName().equals(x.getName()))
+                        .collect(Collectors.toList());
+                Assert.assertEquals(1, env1.size());
+                String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                Assert.assertEquals("helmint-test-1-configs", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                Assert.assertEquals(config.getValue(),
+                        new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
+            });
 
         // cluster default configs
         localEnvironment.getEnvironmentConfiguration().getCommonConfigs().entrySet().stream().forEach(
-                commonConfig -> {
-                    List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
-                            .filter(x -> commonConfig.getKey().equals(x.getName()))
-                            .collect(Collectors.toList());
-                    Assert.assertEquals(1, env1.size());
-                    String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                    Assert.assertEquals("helmint-test-1-configs", env1SecretName);
-                    Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
-                    Assert.assertEquals(commonConfig.getValue(),
-                            new String(Base64.getDecoder().decode(configsSecret.getData().get(commonConfig.getKey()))));
-                }
+            commonConfig -> {
+                List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                        .filter(x -> commonConfig.getKey().equals(x.getName()))
+                        .collect(Collectors.toList());
+                Assert.assertEquals(1, env1.size());
+                String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                Assert.assertEquals("helmint-test-1-configs", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                Assert.assertEquals(commonConfig.getValue(),
+                        new String(Base64.getDecoder().decode(configsSecret.getData().get(commonConfig.getKey()))));
+            }
         );
 
 
         // cluster default credentials
         localEnvironment.getEnvironmentConfiguration().getCommonCredentials().entrySet().stream().forEach(
-                commonCredential -> {
-                    List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
-                            .filter(x -> commonCredential.getKey().equals(x.getName()))
-                            .collect(Collectors.toList());
-                    Assert.assertEquals(1, env1.size());
-                    String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                    Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
-                    Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
-                    Assert.assertEquals(commonCredential.getValue(),
-                            new String(Base64.getDecoder().decode(configsSecret.getData().get(commonCredential.getKey()))));
-                }
+            commonCredential -> {
+                List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                        .filter(x -> commonCredential.getKey().equals(x.getName()))
+                        .collect(Collectors.toList());
+                Assert.assertEquals(1, env1.size());
+                String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
+                Assert.assertEquals(commonCredential.getValue(),
+                        new String(Base64.getDecoder().decode(configsSecret.getData().get(commonCredential.getKey()))));
+            }
         );
 
         // provided credentials
+        Map<String, ApplicationSecretRequest> requests =
+                secretService.getApplicationSecretRequests(application.getApplicationFamily(), application.getId())
+                .stream().collect(Collectors.toMap(ApplicationSecretRequest::getSecretName, Function.identity()));
         secretService.getApplicationSecrets(clusterName, application.getApplicationFamily(), application.getId())
-                .stream().filter(x -> x.getSecretStatus().equals(ApplicationSecret.SecretStatus.FULFILLED))
-                .forEach(
-                credential -> {
-                    List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
-                            .filter(x -> credential.getSecretName().equals(x.getName()))
-                            .collect(Collectors.toList());
-                    Assert.assertEquals(1, env1.size());
-                    String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                    Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
-                    Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
-                    Assert.assertEquals(credential.getSecretValue(),
-                            new String(Base64.getDecoder().decode(configsSecret.getData().get(credential.getSecretName()))));
-                });
+            .stream().filter(x -> x.getSecretStatus().equals(ApplicationSecret.SecretStatus.FULFILLED))
+            .filter(x -> requests.get(x.getSecretName()).getSecretType().equals(ApplicationSecretRequest.SecretType.ENVIRONMENT))
+            .forEach(
+            credential -> {
+                List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
+                        .filter(x -> credential.getSecretName().equals(x.getName()))
+                        .collect(Collectors.toList());
+                Assert.assertEquals(1, env1.size());
+                String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
+                Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
+                Assert.assertEquals(credential.getSecretValue(),
+                        new String(Base64.getDecoder().decode(configsSecret.getData().get(credential.getSecretName()))));
+            });
 
         Optional<VolumeMount> dumpsVolumeCreated = updatedPods.get(0).getSpec().getContainers().get(0).getVolumeMounts().stream()
                 .filter(x -> x.getMountPath().equals("/var/log/dumps"))
@@ -241,7 +257,12 @@ public class HelmServiceIntegrationTest {
         Optional<Volume> logVolumeOptional = updatedPods.get(0).getSpec().getVolumes().stream().filter(x -> x.getName().equals("dump-vol")).findFirst();
         Assert.assertTrue(logVolumeOptional.isPresent());
         Assert.assertEquals("/var/log/dumps/" + application.getName(), logVolumeOptional.get().getHostPath().getPath());
-        System.out.println(logVolumeOptional.get().getHostPath().getAdditionalProperties().get("type"));
+
+
+        Optional<VolumeMount> credentialFileMountCreated = updatedPods.get(0).getSpec().getContainers().get(0).getVolumeMounts().stream()
+                .filter(x -> x.getMountPath().equals("/etc/credentialfiles/"))
+                .findFirst();
+        Assert.assertTrue(credentialFileMountCreated.isPresent());
 
         // update to public app, check ssl and annotations
         application.setLoadBalancerType(LoadBalancerType.EXTERNAL);

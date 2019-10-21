@@ -68,12 +68,8 @@ spec:
           volumeMounts:
             - mountPath: /var/log/dumps
               name: dump-vol
-          {{- range .Values.secretFileMounts }}
-            {{- with . }}
-            - name: "{{ .name }}-vol"
-              mountPath: {{ .mountPath }}
-            {{- end }}
-          {{- end }}
+            - name: {{ $releaseName  }}-file-credentials-vol
+              mountPath: /etc/credentialfiles/
           ports:
               {{- range .Values.ports }}
               {{- with . }}
@@ -136,16 +132,6 @@ spec:
           hostPath:
             path: /var/log/dumps/{{ .Release.Name }}
             type: DirectoryOrCreate
-        {{- if .Values.secretFileMounts }}
-        {{- range .Values.secretFileMounts }}
-        {{- with . }}
-        - name: "{{ .name }}-vol"
+        - name: {{ $releaseName  }}-file-credentials-vol
           secret:
-            secretName: "{{ .Release.Name  }}-file-credentials"
-            items:
-              - key: {{ .name }}
-                path: "."
-        {{- end }}
-        {{- end }}
-        {{- end }}
-
+            secretName: {{ $releaseName  }}-file-credentials

@@ -29,6 +29,14 @@ public class ApplicationSecretRequest {
         this.description = description;
     }
 
+    public ApplicationSecretRequest(ApplicationFamily applicationFamily, String applicationId, String secretName, String description, SecretType secretType, String mountPath) {
+        this.applicationFamily = applicationFamily;
+        this.applicationId = applicationId;
+        this.secretName = secretName;
+        this.description = description;
+        this.secretType = secretType;
+    }
+
     @Id
     @JsonIgnore
     private String id;
@@ -46,7 +54,7 @@ public class ApplicationSecretRequest {
 
     private SecretType secretType = SecretType.ENVIRONMENT;
 
-    private String mountPath;
+    // private String mountPath;
 
     public String getId() {
         return id;
@@ -96,13 +104,13 @@ public class ApplicationSecretRequest {
         this.secretType = secretType;
     }
 
-    public String getMountPath() {
-        return mountPath;
-    }
-
-    public void setMountPath(String mountPath) {
-        this.mountPath = mountPath;
-    }
+//    public String getMountPath() {
+//        return mountPath;
+//    }
+//
+//    public void setMountPath(String mountPath) {
+//        this.mountPath = mountPath;
+//    }
 
     @Override
     public boolean equals(Object o) {
