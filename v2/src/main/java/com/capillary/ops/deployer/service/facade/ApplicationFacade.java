@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,9 @@ public class ApplicationFacade {
     private VcsServiceSelector vcsServiceSelector;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
+
+    @Value("${ecr.registry}")
+    private String ecrRepoUrl;
 
     public Application createApplication(Application application) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
@@ -221,6 +225,7 @@ public class ApplicationFacade {
                 throw new NotPromotedException("Build " + deployment.getBuildId() + " is not promoted");
             }
         }
+
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         deployment.setApplicationId(application.getId());
         deployment.setApplicationFamily(applicationFamily);
@@ -238,6 +243,10 @@ public class ApplicationFacade {
         }
 
         deployment.setImage(build.getImage());
+        String mirror = env.getEnvironmentConfiguration().getEcrMirrorRepo();
+        if(mirror != null && ! mirror.isEmpty()) {
+            deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
+        }
         deploymentRepository.save(deployment);
         helmService.deploy(application, deployment);
         return deployment;

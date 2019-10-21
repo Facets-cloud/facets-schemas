@@ -19,7 +19,7 @@ public abstract class AbstractValueProvider {
 
     @Autowired
     private SecretService secretService;
-    
+
     public String getImage(Deployment deployment) {
         return deployment.getImage();
     }
