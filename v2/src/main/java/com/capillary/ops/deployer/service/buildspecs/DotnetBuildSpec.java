@@ -1,13 +1,17 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.capillary.ops.deployer.exceptions.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class DotnetBuildSpec extends BuildSpec {
+
+    private static final Logger logger = LoggerFactory.getLogger(DotnetBuildSpec.class);
 
     public DotnetBuildSpec(Application application) {
         super(application);
@@ -27,15 +31,25 @@ public class DotnetBuildSpec extends BuildSpec {
     }
 
     @Override
+    protected List<String> getPostBuildCommandsTest() {
+        logger.error("post build commands phase for DotnetBuildSpec is not implemented");
+        throw new NotImplementedException("Post build commands phase for DotnetBuildSpec is not implemented");
+    }
+
+    @Override
     protected List<String> getBuildCommands() {
         List<String> buildCommands = new ArrayList<>();
         buildCommands.add("dotnet clean");
         buildCommands.add("dotnet publish");
-        if (!this.isTestBuild()) {
-            buildCommands.add("docker build -t $APP_NAME:$TAG .");
-            buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
-        }
+        buildCommands.add("docker build -t $APP_NAME:$TAG .");
+        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
         return buildCommands;
+    }
+
+    @Override
+    protected List<String> getBuildCommandsTest() {
+        logger.error("build commands phase for DotnetBuildSpec is not implemented");
+        throw new NotImplementedException("Build commands phase for DotnetBuildSpec is not implemented");
     }
 
     @Override
@@ -46,6 +60,12 @@ public class DotnetBuildSpec extends BuildSpec {
         preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
         return preBuildCommands;
+    }
+
+    @Override
+    protected List<String> getPreBuildCommandsTest() {
+        logger.error("pre build commands phase for DotnetBuildSpec is not implemented");
+        throw new NotImplementedException("Pre build commands phase for DotnetBuildSpec is not implemented");
     }
 
     @Override

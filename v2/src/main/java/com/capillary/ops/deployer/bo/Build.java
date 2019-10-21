@@ -24,6 +24,7 @@ public class Build {
     private String triggeredBy;
     private String description;
     private boolean promoted = false;
+    private boolean testBuild = false;
 
     public Build() {
     }
@@ -122,5 +123,13 @@ public class Build {
 
     public void setApplicationFamily(ApplicationFamily applicationFamily) {
         this.applicationFamily = applicationFamily;
+    }
+
+    public boolean isTestBuild() {
+        return testBuild;
+    }
+
+    public void setTestBuild(boolean testBuild) {
+        this.testBuild = testBuild;
     }
 }

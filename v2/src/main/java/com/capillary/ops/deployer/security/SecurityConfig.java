@@ -1,10 +1,9 @@
-package com.capillary.ops.deployer;
+package com.capillary.ops.deployer.security;
 
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -17,15 +16,24 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   @Autowired
   private OAuth2UserServiceImpl oAuth2UserService;
 
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-  }
+  @Autowired
+  protected GithubIpAccessController githubIpAccessController;
+
+  @Autowired
+  private BitbucketIpAccessController bitbucketIpAccessController;
 
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests()
-            .antMatchers("/api/*/applications/*/webhooks/**")
-            .permitAll()
-//            .access("hasIpAddress('192.30.252.0/22') or hasIpAddress('185.199.108.0/22') or hasIpAddress('192.30.252.0/22') or hasIpAddress('18.205.93.0/25') or hasIpAddress('18.234.32.128/25') or hasIpAddress('13.52.5.0/25')")
-//            .authenticated()
+
+    http
+            .authorizeRequests()
+            .antMatchers("/api/*/applications/*/webhooks/pr/github")
+            .access("@githubIpAccessController.authenticate(request)")
+            .and()
+            .authorizeRequests()
+            .antMatchers("/api/*/applications/*/webhooks/pr/bitbucket")
+            .access("@bitbucketIpAccessController.authenticate(request)")
+            .and()
+            .authorizeRequests()
             .antMatchers("/api/**")
             .authenticated()
             .and()
@@ -42,5 +50,4 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .and()
             .cors();
   }
-
 }

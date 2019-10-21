@@ -171,6 +171,7 @@ public class ApplicationFacade {
         build.setTag(pullRequest.getSourceBranch());
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
+        build.setTestBuild(true);
         buildRepository.save(build);
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);

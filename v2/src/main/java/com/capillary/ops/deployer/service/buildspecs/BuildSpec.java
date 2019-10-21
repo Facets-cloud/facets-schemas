@@ -29,10 +29,22 @@ public abstract class BuildSpec {
     }
 
     public Map<String, Object> getPhases() {
-        Map<String, Object> installPhase = getInstallPhase();
-        Map<String, Object> preBuildPhase = getPreBuildPhase();
-        Map<String, Object> buildPhase = getBuildPhase();
-        Map<String, Object> postBuildPhase = getPostBuildPhase();
+        Map<String, Object> installPhase;
+        Map<String, Object> preBuildPhase;
+        Map<String, Object> buildPhase;
+        Map<String, Object> postBuildPhase;
+
+        if (this.isTestBuild()) {
+            installPhase = getInstallPhaseTest();
+            preBuildPhase = getPreBuildPhaseTest();
+            buildPhase = getBuildPhaseTest();
+            postBuildPhase = getPostBuildPhaseTest();
+        } else {
+            installPhase = getInstallPhase();
+            preBuildPhase = getPreBuildPhase();
+            buildPhase = getBuildPhase();
+            postBuildPhase = getPostBuildPhase();
+        }
 
         Map<String, Object> phases = new HashMap<>();
         phases.put("install", installPhase);
@@ -49,12 +61,21 @@ public abstract class BuildSpec {
         return postBuildPhase;
     }
 
+    private Map<String, Object> getPostBuildPhaseTest() {
+        List<String> postBuildCommands = getPostBuildCommandsTest();
+        Map<String, Object> postBuildPhase = new HashMap<>();
+        postBuildPhase.put("commands", postBuildCommands);
+        return postBuildPhase;
+    }
+
     protected abstract List<String> getPostBuildCommands();
+
+    protected abstract List<String> getPostBuildCommandsTest();
 
     private Map<String, Object> getBuildPhase() {
         List<String> buildCommands = new ArrayList<>();
         Map<String, Object> buildPhase = new HashMap<>();
-        if(configureDockerBuildSteps() && !this.isTestBuild()) {
+        if(configureDockerBuildSteps()) {
             buildCommands.add("$(aws ecr get-login --region us-west-1 --no-include-email)");
         }
         buildCommands.add(String.format("cd %s", application.getApplicationRootDirectory()));
@@ -63,10 +84,30 @@ public abstract class BuildSpec {
         return buildPhase;
     }
 
+    private Map<String, Object> getBuildPhaseTest() {
+        List<String> buildCommands = new ArrayList<>();
+        Map<String, Object> buildPhase = new HashMap<>();
+        buildCommands.add(String.format("cd %s", application.getApplicationRootDirectory()));
+        buildCommands.addAll(getBuildCommandsTest());
+        buildPhase.put("commands", buildCommands);
+        return buildPhase;
+    }
+
     protected abstract List<String> getBuildCommands();
 
+    protected abstract List<String> getBuildCommandsTest();
+
     private Map<String, Object> getPreBuildPhase() {
-        List<String> preBuildCommands = getPreBuildCommands();
+        List<String> preBuildCommands;
+        preBuildCommands = getPreBuildCommands();
+        Map<String, Object> preBuildPhase = new HashMap<>();
+        preBuildPhase.put("commands", preBuildCommands);
+        return preBuildPhase;
+    }
+
+    private Map<String, Object> getPreBuildPhaseTest() {
+        List<String> preBuildCommands;
+        preBuildCommands = getPreBuildCommandsTest();
         Map<String, Object> preBuildPhase = new HashMap<>();
         preBuildPhase.put("commands", preBuildCommands);
         return preBuildPhase;
@@ -81,16 +122,25 @@ public abstract class BuildSpec {
 
     protected abstract List<String> getPreBuildCommands();
 
+    protected abstract List<String> getPreBuildCommandsTest();
+
     protected abstract List<String> getArtifactSpec();
 
     private Map<String, Object> getInstallPhase() {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
-        if(configureDockerBuildSteps() && !this.isTestBuild()) {
+        if(configureDockerBuildSteps()) {
             installCommands.add(
                     "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
             installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
         }
+        installPhase.put("commands", installCommands);
+        return installPhase;
+    }
+
+    private Map<String, Object> getInstallPhaseTest() {
+        List<String> installCommands = new ArrayList<>();
+        Map<String, Object> installPhase = new HashMap<>();
         installPhase.put("commands", installCommands);
         return installPhase;
     }

@@ -62,6 +62,32 @@ public class DeployerHttpClient {
         return new JSONObject(json);
     }
 
+    public JSONObject makeGETRequest(String requestUri) throws IOException {
+        CloseableHttpClient httpClient = this.getHTTPClient();
+
+        logger.debug("constructing base64 encoded credentials");
+
+        Header contentType = new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+        HttpUriRequest request = RequestBuilder.get()
+                .addHeader(contentType)
+                .setUri(requestUri)
+                .build();
+
+        logger.debug("building request with uri: {}", requestUri);
+
+        CloseableHttpResponse httpResponse = httpClient.execute(request);
+
+        HttpEntity entity = httpResponse.getEntity();
+        Header encodingHeader = entity.getContentEncoding();
+        Charset encoding = encodingHeader == null ? StandardCharsets.UTF_8 : Charsets.toCharset(encodingHeader.getValue());
+
+        logger.debug("converting http response to json string with encoding: {}", encoding);
+        String json = EntityUtils.toString(entity, encoding);
+        httpClient.close();
+
+        return new JSONObject(json);
+    }
+
     public JSONObject makePOSTRequest(String requestUri, String body, String username, String password) throws IOException {
         CloseableHttpClient httpClient = this.getHTTPClient();
 
