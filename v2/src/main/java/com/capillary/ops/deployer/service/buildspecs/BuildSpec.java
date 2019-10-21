@@ -184,11 +184,11 @@ public abstract class BuildSpec {
         return true;
     }
 
-    public boolean isTestBuild() {
+    protected boolean isTestBuild() {
         return testBuild;
     }
 
-    public void setTestBuild(boolean testBuild) {
+    protected void setTestBuild(boolean testBuild) {
         this.testBuild = testBuild;
     }
 }

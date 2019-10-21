@@ -177,7 +177,7 @@ public class CodeBuildService implements ICodeBuildService {
                         .projectName(application.getName())
                         .sourceVersion(build.getTag())
                         .environmentVariablesOverride(environmentVariables)
-                        .buildspecOverride(createBuildSpec(application, true))
+                        .buildspecOverride(createBuildSpec(application, testBuild))
                         .build();
         return getCodeBuildClient(buildSpec.getAwsRegion()).startBuild(startBuildRequest).build().id();
     }
