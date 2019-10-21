@@ -114,7 +114,13 @@ public abstract class BuildSpec {
     }
 
     public Map<String, Object> getArtifacts() {
-        List<String> artifactSpec = getArtifactSpec();
+        List<String> artifactSpec;
+        if (this.isTestBuild()) {
+            artifactSpec = getArtifactSpecTest();
+        } else {
+            artifactSpec = getArtifactSpec();
+        }
+
         Map<String, Object> artifacts = new HashMap<>();
         artifacts.put("files", artifactSpec);
         return artifacts;
@@ -125,6 +131,8 @@ public abstract class BuildSpec {
     protected abstract List<String> getPreBuildCommandsTest();
 
     protected abstract List<String> getArtifactSpec();
+
+    protected abstract List<String> getArtifactSpecTest();
 
     private Map<String, Object> getInstallPhase() {
         List<String> installCommands = new ArrayList<>();

@@ -10,6 +10,7 @@ import com.capillary.ops.deployer.bo.S3DumpFile;
 import com.amazonaws.services.s3.model.S3Object;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class S3DumpService {
 
-    private static final String BUCKET_NAME = "k8s-file-dumps";
+    @Value("${aws.s3bucket.dumps.name}")
+    private String defaultS3Bucket;
+
+    @Value("${aws.s3bucket.dumps.region}")
+    private String defaultS3BucketRegion;
 
     Logger logger = LoggerFactory.getLogger(S3DumpService.class);
 
@@ -27,9 +32,9 @@ public class S3DumpService {
     }
 
     public List<String> listObjects(String environment, String module, String date) {
-        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(defaultS3BucketRegion)).build();
         String s3Prefix = getS3Prefix(environment, module, date);
-        ObjectListing objectListing = amazonS3.listObjects(BUCKET_NAME, s3Prefix);
+        ObjectListing objectListing = amazonS3.listObjects(defaultS3Bucket, s3Prefix);
         List<String> keyList = objectListing.getObjectSummaries().stream()
                 .map(S3ObjectSummary::getKey)
                 .collect(Collectors.toList());
@@ -39,8 +44,8 @@ public class S3DumpService {
     }
 
     public S3DumpFile downloadObject(String path) {
-        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
-        S3Object s3Object = amazonS3.getObject(BUCKET_NAME, path);
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(defaultS3BucketRegion)).build();
+        S3Object s3Object = amazonS3.getObject(defaultS3Bucket, path);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         long contentLength = s3Object.getObjectMetadata().getContentLength();
         logger.info("returning object with content length: {}", contentLength);
