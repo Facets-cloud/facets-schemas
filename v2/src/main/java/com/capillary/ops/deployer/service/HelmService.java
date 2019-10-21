@@ -154,9 +154,9 @@ public class HelmService implements IHelmService {
     }
 
     private String getChartName(Application application, Deployment deployment) {
-        if (application.getApplicationType().equals(Application.ApplicationType.STATEFUL_SET)) {
+        if (Application.ApplicationType.STATEFUL_SET.equals(application.getApplicationType())) {
             return "capillary-base-statefulset";
-        } else if (application.getApplicationType().equals(Application.ApplicationType.SCHEDULED_JOB)) {
+        } else if (Application.ApplicationType.SCHEDULED_JOB.equals(application.getApplicationType())) {
             return "capillary-base-cronjob";
         }
 
