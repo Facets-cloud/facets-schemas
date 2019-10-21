@@ -160,6 +160,8 @@ public class BitbucketVcsService implements VcsService {
         String username = System.getenv("BITBUCKET_USERNAME");
         String password = System.getenv("BITBUCKET_PASSWORD");
 
+        logger.info("adding comment on pull request: {}, content: {}", pullRequest, content);
+
         JSONObject raw = new JSONObject();
         raw.put("raw", content);
         JSONObject comments = new JSONObject();
