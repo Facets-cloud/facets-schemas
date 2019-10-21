@@ -59,7 +59,7 @@ public class PullRequestScheduler {
         }
 
         String buildRef = build.getCodeBuildId().split(":")[1];
-        return String.format(host, BASE_REPORTS_URL, application.getApplicationFamily().name(), application.getName(), buildRef);
+        return String.format(BASE_REPORTS_URL, host, application.getApplicationFamily().name(), application.getName(), buildRef);
     }
 
     private void processInProgressPullRequest(List<PullRequest> openPullRequests) {

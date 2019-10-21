@@ -1,6 +1,9 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.exceptions.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
 
@@ -8,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MJNugetBuildSpec extends BuildSpec {
+
+    private static final Logger logger = LoggerFactory.getLogger(MJNugetBuildSpec.class);
 
     public MJNugetBuildSpec(Application application) {
         super(application);
@@ -20,10 +25,14 @@ public class MJNugetBuildSpec extends BuildSpec {
     @Override
     protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
-        if (!this.isTestBuild()) {
-            postBuildCommands.add("nuget push bin\\Release\\*.nupkg -Source mj-snapshot");
-        }
+        postBuildCommands.add("nuget push bin\\Release\\*.nupkg -Source mj-snapshot");
         return postBuildCommands;
+    }
+
+    @Override
+    protected List<String> getPostBuildCommandsTest() {
+        logger.error("post build commands phase for MJNugetBuildSpec is not implemented");
+        throw new NotImplementedException("Post build commands phase for MJNugetBuildSpec is not implemented");
     }
 
     @Override
@@ -35,6 +44,12 @@ public class MJNugetBuildSpec extends BuildSpec {
         buildCommands.add("dotnet pack $package -c Release  -p:VersionSuffix=$versionSuffix");
         // -alpha-$env:CODEBUILD_SOURCE_VERSION'
         return buildCommands;
+    }
+
+    @Override
+    protected List<String> getBuildCommandsTest() {
+        logger.error("build commands phase for MJNugetBuildSpec is not implemented");
+        throw new NotImplementedException("Build commands phase for MJNugetBuildSpec is not implemented");
     }
 
     @Override
@@ -52,6 +67,12 @@ public class MJNugetBuildSpec extends BuildSpec {
                 "       $versionSuffix = 'alpha-' + [int64](([datetime]::UtcNow)-(get-date \"1/1/1970\")).TotalMilliseconds " +
                 "       }");
         return preBuildCommands;
+    }
+
+    @Override
+    protected List<String> getPreBuildCommandsTest() {
+        logger.error("pre build commands phase for MJNugetBuildSpec is not implemented");
+        throw new NotImplementedException("Pre build commands phase for MJNugetBuildSpec is not implemented");
     }
 
     @Override

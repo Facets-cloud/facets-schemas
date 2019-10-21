@@ -150,6 +150,7 @@ public class BitbucketVcsService implements VcsService {
     @Override
     public void processPullRequest(PullRequest pullRequest, Build build) {
         pullRequest.setBuildId(build.getId());
+        pullRequest.setApplicationId(build.getApplicationId());
         pullRequest.setBuildStatus(StatusType.IN_PROGRESS);
         pullRequestRepository.save(pullRequest);
     }

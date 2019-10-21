@@ -38,17 +38,14 @@ public class PullRequest {
 
     private String destinationBranch;
 
-    @Indexed
     private Date updatedAt;
 
     private String sha;
 
     private String commentsUrl;
 
-    @Indexed
     private String buildId;
 
-    @Indexed
     private StatusType buildStatus;
 
     public String getId() {
