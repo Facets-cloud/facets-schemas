@@ -3,38 +3,12 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-hpaMaxReplicas: 4
-livenessPort: 8081
-livenessInitialDelay: 6
-credentials: {commoncredential2: commoncredential2value, CREDENTIAL1: CREDENTIAL_VALUE1,
-              commoncredential1: commoncredential1value, CREDENTIALFILE1: Q1JFREVOVElBTEZJTEUx}
-configurations: {commonconfig2: commonconfig2value, KEY1: VALUE1, commonconfig1: commonconfig1value,
-                 TZ: Asia/Kolkata}
-lbType: internal
-hpaEnabled: 'true'
-enableLivenessTCP: 'true'
-ports:
-  - {name: http, containerPort: 8080, lbPort: 80}
-  - {name: https, containerPort: 8081, lbPort: 443}
-hpaMinReplicas: 1
-livenessTimeout: 10
-podMemoryLimit: 4
-readinessFailureThreshold: 9
-livenessFailureThreshold: 9
-enableReadinessTCP: 'true'
-deploymentId: 5dad61206d93d7418f8d4e1d
-readinessSuccessThreshold: 1
-hpaMetricThreshold: 50
-readinessInitialDelay: 1
-image: nginx:latest
-buildId: newbuild
-readinessPort: 8080
-livenessPeriod: 7
-readinessTimeout: 10
-livenessSuccessThreshold: 1
-podCPULimit: 2
-domainName: helmint-test-1-dns.local.internal
-secretFileMounts:
-  - {mountPath: /mnt/somewhere, name: CREDENTIALFILE1, value: Q1JFREVOVElBTEZJTEUx}
-readinessPeriod: 2
+serviceType: LoadBalancer
 
+resources: {}
+
+tolerations: []
+
+affinity: {}
+
+hpaEnabled: "true"
