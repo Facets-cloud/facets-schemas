@@ -84,6 +84,12 @@ public class ApplicationFacade {
     @Value("${ecr.registry}")
     private String ecrRepoUrl;
 
+    @Value("${aws.s3bucket.testOutputBucket.name}")
+    private String testOutputS3Bucket;
+
+    @Value("${aws.s3bucket.testOutputBucket.region}")
+    private String testOutputS3BucketRegion;
+
     public Application createApplication(Application application) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
             application.getHealthCheck().setLivenessProbe(null);
@@ -354,7 +360,7 @@ public class ApplicationFacade {
 
     public S3DumpFile downloadTestReport(String applicationName, String buildId) {
         String path = buildId + "/" + applicationName;
-        return s3DumpService.downloadObject("deployer-test-build-output", path, Regions.US_WEST_1);
+        return s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
     }
 
     public List<String> listDumpFilesFromS3(String environment, String applicationName, String date) {

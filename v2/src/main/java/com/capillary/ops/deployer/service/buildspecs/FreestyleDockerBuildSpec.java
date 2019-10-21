@@ -29,8 +29,8 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPostBuildCommandsTest() {
-        logger.error("post build commands phase for FreestyleDockerBuildSpec is not implemented");
-        throw new NotImplementedException("Post build commands phase for FreestyleDockerBuildSpec is not implemented");
+        logger.error("post build commands phase for FreestyleDockerBuildSpec test build is not implemented");
+        throw new NotImplementedException("Post build commands phase for FreestyleDockerBuildSpec test build is not implemented");
     }
 
     @Override
@@ -43,8 +43,8 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getBuildCommandsTest() {
-        logger.error("build commands phase for FreestyleDockerBuildSpec is not implemented");
-        throw new NotImplementedException("Build commands phase for FreestyleDockerBuildSpec is not implemented");
+        logger.error("build commands phase for FreestyleDockerBuildSpec test build is not implemented");
+        throw new NotImplementedException("Build commands phase for FreestyleDockerBuildSpec test build is not implemented");
     }
 
     @Override
@@ -59,13 +59,19 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommandsTest() {
-        logger.error("pre build commands phase for FreestyleDockerBuildSpec is not implemented");
-        throw new NotImplementedException("Pre build commands phase for FreestyleDockerBuildSpec is not implemented");
+        logger.error("pre build commands phase for FreestyleDockerBuildSpec test build is not implemented");
+        throw new NotImplementedException("Pre build commands phase for FreestyleDockerBuildSpec test build is not implemented");
     }
 
     @Override
     protected List<String> getArtifactSpec() {
-        return null;
+        return new ArrayList<>();
+    }
+
+    @Override
+    protected List<String> getArtifactSpecTest() {
+        logger.error("get artifacts for FreestyleDockerBuildSpec test build is not implemented");
+        throw new NotImplementedException("Get artifacts for FreestyleDockerBuildSpec test build is not implemented");
     }
 
     @Override

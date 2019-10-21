@@ -62,6 +62,11 @@ public class MavenBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpec() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    protected List<String> getArtifactSpecTest() {
         return Lists.newArrayList("target/site/**/*");
     }
 
