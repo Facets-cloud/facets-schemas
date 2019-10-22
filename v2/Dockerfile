@@ -3,4 +3,3 @@ EXPOSE 8080
 COPY target/ /application/
 COPY charts/ /charts/
 WORKDIR /application
-CMD java -jar *.jar
