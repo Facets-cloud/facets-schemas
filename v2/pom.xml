@@ -214,7 +214,7 @@
                         </goals>
                         <configuration>
                             <workingDirectory>deployer-ui-v2</workingDirectory>
-                            <executable>gsed</executable>
+                            <executable>sed</executable>
                             <arguments>
                                 <argument>-i</argument>
                                 <argument>s/\/\/localhost:8100//g</argument>
