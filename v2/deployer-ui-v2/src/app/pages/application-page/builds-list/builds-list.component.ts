@@ -28,6 +28,8 @@ export class BuildsListComponent implements OnInit, OnChanges {
 
   builds: Build[] = [];
 
+  query: string = '';
+
   settings = {
     columns: {
       id: {
@@ -83,6 +85,7 @@ export class BuildsListComponent implements OnInit, OnChanges {
       },
     ).subscribe(
       builds => {
+        builds = builds.filter(x => x.id.startsWith(this.query));
         if (JSON.stringify(builds) !== JSON.stringify(this.builds)) {
           this.builds = builds;
           if (this.builds.filter(x => x.status === 'IN_PROGRESS').length > 0 && (!this.subscription || this.subscription.closed)) {
@@ -98,5 +101,10 @@ export class BuildsListComponent implements OnInit, OnChanges {
   showBuildDialog() {
     const dialogRef: NbDialogRef<BuildDialogComponent> = this.dialogService.open(BuildDialogComponent, { context: { application: this.application } });
     dialogRef.onClose.subscribe(x => this.loadBuilds());
+  }
+
+  search(query: string) {
+    this.query = query;
+    this.loadBuilds();
   }
 }
