@@ -1,11 +1,11 @@
 /* tslint:disable */
 export interface URL {
+  path?: string;
   authority?: string;
-  content?: {};
   defaultPort?: number;
   file?: string;
   host?: string;
-  path?: string;
+  content?: {};
   port?: number;
   protocol?: string;
   query?: string;

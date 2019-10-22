@@ -14,12 +14,14 @@ import { Application } from '../models/application';
 import { Build } from '../models/build';
 import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
 import { ApplicationSecretRequest } from '../models/application-secret-request';
+import { BitbucketPREvent } from '../models/bitbucket-prevent';
+import { GithubPREvent } from '../models/github-prevent';
+import { InputStreamResource } from '../models/input-stream-resource';
 import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
 import { Deployment } from '../models/deployment';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { ApplicationSecret } from '../models/application-secret';
-import { InputStreamResource } from '../models/input-stream-resource';
 
 /**
  * Application Controller
@@ -48,6 +50,9 @@ class ApplicationControllerService extends __BaseService {
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getApplicationSecretRequestsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
   static readonly createAppSecretRequestUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
+  static readonly processWebhookPRBitbucketUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/bitbucket';
+  static readonly processWebhookPRGithubUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/github';
+  static readonly downloadTestReportUsingGETPath = '/api/{applicationFamily}/applications/{applicationName}/tests/{buildId}';
   static readonly getEnvironmentMetaDataUsingGETPath = '/api/{applicationFamily}/environmentMetaData';
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
   static readonly upsertEnvironmentUsingPOSTPath = '/api/{applicationFamily}/environments';
@@ -965,6 +970,177 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams` containing the following parameters:
+   *
+   * - `webhook`: webhook
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `X-Event-Key`: X-Event-Key
+   *
+   * - `Host`: Host
+   *
+   * @return OK
+   */
+  processWebhookPRBitbucketUsingPOSTResponse(params: ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams): __Observable<__StrictHttpResponse<{}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.webhook;
+
+
+    if (params.XEventKey != null) __headers = __headers.set('X-Event-Key', params.XEventKey.toString());
+    if (params.Host != null) __headers = __headers.set('Host', params.Host.toString());
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/webhooks/pr/bitbucket`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{}>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams` containing the following parameters:
+   *
+   * - `webhook`: webhook
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `X-Event-Key`: X-Event-Key
+   *
+   * - `Host`: Host
+   *
+   * @return OK
+   */
+  processWebhookPRBitbucketUsingPOST(params: ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams): __Observable<{}> {
+    return this.processWebhookPRBitbucketUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as {})
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams` containing the following parameters:
+   *
+   * - `webhook`: webhook
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `Host`: Host
+   *
+   * @return OK
+   */
+  processWebhookPRGithubUsingPOSTResponse(params: ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams): __Observable<__StrictHttpResponse<{}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.webhook;
+
+
+    if (params.Host != null) __headers = __headers.set('Host', params.Host.toString());
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/webhooks/pr/github`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{}>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams` containing the following parameters:
+   *
+   * - `webhook`: webhook
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `Host`: Host
+   *
+   * @return OK
+   */
+  processWebhookPRGithubUsingPOST(params: ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams): __Observable<{}> {
+    return this.processWebhookPRGithubUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as {})
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
+   *
+   * - `buildId`: buildId
+   *
+   * - `applicationName`: applicationName
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  downloadTestReportUsingGETResponse(params: ApplicationControllerService.DownloadTestReportUsingGETParams): __Observable<__StrictHttpResponse<InputStreamResource>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationName}/tests/${params.buildId}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<InputStreamResource>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
+   *
+   * - `buildId`: buildId
+   *
+   * - `applicationName`: applicationName
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  downloadTestReportUsingGET(params: ApplicationControllerService.DownloadTestReportUsingGETParams): __Observable<InputStreamResource> {
+    return this.downloadTestReportUsingGETResponse(params).pipe(
+      __map(_r => _r.body as InputStreamResource)
+    );
+  }
+
+  /**
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -1769,6 +1945,84 @@ module ApplicationControllerService {
      * applicationId
      */
     applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for processWebhookPRBitbucketUsingPOST
+   */
+  export interface ProcessWebhookPRBitbucketUsingPOSTParams {
+
+    /**
+     * webhook
+     */
+    webhook: BitbucketPREvent;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+
+    /**
+     * X-Event-Key
+     */
+    XEventKey: string;
+
+    /**
+     * Host
+     */
+    Host: string;
+  }
+
+  /**
+   * Parameters for processWebhookPRGithubUsingPOST
+   */
+  export interface ProcessWebhookPRGithubUsingPOSTParams {
+
+    /**
+     * webhook
+     */
+    webhook: GithubPREvent;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+
+    /**
+     * Host
+     */
+    Host: string;
+  }
+
+  /**
+   * Parameters for downloadTestReportUsingGET
+   */
+  export interface DownloadTestReportUsingGETParams {
+
+    /**
+     * buildId
+     */
+    buildId: string;
+
+    /**
+     * applicationName
+     */
+    applicationName: string;
 
     /**
      * applicationFamily
