@@ -20,7 +20,7 @@ public class HelmValueProviderFactory {
     private StatefulSetChartValueProvider statefulSetChartValueProvider;
 
     @Autowired
-    public CronJobChartValueProvider cronJobChartValueProvider;
+    private CronJobChartValueProvider cronJobChartValueProvider;
 
     public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment) {
         switch (application.getApplicationType()) {
