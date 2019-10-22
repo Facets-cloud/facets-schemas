@@ -40,7 +40,6 @@ public class MavenBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -U");
         buildCommands.add("mvn clean test");
         return buildCommands;
     }
@@ -67,7 +66,7 @@ public class MavenBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpecTest() {
-        return Lists.newArrayList("target/site/**/*");
+        return Lists.newArrayList("target/**/*");
     }
 
     @Override

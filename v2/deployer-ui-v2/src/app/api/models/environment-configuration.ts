@@ -4,12 +4,12 @@ import { ExternalDnsConfiguration } from './external-dns-configuration';
 import { S3DumpAwsConfig } from './s3dump-aws-config';
 import { SSLConfigs } from './sslconfigs';
 export interface EnvironmentConfiguration {
+  kubernetesToken?: string;
   commonConfigs?: {[key: string]: string};
-  commonCredentials?: {[key: string]: string};
   ecrMirrorRepo?: string;
   k8sLoggingConfiguration?: K8sLoggingConfiguration;
   kubernetesApiEndpoint?: string;
-  kubernetesToken?: string;
+  commonCredentials?: {[key: string]: string};
   nodeGroup?: string;
   privateDnsConfiguration?: ExternalDnsConfiguration;
   publicDnsConfiguration?: ExternalDnsConfiguration;
