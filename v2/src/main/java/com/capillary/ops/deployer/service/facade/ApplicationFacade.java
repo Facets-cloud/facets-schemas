@@ -243,7 +243,8 @@ public class ApplicationFacade {
         }
 
         deployment.setImage(build.getImage());
-        String mirror = env.getEnvironmentConfiguration().getEcrMirrorRepo();
+        String mirror = env.getEnvironmentConfiguration() != null ?
+                env.getEnvironmentConfiguration().getEcrMirrorRepo() : null;
         if(mirror != null && ! mirror.isEmpty()) {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }

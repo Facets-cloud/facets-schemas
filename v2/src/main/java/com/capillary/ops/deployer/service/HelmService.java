@@ -30,7 +30,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 
 @Service
-@Profile("!dev || helminttest")
+@Profile("!dev | helminttest")
 public class HelmService implements IHelmService {
 
     @Autowired
