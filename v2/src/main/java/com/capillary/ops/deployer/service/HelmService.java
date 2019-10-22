@@ -127,8 +127,8 @@ public class HelmService implements IHelmService {
     }
 
     private void install(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        URLChartLoader chartLoader = new URLChartLoader();
-        Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/" + chartName));
+        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
+        Chart.Builder chart = chartLoader.load(Paths.get(this.getClass().getResource("/charts/" + chartName).toURI()));
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
@@ -172,8 +172,8 @@ public class HelmService implements IHelmService {
     }
 
     private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        URLChartLoader chartLoader = new URLChartLoader();
-        Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/" + chartName));
+        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
+        Chart.Builder chart = chartLoader.load(Paths.get(this.getClass().getResource("/charts/" + chartName).toURI()));
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
