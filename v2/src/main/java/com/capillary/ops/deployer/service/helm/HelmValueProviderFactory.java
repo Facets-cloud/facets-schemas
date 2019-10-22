@@ -30,8 +30,8 @@ public class HelmValueProviderFactory {
                 return statefulSetChartValueProvider.getValues(application, environment, deployment);
             case SCHEDULED_JOB:
                 return cronJobChartValueProvider.getValues(application, environment, deployment);
+            default:
+                return baseChartValueProvider.getValues(application, environment, deployment);
         }
-
-        throw new  NotFoundException("could not find a valid deployment configuration");
     }
 }

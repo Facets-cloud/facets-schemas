@@ -13,5 +13,6 @@ export interface Deployment {
   id?: string;
   podSize?: 'SMALL' | 'LARGE' | 'XLARGE' | 'XXLARGE';
   rollbackEnabled?: boolean;
+  schedule?: string;
   timestamp?: string;
 }

@@ -1,11 +1,14 @@
 /* tslint:disable */
 import { HealthCheck } from './health-check';
 import { Port } from './port';
+import { PVC } from './pvc';
 export interface Application {
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationRootDirectory?: string;
+  applicationType?: 'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET';
   buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET';
   commonConfigs?: {[key: string]: string};
+  deploymentStrategy?: 'Recreate' | 'RollingUpdate';
   dnsPrefix?: string;
   dnsType?: 'PUBLIC' | 'PRIVATE';
   healthCheck?: HealthCheck;
@@ -13,6 +16,7 @@ export interface Application {
   loadBalancerType?: 'INTERNAL' | 'EXTERNAL';
   name?: string;
   ports?: Array<Port>;
+  pvcList?: Array<PVC>;
   repositoryUrl?: string;
   vcsProvider?: 'BITBUCKET' | 'GITHUB';
 }

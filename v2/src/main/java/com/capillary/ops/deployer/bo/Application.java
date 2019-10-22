@@ -50,7 +50,7 @@ public class Application {
     @Id
     private String id;
 
-    private ApplicationType applicationType;
+    private ApplicationType applicationType = ApplicationType.SERVICE;
 
     private String name;
 

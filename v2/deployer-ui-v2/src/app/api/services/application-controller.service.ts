@@ -38,6 +38,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly createApplicationUsingPOSTPath = '/api/{applicationFamily}/applications';
   static readonly updateApplicationUsingPUTPath = '/api/{applicationFamily}/applications';
   static readonly getApplicationUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}';
+  static readonly deleteApplicationUsingDELETEPath = '/api/{applicationFamily}/applications/{applicationId}';
   static readonly getApplicationBranchesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/branches';
   static readonly getBuildsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly buildUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
@@ -455,6 +456,53 @@ class ApplicationControllerService extends __BaseService {
   getApplicationUsingGET(params: ApplicationControllerService.GetApplicationUsingGETParams): __Observable<Application> {
     return this.getApplicationUsingGETResponse(params).pipe(
       __map(_r => _r.body as Application)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.DeleteApplicationUsingDELETEParams` containing the following parameters:
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  deleteApplicationUsingDELETEResponse(params: ApplicationControllerService.DeleteApplicationUsingDELETEParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DeleteApplicationUsingDELETEParams` containing the following parameters:
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  deleteApplicationUsingDELETE(params: ApplicationControllerService.DeleteApplicationUsingDELETEParams): __Observable<boolean> {
+    return this.deleteApplicationUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as boolean)
     );
   }
 
@@ -1521,6 +1569,22 @@ module ApplicationControllerService {
    * Parameters for getApplicationUsingGET
    */
   export interface GetApplicationUsingGETParams {
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for deleteApplicationUsingDELETE
+   */
+  export interface DeleteApplicationUsingDELETEParams {
 
     /**
      * applicationId
