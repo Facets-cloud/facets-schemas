@@ -1,9 +1,11 @@
 package com.capillary.ops.deployer.service;
 
+import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.helm.HelmValueProviderFactory;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
+import hapi.chart.ChartOuterClass;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.*;
@@ -25,7 +27,9 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Paths;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.Future;
 
@@ -127,8 +131,8 @@ public class HelmService implements IHelmService {
     }
 
     private void install(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        Chart.Builder chart = chartLoader.load(Paths.get(this.getClass().getResource("/charts/" + chartName).toURI()));
+        Chart.Builder chart = getChart(chartName);
+
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
@@ -142,6 +146,22 @@ public class HelmService implements IHelmService {
         final Release release = releaseFuture.get().getRelease();
 
         releaseManager.close();
+    }
+
+    private Chart.Builder getChart(String chartName) throws URISyntaxException, IOException {
+        URI uri = App.class.getResource("/charts/" + chartName).toURI();
+        try {
+            FileSystems.getFileSystem(uri);
+        } catch (FileSystemNotFoundException e) {
+            Map<String, String> env = new HashMap<>();
+            env.put("create", "true");
+            try {
+                FileSystem zipfs = FileSystems.newFileSystem(uri, env);
+            } catch (FileSystemAlreadyExistsException ex) {
+            }
+        }
+        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
+        return chartLoader.load(Paths.get(uri));
     }
 
     private String getChartName(Application application, Deployment deployment) {
@@ -172,8 +192,7 @@ public class HelmService implements IHelmService {
     }
 
     private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        Chart.Builder chart = chartLoader.load(Paths.get(this.getClass().getResource("/charts/" + chartName).toURI()));
+        getChart(chartName);
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
