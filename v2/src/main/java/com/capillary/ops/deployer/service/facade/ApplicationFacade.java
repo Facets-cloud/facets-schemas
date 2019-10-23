@@ -354,7 +354,7 @@ public class ApplicationFacade {
         return ecrService.listImages(application);
     }
 
-    public S3DumpFile downloadDumpFileFromS3(String applicationName, String environment, String path) {
+    public S3DumpFile downloadDumpFileFromS3(String path) {
         return s3DumpService.downloadObject(path);
     }
 
@@ -363,8 +363,11 @@ public class ApplicationFacade {
         return s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
     }
 
-    public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationName, String date) {
-        return s3DumpService.listObjects(applicationFamily, environment, applicationName, getDateForDump(date));
+    public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {
+        Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        String releaseName = getReleaseName(application, env);
+        return s3DumpService.listObjects(applicationFamily, environment, releaseName, getDateForDump(date));
     }
 
     private String getDateForDump(String date) {
@@ -511,5 +514,11 @@ public class ApplicationFacade {
         applicationRepository.delete(application);
         ecrService.deleteRepository(application);
         return false;
+    }
+
+    public String getReleaseName(Application application, Environment environment) {
+        return org.apache.commons.lang3.StringUtils.isEmpty(environment.getEnvironmentConfiguration().getNodeGroup()) ?
+                application.getName() :
+                environment.getEnvironmentMetaData().getName() + "-" + application.getName();
     }
 }
