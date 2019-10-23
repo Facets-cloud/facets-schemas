@@ -11,14 +11,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.Watcher;
+import mockit.Expectations;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
+import org.microbean.helm.chart.URLChartLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -48,7 +52,7 @@ import java.util.stream.Collectors;
 public class HelmServiceIntegrationTest {
 
     @Autowired
-    public IHelmService helmService;
+    public HelmService helmService;
 
     @Autowired
     public EnvironmentRepository environmentRepository;
@@ -100,7 +104,16 @@ public class HelmServiceIntegrationTest {
     }
 
     @Test
-    public void testInstall() {
+    public void testInstall() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base");
+                result = chart;
+            }
+        };
+
         Environment localEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
         Application application = createApplication("helmint-test-1", ApplicationFamily.CRM);
         Deployment deployment = createDeployment(application);

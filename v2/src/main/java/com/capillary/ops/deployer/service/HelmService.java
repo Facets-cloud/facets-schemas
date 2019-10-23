@@ -148,20 +148,9 @@ public class HelmService implements IHelmService {
         releaseManager.close();
     }
 
-    private Chart.Builder getChart(String chartName) throws URISyntaxException, IOException {
-        URI uri = App.class.getResource("/charts/" + chartName).toURI();
-        try {
-            FileSystems.getFileSystem(uri);
-        } catch (FileSystemNotFoundException e) {
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-            try {
-                FileSystem zipfs = FileSystems.newFileSystem(uri, env);
-            } catch (FileSystemAlreadyExistsException ex) {
-            }
-        }
+    public Chart.Builder getChart(String chartName) throws URISyntaxException, IOException {
         DirectoryChartLoader chartLoader = new DirectoryChartLoader();
-        return chartLoader.load(Paths.get(uri));
+        return chartLoader.load(Paths.get("/charts/" + chartName));
     }
 
     private String getChartName(Application application, Deployment deployment) {
