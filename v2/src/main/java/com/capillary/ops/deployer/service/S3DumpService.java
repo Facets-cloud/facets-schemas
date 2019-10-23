@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.S3DumpFile;
 import com.amazonaws.services.s3.model.S3Object;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +29,18 @@ public class S3DumpService {
 
     Logger logger = LoggerFactory.getLogger(S3DumpService.class);
 
-    private String getS3Prefix(String environment, String module, String date) {
-        return environment + "/" + module + "/" + date;
+    private String getS3Prefix(ApplicationFamily applicationFamily, String environment, String module, String date) {
+        return new StringJoiner("/")
+                .add(applicationFamily.name())
+                .add(environment)
+                .add(module)
+                .add(date)
+                .toString();
     }
 
-    public List<String> listObjects(String environment, String module, String date) {
+    public List<String> listObjects(ApplicationFamily applicationFamily, String environment, String module, String date) {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(defaultS3BucketRegion)).build();
-        String s3Prefix = getS3Prefix(environment, module, date);
+        String s3Prefix = getS3Prefix(applicationFamily, environment, module, date);
         ObjectListing objectListing = amazonS3.listObjects(defaultS3Bucket, s3Prefix);
         List<String> keyList = objectListing.getObjectSummaries().stream()
                 .map(S3ObjectSummary::getKey)

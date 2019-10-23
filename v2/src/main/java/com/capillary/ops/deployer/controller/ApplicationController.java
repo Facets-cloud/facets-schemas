@@ -190,7 +190,7 @@ public class ApplicationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(environment, applicationName, date), HttpStatus.OK);
+        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(applicationFamily, environment, applicationName, date), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download")
