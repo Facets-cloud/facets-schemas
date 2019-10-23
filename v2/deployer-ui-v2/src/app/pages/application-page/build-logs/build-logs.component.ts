@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { Build, LogEvent } from '../../../api/models';
 import { ApplicationControllerService } from '../../../api/services';
 import { timer, Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { timer, Subscription } from 'rxjs';
   templateUrl: './build-logs.component.html',
   styleUrls: ['./build-logs.component.scss']
 })
-export class BuildLogsComponent implements OnInit, OnDestroy {
+export class BuildLogsComponent implements OnInit, OnDestroy, OnChanges {
 
   subscription: Subscription;
 
@@ -20,11 +20,22 @@ export class BuildLogsComponent implements OnInit, OnDestroy {
 
   paused: boolean = false;
 
+  ngOnChanges(changes: SimpleChanges): void {
+    this.subscribeToLogs();
+  }
+
   ngOnInit() {
+    this.subscribeToLogs();
+  }
+
+  private subscribeToLogs() {
     if (this.build.status === 'IN_PROGRESS') {
       this.subscription = timer(0, 1000).subscribe(() => this.refresh());
     }
-    this.refresh();
+
+    if (this.build.status !== undefined) {
+      this.refresh();
+    }
   }
 
   refresh() {

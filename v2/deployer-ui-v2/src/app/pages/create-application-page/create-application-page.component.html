@@ -100,6 +100,25 @@
                 </div>
               </div>
 
+              <div class="form-group row">
+                <label for="ciEnabled" class="label col-sm-4">CI Enabled</label>
+                <div class="col-sm-8">
+                  <nb-toggle [(ngModel)]="application.ciEnabled" name="ciEnabled" #ciEnabled="ngModel" id="ciEnabled">CI Enabled</nb-toggle>
+                </div>
+              </div>
+
+              <!-- <div class="form-group row">
+                <label for="ciEnabled" class="label col-sm-4">CI Enabled</label>
+                <div class="col-sm-8">
+                  <nb-select fullWidth size="small" required [(ngModel)]="application.ciEnabled"
+                    #ciEnabled="ngModel" name="ciEnabled" id="ciEnabled" placeholder="CI Enabled"
+                    fixedWidth>
+                    <nb-option value="false">false</nb-option>
+                    <nb-option value="true">true</nb-option>
+                  </nb-select>
+                </div>
+              </div> -->
+
             </div>
             <div style="padding-top: 1rem; float: right;">
               <button nbStepperNext [disabled]="!appDetailsForm.valid" nbButton>Next</button>

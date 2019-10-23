@@ -8,6 +8,7 @@ import { DeploymentPageComponent } from './deployment-page/deployment-page.compo
 import { DeploymentStatusComponent } from './deployment-status/deployment-status.component';
 import { CreateApplicationPageComponent } from './create-application-page/create-application-page.component';
 import { UserManagementComponent } from './user-management/user-management.component';
+import { BuildDetailsPageComponent } from './build-details-page/build-details-page.component';
 
 const routes: Routes = [{
   path: '',
@@ -25,6 +26,10 @@ const routes: Routes = [{
     {
       path: 'applications/:appFamily/:applicationId',
       component: ApplicationPageComponent,
+    },
+    {
+      path: 'applications/:appFamily/:applicationId/:buildId',
+      component: BuildDetailsPageComponent,
     },
     {
       path: 'applications/:appFamily/:applicationId/builds/:buildId/deploy',

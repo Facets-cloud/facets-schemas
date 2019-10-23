@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NbMenuModule, NbSearchModule, NbInputModule, NbAccordionModule, NbIconModule, NbButtonModule, NbActionsModule, NbCardModule, NbDialogModule, NbCheckboxComponent, NbCheckboxModule, NbTooltipComponent, NbTooltipModule, NbListModule, NbSelectModule, NbStepperModule, NbSpinnerModule, NbAlertModule, NbTabsetModule, NbToastrModule } from '@nebular/theme';
+import { NbMenuModule, NbSearchModule, NbInputModule, NbAccordionModule, NbIconModule, NbButtonModule, NbActionsModule, NbCardModule, NbDialogModule, NbCheckboxComponent, NbCheckboxModule, NbTooltipComponent, NbTooltipModule, NbListModule, NbSelectModule, NbStepperModule, NbSpinnerModule, NbAlertModule, NbTabsetModule, NbToastrModule, NbToggleModule } from '@nebular/theme';
 import { ThemeModule } from '../@theme/theme.module';
 import { PagesComponent } from './pages.component';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -24,6 +24,7 @@ import { CreateApplicationPageComponent } from './create-application-page/create
 import { NumberComponentDynamicComponent } from './create-application-page/number-component-dynamic/number-component-dynamic.component';
 import { CurrentDeploymentsComponent, ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './application-page/current-deployments/current-deployments.component';
 import { UserManagementComponent } from './user-management/user-management.component';
+import { BuildDetailsPageComponent } from './build-details-page/build-details-page.component';
 
 @NgModule({
   imports: [
@@ -50,6 +51,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
     NbAlertModule,
     NbTabsetModule,
     NbToastrModule,
+    NbToggleModule,
   ],
   declarations: [
     PagesComponent,
@@ -74,6 +76,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
     DeploymentDetailsDialog,
     CurrentStatusColumn,
     UserManagementComponent,
+    BuildDetailsPageComponent,
   ],
   entryComponents: [BuildDialogComponent],
 })

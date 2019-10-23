@@ -53,7 +53,7 @@ export class ApplicationsMenuComponent implements OnInit {
         return {
           title: `${x.name}`,
           link: `applications/${appFamily}/${x.id}`,
-          pathMatch: 'prefix',
+          // pathMatch: 'prefix',
         };
       }).forEach(x => applications.push(x)),
     );

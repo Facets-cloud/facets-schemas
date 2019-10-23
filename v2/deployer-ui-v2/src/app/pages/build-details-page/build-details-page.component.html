@@ -1,0 +1,45 @@
+<nb-card size=medium>
+  <nb-card-header>
+    Build Details
+  </nb-card-header>
+  <nb-card-body>
+    <div style="text-align: center;" class="table-responsive">
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th scope=row>Build Description</th>
+            <td>{{build?.description}}</td>
+          </tr>
+          <tr>
+            <th scope=row>Tag/Branch</th>
+            <td>{{build?.tag}}</td>
+          </tr>
+          <tr>
+              <th scope=row>Status</th>
+              <td>{{build?.status}}</td>
+          </tr>
+          <tr>
+            <th scope=row>Triggered By</th>
+            <td>{{build?.triggeredBy}}</td>
+          </tr>
+          <tr>
+              <th scope=row>Build Time</th>
+              <td>{{build?.timestamp | date:'medium'}}</td>
+            </tr>
+            <tr>
+                <th scope=row>Promotion Status</th>
+                <td>{{build?.promoted ? "PROMOTED" : "NOT PROMOTED"}}</td>
+            </tr>
+            <tr>
+                <th scope=row>Image</th>
+                <td>{{build?.image}}</td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<div>
+  <build-logs *ngIf="build" [build]="build"></build-logs>
+</div>
