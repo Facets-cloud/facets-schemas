@@ -32,8 +32,7 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPostBuildCommandsTest() {
-        logger.error("post build commands phase for DotnetBuildSpec test build is not implemented");
-        throw new NotImplementedException("Post build commands phase for DotnetBuildSpec test build is not implemented");
+        return new ArrayList<>();
     }
 
     @Override
@@ -48,8 +47,9 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getBuildCommandsTest() {
-        logger.error("build commands phase for DotnetBuildSpec test build is not implemented");
-        throw new NotImplementedException("Build commands phase for DotnetBuildSpec test build is not implemented");
+        ArrayList<String> buildCommands = new ArrayList<>();
+        buildCommands.add("dotnet test");
+        return buildCommands;
     }
 
     @Override
@@ -64,8 +64,7 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommandsTest() {
-        logger.error("pre build commands phase for DotnetBuildSpec test build is not implemented");
-        throw new NotImplementedException("Pre build commands phase for DotnetBuildSpec is not implemented");
+        return new ArrayList<>();
     }
 
     @Override
@@ -75,8 +74,7 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpecTest() {
-        logger.error("get artifacts for DotnetBuildSpec test build is not implemented");
-        throw new NotImplementedException("Get artifacts for DotnetBuildSpec test build is not implemented");
+        return new ArrayList<>();
     }
 
     @Override
