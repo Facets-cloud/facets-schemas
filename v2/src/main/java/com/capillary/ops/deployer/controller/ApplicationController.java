@@ -193,11 +193,11 @@ public class ApplicationController {
         return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(applicationFamily, environment, applicationId, date), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps/download")
     public ResponseEntity<InputStreamResource> downloadDumpFile(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
                                                    @RequestParam("path") String path,
-                                                   @PathVariable String applicationName) {
+                                                   @PathVariable String applicationId) {
         S3DumpFile dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(path);
 
         HttpHeaders headers = new HttpHeaders();
