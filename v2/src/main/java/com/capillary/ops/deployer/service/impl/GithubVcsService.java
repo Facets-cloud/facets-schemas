@@ -116,18 +116,16 @@ public class GithubVcsService implements VcsService {
         RepositoryService repositoryService = new RepositoryService();
         repositoryService.getClient().setCredentials(username, password);
 
-        if (!pullRequestWebhookExists(repositoryService, repositoryId)) {
-            String webhookURL = String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId());
-            RepositoryHook repositoryHook = new RepositoryHook()
-                    .setName("web")
-                    .setEvents(Lists.newArrayList("pull_request", "repository"))
-                    .setActive(true)
-                    .setConfig(ImmutableMap.of(
-                            "url", webhookURL,
-                            "content_type", "json",
-                            "insecure_ssl", "0"));
-            repositoryService.createHook(repositoryId, repositoryHook);
-        }
+        String webhookURL = String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId());
+        RepositoryHook repositoryHook = new RepositoryHook()
+                .setName("web")
+                .setEvents(Lists.newArrayList("pull_request", "repository"))
+                .setActive(true)
+                .setConfig(ImmutableMap.of(
+                        "url", webhookURL,
+                        "content_type", "json",
+                        "insecure_ssl", "0"));
+        repositoryService.createHook(repositoryId, repositoryHook);
     }
 
     @Override
