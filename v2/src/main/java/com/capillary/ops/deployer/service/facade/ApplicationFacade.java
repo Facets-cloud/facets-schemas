@@ -129,7 +129,7 @@ public class ApplicationFacade {
         try {
             PullRequest pullRequest = webhook.toPullRequest();
             pullRequest.setHost(host);
-            if (!vcsService.shouldTriggerBuild(application, pullRequest)) {
+            if (!application.isCiEnabled() || !vcsService.shouldTriggerBuild(application, pullRequest)) {
                 return true;
             }
 
@@ -157,7 +157,7 @@ public class ApplicationFacade {
             PullRequest pullRequest = webhook.toPullRequest();
             pullRequest.setHost(host);
             pullRequest.setAction(webhookAction);
-            if (!vcsService.shouldTriggerBuild(application, pullRequest)) {
+            if (!application.isCiEnabled() || !vcsService.shouldTriggerBuild(application, pullRequest)) {
                 return true;
             }
 
