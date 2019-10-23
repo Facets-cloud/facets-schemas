@@ -192,7 +192,7 @@ public class HelmService implements IHelmService {
     }
 
     private void upgrade(Environment environment, String releaseName, String chartName, Map<String, Object> valueMap) throws Exception {
-        getChart(chartName);
+        Chart.Builder chart = getChart(chartName);
         ReleaseManager releaseManager = getReleaseManager(environment);
         String valuesYaml = new Yaml().dump(valueMap);
 
