@@ -181,16 +181,16 @@ public class ApplicationController {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
     }
 
-    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationName}/dumps", produces = "application/json")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps", produces = "application/json")
     public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
-                                                   @PathVariable String applicationName,
+                                                   @PathVariable String applicationId,
                                                    @RequestParam(required = false) String date) {
         if (date != null && !applicationFacade.isDateValid(date)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(applicationFamily, environment, applicationName, date), HttpStatus.OK);
+        return new ResponseEntity<>(applicationFacade.listDumpFilesFromS3(applicationFamily, environment, applicationId, date), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download")
@@ -198,7 +198,7 @@ public class ApplicationController {
                                                    @PathVariable("environment") String environment,
                                                    @RequestParam("path") String path,
                                                    @PathVariable String applicationName) {
-        S3DumpFile dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(environment, applicationName, path);
+        S3DumpFile dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(path);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
