@@ -363,8 +363,8 @@ public class ApplicationFacade {
         return s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
     }
 
-    public List<String> listDumpFilesFromS3(String environment, String applicationName, String date) {
-        return s3DumpService.listObjects(environment, applicationName, getDateForDump(date));
+    public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationName, String date) {
+        return s3DumpService.listObjects(applicationFamily, environment, applicationName, getDateForDump(date));
     }
 
     private String getDateForDump(String date) {
