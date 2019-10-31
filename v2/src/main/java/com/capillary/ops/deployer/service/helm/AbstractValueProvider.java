@@ -156,43 +156,31 @@ public abstract class AbstractValueProvider {
         if(healthCheck.getLivenessProbe() != null){
             if(!StringUtils.isEmpty(healthCheck.getLivenessProbe().getHttpCheckEndpoint())){
                 probeFields.put("enableLivenessHTTP","true");
-                probeFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
                 probeFields.put("livenessHTTPEndpoint",healthCheck.getLivenessProbe().getHttpCheckEndpoint());
-                probeFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
-                probeFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
-                probeFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
-                probeFields.put("livenessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                probeFields.put("livenessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }else {
                 probeFields.put("enableLivenessTCP","true");
-                probeFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
-                probeFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
-                probeFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
-                probeFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
-                probeFields.put("livenessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                probeFields.put("livenessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }
+            probeFields.put("livenessPort",healthCheck.getLivenessProbe().getPort());
+            probeFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
+            probeFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
+            probeFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
+            probeFields.put("livenessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
+            probeFields.put("livenessTimeout",healthCheck.getLivenessProbe().getTimeout());
         }
 
         if(healthCheck.getReadinessProbe() != null){
             if(!StringUtils.isEmpty(healthCheck.getReadinessProbe().getHttpCheckEndpoint())){
                 probeFields.put("enableReadinessHTTP","true");
-                probeFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
                 probeFields.put("readinessHTTPEndpoint",healthCheck.getReadinessProbe().getHttpCheckEndpoint());
-                probeFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
-                probeFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
-                probeFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
-                probeFields.put("readinessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                probeFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }else {
                 probeFields.put("enableReadinessTCP","true");
-                probeFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
-                probeFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
-                probeFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
-                probeFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
-                probeFields.put("readinessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
-                probeFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
             }
+            probeFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
+            probeFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
+            probeFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
+            probeFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
+            probeFields.put("readinessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
+            probeFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
         }
         return probeFields;
     }
