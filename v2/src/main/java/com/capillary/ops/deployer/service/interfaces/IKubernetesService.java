@@ -5,7 +5,7 @@ import com.capillary.ops.deployer.bo.ApplicationSecret;
 import com.capillary.ops.deployer.bo.DeploymentStatusDetails;
 import com.capillary.ops.deployer.bo.Environment;
 import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.extensions.DeploymentList;
+import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 
 import java.util.List;
 import java.util.Map;

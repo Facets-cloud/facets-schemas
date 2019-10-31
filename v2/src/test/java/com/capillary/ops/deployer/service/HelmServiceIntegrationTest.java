@@ -13,10 +13,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.batch.DoneableCronJob;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.Watcher;
+import io.fabric8.kubernetes.client.dsl.Resource;
 import mockit.Expectations;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -121,7 +124,7 @@ public class HelmServiceIntegrationTest {
         // deploy new app, internal
 
         helmService.deploy(application, deployment);
-        io.fabric8.kubernetes.api.model.extensions.Deployment k8sdeployment = kubernetesClient.extensions().deployments().inNamespace("default").withName(application.getName()).get();
+        io.fabric8.kubernetes.api.model.apps.Deployment k8sdeployment = kubernetesClient.apps().deployments().inNamespace("default").withName(application.getName()).get();
         String image = k8sdeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage();
         Assert.assertEquals("nginx:latest", image);
         List<ContainerPort> ports = k8sdeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts();
@@ -294,7 +297,30 @@ public class HelmServiceIntegrationTest {
                 updatedService.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-ssl-ports"));
     }
 
-    @After
+    @Test
+    public void testCronInstall() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base-cronjob"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base-cronjob");
+                result = chart;
+            }
+        };
+        Environment localEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
+        Application application = createApplication("helmint-test-cron-1", ApplicationFamily.CRM);
+        Deployment deployment = createDeployment(application);
+        application.setApplicationType(Application.ApplicationType.SCHEDULED_JOB);
+        deployment.setSchedule("*/1 * * * *");
+        deployment.setImage("hello-world:latest");
+        helmService.deploy(application, deployment);
+        CronJob cronJob = kubernetesClient.batch().cronjobs().inNamespace("default").withName(application.getName()).get();
+        Assert.assertEquals("hello-world:latest", cronJob.getSpec().getJobTemplate().getSpec().getTemplate().getSpec().getContainers().get(0).getImage());
+        Assert.assertEquals("*/1 * * * *", cronJob.getSpec().getSchedule());
+
+    }
+
+        @After
     public void tearDown() throws Exception {
         destroyCluster();
     }

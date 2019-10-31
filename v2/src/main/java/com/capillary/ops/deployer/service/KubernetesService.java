@@ -5,9 +5,8 @@ import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
-import io.fabric8.kubernetes.api.model.extensions.DeploymentList;
-import io.fabric8.kubernetes.api.model.extensions.DeploymentStatus;
+import io.fabric8.kubernetes.api.model.apps.DeploymentList;
+import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -138,9 +137,9 @@ public class KubernetesService implements IKubernetesService {
 
     private ApplicationDeploymentDetails getApplicationDeploymentDetails(String deploymentName, KubernetesClient kubernetesClient) {
         logger.info("getting deployment with name: {}", deploymentName);
-        Deployment deployment = kubernetesClient.extensions()
+        io.fabric8.kubernetes.api.model.apps.Deployment deployment = kubernetesClient.extensions()
                 .deployments().
-                inNamespace(NAMESPACE)
+                        inNamespace(NAMESPACE)
                 .withName(deploymentName)
                 .get();
 
@@ -226,7 +225,7 @@ public class KubernetesService implements IKubernetesService {
         return envConfigs;
     }
 
-    private PodReplicationDetails getReplicationDetails(Deployment deployment) {
+    private PodReplicationDetails getReplicationDetails(io.fabric8.kubernetes.api.model.apps.Deployment deployment) {
         DeploymentStatus deploymentStatus = deployment.getStatus();
 
         return new PodReplicationDetails(deploymentStatus.getReplicas(), deploymentStatus.getReadyReplicas(),
