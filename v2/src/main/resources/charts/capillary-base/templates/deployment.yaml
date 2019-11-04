@@ -26,6 +26,9 @@ spec:
         deploymentId: {{ .Values.deploymentId }}
         buildId: {{ .Values.buildId }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+{{- if .Values.roleName }}
+        iam.amazonaws.com/role: {{ .Values.roleName }}
+{{- end }}
     spec:
       containers:
         - name: {{ .Release.Name }}

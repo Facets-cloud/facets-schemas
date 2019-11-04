@@ -43,6 +43,9 @@ public class HelmService implements IHelmService {
     @Autowired
     private HelmValueProviderFactory helmValueProviderFactory;
 
+    @Autowired
+    private IAMService iamService;
+
     private static final Logger logger = LoggerFactory.getLogger(HelmService.class);
 
     @Override
@@ -176,6 +179,7 @@ public class HelmService implements IHelmService {
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String chartName = getChartName(application, deployment);
         Map<String, Object> valueMap = helmValueProviderFactory.getValues(application, environment, deployment);
+        valueMap.put("roleName", iamService.getApplicationRole(application,environment));
         String releaseName = getReleaseName(application, environment);
         install(environment, releaseName, chartName, valueMap);
     }
