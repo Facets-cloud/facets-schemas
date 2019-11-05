@@ -28,7 +28,7 @@ const routes: Routes = [{
       component: ApplicationPageComponent,
     },
     {
-      path: 'applications/:appFamily/:applicationId/:buildId',
+      path: 'applications/:appFamily/:applicationId/builds/:buildId',
       component: BuildDetailsPageComponent,
     },
     {
