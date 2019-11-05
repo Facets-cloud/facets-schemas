@@ -54,6 +54,8 @@ import java.util.stream.Collectors;
 @TestPropertySource("/application.properties")
 public class HelmServiceIntegrationTest {
 
+    private static String OS = System.getProperty("os.name").toLowerCase();
+
     @Autowired
     public HelmService helmService;
 
@@ -363,7 +365,12 @@ public class HelmServiceIntegrationTest {
 
     private File getExecutable(String binaryName) {
         try {
-            InputStream resourceAsStream = HelmServiceIntegrationTest.class.getResourceAsStream("/bin/" + binaryName);
+            String prefix = "osx";
+            if (OS.toLowerCase().contains("linux") || OS.toLowerCase().contains("nix")) {
+                prefix = "linux";
+            }
+            InputStream resourceAsStream = HelmServiceIntegrationTest.class.getResourceAsStream("/bin/"
+                    + prefix + "/" + binaryName);
             File executable = File.createTempFile(binaryName, String.valueOf(System.currentTimeMillis()));
             Files.copy(resourceAsStream, executable.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.setPosixFilePermissions(executable.toPath(), ImmutableSet.of(PosixFilePermission.OWNER_EXECUTE));

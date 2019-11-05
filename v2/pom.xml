@@ -221,22 +221,22 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <groupId>org.codehaus.mojo</groupId>
                 <executions>
-                    <execution><!-- Run our version calculation script -->
-                        <id>set-base-url</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <workingDirectory>deployer-ui-v2</workingDirectory>
-                            <executable>sed</executable>
-                            <arguments>
-                                <argument>-i</argument>
-                                <argument>s/\/\/localhost:8100//g</argument>
-                                <argument>src/app/api/api-configuration.ts</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
+<!--                    <execution>&lt;!&ndash; Run our version calculation script &ndash;&gt;-->
+<!--                        <id>set-base-url</id>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>exec</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <workingDirectory>deployer-ui-v2</workingDirectory>-->
+<!--                            <executable>sed</executable>-->
+<!--                            <arguments>-->
+<!--                                <argument>-i</argument>-->
+<!--                                <argument>s/\/\/localhost:8100//g</argument>-->
+<!--                                <argument>src/app/api/api-configuration.ts</argument>-->
+<!--                            </arguments>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                     <execution><!-- Run our version calculation script -->
                         <id>npm-install-ngcli</id>
                         <phase>generate-sources</phase>

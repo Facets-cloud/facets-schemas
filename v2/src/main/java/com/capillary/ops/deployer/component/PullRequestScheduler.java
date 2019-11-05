@@ -11,6 +11,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,6 +20,7 @@ import software.amazon.awssdk.services.codebuild.model.StatusType;
 import java.util.Calendar;
 import java.util.List;
 
+@Profile("!dev")
 @Component
 public class PullRequestScheduler {
 
