@@ -35,7 +35,7 @@ public abstract class BuildSpec {
         Map<String, Object> postBuildPhase;
 
         if (this.isTestBuild()) {
-            installPhase = getInstallPhaseTest();
+            installPhase = getInstallPhase();
             preBuildPhase = getPreBuildPhaseTest();
             buildPhase = getBuildPhaseTest();
             postBuildPhase = getPostBuildPhaseTest();
