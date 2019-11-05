@@ -6,6 +6,8 @@ import com.capillary.ops.deployer.bo.Kube2IamConfiguration;
 import com.capillary.ops.deployer.service.interfaces.IIAMService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.iam.IamClient;
@@ -13,6 +15,8 @@ import software.amazon.awssdk.services.iam.model.ListRolesRequest;
 import software.amazon.awssdk.services.iam.model.ListRolesResponse;
 import software.amazon.awssdk.services.iam.model.Role;
 
+@Profile("!dev")
+@Service
 public class IAMService implements IIAMService {
 
     private static final Logger logger = LoggerFactory.getLogger(IAMService.class);
