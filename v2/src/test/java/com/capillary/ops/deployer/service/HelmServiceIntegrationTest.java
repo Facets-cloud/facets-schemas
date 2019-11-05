@@ -107,6 +107,11 @@ public class HelmServiceIntegrationTest {
     }
 
     @Test
+    public void testStatefulSet() {
+        Assert.assertTrue(true);
+    }
+
+    @Test
     public void testInstall() throws Exception {
         URLChartLoader chartLoader = new URLChartLoader();
         ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
