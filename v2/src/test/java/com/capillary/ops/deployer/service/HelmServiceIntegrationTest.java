@@ -84,7 +84,7 @@ public class HelmServiceIntegrationTest {
     @Before
     public void setUp() throws Exception {
         clusterName = "deployer-helminttest-" + System.currentTimeMillis();
-        kindExecutable = getExecutable("kind-darwin-amd64");
+        kindExecutable = getExecutable("kind");
         kubectlExecutable = getExecutable("kubectl");
         helmExecutable = getExecutable("helm");
         createCluster();
