@@ -149,6 +149,11 @@ public abstract class BuildSpec {
     private Map<String, Object> getInstallPhaseTest() {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
+        installCommands.add("apt-get update");
+        installCommands.add("apt-get install cgroupfs-mount -y");
+        installCommands.add(
+                "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
+        installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
         installPhase.put("commands", installCommands);
         return installPhase;
     }
