@@ -108,7 +108,7 @@ public class DeployerHttpClient {
         logger.debug("converting http response to json string with encoding: {}", encoding);
         String json = EntityUtils.toString(entity, encoding);
         httpClient.close();
-        logger.info("Response for request: " + json);
+        logger.info("Response for request: " + json + " - " + httpResponse.getStatusLine().getStatusCode());
         return new JSONObject(json);
     }
 }
