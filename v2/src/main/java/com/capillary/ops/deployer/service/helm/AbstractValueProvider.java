@@ -1,7 +1,9 @@
 package com.capillary.ops.deployer.service.helm;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.service.IAMService;
 import com.capillary.ops.deployer.service.SecretService;
+import com.capillary.ops.deployer.service.interfaces.IIAMService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public abstract class AbstractValueProvider {
 
     @Autowired
     private SecretService secretService;
+
+    @Autowired
+    private IIAMService iamService;
 
     public String getImage(Deployment deployment) {
         return deployment.getImage();
@@ -220,6 +225,10 @@ public abstract class AbstractValueProvider {
         return secretFileMountsList;
     }
 
+    public String getApplicationIAMRole(Application application, Environment environment){
+        return iamService.getApplicationRole(application, environment);
+    }
+
     
     public String getSchedule(Deployment deployment) {
         return deployment.getSchedule();
@@ -277,6 +286,7 @@ public abstract class AbstractValueProvider {
         this.addField("configurations", getConfigMap(environment, application, deployment), yaml);
         this.addField("credentials", getCredentialsMap(environment, application), yaml);
         this.addField("secretFileMounts", getSecretFileMounts(application, environment, deployment), yaml);
+        this.addField("roleName", getApplicationIAMRole(application,environment), yaml);
         return yaml;
     }
 

@@ -5,6 +5,15 @@ public class Kube2IamConfiguration {
     String awsAccessKeyID;
     String awsSecretAccessKey;
 
+    public Kube2IamConfiguration(){
+    };
+
+    public Kube2IamConfiguration(boolean enabled, String awsAccessKeyID, String awsSecretAccessKey){
+        this.enabled = enabled;
+        this.awsAccessKeyID = awsAccessKeyID;
+        this.awsSecretAccessKey = awsSecretAccessKey;
+    }
+
     public String getAwsAccessKeyID() {
         return awsAccessKeyID;
     }

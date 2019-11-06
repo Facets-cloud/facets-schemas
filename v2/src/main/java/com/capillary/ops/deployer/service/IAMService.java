@@ -29,6 +29,9 @@ public class IAMService implements IIAMService {
         String roleName = null;
         try {
             Kube2IamConfiguration kube2IamConfiguration = environment.getEnvironmentConfiguration().getKube2IamConfiguration();
+            if(kube2IamConfiguration == null){
+                return null;
+            }
             iamClient = IamClient.builder().region(Region.AWS_GLOBAL).credentialsProvider(() -> new AwsCredentials() {
                 @Override
                 public String accessKeyId() {
@@ -41,7 +44,7 @@ public class IAMService implements IIAMService {
                 }
             }).build();
             String appName = application.getName();
-            String appFamily = application.getApplicationFamily().name();
+            String appFamily = application.getApplicationFamily().name().toLowerCase();
             String rolePath = ROOT_LEVEL + appFamily;
             ListRolesResponse rolesList = iamClient.listRoles(ListRolesRequest.builder().pathPrefix(rolePath).build());
             Role appRole = rolesList.roles().stream().filter(role -> role.roleName().equals(appName)).findFirst().orElse(null);
