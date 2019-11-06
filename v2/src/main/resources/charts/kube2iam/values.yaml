@@ -1,4 +1,6 @@
-extraArgs: {}
+extraArgs:
+  auto-discover-default-role: ""
+  auto-discover-base-arn: ""
 #   base-role-arn: arn:aws:iam::0123456789:role/
 #   default-role: kube2iam-default
 #   api-server: ...
