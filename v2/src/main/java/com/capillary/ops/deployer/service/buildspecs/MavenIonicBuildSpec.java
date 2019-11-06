@@ -18,6 +18,6 @@ public class MavenIonicBuildSpec extends MavenBuildSpec {
 
     @Override
     public String getBuildEnvironmentImage() {
-        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/mavenionicbuildenv:02eb143";
+        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/mavenionicbuildenv:72a11f1";
     }
 }
