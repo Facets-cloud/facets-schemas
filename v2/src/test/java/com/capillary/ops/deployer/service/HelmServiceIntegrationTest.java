@@ -54,6 +54,8 @@ import java.util.stream.Collectors;
 @TestPropertySource("/application.properties")
 public class HelmServiceIntegrationTest {
 
+    private static String OS = System.getProperty("os.name").toLowerCase();
+
     @Autowired
     public HelmService helmService;
 
@@ -82,7 +84,7 @@ public class HelmServiceIntegrationTest {
     @Before
     public void setUp() throws Exception {
         clusterName = "deployer-helminttest-" + System.currentTimeMillis();
-        kindExecutable = getExecutable("kind-darwin-amd64");
+        kindExecutable = getExecutable("kind");
         kubectlExecutable = getExecutable("kubectl");
         helmExecutable = getExecutable("helm");
         createCluster();
@@ -104,6 +106,11 @@ public class HelmServiceIntegrationTest {
                         .withConnectionTimeout(30*1000)
                         .withRequestTimeout(30*1000)
                         .build());
+    }
+
+    @Test
+    public void testStatefulSet() {
+        Assert.assertTrue(true);
     }
 
     @Test
@@ -358,7 +365,12 @@ public class HelmServiceIntegrationTest {
 
     private File getExecutable(String binaryName) {
         try {
-            InputStream resourceAsStream = HelmServiceIntegrationTest.class.getResourceAsStream("/bin/" + binaryName);
+            String prefix = "osx";
+            if (OS.toLowerCase().contains("linux") || OS.toLowerCase().contains("nix")) {
+                prefix = "linux";
+            }
+            InputStream resourceAsStream = HelmServiceIntegrationTest.class.getResourceAsStream("/bin/"
+                    + prefix + "/" + binaryName);
             File executable = File.createTempFile(binaryName, String.valueOf(System.currentTimeMillis()));
             Files.copy(resourceAsStream, executable.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Files.setPosixFilePermissions(executable.toPath(), ImmutableSet.of(PosixFilePermission.OWNER_EXECUTE));
