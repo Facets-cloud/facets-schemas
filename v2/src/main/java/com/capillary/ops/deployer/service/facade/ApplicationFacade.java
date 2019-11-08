@@ -4,11 +4,7 @@ import com.amazonaws.regions.Regions;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
-import com.capillary.ops.deployer.exceptions.AlreadyExistsException;
-import com.capillary.ops.deployer.exceptions.InvalidScheduleException;
-import com.capillary.ops.deployer.exceptions.InvalidSecretException;
-import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.exceptions.NotPromotedException;
+import com.capillary.ops.deployer.exceptions.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
@@ -21,8 +17,10 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
-import org.quartz.CronExpression;
-import org.json.JSONObject;
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinition;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -277,9 +275,7 @@ public class ApplicationFacade {
     public List<Build> getBuilds(ApplicationFamily applicationFamily, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         List<Build> builds = buildRepository.findByApplicationIdOrderByTimestampDesc(application.getId());
-        builds.parallelStream().forEach(x -> {
-            x.setApplicationFamily(applicationFamily);
-        });
+        builds.parallelStream().forEach(x -> x.setApplicationFamily(applicationFamily));
         return getBuildDetails(application, builds);
     }
 
@@ -304,7 +300,7 @@ public class ApplicationFacade {
         deployment.setTimestamp(new Date());
         Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
         if(env.getEnvironmentMetaData().getEnvironmentType().equals(EnvironmentType.PRODUCTION)){
-            if(getBuildPromotionStatus(applicationId,deployment.getBuildId()) == false) {
+            if(!getBuildPromotionStatus(applicationId, deployment.getBuildId())) {
                 logger.info("Build {} is not promoted", deployment.getBuildId());
                 throw new NotPromotedException("Build " + deployment.getBuildId() + " is not promoted");
             }
@@ -320,11 +316,7 @@ public class ApplicationFacade {
             throw new NotFoundException("No image");
         }
 
-        String deploymentSchedule = deployment.getSchedule();
-        if (!StringUtils.isEmpty(deploymentSchedule) && !CronExpression.isValidExpression(deploymentSchedule)) {
-            logger.error("invalid cron expression for schedule: {}", deploymentSchedule);
-            throw new InvalidScheduleException("Invalid cron expression for schedule");
-        }
+        validateCronExpression(deployment.getSchedule());
 
         deployment.setImage(build.getImage());
         String mirror = env.getEnvironmentConfiguration() != null ?
@@ -335,6 +327,21 @@ public class ApplicationFacade {
         deploymentRepository.save(deployment);
         helmService.deploy(application, deployment);
         return deployment;
+    }
+
+    private void validateCronExpression(String deploymentSchedule) {
+        if (deploymentSchedule.isEmpty()) {
+            logger.error("cron schedule cannot be empty");
+        }
+
+        try {
+            CronDefinition definition = CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX);
+            CronParser parser = new CronParser(definition);
+            parser.parse(deploymentSchedule);
+        } catch (IllegalArgumentException ex) {
+            logger.error("invalid cron expression for deployment schedule", ex);
+            throw new InvalidScheduleException("Invalid cron expression for schedule");
+        }
     }
 
     private boolean getBuildPromotionStatus(String applicationId, String buildId) {

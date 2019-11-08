@@ -90,8 +90,8 @@ public class PullRequestScheduler {
                 comment = "Error happened while building, please contact admin";
                 break;
             case FAILED:
-                logger.error("build failed for application: {}, pull request: {}", application.getName(),
-                        pullRequest.getNumber());
+                logger.error("build failed for application: {}, pull request: {}, report link: {}", application.getName(),
+                        pullRequest.getNumber(), getTestOutputLink(pullRequest.getHost(), application, build));
                 comment = "Build failed. Refer to the following build id in deployer: " + build.getId();
                 break;
             case TIMED_OUT:

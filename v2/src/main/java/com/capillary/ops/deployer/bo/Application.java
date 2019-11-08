@@ -66,7 +66,6 @@ public class Application {
     @NotNull
     private List<Port> ports;
 
-    @NotNull
     private LoadBalancerType loadBalancerType;
 
     private List<PVC> pvcList;

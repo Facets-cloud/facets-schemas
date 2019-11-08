@@ -28,6 +28,10 @@ export class BuildsListComponent implements OnInit, OnChanges {
 
   builds: Build[] = [];
 
+  testBuilds: Build[] = [];
+
+  deploymentBuilds: Build[] = [];
+
   query: string = '';
 
   settings = {
@@ -63,6 +67,7 @@ export class BuildsListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.messageBus.buildTopic.subscribe(x => this.loadBuilds());
+    this.loadBuilds();
   }
 
   onCustom(event) {
@@ -90,17 +95,25 @@ export class BuildsListComponent implements OnInit, OnChanges {
           this.builds = builds;
           if (this.builds.filter(x => x.status === 'IN_PROGRESS').length > 0 && (!this.subscription || this.subscription.closed)) {
             this.subscription = timer(0, 10000).subscribe(x => this.loadBuilds());
-          } else {
-            this.subscription.unsubscribe();
+          } else if (this.subscription) {
+              this.subscription.unsubscribe();
           }
         }
+
+        this.filterBuilds();
       },
     );
   }
 
   showBuildDialog() {
-    const dialogRef: NbDialogRef<BuildDialogComponent> = this.dialogService.open(BuildDialogComponent, { context: { application: this.application } });
+    const dialogRef: NbDialogRef<BuildDialogComponent> = this.dialogService.open(BuildDialogComponent,
+      { context: { application: this.application } });
     dialogRef.onClose.subscribe(x => this.loadBuilds());
+  }
+
+  filterBuilds() {
+      this.testBuilds = this.builds.filter(x => x.testBuild).filter(x => x.id.startsWith(this.query));
+      this.deploymentBuilds = this.builds.filter(x => !x.testBuild).filter(x => x.id.startsWith(this.query));
   }
 
   search(query: string) {

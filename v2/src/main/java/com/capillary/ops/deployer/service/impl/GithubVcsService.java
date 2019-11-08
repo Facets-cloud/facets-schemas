@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.impl;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PullRequest;
 import com.capillary.ops.deployer.bo.webhook.github.SupportedActions;
