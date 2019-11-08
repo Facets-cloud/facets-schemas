@@ -6,7 +6,7 @@ import com.capillary.ops.deployer.bo.Probe;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
-import com.capillary.ops.deployer.service.interfaces.IHelmService;
+import com.capillary.ops.deployer.service.interfaces.IIAMService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
@@ -14,12 +14,8 @@ import com.google.common.collect.ImmutableSet;
 import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.DoneableCronJob;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.Watcher;
-import io.fabric8.kubernetes.client.dsl.Resource;
 import mockit.Expectations;
 import org.apache.commons.io.IOUtils;
 import org.junit.*;
@@ -32,14 +28,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -69,6 +62,9 @@ public class HelmServiceIntegrationTest {
     private DeploymentRepository deploymentRepository;
 
     @Autowired
+    private IIAMService iamService;
+
+    @Autowired
     private SecretService secretService;
 
     private String clusterName;
@@ -80,6 +76,7 @@ public class HelmServiceIntegrationTest {
     private String apiEndpoint;
     private DefaultKubernetesClient kubernetesClient;
     private Logger logger = LoggerFactory.getLogger(HelmServiceIntegrationTest.class);
+    private Environment localCRMEnvironment;
 
     @Before
     public void setUp() throws Exception {
@@ -106,6 +103,7 @@ public class HelmServiceIntegrationTest {
                         .withConnectionTimeout(30*1000)
                         .withRequestTimeout(30*1000)
                         .build());
+        localCRMEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
     }
 
     @Test
@@ -124,10 +122,15 @@ public class HelmServiceIntegrationTest {
             }
         };
 
-        Environment localEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
         Application application = createApplication("helmint-test-1", ApplicationFamily.CRM);
         Deployment deployment = createDeployment(application);
 
+        new Expectations(iamService) {
+            {
+                iamService.getApplicationRole((Application) any, (Environment) any);
+                result = "helmint-test-1-role";
+            }
+        };
         // deploy new app, internal
 
         helmService.deploy(application, deployment);
@@ -162,6 +165,7 @@ public class HelmServiceIntegrationTest {
                         new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
         });
 
+        Assert.assertEquals("helmint-test-1-role", pods.get(0).getMetadata().getAnnotations().get("iam.amazonaws.com/role"));
         // update secrets and env
 
         secretService.initializeApplicationSecrets(
@@ -224,7 +228,7 @@ public class HelmServiceIntegrationTest {
             });
 
         // cluster default configs
-        localEnvironment.getEnvironmentConfiguration().getCommonConfigs().entrySet().stream().forEach(
+        localCRMEnvironment.getEnvironmentConfiguration().getCommonConfigs().entrySet().stream().forEach(
             commonConfig -> {
                 List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
                         .filter(x -> commonConfig.getKey().equals(x.getName()))
@@ -240,7 +244,7 @@ public class HelmServiceIntegrationTest {
 
 
         // cluster default credentials
-        localEnvironment.getEnvironmentConfiguration().getCommonCredentials().entrySet().stream().forEach(
+        localCRMEnvironment.getEnvironmentConfiguration().getCommonCredentials().entrySet().stream().forEach(
             commonCredential -> {
                 List <EnvVar> env1 = updatedPods.get(0).getSpec().getContainers().get(0).getEnv().stream()
                         .filter(x -> commonCredential.getKey().equals(x.getName()))
@@ -298,7 +302,7 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals(clusterName + "-" + application.getName() + "-dns.local.public", updatedDns);
         Assert.assertFalse(updatedService.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertFalse(updatedService.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/azure-load-balancer-internal"));
-        Assert.assertEquals(localEnvironment.getEnvironmentConfiguration().getSslConfigs().getSSLCertName(),
+        Assert.assertEquals(localCRMEnvironment.getEnvironmentConfiguration().getSslConfigs().getSSLCertName(),
                 updatedService.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-ssl-cert"));
         Assert.assertEquals("https",
                 updatedService.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-ssl-ports"));
@@ -314,7 +318,6 @@ public class HelmServiceIntegrationTest {
                 result = chart;
             }
         };
-        Environment localEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
         Application application = createApplication("helmint-test-cron-1", ApplicationFamily.CRM);
         Deployment deployment = createDeployment(application);
         application.setApplicationType(Application.ApplicationType.SCHEDULED_JOB);
@@ -423,6 +426,7 @@ public class HelmServiceIntegrationTest {
         environmentConfiguration.setSslConfigs(new SSLConfigs("somecert"));
         environmentConfiguration.setCommonConfigs(ImmutableMap.of("commonconfig1", "commonconfig1value", "commonconfig2", "commonconfig2value"));
         environmentConfiguration.setCommonCredentials(ImmutableMap.of("commoncredential1", "commoncredential1value", "commoncredential2", "commoncredential2value"));
+        environmentConfiguration.setKube2IamConfiguration(new Kube2IamConfiguration(true, "", ""));
         Environment environment = new Environment(environmentMetaData, environmentConfiguration);
         environmentRepository.save(environment);
         return environment;
