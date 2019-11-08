@@ -316,7 +316,9 @@ public class ApplicationFacade {
             throw new NotFoundException("No image");
         }
 
-        validateCronExpression(deployment.getSchedule());
+        if (Application.ApplicationType.SCHEDULED_JOB.equals(application.getApplicationType())) {
+            validateCronExpression(deployment.getSchedule());
+        }
 
         deployment.setImage(build.getImage());
         String mirror = env.getEnvironmentConfiguration() != null ?
