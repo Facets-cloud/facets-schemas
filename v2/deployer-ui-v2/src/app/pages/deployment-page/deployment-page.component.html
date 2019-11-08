@@ -18,6 +18,16 @@
           <button nbButton (click)="environmentSelected(stepper)">next</button>
         </div>
       </nb-step>
+      <nb-step [stepControl]="schedule" label="Select Schedule" *ngIf="application?.applicationType === 'SCHEDULED_JOB'">
+        <nb-alert size="tiny" *ngIf="!build?.promoted" accent="warning" style="text-align: center">Enter a valid cron pattern</nb-alert>
+        <div style="width:20%; margin: auto; min-width: 100px;">
+            <input type="text" #schedule="ngModel" required nbInput fullWidth name="schedule" id="schedule"
+            [(ngModel)]="deployment.schedule" placeholder="Every 2 hours: 0 */2 * * *">
+        </div>
+        <div style="padding-top: 1rem; float: right;">
+          <button [disabled]="!schedule.valid" nbButton (click)="scheduleEnteredStepper(stepper)">next</button>
+        </div>
+      </nb-step>
       <nb-step [stepControl]="podSize" label="Configure Pod Size">
         <div style="width:10%; margin: auto; min-width: 100px;">
           <nb-select required [(ngModel)]="deployment.podSize" #podSize="ngModel" name="podSize" id="podSize"
@@ -43,10 +53,11 @@
       <nb-step label="Configure Environment Variables">
         <ng2-smart-table (deleteConfirm)="onDeleteConfirm($event)" (createConfirm)="validateConfig($event)" [settings]="settings" [source]="deployment.configurations"></ng2-smart-table>
         <div style="padding-top: 1rem; float: right;">
-          <button nbButton nbStepperNext>next</button>
+          <button nbButton nbStepperNext *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">next</button>
+          <button nbButton (click)="deploy(stepper)" *ngIf="application?.applicationType === 'SCHEDULED_JOB'">Deploy</button>
         </div>
       </nb-step>
-      <nb-step label="Configure Autoscaling">
+      <nb-step label="Configure Autoscaling" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
         <div style="width: 25%; margin: auto; min-width: 300px;">
           <label for="minReplicas" class="label">Minimum Replicas</label>
           <input type=number #minReplicas="ngModel" required nbInput fullWidth name="minReplicas" id="minReplicas"

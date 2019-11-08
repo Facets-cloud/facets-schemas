@@ -8,6 +8,19 @@
   <nb-card-body>
     <div style="margin-left: 5rem; margin-right: 5rem;">
       <nb-stepper #stepper linear=true>
+        <nb-step *ngIf="! application?.id" [stepControl]="applicationType" label="Select Application Type">
+          <div style="margin: auto; width: 35%;">
+            <nb-select  required [(ngModel)]="application.applicationType" #applicationType="ngModel" name="applicationType"
+              id="applicationType" placeholder="Select Application Type" fixedWidth>
+              <nb-option #cluster *ngFor="let applicationType of applicationTypes" value="{{applicationType}}">
+                {{applicationType}}
+              </nb-option>
+            </nb-select>
+          </div>
+          <div style="padding-top: 1rem; float: right;">
+            <button nbButton nbStepperNext (click)="applicationTypeSelected(stepper)">next</button>
+          </div>
+        </nb-step>
         <nb-step *ngIf="! application?.id" [stepControl]="appFamily" label="Select Application Family">
           <div style="margin: auto; width: 35%;">
             <nb-select required [(ngModel)]="application.applicationFamily" #appFamily="ngModel" name="appFamily"
@@ -70,9 +83,9 @@
                     [(ngModel)]="application.applicationRootDirectory" placeholder="subDirectory">
                 </div>
               </div>
-              <div class="form-group row">
+              <div class="form-group row" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
                 <label for="loadBalancerType" class="label col-sm-4">LoadBalancer Type</label>
-                <div class="col-sm-8">
+                <div class="col-sm-8" >
                   <nb-select fullWidth size="small" required [(ngModel)]="application.loadBalancerType"
                     #loadBalancerType="ngModel" name="loadBalancerType" id="loadBalancerType" placeholder="LoadBalancer Type"
                     fixedWidth>
@@ -81,18 +94,18 @@
                   </nb-select>
                 </div>
               </div>
-              <div class="form-group row">
+              <div class="form-group row" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
                 <label for="deploymentStrategy" class="label col-sm-4">Deployment Strategy</label>
                 <div class="col-sm-8">
                   <nb-select fullWidth size="small" required [(ngModel)]="application.deploymentStrategy"
-                    #deploymentStrategy="ngModel" name="deploymentStrategy" id="deploymentStrategy" placeholder="LoadBalancer Type"
+                    #deploymentStrategy="ngModel" name="deploymentStrategy" id="deploymentStrategy" placeholder="Deployment Strategy"
                     fixedWidth>
                     <nb-option value="RollingUpdate">RollingUpdate</nb-option>
                     <nb-option value="Recreate">Recreate</nb-option>
                   </nb-select>
                 </div>
               </div>
-              <div class="form-group row">
+              <div class="form-group row" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
                 <label for="dnsPrefix" class="label col-sm-4">DNS Prefix</label>
                 <div class="col-sm-8">
                   <input fieldSize="small" type=text #dnsPrefix="ngModel" nbInput fullWidth name="dnsPrefix"
@@ -125,14 +138,14 @@
             </div>
           </form>
         </nb-step>
-        <nb-step label="Configure Ports">
+        <nb-step label="Configure Ports" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
           <ng2-smart-table (createConfirm)="validatePort($event)" [settings]="settings" [source]="application.ports">
           </ng2-smart-table>
           <div style="padding-top: 1rem; float: right;">
             <button nbStepperNext nbButton>Next</button>
           </div>
         </nb-step>
-        <nb-step label="Configure Liveliness Probe">
+        <nb-step label="Configure Liveliness Probe" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
           <form #livelinessForm="ngForm">
             <div style="margin: auto; width: 70%; min-width: 300px;">
               <div class="form-group row">
@@ -202,7 +215,7 @@
               <button [disabled]="! livelinessForm.valid" nbButton nbStepperNext>Next</button>
           </div>
         </nb-step>
-        <nb-step label="Configure Readiness Probe">
+        <nb-step label="Configure Readiness Probe" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
           <form #readinessForm="ngForm">
             <div style="margin: auto; width: 70%; min-width: 300px;">
               <div class="form-group row">
@@ -268,8 +281,8 @@
             </div>
           </form>
           <div style="padding-top: 1rem; float: right;">
-              <button style="margin-right: 1rem" (click)="skipLiveliness(stepper)" nbButton>Skip</button>
-              <button [disabled]="! livelinessForm.valid" nbButton nbStepperNext>Next</button>
+              <button style="margin-right: 1rem" (click)="skipReadiness(stepper)" nbButton>Skip</button>
+              <button [disabled]="! readinessForm.valid" nbButton nbStepperNext>Next</button>
           </div>
         </nb-step>
         <nb-step label="Create Application">

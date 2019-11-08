@@ -31,6 +31,7 @@ import { ApplicationSecret } from '../models/application-secret';
 })
 class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
+  static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -60,10 +61,10 @@ class ApplicationControllerService extends __BaseService {
   static readonly getCurrentDeploymentUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current';
   static readonly getDeploymentStatusUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus';
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
+  static readonly getDumpFileListUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps';
+  static readonly downloadDumpFileUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps/download';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
-  static readonly getDumpFileListUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationName}/dumps';
-  static readonly downloadDumpFileUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationName}/dumps/download';
 
   constructor(
     config: __Configuration,
@@ -102,6 +103,39 @@ class ApplicationControllerService extends __BaseService {
   getApplicationFamiliesUsingGET(): __Observable<Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>> {
     return this.getApplicationFamiliesUsingGETResponse().pipe(
       __map(_r => _r.body as Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>)
+    );
+  }
+
+  /**
+   * @return OK
+   */
+  getApplicationTypesUsingGETResponse(): __Observable<__StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/applicationTypes`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>>;
+      })
+    );
+  }
+  /**
+   * @return OK
+   */
+  getApplicationTypesUsingGET(): __Observable<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>> {
+    return this.getApplicationTypesUsingGETResponse().pipe(
+      __map(_r => _r.body as Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>)
     );
   }
 
@@ -1468,6 +1502,120 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `date`: date
+   *
+   * @return OK
+   */
+  getDumpFileListUsingGETResponse(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<__StrictHttpResponse<Array<string>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    if (params.date != null) __params = __params.set('date', params.date.toString());
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/dumps`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<string>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `date`: date
+   *
+   * @return OK
+   */
+  getDumpFileListUsingGET(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<Array<string>> {
+    return this.getDumpFileListUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<string>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.DownloadDumpFileUsingGETParams` containing the following parameters:
+   *
+   * - `path`: path
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  downloadDumpFileUsingGETResponse(params: ApplicationControllerService.DownloadDumpFileUsingGETParams): __Observable<__StrictHttpResponse<InputStreamResource>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    if (params.path != null) __params = __params.set('path', params.path.toString());
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/dumps/download`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<InputStreamResource>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DownloadDumpFileUsingGETParams` containing the following parameters:
+   *
+   * - `path`: path
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  downloadDumpFileUsingGET(params: ApplicationControllerService.DownloadDumpFileUsingGETParams): __Observable<InputStreamResource> {
+    return this.downloadDumpFileUsingGETResponse(params).pipe(
+      __map(_r => _r.body as InputStreamResource)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetApplicationSecretsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1573,120 +1721,6 @@ class ApplicationControllerService extends __BaseService {
   updateApplicationSecretsUsingPUT(params: ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams): __Observable<Array<ApplicationSecret>> {
     return this.updateApplicationSecretsUsingPUTResponse(params).pipe(
       __map(_r => _r.body as Array<ApplicationSecret>)
-    );
-  }
-
-  /**
-   * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
-   *
-   * - `environment`: environment
-   *
-   * - `applicationName`: applicationName
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * - `date`: date
-   *
-   * @return OK
-   */
-  getDumpFileListUsingGETResponse(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<__StrictHttpResponse<Array<string>>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-
-
-    if (params.date != null) __params = __params.set('date', params.date.toString());
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationName}/dumps`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<Array<string>>;
-      })
-    );
-  }
-  /**
-   * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
-   *
-   * - `environment`: environment
-   *
-   * - `applicationName`: applicationName
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * - `date`: date
-   *
-   * @return OK
-   */
-  getDumpFileListUsingGET(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<Array<string>> {
-    return this.getDumpFileListUsingGETResponse(params).pipe(
-      __map(_r => _r.body as Array<string>)
-    );
-  }
-
-  /**
-   * @param params The `ApplicationControllerService.DownloadDumpFileUsingGETParams` containing the following parameters:
-   *
-   * - `path`: path
-   *
-   * - `environment`: environment
-   *
-   * - `applicationName`: applicationName
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  downloadDumpFileUsingGETResponse(params: ApplicationControllerService.DownloadDumpFileUsingGETParams): __Observable<__StrictHttpResponse<InputStreamResource>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    if (params.path != null) __params = __params.set('path', params.path.toString());
-
-
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationName}/dumps/download`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<InputStreamResource>;
-      })
-    );
-  }
-  /**
-   * @param params The `ApplicationControllerService.DownloadDumpFileUsingGETParams` containing the following parameters:
-   *
-   * - `path`: path
-   *
-   * - `environment`: environment
-   *
-   * - `applicationName`: applicationName
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  downloadDumpFileUsingGET(params: ApplicationControllerService.DownloadDumpFileUsingGETParams): __Observable<InputStreamResource> {
-    return this.downloadDumpFileUsingGETResponse(params).pipe(
-      __map(_r => _r.body as InputStreamResource)
     );
   }
 }
@@ -2131,6 +2165,58 @@ module ApplicationControllerService {
   }
 
   /**
+   * Parameters for getDumpFileListUsingGET
+   */
+  export interface GetDumpFileListUsingGETParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+
+    /**
+     * date
+     */
+    date?: string;
+  }
+
+  /**
+   * Parameters for downloadDumpFileUsingGET
+   */
+  export interface DownloadDumpFileUsingGETParams {
+
+    /**
+     * path
+     */
+    path: string;
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
    * Parameters for getApplicationSecretsUsingGET
    */
   export interface GetApplicationSecretsUsingGETParams {
@@ -2170,58 +2256,6 @@ module ApplicationControllerService {
      * applicationId
      */
     applicationId: string;
-
-    /**
-     * applicationFamily
-     */
-    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
-  }
-
-  /**
-   * Parameters for getDumpFileListUsingGET
-   */
-  export interface GetDumpFileListUsingGETParams {
-
-    /**
-     * environment
-     */
-    environment: string;
-
-    /**
-     * applicationName
-     */
-    applicationName: string;
-
-    /**
-     * applicationFamily
-     */
-    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
-
-    /**
-     * date
-     */
-    date?: string;
-  }
-
-  /**
-   * Parameters for downloadDumpFileUsingGET
-   */
-  export interface DownloadDumpFileUsingGETParams {
-
-    /**
-     * path
-     */
-    path: string;
-
-    /**
-     * environment
-     */
-    environment: string;
-
-    /**
-     * applicationName
-     */
-    applicationName: string;
 
     /**
      * applicationFamily

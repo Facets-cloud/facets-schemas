@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,8 @@ public class DotnetBuildSpec extends BuildSpec {
     public DotnetBuildSpec(Application application, boolean testBuild) {
         super(application, testBuild);
     }
+
+    private static final String TEST_COMMAND = "dotnet dotcover test --dcReportType=HTML --dcoutput=./UnitTestCoverageReport/UnitTestCoverageReport.HTML";
 
     @Override
     protected List<String> getPostBuildCommands() {
@@ -48,7 +51,7 @@ public class DotnetBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("dotnet test");
+        buildCommands.add(TEST_COMMAND);
         return buildCommands;
     }
 
@@ -74,7 +77,7 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpecTest() {
-        return new ArrayList<>();
+        return Lists.newArrayList("UnitTestCoverageReport/**/*");
     }
 
     @Override

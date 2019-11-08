@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import static com.capillary.ops.deployer.bo.Application.*;
+
 
 @RestController
 @RequestMapping("api")
@@ -230,6 +232,11 @@ public class ApplicationController {
     @GetMapping(value = "/applicationFamilies", produces = "application/json")
     public ResponseEntity<List<ApplicationFamily>> getApplicationFamilies() {
         return new ResponseEntity<>(Arrays.asList(ApplicationFamily.values()), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/applicationTypes", produces = "application/json")
+    public ResponseEntity<List<ApplicationType>> getApplicationTypes() {
+        return new ResponseEntity<>(Arrays.asList(ApplicationType.values()), HttpStatus.OK);
     }
 
     @JsonView(UserView.SecretName.class)

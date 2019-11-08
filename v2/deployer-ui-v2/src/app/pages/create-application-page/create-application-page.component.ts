@@ -24,6 +24,8 @@ export class CreateApplicationPageComponent implements OnInit {
 
   appFamilies = [];
 
+  applicationTypes = [];
+
   settings = {
     columns: {
       name: {
@@ -103,6 +105,7 @@ export class CreateApplicationPageComponent implements OnInit {
         }
       },
     );
+    this.populateApplicationTypes();
     this.populateAppFamilies();
   }
 
@@ -114,7 +117,20 @@ export class CreateApplicationPageComponent implements OnInit {
     );
   }
 
+  populateApplicationTypes() {
+    this.applicationControllerService.getApplicationTypesUsingGET().subscribe(
+      applicationTypes => {
+        // filter stateful set out as UI not implemented for it yet
+        this.applicationTypes = applicationTypes.filter(x => x !== 'STATEFUL_SET');
+      },
+    );
+  }
+
   appFamilySelected(stepper: any) {
+
+  }
+
+  applicationTypeSelected(stepper: any) {
 
   }
 

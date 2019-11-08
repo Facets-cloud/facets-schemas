@@ -148,6 +148,14 @@ export class DeploymentPageComponent implements OnInit {
     );
   }
 
+  scheduleEnteredStepper(stepper: any) {
+    stepper.next();
+  }
+
+  autoScaleOrDeploy(stepper: NbStepperComponent) {
+
+  }
+
   validateConfig(event) {
 
     if (this.deployment.configurations.map(x => x.name).includes(event.newData['name'])) {
