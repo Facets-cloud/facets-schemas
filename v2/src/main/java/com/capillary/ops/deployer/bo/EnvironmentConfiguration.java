@@ -34,6 +34,7 @@ public class EnvironmentConfiguration {
     private SSLConfigs sslConfigs;
     private String ecrMirrorRepo;
     private K8sLoggingConfiguration k8sLoggingConfiguration;
+    private Kube2IamConfiguration kube2IamConfiguration;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -121,5 +122,13 @@ public class EnvironmentConfiguration {
 
     public void setK8sLoggingConfiguration(K8sLoggingConfiguration k8sLoggingConfiguration) {
         this.k8sLoggingConfiguration = k8sLoggingConfiguration;
+    }
+
+    public Kube2IamConfiguration getKube2IamConfiguration() {
+        return kube2IamConfiguration;
+    }
+
+    public void setKube2IamConfiguration(Kube2IamConfiguration kube2IamConfiguration) {
+        this.kube2IamConfiguration = kube2IamConfiguration;
     }
 }
