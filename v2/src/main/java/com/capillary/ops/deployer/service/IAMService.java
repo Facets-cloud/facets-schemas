@@ -30,6 +30,7 @@ public class IAMService implements IIAMService {
         try {
             Kube2IamConfiguration kube2IamConfiguration = environment.getEnvironmentConfiguration().getKube2IamConfiguration();
             if(kube2IamConfiguration == null){
+                logger.info("No kube2iam configuration, not adding annotation");
                 return null;
             }
             iamClient = IamClient.builder().region(Region.AWS_GLOBAL).credentialsProvider(() -> new AwsCredentials() {
@@ -47,7 +48,12 @@ public class IAMService implements IIAMService {
             String appFamily = application.getApplicationFamily().name().toLowerCase();
             String rolePath = ROOT_LEVEL + appFamily;
             ListRolesResponse rolesList = iamClient.listRoles(ListRolesRequest.builder().pathPrefix(rolePath).build());
-            Role appRole = rolesList.roles().stream().filter(role -> role.roleName().equals(appName)).findFirst().orElse(null);
+            Role appRole = rolesList.roles().stream().filter(role ->
+                    role.roleName().equals(appName + "-" + environment.getEnvironmentMetaData().getName()))
+                    .findFirst().orElse(null);
+            if (appRole == null) {
+                logger.info("No role found for app " + application.getName() + " in " + environment.getEnvironmentMetaData().getName());
+            }
             if (appRole != null) {
                 roleName = appRole.roleName();
             }
