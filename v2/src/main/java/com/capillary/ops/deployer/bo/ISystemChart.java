@@ -5,9 +5,9 @@ import java.util.Map;
 
 public interface ISystemChart {
 
-    public abstract String getChartPath();
+    String getChartPath();
 
-    public abstract Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment);
+    Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment);
 
-    public abstract String getReleaseName(ApplicationFamily applicationFamily, Environment environment);
+    String getReleaseName(ApplicationFamily applicationFamily, Environment environment);
 }

@@ -29,11 +29,11 @@ public abstract class AbstractValueProvider {
         return deployment.getImage();
     }
 
-    public Integer getPodCPULimit(Deployment deployment) {
+    public Double getPodCPULimit(Deployment deployment) {
         return deployment.getPodSize().getCpu();
     }
 
-    public Integer getPodMemoryLimit(Deployment deployment) {
+    public Double getPodMemoryLimit(Deployment deployment) {
         return deployment.getPodSize().getMemory();
     }
     

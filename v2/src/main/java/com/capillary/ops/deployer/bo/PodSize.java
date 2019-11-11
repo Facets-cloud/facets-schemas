@@ -4,29 +4,30 @@ public enum PodSize {
     SMALL(1,2),
     LARGE(2,4),
     XLARGE(3,6),
-    XXLARGE(7,14);
+    XXLARGE(7.0,14),
+    TINY(0.5, 1),
+    MICRO(0.25, 0.5);
+    private double cpu;
+    private double memory;
 
-    private int cpu;
-    private int memory;
-
-    PodSize(int cpu, int memory) {
+    PodSize(double cpu, double memory) {
         this.cpu = cpu;
         this.memory = memory;
     }
 
-    public int getCpu() {
+    public double getCpu() {
         return cpu;
     }
 
-    public void setCpu(int cpu) {
+    public void setCpu(double cpu) {
         this.cpu = cpu;
     }
 
-    public int getMemory() {
+    public double getMemory() {
         return memory;
     }
 
-    public void setMemory(int memory) {
+    public void setMemory(double memory) {
         this.memory = memory;
     }
 }

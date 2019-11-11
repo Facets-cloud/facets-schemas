@@ -32,6 +32,12 @@
         <div style="width:10%; margin: auto; min-width: 100px;">
           <nb-select required [(ngModel)]="deployment.podSize" #podSize="ngModel" name="podSize" id="podSize"
             placeholder="Select Pod Size" fixedWidth>
+            <nb-option value="MICRO">
+              MICRO (0.25core/0.5GiB)
+            </nb-option>
+            <nb-option value="TINY">
+              TINY (0.5core/1GiB)
+            </nb-option>
             <nb-option value="SMALL">
               SMALL (1core/2GiB)
             </nb-option>
