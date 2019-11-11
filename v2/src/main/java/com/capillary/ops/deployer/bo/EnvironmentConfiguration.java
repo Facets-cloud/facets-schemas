@@ -35,6 +35,7 @@ public class EnvironmentConfiguration {
     private String ecrMirrorRepo;
     private K8sLoggingConfiguration k8sLoggingConfiguration;
     private Kube2IamConfiguration kube2IamConfiguration;
+    private boolean spotTerminationHandlingEnabled = false;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -130,5 +131,13 @@ public class EnvironmentConfiguration {
 
     public void setKube2IamConfiguration(Kube2IamConfiguration kube2IamConfiguration) {
         this.kube2IamConfiguration = kube2IamConfiguration;
+    }
+
+    public boolean isSpotTerminationHandlingEnabled() {
+        return spotTerminationHandlingEnabled;
+    }
+
+    public void setSpotTerminationHandlingEnabled(boolean spotTerminationHandlingEnabled) {
+        this.spotTerminationHandlingEnabled = spotTerminationHandlingEnabled;
     }
 }
