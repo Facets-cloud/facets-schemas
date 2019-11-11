@@ -55,7 +55,7 @@ public class IAMService implements IIAMService {
                 logger.info("No role found for app " + application.getName() + " in " + environment.getEnvironmentMetaData().getName());
             }
             if (appRole != null) {
-                roleName = appRole.roleName();
+                roleName = appRole.arn();
             }
         } catch (Exception e) {
             logger.error("Error fetching IAM roles", e);
