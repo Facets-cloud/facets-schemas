@@ -120,22 +120,7 @@ public class CodeBuildService implements ICodeBuildService {
     }
 
     private BuildSpec getBuildSpec(Application application) {
-        switch (application.getBuildType()) {
-            case MVN:
-                return new MavenBuildSpec(application);
-            case FREESTYLE_DOCKER:
-                return new FreestyleDockerBuildSpec(application);
-            case DOTNET_CORE:
-                return new DotnetBuildSpec(application);
-            case MVN_IONIC:
-                return new MavenIonicBuildSpec(application);
-            case JDK6_MAVEN2:
-                return new JDK6Maven2BuildSpec(application);
-            case MJ_NUGET:
-                return new MJNugetBuildSpec(application);
-            default:
-                throw new NotImplementedException();
-        }
+        getBuildSpec(application, false);
     }
 
     private BuildSpec getBuildSpec(Application application, boolean testBuild) {
@@ -152,6 +137,10 @@ public class CodeBuildService implements ICodeBuildService {
                 return new JDK6Maven2BuildSpec(application, testBuild);
             case MJ_NUGET:
                 return new MJNugetBuildSpec(application, testBuild);
+            case DOTNET_CORE3:
+                return new Dotnet3BuildSpec(application, testBuild);
+            case DOTNET_CORE22:
+                return new Dotnet22BuildSpec(application, testBuild);
             default:
                 throw new NotImplementedException();
         }

@@ -6,5 +6,7 @@ public enum BuildType {
     DOTNET_CORE,
     MVN_IONIC,
     JDK6_MAVEN2,
-    MJ_NUGET
+    MJ_NUGET,
+    DOTNET_CORE22,
+    DOTNET_CORE3
 }
