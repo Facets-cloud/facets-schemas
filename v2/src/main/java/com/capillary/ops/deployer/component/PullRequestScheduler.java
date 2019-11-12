@@ -91,7 +91,7 @@ public class PullRequestScheduler {
             case FAILED:
                 logger.error("build failed for application: {}, pull request: {}, report link: {}", application.getName(),
                         pullRequest.getNumber(), getTestOutputLink(pullRequest.getHost(), application, build));
-                comment = "Build failed. Refer to the following build id in deployer: " + build.getId();
+                comment = "Build failed, deployer build id: " + build.getId() + ", artifact link: " + getTestOutputLink(pullRequest.getHost(), application, build);
                 break;
             case TIMED_OUT:
                 logger.error("build timed out while building in codebuild: {}", codeBuildId);
