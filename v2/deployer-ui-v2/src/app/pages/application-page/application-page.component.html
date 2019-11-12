@@ -5,8 +5,14 @@
       <app-info [application]="application"></app-info>
     </nb-accordion-item-body>
   </nb-accordion-item>
-  <nb-accordion-item>
+  <nb-accordion-item *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
     <nb-accordion-item-header>Current Deployments</nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <current-deployments [application]="application"></current-deployments>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  <nb-accordion-item *ngIf="application?.applicationType === 'SCHEDULED_JOB'">
+    <nb-accordion-item-header>Run History</nb-accordion-item-header>
     <nb-accordion-item-body>
       <current-deployments [application]="application"></current-deployments>
     </nb-accordion-item-body>

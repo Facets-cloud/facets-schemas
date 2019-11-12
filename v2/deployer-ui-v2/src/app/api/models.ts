@@ -29,6 +29,7 @@ export { HealthCheck } from './models/health-check';
 export { InputStream } from './models/input-stream';
 export { InputStreamResource } from './models/input-stream-resource';
 export { K8sLoggingConfiguration } from './models/k8s-logging-configuration';
+export { Kube2IamConfiguration } from './models/kube-2iam-configuration';
 export { LogEvent } from './models/log-event';
 export { ModelAndView } from './models/model-and-view';
 export { PVC } from './models/pvc';

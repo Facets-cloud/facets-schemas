@@ -351,6 +351,13 @@ public class ApplicationFacade {
         return build.get().isPromoted();
     }
 
+    public List<ApplicationPodDetails> getApplicationPodDetails(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        String releaseName = helmService.getReleaseName(application, environment);
+        return kubernetesService.getApplicationPodDetails(application, environment, releaseName);
+    }
+
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
@@ -471,12 +478,11 @@ public class ApplicationFacade {
 
     public List<EnvironmentMetaData> getEnvironmentMetaData(ApplicationFamily applicationFamily) {
         return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
-                .stream().map(x->x.getEnvironmentMetaData()).collect(Collectors.toList());
+                .stream().map(Environment::getEnvironmentMetaData).collect(Collectors.toList());
     }
 
     public List<Environment> getEnvironments(ApplicationFamily applicationFamily) {
-        return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
-                .stream().collect(Collectors.toList());
+        return new ArrayList<>(environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily));
     }
 
     public Application updateApplication(Application application) {
@@ -529,5 +535,12 @@ public class ApplicationFacade {
         return org.apache.commons.lang3.StringUtils.isEmpty(environment.getEnvironmentConfiguration().getNodeGroup()) ?
                 application.getName() :
                 environment.getEnvironmentMetaData().getName() + "-" + application.getName();
+    }
+
+    public DeploymentStatusDetails getCronjobHistory(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+        return deploymentStatus;
     }
 }

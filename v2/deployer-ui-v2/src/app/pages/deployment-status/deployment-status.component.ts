@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DeploymentStatusDetails } from '../../api/models';
+import { DeploymentStatusDetails, Application, ApplicationPodDetails } from '../../api/models';
 import { ActivatedRoute } from '@angular/router';
 import { ApplicationControllerService } from '../../api/services';
 
@@ -11,8 +11,10 @@ import { ApplicationControllerService } from '../../api/services';
 export class DeploymentStatusComponent implements OnInit {
 
   deploymentStatus: DeploymentStatusDetails;
+  appPodDetails: Array<ApplicationPodDetails>;
   appFamily: any;
   applicationId: string;
+  application: Application;
   environment: string;
   environmentVariables = [];
 
@@ -65,8 +67,18 @@ export class DeploymentStatusComponent implements OnInit {
       this.appFamily = params.get('appFamily');
       this.applicationId = params.get('applicationId');
       this.environment = params.get('environment');
+      this.loadApplication();
       this.loadDeploymentStatus();
+      this.loadPodDetails();
+      this.loadApplication();
     });
+  }
+
+  loadApplication() {
+    this.applicationControllerService.getApplicationUsingGET({
+      applicationFamily: this.appFamily,
+      applicationId: this.applicationId,
+    }).subscribe(application => this.application = application);
   }
 
   loadDeploymentStatus() {
@@ -79,6 +91,14 @@ export class DeploymentStatusComponent implements OnInit {
       const envObj = deploymentStatus.deployment.environmentConfigs;
       this.environmentVariables = Object.keys(envObj).map(x => ({key: x, value: envObj[x]}));
     });
+  }
+
+  loadPodDetails() {
+    this.applicationControllerService.getApplicationPodDetailsUsingGET({
+      applicationFamily: this.appFamily,
+      applicationId: this.applicationId,
+      environment: this.environment,
+    }).subscribe(podDetails => this.appPodDetails = podDetails);
   }
 
 }

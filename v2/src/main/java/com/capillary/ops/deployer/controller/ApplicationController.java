@@ -183,6 +183,13 @@ public class ApplicationController {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
     }
 
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/podDetails", produces = "application/json")
+    public List<ApplicationPodDetails> getApplicationPodDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                      @PathVariable("environment") String environment,
+                                      @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getApplicationPodDetails(applicationFamily, environment, applicationId);
+    }
+
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps", produces = "application/json")
     public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
