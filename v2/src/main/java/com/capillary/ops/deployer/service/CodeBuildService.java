@@ -120,7 +120,7 @@ public class CodeBuildService implements ICodeBuildService {
     }
 
     private BuildSpec getBuildSpec(Application application) {
-        getBuildSpec(application, false);
+        return getBuildSpec(application, false);
     }
 
     private BuildSpec getBuildSpec(Application application, boolean testBuild) {
