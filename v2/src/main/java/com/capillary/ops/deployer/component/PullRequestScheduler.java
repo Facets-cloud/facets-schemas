@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.Calendar;
@@ -41,7 +40,7 @@ public class PullRequestScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PullRequestScheduler.class);
 
-    private static final String BASE_REPORTS_URL = "https://%s/api/%s/applications/%s/tests/%s";
+    private static final String BASE_REPORTS_URL = "https://%s/api/%s/applications/%s/builds/%s";
 
     private static final String DEFAULT_HOST = "deployer.capillary.in";
 
@@ -92,7 +91,7 @@ public class PullRequestScheduler {
             case FAILED:
                 logger.error("build failed for application: {}, pull request: {}, report link: {}", application.getName(),
                         pullRequest.getNumber(), getTestOutputLink(pullRequest.getHost(), application, build));
-                comment = "Build failed. Refer to the following build id in deployer: " + build.getId();
+                comment = "Build failed, deployer build id: " + build.getId() + ", artifact link: " + getTestOutputLink(pullRequest.getHost(), application, build);
                 break;
             case TIMED_OUT:
                 logger.error("build timed out while building in codebuild: {}", codeBuildId);
@@ -104,14 +103,10 @@ public class PullRequestScheduler {
                 break;
             case SUCCEEDED:
                 logger.info("build successful for pull request: {}", pullRequest.getNumber());
-                comment = "Build Successful";
+                comment = "Build Successful. Test Report Output: " + getTestOutputLink(pullRequest.getHost(), application, build);
                 break;
             default:
                 logger.error("unkown build status");
-        }
-
-        if (!StringUtils.isEmpty(codeBuild.artifacts().md5sum())) {
-            comment = comment + ". Test Report Output: " + getTestOutputLink(pullRequest.getHost(), application, build);
         }
 
         vcsServiceSelector.selectVcsService(application.getVcsProvider()).commentOnPullRequest(pullRequest, comment);
