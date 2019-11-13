@@ -168,8 +168,8 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("helmint-test-1-role", pods.get(0).getMetadata().getAnnotations().get("iam.amazonaws.com/role"));
 
         //ZK publish
-        Assert.assertEquals("TEST_ZK_SERVICE_NAME_1,TEST_ZK_SERVICE_NAME_2", pods.get(0).getMetadata().getAnnotations().get("zkName"));
-        Assert.assertEquals("false", pods.get(0).getMetadata().getLabels().get("zkPublish"));
+        Assert.assertEquals("TEST_ZK_SERVICE_NAME_1,TEST_ZK_SERVICE_NAME_2", service.getMetadata().getAnnotations().get("zkName"));
+        Assert.assertEquals("false", service.getMetadata().getLabels().get("zkPublish"));
 
         // update secrets and env
         secretService.initializeApplicationSecrets(
