@@ -312,6 +312,11 @@ public class ApplicationFacade {
         deployment.setEnvironment(environment);
         deployment.setDeployedBy(getUserName());
         Build build = getBuild(applicationFamily, applicationId, deployment.getBuildId());
+        if (build.isTestBuild()) {
+            logger.error("invalid action, cannot deploy a test build");
+            throw new InvalidActionException("Invalid Action: cannot deploy a test build");
+        }
+
         if(StringUtils.isEmpty(build.getImage())) {
             throw new NotFoundException("No image");
         }
@@ -496,6 +501,7 @@ public class ApplicationFacade {
 
         application.setName(existingApplication.getName());
         application.setBuildType(existingApplication.getBuildType());
+        codeBuildService.updateProject(application);
         return applicationRepository.save(application);
     }
 

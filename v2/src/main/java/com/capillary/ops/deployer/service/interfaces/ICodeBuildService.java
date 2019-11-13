@@ -10,6 +10,8 @@ import java.util.List;
 public interface ICodeBuildService {
     void createProject(Application application);
 
+    void updateProject(Application application);
+
     String triggerBuild(Application application, Build build, boolean testBuild);
 
     TokenPaginatedResponse<LogEvent> getBuildLogs(Application application, String codeBuildId, String nextToken);
