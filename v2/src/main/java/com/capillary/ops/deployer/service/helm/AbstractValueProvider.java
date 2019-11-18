@@ -158,7 +158,8 @@ public abstract class AbstractValueProvider {
 
         Map<String, Object> probeFields = new HashMap<>();
         HealthCheck healthCheck = application.getHealthCheck();
-        if(healthCheck.getLivenessProbe() != null){
+        if(healthCheck.getLivenessProbe() != null &&
+                healthCheck.getLivenessProbe().getPort() != 0){
             if(!StringUtils.isEmpty(healthCheck.getLivenessProbe().getHttpCheckEndpoint())){
                 probeFields.put("enableLivenessHTTP","true");
                 probeFields.put("livenessHTTPEndpoint",healthCheck.getLivenessProbe().getHttpCheckEndpoint());
@@ -169,11 +170,11 @@ public abstract class AbstractValueProvider {
             probeFields.put("livenessInitialDelay",healthCheck.getLivenessProbe().getInitialDelaySeconds());
             probeFields.put("livenessPeriod",healthCheck.getLivenessProbe().getPeriodSeconds());
             probeFields.put("livenessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
-            probeFields.put("livenessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
+            probeFields.put("livenessSuccessThreshold", 1);
             probeFields.put("livenessTimeout",healthCheck.getLivenessProbe().getTimeout());
         }
 
-        if(healthCheck.getReadinessProbe() != null){
+        if(healthCheck.getReadinessProbe() != null && healthCheck.getReadinessProbe().getPort() != 0){
             if(!StringUtils.isEmpty(healthCheck.getReadinessProbe().getHttpCheckEndpoint())){
                 probeFields.put("enableReadinessHTTP","true");
                 probeFields.put("readinessHTTPEndpoint",healthCheck.getReadinessProbe().getHttpCheckEndpoint());
@@ -184,7 +185,7 @@ public abstract class AbstractValueProvider {
             probeFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
             probeFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
             probeFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
-            probeFields.put("readinessSuccessThreshold",healthCheck.getLivenessProbe().getSuccessThreshold());
+            probeFields.put("readinessSuccessThreshold", 1);
             probeFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
         }
         return probeFields;

@@ -75,6 +75,7 @@ spec:
               name: dump-vol
             - name: {{ $releaseName  }}-file-credentials-vol
               mountPath: /etc/credentialfiles/
+          {{- if gt (len .Values.ports) 0 -}}
           ports:
               {{- range .Values.ports }}
               {{- with . }}
@@ -83,6 +84,7 @@ spec:
               protocol: TCP
               {{- end }}
               {{- end }}
+          {{- end -}}
 {{- if or .Values.podCPULimit .Values.podMemoryLimit }}
           resources:
             limits:

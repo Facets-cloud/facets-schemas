@@ -470,4 +470,21 @@ public class HelmServiceIntegrationTest {
         return dep;
     }
 
-}
+    @Test
+    public void testInstallNoPorts() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base");
+                result = chart;
+            }
+        };
+
+        Application application = createApplication("helmint-test-noports-1", ApplicationFamily.CRM);
+        application.setPorts(new ArrayList<>());
+        Deployment deployment = createDeployment(application);
+        helmService.deploy(application, deployment);
+    }
+
+    }
