@@ -16,5 +16,6 @@ export interface EnvironmentConfiguration {
   privateDnsConfiguration?: ExternalDnsConfiguration;
   publicDnsConfiguration?: ExternalDnsConfiguration;
   s3DumpAwsConfig?: S3DumpAwsConfig;
+  spotTerminationHandlingEnabled?: boolean;
   sslConfigs?: SSLConfigs;
 }

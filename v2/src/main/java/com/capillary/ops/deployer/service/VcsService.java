@@ -14,7 +14,7 @@ public interface VcsService {
 
     public List<String> getTags(String owner, String repository) throws IOException;
 
-    public void createPullRequestWebhook(Application application, String owner, String repository) throws IOException;
+    public String createPullRequestWebhook(Application application, String owner, String repository, String host) throws IOException;
 
     public void processPullRequest(PullRequest pullRequest, Build build);
 

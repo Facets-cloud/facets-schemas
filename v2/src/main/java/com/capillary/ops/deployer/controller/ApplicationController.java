@@ -7,6 +7,7 @@ import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +48,19 @@ public class ApplicationController {
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application createApplication(@Valid @RequestBody  Application application,
-                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                         @ApiParam(value = "Host", hidden = true) @RequestHeader("Host") String host) {
         application.setApplicationFamily(applicationFamily);
-        return applicationFacade.createApplication(application);
+        return applicationFacade.createApplication(application, host);
     }
 
     @RolesAllowed("ADMIN")
     @PutMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application updateApplication(@Valid @RequestBody  Application application,
-                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                         @ApiParam(value = "Host", hidden = true) @RequestHeader("Host") String host) {
         application.setApplicationFamily(applicationFamily);
-        return applicationFacade.updateApplication(application);
+        return applicationFacade.updateApplication(application, host);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications", produces = "application/json")
@@ -98,7 +101,7 @@ public class ApplicationController {
     public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                        @PathVariable("applicationId") String applicationId, @Valid @RequestBody Build build) {
         build.setApplicationId(applicationId);
-        return applicationFacade.createBuild(applicationFamily, build, false);
+        return applicationFacade.createBuild(applicationFamily, build);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")

@@ -88,7 +88,7 @@ public class ApplicationFacade {
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String testOutputS3BucketRegion;
 
-    public Application createApplication(Application application) {
+    public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
             application.getHealthCheck().setLivenessProbe(null);
         }
@@ -99,16 +99,25 @@ public class ApplicationFacade {
         ecrService.createRepository(application);
         codeBuildService.createProject(application);
         if (application.isCiEnabled()) {
-            createPullRequestWebhook(application);
+            createPullRequestWebhook(application, host);
         }
 
         return application;
     }
 
-    private void createPullRequestWebhook(Application application) {
+    private void createPullRequestWebhook(Application application, String host) {
         try {
-            vcsServiceSelector.selectVcsService(application.getVcsProvider())
-                    .createPullRequestWebhook(application, getRepositoryOwner(application), getRepositoryName(application));
+            String repositoryOwner = getRepositoryOwner(application);
+            String repositoryName = getRepositoryName(application);
+
+            String webhookId = vcsServiceSelector
+                    .selectVcsService(application.getVcsProvider())
+                    .createPullRequestWebhook(application, repositoryOwner, repositoryName, host);
+
+            if (!StringUtils.isEmpty(webhookId)) {
+                application.setWebhookId(webhookId);
+                applicationRepository.save(application);
+            }
         } catch (IOException e) {
             logger.error("could not access the project repository");
         } catch (Exception e) {
@@ -189,13 +198,13 @@ public class ApplicationFacade {
         return true;
     }
 
-    public Build createBuild(ApplicationFamily applicationFamily, Build build, boolean testBuild) {
+    public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String username = getUserName();
         build.setTriggeredBy(username);
         String applicationId = build.getApplicationId();
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         buildRepository.save(build);
-        String codeBuildId = codeBuildService.triggerBuild(application, build, testBuild);
+        String codeBuildId = codeBuildService.triggerBuild(application, build, build.isTestBuild());
         build.setCodeBuildId(codeBuildId);
         buildRepository.save(build);
         return build;
@@ -490,13 +499,13 @@ public class ApplicationFacade {
         return new ArrayList<>(environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily));
     }
 
-    public Application updateApplication(Application application) {
+    public Application updateApplication(Application application, String host) {
         Application existingApplication =
                 applicationRepository
                         .findOneByApplicationFamilyAndId(application.getApplicationFamily(),
                                 application.getId()).get();
         if (!existingApplication.isCiEnabled() && application.isCiEnabled()) {
-            createPullRequestWebhook(application);
+            createPullRequestWebhook(application, host);
         }
 
         application.setName(existingApplication.getName());
@@ -538,9 +547,12 @@ public class ApplicationFacade {
     }
 
     public String getReleaseName(Application application, Environment environment) {
-        return org.apache.commons.lang3.StringUtils.isEmpty(environment.getEnvironmentConfiguration().getNodeGroup()) ?
-                application.getName() :
-                environment.getEnvironmentMetaData().getName() + "-" + application.getName();
+        EnvironmentConfiguration envConfig = environment.getEnvironmentConfiguration();
+        if (envConfig == null || StringUtils.isEmpty(envConfig.getNodeGroup())) {
+            return application.getName();
+        }
+
+        return environment.getEnvironmentMetaData().getName() + "-" + application.getName();
     }
 
     public DeploymentStatusDetails getCronjobHistory(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
