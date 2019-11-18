@@ -4,6 +4,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}
   annotations:
+  {{- if .Values.enableIngress }}
   {{- if .Values.domainName }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
   {{- end }}
@@ -15,6 +16,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.sslCertName }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
   {{- end}}
+  {{- end }}
     heritage: "deployer"
   labels:
     app: {{ .Release.Name  }}
@@ -26,7 +28,11 @@ metadata:
     zk-publish: "{{ .Values.zkPublish }}"
   {{- end}}
 spec:
-  type: {{ .Values.serviceType }}
+  {{- if .Values.enableIngress }}
+  type: ClusterIP
+  {{- else }}
+  type: LoadBalancer
+  {{- end }}
   ports:
       {{- range .Values.ports }}
       {{- with . }}

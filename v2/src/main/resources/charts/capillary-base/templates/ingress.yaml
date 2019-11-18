@@ -1,0 +1,28 @@
+{{- if .Values.enableIngress }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+  annotations:
+  {{- if .Values.domainName }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
+  {{- end }}
+  {{- if and .Values.lbType (eq .Values.lbType "internal") }}
+    kubernetes.io/ingress.class: internal-alb
+    alb.ingress.kubernetes.io/scheme: internal
+  {{- end }}
+  {{- if and .Values.lbType (eq .Values.lbType "external") }}
+    kubernetes.io/ingress.class: public-alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+  {{- end }}
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: {{ .Release.Name }}
+              servicePort: 80
+{{- end }}

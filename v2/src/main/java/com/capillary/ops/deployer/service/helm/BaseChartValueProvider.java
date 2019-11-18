@@ -22,6 +22,7 @@ public class BaseChartValueProvider extends AbstractValueProvider {
         this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
         this.addFields(getHPAConfigs(deployment), yaml);
         this.addFields(getHealthCheckConfigs(application), yaml);
+        this.addFields(getIngressConfigValues(application), yaml);
         return yaml;
     }
 

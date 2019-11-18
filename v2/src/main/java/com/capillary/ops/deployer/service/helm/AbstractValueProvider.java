@@ -259,6 +259,22 @@ public abstract class AbstractValueProvider {
         return portMap;
     }
 
+    public Map<String, Object> getIngressConfigValues(Application application) {
+        final Map<String, Object> ingressConfigValues = new HashMap<>();
+        boolean httpPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.HTTP));
+        boolean httpsPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.HTTPS));
+        boolean tcpPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.TCP));
+
+        if (tcpPresent) {
+            ingressConfigValues.put("enableIngress", false);
+        } else {
+            if (httpPresent || httpsPresent) {
+                ingressConfigValues.put("enableIngress", true);
+            }
+        }
+        return ingressConfigValues;
+    }
+
     protected boolean addField(String key, Object value, Map<String, Object> yaml) {
         if (value != null) {
             yaml.put(key, value);

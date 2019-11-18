@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableSet;
 import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import mockit.Expectations;
@@ -328,6 +329,35 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("hello-world:latest", cronJob.getSpec().getJobTemplate().getSpec().getTemplate().getSpec().getContainers().get(0).getImage());
         Assert.assertEquals("*/1 * * * *", cronJob.getSpec().getSchedule());
 
+    }
+
+    @Test
+    public void testInstallIngress() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base");
+                result = chart;
+            }
+        };
+
+        Application application = createApplication("helmint-test-ingress-1", ApplicationFamily.CRM);
+        List<Port> updatedPorts = new ArrayList<>();
+        Deployment deployment = createDeployment(application);
+        updatedPorts.add(new Port("http",80L,80L,Port.Protocol.HTTP));
+        application.setPorts(updatedPorts);
+        application.setLoadBalancerType(LoadBalancerType.INTERNAL);
+        application.setDnsType(Application.DnsType.PRIVATE);
+        helmService.deploy(application, deployment);
+        kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
+        Service serviceForIngress = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Ingress ingress = kubernetesClient.extensions().ingresses().inNamespace("default").withName(application.getName()).get();
+
+        Assert.assertEquals("ClusterIP",serviceForIngress.getSpec().getType());
+        Assert.assertFalse(serviceForIngress.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
+        Assert.assertEquals(ingress.getMetadata().getAnnotations().get("kubernetes.io/ingress.class"),"internal-alb");
+        Assert.assertTrue(ingress.getMetadata().getAnnotations().containsKey("external-dns.alpha.kubernetes.io/hostname"));
     }
 
         @After
