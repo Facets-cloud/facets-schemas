@@ -1,4 +1,4 @@
-{{- if .Values.enableIngress }}
+{{- if and .Values.enableIngress }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -16,13 +16,20 @@ metadata:
   {{- if and .Values.lbType (eq .Values.lbType "external") }}
     kubernetes.io/ingress.class: public-alb
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.sslCertName }}
   {{- end }}
+    alb.ingress.kubernetes.io/listen-ports: {{ .Values.albListenPorts }}
 spec:
   rules:
-    - http:
+    - host: {{ .Values.domainName }}
+      http:
         paths:
-          - path: /*
+      {{- range .Values.ports }}
+      {{- with . }}
+          - path: /
             backend:
               serviceName: {{ .Release.Name }}
-              servicePort: 80
+              servicePort: {{ .lbPort }}
+      {{- end }}
+      {{- end }}
 {{- end }}

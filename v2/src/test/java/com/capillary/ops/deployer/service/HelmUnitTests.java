@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.helm.*;
+import com.capillary.ops.deployer.service.interfaces.IIAMService;
 import mockit.Injectable;
 import mockit.*;
 import mockit.Mocked;
@@ -11,9 +12,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HelmUnitTests {
 
@@ -28,6 +32,13 @@ public class HelmUnitTests {
 
     @Injectable
     private CronJobChartValueProvider cronJobChartValueProvider;
+
+    @Injectable
+    private SecretService secretService;
+
+    @Mocked
+    private IIAMService iamService;
+
 
     @Test
     public void getIngressValuesHTTP(){
@@ -49,11 +60,25 @@ public class HelmUnitTests {
         Map<String,Object> values = helmValueProviderFactory.getValues(application,environment,deployment);
 
         //Assert.assertTrue(values.containsKey("enableIngress"));
-        Assert.assertTrue(true);
+        //Assert.assertTrue(true);
     }
 
     @Test
     public void getIngressValuesOnlyTCP(){
 
+    }
+
+    @Test
+    public void getALBListenPorts() {
+        Application application = new Application();
+        application.setName("myapp");
+        application.setApplicationFamily(ApplicationFamily.CRM);
+        application.setApplicationType(Application.ApplicationType.SERVICE);
+        Port port1 = new Port("http", 80L, 8888L, Port.Protocol.HTTP);
+        Port port2 = new Port("https", 8443L, 4444L, Port.Protocol.HTTPS);
+        application.setPorts(Arrays.asList(port1,port2));
+
+        String portList = baseChartValueProvider.getALBListenPorts(application);
+        //Assert.assertTrue(portList.contains("8888"));
     }
 }

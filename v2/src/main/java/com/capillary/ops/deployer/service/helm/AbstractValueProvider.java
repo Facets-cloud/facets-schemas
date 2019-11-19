@@ -268,11 +268,26 @@ public abstract class AbstractValueProvider {
         if (tcpPresent) {
             ingressConfigValues.put("enableIngress", false);
         } else {
-            if (httpPresent || httpsPresent) {
+            if (application.getDnsPrefix() != null && (httpPresent || httpsPresent)) {
                 ingressConfigValues.put("enableIngress", true);
+                ingressConfigValues.put("albListenPorts", getALBListenPorts(application) );
             }
         }
         return ingressConfigValues;
+    }
+
+    public String getALBListenPorts(Application application) {
+        StringBuilder listenPorts = new StringBuilder();
+        listenPorts.append("[");
+        listenPorts.append(application.getPorts().stream()
+                .filter(p -> (!p.getProtocol().equals(Port.Protocol.TCP)))
+                .map(this::formatForALBListenPort).collect(Collectors.joining(",")));
+        listenPorts.append("]");
+        return listenPorts.toString();
+    }
+
+    private String formatForALBListenPort(Port port) {
+        return "{\"" + port.getProtocol().name() + "\": " + port.getLbPort() + "}";
     }
 
     protected boolean addField(String key, Object value, Map<String, Object> yaml) {
