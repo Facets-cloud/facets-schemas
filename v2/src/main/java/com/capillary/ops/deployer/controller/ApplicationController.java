@@ -221,17 +221,17 @@ public class ApplicationController {
         return new ResponseEntity<>(new InputStreamResource(dumpFileFromS3.getInputStream()), headers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{applicationFamily}/applications/{applicationName}/tests/{buildId}")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/downloadArtifacts")
     public ResponseEntity<InputStreamResource> downloadTestReport(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                                  @PathVariable String applicationName,
+                                                                  @PathVariable String applicationId,
                                                                   @PathVariable String buildId) {
-        S3DumpFile dumpFileFromS3 = applicationFacade.downloadTestReport(applicationName, buildId);
+        S3DumpFile dumpFileFromS3 = applicationFacade.downloadTestReport(applicationFamily, applicationId, buildId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentLength(dumpFileFromS3.getContentLength());
         StringJoiner path = new StringJoiner("/")
-                .add(applicationName)
+                .add(dumpFileFromS3.getApplicationName() == null ? applicationId : dumpFileFromS3.getApplicationName())
                 .add(buildId)
                 .add(".zip");
         headers.setContentDispositionFormData("attachment", path.toString());

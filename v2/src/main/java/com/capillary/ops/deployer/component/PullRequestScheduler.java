@@ -40,7 +40,7 @@ public class PullRequestScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PullRequestScheduler.class);
 
-    private static final String BASE_REPORTS_URL = "https://%s/api/%s/applications/%s/tests/%s";
+    private static final String BASE_REPORTS_URL = "https://%s/api/%s/applications/%s/builds/%s/downloadArtifacts";
 
     private static final String DEFAULT_HOST = "deployer.capillary.in";
 
@@ -60,7 +60,7 @@ public class PullRequestScheduler {
         }
 
         String buildRef = build.getCodeBuildId().split(":")[1];
-        return String.format(BASE_REPORTS_URL, host, application.getApplicationFamily().name(), application.getName(), buildRef);
+        return String.format(BASE_REPORTS_URL, host, application.getApplicationFamily().name(), application.getId(), buildRef);
     }
 
     private void processInProgressPullRequest(List<PullRequest> openPullRequests) {

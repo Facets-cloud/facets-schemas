@@ -388,9 +388,13 @@ public class ApplicationFacade {
         return s3DumpService.downloadObject(path);
     }
 
-    public S3DumpFile downloadTestReport(String applicationName, String buildId) {
-        String path = buildId + "/" + applicationName;
-        return s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
+    public S3DumpFile downloadTestReport(ApplicationFamily applicationFamily, String applicationId, String buildId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        String path = buildId + "/" + application.getName();
+        S3DumpFile s3DumpFile = s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
+        s3DumpFile.setApplicationName(application.getName());
+
+        return s3DumpFile;
     }
 
     public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {

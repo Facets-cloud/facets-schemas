@@ -15,6 +15,8 @@ public class S3DumpFile {
 
     private Long contentLength;
 
+    private String applicationName;
+
     public InputStream getInputStream() {
         return inputStream;
     }
@@ -29,5 +31,13 @@ public class S3DumpFile {
 
     public void setContentLength(Long contentLength) {
         this.contentLength = contentLength;
+    }
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 }
