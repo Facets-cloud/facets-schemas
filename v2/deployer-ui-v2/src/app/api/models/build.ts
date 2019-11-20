@@ -1,12 +1,12 @@
 /* tslint:disable */
 export interface Build {
-  image?: string;
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  applicationId?: string;
   codeBuildId?: string;
   description?: string;
   environmentVariables?: {[key: string]: string};
   id?: string;
-  applicationId?: string;
+  image?: string;
   promoted?: boolean;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
   tag?: string;
