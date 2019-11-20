@@ -132,4 +132,23 @@ public class Build {
     public void setTestBuild(boolean testBuild) {
         this.testBuild = testBuild;
     }
+
+    @Override
+    public String toString() {
+        return "Build{" +
+                "id='" + id + '\'' +
+                ", codeBuildId='" + codeBuildId + '\'' +
+                ", applicationId='" + applicationId + '\'' +
+                ", applicationFamily=" + applicationFamily +
+                ", tag='" + tag + '\'' +
+                ", status=" + status +
+                ", environmentVariables=" + environmentVariables +
+                ", timestamp=" + timestamp +
+                ", image='" + image + '\'' +
+                ", triggeredBy='" + triggeredBy + '\'' +
+                ", description='" + description + '\'' +
+                ", promoted=" + promoted +
+                ", testBuild=" + testBuild +
+                '}';
+    }
 }
