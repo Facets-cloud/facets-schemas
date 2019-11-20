@@ -6,7 +6,7 @@ import { ButtonDownloadComponent } from './button.download.component';
 @Component({
   selector: 'app-dumps',
   templateUrl: './app-dumps.component.html',
-  styleUrls: ['./app-dumps.component.scss'],
+  styleUrls: ['./app-dumps.component.scss']
 })
 export class AppDumpsComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
@@ -85,6 +85,9 @@ export class AppDumpsComponent implements OnInit, OnChanges {
           hour: this.getFileHour(file),
           name: fileParts[fileParts.length - 1],
           path: file,
+          application: this.application,
+          environment: this.environment,
+          date: date,
         });
       });
       this.dumpFiles = dumps;
