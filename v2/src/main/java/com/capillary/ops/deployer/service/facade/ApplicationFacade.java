@@ -391,11 +391,12 @@ public class ApplicationFacade {
     public S3DumpFile downloadTestReport(ApplicationFamily applicationFamily, String applicationId, String buildId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build build = buildRepository.findOneByApplicationIdAndId(applicationId, buildId).get();
+        Build buildDetails = getBuildDetails(application, build);
         logger.info("downloading test report for build: {}", build);
 
-        if (StatusType.SUCCEEDED.equals(build.getStatus()) || StatusType.FAILED.equals(build.getStatus())) {
-            logger.info("got build status as {}, downloading artifact file", build.getStatus());
-            String path = build.getCodeBuildId().split(":")[1] + "/" + application.getName();
+        if (StatusType.SUCCEEDED.equals(buildDetails.getStatus()) || StatusType.FAILED.equals(buildDetails.getStatus())) {
+            logger.info("got build status as {}, downloading artifact file", buildDetails.getStatus());
+            String path = buildDetails.getCodeBuildId().split(":")[1] + "/" + application.getName();
             S3DumpFile s3DumpFile = s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
             s3DumpFile.setApplicationName(application.getName());
 
