@@ -1,7 +1,7 @@
 <nb-card size=medium>
   <nb-card-header>
     Build Details
-    <a *ngIf="build?.status === 'SUCCEEDED' || build?.status === 'FAILED'" href="{{ getArtifactLink() }}">
+    <a *ngIf="(build.testBuild) && (build?.status === 'SUCCEEDED' || build?.status === 'FAILED')" href="{{ getArtifactLink() }}">
       <button style="float: right;" nbTooltip="Download Artifacts" nbButton appearance="ghost">
         <nb-icon pack="eva" icon="download-outline"></nb-icon>
       </button>
