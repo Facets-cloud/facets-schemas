@@ -1,8 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ViewCell } from 'ng2-smart-table';
 import { Application } from '../../../api/models';
-import { ApplicationControllerService } from '../../../api/services';
-import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'button-download-component',
@@ -25,14 +22,8 @@ export class ButtonDownloadComponent implements OnInit {
     const application: Application = this.rowData.application;
     const appFamily = application.applicationFamily;
     const env = this.rowData.environment;
-    const downloadPath = appFamily + '/'
-                        + env + '/'
-                        + application.name + '/'
-                        + this.rowData.date + 'H'
-                        + this.rowData.hour + '/'
-                        + this.rowData.name;
-    const completeUrl = `/api/${appFamily}/${env}/applications/${application.id}/dumps/download?path=${downloadPath}`;
-    return completeUrl;
+
+    return `/api/${appFamily}/${env}/applications/${application.id}/dumps/download?path=${this.rowData.path}`;
   }
 
 }
