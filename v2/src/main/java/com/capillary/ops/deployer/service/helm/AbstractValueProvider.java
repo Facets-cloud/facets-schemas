@@ -259,35 +259,24 @@ public abstract class AbstractValueProvider {
         return portMap;
     }
 
-    public Map<String, Object> getIngressConfigValues(Application application) {
-        final Map<String, Object> ingressConfigValues = new HashMap<>();
+    public Map<String, Object> getPortDetails(Application application) {
+        final Map<String, Object> configs = new HashMap<>();
         boolean httpPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.HTTP));
         boolean httpsPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.HTTPS));
         boolean tcpPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.TCP));
 
         if (tcpPresent) {
-            ingressConfigValues.put("enableIngress", false);
+            configs.put("protocolGroup", "tcp");
         } else {
-            if (application.getDnsPrefix() != null && (httpPresent || httpsPresent)) {
-                ingressConfigValues.put("enableIngress", true);
-                ingressConfigValues.put("albListenPorts", getALBListenPorts(application) );
+            if (httpPresent) {
+                configs.put("protocolGroup", "onlyhttp");
+            } else if(httpsPresent){
+                configs.put("protocolGroup", "onlyhttps");
+            } else if(httpPresent && httpsPresent){
+                configs.put("protocolGroup", "http&https");
             }
         }
-        return ingressConfigValues;
-    }
-
-    public String getALBListenPorts(Application application) {
-        StringBuilder listenPorts = new StringBuilder();
-        listenPorts.append("[");
-        listenPorts.append(application.getPorts().stream()
-                .filter(p -> (!p.getProtocol().equals(Port.Protocol.TCP)))
-                .map(this::formatForALBListenPort).collect(Collectors.joining(",")));
-        listenPorts.append("]");
-        return listenPorts.toString();
-    }
-
-    private String formatForALBListenPort(Port port) {
-        return "{\"" + port.getProtocol().name() + "\": " + port.getLbPort() + "}";
+        return configs;
     }
 
     protected boolean addField(String key, Object value, Map<String, Object> yaml) {

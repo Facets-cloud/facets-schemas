@@ -332,7 +332,7 @@ public class HelmServiceIntegrationTest {
     }
 
     @Test
-    public void testInstallIngress() throws Exception {
+    public void testOnlyHttpConfig() throws Exception {
         URLChartLoader chartLoader = new URLChartLoader();
         ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
         new Expectations(helmService) {
@@ -351,13 +351,10 @@ public class HelmServiceIntegrationTest {
         application.setDnsType(Application.DnsType.PRIVATE);
         helmService.deploy(application, deployment);
         kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
-        Service serviceForIngress = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
-        Ingress ingress = kubernetesClient.extensions().ingresses().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
 
-        Assert.assertEquals("ClusterIP",serviceForIngress.getSpec().getType());
-        Assert.assertFalse(serviceForIngress.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
-        Assert.assertEquals(ingress.getMetadata().getAnnotations().get("kubernetes.io/ingress.class"),"internal-alb");
-        Assert.assertTrue(ingress.getMetadata().getAnnotations().containsKey("external-dns.alpha.kubernetes.io/hostname"));
+        Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
+        Assert.assertEquals(service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"),"onlyhttp");
     }
 
         @After

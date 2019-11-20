@@ -41,7 +41,7 @@ public class HelmUnitTests {
 
 
     @Test
-    public void getIngressValuesHTTP(){
+    public void getPortDetailsHTTP(){
         Environment environment = new Environment();
 
         Application application = new Application();
@@ -68,17 +68,4 @@ public class HelmUnitTests {
 
     }
 
-    @Test
-    public void getALBListenPorts() {
-        Application application = new Application();
-        application.setName("myapp");
-        application.setApplicationFamily(ApplicationFamily.CRM);
-        application.setApplicationType(Application.ApplicationType.SERVICE);
-        Port port1 = new Port("http", 80L, 8888L, Port.Protocol.HTTP);
-        Port port2 = new Port("https", 8443L, 4444L, Port.Protocol.HTTPS);
-        application.setPorts(Arrays.asList(port1,port2));
-
-        String portList = baseChartValueProvider.getALBListenPorts(application);
-        //Assert.assertTrue(portList.contains("8888"));
-    }
 }
