@@ -14,7 +14,7 @@
             <button [disabled]="selectedEnv.invalid" nbButton nbStepperNext >Next</button>
         </div>
       </nb-step>
-      <nb-step [stepControl]="date" label="Month">
+      <nb-step [stepControl]="date" label="Date">
         <div style="width:20%; margin: auto; min-width: 100px;">
           <nb-calendar [date]="date" (dateChange)="handleDateChange($event)"></nb-calendar>
         </div>
