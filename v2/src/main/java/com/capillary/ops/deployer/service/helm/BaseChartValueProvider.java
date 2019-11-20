@@ -23,6 +23,7 @@ public class BaseChartValueProvider extends AbstractValueProvider {
         this.addFields(getHPAConfigs(deployment), yaml);
         this.addFields(getHealthCheckConfigs(application), yaml);
         this.addFields(getPortDetails(application), yaml);
+        this.addField("elbIdleTimeoutSeconds", application.getElbIdleTimeoutSeconds(), yaml);
         return yaml;
     }
 

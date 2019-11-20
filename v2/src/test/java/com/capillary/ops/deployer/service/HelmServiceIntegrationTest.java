@@ -342,7 +342,7 @@ public class HelmServiceIntegrationTest {
             }
         };
 
-        Application application = createApplication("helmint-test-ingress-1", ApplicationFamily.CRM);
+        Application application = createApplication("helmint-test-service-01", ApplicationFamily.CRM);
         List<Port> updatedPorts = new ArrayList<>();
         Deployment deployment = createDeployment(application);
         updatedPorts.add(new Port("http",80L,80L,Port.Protocol.HTTP));
@@ -354,8 +354,8 @@ public class HelmServiceIntegrationTest {
         Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
 
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
-        Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
-        Assert.assertEquals(service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"),"onlyhttp");
+        Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
+        Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
 
         @After

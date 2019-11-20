@@ -88,6 +88,8 @@ public class Application {
 
     private DeploymentStrategy deploymentStrategy = DeploymentStrategy.RollingUpdate;
 
+    private int elbIdleTimeoutSeconds = 300;
+
     public String getId() {
         return id;
     }
@@ -222,5 +224,13 @@ public class Application {
 
     public void setApplicationType(ApplicationType applicationType) {
         this.applicationType = applicationType;
+    }
+
+    public int getElbIdleTimeoutSeconds() {
+        return elbIdleTimeoutSeconds;
+    }
+
+    public void setElbIdleTimeoutSeconds(int elbIdleTimeoutSeconds) {
+        this.elbIdleTimeoutSeconds = elbIdleTimeoutSeconds;
     }
 }
