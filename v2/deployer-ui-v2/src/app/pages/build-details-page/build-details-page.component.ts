@@ -49,4 +49,9 @@ export class BuildDetailsPageComponent implements OnInit {
     );
   }
 
+  getArtifactLink() {
+    const build = this.build;
+    return `/api/${build.applicationFamily}/applications/${build.applicationId}/builds/${build.id}/downloadArtifacts`;
+  }
+
 }

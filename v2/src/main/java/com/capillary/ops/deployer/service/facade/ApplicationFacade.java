@@ -390,11 +390,17 @@ public class ApplicationFacade {
 
     public S3DumpFile downloadTestReport(ApplicationFamily applicationFamily, String applicationId, String buildId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        String path = buildId + "/" + application.getName();
-        S3DumpFile s3DumpFile = s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
-        s3DumpFile.setApplicationName(application.getName());
+        Build build = buildRepository.findOneByApplicationIdAndId(applicationId, buildId).get();
 
-        return s3DumpFile;
+        if (StatusType.SUCCEEDED.equals(build.getStatus()) || StatusType.FAILED.equals(build.getStatus())) {
+            String path = build.getCodeBuildId().split(":")[1] + "/" + application.getName();
+            S3DumpFile s3DumpFile = s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
+            s3DumpFile.setApplicationName(application.getName());
+
+            return s3DumpFile;
+        }
+
+        throw new NotFoundException("Artifacts can only be downloaded for successful or failed builds");
     }
 
     public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {
