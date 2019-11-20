@@ -22,23 +22,29 @@ import java.util.stream.Collectors;
 public class HelmUnitTests {
 
     @Tested
-    private HelmValueProviderFactory helmValueProviderFactory;
-
-    @Injectable
     private BaseChartValueProvider baseChartValueProvider;
-
-    @Injectable
-    private StatefulSetChartValueProvider statefulSetChartValueProvider;
-
-    @Injectable
-    private CronJobChartValueProvider cronJobChartValueProvider;
 
     @Injectable
     private SecretService secretService;
 
-    @Mocked
+    @Injectable
     private IIAMService iamService;
 
+    @Test
+    public void getPortDetailsHTTPS(){
+        Environment environment = new Environment();
+
+        Application application = new Application();
+        application.setName("myapp");
+        application.setApplicationFamily(ApplicationFamily.CRM);
+        application.setApplicationType(Application.ApplicationType.SERVICE);
+        List<Port> ports = new ArrayList<>();
+        ports.add(new Port("http",443L,443L,Port.Protocol.HTTPS));
+        application.setPorts(ports);
+
+        Map<String,Object> values = baseChartValueProvider.getPortDetails(application);
+        Assert.assertEquals("httpsOnly",values.get("protocolGroup"));
+    }
 
     @Test
     public void getPortDetailsHTTP(){
@@ -49,23 +55,61 @@ public class HelmUnitTests {
         application.setApplicationFamily(ApplicationFamily.CRM);
         application.setApplicationType(Application.ApplicationType.SERVICE);
         List<Port> ports = new ArrayList<>();
-        ports.add(new Port("http",80L,80L,Port.Protocol.HTTP));
+        ports.add(new Port("http",8080L,8080L,Port.Protocol.HTTP));
         application.setPorts(ports);
-        Deployment deployment = new Deployment();
-        deployment.setId("test");
-        deployment.setBuildId("test");
-        deployment.setImage("test");
-        deployment.setEnvironment("qa");
 
-        Map<String,Object> values = helmValueProviderFactory.getValues(application,environment,deployment);
-
-        //Assert.assertTrue(values.containsKey("enableIngress"));
-        //Assert.assertTrue(true);
+        Map<String,Object> values = baseChartValueProvider.getPortDetails(application);
+        Assert.assertEquals("httpOnly",values.get("protocolGroup"));
     }
 
     @Test
-    public void getIngressValuesOnlyTCP(){
+    public void getPortDetailsTCP(){
+        Environment environment = new Environment();
 
+        Application application = new Application();
+        application.setName("myapp");
+        application.setApplicationFamily(ApplicationFamily.CRM);
+        application.setApplicationType(Application.ApplicationType.SERVICE);
+        List<Port> ports = new ArrayList<>();
+        ports.add(new Port("http",5454L,8045L,Port.Protocol.TCP));
+        application.setPorts(ports);
+
+        Map<String,Object> values = baseChartValueProvider.getPortDetails(application);
+        Assert.assertEquals("tcp",values.get("protocolGroup"));
     }
 
+
+    @Test
+    public void getPortDetailsHTTPSAndHTTP(){
+        Environment environment = new Environment();
+
+        Application application = new Application();
+        application.setName("myapp");
+        application.setApplicationFamily(ApplicationFamily.CRM);
+        application.setApplicationType(Application.ApplicationType.SERVICE);
+        List<Port> ports = new ArrayList<>();
+        ports.add(new Port("http",443L,443L,Port.Protocol.HTTPS));
+        ports.add(new Port("http",8080L,8080L,Port.Protocol.HTTP));
+        application.setPorts(ports);
+
+        Map<String,Object> values = baseChartValueProvider.getPortDetails(application);
+        Assert.assertEquals("http&https",values.get("protocolGroup"));
+    }
+
+
+    @Test
+    public void getPortDetailsNoProtocol(){
+        Environment environment = new Environment();
+
+        Application application = new Application();
+        application.setName("myapp");
+        application.setApplicationFamily(ApplicationFamily.CRM);
+        application.setApplicationType(Application.ApplicationType.SERVICE);
+        List<Port> ports = new ArrayList<>();
+        ports.add(new Port("http",443L,443L));
+        application.setPorts(ports);
+
+        Map<String,Object> values = baseChartValueProvider.getPortDetails(application);
+        Assert.assertEquals("tcp",values.get("protocolGroup"));
+    }
 }

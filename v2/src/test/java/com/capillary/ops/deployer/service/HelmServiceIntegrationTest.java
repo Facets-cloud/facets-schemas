@@ -332,7 +332,7 @@ public class HelmServiceIntegrationTest {
     }
 
     @Test
-    public void testOnlyHttpConfig() throws Exception {
+    public void testHttpOnlyConfig() throws Exception {
         URLChartLoader chartLoader = new URLChartLoader();
         ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
         new Expectations(helmService) {
@@ -353,6 +353,7 @@ public class HelmServiceIntegrationTest {
         kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
         Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
 
+        Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals(service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"),"onlyhttp");
     }

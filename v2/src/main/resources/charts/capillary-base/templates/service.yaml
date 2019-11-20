@@ -16,9 +16,9 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
   {{- end }}
   {{- if eq .Values.protocolGroup "onlyhttp" }}
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "onlyhttp"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "httpOnly"
   {{- end }}
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: 300
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
     heritage: "deployer"
   labels:
     app: {{ .Release.Name  }}

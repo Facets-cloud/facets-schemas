@@ -268,10 +268,10 @@ public abstract class AbstractValueProvider {
         if (tcpPresent) {
             configs.put("protocolGroup", "tcp");
         } else {
-            if (httpPresent) {
-                configs.put("protocolGroup", "onlyhttp");
-            } else if(httpsPresent){
-                configs.put("protocolGroup", "onlyhttps");
+            if (httpPresent && !httpsPresent) {
+                configs.put("protocolGroup", "httpOnly");
+            } else if(httpsPresent && !httpPresent){
+                configs.put("protocolGroup", "httpsOnly");
             } else if(httpPresent && httpsPresent){
                 configs.put("protocolGroup", "http&https");
             }
