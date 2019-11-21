@@ -11,7 +11,7 @@ export interface Deployment {
   applicationId?: string;
   horizontalPodAutoscaler?: HPA;
   id?: string;
-  podSize?: 'SMALL' | 'LARGE' | 'XLARGE' | 'XXLARGE';
+  podSize?: 'SMALL' | 'LARGE' | 'XLARGE' | 'XXLARGE' | 'TINY' | 'MICRO';
   rollbackEnabled?: boolean;
   schedule?: string;
   timestamp?: string;

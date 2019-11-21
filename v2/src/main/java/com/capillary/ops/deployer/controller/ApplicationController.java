@@ -7,6 +7,7 @@ import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +48,19 @@ public class ApplicationController {
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application createApplication(@Valid @RequestBody  Application application,
-                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                         @ApiParam(value = "Host", hidden = true) @RequestHeader("Host") String host) {
         application.setApplicationFamily(applicationFamily);
-        return applicationFacade.createApplication(application);
+        return applicationFacade.createApplication(application, host);
     }
 
     @RolesAllowed("ADMIN")
     @PutMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application updateApplication(@Valid @RequestBody  Application application,
-                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+                                         @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                         @ApiParam(value = "Host", hidden = true) @RequestHeader("Host") String host) {
         application.setApplicationFamily(applicationFamily);
-        return applicationFacade.updateApplication(application);
+        return applicationFacade.updateApplication(application, host);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications", produces = "application/json")
@@ -98,7 +101,7 @@ public class ApplicationController {
     public Build build(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                        @PathVariable("applicationId") String applicationId, @Valid @RequestBody Build build) {
         build.setApplicationId(applicationId);
-        return applicationFacade.createBuild(applicationFamily, build, false);
+        return applicationFacade.createBuild(applicationFamily, build);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
@@ -183,6 +186,13 @@ public class ApplicationController {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
     }
 
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/podDetails", produces = "application/json")
+    public List<ApplicationPodDetails> getApplicationPodDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                      @PathVariable("environment") String environment,
+                                      @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getApplicationPodDetails(applicationFamily, environment, applicationId);
+    }
+
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps", produces = "application/json")
     public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                    @PathVariable("environment") String environment,
@@ -211,17 +221,17 @@ public class ApplicationController {
         return new ResponseEntity<>(new InputStreamResource(dumpFileFromS3.getInputStream()), headers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{applicationFamily}/applications/{applicationName}/tests/{buildId}")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/downloadArtifacts")
     public ResponseEntity<InputStreamResource> downloadTestReport(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                                  @PathVariable String applicationName,
+                                                                  @PathVariable String applicationId,
                                                                   @PathVariable String buildId) {
-        S3DumpFile dumpFileFromS3 = applicationFacade.downloadTestReport(applicationName, buildId);
+        S3DumpFile dumpFileFromS3 = applicationFacade.downloadTestReport(applicationFamily, applicationId, buildId);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentLength(dumpFileFromS3.getContentLength());
         StringJoiner path = new StringJoiner("/")
-                .add(applicationName)
+                .add(dumpFileFromS3.getApplicationName() == null ? applicationId : dumpFileFromS3.getApplicationName())
                 .add(buildId)
                 .add(".zip");
         headers.setContentDispositionFormData("attachment", path.toString());

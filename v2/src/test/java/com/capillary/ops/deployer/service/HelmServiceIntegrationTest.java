@@ -331,7 +331,8 @@ public class HelmServiceIntegrationTest {
         CronJob cronJob = kubernetesClient.batch().cronjobs().inNamespace("default").withName(application.getName()).get();
         Assert.assertEquals("hello-world:latest", cronJob.getSpec().getJobTemplate().getSpec().getTemplate().getSpec().getContainers().get(0).getImage());
         Assert.assertEquals("*/1 * * * *", cronJob.getSpec().getSchedule());
-
+        Assert.assertEquals(10, cronJob.getSpec().getSuccessfulJobsHistoryLimit().longValue());
+        Assert.assertEquals(10, cronJob.getSpec().getFailedJobsHistoryLimit().longValue());
     }
 
         @After

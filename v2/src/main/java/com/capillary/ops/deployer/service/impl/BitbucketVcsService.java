@@ -37,7 +37,10 @@ public class BitbucketVcsService implements VcsService {
     private static final Logger logger = LoggerFactory.getLogger(BitbucketVcsService.class);
 
     private static final String BASE_URI = "https://api.bitbucket.org/2.0";
-    private static final String PR_WEBHOOK_URL = "https://deployer.capillary.in/api/%s/applications/%s/webhooks/pr/bitbucket";
+
+    private static final String DEFAULT_WEBHOOK_HOST = "deployer.capillary.in";
+
+    private static final String PR_WEBHOOK_URL = "https://%s/api/%s/applications/%s/webhooks/pr/bitbucket";
 
 
     private List<JSONObject> getPaginatedResponse(String requestUri, String username, String password) throws IOException {
@@ -120,18 +123,26 @@ public class BitbucketVcsService implements VcsService {
         return jsonValues.parallelStream().map(x -> x.getString("name")).collect(Collectors.toList());
     }
 
-    private String getPRWebhookBody(Application application) {
+    private String getPRWebhookBody(Application application, String host) {
+        if (host == null) {
+            host = DEFAULT_WEBHOOK_HOST;
+        }
+
         JSONObject webhook = new JSONObject();
         webhook.put("description", "web");
         webhook.put("active", true);
-        webhook.put("url", String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId()));
+        webhook.put("url", String.format(PR_WEBHOOK_URL, host, application.getApplicationFamily(), application.getId()));
         webhook.put("events", Lists.newArrayList("pullrequest:created", "pullrequest:updated"));
 
         return webhook.toString();
     }
 
     @Override
-    public void createPullRequestWebhook(Application application, String owner, String repository) throws IOException {
+    public String createPullRequestWebhook(Application application, String owner, String repository, String host) throws IOException {
+        if (!StringUtils.isEmpty(application.getWebhookId())) {
+            return null;
+        }
+
         String username = System.getenv("BITBUCKET_USERNAME");
         String password = System.getenv("BITBUCKET_PASSWORD");
 
@@ -143,8 +154,9 @@ public class BitbucketVcsService implements VcsService {
                 .add("hooks")
                 .toString();
 
-        String webhookBody = getPRWebhookBody(application);
-        httpClient.makePOSTRequest(requestUri, webhookBody, username, password);
+        String webhookBody = getPRWebhookBody(application, host);
+        JSONObject jsonObject = httpClient.makePOSTRequest(requestUri, webhookBody, username, password);
+        return jsonObject.getString("uuid");
     }
 
     @Override

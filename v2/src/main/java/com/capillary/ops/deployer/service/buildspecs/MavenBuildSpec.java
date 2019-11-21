@@ -66,7 +66,8 @@ public class MavenBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpecTest() {
-        return Lists.newArrayList("target/**/*");
+        String rootDirectory = this.application.getApplicationRootDirectory();
+        return Lists.newArrayList(rootDirectory + "/target/**/*");
     }
 
     @Override

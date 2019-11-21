@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NbMenuModule, NbSearchModule, NbInputModule, NbAccordionModule, NbIconModule, NbButtonModule, NbActionsModule, NbCardModule, NbDialogModule, NbCheckboxComponent, NbCheckboxModule, NbTooltipComponent, NbTooltipModule, NbListModule, NbSelectModule, NbStepperModule, NbSpinnerModule, NbAlertModule, NbTabsetModule, NbToastrModule, NbToggleModule } from '@nebular/theme';
+import { NbMenuModule, NbSearchModule, NbInputModule, NbAccordionModule, NbIconModule, NbButtonModule, NbActionsModule, NbCardModule, NbDialogModule, NbCheckboxComponent, NbCheckboxModule, NbTooltipComponent, NbTooltipModule, NbListModule, NbSelectModule, NbStepperModule, NbSpinnerModule, NbAlertModule, NbTabsetModule, NbToastrModule, NbToggleModule, NbCalendarModule } from '@nebular/theme';
 import { ThemeModule } from '../@theme/theme.module';
 import { PagesComponent } from './pages.component';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -25,6 +25,8 @@ import { NumberComponentDynamicComponent } from './create-application-page/numbe
 import { CurrentDeploymentsComponent, ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './application-page/current-deployments/current-deployments.component';
 import { UserManagementComponent } from './user-management/user-management.component';
 import { BuildDetailsPageComponent } from './build-details-page/build-details-page.component';
+import { AppDumpsComponent } from './application-page/app-dumps/app-dumps.component';
+import { ButtonDownloadComponent } from './application-page/app-dumps/button.download.component';
 
 @NgModule({
   imports: [
@@ -52,6 +54,7 @@ import { BuildDetailsPageComponent } from './build-details-page/build-details-pa
     NbTabsetModule,
     NbToastrModule,
     NbToggleModule,
+    NbCalendarModule,
   ],
   declarations: [
     PagesComponent,
@@ -77,8 +80,10 @@ import { BuildDetailsPageComponent } from './build-details-page/build-details-pa
     CurrentStatusColumn,
     UserManagementComponent,
     BuildDetailsPageComponent,
+    AppDumpsComponent,
+    ButtonDownloadComponent,
   ],
-  entryComponents: [BuildDialogComponent],
+  entryComponents: [BuildDialogComponent, ButtonDownloadComponent],
 })
 export class PagesModule {
 }

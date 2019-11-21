@@ -77,7 +77,8 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpecTest() {
-        return Lists.newArrayList("UnitTestCoverageReport/**/*");
+        String rootDirectory = this.application.getApplicationRootDirectory();
+        return Lists.newArrayList(rootDirectory + "/UnitTestCoverageReport/**/*");
     }
 
     @Override

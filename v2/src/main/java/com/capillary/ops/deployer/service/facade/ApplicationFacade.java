@@ -88,7 +88,7 @@ public class ApplicationFacade {
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String testOutputS3BucketRegion;
 
-    public Application createApplication(Application application) {
+    public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
             application.getHealthCheck().setLivenessProbe(null);
         }
@@ -99,16 +99,25 @@ public class ApplicationFacade {
         ecrService.createRepository(application);
         codeBuildService.createProject(application);
         if (application.isCiEnabled()) {
-            createPullRequestWebhook(application);
+            createPullRequestWebhook(application, host);
         }
 
         return application;
     }
 
-    private void createPullRequestWebhook(Application application) {
+    private void createPullRequestWebhook(Application application, String host) {
         try {
-            vcsServiceSelector.selectVcsService(application.getVcsProvider())
-                    .createPullRequestWebhook(application, getRepositoryOwner(application), getRepositoryName(application));
+            String repositoryOwner = getRepositoryOwner(application);
+            String repositoryName = getRepositoryName(application);
+
+            String webhookId = vcsServiceSelector
+                    .selectVcsService(application.getVcsProvider())
+                    .createPullRequestWebhook(application, repositoryOwner, repositoryName, host);
+
+            if (!StringUtils.isEmpty(webhookId)) {
+                application.setWebhookId(webhookId);
+                applicationRepository.save(application);
+            }
         } catch (IOException e) {
             logger.error("could not access the project repository");
         } catch (Exception e) {
@@ -189,13 +198,13 @@ public class ApplicationFacade {
         return true;
     }
 
-    public Build createBuild(ApplicationFamily applicationFamily, Build build, boolean testBuild) {
+    public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String username = getUserName();
         build.setTriggeredBy(username);
         String applicationId = build.getApplicationId();
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         buildRepository.save(build);
-        String codeBuildId = codeBuildService.triggerBuild(application, build, testBuild);
+        String codeBuildId = codeBuildService.triggerBuild(application, build, build.isTestBuild());
         build.setCodeBuildId(codeBuildId);
         buildRepository.save(build);
         return build;
@@ -312,6 +321,11 @@ public class ApplicationFacade {
         deployment.setEnvironment(environment);
         deployment.setDeployedBy(getUserName());
         Build build = getBuild(applicationFamily, applicationId, deployment.getBuildId());
+        if (build.isTestBuild()) {
+            logger.error("invalid action, cannot deploy a test build");
+            throw new InvalidActionException("Invalid Action: cannot deploy a test build");
+        }
+
         if(StringUtils.isEmpty(build.getImage())) {
             throw new NotFoundException("No image");
         }
@@ -351,6 +365,13 @@ public class ApplicationFacade {
         return build.get().isPromoted();
     }
 
+    public List<ApplicationPodDetails> getApplicationPodDetails(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        String releaseName = helmService.getReleaseName(application, environment);
+        return kubernetesService.getApplicationPodDetails(application, environment, releaseName);
+    }
+
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
@@ -367,9 +388,22 @@ public class ApplicationFacade {
         return s3DumpService.downloadObject(path);
     }
 
-    public S3DumpFile downloadTestReport(String applicationName, String buildId) {
-        String path = buildId + "/" + applicationName;
-        return s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
+    public S3DumpFile downloadTestReport(ApplicationFamily applicationFamily, String applicationId, String buildId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Build build = buildRepository.findOneByApplicationIdAndId(applicationId, buildId).get();
+        Build buildDetails = getBuildDetails(application, build);
+        logger.info("downloading test report for build: {}", build);
+
+        if (StatusType.SUCCEEDED.equals(buildDetails.getStatus()) || StatusType.FAILED.equals(buildDetails.getStatus())) {
+            logger.info("got build status as {}, downloading artifact file", buildDetails.getStatus());
+            String path = buildDetails.getCodeBuildId().split(":")[1] + "/" + application.getName();
+            S3DumpFile s3DumpFile = s3DumpService.downloadObject(testOutputS3Bucket, path, Regions.valueOf(testOutputS3BucketRegion));
+            s3DumpFile.setApplicationName(application.getName());
+
+            return s3DumpFile;
+        }
+
+        throw new NotFoundException("Artifacts can only be downloaded for successful or failed builds");
     }
 
     public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {
@@ -471,25 +505,25 @@ public class ApplicationFacade {
 
     public List<EnvironmentMetaData> getEnvironmentMetaData(ApplicationFamily applicationFamily) {
         return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
-                .stream().map(x->x.getEnvironmentMetaData()).collect(Collectors.toList());
+                .stream().map(Environment::getEnvironmentMetaData).collect(Collectors.toList());
     }
 
     public List<Environment> getEnvironments(ApplicationFamily applicationFamily) {
-        return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
-                .stream().collect(Collectors.toList());
+        return new ArrayList<>(environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily));
     }
 
-    public Application updateApplication(Application application) {
+    public Application updateApplication(Application application, String host) {
         Application existingApplication =
                 applicationRepository
                         .findOneByApplicationFamilyAndId(application.getApplicationFamily(),
                                 application.getId()).get();
         if (!existingApplication.isCiEnabled() && application.isCiEnabled()) {
-            createPullRequestWebhook(application);
+            createPullRequestWebhook(application, host);
         }
 
         application.setName(existingApplication.getName());
         application.setBuildType(existingApplication.getBuildType());
+        codeBuildService.updateProject(application);
         return applicationRepository.save(application);
     }
 
@@ -526,8 +560,18 @@ public class ApplicationFacade {
     }
 
     public String getReleaseName(Application application, Environment environment) {
-        return org.apache.commons.lang3.StringUtils.isEmpty(environment.getEnvironmentConfiguration().getNodeGroup()) ?
-                application.getName() :
-                environment.getEnvironmentMetaData().getName() + "-" + application.getName();
+        EnvironmentConfiguration envConfig = environment.getEnvironmentConfiguration();
+        if (envConfig == null || StringUtils.isEmpty(envConfig.getNodeGroup())) {
+            return application.getName();
+        }
+
+        return environment.getEnvironmentMetaData().getName() + "-" + application.getName();
+    }
+
+    public DeploymentStatusDetails getCronjobHistory(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+        return deploymentStatus;
     }
 }

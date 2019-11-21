@@ -20,7 +20,7 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
 
   environments: EnvironmentMetaData[];
   deployments: Deployment[] = [];
-  settings = {
+  settingsDefault = {
     columns: {
       environment: {
         title: 'Cluster',
@@ -52,6 +52,41 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
       },
       cpuThreshold: {
         title: 'CPU Threshold (%)',
+      },
+      timestamp: {
+        title: 'Deployed At',
+      },
+    },
+    actions: false,
+    hideSubHeader: true,
+  };
+
+  settingsCronjob = {
+    columns: {
+      environment: {
+        title: 'Cluster',
+      },
+      buildId: {
+        title: 'Build Id',
+      },
+      currentStatus: {
+        title: "Current Status",
+        type: 'custom',
+        renderComponent: CurrentStatusColumn,
+      },
+      deployedBy: {
+        title: 'Deployed By',
+      },
+      schedule: {
+        title: 'Schedule',
+      },
+      podSize: {
+        title: 'Pod Size',
+      },
+      configurations: {
+        type: 'custom',
+        renderComponent: ActionsColumn,
+        title: 'Environemnt Variables',
       },
       timestamp: {
         title: 'Deployed At',

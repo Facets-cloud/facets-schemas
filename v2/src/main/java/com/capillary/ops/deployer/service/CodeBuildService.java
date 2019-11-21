@@ -1,9 +1,7 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.Build;
-import com.capillary.ops.deployer.bo.LogEvent;
-import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.capillary.ops.deployer.service.buildspecs.*;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,6 +22,8 @@ import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsResponse
 import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
@@ -39,8 +39,61 @@ public class CodeBuildService implements ICodeBuildService {
 
     private static final Logger logger = LoggerFactory.getLogger(CodeBuildService.class);
 
+    private static final int BUILD_TIMEOUT_MINUTES = 60;
+
     @Override
     public void createProject(Application application) {
+        ProjectSpec projectSpec = getProjectSpec(application);
+        BuildSpec buildSpec = projectSpec.getBuildSpec();
+
+        CreateProjectRequest.Builder createProjectRequestBuilder = CreateProjectRequest.builder()
+                .name(application.getName())
+                .source(projectSpec.getProjectSource())
+                .environment(projectSpec.getProjectEnvironment())
+                .artifacts(projectSpec.getProjectArtifacts())
+                .serviceRole(projectSpec.getServiceRole())
+                .timeoutInMinutes(BUILD_TIMEOUT_MINUTES)
+                .logsConfig(projectSpec.getLogsConfig());
+
+        if(buildSpec.buildInVpc()) {
+            createProjectRequestBuilder.vpcConfig(projectSpec.getVpcConfig());
+        }
+
+        if(buildSpec.useCache()) {
+            createProjectRequestBuilder.cache(projectSpec.getProjectCache());
+        }
+
+        CreateProjectRequest createProjectRequest = createProjectRequestBuilder.build();
+        getCodeBuildClient(buildSpec.getAwsRegion()).createProject(createProjectRequest);
+    }
+
+    @Override
+    public void updateProject(Application application) {
+        ProjectSpec projectSpec = getProjectSpec(application);
+        BuildSpec buildSpec = projectSpec.getBuildSpec();
+
+        UpdateProjectRequest.Builder updateProjectRequestBuilder = UpdateProjectRequest.builder()
+                .name(application.getName())
+                .source(projectSpec.getProjectSource())
+                .environment(projectSpec.getProjectEnvironment())
+                .artifacts(projectSpec.getProjectArtifacts())
+                .serviceRole(projectSpec.getServiceRole())
+                .timeoutInMinutes(BUILD_TIMEOUT_MINUTES)
+                .logsConfig(projectSpec.getLogsConfig());
+
+        if(buildSpec.buildInVpc()) {
+            updateProjectRequestBuilder.vpcConfig(projectSpec.getVpcConfig());
+        }
+
+        if(buildSpec.useCache()) {
+            updateProjectRequestBuilder.cache(projectSpec.getProjectCache());
+        }
+
+        UpdateProjectRequest updateProjectRequest = updateProjectRequestBuilder.build();
+        getCodeBuildClient(buildSpec.getAwsRegion()).updateProject(updateProjectRequest);
+    }
+
+    private ProjectSpec getProjectSpec(Application application) {
         BuildSpec buildSpec = getBuildSpec(application);
         ProjectSource projectSource = ProjectSource.builder()
                 .type(SourceType.valueOf(application.getVcsProvider().toString()))
@@ -85,25 +138,8 @@ public class CodeBuildService implements ICodeBuildService {
                 .packaging(ArtifactPackaging.ZIP)
                 .build();
 
-        CreateProjectRequest.Builder createProjectRequestBuilder = CreateProjectRequest.builder()
-                .name(application.getName())
-                .source(projectSource)
-                .environment(projectEnvironment)
-                .artifacts(projectArtifacts)
-                .serviceRole(serviceRole)
-                .timeoutInMinutes(60)
-                .logsConfig(logsConfig);
-
-        if(buildSpec.buildInVpc()) {
-            createProjectRequestBuilder.vpcConfig(vpcConfig);
-        }
-
-        if(buildSpec.useCache()) {
-            createProjectRequestBuilder.cache(projectCache);
-        }
-
-        CreateProjectRequest createProjectRequest = createProjectRequestBuilder.build();
-        getCodeBuildClient(buildSpec.getAwsRegion()).createProject(createProjectRequest);
+        return new ProjectSpec(buildSpec, projectSource, projectEnvironment, projectCache, serviceRole, logsConfig,
+                vpcConfig, projectArtifacts);
     }
 
     private String createBuildSpec(Application application, boolean testSpec) {

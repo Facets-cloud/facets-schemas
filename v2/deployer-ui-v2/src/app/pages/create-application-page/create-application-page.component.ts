@@ -139,6 +139,13 @@ export class CreateApplicationPageComponent implements OnInit {
       this.nbToastrService.danger('Duplicate port name not allowed', 'Error');
       event.confirm.reject();
     }
+
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid port name: ' + event.newData['name'] +
+      '. Port name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+    }
+
     event.confirm.resolve(event.newData);
   }
 
@@ -152,29 +159,40 @@ export class CreateApplicationPageComponent implements OnInit {
     stepper.next();
   }
 
-  createApplication() {
-    if (this.application.loadBalancerType === 'EXTERNAL') {
-      this.application.dnsType = 'PUBLIC';
-    } else {
-      this.application.dnsType = 'PRIVATE';
-    }
+  createOrUpdateApplication() {
+    this.application.dnsType = this.application.loadBalancerType === 'EXTERNAL' ? 'PUBLIC' : 'PRIVATE';
+
+    // Set default thresholds as 1 is the only allowed value by kubernetes
+    this.application.healthCheck.livenessProbe.successThreshold = 1;
+    this.application.healthCheck.readinessProbe.successThreshold = 1;
+
     if (this.application.id) {
-      this.applicationControllerService.updateApplicationUsingPUT({
-        applicationFamily: this.application.applicationFamily,
-        application: this.application,
-      }).subscribe(app => {
-        this.messageBus.application.next(true);
-        this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
-      });
+      this.updateApplication();
     } else {
-      this.applicationControllerService.createApplicationUsingPOST({
-        applicationFamily: this.application.applicationFamily,
-        application: this.application,
-      }).subscribe(app => {
-        this.messageBus.application.next(true);
-        this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
-      });
+      this.createApplication();
     }
   }
 
+  private navigateToApplication(app: Application) {
+    this.messageBus.application.next(true);
+    this.router.navigate(['pages', 'applications', app.applicationFamily, app.id]);
+  }
+
+  private createApplication() {
+    this.applicationControllerService.createApplicationUsingPOST({
+      applicationFamily: this.application.applicationFamily,
+      application: this.application,
+    }).subscribe(app => {
+      this.navigateToApplication(app);
+    });
+  }
+
+  private updateApplication() {
+    this.applicationControllerService.updateApplicationUsingPUT({
+      applicationFamily: this.application.applicationFamily,
+      application: this.application,
+    }).subscribe(app => {
+      this.navigateToApplication(app);
+    });
+  }
 }

@@ -43,4 +43,8 @@ export class SmartTableCustomActionsComponent implements OnInit {
       buildId: this.rowData.id,
     }).subscribe(build => { this.rowData = build; this.messageBus.buildTopic.next(true); });
   }
+
+  openBuildPage() {
+    this.router.navigate(['builds', this.rowData.id], { relativeTo: this.route });
+  }
 }

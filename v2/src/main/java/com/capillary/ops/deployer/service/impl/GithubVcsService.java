@@ -1,7 +1,6 @@
 package com.capillary.ops.deployer.service.impl;
 
 import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PullRequest;
 import com.capillary.ops.deployer.bo.webhook.github.SupportedActions;
@@ -44,7 +43,11 @@ public class GithubVcsService implements VcsService {
 
     private static final Logger logger = LoggerFactory.getLogger(GithubVcsService.class);
 
-    private static final String PR_WEBHOOK_URL = "https://deployer.capillary.in/api/%s/applications/%s/webhooks/pr/github";
+    private static final String DEFAULT_WEBHOOK_HOST = "deployer.capillary.in";
+
+    private static final String PR_WEBHOOK_URL = "https://%s/api/%s/applications/%s/webhooks/pr/github";
+
+    private static final List<String> WEBHOOK_EVENTS = Lists.newArrayList("pull_request", "repository");
 
     @Override
     public String getName() {
@@ -69,7 +72,7 @@ public class GithubVcsService implements VcsService {
         List<RepositoryBranch> branches = repositoryService.getBranches(repositoryId);
         logger.info("fetched {} branches from github for this application", branches.size());
 
-        return branches.parallelStream().map(x -> x.getName()).collect(Collectors.toList());
+        return branches.parallelStream().map(RepositoryBranch::getName).collect(Collectors.toList());
     }
 
     @Override
@@ -90,26 +93,19 @@ public class GithubVcsService implements VcsService {
         List<RepositoryTag> tags = repositoryService.getTags(repositoryId);
         logger.info("fetched {} tags from github for this application", tags.size());
 
-        return tags.parallelStream().map(x -> x.getName()).collect(Collectors.toList());
-    }
-
-    private boolean pullRequestWebhookExists(RepositoryService repositoryService, RepositoryId repositoryId) throws IOException {
-        List<RepositoryHook> existingHooks = repositoryService.getHooks(repositoryId);
-        List<RepositoryHook> webhooks = existingHooks.stream()
-                .filter(x -> x.getName().equals("web") && x.isActive())
-                .collect(Collectors.toList());
-        for (RepositoryHook hook: webhooks) {
-            List<String> events = hook.getEvents();
-            if (events.contains("pull_request") && events.contains("repository")) {
-                return true;
-            }
-        }
-
-        return false;
+        return tags.parallelStream().map(RepositoryTag::getName).collect(Collectors.toList());
     }
 
     @Override
-    public void createPullRequestWebhook(Application application, String owner, String repository) throws IOException {
+    public String createPullRequestWebhook(Application application, String owner, String repository, String host) throws IOException {
+        if (!StringUtils.isEmpty(application.getWebhookId())) {
+            return null;
+        }
+
+        if (host == null) {
+            host = DEFAULT_WEBHOOK_HOST;
+        }
+
         String username = System.getenv("GITHUB_USERNAME");
         String password = System.getenv("GITHUB_PASSWORD");
 
@@ -117,7 +113,7 @@ public class GithubVcsService implements VcsService {
         RepositoryService repositoryService = new RepositoryService();
         repositoryService.getClient().setCredentials(username, password);
 
-        String webhookURL = String.format(PR_WEBHOOK_URL, application.getApplicationFamily(), application.getId());
+        String webhookURL = String.format(PR_WEBHOOK_URL, host, application.getApplicationFamily(), application.getId());
         RepositoryHook repositoryHook = new RepositoryHook()
                 .setName("web")
                 .setEvents(Lists.newArrayList("pull_request", "repository"))
@@ -126,7 +122,7 @@ public class GithubVcsService implements VcsService {
                         "url", webhookURL,
                         "content_type", "json",
                         "insecure_ssl", "0"));
-        repositoryService.createHook(repositoryId, repositoryHook);
+        return String.valueOf(repositoryService.createHook(repositoryId, repositoryHook).getId());
     }
 
     @Override
