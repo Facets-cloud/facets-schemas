@@ -18,6 +18,9 @@ metadata:
   {{- if eq .Values.protocolGroup "httpOnly" }}
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
   {{- end }}
+  {{- if .Values.zkPublish }}
+    zk-name: "{{ .Values.zkName }}"
+  {{- end}}
     service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "{{ .Values.elbIdleTimeoutSeconds }}"
     heritage: "deployer"
   labels:
@@ -26,7 +29,6 @@ metadata:
     heritage: {{ .Release.Service }}
   {{- if .Values.zkPublish }}
     origin: k8s-cluster
-    zk-name: "{{ .Values.zkName }}"
     zk-publish: "{{ .Values.zkPublish }}"
   {{- end}}
 spec:

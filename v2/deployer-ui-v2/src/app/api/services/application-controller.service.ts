@@ -21,6 +21,7 @@ import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
 import { Deployment } from '../models/deployment';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
+import { ApplicationPodDetails } from '../models/application-pod-details';
 import { ApplicationSecret } from '../models/application-secret';
 
 /**
@@ -63,6 +64,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
   static readonly getDumpFileListUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps';
   static readonly downloadDumpFileUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps/download';
+  static readonly getApplicationPodDetailsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/podDetails';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
 
@@ -1616,6 +1618,58 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetApplicationPodDetailsUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationPodDetailsUsingGETResponse(params: ApplicationControllerService.GetApplicationPodDetailsUsingGETParams): __Observable<__StrictHttpResponse<Array<ApplicationPodDetails>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/podDetails`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ApplicationPodDetails>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetApplicationPodDetailsUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationPodDetailsUsingGET(params: ApplicationControllerService.GetApplicationPodDetailsUsingGETParams): __Observable<Array<ApplicationPodDetails>> {
+    return this.getApplicationPodDetailsUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<ApplicationPodDetails>)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetApplicationSecretsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2199,6 +2253,27 @@ module ApplicationControllerService {
      * path
      */
     path: string;
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getApplicationPodDetailsUsingGET
+   */
+  export interface GetApplicationPodDetailsUsingGETParams {
 
     /**
      * environment

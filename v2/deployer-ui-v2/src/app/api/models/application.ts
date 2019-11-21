@@ -21,4 +21,5 @@ export interface Application {
   pvcList?: Array<PVC>;
   repositoryUrl?: string;
   vcsProvider?: 'BITBUCKET' | 'GITHUB';
+  webhookId?: string;
 }

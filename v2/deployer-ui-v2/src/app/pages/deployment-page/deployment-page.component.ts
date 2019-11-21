@@ -8,7 +8,7 @@ import { MessageBus } from '../../@core/message-bus';
 @Component({
   selector: 'deployment-page',
   templateUrl: './deployment-page.component.html',
-  styleUrls: ['./deployment-page.component.scss']
+  styleUrls: ['./deployment-page.component.scss'],
 })
 export class DeploymentPageComponent implements OnInit {
 
@@ -140,8 +140,9 @@ export class DeploymentPageComponent implements OnInit {
       deployment => {
         if (deployment) {
           this.deployment.podSize = deployment.podSize,
-            this.deployment.configurations = deployment.configurations;
+          this.deployment.configurations = deployment.configurations;
           this.deployment.horizontalPodAutoscaler = deployment.horizontalPodAutoscaler;
+          this.deployment.schedule = deployment.schedule;
         }
         stepper.next();
       },

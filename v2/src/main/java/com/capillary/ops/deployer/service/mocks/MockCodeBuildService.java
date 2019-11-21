@@ -25,6 +25,10 @@ public class MockCodeBuildService implements ICodeBuildService {
     }
 
     @Override
+    public void updateProject(Application application) {
+    }
+
+    @Override
     public String triggerBuild(Application application, Build build, boolean testBuild) {
         return UUID.randomUUID().toString();
     }

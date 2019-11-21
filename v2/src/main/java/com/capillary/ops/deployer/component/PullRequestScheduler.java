@@ -40,7 +40,7 @@ public class PullRequestScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PullRequestScheduler.class);
 
-    private static final String BASE_REPORTS_URL = "https://%s/api/%s/applications/%s/builds/%s";
+    private static final String BASE_REPORTS_URL = "https://%s/pages/applications/%s/%s/builds/%s/downloadArtifacts";
 
     private static final String DEFAULT_HOST = "deployer.capillary.in";
 
@@ -59,8 +59,7 @@ public class PullRequestScheduler {
             host = DEFAULT_HOST;
         }
 
-        String buildRef = build.getCodeBuildId().split(":")[1];
-        return String.format(BASE_REPORTS_URL, host, application.getApplicationFamily().name(), application.getName(), buildRef);
+        return String.format(BASE_REPORTS_URL, host, application.getApplicationFamily().name(), application.getId(), build.getId());
     }
 
     private void processInProgressPullRequest(List<PullRequest> openPullRequests) {
@@ -91,7 +90,7 @@ public class PullRequestScheduler {
             case FAILED:
                 logger.error("build failed for application: {}, pull request: {}, report link: {}", application.getName(),
                         pullRequest.getNumber(), getTestOutputLink(pullRequest.getHost(), application, build));
-                comment = "Build failed, deployer build id: " + build.getId() + ", artifact link: " + getTestOutputLink(pullRequest.getHost(), application, build);
+                comment = "Build failed, deployer build id: " + build.getId() + ", build link: " + getTestOutputLink(pullRequest.getHost(), application, build);
                 break;
             case TIMED_OUT:
                 logger.error("build timed out while building in codebuild: {}", codeBuildId);
@@ -103,7 +102,7 @@ public class PullRequestScheduler {
                 break;
             case SUCCEEDED:
                 logger.info("build successful for pull request: {}", pullRequest.getNumber());
-                comment = "Build Successful. Test Report Output: " + getTestOutputLink(pullRequest.getHost(), application, build);
+                comment = "Build Successful. Build link: " + getTestOutputLink(pullRequest.getHost(), application, build);
                 break;
             default:
                 logger.error("unkown build status");

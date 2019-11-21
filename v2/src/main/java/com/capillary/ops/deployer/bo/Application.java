@@ -86,6 +86,8 @@ public class Application {
 
     private boolean ciEnabled = false;
 
+    private String webhookId;
+
     private DeploymentStrategy deploymentStrategy = DeploymentStrategy.RollingUpdate;
 
     private int elbIdleTimeoutSeconds = 300;
@@ -208,6 +210,14 @@ public class Application {
 
     public void setCiEnabled(boolean ciEnabled) {
         this.ciEnabled = ciEnabled;
+    }
+
+    public String getWebhookId() {
+        return webhookId;
+    }
+
+    public void setWebhookId(String webhookId) {
+        this.webhookId = webhookId;
     }
 
     public DeploymentStrategy getDeploymentStrategy() {

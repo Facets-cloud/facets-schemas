@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
@@ -98,6 +99,13 @@ public class KubernetesService implements IKubernetesService {
                 applicationServiceDetails.getSelectors(), kubernetesClient);
 
         return new DeploymentStatusDetails(applicationServiceDetails, applicationDeploymentDetails, applicationPodDetails);
+    }
+
+    @Override
+    public List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName) {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        ImmutableMap<String, String> selectors = ImmutableMap.of("app", deploymentName);
+        return getApplicationPodDetails(deploymentName, selectors, kubernetesClient);
     }
 
     private ApplicationServiceDetails getApplicationServiceDetails(String deploymentName, KubernetesClient kubernetesClient) {

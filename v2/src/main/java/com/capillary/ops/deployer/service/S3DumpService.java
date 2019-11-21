@@ -44,6 +44,7 @@ public class S3DumpService {
         ObjectListing objectListing = amazonS3.listObjects(defaultS3Bucket, s3Prefix);
         List<String> keyList = objectListing.getObjectSummaries().stream()
                 .map(S3ObjectSummary::getKey)
+                .filter(x -> !x.endsWith("/"))
                 .collect(Collectors.toList());
         logger.info("fetched objects from s3 with size: {}", keyList.size());
 
