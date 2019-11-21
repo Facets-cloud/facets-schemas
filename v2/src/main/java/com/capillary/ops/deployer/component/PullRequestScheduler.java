@@ -40,7 +40,7 @@ public class PullRequestScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(PullRequestScheduler.class);
 
-    private static final String BASE_REPORTS_URL = "https://%s/pages/applications/%s/%s/builds/%s/downloadArtifacts";
+    private static final String BASE_REPORTS_URL = "https://%s/pages/applications/%s/%s/builds/%s";
 
     private static final String DEFAULT_HOST = "deployer.capillary.in";
 
