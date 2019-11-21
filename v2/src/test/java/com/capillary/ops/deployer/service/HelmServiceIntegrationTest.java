@@ -166,8 +166,12 @@ public class HelmServiceIntegrationTest {
         });
 
         Assert.assertEquals("helmint-test-1-role", pods.get(0).getMetadata().getAnnotations().get("iam.amazonaws.com/role"));
-        // update secrets and env
 
+        //ZK publish
+        Assert.assertEquals("TEST_ZK_SERVICE_NAME_1,TEST_ZK_SERVICE_NAME_2", service.getMetadata().getAnnotations().get("zk-name"));
+        Assert.assertEquals("false", service.getMetadata().getLabels().get("zk-publish"));
+
+        // update secrets and env
         secretService.initializeApplicationSecrets(
                 Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
                         application.getId(), "CREDENTIAL1", "")));
@@ -461,7 +465,9 @@ public class HelmServiceIntegrationTest {
     private Deployment createDeployment(Application application) {
         List<EnvironmentVariable> environmentVariables = Arrays.asList(
                 new EnvironmentVariable("TZ", "Asia/Kolkata"),
-                new EnvironmentVariable("KEY1", "VALUE1"));
+                new EnvironmentVariable("KEY1", "VALUE1"),
+                new EnvironmentVariable("zkPublish", "false"),
+                new EnvironmentVariable("zkName", "TEST_ZK_SERVICE_NAME_1,TEST_ZK_SERVICE_NAME_2"));
         HPA hpa = new HPA(50, 1, 4);
         Deployment dep = new Deployment(application.getApplicationFamily(), application.getId(), "nginx:latest", "xyz",
                 clusterName, environmentVariables, new Date(), PodSize.LARGE, hpa, null,
