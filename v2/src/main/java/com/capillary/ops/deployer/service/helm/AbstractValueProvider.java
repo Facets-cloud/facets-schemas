@@ -259,6 +259,26 @@ public abstract class AbstractValueProvider {
         return portMap;
     }
 
+    public Map<String, Object> getPortDetails(Application application) {
+        final Map<String, Object> configs = new HashMap<>();
+        boolean httpPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.HTTP));
+        boolean httpsPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.HTTPS));
+        boolean tcpPresent = application.getPorts().stream().anyMatch(p -> p.getProtocol().equals(Port.Protocol.TCP));
+
+        if (tcpPresent) {
+            configs.put("protocolGroup", "tcp");
+        } else {
+            if (httpPresent && !httpsPresent) {
+                configs.put("protocolGroup", "httpOnly");
+            } else if(httpsPresent && !httpPresent){
+                configs.put("protocolGroup", "httpsOnly");
+            } else if(httpPresent && httpsPresent){
+                configs.put("protocolGroup", "http&https");
+            }
+        }
+        return configs;
+    }
+
     protected boolean addField(String key, Object value, Map<String, Object> yaml) {
         if (value != null) {
             yaml.put(key, value);

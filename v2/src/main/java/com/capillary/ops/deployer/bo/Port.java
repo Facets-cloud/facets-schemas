@@ -2,6 +2,12 @@ package com.capillary.ops.deployer.bo;
 
 public class Port {
 
+    public enum Protocol {
+        TCP,
+        HTTP,
+        HTTPS
+    }
+
     public Port() {
     }
 
@@ -11,9 +17,17 @@ public class Port {
         this.lbPort = lbPort;
     }
 
+    public Port(String name, Long containerPort, Long lbPort, Protocol protocol) {
+        this.name = name;
+        this.containerPort = containerPort;
+        this.lbPort = lbPort;
+        this.protocol = protocol;
+    }
+
     String name;
     Long containerPort;
     Long lbPort;
+    Protocol protocol = Protocol.TCP;
 
     public String getName() {
         return name;
@@ -38,4 +52,13 @@ public class Port {
     public void setLbPort(Long lbPort) {
         this.lbPort = lbPort;
     }
+
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
 }

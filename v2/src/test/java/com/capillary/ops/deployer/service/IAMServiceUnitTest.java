@@ -1,15 +1,11 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
-import com.capillary.ops.deployer.service.interfaces.IIAMService;
 import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Tested;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.IamClientBuilder;
 import software.amazon.awssdk.services.iam.model.ListRolesRequest;
@@ -29,6 +25,7 @@ public class IAMServiceUnitTest {
 
     @Mocked
     private IamClientBuilder iamClientBuilder;
+
 
     @Test
     public void getApplicationIAMRole(){

@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableSet;
 import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import mockit.Expectations;
@@ -333,6 +334,33 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("*/1 * * * *", cronJob.getSpec().getSchedule());
         Assert.assertEquals(10, cronJob.getSpec().getSuccessfulJobsHistoryLimit().longValue());
         Assert.assertEquals(10, cronJob.getSpec().getFailedJobsHistoryLimit().longValue());
+    }
+
+    @Test
+    public void testHttpOnlyConfig() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base");
+                result = chart;
+            }
+        };
+
+        Application application = createApplication("helmint-test-service-01", ApplicationFamily.CRM);
+        List<Port> updatedPorts = new ArrayList<>();
+        Deployment deployment = createDeployment(application);
+        updatedPorts.add(new Port("http",80L,80L,Port.Protocol.HTTP));
+        application.setPorts(updatedPorts);
+        application.setLoadBalancerType(LoadBalancerType.INTERNAL);
+        application.setDnsType(Application.DnsType.PRIVATE);
+        helmService.deploy(application, deployment);
+        kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+
+        Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
+        Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
+        Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
 
         @After
