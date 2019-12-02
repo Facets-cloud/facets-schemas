@@ -36,6 +36,7 @@ public class EnvironmentConfiguration {
     private K8sLoggingConfiguration k8sLoggingConfiguration;
     private Kube2IamConfiguration kube2IamConfiguration;
     private boolean spotTerminationHandlingEnabled = false;
+    private String newRelicClusterName;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -139,5 +140,13 @@ public class EnvironmentConfiguration {
 
     public void setSpotTerminationHandlingEnabled(boolean spotTerminationHandlingEnabled) {
         this.spotTerminationHandlingEnabled = spotTerminationHandlingEnabled;
+    }
+
+    public String getNewRelicClusterName() {
+        return newRelicClusterName;
+    }
+
+    public void setNewRelicClusterName(String newRelicClusterName) {
+        this.newRelicClusterName = newRelicClusterName;
     }
 }

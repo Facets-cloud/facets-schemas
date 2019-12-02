@@ -1,0 +1,118 @@
+{
+  "dashboard": {
+{{#dashboardId}}
+    "id": "{{dashboardId}}",
+{{/dashboardId}}
+    "title": "{{dashboardTitle}}",
+    "description": "",
+    "icon": "bar-chart",
+    "visibility": "all",
+    "editable": "editable_by_owner",
+    "metadata": {
+      "version": 1
+    },
+    "widgets": [
+      {
+        "visualization": "faceted_line_chart",
+        "layout": {
+          "width": 4,
+          "height": 3,
+          "row": 1,
+          "column": 1
+        },
+        "account_id": 67421,
+        "data": [
+          {
+            "nrql": "FROM K8sContainerSample SELECT latest(cpuUsedCores / cpuLimitCores) * 100 AS '% CPU' FACET podName, containerName TIMESERIES WHERE clusterName = '{{cluster}}' AND `label.app` = '{{applicationName}}'\n\n"
+          }
+        ],
+        "presentation": {
+          "title": "Container CPU Usage - % Used vs Limit",
+          "notes": null
+        }
+      },
+      {
+        "visualization": "faceted_line_chart",
+        "layout": {
+          "width": 4,
+          "height": 3,
+          "row": 4,
+          "column": 1
+        },
+        "account_id": 67421,
+        "data": [
+          {
+            "nrql": "FROM K8sContainerSample SELECT latest(memoryUsedBytes / memoryLimitBytes) * 100 AS '% Memory' FACET podName, containerName TIMESERIES WHERE clusterName = '{{cluster}}' AND `label.app` = '{{applicationName}}'\n\n"
+          }
+        ],
+        "presentation": {
+          "title": "Container Memory Usage - % Used vs Limit",
+          "notes": null
+        }
+      },
+      {
+        "visualization": "faceted_line_chart",
+        "layout": {
+          "width": 4,
+          "height": 3,
+          "row": 7,
+          "column": 5
+        },
+        "account_id": 67421,
+        "data": [
+          {
+            "nrql": "SELECT uniqueCount(podName) FROM K8sPodSample where status='Running' facet `label.app` WHERE deploymentName IS NOT NULL TIMESERIES WHERE clusterName = '{{cluster}}' WHERE `label.app` = '{{applicationName}}'"
+          }
+        ],
+        "presentation": {
+          "title": "Active Pods Count",
+          "notes": null
+        }
+      },
+      {
+        "visualization": "faceted_line_chart",
+        "layout": {
+          "width": 4,
+          "height": 3,
+          "row": 10,
+          "column": 5
+        },
+        "account_id": 67421,
+        "data": [
+          {
+            "nrql": "FROM K8sContainerSample SELECT max(restartCount) - min(restartCount) AS 'Restarts' FACET podName, containerName TIMESERIES  WHERE clusterName = '{{cluster}}' WHERE `label.app` = '{{applicationName}}'\n\n"
+          }
+        ],
+        "presentation": {
+          "title": "Container Restarts",
+          "notes": null
+        }
+      },
+      {
+        "visualization": "line_chart",
+        "layout": {
+          "width": 4,
+          "height": 3,
+          "row": 13,
+          "column": 1
+        },
+        "account_id": 67421,
+        "data": [
+          {
+            "nrql": "SELECT filter(uniqueCount(podName), WHERE isReady = 0) as `Unready Pods` FROM K8sContainerSample WHERE clusterName = '{{cluster}}' AND `label`.`app` = '{{applicationName}}' TIMESERIES 1 minute "
+          }
+        ],
+        "presentation": {
+          "title": "Unready Pods",
+          "notes": null
+        }
+      }
+    ],
+    "filter": {
+      "event_types": [
+        "K8sContainerSample"
+      ],
+      "attributes": []
+    }
+  }
+}

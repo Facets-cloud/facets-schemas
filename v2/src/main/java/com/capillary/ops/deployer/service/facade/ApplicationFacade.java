@@ -17,6 +17,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import com.capillary.ops.deployer.service.newrelic.INewRelicService;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
@@ -87,6 +88,9 @@ public class ApplicationFacade {
 
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String testOutputS3BucketRegion;
+
+    @Autowired
+    private INewRelicService newRelicService;
 
     public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
@@ -573,5 +577,21 @@ public class ApplicationFacade {
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
         return deploymentStatus;
+    }
+
+    public boolean enableNewrelicMonitoring(ApplicationFamily applicationFamily,
+                                            String applicationId, String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        newRelicService.upsertDashboard(application, environment);
+        return true;
+    }
+
+    public boolean disableNewrelicMonitoring(ApplicationFamily applicationFamily,
+                                             String applicationId, String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        newRelicService.deleteDashboard(application, environment);
+        return true;
     }
 }

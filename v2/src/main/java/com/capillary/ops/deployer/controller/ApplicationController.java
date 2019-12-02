@@ -332,4 +332,22 @@ public class ApplicationController {
                                      @PathVariable("applicationId") String applicationId) {
         return applicationFacade.deleteApplication(applicationFamily, applicationId);
     }
+
+    @RolesAllowed("ADMIN")
+    @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
+    public boolean enableMonitoring(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                         @PathVariable("applicationId") String applicationId,
+                                         @PathVariable("environment") String environment) {
+        return applicationFacade.enableNewrelicMonitoring(applicationFamily, applicationId, environment);
+    }
+
+    @RolesAllowed("ADMIN")
+    @DeleteMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
+    public boolean disableMonitoring(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                         @PathVariable("applicationId") String applicationId,
+                                         @PathVariable("environment") String environment) {
+        return applicationFacade.disableNewrelicMonitoring(applicationFamily, applicationId, environment);
+    }
+
+
 }
