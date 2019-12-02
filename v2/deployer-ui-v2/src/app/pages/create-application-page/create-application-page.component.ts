@@ -2,15 +2,16 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Application } from '../../api/models';
 import { ApplicationControllerService } from '../../api/services';
 import { NumberComponentDynamicComponent } from './number-component-dynamic/number-component-dynamic.component';
-import { NbToastrService, NbStepperComponent } from '@nebular/theme';
+import { NbToastrService, NbStepperComponent, NbSelectModule } from '@nebular/theme';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApplicationsMenuComponent } from '../applications-menu/applications-menu.component';
 import { MessageBus } from '../../@core/message-bus';
+import { CtrDropdown } from 'ng2-completer';
 
 @Component({
   selector: 'create-application-page',
   templateUrl: './create-application-page.component.html',
-  styleUrls: ['./create-application-page.component.scss']
+  styleUrls: ['./create-application-page.component.scss'],
 })
 export class CreateApplicationPageComponent implements OnInit {
 
@@ -20,6 +21,7 @@ export class CreateApplicationPageComponent implements OnInit {
       livenessProbe: {},
       readinessProbe: {},
     },
+    pvcList: [],
   };
 
   appFamilies = [];
@@ -71,6 +73,70 @@ export class CreateApplicationPageComponent implements OnInit {
     },
   };
 
+
+  persistantVolumeLayout = {
+    columns: {
+      name: {
+        title: 'Name',
+        filter: false,
+        width: '20%',
+      },
+      accessMode: {
+        title: 'Access Mode',
+        filter: false,
+        width: '20%',
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select..',
+            list: [
+              {value: '1', title: 'ReadWriteOnce'},
+              {value: '2', title: 'ReadOnlyMany'},
+              {value: '3', title: 'ReadWriteMany'},
+            ],
+          },
+        },
+      },
+      storageSize: {
+        title: 'Storage Size',
+        filter: false,
+        width: '20%',
+        editor: { type: 'custom', component: NumberComponentDynamicComponent },
+      },
+      volumeDirectory: {
+        title: 'Path',
+        filter: false,
+        width: '20%',
+      },
+      mountPath: {
+        title: 'Sub Path',
+        filter: false,
+        width: '20%',
+      },
+    },
+    noDataMessage: '',
+    add: {
+      addButtonContent: '<i class="nb-plus"></i>',
+      createButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+    },
+    delete: {
+      deleteButtonContent: '<i class="nb-trash"></i>',
+    },
+    edit: {
+      editButtonContent: '<i class="nb-edit"></i>',
+      saveButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+    },
+    pager: {
+      display: true,
+      perPage: 5,
+    },
+    actions: {
+      position: 'right',
+    },
+  };
+
   constructor(private applicationControllerService: ApplicationControllerService,
     private nbToastrService: NbToastrService, private router: Router,
     private messageBus: MessageBus, private activatedRoute: ActivatedRoute) { }
@@ -85,6 +151,9 @@ export class CreateApplicationPageComponent implements OnInit {
           }).subscribe(app => {
             if (!app.ports) {
               app.ports = [];
+            }
+            if (!app.pvcList) {
+              app.pvcList = [];
             }
             if (!app.healthCheck) {
               app.healthCheck = {
@@ -121,7 +190,7 @@ export class CreateApplicationPageComponent implements OnInit {
     this.applicationControllerService.getApplicationTypesUsingGET().subscribe(
       applicationTypes => {
         // filter stateful set out as UI not implemented for it yet
-        this.applicationTypes = applicationTypes.filter(x => x !== 'STATEFUL_SET');
+        this.applicationTypes = applicationTypes; // .filter(x => x !== 'STATEFUL_SET');
       },
     );
   }
@@ -146,6 +215,10 @@ export class CreateApplicationPageComponent implements OnInit {
       event.confirm.reject();
     }
 
+    event.confirm.resolve(event.newData);
+  }
+
+  validatePVC(event) {
     event.confirm.resolve(event.newData);
   }
 
