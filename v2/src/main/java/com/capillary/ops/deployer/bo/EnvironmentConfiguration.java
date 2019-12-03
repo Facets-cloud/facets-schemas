@@ -37,6 +37,8 @@ public class EnvironmentConfiguration {
     private Kube2IamConfiguration kube2IamConfiguration;
     private boolean spotTerminationHandlingEnabled = false;
     private String newRelicClusterName;
+    private boolean metricServerEnabled = false;
+    private ClusterAutoscalerConfiguration clusterAutoscalerConfiguration;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -148,5 +150,21 @@ public class EnvironmentConfiguration {
 
     public void setNewRelicClusterName(String newRelicClusterName) {
         this.newRelicClusterName = newRelicClusterName;
+    }
+
+    public boolean isMetricServerEnabled() {
+        return metricServerEnabled;
+    }
+
+    public void setMetricServerEnabled(boolean metricServerEnabled) {
+        this.metricServerEnabled = metricServerEnabled;
+    }
+
+    public ClusterAutoscalerConfiguration getClusterAutoscalerConfiguration() {
+        return clusterAutoscalerConfiguration;
+    }
+
+    public void setClusterAutoscalerConfiguration(ClusterAutoscalerConfiguration clusterAutoscalerConfiguration) {
+        this.clusterAutoscalerConfiguration = clusterAutoscalerConfiguration;
     }
 }
