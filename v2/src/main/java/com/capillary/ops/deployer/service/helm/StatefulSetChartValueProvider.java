@@ -14,7 +14,7 @@ public class StatefulSetChartValueProvider extends AbstractValueProvider {
     @Override
     public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment) {
         Map<String, Object> yaml = new HashMap<>();
-        this.addBaseDetails(application, environment, deployment);
+        yaml.putAll(this.addBaseDetails(application, environment, deployment));
         this.addField("persistentVolumeClaims", getPVCList(application), yaml);
         this.addField("lbType", getLbType(application), yaml);
         this.addField("sslCertName", getSSLCertificateName(application, environment), yaml);

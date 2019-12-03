@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.ConfigBuilder;
@@ -105,11 +106,6 @@ public class HelmServiceIntegrationTest {
                         .withRequestTimeout(30*1000)
                         .build());
         localCRMEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
-    }
-
-    @Test
-    public void testStatefulSet() {
-        Assert.assertTrue(true);
     }
 
     @Test
@@ -520,6 +516,28 @@ public class HelmServiceIntegrationTest {
         application.setPorts(new ArrayList<>());
         Deployment deployment = createDeployment(application);
         helmService.deploy(application, deployment);
+    }
+
+    @Test
+    public void testStatefulSetInstall() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base-statefulset"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base-statefulset");
+                result = chart;
+            }
+        };
+        Application application = createApplication("helmint-test-statefulset-1", ApplicationFamily.CRM);
+        application.setPorts(Arrays.asList(new Port("http",80L,80L,Port.Protocol.HTTP)));
+        application.setApplicationType(Application.ApplicationType.STATEFUL_SET);
+        application.setPvcList(Arrays.asList(new PVC("data-pvc",PVC.AccessMode.ReadOnlyMany,100,"/usr/share/test","mnt")));
+        Deployment deployment = createDeployment(application);
+        deployment.setImage("hello-world:latest");
+        deployment.setHorizontalPodAutoscaler(null);
+        helmService.deploy(application, deployment);
+        StatefulSet statefulSet = kubernetesClient.apps().statefulSets().inNamespace("default").withName(application.getName()).get();
+        Assert.assertEquals("data-pvc-vol", statefulSet.getSpec().getVolumeClaimTemplates().get(0).getMetadata().getName());
     }
 
     }
