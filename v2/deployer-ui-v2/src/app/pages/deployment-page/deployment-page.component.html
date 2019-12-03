@@ -63,7 +63,7 @@
           <button nbButton (click)="deploy(stepper)" *ngIf="application?.applicationType === 'SCHEDULED_JOB'">Deploy</button>
         </div>
       </nb-step>
-      <nb-step label="Configure Autoscaling" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
+      <nb-step label="Configure Autoscaling" *ngIf="application?.applicationType == 'SERVICE'">
         <div style="width: 25%; margin: auto; min-width: 300px;">
           <label for="minReplicas" class="label">Minimum Replicas</label>
           <input type=number #minReplicas="ngModel" required nbInput fullWidth name="minReplicas" id="minReplicas"

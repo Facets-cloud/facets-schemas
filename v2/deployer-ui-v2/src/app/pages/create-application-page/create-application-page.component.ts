@@ -85,14 +85,15 @@ export class CreateApplicationPageComponent implements OnInit {
         title: 'Access Mode',
         filter: false,
         width: '20%',
+        defaultValue: 'ReadWriteOnce',
         editor: {
           type: 'list',
           config: {
             selectText: 'Select..',
             list: [
-              {value: '1', title: 'ReadWriteOnce'},
-              {value: '2', title: 'ReadOnlyMany'},
-              {value: '3', title: 'ReadWriteMany'},
+              {value: 'ReadWriteOnce', title: 'ReadWriteOnce'},
+              {value: 'ReadOnlyMany', title: 'ReadOnlyMany'},
+              {value: 'ReadWriteMany', title: 'ReadWriteMany'},
             ],
           },
         },
@@ -119,8 +120,10 @@ export class CreateApplicationPageComponent implements OnInit {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true,
     },
     delete: {
+      confirmDelete: true,
       deleteButtonContent: '<i class="nb-trash"></i>',
     },
     edit: {
@@ -220,6 +223,15 @@ export class CreateApplicationPageComponent implements OnInit {
 
   validatePVC(event) {
     event.confirm.resolve(event.newData);
+  }
+
+  onDeletePVC(event) {
+    for (let i = 0; i < this.application.pvcList.length; i++) {
+      if (this.application.pvcList[i].name === event.data['name']) {
+        this.application.pvcList.splice(i, 1);
+      }
+    }
+    event.confirm.resolve(event.data);
   }
 
   skipLiveliness(stepper: NbStepperComponent) {

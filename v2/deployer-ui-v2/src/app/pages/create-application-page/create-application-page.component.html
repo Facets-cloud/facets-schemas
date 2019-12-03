@@ -157,10 +157,10 @@
           </form>
         </nb-step>
         <nb-step  label="Configure Storage" *ngIf="application?.applicationType == 'STATEFUL_SET'" >
-          <ng2-smart-table   (createConfirm)="validatePVC($event)"  [settings]="persistantVolumeLayout" [source]="application.pvcList">
+          <ng2-smart-table   (createConfirm)="validatePVC($event)"  (deleteConfirm)="onDeletePVC($event)" [settings]="persistantVolumeLayout" [source]="application.pvcList">
           </ng2-smart-table>
           <div style="padding-top: 1rem; float: right;">
-            <button nbStepperNext nbButton>Next</button>
+            <button nbButton nbStepperNext >next</button>
           </div>
         </nb-step>
         <nb-step label="Configure Ports" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
