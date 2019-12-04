@@ -1,3 +1,4 @@
+{{- if gt (len .Values.ports) 0 }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -13,14 +14,25 @@ metadata:
   {{- if .Values.sslCertName }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.sslCertName }}
     service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+  {{- end }}
+  {{- if eq .Values.protocolGroup "httpOnly" }}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+  {{- end }}
+  {{- if .Values.zkPublish }}
+    zk-name: "{{ .Values.zkName }}"
   {{- end}}
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "{{ .Values.elbIdleTimeoutSeconds }}"
     heritage: "deployer"
   labels:
     app: {{ .Release.Name  }}
-    chart: {{ template "capillary-base-statefulset.chart" . }}
+    chart: {{ template "capillary-base.chart" . }}
     heritage: {{ .Release.Service }}
+  {{- if .Values.zkPublish }}
+    origin: k8s-cluster
+    zk-publish: "{{ .Values.zkPublish }}"
+  {{- end}}
 spec:
-  type: {{ .Values.serviceType }}
+  type: LoadBalancer
   ports:
       {{- range .Values.ports }}
       {{- with . }}
@@ -33,3 +45,4 @@ spec:
   selector:
     app: {{ .Release.Name }}
     release: {{ .Release.Name }}
+{{- end }}

@@ -532,12 +532,19 @@ public class HelmServiceIntegrationTest {
         application.setPorts(Arrays.asList(new Port("http",80L,80L,Port.Protocol.HTTP)));
         application.setApplicationType(Application.ApplicationType.STATEFUL_SET);
         application.setPvcList(Arrays.asList(new PVC("data-pvc",PVC.AccessMode.ReadOnlyMany,100,"/usr/share/test","mnt")));
+        application.setLoadBalancerType(LoadBalancerType.INTERNAL);
+        application.setDnsType(Application.DnsType.PRIVATE);
         Deployment deployment = createDeployment(application);
         deployment.setImage("hello-world:latest");
         deployment.setHorizontalPodAutoscaler(null);
         helmService.deploy(application, deployment);
         StatefulSet statefulSet = kubernetesClient.apps().statefulSets().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+
         Assert.assertEquals("data-pvc-vol", statefulSet.getSpec().getVolumeClaimTemplates().get(0).getMetadata().getName());
+        Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
+        Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
+        Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
 
     }
