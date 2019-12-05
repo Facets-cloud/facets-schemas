@@ -3,6 +3,19 @@
     <nb-accordion-item collapsed=false>
       <nb-accordion-item-header>Pods</nb-accordion-item-header>
       <nb-accordion-item-body>
+          <nb-alert *ngIf="stopping" accent="warning">
+              Pods are stopping
+            </nb-alert>
+            <nb-alert *ngIf="starting" accent="warning">
+                Pods are starting
+            </nb-alert>
+            <nb-alert *ngIf="stopped" accent="warning">
+                Pods are stopped
+            </nb-alert>
+          <div style="margin-bottom: 1rem">
+              <button *ngIf="!stopped && !stopping" nbButton outline status="danger" (click)="showHaltPodsDialog(haltConfirmDialog)">Stop All Pods</button>
+              <button *ngIf="stopped" nbButton outline status="info" (click)="startPods()">Start All Pods</button>
+          </div>
         <ng2-smart-table [settings]="settings" [source]="application?.applicationType !== 'SCHEDULED_JOB' ? deploymentStatus?.pods : appPodDetails"></ng2-smart-table>
       </nb-accordion-item-body>
     </nb-accordion-item>
@@ -40,3 +53,17 @@
     </nb-accordion-item>
   </nb-accordion>
 </nb-card>
+
+<ng-template #haltConfirmDialog let-data let-ref="dialogRef">
+    <nb-card>
+      <nb-card-header>Are you sure?</nb-card-header>
+      <nb-card-body>This action will stop the application completely</nb-card-body>
+      <nb-card-footer>
+        <span style="padding-right: 0.5rem;">
+          <button nbButton status="danger" (click)="ref.close()">Cancel</button>
+        </span>
+        <button nbButton status="success" (click)="haltPods(); ref.close();">Confirm</button>
+      </nb-card-footer>
+    </nb-card>
+</ng-template>
+

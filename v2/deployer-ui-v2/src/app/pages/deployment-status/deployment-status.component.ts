@@ -1,7 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, TemplateRef } from '@angular/core';
 import { DeploymentStatusDetails, Application, ApplicationPodDetails } from '../../api/models';
 import { ActivatedRoute } from '@angular/router';
 import { ApplicationControllerService } from '../../api/services';
+import { NbDialogService, NbDialogRef } from '@nebular/theme';
 
 @Component({
   selector: 'deployment-status',
@@ -17,6 +18,8 @@ export class DeploymentStatusComponent implements OnInit {
   application: Application;
   environment: string;
   environmentVariables = [];
+  stopping = false;
+  starting = false;
 
   settings = {
     columns: {
@@ -58,9 +61,11 @@ export class DeploymentStatusComponent implements OnInit {
     actions: false,
     hideSubHeader: true,
   };
+  stopped: boolean;
 
 
-  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService) { }
+  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
+    private dialogService: NbDialogService) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -90,6 +95,19 @@ export class DeploymentStatusComponent implements OnInit {
       this.deploymentStatus = deploymentStatus;
       const envObj = deploymentStatus.deployment.environmentConfigs;
       this.environmentVariables = Object.keys(envObj).map(x => ({key: x, value: envObj[x]}));
+      if (deploymentStatus.deployment.replicas.total === 0 && deploymentStatus.pods.length > 0) {
+        this.stopping = true;
+      } else {
+        this.stopping = false;
+      }
+      if (deploymentStatus.deployment.replicas.total > 0 && deploymentStatus.pods.length === 0) {
+        this.starting = true;
+      } else {
+        this.starting = false;
+      }
+      if (deploymentStatus.deployment.replicas.total === 0 && deploymentStatus.pods.length === 0) {
+        this.stopped = true;
+      }
     });
   }
 
@@ -101,4 +119,27 @@ export class DeploymentStatusComponent implements OnInit {
     }).subscribe(podDetails => this.appPodDetails = podDetails);
   }
 
+  haltPods() {
+    this.applicationControllerService.haltApplicationUsingPOST({
+      applicationFamily: this.application.applicationFamily,
+      applicationId: this.application.id,
+      environment: this.environment,
+    }).subscribe(x => {
+      this.loadDeploymentStatus();
+    });
+  }
+
+  showHaltPodsDialog(dialog: TemplateRef<any>) {
+    this.dialogService.open(dialog, {});
+  }
+
+  startPods() {
+    this.applicationControllerService.resumeApplicationUsingPOST({
+      applicationFamily: this.application.applicationFamily,
+      applicationId: this.application.id,
+      environment: this.environment,
+    }).subscribe(x => {
+      this.loadDeploymentStatus();
+    });
+  }
 }

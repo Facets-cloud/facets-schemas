@@ -12,6 +12,7 @@ export interface EnvironmentConfiguration {
   kube2IamConfiguration?: Kube2IamConfiguration;
   kubernetesApiEndpoint?: string;
   kubernetesToken?: string;
+  newRelicClusterName?: string;
   nodeGroup?: string;
   privateDnsConfiguration?: ExternalDnsConfiguration;
   publicDnsConfiguration?: ExternalDnsConfiguration;

@@ -12,11 +12,11 @@ import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
+import { InputStreamResource } from '../models/input-stream-resource';
 import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
 import { ApplicationSecretRequest } from '../models/application-secret-request';
 import { BitbucketPREvent } from '../models/bitbucket-prevent';
 import { GithubPREvent } from '../models/github-prevent';
-import { InputStreamResource } from '../models/input-stream-resource';
 import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
 import { Deployment } from '../models/deployment';
@@ -48,13 +48,13 @@ class ApplicationControllerService extends __BaseService {
   static readonly buildUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/builds';
   static readonly getBuildUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
   static readonly updateBuildUsingPUTPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
+  static readonly downloadTestReportUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/downloadArtifacts';
   static readonly getBuildLogsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getApplicationSecretRequestsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
   static readonly createAppSecretRequestUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
   static readonly processWebhookPRBitbucketUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/bitbucket';
   static readonly processWebhookPRGithubUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/github';
-  static readonly downloadTestReportUsingGETPath = '/api/{applicationFamily}/applications/{applicationName}/tests/{buildId}';
   static readonly getEnvironmentMetaDataUsingGETPath = '/api/{applicationFamily}/environmentMetaData';
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
   static readonly upsertEnvironmentUsingPOSTPath = '/api/{applicationFamily}/environments';
@@ -64,7 +64,11 @@ class ApplicationControllerService extends __BaseService {
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
   static readonly getDumpFileListUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps';
   static readonly downloadDumpFileUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps/download';
+  static readonly haltApplicationUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/halt';
+  static readonly enableMonitoringUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
+  static readonly disableMonitoringUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
   static readonly getApplicationPodDetailsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/podDetails';
+  static readonly resumeApplicationUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/resume';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
 
@@ -803,6 +807,58 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
+   *
+   * - `buildId`: buildId
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  downloadTestReportUsingGETResponse(params: ApplicationControllerService.DownloadTestReportUsingGETParams): __Observable<__StrictHttpResponse<InputStreamResource>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}/downloadArtifacts`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<InputStreamResource>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
+   *
+   * - `buildId`: buildId
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  downloadTestReportUsingGET(params: ApplicationControllerService.DownloadTestReportUsingGETParams): __Observable<InputStreamResource> {
+    return this.downloadTestReportUsingGETResponse(params).pipe(
+      __map(_r => _r.body as InputStreamResource)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetBuildLogsUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -1121,58 +1177,6 @@ class ApplicationControllerService extends __BaseService {
   processWebhookPRGithubUsingPOST(params: ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams): __Observable<{}> {
     return this.processWebhookPRGithubUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as {})
-    );
-  }
-
-  /**
-   * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
-   *
-   * - `buildId`: buildId
-   *
-   * - `applicationName`: applicationName
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  downloadTestReportUsingGETResponse(params: ApplicationControllerService.DownloadTestReportUsingGETParams): __Observable<__StrictHttpResponse<InputStreamResource>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationName}/tests/${params.buildId}`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<InputStreamResource>;
-      })
-    );
-  }
-  /**
-   * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
-   *
-   * - `buildId`: buildId
-   *
-   * - `applicationName`: applicationName
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  downloadTestReportUsingGET(params: ApplicationControllerService.DownloadTestReportUsingGETParams): __Observable<InputStreamResource> {
-    return this.downloadTestReportUsingGETResponse(params).pipe(
-      __map(_r => _r.body as InputStreamResource)
     );
   }
 
@@ -1618,6 +1622,162 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.HaltApplicationUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  haltApplicationUsingPOSTResponse(params: ApplicationControllerService.HaltApplicationUsingPOSTParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/halt`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.HaltApplicationUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  haltApplicationUsingPOST(params: ApplicationControllerService.HaltApplicationUsingPOSTParams): __Observable<boolean> {
+    return this.haltApplicationUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.EnableMonitoringUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  enableMonitoringUsingPOSTResponse(params: ApplicationControllerService.EnableMonitoringUsingPOSTParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/monitoring`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.EnableMonitoringUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  enableMonitoringUsingPOST(params: ApplicationControllerService.EnableMonitoringUsingPOSTParams): __Observable<boolean> {
+    return this.enableMonitoringUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.DisableMonitoringUsingDELETEParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  disableMonitoringUsingDELETEResponse(params: ApplicationControllerService.DisableMonitoringUsingDELETEParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/monitoring`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DisableMonitoringUsingDELETEParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  disableMonitoringUsingDELETE(params: ApplicationControllerService.DisableMonitoringUsingDELETEParams): __Observable<boolean> {
+    return this.disableMonitoringUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetApplicationPodDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1666,6 +1826,58 @@ class ApplicationControllerService extends __BaseService {
   getApplicationPodDetailsUsingGET(params: ApplicationControllerService.GetApplicationPodDetailsUsingGETParams): __Observable<Array<ApplicationPodDetails>> {
     return this.getApplicationPodDetailsUsingGETResponse(params).pipe(
       __map(_r => _r.body as Array<ApplicationPodDetails>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.ResumeApplicationUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  resumeApplicationUsingPOSTResponse(params: ApplicationControllerService.ResumeApplicationUsingPOSTParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/resume`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.ResumeApplicationUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  resumeApplicationUsingPOST(params: ApplicationControllerService.ResumeApplicationUsingPOSTParams): __Observable<boolean> {
+    return this.resumeApplicationUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as boolean)
     );
   }
 
@@ -1962,6 +2174,27 @@ module ApplicationControllerService {
   }
 
   /**
+   * Parameters for downloadTestReportUsingGET
+   */
+  export interface DownloadTestReportUsingGETParams {
+
+    /**
+     * buildId
+     */
+    buildId: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
    * Parameters for getBuildLogsUsingGET
    */
   export interface GetBuildLogsUsingGETParams {
@@ -2095,27 +2328,6 @@ module ApplicationControllerService {
      * Host
      */
     Host: string;
-  }
-
-  /**
-   * Parameters for downloadTestReportUsingGET
-   */
-  export interface DownloadTestReportUsingGETParams {
-
-    /**
-     * buildId
-     */
-    buildId: string;
-
-    /**
-     * applicationName
-     */
-    applicationName: string;
-
-    /**
-     * applicationFamily
-     */
-    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   }
 
   /**
@@ -2271,9 +2483,93 @@ module ApplicationControllerService {
   }
 
   /**
+   * Parameters for haltApplicationUsingPOST
+   */
+  export interface HaltApplicationUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for enableMonitoringUsingPOST
+   */
+  export interface EnableMonitoringUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for disableMonitoringUsingDELETE
+   */
+  export interface DisableMonitoringUsingDELETEParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
    * Parameters for getApplicationPodDetailsUsingGET
    */
   export interface GetApplicationPodDetailsUsingGETParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for resumeApplicationUsingPOST
+   */
+  export interface ResumeApplicationUsingPOSTParams {
 
     /**
      * environment

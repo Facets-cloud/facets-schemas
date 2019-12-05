@@ -66,7 +66,7 @@ public class MockKubernetesService implements IKubernetesService {
                         ImmutableMap.of("key1", "value1",
                                 "key2", "value2",
                                 "key3", "value3"), new ArrayList<>(),
-                        new PodReplicationDetails(), new HashMap<>(),
+                        new PodReplicationDetails(2, 2, 0, 0, 0), new HashMap<>(),
                         hpaDetails,
                         "2019-06-07T06:46:21Z"),
                 Arrays.asList(pod1, pod2)
