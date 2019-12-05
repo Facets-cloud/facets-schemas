@@ -23,4 +23,9 @@ public interface IKubernetesService {
     DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName);
 
     List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName);
+
+    void haltApplication(String deploymentName, Environment environment);
+
+    void resumeApplication(String deploymentName, Environment environment);
+
 }

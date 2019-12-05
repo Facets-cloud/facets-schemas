@@ -107,4 +107,14 @@ public class MockKubernetesService implements IKubernetesService {
 
         return Lists.newArrayList(podDetails, podDetails2);
     }
+
+    @Override
+    public void haltApplication(String deploymentName, Environment environment) {
+
+    }
+
+    @Override
+    public void resumeApplication(String deploymentName, Environment environment) {
+
+    }
 }

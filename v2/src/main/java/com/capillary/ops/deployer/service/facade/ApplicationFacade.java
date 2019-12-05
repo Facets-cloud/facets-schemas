@@ -591,4 +591,20 @@ public class ApplicationFacade {
         newRelicService.deleteDashboard(application, environment);
         return true;
     }
+
+    public boolean shutdownApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        String releaseName = helmService.getReleaseName(application, environment);
+        kubernetesService.haltApplication(releaseName, environment);
+        return true;
+    }
+
+    public boolean resumeApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        String releaseName = helmService.getReleaseName(application, environment);
+        kubernetesService.resumeApplication(releaseName, environment);
+        return true;
+    }
 }

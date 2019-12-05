@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
 import io.fabric8.kubernetes.client.ConfigBuilder;
@@ -106,6 +107,29 @@ public class KubernetesService implements IKubernetesService {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         ImmutableMap<String, String> selectors = ImmutableMap.of("app", deploymentName);
         return getApplicationPodDetails(deploymentName, selectors, kubernetesClient);
+    }
+
+    @Override
+    public void haltApplication(String deploymentName, Environment environment) {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        Deployment deployment = kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).get();
+        if(deployment.getSpec().getReplicas() > 0) {
+            deployment.getSpec().setReplicas(0);
+        }
+        kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).patch(deployment);
+    }
+
+    @Override
+    public void resumeApplication(String deploymentName, Environment environment) {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        Deployment deployment = kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).get();
+        HorizontalPodAutoscaler horizontalPodAutoscaler =
+                kubernetesClient.autoscaling().horizontalPodAutoscalers().inNamespace("default").withName(deploymentName).get();
+        Integer minReplicas = horizontalPodAutoscaler.getSpec().getMinReplicas();
+        if(deployment.getSpec().getReplicas() == 0) {
+            deployment.getSpec().setReplicas(minReplicas);
+        }
+        kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).patch(deployment);
     }
 
     private ApplicationServiceDetails getApplicationServiceDetails(String deploymentName, KubernetesClient kubernetesClient) {
