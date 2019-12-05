@@ -4,7 +4,7 @@
     <form #buildForm="ngForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="buildbranch" class="label">Branch/Tag</label>
-        <input #buildbranch="ngModel" required type="text" nbInput fullWidth name="buildbranch" id="buildbranch" placeholder="origin/master" [(ngModel)]="build.tag">
+        <input [nbPopoverAdjustment]="adjustment" [nbPopover]="searchResults" [nbPopoverPlacement]="position" [nbPopoverTrigger]="trigger" (input)="searchBranch($event.target.value)" nbInput #buildbranch="ngModel" required type="text" fullWidth name="buildbranch" id="buildbranch" placeholder="origin/master" [(ngModel)]="build.tag">
       </div>
       <div class="form-group">
         <label for="builddescription" class="label">Description</label>
@@ -14,3 +14,8 @@
     </form>
   </nb-card-body>
 </nb-card>
+<ng-template #searchResults>
+  <div style="width: 18rem;">
+    <nb-menu tag="menu" [items]="filteredBranches"></nb-menu>
+  </div>
+</ng-template>

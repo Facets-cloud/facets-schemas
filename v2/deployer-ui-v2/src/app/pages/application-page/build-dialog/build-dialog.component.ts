@@ -1,9 +1,10 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter, ViewChild, TemplateRef } from '@angular/core';
 import { Application, Build } from '../../../api/models';
 import { NgForm } from '@angular/forms';
 import { ApplicationControllerService } from '../../../api/services';
-import { NbDialogService, NbDialogRef } from '@nebular/theme';
+import { NbDialogService, NbDialogRef, NbPopoverDirective, NbTrigger, NbPosition, NbMenuItem, NbMenuService } from '@nebular/theme';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'build-dialog',
@@ -16,17 +17,37 @@ export class BuildDialogComponent implements OnInit, OnChanges {
 
   @Output() buildTriggered: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  build: Build = {};
+  @ViewChild(NbPopoverDirective, { static: false }) popover: NbPopoverDirective;
+  @ViewChild('searchResults', { read: TemplateRef, static: false }) templateList: TemplateRef<any>;
 
+  build: Build = {};
+  branches: string[];
+  filteredBranches: NbMenuItem[] = [];
+  trigger = NbTrigger.NOOP;
+  position = NbPosition.BOTTOM;
+  adjustment = 'noop';
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.application.currentValue) {
     }
   }
 
   constructor(private applicationControllerService: ApplicationControllerService,
-    private router: Router, protected ref: NbDialogRef<BuildDialogComponent>) { }
+    private router: Router, protected ref: NbDialogRef<BuildDialogComponent>,
+    protected menu: NbMenuService) { }
 
   ngOnInit() {
+    this.applicationControllerService.getApplicationBranchesUsingGET({
+      applicationFamily: this.application.applicationFamily,
+      applicationId: this.application.id,
+    }).subscribe(
+      response => this.branches = response,
+    );
+    this.menu.onItemClick().subscribe(
+      x => {
+        this.build.tag = x.item.title;
+        this.popover.hide();
+      },
+    );
   }
 
   onSubmit() {
@@ -42,5 +63,17 @@ export class BuildDialogComponent implements OnInit, OnChanges {
         this.ref.close();
       },
     );
+  }
+
+  searchBranch(query: any) {
+    this.filteredBranches = this.branches.filter(x => x.startsWith(query)).map(
+      x => {
+        return {
+          title: x,
+        };
+      },
+    ).slice(0, 10);
+
+    this.popover.show();
   }
 }

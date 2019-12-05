@@ -9,10 +9,7 @@ import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
-import com.capillary.ops.deployer.service.S3DumpService;
-import com.capillary.ops.deployer.service.SecretService;
-import com.capillary.ops.deployer.service.VcsService;
-import com.capillary.ops.deployer.service.VcsServiceSelector;
+import com.capillary.ops.deployer.service.*;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
@@ -76,7 +73,7 @@ public class ApplicationFacade {
     private EnvironmentRepository environmentRepository;
 
     @Autowired
-    private VcsServiceSelector vcsServiceSelector;
+    private IVcsServiceSelector vcsServiceSelector;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 

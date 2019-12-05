@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NbMenuModule, NbSearchModule, NbInputModule, NbAccordionModule, NbIconModule, NbButtonModule, NbActionsModule, NbCardModule, NbDialogModule, NbCheckboxComponent, NbCheckboxModule, NbTooltipComponent, NbTooltipModule, NbListModule, NbSelectModule, NbStepperModule, NbSpinnerModule, NbAlertModule, NbTabsetModule, NbToastrModule, NbToggleModule, NbCalendarModule } from '@nebular/theme';
+import { NbMenuModule, NbSearchModule, NbInputModule, NbAccordionModule, NbIconModule, NbButtonModule, NbActionsModule, NbCardModule, NbDialogModule, NbCheckboxComponent, NbCheckboxModule, NbTooltipComponent, NbTooltipModule, NbListModule, NbSelectModule, NbStepperModule, NbSpinnerModule, NbAlertModule, NbTabsetModule, NbToastrModule, NbToggleModule, NbCalendarModule, NbPopoverModule } from '@nebular/theme';
 import { ThemeModule } from '../@theme/theme.module';
 import { PagesComponent } from './pages.component';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -27,6 +27,7 @@ import { UserManagementComponent } from './user-management/user-management.compo
 import { BuildDetailsPageComponent } from './build-details-page/build-details-page.component';
 import { AppDumpsComponent } from './application-page/app-dumps/app-dumps.component';
 import { ButtonDownloadComponent } from './application-page/app-dumps/button.download.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
@@ -55,6 +56,8 @@ import { ButtonDownloadComponent } from './application-page/app-dumps/button.dow
     NbToastrModule,
     NbToggleModule,
     NbCalendarModule,
+    NgSelectModule,
+    NbPopoverModule,
   ],
   declarations: [
     PagesComponent,
