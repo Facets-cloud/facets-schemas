@@ -21,6 +21,11 @@ public class MockVcsService implements VcsService {
 
     @Override
     public List<String> getBranches(String owner, String repository) throws IOException {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return Arrays.asList("branch1", "branch2", "branch3", "branch4", "branch5", "branch3", "branch4", "branch5", "branch3", "branch4", "branch5");
     }
 

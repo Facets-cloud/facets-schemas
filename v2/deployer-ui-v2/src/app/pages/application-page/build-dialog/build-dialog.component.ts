@@ -40,7 +40,11 @@ export class BuildDialogComponent implements OnInit, OnChanges {
       applicationFamily: this.application.applicationFamily,
       applicationId: this.application.id,
     }).subscribe(
-      response => this.branches = response,
+      response => {
+        this.branches = response;
+        this.searchBranch('');
+        this.popover.show();
+      },
     );
     this.menu.onItemClick().subscribe(
       x => {
@@ -72,7 +76,7 @@ export class BuildDialogComponent implements OnInit, OnChanges {
           title: x,
         };
       },
-    ).slice(0, 10);
+    );
 
     this.popover.show();
   }
