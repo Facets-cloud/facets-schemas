@@ -177,6 +177,8 @@ public class CodeBuildService implements ICodeBuildService {
                 return new Dotnet3BuildSpec(application, testBuild);
             case DOTNET_CORE22:
                 return new Dotnet22BuildSpec(application, testBuild);
+            case SBT:
+                return new SbtBuildSpec(application, testBuild);
             default:
                 throw new NotImplementedException();
         }
