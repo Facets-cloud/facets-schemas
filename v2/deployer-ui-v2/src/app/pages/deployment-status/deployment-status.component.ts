@@ -1,8 +1,9 @@
-import { Component, OnInit, Input, TemplateRef } from '@angular/core';
-import { DeploymentStatusDetails, Application, ApplicationPodDetails } from '../../api/models';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApplicationControllerService } from '../../api/services';
 import { NbDialogService, NbDialogRef } from '@nebular/theme';
+import { DeploymentStatusDetails, Application, ApplicationPodDetails, Deployment } from '../../api/models';
+import { ExcecutePodActionDialogComponent } from './excecute-pod-action-dialog/excecute-pod-action-dialog.component';
 
 @Component({
   selector: 'deployment-status',
@@ -15,7 +16,7 @@ export class DeploymentStatusComponent implements OnInit {
   appPodDetails: Array<ApplicationPodDetails>;
   appFamily: any;
   applicationId: string;
-  application: Application;
+  @Input() application: Application;
   environment: string;
   environmentVariables = [];
   stopping = false;
@@ -44,6 +45,11 @@ export class DeploymentStatusComponent implements OnInit {
       restartReason: {
         title: 'Last Restart Reason',
       },
+      custom: {
+        type: 'custom',
+        renderComponent: PodActionsColumnComponent,
+        title: 'Pod Actions',
+      },
     },
     actions: false,
     hideSubHeader: true,
@@ -64,7 +70,8 @@ export class DeploymentStatusComponent implements OnInit {
   stopped: boolean;
 
 
-  constructor(private activatedRoute: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
+  constructor(private activatedRoute: ActivatedRoute,
+    private applicationControllerService: ApplicationControllerService,
     private dialogService: NbDialogService) { }
 
   ngOnInit() {
@@ -82,7 +89,20 @@ export class DeploymentStatusComponent implements OnInit {
     this.applicationControllerService.getApplicationUsingGET({
       applicationFamily: this.appFamily,
       applicationId: this.applicationId,
-    }).subscribe(application => this.application = application);
+    }).subscribe(application => {
+      this.application = application;
+    });
+  }
+
+  getApplicationPodDetailsWithAppAndEnv(podDetails: Array<ApplicationPodDetails>): Array<ApplicationPodDetails> {
+    const details: Array<ApplicationPodDetails> = [];
+    podDetails.forEach(podDetail => {
+      podDetail['application'] = this.application;
+      podDetail['environment'] = this.environment;
+      details.push(podDetail);
+    });
+
+    return details;
   }
 
   loadDeploymentStatus() {
@@ -107,15 +127,8 @@ export class DeploymentStatusComponent implements OnInit {
       if (deploymentStatus.deployment.replicas.total === 0 && deploymentStatus.pods.length === 0) {
         this.stopped = true;
       }
+      this.deploymentStatus.pods = this.getApplicationPodDetailsWithAppAndEnv(deploymentStatus.pods);
     });
-  }
-
-  loadPodDetails() {
-    this.applicationControllerService.getApplicationPodDetailsUsingGET({
-      applicationFamily: this.appFamily,
-      applicationId: this.applicationId,
-      environment: this.environment,
-    }).subscribe(podDetails => this.appPodDetails = podDetails);
   }
 
   haltPods() {
@@ -140,5 +153,30 @@ export class DeploymentStatusComponent implements OnInit {
     }).subscribe(x => {
       this.loadDeploymentStatus();
     });
+  }
+}
+
+@Component({
+  selector: 'pod-actions-column',
+  template: `
+  <button style="width: 100%; margin: auto;" (click)="executeAction()" nbTooltip="Execute Action" nbButton appearance="ghost">
+    <nb-icon pack="eva" icon="corner-down-left-outline"></nb-icon>
+  </button>
+  `,
+})
+export class PodActionsColumnComponent implements OnChanges {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.rowData.currentValue.name) {
+      console.log(this.rowData);
+    }
+  }
+
+  @Input() rowData: ApplicationPodDetails;
+
+  constructor(private nbDialogService: NbDialogService) {
+  }
+
+  executeAction() {
+    this.nbDialogService.open(ExcecutePodActionDialogComponent, { context: { applicationPodDetails: this.rowData } });
   }
 }

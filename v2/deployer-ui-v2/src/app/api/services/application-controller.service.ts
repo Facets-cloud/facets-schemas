@@ -7,6 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
+import { ApplicationAction } from '../models/application-action';
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
@@ -23,6 +24,7 @@ import { Deployment } from '../models/deployment';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { Monitoring } from '../models/monitoring';
 import { ApplicationPodDetails } from '../models/application-pod-details';
+import { ActionExecution } from '../models/action-execution';
 import { ApplicationSecret } from '../models/application-secret';
 
 /**
@@ -34,6 +36,7 @@ import { ApplicationSecret } from '../models/application-secret';
 class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
   static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
+  static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -71,6 +74,8 @@ class ApplicationControllerService extends __BaseService {
   static readonly enableMonitoringUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
   static readonly disableMonitoringUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
   static readonly getApplicationPodDetailsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/podDetails';
+  static readonly getActionsForPodUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/pods/{podName}/actions';
+  static readonly executeActionOnPodUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/pods/{podName}/actions/executeAction';
   static readonly resumeApplicationUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/resume';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
@@ -145,6 +150,53 @@ class ApplicationControllerService extends __BaseService {
   getApplicationTypesUsingGET(): __Observable<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>> {
     return this.getApplicationTypesUsingGETResponse().pipe(
       __map(_r => _r.body as Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.CreateGenericActionUsingPOSTParams` containing the following parameters:
+   *
+   * - `buildType`: buildType
+   *
+   * - `applicationAction`: applicationAction
+   *
+   * @return OK
+   */
+  createGenericActionUsingPOSTResponse(params: ApplicationControllerService.CreateGenericActionUsingPOSTParams): __Observable<__StrictHttpResponse<ApplicationAction>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.applicationAction;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/buildType/${params.buildType}/actions`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ApplicationAction>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.CreateGenericActionUsingPOSTParams` containing the following parameters:
+   *
+   * - `buildType`: buildType
+   *
+   * - `applicationAction`: applicationAction
+   *
+   * @return OK
+   */
+  createGenericActionUsingPOST(params: ApplicationControllerService.CreateGenericActionUsingPOSTParams): __Observable<ApplicationAction> {
+    return this.createGenericActionUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as ApplicationAction)
     );
   }
 
@@ -1932,6 +1984,125 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetActionsForPodUsingGETParams` containing the following parameters:
+   *
+   * - `podName`: podName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getActionsForPodUsingGETResponse(params: ApplicationControllerService.GetActionsForPodUsingGETParams): __Observable<__StrictHttpResponse<Array<ApplicationAction>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/pods/${params.podName}/actions`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ApplicationAction>>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetActionsForPodUsingGETParams` containing the following parameters:
+   *
+   * - `podName`: podName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getActionsForPodUsingGET(params: ApplicationControllerService.GetActionsForPodUsingGETParams): __Observable<Array<ApplicationAction>> {
+    return this.getActionsForPodUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<ApplicationAction>)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.ExecuteActionOnPodUsingPOSTParams` containing the following parameters:
+   *
+   * - `podName`: podName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `applicationAction`: applicationAction
+   *
+   * @return OK
+   */
+  executeActionOnPodUsingPOSTResponse(params: ApplicationControllerService.ExecuteActionOnPodUsingPOSTParams): __Observable<__StrictHttpResponse<ActionExecution>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+
+    __body = params.applicationAction;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/pods/${params.podName}/actions/executeAction`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ActionExecution>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.ExecuteActionOnPodUsingPOSTParams` containing the following parameters:
+   *
+   * - `podName`: podName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * - `applicationAction`: applicationAction
+   *
+   * @return OK
+   */
+  executeActionOnPodUsingPOST(params: ApplicationControllerService.ExecuteActionOnPodUsingPOSTParams): __Observable<ActionExecution> {
+    return this.executeActionOnPodUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as ActionExecution)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.ResumeApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2094,6 +2265,22 @@ class ApplicationControllerService extends __BaseService {
 }
 
 module ApplicationControllerService {
+
+  /**
+   * Parameters for createGenericActionUsingPOST
+   */
+  export interface CreateGenericActionUsingPOSTParams {
+
+    /**
+     * buildType
+     */
+    buildType: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3' | 'SBT';
+
+    /**
+     * applicationAction
+     */
+    applicationAction: ApplicationAction;
+  }
 
   /**
    * Parameters for updateUserUsingPUT
@@ -2703,6 +2890,63 @@ module ApplicationControllerService {
      * applicationFamily
      */
     applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getActionsForPodUsingGET
+   */
+  export interface GetActionsForPodUsingGETParams {
+
+    /**
+     * podName
+     */
+    podName: string;
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for executeActionOnPodUsingPOST
+   */
+  export interface ExecuteActionOnPodUsingPOSTParams {
+
+    /**
+     * podName
+     */
+    podName: string;
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+
+    /**
+     * applicationAction
+     */
+    applicationAction: ApplicationAction;
   }
 
   /**
