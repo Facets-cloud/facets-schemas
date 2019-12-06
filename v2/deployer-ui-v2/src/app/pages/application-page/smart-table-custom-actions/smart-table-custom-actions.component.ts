@@ -14,7 +14,7 @@ import { MessageBus } from '../../../@core/message-bus';
 })
 export class SmartTableCustomActionsComponent implements OnInit {
 
-  @Input() rowData: Build;
+  @Input() rowData: any;
 
   constructor(private dialogService: NbDialogService, private router: Router,
     private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,

@@ -36,14 +36,12 @@ public class MockDataBootstrap {
     @PostConstruct
     private void init() {
         Environment nightly = createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
-        nightly.getEnvironmentMetaData().setGitFlowDevelopmentBranchDeploymentAllowed(true);
         environmentRepository.save(nightly);
         createEnvironment("stage", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
         createEnvironment("sg", EnvironmentType.PRODUCTION, ApplicationFamily.ECOMMERCE);
         createEnvironment("eu", EnvironmentType.PRODUCTION, ApplicationFamily.ECOMMERCE);
 
         Environment crmNightly = createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.CRM);
-        crmNightly.getEnvironmentMetaData().setGitFlowDevelopmentBranchDeploymentAllowed(true);
         environmentRepository.save(crmNightly);
 
         createApplication("intouch-api", ApplicationFamily.CRM);

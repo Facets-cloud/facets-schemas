@@ -18,8 +18,14 @@ export class BuildsListComponent implements OnInit, OnChanges {
 
   subscription: Subscription;
 
-  ngOnChanges(changes: SimpleChanges): void {
+  async ngOnChanges(changes: SimpleChanges) {
     if (changes.application.currentValue.id) {
+      if (this.application.strictGitFlowModeEnabled) {
+        this.tags = await this.applicationControllerService.getApplicationTagsUsingGET({
+          applicationId: this.application.id,
+          applicationFamily: this.application.applicationFamily,
+        }).toPromise();
+      }
       this.loadBuilds();
     }
   }
@@ -33,6 +39,8 @@ export class BuildsListComponent implements OnInit, OnChanges {
   deploymentBuilds: Build[] = [];
 
   query: string = '';
+
+  tags: string[];
 
   settings = {
     columns: {
@@ -65,7 +73,7 @@ export class BuildsListComponent implements OnInit, OnChanges {
     private applicationControllerService: ApplicationControllerService, private router: Router,
     private messageBus: MessageBus) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.messageBus.buildTopic.subscribe(x => this.loadBuilds());
     this.loadBuilds();
   }
@@ -90,6 +98,12 @@ export class BuildsListComponent implements OnInit, OnChanges {
       },
     ).subscribe(
       builds => {
+        builds.forEach(b => {
+          b['allowPromotion'] = true;
+          if (this.application.strictGitFlowModeEnabled && (!this.tags || !this.tags.includes(b.tag))) {
+            b['allowPromotion'] = false;
+          }
+        });
         builds = builds.filter(x => x.id.startsWith(this.query));
         if (JSON.stringify(builds) !== JSON.stringify(this.builds)) {
           this.builds = builds;

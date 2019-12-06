@@ -14,7 +14,6 @@ public class EnvironmentMetaData {
     private EnvironmentType environmentType;
     private String name;
     private ApplicationFamily applicationFamily;
-    private boolean gitFlowDevelopmentBranchDeploymentAllowed = false;
 
     public String getName() {
         return name;
@@ -38,13 +37,5 @@ public class EnvironmentMetaData {
 
     public void setApplicationFamily(ApplicationFamily applicationFamily) {
         this.applicationFamily = applicationFamily;
-    }
-
-    public boolean isGitFlowDevelopmentBranchDeploymentAllowed() {
-        return gitFlowDevelopmentBranchDeploymentAllowed;
-    }
-
-    public void setGitFlowDevelopmentBranchDeploymentAllowed(boolean gitFlowDevelopmentBranchDeploymentAllowed) {
-        this.gitFlowDevelopmentBranchDeploymentAllowed = gitFlowDevelopmentBranchDeploymentAllowed;
     }
 }
