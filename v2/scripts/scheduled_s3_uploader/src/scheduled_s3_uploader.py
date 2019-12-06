@@ -94,14 +94,15 @@ def schedule_module_upload():
             schedule.every(DEFAULT_FREQUENCY_MIN).minutes.do(upload_module, module, path).tag("5-min-task")
 
 
-def health_check():
-    if not os.path.exists('/tmp/healthy'):
-        os.system('touch /tmp/healthy')
-
-    current_timestamp = round(time.time())
-    logger.debug("adding health check entry for timestamp: {}".format(current_timestamp))
-    with open('/tmp/healthy', 'a+') as fout:
-        fout.write('{} - healthy\n'.format(current_timestamp))
+# def health_check():
+#     if not os.path.exists('/tmp/healthy'):
+#         logger.info("creating file /tmp/healthy")
+#         os.system('touch /tmp/healthy')
+#
+#     current_timestamp = round(time.time())
+#     logger.info("adding health check entry for timestamp: {}".format(current_timestamp))
+#     with open('/tmp/healthy', 'a+') as fout:
+#         fout.write('{} - healthy\n'.format(current_timestamp))
 
 
 schedule_module_upload()
@@ -109,7 +110,7 @@ schedule_module_upload()
 # Check for any new modules every 15 minutes and refresh the list of schedules
 schedule.every(15).minutes.do(schedule_module_upload).tag("15-min-task")
 logger.debug("scheduled task for refreshing module list")
-schedule.every(5).seconds.do(health_check).tag("health-check")
+# schedule.every(5).seconds.do(health_check).tag("health-check")
 logger.debug("scheduled health check to run every 5 seconds")
 
 while True:
