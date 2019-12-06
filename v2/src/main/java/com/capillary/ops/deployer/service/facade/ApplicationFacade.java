@@ -241,9 +241,19 @@ public class ApplicationFacade {
         String repositoryOwner = getRepositoryOwner(application);
 
         List<String> branches = vcsService.getBranches(repositoryOwner, repositoryName);
+        throw new RuntimeException();
+    }
+
+    public List<String> getApplicationTags(ApplicationFamily applicationFamily, String applicationId) throws IOException {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+
+        String repositoryName = getRepositoryName(application);
+        String repositoryOwner = getRepositoryOwner(application);
+
         List<String> tags = vcsService.getTags(repositoryOwner, repositoryName);
 
-        return Stream.concat(branches.stream(), tags.stream()).collect(Collectors.toList());
+        return tags;
     }
 
     private String getRepositoryName(Application application) {

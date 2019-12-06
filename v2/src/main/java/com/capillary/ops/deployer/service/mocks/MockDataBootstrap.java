@@ -35,12 +35,16 @@ public class MockDataBootstrap {
 
     @PostConstruct
     private void init() {
-        createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
+        Environment nightly = createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
+        nightly.getEnvironmentMetaData().setGitFlowDevelopmentBranchDeploymentAllowed(true);
+        environmentRepository.save(nightly);
         createEnvironment("stage", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
         createEnvironment("sg", EnvironmentType.PRODUCTION, ApplicationFamily.ECOMMERCE);
         createEnvironment("eu", EnvironmentType.PRODUCTION, ApplicationFamily.ECOMMERCE);
 
-        createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.CRM);
+        Environment crmNightly = createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.CRM);
+        crmNightly.getEnvironmentMetaData().setGitFlowDevelopmentBranchDeploymentAllowed(true);
+        environmentRepository.save(crmNightly);
 
         createApplication("intouch-api", ApplicationFamily.CRM);
         createApplication("api-rate-limiter", ApplicationFamily.CRM);
@@ -62,14 +66,14 @@ public class MockDataBootstrap {
 
     }
 
-    private void createEnvironment(String name, EnvironmentType type, ApplicationFamily applicationFamily) {
+    private Environment createEnvironment(String name, EnvironmentType type, ApplicationFamily applicationFamily) {
         Environment nightly = new Environment();
         EnvironmentMetaData nightlyMetaData = new EnvironmentMetaData();
         nightlyMetaData.setApplicationFamily(applicationFamily);
         nightlyMetaData.setName(name);
         nightlyMetaData.setEnvironmentType(type);
         nightly.setEnvironmentMetaData(nightlyMetaData);
-        environmentRepository.save(nightly);
+        return environmentRepository.save(nightly);
     }
 
     private void createBuild(Application application) {

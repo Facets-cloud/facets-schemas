@@ -22,10 +22,13 @@ export class BuildDialogComponent implements OnInit, OnChanges {
 
   build: Build = {};
   branches: string[];
+  tags: string[];
   filteredBranches: NbMenuItem[] = [];
   trigger = NbTrigger.NOOP;
   position = NbPosition.BOTTOM;
   adjustment = 'noop';
+  branchloadingFailed = false;
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.application.currentValue) {
     }
@@ -35,17 +38,21 @@ export class BuildDialogComponent implements OnInit, OnChanges {
     private router: Router, protected ref: NbDialogRef<BuildDialogComponent>,
     protected menu: NbMenuService) { }
 
-  ngOnInit() {
-    this.applicationControllerService.getApplicationBranchesUsingGET({
-      applicationFamily: this.application.applicationFamily,
-      applicationId: this.application.id,
-    }).subscribe(
-      response => {
-        this.branches = response;
-        this.searchBranch('');
-        this.popover.show();
-      },
-    );
+  async ngOnInit() {
+    try {
+      this.branches = await this.applicationControllerService.getApplicationBranchesUsingGET({
+        applicationFamily: this.application.applicationFamily,
+        applicationId: this.application.id,
+      }).toPromise();
+      this.tags = await this.applicationControllerService.getApplicationTagsUsingGET({
+        applicationFamily: this.application.applicationFamily,
+        applicationId: this.application.id,
+      }).toPromise();
+      this.searchBranch('');
+      this.popover.show();
+    } catch (e) {
+      this.branchloadingFailed = true;
+    }
     this.menu.onItemClick().subscribe(
       x => {
         this.build.tag = x.item.title;
@@ -70,13 +77,35 @@ export class BuildDialogComponent implements OnInit, OnChanges {
   }
 
   searchBranch(query: any) {
-    this.filteredBranches = this.branches.filter(x => x.startsWith(query)).map(
+    const filteredBranches: NbMenuItem[] = this.branches.filter(x => x.startsWith(query)).map(
       x => {
         return {
           title: x,
         };
       },
     );
+
+    const filteredTags: NbMenuItem[] = this.tags.filter(x => x.startsWith(query)).map(
+      x => {
+        return {
+          title: x,
+        };
+      },
+    );
+
+    this.filteredBranches = [
+      {
+        title: 'branches',
+        group: false,
+        children: filteredBranches,
+        expanded: true,
+      },
+      {
+        title: 'tags',
+        group: false,
+        children: filteredTags,
+        expanded: true,
+      }];
 
     this.popover.show();
   }

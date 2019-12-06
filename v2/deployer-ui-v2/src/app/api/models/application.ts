@@ -20,6 +20,7 @@ export interface Application {
   ports?: Array<Port>;
   pvcList?: Array<PVC>;
   repositoryUrl?: string;
+  strictGitFlowModeEnabled?: boolean;
   vcsProvider?: 'BITBUCKET' | 'GITHUB';
   webhookId?: string;
 }

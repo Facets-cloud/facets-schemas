@@ -127,6 +127,12 @@ public class ApplicationController {
         return applicationFacade.getApplicationBranches(applicationFamily, applicationId);
     }
 
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/tags", produces = "application/json")
+    public List<String> getApplicationTags(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                               @PathVariable("applicationId") String applicationId) throws IOException {
+        return applicationFacade.getApplicationTags(applicationFamily, applicationId);
+    }
+
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")
     public TokenPaginatedResponse<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                                @PathVariable("applicationId") String applicationId,

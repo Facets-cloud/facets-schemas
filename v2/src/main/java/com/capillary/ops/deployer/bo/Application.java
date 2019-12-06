@@ -92,6 +92,8 @@ public class Application {
 
     private int elbIdleTimeoutSeconds = 300;
 
+    private boolean strictGitFlowModeEnabled = false;
+
     public String getId() {
         return id;
     }
@@ -242,5 +244,13 @@ public class Application {
 
     public void setElbIdleTimeoutSeconds(int elbIdleTimeoutSeconds) {
         this.elbIdleTimeoutSeconds = elbIdleTimeoutSeconds;
+    }
+
+    public boolean isStrictGitFlowModeEnabled() {
+        return strictGitFlowModeEnabled;
+    }
+
+    public void setStrictGitFlowModeEnabled(boolean strictGitFlowModeEnabled) {
+        this.strictGitFlowModeEnabled = strictGitFlowModeEnabled;
     }
 }
