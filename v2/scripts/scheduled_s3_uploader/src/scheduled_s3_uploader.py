@@ -96,10 +96,11 @@ def schedule_module_upload():
 
 def health_check():
     if not os.path.exists('/tmp/healthy'):
+        logger.info("creating file /tmp/healthy")
         os.system('touch /tmp/healthy')
 
     current_timestamp = round(time.time())
-    logger.debug("adding health check entry for timestamp: {}".format(current_timestamp))
+    logger.info("adding health check entry for timestamp: {}".format(current_timestamp))
     with open('/tmp/healthy', 'a+') as fout:
         fout.write('{} - healthy\n'.format(current_timestamp))
 
