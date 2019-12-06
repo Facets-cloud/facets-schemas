@@ -96,10 +96,9 @@ export class AppDumpsComponent implements OnInit, OnChanges {
   }
 
   listDumpFiles() {
-    const calender = this.date;
-    const date = calender.getFullYear() + '-' + (calender.getMonth() + 1) + '-' + calender.getDate();
     const app = this.application;
-    this.fetchDumpFileList(app.applicationFamily, app.id, this.environment, date);
+    const dateString = this.date.toISOString().split('T')[0];
+    this.fetchDumpFileList(app.applicationFamily, app.id, this.environment, dateString);
   }
 
   handleDateChange(event) {
