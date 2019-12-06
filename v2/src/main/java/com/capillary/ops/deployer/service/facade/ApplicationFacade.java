@@ -241,7 +241,7 @@ public class ApplicationFacade {
         String repositoryOwner = getRepositoryOwner(application);
 
         List<String> branches = vcsService.getBranches(repositoryOwner, repositoryName);
-        throw new RuntimeException();
+        return branches;
     }
 
     public List<String> getApplicationTags(ApplicationFamily applicationFamily, String applicationId) throws IOException {
