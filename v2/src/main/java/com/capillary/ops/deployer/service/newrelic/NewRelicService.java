@@ -3,7 +3,9 @@ package com.capillary.ops.deployer.service.newrelic;
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Environment;
 import com.capillary.ops.deployer.service.HelmService;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.samskivert.mustache.Mustache;
@@ -22,10 +24,16 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -48,8 +56,7 @@ public class NewRelicService implements INewRelicService {
         }
         try {
             String jsonTemplate =
-                    new String(Files.readAllBytes(
-                            Paths.get(getClass().getResource("/newrelic-dashboard.json.mustache").toURI())));
+                    getDashboardTemplate();
             Template template = Mustache.compiler().compile(jsonTemplate);
             String dashboardName = getDashboardTitle(application, environment);
             String dashboardId = getDashboardId(application, environment);
@@ -174,4 +181,12 @@ public class NewRelicService implements INewRelicService {
         }
     }
 
+    private String getDashboardTemplate() {
+        try {
+            URL url = this.getClass().getResource("/newrelic-dashboard.json.mustache");
+            return Resources.toString(url, Charsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
