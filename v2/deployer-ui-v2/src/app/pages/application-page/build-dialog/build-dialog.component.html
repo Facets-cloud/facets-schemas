@@ -1,4 +1,4 @@
-<nb-card [nbSpinner]="!(branches?.length > 0) && !branchloadingFailed" nbSpinnerStatus="danger" nbSpinnerSize="large">
+<nb-card [nbSpinner]="!(branches && tags) && !branchloadingFailed" nbSpinnerStatus="danger" nbSpinnerSize="large">
   <nb-card-header>Build {{application?.name}}</nb-card-header>
   <nb-card-body>
     <form #buildForm="ngForm" (ngSubmit)="onSubmit()">

@@ -67,7 +67,7 @@ export class DeploymentPageComponent implements OnInit {
     private applicationControllerService: ApplicationControllerService,
     private nbToastrService: NbToastrService, private messageBus: MessageBus) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.activatedRoute.paramMap.subscribe(
       params => {
         this.appFamily = params.get('appFamily');
@@ -92,9 +92,15 @@ export class DeploymentPageComponent implements OnInit {
 
   loadEnvironments() {
     this.applicationControllerService.getEnvironmentMetaDataUsingGET(this.appFamily)
-      .subscribe(environments => {
+      .subscribe(async environments => {
         if (!this.build.promoted) {
           environments = environments.filter(x => x.environmentType === 'QA');
+        }
+        if (this.application.strictGitFlowModeEnabled) {
+          const tags = await this.applicationControllerService.getApplicationTagsUsingGET({
+            applicationFamily: this.application.applicationFamily,
+            applicationId: this.application.id,
+          }).toPromise();
         }
         this.environments = environments;
       });

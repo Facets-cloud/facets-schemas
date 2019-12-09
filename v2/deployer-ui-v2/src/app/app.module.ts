@@ -31,6 +31,7 @@ import { RequestCredentialDialogComponent } from './pages/application-page/reque
 import { SetCredentialValueDialogComponent } from './pages/application-page/set-credential-value-dialog/set-credential-value-dialog.component';
 import { NumberComponentDynamicComponent } from './pages/create-application-page/number-component-dynamic/number-component-dynamic.component';
 import { ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './pages/application-page/current-deployments/current-deployments.component';
+import { NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './pages/application-page/monitoring/monitoring.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -66,6 +67,8 @@ import { ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './p
     ActionsColumn,
     DeploymentDetailsDialog,
     CurrentStatusColumn,
+    NewRelicLinkViewComponent,
+    MonitoringEnableButtonComponent,
   ],
 })
 export class AppModule {

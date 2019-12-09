@@ -355,6 +355,15 @@ public class ApplicationController {
         return applicationFacade.disableNewrelicMonitoring(applicationFamily, applicationId, environment);
     }
 
+    @RolesAllowed("ADMIN")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
+    public Monitoring getMonitoringDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                     @PathVariable("applicationId") String applicationId,
+                                     @PathVariable("environment") String environment) {
+        return applicationFacade.getMonitoringDetails(applicationFamily, applicationId, environment);
+    }
+
+
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/halt", produces = "application/json")
     public boolean haltApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,

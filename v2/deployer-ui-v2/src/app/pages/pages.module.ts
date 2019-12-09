@@ -28,6 +28,7 @@ import { BuildDetailsPageComponent } from './build-details-page/build-details-pa
 import { AppDumpsComponent } from './application-page/app-dumps/app-dumps.component';
 import { ButtonDownloadComponent } from './application-page/app-dumps/button.download.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './application-page/monitoring/monitoring.component';
 
 @NgModule({
   imports: [
@@ -85,6 +86,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
     BuildDetailsPageComponent,
     AppDumpsComponent,
     ButtonDownloadComponent,
+    MonitoringComponent,
+    NewRelicLinkViewComponent,
+    MonitoringEnableButtonComponent,
   ],
   entryComponents: [BuildDialogComponent, ButtonDownloadComponent],
 })

@@ -617,4 +617,12 @@ public class ApplicationFacade {
         kubernetesService.resumeApplication(releaseName, environment);
         return true;
     }
+
+    public Monitoring getMonitoringDetails(ApplicationFamily applicationFamily, String applicationId,
+                                           String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        String newRelicServiceDashboardURL = newRelicService.getDashboardURL(application, environment);
+        return new Monitoring(applicationFamily, applicationId, environmentName, newRelicServiceDashboardURL);
+    }
 }

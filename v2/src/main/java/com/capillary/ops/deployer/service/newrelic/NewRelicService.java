@@ -87,7 +87,7 @@ public class NewRelicService implements INewRelicService {
             HttpResponse response = httpClient.execute(request);
             String responseBody = EntityUtils.toString(response.getEntity());
             logger.info("newrelic api response: ", responseBody);
-
+            int[][] r = new int[][]{};
         } catch (Throwable t) {
             throw new RuntimeException("NewRelic API exception", t);
         }
@@ -152,7 +152,8 @@ public class NewRelicService implements INewRelicService {
                     .getAsJsonObject().get("ui_url").getAsString();
             return id;
         } catch (Throwable t) {
-            throw new RuntimeException("NewRelic API exception", t);
+            logger.warn("NewRelic API exception", t);
+            return null;
         }
     }
 
