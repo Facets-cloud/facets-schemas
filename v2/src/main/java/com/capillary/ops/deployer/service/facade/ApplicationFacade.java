@@ -567,7 +567,8 @@ public class ApplicationFacade {
                 applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         applicationRepository.delete(application);
         ecrService.deleteRepository(application);
-        return false;
+        codeBuildService.deleteProject(application);
+        return true;
     }
 
     public String getReleaseName(Application application, Environment environment) {
