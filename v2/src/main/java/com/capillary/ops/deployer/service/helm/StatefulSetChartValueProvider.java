@@ -24,6 +24,7 @@ public class StatefulSetChartValueProvider extends AbstractValueProvider {
         //this.addFields(getHPAConfigs(deployment), yaml);
         this.addFields(getHealthCheckConfigs(application), yaml);
         this.addField("elbIdleTimeoutSeconds", application.getElbIdleTimeoutSeconds(), yaml);
+        this.addFields(getPortDetails(application), yaml);
         return yaml;
     }
 }

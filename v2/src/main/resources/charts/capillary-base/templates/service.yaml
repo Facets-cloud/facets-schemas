@@ -25,7 +25,7 @@ metadata:
     heritage: "deployer"
   labels:
     app: {{ .Release.Name  }}
-    chart: {{ template "capillary-base-statefulset.chart" . }}
+    chart: {{ template "capillary-base.chart" . }}
     heritage: {{ .Release.Service }}
   {{- if .Values.zkPublish }}
     origin: k8s-cluster
