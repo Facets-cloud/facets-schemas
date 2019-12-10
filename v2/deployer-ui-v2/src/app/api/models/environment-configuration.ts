@@ -1,10 +1,12 @@
 /* tslint:disable */
+import { ClusterAutoscalerConfiguration } from './cluster-autoscaler-configuration';
 import { K8sLoggingConfiguration } from './k8s-logging-configuration';
 import { Kube2IamConfiguration } from './kube-2iam-configuration';
 import { ExternalDnsConfiguration } from './external-dns-configuration';
 import { S3DumpAwsConfig } from './s3dump-aws-config';
 import { SSLConfigs } from './sslconfigs';
 export interface EnvironmentConfiguration {
+  clusterAutoscalerConfiguration?: ClusterAutoscalerConfiguration;
   commonConfigs?: {[key: string]: string};
   commonCredentials?: {[key: string]: string};
   ecrMirrorRepo?: string;
@@ -12,6 +14,7 @@ export interface EnvironmentConfiguration {
   kube2IamConfiguration?: Kube2IamConfiguration;
   kubernetesApiEndpoint?: string;
   kubernetesToken?: string;
+  metricServerEnabled?: boolean;
   newRelicClusterName?: string;
   nodeGroup?: string;
   privateDnsConfiguration?: ExternalDnsConfiguration;

@@ -6,7 +6,7 @@ export interface Application {
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationRootDirectory?: string;
   applicationType?: 'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET';
-  buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3' | 'SBT';
+  buildType?: 'MVN' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3';
   ciEnabled?: boolean;
   commonConfigs?: {[key: string]: string};
   deploymentStrategy?: 'Recreate' | 'RollingUpdate';
