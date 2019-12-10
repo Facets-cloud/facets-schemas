@@ -26,7 +26,9 @@ export class SecretStatusColumnComponent implements OnInit {
         { context: {
           application: this.rowData['application'],
           environment: this.value['environment'],
-          secretName: this.rowData['secretName'] } });
+          secretName: this.rowData['secretName'],
+          secretType: this.rowData['secretType'],
+        } });
     dialogRef.onClose.subscribe(x => {
       this.updateResult.emit(true);
     });

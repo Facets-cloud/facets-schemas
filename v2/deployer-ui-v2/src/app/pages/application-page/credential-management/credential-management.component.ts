@@ -103,6 +103,7 @@ export class CredentialManagementComponent implements OnInit, OnChanges {
       request => {
         const row = {};
         row['secretName'] = request.secretName;
+        row['secretType'] = request.secretType;
         row['description'] = request.description;
         row['allowEdit'] = this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN');
         row['application'] = this.application;

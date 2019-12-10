@@ -12,7 +12,9 @@ export class RequestCredentialDialogComponent implements OnInit {
 
   @Input() application: Application;
 
-  secret: ApplicationSecretRequest = {};
+  secret: ApplicationSecretRequest = {
+    secretType: 'ENVIRONMENT',
+  };
 
   constructor(private applicationControllerService: ApplicationControllerService,
     protected ref: NbDialogRef<RequestCredentialDialogComponent>) { }
@@ -25,6 +27,7 @@ export class RequestCredentialDialogComponent implements OnInit {
       applicationFamily: this.application.applicationFamily,
       applicationId: this.application.id,
       applicationSecretRequests: [this.secret],
+
     }).subscribe(x => {
       this.ref.close();
     });

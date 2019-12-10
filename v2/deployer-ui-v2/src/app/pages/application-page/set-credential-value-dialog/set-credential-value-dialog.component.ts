@@ -16,6 +16,8 @@ export class SetCredentialValueDialogComponent implements OnInit {
 
   @Input() environment: string;
 
+  @Input() secretType: 'ENVIRONMENT' | 'FILE';
+
   applicationSecret: ApplicationSecret = {};
 
   constructor(protected ref: NbDialogRef<SetCredentialValueDialogComponent>,
