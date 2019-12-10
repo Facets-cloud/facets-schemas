@@ -21,7 +21,6 @@ import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
 import { Deployment } from '../models/deployment';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
-import { Monitoring } from '../models/monitoring';
 import { ApplicationPodDetails } from '../models/application-pod-details';
 import { ApplicationSecret } from '../models/application-secret';
 
@@ -54,7 +53,6 @@ class ApplicationControllerService extends __BaseService {
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getApplicationSecretRequestsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
   static readonly createAppSecretRequestUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
-  static readonly getApplicationTagsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/tags';
   static readonly processWebhookPRBitbucketUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/bitbucket';
   static readonly processWebhookPRGithubUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/github';
   static readonly getEnvironmentMetaDataUsingGETPath = '/api/{applicationFamily}/environmentMetaData';
@@ -67,7 +65,6 @@ class ApplicationControllerService extends __BaseService {
   static readonly getDumpFileListUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps';
   static readonly downloadDumpFileUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/dumps/download';
   static readonly haltApplicationUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/halt';
-  static readonly getMonitoringDetailsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
   static readonly enableMonitoringUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
   static readonly disableMonitoringUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/monitoring';
   static readonly getApplicationPodDetailsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/podDetails';
@@ -1065,53 +1062,6 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `ApplicationControllerService.GetApplicationTagsUsingGETParams` containing the following parameters:
-   *
-   * - `applicationId`: applicationId
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  getApplicationTagsUsingGETResponse(params: ApplicationControllerService.GetApplicationTagsUsingGETParams): __Observable<__StrictHttpResponse<Array<string>>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/tags`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<Array<string>>;
-      })
-    );
-  }
-  /**
-   * @param params The `ApplicationControllerService.GetApplicationTagsUsingGETParams` containing the following parameters:
-   *
-   * - `applicationId`: applicationId
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  getApplicationTagsUsingGET(params: ApplicationControllerService.GetApplicationTagsUsingGETParams): __Observable<Array<string>> {
-    return this.getApplicationTagsUsingGETResponse(params).pipe(
-      __map(_r => _r.body as Array<string>)
-    );
-  }
-
-  /**
    * @param params The `ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams` containing the following parameters:
    *
    * - `webhook`: webhook
@@ -1724,58 +1674,6 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `ApplicationControllerService.GetMonitoringDetailsUsingGETParams` containing the following parameters:
-   *
-   * - `environment`: environment
-   *
-   * - `applicationId`: applicationId
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  getMonitoringDetailsUsingGETResponse(params: ApplicationControllerService.GetMonitoringDetailsUsingGETParams): __Observable<__StrictHttpResponse<Monitoring>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/monitoring`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<Monitoring>;
-      })
-    );
-  }
-  /**
-   * @param params The `ApplicationControllerService.GetMonitoringDetailsUsingGETParams` containing the following parameters:
-   *
-   * - `environment`: environment
-   *
-   * - `applicationId`: applicationId
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  getMonitoringDetailsUsingGET(params: ApplicationControllerService.GetMonitoringDetailsUsingGETParams): __Observable<Monitoring> {
-    return this.getMonitoringDetailsUsingGETResponse(params).pipe(
-      __map(_r => _r.body as Monitoring)
-    );
-  }
-
-  /**
    * @param params The `ApplicationControllerService.EnableMonitoringUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2376,22 +2274,6 @@ module ApplicationControllerService {
   }
 
   /**
-   * Parameters for getApplicationTagsUsingGET
-   */
-  export interface GetApplicationTagsUsingGETParams {
-
-    /**
-     * applicationId
-     */
-    applicationId: string;
-
-    /**
-     * applicationFamily
-     */
-    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
-  }
-
-  /**
    * Parameters for processWebhookPRBitbucketUsingPOST
    */
   export interface ProcessWebhookPRBitbucketUsingPOSTParams {
@@ -2604,27 +2486,6 @@ module ApplicationControllerService {
    * Parameters for haltApplicationUsingPOST
    */
   export interface HaltApplicationUsingPOSTParams {
-
-    /**
-     * environment
-     */
-    environment: string;
-
-    /**
-     * applicationId
-     */
-    applicationId: string;
-
-    /**
-     * applicationFamily
-     */
-    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
-  }
-
-  /**
-   * Parameters for getMonitoringDetailsUsingGET
-   */
-  export interface GetMonitoringDetailsUsingGETParams {
 
     /**
      * environment
