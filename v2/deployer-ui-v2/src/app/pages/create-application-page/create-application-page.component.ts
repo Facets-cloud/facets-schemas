@@ -34,6 +34,7 @@ export class CreateApplicationPageComponent implements OnInit {
         title: 'Name',
         filter: false,
         width: '34%',
+        editable: false,
       },
       containerPort: {
         title: 'Container Port',
@@ -63,6 +64,8 @@ export class CreateApplicationPageComponent implements OnInit {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      editConfirm: true,
+      confirmSave: true,
     },
     pager: {
       display: true,
@@ -80,6 +83,7 @@ export class CreateApplicationPageComponent implements OnInit {
         title: 'Name',
         filter: false,
         width: '20%',
+        editable: false,
       },
       accessMode: {
         title: 'Access Mode',
@@ -99,18 +103,13 @@ export class CreateApplicationPageComponent implements OnInit {
         },
       },
       storageSize: {
-        title: 'Storage Size',
+        title: 'Storage Size (Gi)',
         filter: false,
         width: '20%',
         editor: { type: 'custom', component: NumberComponentDynamicComponent },
       },
-      volumeDirectory: {
-        title: 'Path',
-        filter: false,
-        width: '20%',
-      },
       mountPath: {
-        title: 'Sub Path',
+        title: 'Path',
         filter: false,
         width: '20%',
       },
@@ -122,14 +121,11 @@ export class CreateApplicationPageComponent implements OnInit {
       cancelButtonContent: '<i class="nb-close"></i>',
       confirmCreate: true,
     },
-    delete: {
-      confirmDelete: true,
-      deleteButtonContent: '<i class="nb-trash"></i>',
-    },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true,
     },
     pager: {
       display: true,
@@ -221,7 +217,69 @@ export class CreateApplicationPageComponent implements OnInit {
     event.confirm.resolve(event.newData);
   }
 
+  validateEditPort(event) {
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid port name: ' + event.newData['name'] +
+      '. Port name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+    }
+
+    event.confirm.resolve(event.newData);
+  }
+
   validatePVC(event) {
+    if (this.application.pvcList.map(x => x.name).includes(event.newData['name'])) {
+      this.nbToastrService.danger('Duplicate PVC name not allowed', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid PVC name: ' + event.newData['name'] +
+      '. PVC name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[1-9][0-9]+$/.test(event.newData['storageSize'])) {
+      this.nbToastrService.danger('Invalid PVC storage size: ' + event.newData['name'] +
+      '. Storage size can only contain numeric values', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[A-Za-z][A-Za-z-]*[A-Za-z]+$/.test(event.newData['mountPath'])) {
+      this.nbToastrService.danger('Invlid PVC path: ' + event.newData['name'] +
+      '. Path can only contain alphabets separated by -', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    event.confirm.resolve(event.newData);
+  }
+
+  validateEditPVC(event) {
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid PVC name: ' + event.newData['name'] +
+      '. PVC name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[1-9][0-9]+$/.test(event.newData['storageSize'])) {
+      this.nbToastrService.danger('Invalid PVC storage size: ' + event.newData['name'] +
+      '. Storage size can only contain numeric values', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[A-Za-z][A-Za-z-]*[A-Za-z]+$/.test(event.newData['mountPath'])) {
+      this.nbToastrService.danger('Invlid PVC path: ' + event.newData['name'] +
+      '. Path can only contain alphabets separated by -', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
     event.confirm.resolve(event.newData);
   }
 

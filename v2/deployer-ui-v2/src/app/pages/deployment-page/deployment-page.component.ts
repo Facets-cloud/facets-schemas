@@ -31,6 +31,7 @@ export class DeploymentPageComponent implements OnInit {
         title: 'Key',
         filter: false,
         width: '45%',
+        editable: false,
       },
       value: {
         title: 'Value',

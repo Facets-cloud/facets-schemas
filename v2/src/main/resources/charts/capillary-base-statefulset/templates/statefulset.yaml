@@ -71,9 +71,8 @@ spec:
           {{- end }}
           {{- range .Values.persistentVolumeClaims }}
           {{- with . }}
-            - name: "{{ .name }}"
-              mountPath: {{ .mountPath }}
-              subPath: {{ .volumeDirectory }}
+            - name: "{{ .name }}-vol"
+              mountPath: "/mnt/{{ .mountPath }}"
           {{- end }}
           {{- end }}
           ports:

@@ -34,6 +34,13 @@
             <button nbButton nbStepperNext (click)="appFamilySelected(stepper)">next</button>
           </div>
         </nb-step>
+        <nb-step  label="Configure Storage" *ngIf="application?.applicationType == 'STATEFUL_SET'" >
+          <ng2-smart-table   (createConfirm)="validatePVC($event)" (editConfirm)="validateEditPVC($event)"  (deleteConfirm)="onDeletePVC($event)" [settings]="persistantVolumeLayout" [source]="application.pvcList">
+          </ng2-smart-table>
+          <div style="padding-top: 1rem; float: right;">
+            <button nbButton nbStepperNext >next</button>
+          </div>
+        </nb-step>
         <nb-step [stepControl]="appDetailsForm" label="Configure Application Details">
           <form #appDetailsForm="ngForm">
             <div style="margin: auto; width: 70%; min-width: 300px;">
@@ -125,7 +132,7 @@
               </div>
 
               <div class="form-group row">
-                <label for="strictGitflowEnabled" class="label col-sm-4">CI Enabled</label>
+                <label for="strictGitflowEnabled" class="label col-sm-4">Enable Strict Gitflow</label>
                 <div class="col-sm-8">
                   <nb-toggle [(ngModel)]="application.strictGitFlowModeEnabled" name="strictGitflowEnabled" #strictGitflowEnabled="ngModel" id="strictGitflowEnabled">Strict Gitflow Enabled</nb-toggle>
                 </div>
@@ -156,15 +163,8 @@
             </div>
           </form>
         </nb-step>
-        <nb-step  label="Configure Storage" *ngIf="application?.applicationType == 'STATEFUL_SET'" >
-          <ng2-smart-table   (createConfirm)="validatePVC($event)"  (deleteConfirm)="onDeletePVC($event)" [settings]="persistantVolumeLayout" [source]="application.pvcList">
-          </ng2-smart-table>
-          <div style="padding-top: 1rem; float: right;">
-            <button nbButton nbStepperNext >next</button>
-          </div>
-        </nb-step>
         <nb-step label="Configure Ports" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
-          <ng2-smart-table (createConfirm)="validatePort($event)" [settings]="settings" [source]="application.ports">
+          <ng2-smart-table (createConfirm)="validatePort($event)" (editConfirm)="validateEditPort($event)" [settings]="settings" [source]="application.ports">
           </ng2-smart-table>
           <div style="padding-top: 1rem; float: right;">
             <button nbStepperNext nbButton>Next</button>
