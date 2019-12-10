@@ -8,5 +8,6 @@ public enum BuildType {
     JDK6_MAVEN2,
     MJ_NUGET,
     DOTNET_CORE22,
-    DOTNET_CORE3
+    DOTNET_CORE3,
+    SBT
 }
