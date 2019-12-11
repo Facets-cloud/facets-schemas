@@ -16,7 +16,7 @@
               <button *ngIf="!stopped && !stopping" nbButton outline status="danger" (click)="showHaltPodsDialog(haltConfirmDialog)">Stop All Pods</button>
               <button *ngIf="stopped" nbButton outline status="info" (click)="startPods()">Start All Pods</button>
           </div>
-        <ng2-smart-table [settings]="settings" [source]="application?.applicationType !== 'SCHEDULED_JOB' ? deploymentStatus?.pods : appPodDetails"></ng2-smart-table>
+          <ng2-smart-table [settings]="settings" [source]="deploymentStatus?.pods"></ng2-smart-table>
       </nb-accordion-item-body>
     </nb-accordion-item>
     <nb-accordion-item>

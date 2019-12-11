@@ -20,7 +20,16 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}
+            release: {{ .Release.Name }}
+          annotations:
+            deploymentId: {{ .Values.deploymentId }}
+            buildId: {{ .Values.buildId }}
+            cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
         spec:
+
           restartPolicy: "Never"
           concurrencyPolicy: {{ .Values.concurrencyPolicy }}
           volumes:

@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -24,9 +25,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.capillary.ops.deployer.bo.Application.ApplicationType.SCHEDULED_JOB;
 
 @Profile("!dev")
 @Service
@@ -93,12 +97,20 @@ public class KubernetesService implements IKubernetesService {
     @Override
     public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        ApplicationServiceDetails applicationServiceDetails = null;
+        ApplicationDeploymentDetails applicationDeploymentDetails;
+        Map<String, String> selectors = new HashMap<>();
+        if (application.getApplicationType().equals(SCHEDULED_JOB)) {
+            applicationDeploymentDetails = getCronjobDeploymentDetails(deploymentName, kubernetesClient);
+            selectors = ImmutableMap.of("app", deploymentName);
+        } else {
+            applicationServiceDetails = getApplicationServiceDetails(deploymentName, kubernetesClient);
+            applicationDeploymentDetails= getApplicationDeploymentDetails(deploymentName, kubernetesClient);
+            selectors = applicationServiceDetails.getSelectors();
+        }
 
-        ApplicationServiceDetails applicationServiceDetails = getApplicationServiceDetails(deploymentName, kubernetesClient);
-        ApplicationDeploymentDetails applicationDeploymentDetails = getApplicationDeploymentDetails(deploymentName, kubernetesClient);
-        List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(deploymentName,
-                applicationServiceDetails.getSelectors(), kubernetesClient);
-
+        List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(
+                deploymentName, selectors, kubernetesClient);
         return new DeploymentStatusDetails(applicationServiceDetails, applicationDeploymentDetails, applicationPodDetails);
     }
 
@@ -167,7 +179,8 @@ public class KubernetesService implements IKubernetesService {
         return null;
     }
 
-    private ApplicationDeploymentDetails getApplicationDeploymentDetails(String deploymentName, KubernetesClient kubernetesClient) {
+    private ApplicationDeploymentDetails getApplicationDeploymentDetails(String deploymentName,
+                                                                         KubernetesClient kubernetesClient) {
         logger.info("getting deployment with name: {}", deploymentName);
         io.fabric8.kubernetes.api.model.apps.Deployment deployment = kubernetesClient.extensions()
                 .deployments().
@@ -211,6 +224,37 @@ public class KubernetesService implements IKubernetesService {
         return null;
     }
 
+    private ApplicationDeploymentDetails getCronjobDeploymentDetails(String deploymentName,
+                                                                         KubernetesClient kubernetesClient) {
+        logger.info("getting cronjob with name: {}", deploymentName);
+        CronJob cronjob = kubernetesClient.batch()
+                .cronjobs()
+                .inNamespace(NAMESPACE)
+                .withName(deploymentName)
+                .get();
+
+        if (cronjob != null) {
+            ObjectMeta cronjobMetadata = cronjob.getMetadata();
+
+            Map<String, String> environmentConfigs = getEnvironmentConfigs(kubernetesClient, deploymentName);
+            logger.info("found environment configs for cronjob: {}", deploymentName);
+
+            List<String> credentialsList = getCredentialsList(kubernetesClient, deploymentName);
+            logger.info("found credentials list for cronjob: {}", deploymentName);
+
+            return new ApplicationDeploymentDetails(
+                    cronjobMetadata.getName(),
+                    environmentConfigs,
+                    credentialsList,
+                    null,
+                    cronjobMetadata.getLabels(),
+                    null,
+                    cronjobMetadata.getCreationTimestamp());
+        }
+
+        return null;
+    }
+
     private HPADetails getHPADetails(HorizontalPodAutoscaler hpa) {
         return new HPADetails(hpa.getSpec().getMinReplicas(),
                 hpa.getSpec().getMaxReplicas(),
@@ -221,7 +265,7 @@ public class KubernetesService implements IKubernetesService {
     }
 
     private Map<String, String> getEnvironmentConfigs(KubernetesClient kubernetesClient, String deploymentName) {
-        Secret secret = kubernetesClient.secrets().inNamespace("default").withName(deploymentName + "-configs").get();
+        Secret secret = kubernetesClient.secrets().inNamespace(NAMESPACE).withName(deploymentName + "-configs").get();
         return secret == null ? null : decodeConfigValues(secret);
     }
 
