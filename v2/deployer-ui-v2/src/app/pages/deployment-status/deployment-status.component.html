@@ -26,7 +26,7 @@
       </ng2-smart-table>
     </nb-accordion-item-body>
     </nb-accordion-item>
-    <nb-accordion-item *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
+    <nb-accordion-item *ngIf="application?.applicationType === 'SERVICE'">
       <nb-accordion-item-header>Autoscaling Status</nb-accordion-item-header>
       <nb-accordion-item-body>
       <div class="row">

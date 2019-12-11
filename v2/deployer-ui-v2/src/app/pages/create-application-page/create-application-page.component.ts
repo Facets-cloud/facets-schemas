@@ -82,13 +82,13 @@ export class CreateApplicationPageComponent implements OnInit {
       name: {
         title: 'Name',
         filter: false,
-        width: '20%',
+        width: '24%',
         editable: false,
       },
       accessMode: {
         title: 'Access Mode',
         filter: false,
-        width: '20%',
+        width: '24%',
         defaultValue: 'ReadWriteOnce',
         editor: {
           type: 'list',
@@ -105,13 +105,13 @@ export class CreateApplicationPageComponent implements OnInit {
       storageSize: {
         title: 'Storage Size (Gi)',
         filter: false,
-        width: '20%',
+        width: '24%',
         editor: { type: 'custom', component: NumberComponentDynamicComponent },
       },
       mountPath: {
         title: 'Path',
         filter: false,
-        width: '20%',
+        width: '24%',
       },
     },
     noDataMessage: '',
@@ -133,6 +133,7 @@ export class CreateApplicationPageComponent implements OnInit {
     },
     actions: {
       position: 'right',
+      delete: false,
     },
   };
 

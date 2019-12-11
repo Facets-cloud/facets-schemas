@@ -34,13 +34,6 @@
             <button nbButton nbStepperNext (click)="appFamilySelected(stepper)">next</button>
           </div>
         </nb-step>
-        <nb-step  label="Configure Storage" *ngIf="application?.applicationType == 'STATEFUL_SET'" >
-          <ng2-smart-table   (createConfirm)="validatePVC($event)" (editConfirm)="validateEditPVC($event)"  (deleteConfirm)="onDeletePVC($event)" [settings]="persistantVolumeLayout" [source]="application.pvcList">
-          </ng2-smart-table>
-          <div style="padding-top: 1rem; float: right;">
-            <button nbButton nbStepperNext >next</button>
-          </div>
-        </nb-step>
         <nb-step [stepControl]="appDetailsForm" label="Configure Application Details">
           <form #appDetailsForm="ngForm">
             <div style="margin: auto; width: 70%; min-width: 300px;">
@@ -112,7 +105,7 @@
                     id="elbIdleTimeoutSeconds" [(ngModel)]="application.elbIdleTimeoutSeconds" placeholder="60">
                 </div>
               </div>
-              <div class="form-group row" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
+              <div class="form-group row" *ngIf="application?.applicationType === 'SERVICE'">
                 <label for="deploymentStrategy" class="label col-sm-4">Deployment Strategy</label>
                 <div class="col-sm-8">
                   <nb-select fullWidth size="small" required [(ngModel)]="application.deploymentStrategy"
@@ -162,6 +155,13 @@
               <button nbStepperNext [disabled]="!appDetailsForm.valid" nbButton>Next</button>
             </div>
           </form>
+        </nb-step>
+        <nb-step  label="Configure Storage" *ngIf="application?.applicationType == 'STATEFUL_SET'" >
+          <ng2-smart-table   (createConfirm)="validatePVC($event)" (editConfirm)="validateEditPVC($event)"  (deleteConfirm)="onDeletePVC($event)" [settings]="persistantVolumeLayout" [source]="application.pvcList">
+          </ng2-smart-table>
+          <div style="padding-top: 1rem; float: right;">
+            <button nbButton nbStepperNext >next</button>
+          </div>
         </nb-step>
         <nb-step label="Configure Ports" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
           <ng2-smart-table (createConfirm)="validatePort($event)" (editConfirm)="validateEditPort($event)" [settings]="settings" [source]="application.ports">
