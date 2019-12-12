@@ -74,7 +74,6 @@ export class DeploymentStatusComponent implements OnInit {
       this.environment = params.get('environment');
       this.loadApplication();
       this.loadDeploymentStatus();
-      this.loadPodDetails();
       this.loadApplication();
     });
   }
