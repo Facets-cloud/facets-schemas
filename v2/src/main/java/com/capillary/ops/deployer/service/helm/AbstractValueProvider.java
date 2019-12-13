@@ -60,22 +60,22 @@ public abstract class AbstractValueProvider {
         return configMap;
     }
 
-    public Map<String, String> getCredentialsMap(Environment environment, Application application) {
-        List<ApplicationSecret> savedSecrets = secretService.getApplicationSecrets(
-                environment.getEnvironmentMetaData().getName(),
-                application.getApplicationFamily(),
-                application.getId());
+    public Map<String, Object> getCredentialsMap(Environment environment, Application application) {
+        Map<String, Object> credentialsList = new HashMap<>();
+        List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(
+                environment.getEnvironmentMetaData().getName(), application.getApplicationFamily(), application.getId());
+        Map<String, ApplicationSecretRequest> requests = secretService.getApplicationSecretRequests(application.getApplicationFamily(), application.getId())
+                .stream().collect(Collectors.toMap(ApplicationSecretRequest::getSecretName, Function.identity()));
+        Map<String, ApplicationSecret> envSecrets = applicationSecrets.stream()
+                .filter(x -> requests.get(x.getSecretName()).getSecretType() != null && requests.get(x.getSecretName()).getSecretType().equals(ApplicationSecretRequest.SecretType.ENVIRONMENT))
+                .collect(Collectors.toMap(ApplicationSecret::getSecretName, Function.identity()));
 
-        Map<String, String> secretMap = Maps.newHashMapWithExpectedSize(savedSecrets.size());
-        if(savedSecrets != null) {
-            savedSecrets.stream().filter(x -> x.getSecretStatus()
-                    .equals(ApplicationSecret.SecretStatus.FULFILLED))
-                    .forEach(x -> secretMap.put(x.getSecretName(), x.getSecretValue()));
-        }
-        if(environment.getEnvironmentConfiguration().getCommonCredentials() != null) {
-            secretMap.putAll(environment.getEnvironmentConfiguration().getCommonCredentials());
-        }
-        return secretMap;
+        envSecrets.values().stream().forEach(x -> {
+            if (envSecrets.containsKey(x.getSecretName())) {
+                credentialsList.put(x.getSecretName().toLowerCase(),envSecrets.get(x.getSecretName()).getSecretValue());
+            }
+        });
+        return credentialsList;
     }
 
     public String getSSLCertificateName(Application application, Environment environment) {

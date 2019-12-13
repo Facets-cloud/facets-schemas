@@ -534,6 +534,29 @@ public class HelmServiceIntegrationTest {
         application.setPvcList(Arrays.asList(new PVC("data-pvc",PVC.AccessMode.ReadOnlyMany,100,"/usr/share/test","mnt")));
         application.setLoadBalancerType(LoadBalancerType.INTERNAL);
         application.setDnsType(Application.DnsType.PRIVATE);
+
+        // update secrets and env
+        secretService.initializeApplicationSecrets(
+                Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
+                        application.getId(), "CREDENTIAL1", "")));
+        secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
+                application.getId(),
+                Arrays.asList(
+                        new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
+                                "CREDENTIAL1", "CREDENTIAL_VALUE1",
+                                ApplicationSecret.SecretStatus.FULFILLED)));
+
+        secretService.initializeApplicationSecrets(
+                Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
+                        application.getId(), "CREDENTIALFILE1", "",
+                        ApplicationSecretRequest.SecretType.FILE, "")));
+        secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
+                application.getId(),
+                Arrays.asList(
+                        new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
+                                "CREDENTIALFILE1", Base64.getEncoder().encodeToString("CREDENTIALFILE1".getBytes()),
+                                ApplicationSecret.SecretStatus.FULFILLED)));
+
         Deployment deployment = createDeployment(application);
         deployment.setImage("hello-world:latest");
         deployment.setHorizontalPodAutoscaler(null);
@@ -541,7 +564,18 @@ public class HelmServiceIntegrationTest {
         StatefulSet statefulSet = kubernetesClient.apps().statefulSets().inNamespace("default").withName(application.getName()).get();
         Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
 
+        final List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
+                pod -> pod.getMetadata().getAnnotations() != null &&
+                        deployment.getId().equalsIgnoreCase(pod.getMetadata().getAnnotations().get("deploymentId"))
+        ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(deployment.getBuildId()))
+                .filter(pod -> pod.getMetadata().getLabels().get("app").equalsIgnoreCase(application.getName()))
+                .collect(Collectors.toList());
+
         Assert.assertEquals("data-pvc-vol", statefulSet.getSpec().getVolumeClaimTemplates().get(0).getMetadata().getName());
+        Assert.assertEquals("CREDENTIAL_VALUE1", pods.get(0).getSpec().getContainers().get(0)
+                .getEnv().stream().filter(x -> x.getName().equals("credential1")).findAny().get().getValue());
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-file-credentials").get().getData().containsKey("CREDENTIALFILE1"));
+        Assert.assertFalse(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIALFILE1"));
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
