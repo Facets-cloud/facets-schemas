@@ -10,5 +10,5 @@ public enum BuildType {
     DOTNET_CORE22,
     DOTNET_CORE3,
     SBT,
-    NODEJS;
+    NPM;
 }

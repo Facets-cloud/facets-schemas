@@ -179,8 +179,8 @@ public class CodeBuildService implements ICodeBuildService {
                 return new Dotnet22BuildSpec(application, testBuild);
             case SBT:
                 return new SbtBuildSpec(application, testBuild);
-            case NODEJS:
-                return new NodejsBuildSpec(application, testBuild);
+            case NPM:
+                return new NPMBuildSpec(application, testBuild);
             default:
                 throw new NotImplementedException();
         }
