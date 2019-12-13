@@ -36,15 +36,12 @@ spec:
         {{- with . }}
         - name: "{{ .name }}-vol"
           secret:
-            secretName: "{{ $releaseName  }}-file-credentials"
+            secretName: "{{ .Release.Name  }}-file-credentials"
             items:
               - key: {{ .name }}
                 path: "."
         {{- end }}
         {{- end }}
-        - name: {{ $releaseName  }}-file-credentials-vol
-          secret:
-            secretName: {{ $releaseName  }}-file-credentials
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
@@ -66,8 +63,12 @@ spec:
   {{- end }}
           imagePullPolicy: IfNotPresent
           volumeMounts:
-            - name: {{ $releaseName  }}-file-credentials-vol
-              mountPath: /etc/credentialfiles/
+          {{- range .Values.secretFileMounts }}
+          {{- with . }}
+            - name: "{{ .name }}-vol"
+              mountPath: {{ .mountPath }}
+          {{- end }}
+          {{- end }}
           {{- range .Values.persistentVolumeClaims }}
           {{- with . }}
             - name: "{{ .name }}-vol"
