@@ -9,5 +9,6 @@ public enum BuildType {
     MJ_NUGET,
     DOTNET_CORE22,
     DOTNET_CORE3,
-    SBT
+    SBT,
+    NODEJS;
 }
