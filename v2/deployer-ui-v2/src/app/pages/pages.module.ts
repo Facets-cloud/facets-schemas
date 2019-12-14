@@ -30,6 +30,7 @@ import { ButtonDownloadComponent } from './application-page/app-dumps/button.dow
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './application-page/monitoring/monitoring.component';
 import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-pod-action-dialog/excecute-pod-action-dialog.component';
+import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoComponent } from './application-page/executed-actions/executed-actions.component';
 
 @NgModule({
   imports: [
@@ -92,8 +93,12 @@ import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-p
     NewRelicLinkViewComponent,
     MonitoringEnableButtonComponent,
     ExcecutePodActionDialogComponent,
+    ExecutedActionsComponent,
+    DialogActionInfoComponent,
+    ButtonActionInfoComponent,
   ],
-  entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent, ExcecutePodActionDialogComponent],
+  entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent,
+    ExcecutePodActionDialogComponent, DialogActionInfoComponent, ButtonActionInfoComponent],
 })
 export class PagesModule {
 }

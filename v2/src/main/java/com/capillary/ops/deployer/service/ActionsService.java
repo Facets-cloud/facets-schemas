@@ -1,15 +1,20 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.BuildType;
+import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ActionType;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.actions.CreationStatus;
+import com.capillary.ops.deployer.repository.ActionExecutionRepository;
 import com.capillary.ops.deployer.repository.ApplicationActionRepository;
 import com.capillary.ops.deployer.service.interfaces.IActionsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +25,9 @@ public class ActionsService implements IActionsService {
 
     @Autowired
     private ApplicationActionRepository applicationActionRepository;
+
+    @Autowired
+    private ActionExecutionRepository actionExecutionRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ActionsService.class);
 
@@ -43,5 +51,12 @@ public class ActionsService implements IActionsService {
         applicationAction.setActionType(ActionType.GENERIC);
         applicationAction.setCreationStatus(CreationStatus.FULFILLED);
         return applicationActionRepository.save(applicationAction);
+    }
+
+    @Override
+    public List<ActionExecution> getLastNExecutions(String applicationId, int n, String property) {
+        Page<ActionExecution> executions = actionExecutionRepository.findAllByApplicationId(
+                applicationId, PageRequest.of(0, n, Sort.by(property).descending()));
+        return executions.getContent();
     }
 }

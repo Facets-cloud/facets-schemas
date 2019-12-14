@@ -50,22 +50,22 @@ public class KubernetesService implements IKubernetesService {
 
         @Override
         public void onOpen(Response response) {
-            System.out.println("inside onOpen");
-            System.out.println("response = " + response);
-            System.out.println("The shell will remain open for 10 seconds.");
+            logger.info("inside onOpen");
+            logger.info("response: {}", response);
+            logger.info("The shell will remain open for 10 seconds.");
         }
 
         @Override
         public void onFailure(Throwable t, Response response) {
-            System.out.println("inside onFailure");
-            System.out.println("response = " + response);
-            System.err.println("shell barfed");
+            logger.info("inside onFailure");
+            logger.info("response: {}", response);
+            logger.info("shell barfed");
         }
 
         @Override
         public void onClose(int code, String reason) {
-            System.out.println("inside onClose");
-            System.out.println("The shell will now close.");
+            logger.info("inside onClose");
+            logger.info("The shell will now close.");
         }
     }
 
@@ -154,10 +154,10 @@ public class KubernetesService implements IKubernetesService {
         String actionPath = applicationAction.getPath();
         String arguments = applicationAction.getArguments();
         if (org.springframework.util.StringUtils.isEmpty(arguments)) {
-            return new String[]{actionPath, "&"};
+            return new String[]{actionPath};
         }
 
-        return new String[]{actionPath, arguments, "&"};
+        return new String[]{actionPath, arguments};
     }
 
     private ByteArrayOutputStream executeKubeCommand(Environment environment, String podName, String[] command) throws Exception {
@@ -193,11 +193,13 @@ public class KubernetesService implements IKubernetesService {
         logger.info("executing commmand: {} on pod: {}", command, podName);
         try {
             ByteArrayOutputStream outputStream = executeKubeCommand(environment, podName, command);
+            String output = new String(outputStream.toByteArray());
+            actionExecution.setOutput(output);
             outputStream.close();
         } catch (Exception ex) {
             logger.error("error happened while trying to execute application action: {}", applicationAction, ex);
             actionExecution.setTriggerStatus(TriggerStatus.FAILURE);
-            actionExecution.setTriggerException(ex);
+            actionExecution.setTriggerException(ex.getMessage());
         }
 
         return actionExecution;

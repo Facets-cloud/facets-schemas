@@ -1,9 +1,11 @@
 /* tslint:disable */
 import { ApplicationAction } from './application-action';
-import { Exception } from './exception';
 export interface ActionExecution {
   action?: ApplicationAction;
-  triggerException?: Exception;
+  applicationId?: string;
+  id?: string;
+  output?: string;
+  triggerException?: string;
   triggerStatus?: 'SUCCESS' | 'FAILURE';
   triggerTime?: number;
 }

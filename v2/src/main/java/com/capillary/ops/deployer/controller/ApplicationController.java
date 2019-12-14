@@ -211,6 +211,12 @@ public class ApplicationController {
         return applicationFacade.executeActionOnPod(applicationFamily, environment, applicationId, podName, applicationAction);
     }
 
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/executedActions", produces = "application/json")
+    public List<ActionExecution> getExecutedActionsForApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                                  @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getExecutedActionsForApplication(applicationFamily, applicationId);
+    }
+
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/pods/{podName}/actions",
             produces = "application/json")
     public List<ApplicationAction> getActionsForPod(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,

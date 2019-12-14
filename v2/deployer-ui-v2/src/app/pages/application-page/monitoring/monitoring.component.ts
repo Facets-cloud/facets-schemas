@@ -78,7 +78,6 @@ export class MonitoringComponent implements OnInit, OnChanges {
 
 
   private async getMonitoringDetails() {
-    console.log("running");
     const monitoringDetails = [];
     this.environments =
       await this.applicationControllerService.getEnvironmentMetaDataUsingGET(this.application.applicationFamily).toPromise();
