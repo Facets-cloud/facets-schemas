@@ -61,7 +61,7 @@ public abstract class AbstractValueProvider {
     }
 
     public Map<String, Object> getCredentialsMap(Environment environment, Application application) {
-        Map<String, Object> credentialsList = new HashMap<>();
+        Map<String, Object> credentialsMap = new HashMap<>();
         List<ApplicationSecret> applicationSecrets = secretService.getApplicationSecrets(
                 environment.getEnvironmentMetaData().getName(), application.getApplicationFamily(), application.getId());
         Map<String, ApplicationSecretRequest> requests = secretService.getApplicationSecretRequests(application.getApplicationFamily(), application.getId())
@@ -72,10 +72,13 @@ public abstract class AbstractValueProvider {
 
         envSecrets.values().stream().forEach(x -> {
             if (envSecrets.containsKey(x.getSecretName())) {
-                credentialsList.put(x.getSecretName().toLowerCase(),envSecrets.get(x.getSecretName()).getSecretValue());
+                credentialsMap.put(x.getSecretName(),envSecrets.get(x.getSecretName()).getSecretValue());
             }
         });
-        return credentialsList;
+        if(environment.getEnvironmentConfiguration().getCommonCredentials() != null) {
+            credentialsMap.putAll(environment.getEnvironmentConfiguration().getCommonCredentials());
+        }
+        return credentialsMap;
     }
 
     public String getSSLCertificateName(Application application, Environment environment) {

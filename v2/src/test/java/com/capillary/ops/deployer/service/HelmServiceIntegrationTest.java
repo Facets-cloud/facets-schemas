@@ -572,10 +572,10 @@ public class HelmServiceIntegrationTest {
                 .collect(Collectors.toList());
 
         Assert.assertEquals("data-pvc-vol", statefulSet.getSpec().getVolumeClaimTemplates().get(0).getMetadata().getName());
-        Assert.assertEquals("CREDENTIAL_VALUE1", pods.get(0).getSpec().getContainers().get(0)
-                .getEnv().stream().filter(x -> x.getName().equals("credential1")).findAny().get().getValue());
-        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-file-credentials").get().getData().containsKey("CREDENTIALFILE1"));
+        Assert.assertTrue(pods.get(0).getSpec().getContainers().get(0).getEnv().stream().anyMatch(x -> x.getName().equals("CREDENTIAL1")));
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-file-credentials").get().getData().containsKey("credentialfile1"));
         Assert.assertFalse(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIALFILE1"));
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIAL1"));
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
