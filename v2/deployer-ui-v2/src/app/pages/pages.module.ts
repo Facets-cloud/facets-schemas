@@ -15,7 +15,7 @@ import { BuildInfoComponent } from './application-page/build-info/build-info.com
 import { SmartTableCustomActionsComponent } from './application-page/smart-table-custom-actions/smart-table-custom-actions.component';
 import { BuildLogsComponent } from './application-page/build-logs/build-logs.component';
 import { DeploymentPageComponent } from './deployment-page/deployment-page.component';
-import { DeploymentStatusComponent } from './deployment-status/deployment-status.component';
+import { DeploymentStatusComponent, PodActionsColumnComponent } from './deployment-status/deployment-status.component';
 import { CredentialManagementComponent } from './application-page/credential-management/credential-management.component';
 import { SecretStatusColumnComponent } from './application-page/secret-status-column/secret-status-column.component';
 import { RequestCredentialDialogComponent } from './application-page/request-credential-dialog/request-credential-dialog.component';
@@ -29,6 +29,8 @@ import { AppDumpsComponent } from './application-page/app-dumps/app-dumps.compon
 import { ButtonDownloadComponent } from './application-page/app-dumps/button.download.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './application-page/monitoring/monitoring.component';
+import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-pod-action-dialog/excecute-pod-action-dialog.component';
+import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoComponent } from './application-page/executed-actions/executed-actions.component';
 
 @NgModule({
   imports: [
@@ -72,6 +74,7 @@ import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonC
     BuildLogsComponent,
     DeploymentPageComponent,
     DeploymentStatusComponent,
+    PodActionsColumnComponent,
     CredentialManagementComponent,
     SecretStatusColumnComponent,
     RequestCredentialDialogComponent,
@@ -89,8 +92,13 @@ import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonC
     MonitoringComponent,
     NewRelicLinkViewComponent,
     MonitoringEnableButtonComponent,
+    ExcecutePodActionDialogComponent,
+    ExecutedActionsComponent,
+    DialogActionInfoComponent,
+    ButtonActionInfoComponent,
   ],
-  entryComponents: [BuildDialogComponent, ButtonDownloadComponent],
+  entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent,
+    ExcecutePodActionDialogComponent, DialogActionInfoComponent, ButtonActionInfoComponent],
 })
 export class PagesModule {
 }

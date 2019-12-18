@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.actions.ActionExecution;
+import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
@@ -197,6 +199,38 @@ public class ApplicationController {
                                       @PathVariable("environment") String environment,
                                       @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getApplicationPodDetails(applicationFamily, environment, applicationId);
+    }
+
+    @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/pods/{podName}/actions/executeAction",
+            produces = "application/json")
+    public ActionExecution executeActionOnPod(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                              @PathVariable("environment") String environment,
+                                              @PathVariable("applicationId") String applicationId,
+                                              @PathVariable("podName") String podName,
+                                              @RequestBody ApplicationAction applicationAction) {
+        return applicationFacade.executeActionOnPod(applicationFamily, environment, applicationId, podName, applicationAction);
+    }
+
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/executedActions", produces = "application/json")
+    public List<ActionExecution> getExecutedActionsForApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                                  @PathVariable("applicationId") String applicationId) {
+        return applicationFacade.getExecutedActionsForApplication(applicationFamily, applicationId);
+    }
+
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/pods/{podName}/actions",
+            produces = "application/json")
+    public List<ApplicationAction> getActionsForPod(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                    @PathVariable("environment") String environment,
+                                                    @PathVariable("applicationId") String applicationId,
+                                                    @PathVariable("podName") String podName) {
+        return applicationFacade.getActionsForPod(applicationFamily, environment, applicationId, podName);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/buildType/{buildType}/actions", produces = "application/json")
+    public ApplicationAction createGenericAction(@PathVariable("buildType") BuildType buildType,
+                                                 @RequestBody ApplicationAction applicationAction) {
+        return applicationFacade.createGenericAction(buildType, applicationAction);
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps", produces = "application/json")

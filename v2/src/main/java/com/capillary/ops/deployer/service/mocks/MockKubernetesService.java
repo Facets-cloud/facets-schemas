@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.mocks;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.actions.ActionExecution;
+import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -10,7 +12,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.*;
 
 @Profile("dev")
@@ -106,6 +107,11 @@ public class MockKubernetesService implements IKubernetesService {
         podDetails2.setCreationTimestamp(time2);
 
         return Lists.newArrayList(podDetails, podDetails2);
+    }
+
+    @Override
+    public ActionExecution executeAction(ApplicationAction applicationAction, Environment environment, String podName) {
+        return null;
     }
 
     @Override

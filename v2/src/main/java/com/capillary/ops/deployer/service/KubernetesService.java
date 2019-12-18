@@ -1,6 +1,9 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.actions.ActionExecution;
+import com.capillary.ops.deployer.bo.actions.ApplicationAction;
+import com.capillary.ops.deployer.bo.actions.TriggerStatus;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -13,6 +16,8 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.ExecListener;
+import io.fabric8.kubernetes.client.dsl.ExecWatch;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +45,29 @@ public class KubernetesService implements IKubernetesService {
     private static final Logger logger = LoggerFactory.getLogger(KubernetesService.class);
 
     private static final String NAMESPACE = "default";
+
+    private static class KubeExecListener implements ExecListener {
+
+        @Override
+        public void onOpen(Response response) {
+            logger.info("inside onOpen");
+            logger.info("response: {}", response);
+            logger.info("The shell will remain open for 10 seconds.");
+        }
+
+        @Override
+        public void onFailure(Throwable t, Response response) {
+            logger.info("inside onFailure");
+            logger.info("response: {}", response);
+            logger.info("shell barfed");
+        }
+
+        @Override
+        public void onClose(int code, String reason) {
+            logger.info("inside onClose");
+            logger.info("The shell will now close.");
+        }
+    }
 
     @Override
     public DeploymentList getDeployments(Environment environment, String namespace) {
@@ -119,6 +148,61 @@ public class KubernetesService implements IKubernetesService {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         ImmutableMap<String, String> selectors = ImmutableMap.of("app", deploymentName);
         return getApplicationPodDetails(deploymentName, selectors, kubernetesClient);
+    }
+
+    private String[] getActionCommand(ApplicationAction applicationAction) {
+        String actionPath = applicationAction.getPath();
+        String arguments = applicationAction.getArguments();
+        if (org.springframework.util.StringUtils.isEmpty(arguments)) {
+            return new String[]{actionPath};
+        }
+
+        return new String[]{actionPath, arguments};
+    }
+
+    private ByteArrayOutputStream executeKubeCommand(Environment environment, String podName, String[] command) throws Exception {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
+        logger.info("executing command: {} on pod: {}", command, podName);
+        try (ExecWatch watch =
+                     kubernetesClient
+                             .pods()
+                             .inNamespace(NAMESPACE)
+                             .withName(podName)
+                             .readingInput(System.in)
+                             .writingOutput(os)
+                             .writingError(System.err)
+                             .withTTY()
+                             .usingListener(new KubeExecListener())
+                             .exec(command)) {
+            Thread.sleep(5 * 1000);
+            return os;
+        } catch (Exception ex) {
+            logger.error("error happened while trying to execute command: {} on pod: {}", command, podName);
+            throw ex;
+        }
+    }
+
+    @Override
+    public ActionExecution executeAction(ApplicationAction applicationAction, Environment environment, String podName) {
+        ActionExecution actionExecution = new ActionExecution(
+                applicationAction,
+                TriggerStatus.SUCCESS,
+                System.currentTimeMillis());
+        String[] command = getActionCommand(applicationAction);
+        logger.info("executing commmand: {} on pod: {}", command, podName);
+        try {
+            ByteArrayOutputStream outputStream = executeKubeCommand(environment, podName, command);
+            String output = new String(outputStream.toByteArray());
+            actionExecution.setOutput(output);
+            outputStream.close();
+        } catch (Exception ex) {
+            logger.error("error happened while trying to execute application action: {}", applicationAction, ex);
+            actionExecution.setTriggerStatus(TriggerStatus.FAILURE);
+            actionExecution.setTriggerException(ex.getMessage());
+        }
+
+        return actionExecution;
     }
 
     @Override

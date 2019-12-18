@@ -2,27 +2,33 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.actions.ActionExecution;
+import com.capillary.ops.deployer.bo.actions.ApplicationAction;
+import com.capillary.ops.deployer.bo.actions.CreationStatus;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.exceptions.*;
-import com.capillary.ops.deployer.repository.ApplicationRepository;
-import com.capillary.ops.deployer.repository.BuildRepository;
-import com.capillary.ops.deployer.repository.DeploymentRepository;
-import com.capillary.ops.deployer.repository.EnvironmentRepository;
-import com.capillary.ops.deployer.service.*;
-import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
-import com.capillary.ops.deployer.service.interfaces.IECRService;
-import com.capillary.ops.deployer.service.interfaces.IHelmService;
-import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
+import com.capillary.ops.deployer.repository.*;
+import com.capillary.ops.deployer.service.IVcsServiceSelector;
+import com.capillary.ops.deployer.service.S3DumpService;
+import com.capillary.ops.deployer.service.SecretService;
+import com.capillary.ops.deployer.service.VcsService;
+import com.capillary.ops.deployer.service.interfaces.*;
 import com.capillary.ops.deployer.service.newrelic.INewRelicService;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -30,6 +36,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -75,6 +82,12 @@ public class ApplicationFacade {
     @Autowired
     private IVcsServiceSelector vcsServiceSelector;
 
+    @Autowired
+    private ApplicationActionRepository applicationActionRepository;
+
+    @Autowired
+    private IActionsService actionsService;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
     @Value("${ecr.registry}")
@@ -88,6 +101,9 @@ public class ApplicationFacade {
 
     @Autowired
     private INewRelicService newRelicService;
+
+    @Autowired
+    private ActionExecutionRepository actionExecutionRepository;
 
     public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
@@ -580,11 +596,61 @@ public class ApplicationFacade {
         return environment.getEnvironmentMetaData().getName() + "-" + application.getName();
     }
 
-    public DeploymentStatusDetails getCronjobHistory(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
+    private boolean isValidActoinArgument(ApplicationAction applicationAction) {
+        return true;
+    }
+
+    public ActionExecution executeActionOnPod(ApplicationFamily applicationFamily, String environment,
+                                              String applicationId, String podName, ApplicationAction applicationAction) {
+        ApplicationAction existingAction = applicationActionRepository.findById(applicationAction.getId()).get();
+        if (CreationStatus.FULFILLED.equals(existingAction.getCreationStatus()) && isValidActoinArgument(applicationAction)) {
+            Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
+            logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env, podName);
+            ActionExecution actionExecution = kubernetesService.executeAction(existingAction, env, podName);
+            actionExecution.setApplicationId(applicationId);
+            actionExecutionRepository.save(actionExecution);
+
+            return actionExecution;
+        }
+
+        logger.info("action {} has not been fulfilled yet, cannot be run on application: {}", applicationAction, applicationId);
+        throw new NotFulfilledException("The action has not been fulfilled. Please contact an admin");
+    }
+
+    public List<ApplicationAction> getActionsForPod(ApplicationFamily applicationFamily, String environment, String applicationId, String podName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
-        DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
-        return deploymentStatus;
+        List<ApplicationAction> genericActions = actionsService.getGenericActions(application.getBuildType());
+        logger.info("fetched {} generic actions for buildType {}", genericActions.size(), application.getBuildType());
+
+        List<ApplicationAction> applicationActions = actionsService.getApplicationActions(application.getId());
+        logger.info("fetched {} application actions for application {}", applicationActions.size(), application.getId());
+
+        return Stream.concat(genericActions.stream(), applicationActions.stream())
+                .collect(Collectors.toList());
+    }
+
+    private boolean isValidGenericActionPath(ApplicationAction applicationAction) {
+        String actionPath = applicationAction.getPath();
+        if (StringUtils.isEmpty(actionPath)) {
+            logger.error("error, empty path for action: {}", applicationAction);
+            throw new InvalidActionException("action path cannot be empty");
+        }
+
+        if (!actionPath.startsWith("/commands/generic")) {
+            logger.error("error, path for generic action: {} not starting with /commands/generic", applicationAction);
+            throw new InvalidActionException("generic action path can only start with /commands/generic");
+        }
+
+        return true;
+    }
+
+    public ApplicationAction createGenericAction(BuildType buildType, ApplicationAction applicationAction) {
+        if (isValidGenericActionPath(applicationAction)) {
+            return actionsService.saveGenericAction(buildType, applicationAction);
+        }
+
+        logger.error("unknown error while saving action: {}", applicationAction);
+        throw new RuntimeException("unknown error occured while saving generic action");
     }
 
     public boolean enableNewrelicMonitoring(ApplicationFamily applicationFamily,
@@ -625,5 +691,13 @@ public class ApplicationFacade {
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String newRelicServiceDashboardURL = newRelicService.getDashboardURL(application, environment);
         return new Monitoring(applicationFamily, applicationId, environmentName, newRelicServiceDashboardURL);
+    }
+
+    public List<ActionExecution> getExecutedActionsForApplication(
+            ApplicationFamily applicationFamily, String applicationId) {
+        applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        logger.info("getting executed actions for applicationFamily: {}, applicationId: {}",
+                applicationFamily, applicationId);
+        return actionsService.getLastNExecutions(applicationId, 10, "triggerTime");
     }
 }

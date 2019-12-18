@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.interfaces;
 
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.bo.actions.ActionExecution;
+import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 
@@ -24,8 +26,9 @@ public interface IKubernetesService {
 
     List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName);
 
+    ActionExecution executeAction(ApplicationAction applicationAction, Environment environment, String podName);
+
     void haltApplication(String deploymentName, Environment environment);
 
     void resumeApplication(String deploymentName, Environment environment);
-
 }
