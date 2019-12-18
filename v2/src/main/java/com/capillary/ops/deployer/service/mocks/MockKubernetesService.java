@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service.mocks;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
+import com.capillary.ops.deployer.bo.actions.TriggerStatus;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -111,7 +112,14 @@ public class MockKubernetesService implements IKubernetesService {
 
     @Override
     public ActionExecution executeAction(ApplicationAction applicationAction, Environment environment, String podName) {
-        return null;
+        ActionExecution actionExecution = new ActionExecution(
+                applicationAction,
+                TriggerStatus.SUCCESS,
+                System.currentTimeMillis());
+        actionExecution.setId(UUID.randomUUID().toString());
+        actionExecution.setOutput("hello world");
+
+        return actionExecution;
     }
 
     @Override

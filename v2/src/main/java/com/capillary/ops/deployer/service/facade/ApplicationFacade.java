@@ -608,9 +608,8 @@ public class ApplicationFacade {
             logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env, podName);
             ActionExecution actionExecution = kubernetesService.executeAction(existingAction, env, podName);
             actionExecution.setApplicationId(applicationId);
-            actionExecutionRepository.save(actionExecution);
 
-            return actionExecution;
+            return actionExecutionRepository.save(actionExecution);
         }
 
         logger.info("action {} has not been fulfilled yet, cannot be run on application: {}", applicationAction, applicationId);

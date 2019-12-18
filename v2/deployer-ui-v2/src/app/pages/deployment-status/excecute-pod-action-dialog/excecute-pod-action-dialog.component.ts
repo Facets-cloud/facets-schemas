@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { ApplicationPodDetails, Application } from '../../../api/models';
 import { ApplicationAction } from '../../../api/models/application-action';
 import { ApplicationControllerService } from '../../../api/services';
-import { NbDialogRef } from '@nebular/theme';
+import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { BuildDialogComponent } from '../../application-page/build-dialog/build-dialog.component';
 
 @Component({
@@ -20,7 +20,7 @@ export class ExcecutePodActionDialogComponent implements OnInit, OnChanges {
   executingAction: Boolean = false;
 
   constructor(private applicationController: ApplicationControllerService,
-    protected ref: NbDialogRef<BuildDialogComponent>) { }
+    protected ref: NbDialogRef<BuildDialogComponent>, private nbToastrService: NbToastrService) { }
 
   ngOnInit() {
     const application: Application = this.applicationPodDetails['application'];
@@ -56,6 +56,11 @@ export class ExcecutePodActionDialogComponent implements OnInit, OnChanges {
       applicationFamily: application.applicationFamily,
       applicationAction: this.filteredAction,
     }).subscribe(execution => {
+      if (execution.id) {
+        this.nbToastrService.success('Execution Successful!', 'Success');
+      } else {
+        this.nbToastrService.danger('Execution Error!', 'Error');
+      }
       this.executingAction = false;
       this.ref.close();
     });
