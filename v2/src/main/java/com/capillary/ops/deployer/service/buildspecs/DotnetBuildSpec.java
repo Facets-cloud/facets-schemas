@@ -22,7 +22,7 @@ public class DotnetBuildSpec extends BuildSpec {
         super(application, testBuild);
     }
 
-    private static final String TEST_COMMAND = "dotnet dotcover test --dcReportType=HTML --dcoutput=./UnitTestCoverageReport/UnitTestCoverageReport.HTML";
+    private static final String TEST_COMMAND = "dotnet build && dotnet dotcover test --dcReportType=HTML --dcoutput=./UnitTestCoverageReport/UnitTestCoverageReport.HTML";
 
     @Override
     protected List<String> getPostBuildCommands() {
