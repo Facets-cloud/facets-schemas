@@ -13,4 +13,6 @@ public interface INewRelicService {
     String getDashboardURL(Application application, Environment environment);
 
     void deleteDashboard(Application application, Environment environment);
+
+    String createAlerts(Application application, Environment environment);
 }

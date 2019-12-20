@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
+import javafx.scene.control.Alert;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -17,10 +19,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +52,10 @@ public class NewRelicService implements INewRelicService {
             .setConnectionManager(new PoolingHttpClientConnectionManager()).build();
 
     private static final Logger logger = LoggerFactory.getLogger(NewRelicService.class);
+
+    enum AlertChannel{
+        Email
+    }
 
     @Override
     public void upsertDashboard(Application application,
@@ -181,6 +190,20 @@ public class NewRelicService implements INewRelicService {
         }
     }
 
+    @Override
+    public String createAlerts(Application application, Environment environment) {
+        String policyId= "";
+        try {
+            //check if policy exists
+            //else create policy and conditions
+            policyId = createAlertPolicy(application.getName());
+        }
+        catch (Exception e){
+            throw new RuntimeException("NewRelic API exception", e);
+        }
+        return policyId;
+    }
+
     private String getDashboardTemplate() {
         try {
             URL url = this.getClass().getResource("/newrelic-dashboard.json.mustache");
@@ -188,5 +211,41 @@ public class NewRelicService implements INewRelicService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String createAlertPolicy(String alertPolicyName) throws Exception{
+        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_policies.json");
+        HttpPost request = new HttpPost(builder.build());
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("X-Api-Key", newrelicApiKey);
+        String jsonPayload = new JSONObject().put("policy", new JSONObject()
+                .put("incident_preference","PER_CONDITION_AND_TARGET")
+                .put("name", alertPolicyName)).toString();
+        HttpEntity entity = new StringEntity(jsonPayload, ContentType.APPLICATION_JSON);
+        request.setEntity(entity);
+        HttpResponse response = httpClient.execute(request);
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
+        String policyId = jsonObject.getAsJsonObject("policy")
+                .getAsJsonObject().get("id").getAsString();
+        return policyId;
+    }
+
+    private String createAlertChannel(String channelName, String configurationJson, AlertChannel alertChannel) throws Exception{
+        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_channels.json");
+        HttpPost request = new HttpPost(builder.build());
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("X-Api-Key", newrelicApiKey);
+        String jsonPayload = new JSONObject().put("channel", new JSONObject()
+                .put("name",channelName)
+                .put("type", alertChannel.name())).toString();
+        HttpEntity entity = new StringEntity(jsonPayload, ContentType.APPLICATION_JSON);
+        request.setEntity(entity);
+        HttpResponse response = httpClient.execute(request);
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
+        String policyId = jsonObject.getAsJsonObject("policy")
+                .getAsJsonObject().get("id").getAsString();
+        return policyId;
     }
 }
