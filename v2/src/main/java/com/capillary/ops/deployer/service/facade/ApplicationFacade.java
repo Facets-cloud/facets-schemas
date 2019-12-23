@@ -19,6 +19,8 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import com.github.alturkovic.lock.Interval;
+import com.github.alturkovic.lock.redis.alias.RedisLocked;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -215,6 +219,10 @@ public class ApplicationFacade {
         return true;
     }
 
+    @RedisLocked(
+            expression = "#applicationFamily + '_' + #build.getApplicationId() + '_' + #build.getTag() + '_' + #build.getId()",
+            expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
+    )
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String username = getUserName();
         build.setTriggeredBy(username);
@@ -332,6 +340,10 @@ public class ApplicationFacade {
         return codeBuildService.getBuildLogs(application, build.getCodeBuildId(), nextToken);
     }
 
+    @RedisLocked(
+            expression = "#applicationFamily + '_' + #environment + '_' + #applicationId + '_' + #deployment.getBuildId()",
+            expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
+    )
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
         deployment.setTimestamp(new Date());
         Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();

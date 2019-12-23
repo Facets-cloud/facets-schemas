@@ -215,6 +215,16 @@
             <artifactId>cron-utils</artifactId>
             <version>9.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>it.ozimov</groupId>
+            <artifactId>embedded-redis</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.alturkovic.distributed-lock</groupId>
+            <artifactId>distributed-lock-redis</artifactId>
+            <version>1.2.2</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -392,4 +402,10 @@
 <!--            <url>https://repo.spring.io/libs-release</url>-->
 <!--        </repository>-->
 <!--    </repositories>-->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 </project>

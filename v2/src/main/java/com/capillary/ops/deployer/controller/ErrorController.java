@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.ErrorDetails;
+import com.github.alturkovic.lock.exception.LockNotAvailableException;
 import com.mongodb.MongoWriteException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
