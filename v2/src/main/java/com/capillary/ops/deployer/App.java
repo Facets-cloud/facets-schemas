@@ -3,6 +3,8 @@ package com.capillary.ops.deployer;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.github.alturkovic.lock.configuration.EnableDistributedLock;
+import com.github.alturkovic.lock.redis.impl.SimpleRedisLock;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,10 +14,14 @@ import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProper
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -35,7 +41,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -44,6 +49,7 @@ import java.util.concurrent.Executors;
 @EnableAsync
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @EnableScheduling
+@EnableDistributedLock
 public class App {
 
   public static void main(String[] args) throws Exception {
@@ -88,6 +94,25 @@ public class App {
   @Bean
   public AmazonS3 getAmazonS3Client() {
     return AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
+  }
+
+  @Bean
+  public RedisConnectionFactory redisConnectionFactory() {
+    LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
+    return connectionFactory;
+  }
+
+  @Bean
+  public StringRedisTemplate stringRedisTemplate() {
+    StringRedisTemplate redisTemplate = new StringRedisTemplate();
+    redisTemplate.setEnableTransactionSupport(true);
+    redisTemplate.setConnectionFactory(redisConnectionFactory());
+    return redisTemplate;
+  }
+
+  @Bean
+  public SimpleRedisLock prodRedisLock(final StringRedisTemplate stringRedisTemplate) {
+    return new SimpleRedisLock(stringRedisTemplate);
   }
 
   @Configuration
