@@ -21,17 +21,10 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -39,7 +32,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -224,15 +216,31 @@ public class ApplicationFacade {
             expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
     )
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
-        String username = getUserName();
-        build.setTriggeredBy(username);
         String applicationId = build.getApplicationId();
-        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        buildRepository.save(build);
-        String codeBuildId = codeBuildService.triggerBuild(application, build, build.isTestBuild());
-        build.setCodeBuildId(codeBuildId);
-        buildRepository.save(build);
-        return build;
+        if (canTriggerBuild(build, applicationId)) {
+            String username = getUserName();
+            build.setTriggeredBy(username);
+            Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+            buildRepository.save(build);
+            String codeBuildId = codeBuildService.triggerBuild(application, build, build.isTestBuild());
+            build.setCodeBuildId(codeBuildId);
+            buildRepository.save(build);
+            return build;
+        }
+
+        throw new RuntimeException("unknown exception while triggering build");
+    }
+
+    private boolean canTriggerBuild(Build build, String applicationId) {
+        List<Build> existingBuilds = buildRepository.findByApplicationIdOrderByTimestampDesc(applicationId);
+        if (existingBuilds.size() > 0) {
+            Build latestBuild = existingBuilds.get(0);
+            if (StatusType.IN_PROGRESS.equals(latestBuild.getStatus()) && latestBuild.getTag().equals(build.getTag())) {
+                throw new ConcurrentExecutionException("concurrent builds of same application and branch cannot run at the same time");
+            }
+        }
+
+        return true;
     }
 
     public List<Application> getApplications(ApplicationFamily applicationFamily) {
