@@ -12,6 +12,7 @@ export interface Deployment {
   horizontalPodAutoscaler?: HPA;
   id?: string;
   podSize?: 'SMALL' | 'LARGE' | 'XLARGE' | 'XXLARGE' | 'TINY' | 'MICRO';
+  replicas?: number;
   rollbackEnabled?: boolean;
   schedule?: string;
   timestamp?: string;

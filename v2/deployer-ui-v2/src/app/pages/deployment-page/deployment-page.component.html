@@ -56,6 +56,16 @@
           <button [disabled]="podSize.invalid" nbButton nbStepperNext>Next</button>
         </div>
       </nb-step>
+      <nb-step label="Configure Replicas" *ngIf="application?.applicationType === 'STATEFUL_SET'">
+        <div style="width: 25%; margin: auto; min-width: 300px;">
+          <label for="Replicas" class="label">Replicas</label>
+          <input type=number #replicas="ngModel" required nbInput fullWidth name="replicas" id="replicas"
+            [(ngModel)]="deployment.replicas" placeholder="Defaults to 1">
+        </div>
+        <div style="padding-top: 1rem; float: right;">
+          <button nbButton nbStepperNext  >Next</button>
+        </div>
+      </nb-step>
       <nb-step label="Configure Environment Variables">
         <ng2-smart-table (deleteConfirm)="onDeleteConfirm($event)" (createConfirm)="validateConfig($event)" [settings]="settings" [source]="deployment.configurations"></ng2-smart-table>
         <div style="padding-top: 1rem; float: right;">

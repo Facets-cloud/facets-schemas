@@ -22,6 +22,7 @@ public class StatefulSetChartValueProvider extends AbstractValueProvider {
         this.addField("domainName", getPublicZoneDns(application, environment), yaml);
         this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
         //this.addFields(getHPAConfigs(deployment), yaml);
+        this.addField("replicaCount", deployment.getReplicas(),yaml);
         this.addFields(getHealthCheckConfigs(application), yaml);
         this.addField("elbIdleTimeoutSeconds", application.getElbIdleTimeoutSeconds(), yaml);
         this.addFields(getPortDetails(application), yaml);
