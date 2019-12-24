@@ -20,6 +20,7 @@ export class DeploymentPageComponent implements OnInit {
   deployment: Deployment = {
     configurations: [],
     horizontalPodAutoscaler: { minReplicas: 1, maxReplicas: 1, threshold: 50 },
+    replicas: 1,
   };
   environments: EnvironmentMetaData[];
   application: Application;
@@ -31,6 +32,7 @@ export class DeploymentPageComponent implements OnInit {
         title: 'Key',
         filter: false,
         width: '45%',
+        editable: false,
       },
       value: {
         title: 'Value',
@@ -149,6 +151,7 @@ export class DeploymentPageComponent implements OnInit {
           this.deployment.configurations = deployment.configurations;
           this.deployment.horizontalPodAutoscaler = deployment.horizontalPodAutoscaler;
           this.deployment.schedule = deployment.schedule;
+          this.deployment.replicas = deployment.replicas;
         }
         stepper.next();
       },

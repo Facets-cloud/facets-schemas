@@ -1,7 +1,11 @@
-<div *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
+<div *ngIf="application?.applicationType === 'SERVICE'">
   <ng2-smart-table *ngIf="deployments.length > 0" [settings]="settingsDefault" [source]="deployments"></ng2-smart-table>
 </div>
 
 <div *ngIf="application?.applicationType === 'SCHEDULED_JOB'">
   <ng2-smart-table *ngIf="deployments.length > 0" [settings]="settingsCronjob" [source]="deployments"></ng2-smart-table>
+</div>
+
+<div *ngIf="application?.applicationType === 'STATEFUL_SET'">
+  <ng2-smart-table *ngIf="deployments.length > 0" [settings]="settingsStatefulSet" [source]="deployments"></ng2-smart-table>
 </div>

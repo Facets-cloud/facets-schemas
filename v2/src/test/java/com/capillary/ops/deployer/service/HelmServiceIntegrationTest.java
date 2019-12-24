@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.ConfigBuilder;
@@ -105,11 +106,6 @@ public class HelmServiceIntegrationTest {
                         .withRequestTimeout(30*1000)
                         .build());
         localCRMEnvironment = createLocalEnvironment(ApplicationFamily.CRM, EnvironmentType.PRODUCTION);
-    }
-
-    @Test
-    public void testStatefulSet() {
-        Assert.assertTrue(true);
     }
 
     @Test
@@ -520,6 +516,69 @@ public class HelmServiceIntegrationTest {
         application.setPorts(new ArrayList<>());
         Deployment deployment = createDeployment(application);
         helmService.deploy(application, deployment);
+    }
+
+    @Test
+    public void testStatefulSetInstall() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base-statefulset"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base-statefulset");
+                result = chart;
+            }
+        };
+        Application application = createApplication("helmint-test-statefulset-1", ApplicationFamily.CRM);
+        application.setPorts(Arrays.asList(new Port("http",80L,80L,Port.Protocol.HTTP)));
+        application.setApplicationType(Application.ApplicationType.STATEFUL_SET);
+        application.setPvcList(Arrays.asList(new PVC("data-pvc",PVC.AccessMode.ReadOnlyMany,100,"/usr/share/test","mnt")));
+        application.setLoadBalancerType(LoadBalancerType.INTERNAL);
+        application.setDnsType(Application.DnsType.PRIVATE);
+
+        // update secrets and env
+        secretService.initializeApplicationSecrets(
+                Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
+                        application.getId(), "CREDENTIAL1", "")));
+        secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
+                application.getId(),
+                Arrays.asList(
+                        new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
+                                "CREDENTIAL1", "CREDENTIAL_VALUE1",
+                                ApplicationSecret.SecretStatus.FULFILLED)));
+
+        secretService.initializeApplicationSecrets(
+                Arrays.asList(new ApplicationSecretRequest(application.getApplicationFamily(),
+                        application.getId(), "CREDENTIALFILE1", "",
+                        ApplicationSecretRequest.SecretType.FILE, "")));
+        secretService.updateApplicationSecrets(clusterName, application.getApplicationFamily(),
+                application.getId(),
+                Arrays.asList(
+                        new ApplicationSecret(clusterName, application.getApplicationFamily(), application.getId(),
+                                "CREDENTIALFILE1", Base64.getEncoder().encodeToString("CREDENTIALFILE1".getBytes()),
+                                ApplicationSecret.SecretStatus.FULFILLED)));
+
+        Deployment deployment = createDeployment(application);
+        deployment.setImage("hello-world:latest");
+        deployment.setHorizontalPodAutoscaler(null);
+        helmService.deploy(application, deployment);
+        StatefulSet statefulSet = kubernetesClient.apps().statefulSets().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+
+        final List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
+                pod -> pod.getMetadata().getAnnotations() != null &&
+                        deployment.getId().equalsIgnoreCase(pod.getMetadata().getAnnotations().get("deploymentId"))
+        ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(deployment.getBuildId()))
+                .filter(pod -> pod.getMetadata().getLabels().get("app").equalsIgnoreCase(application.getName()))
+                .collect(Collectors.toList());
+
+        Assert.assertEquals("data-pvc-vol", statefulSet.getSpec().getVolumeClaimTemplates().get(0).getMetadata().getName());
+        Assert.assertTrue(pods.get(0).getSpec().getContainers().get(0).getEnv().stream().anyMatch(x -> x.getName().equals("CREDENTIAL1")));
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-file-credentials").get().getData().containsKey("credentialfile1"));
+        Assert.assertFalse(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIALFILE1"));
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIAL1"));
+        Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
+        Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
+        Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
 
     }

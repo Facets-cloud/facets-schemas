@@ -32,16 +32,13 @@ spec:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
       volumes:
-        {{- range .Values.secretFileMounts }}
-        {{- with . }}
-        - name: "{{ .name }}-vol"
+        - name: dump-vol
+          hostPath:
+            path: /var/log/dumps/{{ .Release.Name }}
+            type: DirectoryOrCreate
+        - name: {{ $releaseName  }}-file-credentials-vol
           secret:
-            secretName: "{{ .Release.Name  }}-file-credentials"
-            items:
-              - key: {{ .name }}
-                path: "."
-        {{- end }}
-        {{- end }}
+            secretName: {{ $releaseName  }}-file-credentials
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image }}"
@@ -63,17 +60,14 @@ spec:
   {{- end }}
           imagePullPolicy: IfNotPresent
           volumeMounts:
-          {{- range .Values.secretFileMounts }}
-          {{- with . }}
-            - name: "{{ .name }}-vol"
-              mountPath: {{ .mountPath }}
-          {{- end }}
-          {{- end }}
+            - mountPath: /var/log/dumps
+              name: dump-vol
+            - name: {{ $releaseName  }}-file-credentials-vol
+              mountPath: /etc/credentialfiles/
           {{- range .Values.persistentVolumeClaims }}
           {{- with . }}
-            - name: "{{ .name }}"
-              mountPath: {{ .mountPath }}
-              subPath: {{ .volumeDirectory }}
+            - name: "{{ .name }}-vol"
+              mountPath: "/mnt/{{ .mountPath }}"
           {{- end }}
           {{- end }}
           ports:

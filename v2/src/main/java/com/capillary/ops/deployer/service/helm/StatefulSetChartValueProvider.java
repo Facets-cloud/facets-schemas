@@ -14,16 +14,18 @@ public class StatefulSetChartValueProvider extends AbstractValueProvider {
     @Override
     public Map<String, Object> getValues(Application application, Environment environment, Deployment deployment) {
         Map<String, Object> yaml = new HashMap<>();
-        this.addBaseDetails(application, environment, deployment);
+        yaml.putAll(this.addBaseDetails(application, environment, deployment));
         this.addField("persistentVolumeClaims", getPVCList(application), yaml);
         this.addField("lbType", getLbType(application), yaml);
         this.addField("sslCertName", getSSLCertificateName(application, environment), yaml);
         this.addField("domainName", getPrivateZoneDns(application, environment), yaml);
         this.addField("domainName", getPublicZoneDns(application, environment), yaml);
         this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
-        this.addFields(getHPAConfigs(deployment), yaml);
+        //this.addFields(getHPAConfigs(deployment), yaml);
+        this.addField("replicaCount", deployment.getReplicas(),yaml);
         this.addFields(getHealthCheckConfigs(application), yaml);
         this.addField("elbIdleTimeoutSeconds", application.getElbIdleTimeoutSeconds(), yaml);
+        this.addFields(getPortDetails(application), yaml);
         return yaml;
     }
 }

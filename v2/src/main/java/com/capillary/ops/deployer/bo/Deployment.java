@@ -47,6 +47,7 @@ public class Deployment {
     private String schedule;
     private boolean rollbackEnabled;
     private String deployedBy;
+    private Integer replicas = 1;
 
     public String getApplicationId() {
         return applicationId;
@@ -158,5 +159,13 @@ public class Deployment {
 
     public void setDeployedBy(String deployedBy) {
         this.deployedBy = deployedBy;
+    }
+
+    public Integer getReplicas() {
+        return replicas;
+    }
+
+    public void setReplicas(Integer replicas) {
+        this.replicas = replicas;
     }
 }

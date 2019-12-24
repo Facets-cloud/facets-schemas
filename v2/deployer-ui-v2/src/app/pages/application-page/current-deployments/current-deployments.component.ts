@@ -42,7 +42,7 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
       configurations: {
         type: 'custom',
         renderComponent: ActionsColumn,
-        title: 'Environemnt Variables',
+        title: 'Environment Variables',
       },
       minReplicas: {
         title: 'Min Replicas',
@@ -86,7 +86,43 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
       configurations: {
         type: 'custom',
         renderComponent: ActionsColumn,
-        title: 'Environemnt Variables',
+        title: 'Environment Variables',
+      },
+      timestamp: {
+        title: 'Deployed At',
+      },
+    },
+    actions: false,
+    hideSubHeader: true,
+  };
+
+
+  settingsStatefulSet = {
+    columns: {
+      environment: {
+        title: 'Cluster',
+      },
+      buildId: {
+        title: 'Build Id',
+      },
+      currentStatus: {
+        title: "Current Status",
+        type: 'custom',
+        renderComponent: CurrentStatusColumn,
+      },
+      deployedBy: {
+        title: 'Deployed By',
+      },
+      podSize: {
+        title: 'Pod Size',
+      },
+      configurations: {
+        type: 'custom',
+        renderComponent: ActionsColumn,
+        title: 'Environment Variables',
+      },
+      replicas: {
+        title: 'Replicas',
       },
       timestamp: {
         title: 'Deployed At',

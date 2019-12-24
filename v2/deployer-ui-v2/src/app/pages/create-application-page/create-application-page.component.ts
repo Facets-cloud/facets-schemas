@@ -2,15 +2,16 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Application } from '../../api/models';
 import { ApplicationControllerService } from '../../api/services';
 import { NumberComponentDynamicComponent } from './number-component-dynamic/number-component-dynamic.component';
-import { NbToastrService, NbStepperComponent } from '@nebular/theme';
+import { NbToastrService, NbStepperComponent, NbSelectModule } from '@nebular/theme';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApplicationsMenuComponent } from '../applications-menu/applications-menu.component';
 import { MessageBus } from '../../@core/message-bus';
+import { CtrDropdown } from 'ng2-completer';
 
 @Component({
   selector: 'create-application-page',
   templateUrl: './create-application-page.component.html',
-  styleUrls: ['./create-application-page.component.scss']
+  styleUrls: ['./create-application-page.component.scss'],
 })
 export class CreateApplicationPageComponent implements OnInit {
 
@@ -20,6 +21,7 @@ export class CreateApplicationPageComponent implements OnInit {
       livenessProbe: {},
       readinessProbe: {},
     },
+    pvcList: [],
   };
 
   appFamilies = [];
@@ -32,6 +34,7 @@ export class CreateApplicationPageComponent implements OnInit {
         title: 'Name',
         filter: false,
         width: '34%',
+        editable: false,
       },
       containerPort: {
         title: 'Container Port',
@@ -61,6 +64,8 @@ export class CreateApplicationPageComponent implements OnInit {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      editConfirm: true,
+      confirmSave: true,
     },
     pager: {
       display: true,
@@ -68,6 +73,67 @@ export class CreateApplicationPageComponent implements OnInit {
     },
     actions: {
       position: 'right',
+    },
+  };
+
+
+  persistantVolumeLayout = {
+    columns: {
+      name: {
+        title: 'Name',
+        filter: false,
+        width: '24%',
+        editable: false,
+      },
+      accessMode: {
+        title: 'Access Mode',
+        filter: false,
+        width: '24%',
+        defaultValue: 'ReadWriteOnce',
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select..',
+            list: [
+              {value: 'ReadWriteOnce', title: 'ReadWriteOnce'},
+              {value: 'ReadOnlyMany', title: 'ReadOnlyMany'},
+              {value: 'ReadWriteMany', title: 'ReadWriteMany'},
+            ],
+          },
+        },
+      },
+      storageSize: {
+        title: 'Storage Size (Gi)',
+        filter: false,
+        width: '24%',
+        editor: { type: 'custom', component: NumberComponentDynamicComponent },
+      },
+      mountPath: {
+        title: 'Path',
+        filter: false,
+        width: '24%',
+      },
+    },
+    noDataMessage: '',
+    add: {
+      addButtonContent: '<i class="nb-plus"></i>',
+      createButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true,
+    },
+    edit: {
+      editButtonContent: '<i class="nb-edit"></i>',
+      saveButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true,
+    },
+    pager: {
+      display: true,
+      perPage: 5,
+    },
+    actions: {
+      position: 'right',
+      delete: false,
     },
   };
 
@@ -85,6 +151,9 @@ export class CreateApplicationPageComponent implements OnInit {
           }).subscribe(app => {
             if (!app.ports) {
               app.ports = [];
+            }
+            if (!app.pvcList) {
+              app.pvcList = [];
             }
             if (!app.healthCheck) {
               app.healthCheck = {
@@ -121,7 +190,7 @@ export class CreateApplicationPageComponent implements OnInit {
     this.applicationControllerService.getApplicationTypesUsingGET().subscribe(
       applicationTypes => {
         // filter stateful set out as UI not implemented for it yet
-        this.applicationTypes = applicationTypes.filter(x => x !== 'STATEFUL_SET');
+        this.applicationTypes = applicationTypes; // .filter(x => x !== 'STATEFUL_SET');
       },
     );
   }
@@ -147,6 +216,81 @@ export class CreateApplicationPageComponent implements OnInit {
     }
 
     event.confirm.resolve(event.newData);
+  }
+
+  validateEditPort(event) {
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid port name: ' + event.newData['name'] +
+      '. Port name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+    }
+
+    event.confirm.resolve(event.newData);
+  }
+
+  validatePVC(event) {
+    if (this.application.pvcList.map(x => x.name).includes(event.newData['name'])) {
+      this.nbToastrService.danger('Duplicate PVC name not allowed', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid PVC name: ' + event.newData['name'] +
+      '. PVC name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[1-9][0-9]+$/.test(event.newData['storageSize'])) {
+      this.nbToastrService.danger('Invalid PVC storage size: ' + event.newData['name'] +
+      '. Storage size can only contain numeric values', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[A-Za-z][A-Za-z-]*[A-Za-z]+$/.test(event.newData['mountPath'])) {
+      this.nbToastrService.danger('Invlid PVC path: ' + event.newData['name'] +
+      '. Path can only contain alphabets separated by -', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    event.confirm.resolve(event.newData);
+  }
+
+  validateEditPVC(event) {
+    if (!/^[a-z]+$/.test(event.newData['name'])) {
+      this.nbToastrService.danger('Invalid PVC name: ' + event.newData['name'] +
+      '. PVC name can only contain lower case alphabets', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[1-9][0-9]+$/.test(event.newData['storageSize'])) {
+      this.nbToastrService.danger('Invalid PVC storage size: ' + event.newData['name'] +
+      '. Storage size can only contain numeric values', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    if (!/^[A-Za-z][A-Za-z-]*[A-Za-z]+$/.test(event.newData['mountPath'])) {
+      this.nbToastrService.danger('Invlid PVC path: ' + event.newData['name'] +
+      '. Path can only contain alphabets separated by -', 'Error');
+      event.confirm.reject();
+      return;
+    }
+
+    event.confirm.resolve(event.newData);
+  }
+
+  onDeletePVC(event) {
+    for (let i = 0; i < this.application.pvcList.length; i++) {
+      if (this.application.pvcList[i].name === event.data['name']) {
+        this.application.pvcList.splice(i, 1);
+      }
+    }
+    event.confirm.resolve(event.data);
   }
 
   skipLiveliness(stepper: NbStepperComponent) {

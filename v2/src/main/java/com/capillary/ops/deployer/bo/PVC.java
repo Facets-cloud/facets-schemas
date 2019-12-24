@@ -10,6 +10,18 @@ public class PVC {
         ReadWriteMany
     }
 
+    public PVC(){
+
+    }
+
+    public PVC(String name, AccessMode accessMode, Integer storageSize, String volumeDirectory, String mountPath) {
+        this.name = name;
+        this.accessMode = accessMode;
+        this.storageSize = storageSize;
+        this.volumeDirectory = volumeDirectory;
+        this.mountPath = mountPath;
+    }
+
     private String name;
     private AccessMode accessMode = AccessMode.ReadWriteOnce;
     private Integer storageSize = 1;

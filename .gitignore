@@ -39,5 +39,6 @@ v2/src/main/resources/static/
 *.factorypath
 *.project
 package-lock.json
+v2/deployer-ui-v2/src/app/api/api-configuration.ts
 dist/
 .helm
