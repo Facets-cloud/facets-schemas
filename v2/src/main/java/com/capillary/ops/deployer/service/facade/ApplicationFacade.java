@@ -220,7 +220,7 @@ public class ApplicationFacade {
     }
 
     @RedisLocked(
-            expression = "#applicationFamily + '_' + #build.getApplicationId() + '_' + #build.getTag() + '_' + #build.getId()",
+            expression = "#applicationFamily + '_' + #build.getApplicationId() + '_' + #build.getTag()",
             expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
     )
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
