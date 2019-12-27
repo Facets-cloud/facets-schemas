@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.github.alturkovic.lock.configuration.EnableDistributedLock;
 import com.github.alturkovic.lock.redis.impl.SimpleRedisLock;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -18,9 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -51,6 +50,12 @@ import java.util.concurrent.Executors;
 @EnableScheduling
 @EnableDistributedLock
 public class App {
+
+  @Value("${spring.redis.host}")
+  private String redisHost;
+
+  @Value("${spring.redis.port}")
+  private int redisPort;
 
   public static void main(String[] args) throws Exception {
     SpringApplication.run(App.class, args);
@@ -98,7 +103,7 @@ public class App {
 
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
-    LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory();
+    LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
     return connectionFactory;
   }
 
