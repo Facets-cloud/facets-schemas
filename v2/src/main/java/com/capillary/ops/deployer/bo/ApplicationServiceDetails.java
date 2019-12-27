@@ -11,7 +11,7 @@ public class ApplicationServiceDetails {
 
     public ApplicationServiceDetails() {}
 
-    public ApplicationServiceDetails(String name, ServiceType serviceType, List<Endpoint> internalEndpoints, List<Endpoint> externalEndpoints, Map<String, String> labels, Map<String, String> selectors, String creationTimestamp) {
+    public ApplicationServiceDetails(String name, ServiceType serviceType, List<Endpoint> internalEndpoints, List<Endpoint> externalEndpoints, Map<String, String> labels, Map<String, String> selectors, String creationTimestamp, String externalDns) {
         this.name = name;
         this.serviceType = serviceType;
         this.internalEndpoints = internalEndpoints;
@@ -19,6 +19,7 @@ public class ApplicationServiceDetails {
         this.labels = labels;
         this.selectors = selectors;
         this.creationTimestamp = creationTimestamp;
+        this.externalDns = externalDns;
     }
 
     public enum ServiceType {
@@ -69,6 +70,8 @@ public class ApplicationServiceDetails {
     private Map<String, String> selectors = new HashMap<>();
 
     private String creationTimestamp;
+
+    private String externalDns;
 
     public String getName() {
         return name;
@@ -124,5 +127,13 @@ public class ApplicationServiceDetails {
 
     public void setCreationTimestamp(String creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
+    }
+
+    public String getExternalDns() {
+        return externalDns;
+    }
+
+    public void setExternalDns(String externalDns) {
+        this.externalDns = externalDns;
     }
 }
