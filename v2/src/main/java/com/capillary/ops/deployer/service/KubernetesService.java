@@ -255,9 +255,10 @@ public class KubernetesService implements IKubernetesService {
             ingresses.forEach(x -> internalPortList.forEach(p -> externalPortList.add(
                     new ApplicationServiceDetails.Endpoint(p.getProtocol(), x.getHostname() + ":" + p.getEndpoint().split(":")[1]))));
             logger.info("found external port mapping: {}", externalPortList);
+            String externalDns = serviceMetadata.getAnnotations().getOrDefault("external-dns.alpha.kubernetes.io/hostname","NA");
 
             return new ApplicationServiceDetails(serviceMetadata.getName(), serviceType, internalPortList, externalPortList,
-                    serviceMetadata.getLabels(), serviceSpec.getSelector(), serviceMetadata.getCreationTimestamp());
+                    serviceMetadata.getLabels(), serviceSpec.getSelector(), serviceMetadata.getCreationTimestamp(),externalDns);
         }
 
         return null;

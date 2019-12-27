@@ -61,9 +61,11 @@ public class MockKubernetesService implements IKubernetesService {
 
         HPADetails hpaDetails = new HPADetails(1, 2,
                 1, 1, 60, 30);
+        ApplicationServiceDetails.Endpoint externalEndpoint = new ApplicationServiceDetails.Endpoint("http","mock-aws-elb");
+        ApplicationServiceDetails.Endpoint internalEndpoint = new ApplicationServiceDetails.Endpoint("http",application.getName()+ ".default");
 
         DeploymentStatusDetails deploymentStatusDetails = new DeploymentStatusDetails(
-                new ApplicationServiceDetails(),
+                new ApplicationServiceDetails(application.getName(),ApplicationServiceDetails.ServiceType.LoadBalancer,Arrays.asList(internalEndpoint),Arrays.asList(externalEndpoint),null,null,null,"app.dns"),
                 new ApplicationDeploymentDetails(application.getName(),
                         ImmutableMap.of("key1", "value1",
                                 "key2", "value2",
