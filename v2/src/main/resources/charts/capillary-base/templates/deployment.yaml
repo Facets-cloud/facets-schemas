@@ -134,6 +134,7 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+      enableServiceLinks: false
       volumes:
         - name: dump-vol
           hostPath:

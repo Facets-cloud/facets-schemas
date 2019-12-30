@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})
 @ActiveProfiles({"helminttest", "dev"})
-@TestPropertySource("/application.properties")
+@TestPropertySource("/application-dev.properties")
 public class HelmServiceIntegrationTest {
 
     private static String OS = System.getProperty("os.name").toLowerCase();
@@ -148,6 +148,7 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
         Assert.assertEquals("helmint-test-1-dns.local.internal", service.getMetadata().getAnnotations().get("external-dns.alpha.kubernetes.io/hostname"));
         Assert.assertEquals(1, pods.size());
+        Assert.assertFalse(pods.get(0).getSpec().getEnableServiceLinks());
 
         deployment.getConfigurations().forEach(
                 config -> {
