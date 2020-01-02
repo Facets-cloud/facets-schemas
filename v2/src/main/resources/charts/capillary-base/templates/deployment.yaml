@@ -134,7 +134,9 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+{{- if (semverCompare ">=1.14" .Capabilities.KubeVersion.GitVersion) }}
       enableServiceLinks: false
+{{- end }}
       volumes:
         - name: dump-vol
           hostPath:

@@ -148,7 +148,7 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
         Assert.assertEquals("helmint-test-1-dns.local.internal", service.getMetadata().getAnnotations().get("external-dns.alpha.kubernetes.io/hostname"));
         Assert.assertEquals(1, pods.size());
-        Assert.assertFalse(pods.get(0).getSpec().getEnableServiceLinks());
+        Assert.assertNull(pods.get(0).getSpec().getEnableServiceLinks());
 
         deployment.getConfigurations().forEach(
                 config -> {
@@ -360,13 +360,17 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
 
-        @After
+    @After
     public void tearDown() throws Exception {
         destroyCluster();
     }
 
+    private void createCluster(String version) throws IOException, InterruptedException {
+        runCommand(new String[]{kindExecutable.getAbsolutePath(), "create", "cluster", "--name", clusterName, "--image", "kindest/node:" + version});
+    }
+
     private void createCluster() throws IOException, InterruptedException {
-        runCommand(new String[]{kindExecutable.getAbsolutePath(), "create", "cluster", "--name", clusterName});
+        createCluster("v1.12.10");
     }
 
     private void destroyCluster() throws IOException, InterruptedException {
