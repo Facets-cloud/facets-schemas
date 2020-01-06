@@ -389,7 +389,6 @@ public class ApplicationController {
         return applicationFacade.disableNewrelicMonitoring(applicationFamily, applicationId, environment);
     }
 
-    @RolesAllowed("ADMIN")
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
     public Monitoring getMonitoringDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                      @PathVariable("applicationId") String applicationId,
