@@ -1,5 +1,5 @@
 extraArgs:
-  default-role: "arn:aws:iam::486456986266:role/deployer/k8s-default"
+#  default-role: "arn:aws:iam::486456986266:role/deployer/k8s-default"
 #   base-role-arn: arn:aws:iam::0123456789:role/
 #   default-role: kube2iam-default
 #   api-server: ...
