@@ -352,7 +352,7 @@ public class HelmServiceIntegrationTest {
         application.setLoadBalancerType(LoadBalancerType.INTERNAL);
         application.setDnsType(Application.DnsType.PRIVATE);
         helmService.deploy(application, deployment);
-        kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
+        //kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
         Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
 
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
