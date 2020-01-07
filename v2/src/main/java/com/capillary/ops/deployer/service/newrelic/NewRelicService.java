@@ -34,6 +34,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
+import javax.swing.text.html.parser.Entity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -192,16 +193,18 @@ public class NewRelicService implements INewRelicService {
 
     @Override
     public String createAlerts(Application application, Environment environment) {
-        String policyId= "";
+        String policyId;
+        String channelId;
         try {
             //check if policy exists
             //else create policy and conditions
             policyId = createAlertPolicy(application.getName());
+            channelId = createAlertChannel(application.getName(),policyId,"");
         }
         catch (Exception e){
             throw new RuntimeException("NewRelic API exception", e);
         }
-        return policyId;
+        return null;
     }
 
     private String getDashboardTemplate() {
@@ -231,21 +234,26 @@ public class NewRelicService implements INewRelicService {
         return policyId;
     }
 
-    private String createAlertChannel(String channelName, String configurationJson, AlertChannel alertChannel) throws Exception{
-        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_channels.json");
+    private String createAlertChannel(String channelName, String policyId, String recipientEmail) throws Exception {
+        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_channels.json?policy_ids[]="+policyId );
         HttpPost request = new HttpPost(builder.build());
         request.setHeader("Content-Type", "application/json");
         request.setHeader("X-Api-Key", newrelicApiKey);
-        String jsonPayload = new JSONObject().put("channel", new JSONObject()
-                .put("name",channelName)
-                .put("type", alertChannel.name())).toString();
+        String jsonPayload = new JSONObject().put("channel",
+                new JSONObject()
+                        .put("name", channelName)
+                        .put("type", AlertChannel.Email)
+                        .put("configuration", new JSONObject()
+                                .put("recipients", recipientEmail))
+                                .put("include_json_attachment", false))
+                        .toString();
         HttpEntity entity = new StringEntity(jsonPayload, ContentType.APPLICATION_JSON);
         request.setEntity(entity);
         HttpResponse response = httpClient.execute(request);
         String responseBody = EntityUtils.toString(response.getEntity());
         JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
-        String policyId = jsonObject.getAsJsonObject("policy")
+        String channelId = jsonObject.getAsJsonObject("channels")
                 .getAsJsonObject().get("id").getAsString();
-        return policyId;
+        return channelId;
     }
 }

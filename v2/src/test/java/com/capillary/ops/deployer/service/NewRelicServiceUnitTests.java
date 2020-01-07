@@ -14,10 +14,10 @@ public class NewRelicServiceUnitTests {
 
     @Test
     public void CreateAlertPolicy(){
-//        Application application = new Application();
-//        application.setName("unittest-01");
-//        Environment environment = new Environment();
-//        String returnId = newRelicService.createAlerts(application,environment);
+        Application application = new Application();
+        application.setName("unittest-02");
+        Environment environment = new Environment();
+        String returnId = newRelicService.createAlerts(application,environment);
     }
 
 }

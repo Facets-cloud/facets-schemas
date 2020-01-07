@@ -1,0 +1,24 @@
+{
+"conditions": [
+{
+"id": 11336794,
+"type": "apm_app_metric",
+"name": "{{applicationName}} - Apdex (Low)",
+"enabled": true,
+"entities": [
+"{{ entityId }}"
+],
+"metric": "apdex",
+"condition_scope": "application",
+"terms": [
+{
+"duration": "5",
+"operator": "below",
+"priority": "critical",
+"threshold": "0.98",
+"time_function": "all"
+}
+]
+}
+]
+}
