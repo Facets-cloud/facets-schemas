@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.bo;
 
 public enum BuildType {
     MVN,
+    JAVA8_LIBRARY,
     FREESTYLE_DOCKER,
     DOTNET_CORE,
     MVN_IONIC,
@@ -10,5 +11,5 @@ public enum BuildType {
     DOTNET_CORE22,
     DOTNET_CORE3,
     SBT,
-    NPM;
+    NPM
 }
