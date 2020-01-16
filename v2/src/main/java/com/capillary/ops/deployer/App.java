@@ -51,10 +51,10 @@ import java.util.concurrent.Executors;
 @EnableDistributedLock
 public class App {
 
-  @Value("${spring.redis.host:}")
+  @Value("${spring.redis.host}")
   private String redisHost;
 
-  @Value("${spring.redis.port:}")
+  @Value("${spring.redis.port}")
   private int redisPort;
 
   public static void main(String[] args) throws Exception {
