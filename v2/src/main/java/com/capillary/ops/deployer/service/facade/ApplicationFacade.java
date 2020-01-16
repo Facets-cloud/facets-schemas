@@ -7,6 +7,7 @@ import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.actions.CreationStatus;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
+import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.*;
 import com.capillary.ops.deployer.repository.*;
 import com.capillary.ops.deployer.service.IVcsServiceSelector;
@@ -21,6 +22,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -99,6 +104,9 @@ public class ApplicationFacade {
     private INewRelicService newRelicService;
 
     @Autowired
+    private DeployerHttpClient httpClient;
+
+    @Autowired
     private ActionExecutionRepository actionExecutionRepository;
 
     public Application createApplication(Application application, String host) {
@@ -108,6 +116,12 @@ public class ApplicationFacade {
         if(application.getHealthCheck().getReadinessProbe().getPort() == 0) {
             application.getHealthCheck().setReadinessProbe(null);
         }
+
+        String statusCallbackUrl = application.getStatusCallbackUrl();
+        if (statusCallbackUrl != null && !isValidCallbackUrl(statusCallbackUrl)) {
+            throw new RuntimeException("Invalid Status Callback Url");
+        }
+
         applicationRepository.save(application);
         ecrService.createRepository(application);
         codeBuildService.createProject(application);
@@ -116,6 +130,16 @@ public class ApplicationFacade {
         }
 
         return application;
+    }
+
+    private boolean isValidCallbackUrl(String statusCallbackUrl) {
+        try {
+            new URL(statusCallbackUrl).toURI();
+        } catch (MalformedURLException | URISyntaxException e) {
+            return false;
+        }
+
+        return statusCallbackUrl.startsWith("https://api.flock.com/hooks/sendMessage/");
     }
 
     private void createPullRequestWebhook(Application application, String host) {
@@ -221,14 +245,28 @@ public class ApplicationFacade {
             String username = getUserName();
             build.setTriggeredBy(username);
             Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-            buildRepository.save(build);
-            String codeBuildId = codeBuildService.triggerBuild(application, build, build.isTestBuild());
+
+            String codeBuildId;
+            try {
+                codeBuildId = codeBuildService.triggerBuild(application, build, build.isTestBuild());
+                buildRepository.save(build);
+            } catch (Exception ex) {
+                logger.error("error happened while triggering application build");
+                postMessageToFlock(application, getBuildTriggerFailureMessage(build, applicationFamily));
+                throw ex;
+            }
             build.setCodeBuildId(codeBuildId);
             buildRepository.save(build);
             return build;
         }
 
         throw new RuntimeException("unknown exception while triggering build");
+    }
+
+    private String getBuildTriggerFailureMessage(Build build, ApplicationFamily applicationFamily) {
+        JSONObject message = new JSONObject();
+        message.put("text", "build trigger for applicationFamily: " + applicationFamily + ", applicationId: " + build.getApplicationId() + " failed");
+        return message.toString();
     }
 
     private boolean canTriggerBuild(Build build, String applicationId) {
@@ -388,8 +426,35 @@ public class ApplicationFacade {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }
         deploymentRepository.save(deployment);
-        helmService.deploy(application, deployment);
+        try {
+            helmService.deploy(application, deployment);
+        } catch (Exception e) {
+            logger.error("error happened while deploying application");
+            postMessageToFlock(
+                    application,
+                    getDeploymentFailureMessage(deployment, application));
+        }
+
         return deployment;
+    }
+
+    private String getDeploymentFailureMessage(Deployment deployment, Application application) {
+        JSONObject message = new JSONObject();
+        message.put("text", "Deployment for application: " + application.getName() + ", with buildId: " + deployment.getBuildId() + " failed");
+        return message.toString();
+    }
+
+    private void postMessageToFlock(Application application, String message) {
+        if (StringUtils.isEmpty(application.getStatusCallbackUrl())) {
+            logger.info("status callback url not defined, not failure to flock");
+            return;
+        }
+
+        try {
+            httpClient.makePOSTRequest(application.getStatusCallbackUrl(), message, "", "");
+        } catch (Exception e) {
+            logger.error("error happened while posting message to flock: {}", message, e);
+        }
     }
 
     private void validateCronExpression(String deploymentSchedule) {

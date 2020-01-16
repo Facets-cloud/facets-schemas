@@ -191,7 +191,7 @@ public class CodeBuildService implements ICodeBuildService {
         BuildSpec buildSpec = getBuildSpec(application, testBuild);
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         if(build.getEnvironmentVariables() != null) {
-            build.getEnvironmentVariables().entrySet().stream().forEach(x -> {
+            build.getEnvironmentVariables().entrySet().forEach(x -> {
                 EnvironmentVariable environmentVariable =
                         EnvironmentVariable.builder()
                                 .name(x.getKey())

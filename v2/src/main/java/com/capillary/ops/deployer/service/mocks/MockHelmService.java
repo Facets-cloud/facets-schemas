@@ -17,7 +17,6 @@ public class MockHelmService implements IHelmService {
 
     @Override
     public void deploy(Application application, Deployment deployment) {
-
     }
 
     @Override

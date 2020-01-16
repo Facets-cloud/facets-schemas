@@ -94,6 +94,8 @@ public class Application {
 
     private boolean strictGitFlowModeEnabled = false;
 
+    private String statusCallbackUrl;
+
     public String getId() {
         return id;
     }
@@ -252,5 +254,13 @@ public class Application {
 
     public void setStrictGitFlowModeEnabled(boolean strictGitFlowModeEnabled) {
         this.strictGitFlowModeEnabled = strictGitFlowModeEnabled;
+    }
+
+    public String getStatusCallbackUrl() {
+        return statusCallbackUrl;
+    }
+
+    public void setStatusCallbackUrl(String statusCallbackUrl) {
+        this.statusCallbackUrl = statusCallbackUrl;
     }
 }
