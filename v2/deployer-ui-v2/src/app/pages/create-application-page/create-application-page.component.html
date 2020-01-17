@@ -123,7 +123,13 @@
                     id="dnsPrefix" [(ngModel)]="application.dnsPrefix" placeholder="myapp">
                 </div>
               </div>
-
+              <div class="form-group row">
+                <label for="webhookUrl" class="label col-sm-4">Webhook URL</label>
+                <div class="col-sm-8">
+                  <input fieldSize="small" type=text #webhookUrl="ngModel" nbInput fullWidth name="webhookUrl"
+                    id="webhookUrl" [(ngModel)]="application.statusCallbackUrl" placeholder="https://api.flock.com/hooks/sendMessage/1234">
+                </div>
+              </div>
               <div class="form-group row">
                 <label for="strictGitflowEnabled" class="label col-sm-4">Enable Strict Gitflow</label>
                 <div class="col-sm-8">

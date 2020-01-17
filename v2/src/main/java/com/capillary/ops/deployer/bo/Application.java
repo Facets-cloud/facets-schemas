@@ -1,21 +1,25 @@
 package com.capillary.ops.deployer.bo;
 
+import com.google.common.collect.Sets;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @CompoundIndexes({
         @CompoundIndex(name = "unique_application", unique = true, def = "{'name':1, 'applicationFamily':1}")
 })
 @Document
 public class Application {
+
+    private static final String DEFAULT_STATUS_CALLBACK_URL = "https://api.flock.com/hooks/sendMessage/74e69c78-021a-49f4-9775-e526bbf861e0";
+
     public enum DnsType {
         PUBLIC,
         PRIVATE
@@ -93,6 +97,8 @@ public class Application {
     private int elbIdleTimeoutSeconds = 300;
 
     private boolean strictGitFlowModeEnabled = false;
+
+    private String statusCallbackUrl;
 
     public String getId() {
         return id;
@@ -252,5 +258,18 @@ public class Application {
 
     public void setStrictGitFlowModeEnabled(boolean strictGitFlowModeEnabled) {
         this.strictGitFlowModeEnabled = strictGitFlowModeEnabled;
+    }
+
+    public String getStatusCallbackUrl() {
+        return statusCallbackUrl;
+    }
+
+    public void setStatusCallbackUrl(String statusCallbackUrl) {
+        this.statusCallbackUrl = statusCallbackUrl;
+    }
+
+    public List<String> getStatusCallbackUrls() {
+        Set<String> callbackUrls = Sets.newHashSet(this.statusCallbackUrl, DEFAULT_STATUS_CALLBACK_URL);
+        return callbackUrls.stream().filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.toList());
     }
 }
