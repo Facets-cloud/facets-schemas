@@ -444,7 +444,6 @@ public class HelmServiceIntegrationTest {
             additionalEnv.put("KUBECONFIG", kubeConfigPath);
         }
         return runCommand(command, additionalEnv);
-
     }
 
     private String runCommand(String[] command, Map<String, String> env) throws IOException, InterruptedException {

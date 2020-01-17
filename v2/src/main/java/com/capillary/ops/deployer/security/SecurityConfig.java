@@ -22,9 +22,16 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   @Autowired
   private BitbucketIpAccessController bitbucketIpAccessController;
 
+  @Autowired
+  private InternalRequestAccessController internalRequestAccessController;
+
   protected void configure(HttpSecurity http) throws Exception {
 
     http
+            .authorizeRequests()
+            .antMatchers("/internal/capillarycloud/api/**")
+            .access("@internalRequestAccessController.authenticate(request)")
+            .and()
             .authorizeRequests()
             .antMatchers("/api/*/applications/*/webhooks/pr/github")
             .access("@githubIpAccessController.authenticate(request)")
@@ -34,7 +41,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .access("@bitbucketIpAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
-            .antMatchers("/api/**")
+            .antMatchers("/api/**", "/capillarycloud/api/**")
             .authenticated()
             .and()
             .oauth2Login()
