@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -16,6 +17,9 @@ import java.util.Map;
 })
 @Document
 public class Application {
+
+    private static final String DEFAULT_STATUS_CALLBACK_URL = "https://api.flock.com/hooks/sendMessage/74e69c78-021a-49f4-9775-e526bbf861e0";
+
     public enum DnsType {
         PUBLIC,
         PRIVATE
@@ -257,6 +261,10 @@ public class Application {
     }
 
     public String getStatusCallbackUrl() {
+        if (StringUtils.isEmpty(this.statusCallbackUrl)){
+            return DEFAULT_STATUS_CALLBACK_URL;
+        }
+
         return statusCallbackUrl;
     }
 

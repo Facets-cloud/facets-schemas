@@ -445,13 +445,15 @@ public class ApplicationFacade {
     }
 
     private void postMessageToFlock(Application application, String message) {
-        if (StringUtils.isEmpty(application.getStatusCallbackUrl())) {
+        String statusCallbackUrl = application.getStatusCallbackUrl();
+
+        if (StringUtils.isEmpty(statusCallbackUrl)) {
             logger.info("status callback url not defined, not failure to flock");
             return;
         }
 
         try {
-            httpClient.makePOSTRequest(application.getStatusCallbackUrl(), message, "", "");
+            httpClient.makePOSTRequest(statusCallbackUrl, message, "", "");
         } catch (Exception e) {
             logger.error("error happened while posting message to flock: {}", message, e);
         }
