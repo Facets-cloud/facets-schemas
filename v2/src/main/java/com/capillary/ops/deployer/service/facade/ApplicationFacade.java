@@ -445,18 +445,19 @@ public class ApplicationFacade {
     }
 
     private void postMessageToFlock(Application application, String message) {
-        String statusCallbackUrl = application.getStatusCallbackUrl();
+        List<String> statusCallbackUrls = application.getStatusCallbackUrls();
+        statusCallbackUrls.forEach(webhookUrl -> {
+            if (StringUtils.isEmpty(webhookUrl)) {
+                logger.info("status callback url not defined, not failure to flock");
+                return;
+            }
 
-        if (StringUtils.isEmpty(statusCallbackUrl)) {
-            logger.info("status callback url not defined, not failure to flock");
-            return;
-        }
-
-        try {
-            httpClient.makePOSTRequest(statusCallbackUrl, message, "", "");
-        } catch (Exception e) {
-            logger.error("error happened while posting message to flock: {}", message, e);
-        }
+            try {
+                httpClient.makePOSTRequest(webhookUrl, message, "", "");
+            } catch (Exception e) {
+                logger.error("error happened while posting message to flock: {}", message, e);
+            }
+        });
     }
 
     private void validateCronExpression(String deploymentSchedule) {

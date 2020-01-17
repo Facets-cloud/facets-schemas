@@ -1,5 +1,6 @@
 package com.capillary.ops.deployer.bo;
 
+import com.google.common.collect.Sets;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -8,9 +9,8 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @CompoundIndexes({
         @CompoundIndex(name = "unique_application", unique = true, def = "{'name':1, 'applicationFamily':1}")
@@ -261,14 +261,15 @@ public class Application {
     }
 
     public String getStatusCallbackUrl() {
-        if (StringUtils.isEmpty(this.statusCallbackUrl)){
-            return DEFAULT_STATUS_CALLBACK_URL;
-        }
-
         return statusCallbackUrl;
     }
 
     public void setStatusCallbackUrl(String statusCallbackUrl) {
         this.statusCallbackUrl = statusCallbackUrl;
+    }
+
+    public List<String> getStatusCallbackUrls() {
+        Set<String> callbackUrls = Sets.newHashSet(this.statusCallbackUrl, DEFAULT_STATUS_CALLBACK_URL);
+        return callbackUrls.stream().filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.toList());
     }
 }
