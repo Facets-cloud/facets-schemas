@@ -1,0 +1,33 @@
+{
+  "data":
+    {
+      "type": "infra_metric",
+      "name": "{{alertName}}-pod-not-ready",
+      "enabled": true,
+      "filter": {
+        "and": [
+          {
+            "is": {
+              "label.app": "{{applicationName}}"
+            }
+          },
+          {
+            "is": {
+              "clusterName": "{{clusterName}}"
+            }
+          }
+        ]
+      },
+      "violation_close_timer": 24,
+      "policy_id": {{ policyId}},
+      "event_type": "K8sPodSample",
+      "select_value": "isReady",
+      "comparison": "equal",
+      "critical_threshold": {
+        "value": 0,
+        "duration_minutes": 1,
+        "time_function": "all"
+      }
+    }
+
+}

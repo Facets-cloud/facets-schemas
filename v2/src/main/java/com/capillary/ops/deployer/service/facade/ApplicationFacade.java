@@ -756,6 +756,22 @@ public class ApplicationFacade {
         return true;
     }
 
+    public boolean enableNewrelicAlerting(ApplicationFamily applicationFamily,
+                                            String applicationId, String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        newRelicService.createAlerts(application, environment);
+        return true;
+    }
+
+    public boolean disableNewrelicAlerting(ApplicationFamily applicationFamily,
+                                             String applicationId, String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        newRelicService.disableAlerts(application, environment);
+        return true;
+    }
+
     public boolean shutdownApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
@@ -786,5 +802,13 @@ public class ApplicationFacade {
         logger.info("getting executed actions for applicationFamily: {}, applicationId: {}",
                 applicationFamily, applicationId);
         return actionsService.getLastNExecutions(applicationId, 10, "triggerTime");
+    }
+
+    public Alerting getAlertingDetails(ApplicationFamily applicationFamily, String applicationId,
+                                           String environmentName) {
+        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        String newRelicServiceAlertsURL = newRelicService.getDashboardURL(application, environment);
+        return new Alerting(applicationFamily, applicationId, environmentName, newRelicServiceAlertsURL);
     }
 }

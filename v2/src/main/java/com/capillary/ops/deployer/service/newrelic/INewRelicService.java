@@ -14,5 +14,9 @@ public interface INewRelicService {
 
     void deleteDashboard(Application application, Environment environment);
 
-    String createAlerts(Application application, Environment environment);
+    void createAlerts(Application application, Environment environment);
+
+    void disableAlerts(Application application, Environment environment);
+
+    String getAlertsURL(Application application, Environment environment);
 }

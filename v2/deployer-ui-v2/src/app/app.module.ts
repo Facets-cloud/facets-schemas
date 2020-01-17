@@ -1,3 +1,4 @@
+import { Alerting } from './api/models/alerting';
 /**
  * @license
  * Copyright Akveo. All Rights Reserved.
@@ -32,6 +33,7 @@ import { SetCredentialValueDialogComponent } from './pages/application-page/set-
 import { NumberComponentDynamicComponent } from './pages/create-application-page/number-component-dynamic/number-component-dynamic.component';
 import { ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './pages/application-page/current-deployments/current-deployments.component';
 import { NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './pages/application-page/monitoring/monitoring.component';
+import { NewRelicAlertLinkViewComponent, AlertingEnableButtonComponent } from './pages/application-page/alerting/alerting.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -68,7 +70,9 @@ import { NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './pa
     DeploymentDetailsDialog,
     CurrentStatusColumn,
     NewRelicLinkViewComponent,
+    NewRelicAlertLinkViewComponent,
     MonitoringEnableButtonComponent,
+    AlertingEnableButtonComponent,
   ],
 })
 export class AppModule {

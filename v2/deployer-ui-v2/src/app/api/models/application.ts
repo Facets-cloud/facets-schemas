@@ -17,6 +17,7 @@ export interface Application {
   id?: string;
   loadBalancerType?: 'INTERNAL' | 'EXTERNAL';
   name?: string;
+  newRelicAlertRecipients?: string;
   ports?: Array<Port>;
   pvcList?: Array<PVC>;
   repositoryUrl?: string;
