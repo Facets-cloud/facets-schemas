@@ -14,23 +14,16 @@ terraform {
 }
 
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
-
+  source = "./vpc"
   name = var.name
-  cidr = var.vpcCIDR
-
-  azs             = var.azs
-  private_subnets = var.privateSubnetCIDR
-  public_subnets  = var.publicSubnetCIDR
-
-  enable_nat_gateway = true
-
-  tags = {
-    Terraform = "true",
-    "kubernetes.io/cluster/${var.name}-k8s-cluster" = "shared"
-  }
+  clusterId = var.id
+  infraResourceName = "crm-vpc"
+  awsRegion = var.awsRegion
+  azs = var.azs
+  privateSubnetCIDR = var.privateSubnetCIDR
+  publicSubnetCIDR = var.publicSubnetCIDR
+  vpcCIDR = var.vpcCIDR
 }
-
 
 module "k8s-cluster" {
   source          = "terraform-aws-modules/eks/aws"
@@ -48,13 +41,13 @@ module "k8s-cluster" {
 }
 
 provider "kubernetes" {
-  config_path = "${module.k8s-cluster.kubeconfig_filename == null ? module.k8s-cluster.kubeconfig_filename : "/nofile"}"
+  config_path = module.k8s-cluster.kubeconfig_filename == null ? module.k8s-cluster.kubeconfig_filename : "/nofile"
   load_config_file = false
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "${module.k8s-cluster.kubeconfig_filename == null ? module.k8s-cluster.kubeconfig_filename : "/nofile"}"
+    config_path = module.k8s-cluster.kubeconfig_filename == null ? module.k8s-cluster.kubeconfig_filename : "/nofile"
   }
 }
 
@@ -62,4 +55,7 @@ provider "restapi" {
   uri                  = "http://127.0.0.1:8080/"
   debug                = true
   write_returns_object = true
+  headers              = {
+    "X-DEPLOYER-INTERNAL-AUTH-TOKEN" = "${var.apiToken}"
+  }
 }

@@ -58,12 +58,16 @@ public class CapillaryCloudFacade {
         return infrastructureResource;
     }
 
-    public K8sCluster registerK8sCluster(K8sCluster k8sCluster) {
+    public K8sCluster registerK8sCluster(String infrastructureResourceName, K8sCluster k8sCluster) {
+        k8sCluster.setInfrastructureResourceId(
+                infrastructureResourceRepository.findByName(infrastructureResourceName).get().getId());
         k8sClusterRepository.save(k8sCluster);
         return k8sCluster;
     }
 
-    public VPC registerVPC(VPC vpc) {
+    public VPC registerVPC(String infrastructureResourceName, VPC vpc) {
+        vpc.setInfrastructureResourceId(
+                infrastructureResourceRepository.findByName(infrastructureResourceName).get().getId());
         vpcRepository.save(vpc);
         return vpc;
     }

@@ -26,8 +26,10 @@ public class TerraformEnvironment implements AutoCloseable {
 
     private final Cluster cluster;
     private String tempPath;
+    private String apiToken;
 
-    public TerraformEnvironment(Cluster cluster) {
+    public TerraformEnvironment(Cluster cluster, String apiToken) {
+        this.apiToken = apiToken;
         this.cluster = cluster;
         tempPath = getTempPath();
         createWorkingDirectory();
@@ -35,7 +37,7 @@ public class TerraformEnvironment implements AutoCloseable {
         new File(tempPath + "/tf/terraform.d/plugins/linux_amd64/terraform-provider-restapi_v1.10.0-linux-amd64").setExecutable(true);
         generateTFVars();
         runCommand("terraform version");
-        runCommand("terraform init");
+        runCommand("terraform init  -input=false");
         runCommand("terraform workspace new " + cluster.getName());
         runCommand("terraform workspace select " + cluster.getName());
         runCommand("terraform workspace show");
@@ -67,6 +69,7 @@ public class TerraformEnvironment implements AutoCloseable {
             processBuilder.directory(new File(tempPath + "/tf"));
             String newPath = tempPath + "/bin/" + getPlatform() + "/:" + processBuilder.environment().get("PATH");
             processBuilder.environment().put("PATH", newPath);
+            processBuilder.environment().put("TF_VAR_apiToken", apiToken);
             Process process = processBuilder.start();
             process.waitFor();
             String stdOut = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8);

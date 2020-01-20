@@ -1,8 +1,8 @@
-variable "name" {
-}
+variable "name" {}
 
-variable "id" {
-}
+variable "clusterId" {}
+
+variable "infraResourceName" {}
 
 variable "vpcCIDR" {}
 variable "azs" {
@@ -16,5 +16,3 @@ variable "privateSubnetCIDR" {
 }
 
 variable "awsRegion" {}
-
-variable "apiToken" {}

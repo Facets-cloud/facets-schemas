@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.capillaryCloud.Cluster;
+import com.capillary.ops.deployer.bo.capillaryCloud.InfrastructureResource;
 import com.capillary.ops.deployer.bo.capillaryCloud.ProcessExecutionResult;
 import com.capillary.ops.deployer.service.capillaryCloud.CapillaryCloudFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,12 @@ public class CapillaryCloudController {
     @PostMapping("/clusters/{clusterId}/infra/destroy")
     public ProcessExecutionResult destroyCluster(@PathVariable String clusterId) {
         return capillaryCloudFacade.destroyCluster(clusterId);
+    }
+
+    @PostMapping("/infraResources")
+    public InfrastructureResource
+    createInfrastructureResource(@RequestBody InfrastructureResource infrastructureResource) {
+        return capillaryCloudFacade.createInfrastructureResource(infrastructureResource);
     }
 
 }

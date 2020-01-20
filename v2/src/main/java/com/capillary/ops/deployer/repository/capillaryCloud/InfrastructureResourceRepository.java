@@ -4,5 +4,8 @@ import com.capillary.ops.deployer.bo.capillaryCloud.Cluster;
 import com.capillary.ops.deployer.bo.capillaryCloud.InfrastructureResource;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface InfrastructureResourceRepository extends MongoRepository<InfrastructureResource, String> {
+    Optional<InfrastructureResource> findByName(String name);
 }
