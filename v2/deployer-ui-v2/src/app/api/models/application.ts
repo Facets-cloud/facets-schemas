@@ -22,6 +22,7 @@ export interface Application {
   pvcList?: Array<PVC>;
   repositoryUrl?: string;
   statusCallbackUrl?: string;
+  statusCallbackUrls?: Array<string>;
   strictGitFlowModeEnabled?: boolean;
   vcsProvider?: 'BITBUCKET' | 'GITHUB';
   webhookId?: string;
