@@ -118,7 +118,7 @@ public class ApplicationFacade {
         }
 
         String statusCallbackUrl = application.getStatusCallbackUrl();
-        if (statusCallbackUrl != null && !isValidCallbackUrl(statusCallbackUrl)) {
+        if (!StringUtils.isEmpty(statusCallbackUrl) && !isValidCallbackUrl(statusCallbackUrl)) {
             throw new RuntimeException("Invalid Status Callback Url");
         }
 
