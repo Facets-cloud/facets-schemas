@@ -37,12 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Profile("!dev")
 @Service
 public class NewRelicService implements INewRelicService {
 
-    @Value("${newrelic.apiKey}")
-    private String newrelicApiKey;
+    //@Value("${newrelic.apiKey}")
+    private String newrelicApiKey = "NRAA-a18c5fa8971aa015c6b8f8997ad";
 
     private static HttpClient httpClient = HttpClientBuilder.create()
             .setConnectionManager(new PoolingHttpClientConnectionManager()).build();
@@ -271,7 +270,7 @@ public class NewRelicService implements INewRelicService {
         String baseURL = "https://alerts.newrelic.com/accounts/67421/policies/";
         try {
             Integer policyId = getAlertPolicy(application.getName());
-            if (getAlertConditions(application, environment, policyId) != null) {
+            if (policyId != null && getAlertConditions(application, environment, policyId) != null) {
                 alertsURL = baseURL + getAlertPolicy(application.getName());
             }
         } catch (Exception e) {

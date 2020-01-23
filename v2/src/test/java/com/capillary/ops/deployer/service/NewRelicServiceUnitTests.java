@@ -16,24 +16,25 @@ public class NewRelicServiceUnitTests {
 
     @Test
     public void CreateAlertPolicy(){
-//        try {
-//            String appName = "intouch-api-v3";
-//            Application application = new Application();
-//            application.setName(appName);
-//            application.setNewRelicAlertRecipients("madan.gopal@capillarytech.com");
-//
-//            Environment environment = new Environment();
-//            EnvironmentMetaData metaData = new EnvironmentMetaData();
-//            metaData.setName("nightly-crm");
-//            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
-//            environmentConfiguration.setNewRelicClusterName("nightlyk8s.capillary.in");
-//            environment.setEnvironmentMetaData(metaData);
-//            environment.setEnvironmentConfiguration(environmentConfiguration);
-//            newRelicService.disableAlerts(application,environment);
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//        }
+        try {
+            String appName = "k8s-demo";
+            Application application = new Application();
+            application.setName(appName);
+            application.setNewRelicAlertRecipients("madan.gopal@capillarytech.com");
+
+            Environment environment = new Environment();
+            EnvironmentMetaData metaData = new EnvironmentMetaData();
+            metaData.setName("nightly-crm");
+            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
+            environmentConfiguration.setNewRelicClusterName("nightlyk8s.capillary.in");
+            environment.setEnvironmentMetaData(metaData);
+            environment.setEnvironmentConfiguration(environmentConfiguration);
+
+            String newRelicServiceAlertsURL = newRelicService.getAlertsURL(application, environment);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
