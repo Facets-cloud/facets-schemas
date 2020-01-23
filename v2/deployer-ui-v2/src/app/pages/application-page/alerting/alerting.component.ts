@@ -107,7 +107,7 @@ export class NewRelicAlertLinkViewComponent {
 
 
 @Component({
-  selector: 'newrelic-alerts-toggle-button',
+  selector: 'newrelic-alerts-link-view',
   template: `<nb-toggle [(checked)]="enabled" (checkedChange)="changed()"></nb-toggle>`,
 })
 export class AlertingEnableButtonComponent implements OnInit {
