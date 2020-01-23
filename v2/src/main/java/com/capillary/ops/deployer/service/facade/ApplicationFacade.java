@@ -808,7 +808,7 @@ public class ApplicationFacade {
                                            String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
-        String newRelicServiceAlertsURL = newRelicService.getDashboardURL(application, environment);
+        String newRelicServiceAlertsURL = newRelicService.getAlertsURL(application, environment);
         return new Alerting(applicationFamily, applicationId, environmentName, newRelicServiceAlertsURL);
     }
 }
