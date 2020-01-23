@@ -40,8 +40,7 @@ import java.util.stream.Collectors;
 @Service
 public class NewRelicService implements INewRelicService {
 
-    //@Value("${newrelic.apiKey}")
-    private String newrelicApiKey = "NRAA-a18c5fa8971aa015c6b8f8997ad";
+    private String newrelicApiKey;
 
     private static HttpClient httpClient = HttpClientBuilder.create()
             .setConnectionManager(new PoolingHttpClientConnectionManager()).build();
