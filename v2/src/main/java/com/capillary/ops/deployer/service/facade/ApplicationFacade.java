@@ -440,7 +440,9 @@ public class ApplicationFacade {
 
     private String getDeploymentFailureMessage(Deployment deployment, Application application) {
         JSONObject message = new JSONObject();
-        message.put("text", "Deployment for application: " + application.getName() + ", with buildId: " + deployment.getBuildId() + " failed");
+        message.put("text", "Deployment for application: " + application.getName() +
+                ", with buildId: " + deployment.getBuildId() +
+                ", failed for environment: " + deployment.getEnvironment());
         return message.toString();
     }
 
