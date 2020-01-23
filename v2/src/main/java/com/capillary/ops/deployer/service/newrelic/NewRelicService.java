@@ -27,6 +27,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -34,7 +35,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+@Profile("!dev")
 @Service
 public class NewRelicService implements INewRelicService {
 
@@ -194,10 +197,10 @@ public class NewRelicService implements INewRelicService {
 
     @Override
     public void createAlerts(Application application, Environment environment) {
-        if(environment.getEnvironmentConfiguration().getNewRelicClusterName() == null) {
+        if (environment.getEnvironmentConfiguration().getNewRelicClusterName() == null) {
             throw new RuntimeException("NewRelic cluster name not configured");
         }
-        if(application.getNewRelicAlertRecipients() == null) {
+        if (application.getNewRelicAlertRecipients() == null) {
             throw new RuntimeException("NewRelic alert recipients list is empty");
         }
         String appName = application.getName();
@@ -207,9 +210,9 @@ public class NewRelicService implements INewRelicService {
         try {
             policyId = getAlertPolicy(application.getName());
             if (policyId == null) {
-                    policyId = createAlertPolicy(appName);
-                    createAlertChannel(appName, policyId, recipients);
-                    createAlertConditions(application, environment, policyId);
+                policyId = createAlertPolicy(appName);
+                createAlertChannel(appName, policyId, recipients);
+                createAlertConditions(application, environment, policyId);
             } else {
                 conditionId = getAlertConditions(application, environment, policyId);
                 if (conditionId == null) {
@@ -224,25 +227,54 @@ public class NewRelicService implements INewRelicService {
     @Override
     public void disableAlerts(Application application, Environment environment) {
         try {
+            deleteAlertChannel(application, environment);
             Integer policyId = getAlertPolicy(application.getName());
             URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_policies/" + policyId + ".json");
             HttpDelete httpDelete = new HttpDelete(builder.build());
             httpDelete.setHeader("X-Api-Key", newrelicApiKey);
             HttpResponse response = httpClient.execute(httpDelete);
-        }
-        catch (Exception e){
+
+        } catch (Exception e) {
             throw new RuntimeException("NewRelic API exception", e);
         }
     }
 
+    private void deleteAlertChannel(Application application, Environment environment) throws Exception {
+        Integer channelId = getAlertChannelId(application.getName());
+        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_channels/" + channelId + ".json");
+        HttpDelete httpDelete = new HttpDelete(builder.build());
+        httpDelete.setHeader("X-Api-Key", newrelicApiKey);
+        HttpResponse response = httpClient.execute(httpDelete);
+    }
+
+    private Integer getAlertChannelId(String applicationName) throws Exception {
+        Integer channelId = null;
+        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_channels.json");
+        HttpGet getRequest = new HttpGet(builder.build());
+        getRequest.setHeader("X-Api-Key", newrelicApiKey);
+        HttpResponse response = httpClient.execute(getRequest);
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
+        if (jsonObject.getAsJsonArray("channels").size() > 0) {
+            for(JsonElement channel: jsonObject.getAsJsonArray("channels")){
+                if(channel.getAsJsonObject().get("name").getAsString().equals(applicationName)){
+                    channelId = channel.getAsJsonObject().get("id").getAsInt();
+                }
+            }
+        }
+        return channelId;
+    }
+
     @Override
     public String getAlertsURL(Application application, Environment environment) {
-        String alertsURL = "";
+        String alertsURL = null;
+        String baseURL = "https://alerts.newrelic.com/accounts/67421/policies/";
         try {
-            String baseURL = "https://alerts.newrelic.com/accounts/67421/policies/";
-            alertsURL = baseURL + getAlertPolicy(application.getName());
-        }
-        catch (Exception e){
+            Integer policyId = getAlertPolicy(application.getName());
+            if (getAlertConditions(application, environment, policyId) != null) {
+                alertsURL = baseURL + getAlertPolicy(application.getName());
+            }
+        } catch (Exception e) {
             throw new RuntimeException("NewRelic API exception", e);
         }
         return alertsURL;

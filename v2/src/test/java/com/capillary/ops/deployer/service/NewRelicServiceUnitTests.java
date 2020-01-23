@@ -29,7 +29,7 @@ public class NewRelicServiceUnitTests {
 //            environmentConfiguration.setNewRelicClusterName("nightlyk8s.capillary.in");
 //            environment.setEnvironmentMetaData(metaData);
 //            environment.setEnvironmentConfiguration(environmentConfiguration);
-//            newRelicService.createAlerts(application,environment);
+//            newRelicService.disableAlerts(application,environment);
 //        }
 //        catch (Exception e){
 //            e.printStackTrace();
