@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 @Service
 public class NewRelicService implements INewRelicService {
 
+    @Value("${newrelic.apiKey}")
     private String newrelicApiKey;
 
     private static HttpClient httpClient = HttpClientBuilder.create()
