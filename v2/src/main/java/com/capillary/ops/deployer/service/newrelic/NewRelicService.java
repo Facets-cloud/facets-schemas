@@ -232,7 +232,7 @@ public class NewRelicService implements INewRelicService {
             HttpDelete httpDelete = new HttpDelete(builder.build());
             httpDelete.setHeader("X-Api-Key", newrelicApiKey);
             HttpResponse response = httpClient.execute(httpDelete);
-
+            EntityUtils.consume(response.getEntity());
         } catch (Exception e) {
             throw new RuntimeException("NewRelic API exception", e);
         }
@@ -244,6 +244,7 @@ public class NewRelicService implements INewRelicService {
         HttpDelete httpDelete = new HttpDelete(builder.build());
         httpDelete.setHeader("X-Api-Key", newrelicApiKey);
         HttpResponse response = httpClient.execute(httpDelete);
+        EntityUtils.consume(response.getEntity());
     }
 
     private Integer getAlertChannelId(String applicationName) throws Exception {
@@ -281,7 +282,7 @@ public class NewRelicService implements INewRelicService {
 
     private Integer getAlertPolicy(String name) throws Exception {
         Integer policyId = null;
-        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_policies.json?filter[name]=" + name);
+        URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/alerts_policies.json?filter[exact_match]=true&filter[name]=" + name);
         HttpGet getRequest = new HttpGet(builder.build());
         getRequest.setHeader("Content-Type", "application/json");
         getRequest.setHeader("X-Api-Key", newrelicApiKey);

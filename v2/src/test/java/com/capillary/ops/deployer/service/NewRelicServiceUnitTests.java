@@ -29,8 +29,13 @@ public class NewRelicServiceUnitTests {
 //            environmentConfiguration.setNewRelicClusterName("nightlyk8s.capillary.in");
 //            environment.setEnvironmentMetaData(metaData);
 //            environment.setEnvironmentConfiguration(environmentConfiguration);
+//            newRelicService.createAlerts(application,environment);
+//            String newRelicServiceAlertsURL2 = newRelicService.getAlertsURL(application, environment);
+//
+//            newRelicService.disableAlerts(application,environment);
 //
 //            String newRelicServiceAlertsURL = newRelicService.getAlertsURL(application, environment);
+//            System.out.println(newRelicServiceAlertsURL);
 //        }
 //        catch (Exception e){
 //            e.printStackTrace();
