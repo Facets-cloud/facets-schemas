@@ -3,18 +3,17 @@ package com.capillary.ops.deployer.bo.capillaryCloud;
 import org.springframework.data.annotation.Id;
 
 public class InfrastructureResource {
-    @Id
-    private String id;
+
+    public InfrastructureResource() {
+    }
+
+    public InfrastructureResource(String name, InfrastructureResourceType type) {
+        this.name = name;
+        this.type = type;
+    }
+
     private String name;
     private InfrastructureResourceType type;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

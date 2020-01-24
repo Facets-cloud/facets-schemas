@@ -1,18 +1,16 @@
 variable "name" {}
 
-variable "clusterId" {}
-
 variable "infraResourceName" {}
 
 variable "vpcCIDR" {}
 variable "azs" {
-  type = list
+  type = list(string)
 }
 variable "publicSubnetCIDR" {
-  type = list
+  type = list(string)
 }
 variable "privateSubnetCIDR" {
-  type = list
+  type = list(string)
 }
 
 variable "awsRegion" {}

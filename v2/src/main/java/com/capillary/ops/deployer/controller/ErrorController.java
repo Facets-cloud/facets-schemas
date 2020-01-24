@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.ErrorDetails;
+import com.capillary.ops.deployer.exceptions.NoSuchInfrastructureResourceException;
 import com.github.alturkovic.lock.exception.LockNotAvailableException;
 import com.mongodb.MongoWriteException;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -42,4 +45,12 @@ public class ErrorController {
   public ModelAndView handleNoHandlerFoundException() {
     return new ModelAndView("/");
   }
+
+  @ExceptionHandler(NoSuchInfrastructureResourceException.class)
+  public ResponseEntity<Map<String, String>> missingInfraResourceInstance(
+          NoSuchInfrastructureResourceException ex, WebRequest request) {
+    return new ResponseEntity<>(
+            new HashMap<>(), HttpStatus.OK);
+  }
+
 }

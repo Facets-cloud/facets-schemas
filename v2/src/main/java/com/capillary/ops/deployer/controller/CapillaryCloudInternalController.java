@@ -13,14 +13,37 @@ public class CapillaryCloudInternalController {
     @Autowired
     private CapillaryCloudFacade capillaryCloudFacade;
 
-    @PostMapping("/infraResources/vpcs/{infrastructureResourceName}/instances/{clusterId}")
-    public VPC hello(@PathVariable String infrastructureResourceName, @RequestBody  VPC vpc) {
-        return capillaryCloudFacade.registerVPC(infrastructureResourceName, vpc);
+    @PostMapping("/infraResources/vpcs/{infrastructureResourceName}/instances/{clusterName}")
+    public VPC registerVPC(@PathVariable String infrastructureResourceName, @PathVariable String clusterName,
+                           @RequestBody  VPC vpc) {
+        return capillaryCloudFacade.registerInstance(infrastructureResourceName, clusterName, vpc);
     }
 
-    @PostMapping("/infraResources/k8sClusters/{infrastructureResourceName}/instances/{clusterId}")
-    public K8sCluster hello(@PathVariable String infrastructureResourceName, @RequestBody K8sCluster k8sCluster) {
-        return capillaryCloudFacade.registerK8sCluster(infrastructureResourceName, k8sCluster);
+    @GetMapping("/infraResources/vpcs/{infrastructureResourceName}/instances/{clusterName}")
+    public VPC getVPC(@PathVariable String infrastructureResourceName, @PathVariable String clusterName) {
+        return capillaryCloudFacade.getInstance(infrastructureResourceName, clusterName);
     }
+
+    @DeleteMapping("/infraResources/vpcs/{infrastructureResourceName}/instances/{clusterName}")
+    public VPC deleteVPC(@PathVariable String infrastructureResourceName, @PathVariable String clusterName) {
+        return capillaryCloudFacade.deleteInstance(infrastructureResourceName, clusterName);
+    }
+
+    @PostMapping("/infraResources/k8sClusters/{infrastructureResourceName}/instances/{clusterName}")
+    public K8sCluster registerK8sCluster(@PathVariable String infrastructureResourceName, @PathVariable String clusterName,
+                                         @RequestBody K8sCluster k8sCluster) {
+        return capillaryCloudFacade.registerInstance(infrastructureResourceName, clusterName, k8sCluster);
+    }
+
+    @GetMapping("/infraResources/k8sClusters/{infrastructureResourceName}/instances/{clusterName}")
+    public K8sCluster getK8sCluster(@PathVariable String infrastructureResourceName, @PathVariable String clusterName) {
+        return capillaryCloudFacade.getInstance(infrastructureResourceName, clusterName);
+    }
+
+    @DeleteMapping("/infraResources/k8sClusters/{infrastructureResourceName}/instances/{clusterName}")
+    public K8sCluster deleteK8sCluster(@PathVariable String infrastructureResourceName, @PathVariable String clusterName) {
+        return capillaryCloudFacade.deleteInstance(infrastructureResourceName, clusterName);
+    }
+
 
 }

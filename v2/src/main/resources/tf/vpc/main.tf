@@ -14,13 +14,17 @@ module "vpc" {
     Terraform = "true",
     "kubernetes.io/cluster/${var.name}-k8s-cluster" = "shared"
   }
+  version = "2.23.0"
 }
 
 resource "restapi_object" "vpc_instance" {
-  path = "/internal/capillarycloud/api/infraResources/vpcs/crm-vpc/instances/${var.clusterId}"
+  path = "/internal/capillarycloud/api/infraResources/vpcs/crm-vpc/instances/${var.name}"
+  read_path = "/internal/capillarycloud/api/infraResources/vpcs/crm-vpc/instances/${var.name}"
+  destroy_path = "/internal/capillarycloud/api/infraResources/vpcs/crm-vpc/instances/${var.name}"
+  update_path = "/internal/capillarycloud/api/infraResources/vpcs/crm-vpc/instances/${var.name}"
+
   data = <<EOF
 {
-  "clusterId": "${var.clusterId}",
   "privateSubnets": ${jsonencode(var.privateSubnetCIDR)},
   "publicSubnets": ${jsonencode(var.publicSubnetCIDR)},
   "vpcCIDR": "${var.vpcCIDR}",

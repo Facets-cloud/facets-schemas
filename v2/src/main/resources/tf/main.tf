@@ -1,6 +1,7 @@
 provider "aws" {
   region = var.awsRegion
   profile = "tfmj"
+  version = "~> 2.45.0"
 }
 
 terraform {
@@ -13,10 +14,9 @@ terraform {
   }
 }
 
-module "vpc" {
+module "crm-vpc" {
   source = "./vpc"
   name = var.name
-  clusterId = var.id
   infraResourceName = "crm-vpc"
   awsRegion = var.awsRegion
   azs = var.azs
@@ -25,30 +25,11 @@ module "vpc" {
   vpcCIDR = var.vpcCIDR
 }
 
-module "k8s-cluster" {
-  source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = "${var.name}-k8s-cluster"
-  cluster_version = "1.14"
-  subnets         = "${module.vpc.private_subnets}"
-  vpc_id          = "${module.vpc.vpc_id}"
-  manage_aws_auth = false
-  worker_groups = [
-    {
-      instance_type = "m4.large"
-      asg_max_size  = 2
-    }
-  ]
-}
-
-provider "kubernetes" {
-  config_path = module.k8s-cluster.kubeconfig_filename == null ? module.k8s-cluster.kubeconfig_filename : "/nofile"
-  load_config_file = false
-}
-
-provider "helm" {
-  kubernetes {
-    config_path = module.k8s-cluster.kubeconfig_filename == null ? module.k8s-cluster.kubeconfig_filename : "/nofile"
-  }
+module "crm-k8scluster" {
+  source = "./k8s_cluster"
+  name = var.name
+  subnets = module.crm-vpc.private_subnets
+  vpc_id = module.crm-vpc.vpc_id
 }
 
 provider "restapi" {
@@ -58,4 +39,5 @@ provider "restapi" {
   headers              = {
     "X-DEPLOYER-INTERNAL-AUTH-TOKEN" = "${var.apiToken}"
   }
+  update_method        = "POST"
 }

@@ -5,23 +5,23 @@ import org.springframework.data.annotation.Id;
 public abstract class InfrastructureResourceInstance {
     @Id
     private String id;
-    protected String infrastructureResourceId;
-    protected String clusterId;
+    protected String infrastructureResourceName;
+    protected String clusterName;
 
-    public String getInfrastructureResourceId() {
-        return infrastructureResourceId;
+    public String getInfrastructureResourceName() {
+        return infrastructureResourceName;
     }
 
-    public void setInfrastructureResourceId(String infrastructureResourceId) {
-        this.infrastructureResourceId = infrastructureResourceId;
+    public void setInfrastructureResourceName(String infrastructureResourceName) {
+        this.infrastructureResourceName = infrastructureResourceName;
     }
 
-    public String getClusterId() {
-        return clusterId;
+    public String getClusterName() {
+        return clusterName;
     }
 
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 
     public String getId() {

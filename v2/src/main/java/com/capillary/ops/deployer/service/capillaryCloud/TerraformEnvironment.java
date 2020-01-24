@@ -36,6 +36,7 @@ public class TerraformEnvironment implements AutoCloseable {
         new File(tempPath + "/tf/terraform.d/plugins/darwin_amd64/terraform-provider-restapi_v1.10.0-darwin-amd64").setExecutable(true);
         new File(tempPath + "/tf/terraform.d/plugins/linux_amd64/terraform-provider-restapi_v1.10.0-linux-amd64").setExecutable(true);
         generateTFVars();
+        runCommand("rm -rf .terraform");
         runCommand("terraform version");
         runCommand("terraform init  -input=false");
         runCommand("terraform workspace new " + cluster.getName());
