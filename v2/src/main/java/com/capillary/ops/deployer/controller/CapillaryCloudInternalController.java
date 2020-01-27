@@ -3,6 +3,8 @@ package com.capillary.ops.deployer.controller;
 import com.capillary.ops.deployer.bo.capillaryCloud.K8sCluster;
 import com.capillary.ops.deployer.bo.capillaryCloud.VPC;
 import com.capillary.ops.deployer.service.capillaryCloud.CapillaryCloudFacade;
+import com.capillary.ops.deployer.service.facade.ApplicationFacade;
+import io.swagger.annotations.ApiImplicitParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,7 @@ public class CapillaryCloudInternalController {
     @PostMapping("/infraResources/k8sClusters/{infrastructureResourceName}/instances/{clusterName}")
     public K8sCluster registerK8sCluster(@PathVariable String infrastructureResourceName, @PathVariable String clusterName,
                                          @RequestBody K8sCluster k8sCluster) {
+        capillaryCloudFacade.upsertDeployerEnvironment(clusterName, infrastructureResourceName, k8sCluster);
         return capillaryCloudFacade.registerInstance(infrastructureResourceName, clusterName, k8sCluster);
     }
 

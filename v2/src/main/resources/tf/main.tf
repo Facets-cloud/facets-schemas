@@ -14,7 +14,7 @@ terraform {
   }
 }
 
-module "crm-vpc" {
+module "vpc" {
   source = "./vpc"
   name = var.name
   infraResourceName = "crm-vpc"
@@ -25,11 +25,13 @@ module "crm-vpc" {
   vpcCIDR = var.vpcCIDR
 }
 
-module "crm-k8scluster" {
+module "k8scluster" {
   source = "./k8s_cluster"
   name = var.name
-  subnets = module.crm-vpc.private_subnets
-  vpc_id = module.crm-vpc.vpc_id
+  subnets = module.vpc.private_subnets
+  vpc_id = module.vpc.vpc_id
+  infraResourceName = "crm-k8scluster"
+  awsRegion = var.awsRegion
 }
 
 provider "restapi" {

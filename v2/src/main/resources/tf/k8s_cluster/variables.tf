@@ -7,3 +7,5 @@ variable "subnets" {
 variable "vpc_id" {}
 
 variable infraResourceName {}
+
+variable "awsRegion" {}

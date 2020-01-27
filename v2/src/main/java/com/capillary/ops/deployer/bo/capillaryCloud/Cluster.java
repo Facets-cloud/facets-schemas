@@ -1,5 +1,8 @@
 package com.capillary.ops.deployer.bo.capillaryCloud;
 
+import com.capillary.ops.deployer.bo.ApplicationFamily;
+import com.capillary.ops.deployer.bo.EnvironmentType;
+import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import org.springframework.data.annotation.Id;
 
 import java.util.List;
@@ -13,6 +16,8 @@ public class Cluster {
     private List<String> privateSubnetCIDR;
     private List<String> publicSubnetCIDR;
     private String vpcCIDR;
+    private ApplicationFamily applicationFamily;
+    private EnvironmentType environmentType;
 
     public String getName() {
         return name;
@@ -65,6 +70,14 @@ public class Cluster {
     public Cluster() {
     }
 
+    public ApplicationFamily getApplicationFamily() {
+        return applicationFamily;
+    }
+
+    public void setApplicationFamily(ApplicationFamily applicationFamily) {
+        this.applicationFamily = applicationFamily;
+    }
+
     public Cluster(String name, String awsRegion, List<String> azs, List<String> privateSubnetCIDR, List<String> publicSubnetCIDR, String vpcCIDR) {
         this.name = name;
         this.awsRegion = awsRegion;
@@ -80,5 +93,13 @@ public class Cluster {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public EnvironmentType getEnvironmentType() {
+        return environmentType;
+    }
+
+    public void setEnvironmentType(EnvironmentType environmentType) {
+        this.environmentType = environmentType;
     }
 }

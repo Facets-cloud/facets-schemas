@@ -2,7 +2,16 @@ package com.capillary.ops.deployer.bo;
 
 public class EnvironmentMetaData {
 
+    private String capillaryCloudClusterName;
+
     public EnvironmentMetaData(EnvironmentType environmentType, String name, ApplicationFamily applicationFamily) {
+        this.environmentType = environmentType;
+        this.name = name;
+        this.applicationFamily = applicationFamily;
+    }
+
+    public EnvironmentMetaData(String capillaryCloudClusterName, EnvironmentType environmentType, String name, ApplicationFamily applicationFamily) {
+        this.capillaryCloudClusterName = capillaryCloudClusterName;
         this.environmentType = environmentType;
         this.name = name;
         this.applicationFamily = applicationFamily;
@@ -37,5 +46,13 @@ public class EnvironmentMetaData {
 
     public void setApplicationFamily(ApplicationFamily applicationFamily) {
         this.applicationFamily = applicationFamily;
+    }
+
+    public String getCapillaryCloudClusterName() {
+        return capillaryCloudClusterName;
+    }
+
+    public void setCapillaryCloudClusterName(String capillaryCloudClusterName) {
+        this.capillaryCloudClusterName = capillaryCloudClusterName;
     }
 }

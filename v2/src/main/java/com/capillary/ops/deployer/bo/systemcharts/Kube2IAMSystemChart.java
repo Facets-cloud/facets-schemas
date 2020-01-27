@@ -22,7 +22,7 @@ public class Kube2IAMSystemChart implements ISystemChart {
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
         Map<String, Object> values = new HashMap<>();
         Kube2IamConfiguration kube2IamConfiguration = environment.getEnvironmentConfiguration().getKube2IamConfiguration();
-        if(!kube2IamConfiguration.isEnabled()) {
+        if(kube2IamConfiguration == null || !kube2IamConfiguration.isEnabled()) {
             return null;
         }
         Map<String, Object> awsCreds = new HashMap<>();

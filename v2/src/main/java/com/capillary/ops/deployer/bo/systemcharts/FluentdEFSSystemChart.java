@@ -25,7 +25,7 @@ public class FluentdEFSSystemChart implements ISystemChart {
     public Map<String, Object> getValues(ApplicationFamily applicationFamily, Environment environment) {
         Map<String, Object> values = new HashMap<>();
         K8sLoggingConfiguration logConfigs = environment.getEnvironmentConfiguration().getK8sLoggingConfiguration();
-        if(logConfigs.getEfsHost() == null) {
+        if(logConfigs == null || logConfigs.getEfsHost() == null) {
             return null;
         }
         values.put("efsHost",logConfigs.getEfsHost());

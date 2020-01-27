@@ -1,9 +1,14 @@
 package com.capillary.ops.deployer.service.capillaryCloud;
 
+import com.capillary.ops.deployer.bo.Environment;
+import com.capillary.ops.deployer.bo.EnvironmentConfiguration;
+import com.capillary.ops.deployer.bo.EnvironmentMetaData;
 import com.capillary.ops.deployer.bo.capillaryCloud.*;
 import com.capillary.ops.deployer.exceptions.NoSuchInfrastructureResourceException;
+import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.repository.capillaryCloud.ClusterRepository;
 import com.capillary.ops.deployer.repository.capillaryCloud.InfrastructureResourceInstanceRepository;
+import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,9 @@ public class CapillaryCloudFacade {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private EnvironmentRepository environmentRepository;
 
     public Cluster defineCluster(Cluster cluster) {
         clusterRepository.save(cluster);
@@ -109,5 +117,28 @@ public class CapillaryCloudFacade {
         InfrastructureResourceInstance instance = getInstance(infrastructureResourceName, clusterName);
         infrastructureResourceInstanceRepository.delete(instance);
         return (T) instance;
+    }
+
+    public void upsertDeployerEnvironment(String clusterName, String infrastructureResourceName, K8sCluster k8sCluster) {
+        Cluster cluster = clusterRepository.findOneByName(clusterName).get();
+        String environmentName = infrastructureResourceName + "-" + clusterName;
+
+        Optional<Environment> existingEnvOptional =
+                environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(cluster.getApplicationFamily(), environmentName);
+        if(existingEnvOptional.isPresent()) {
+            Environment existingEnv = existingEnvOptional.get();
+            existingEnv.getEnvironmentConfiguration().setKubernetesToken(k8sCluster.getToken());
+            existingEnv.getEnvironmentConfiguration().setKubernetesApiEndpoint(k8sCluster.getApiEndpoint());
+            environmentRepository.save(existingEnv);
+        } else {
+            EnvironmentMetaData environmentMetaData =
+                    new EnvironmentMetaData(cluster.getName(), cluster.getEnvironmentType(), environmentName,
+                            cluster.getApplicationFamily());
+            EnvironmentConfiguration environmentConfiguration = new EnvironmentConfiguration();
+            environmentConfiguration.setKubernetesApiEndpoint(k8sCluster.getApiEndpoint());
+            environmentConfiguration.setKubernetesToken(k8sCluster.getToken());
+            Environment newEnvironment = new Environment(environmentMetaData, environmentConfiguration);
+            environmentRepository.save(newEnvironment);
+        }
     }
 }
