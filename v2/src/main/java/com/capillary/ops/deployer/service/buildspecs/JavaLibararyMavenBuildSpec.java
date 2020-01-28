@@ -26,4 +26,9 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
     public boolean configureDockerBuildSteps() {
         return false;
     }
+
+    @Override
+    public String getBuildEnvironmentImage() {
+        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/mavenjavalibrary:v1.0";
+    }
 }
