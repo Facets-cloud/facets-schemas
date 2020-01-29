@@ -132,9 +132,20 @@ public class HelmServiceIntegrationTest {
 
         helmService.deploy(application, deployment);
         io.fabric8.kubernetes.api.model.apps.Deployment k8sdeployment = kubernetesClient.apps().deployments().inNamespace("default").withName(application.getName()).get();
-        String image = k8sdeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage();
+        Container container =
+            k8sdeployment.getSpec().getTemplate().getSpec().getContainers()
+                .stream()
+                .filter(x -> x.getName().equals(application.getName()))
+                .findFirst().get();
+        Container sidecar =
+            k8sdeployment.getSpec().getTemplate().getSpec().getContainers()
+                .stream()
+                .filter(x -> x.getName().equals("jmx"))
+                .findFirst().get();
+        String image = container.getImage();
         Assert.assertEquals("nginx:latest", image);
-        List<ContainerPort> ports = k8sdeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts();
+
+        List<ContainerPort> ports = container.getPorts();
         Assert.assertTrue(ports.stream().anyMatch(x -> x.getContainerPort().equals(application.getPorts().get(0).getContainerPort().intValue())));
         Assert.assertTrue(ports.stream().anyMatch(x -> x.getContainerPort().equals(application.getPorts().get(1).getContainerPort().intValue())));
         final List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
