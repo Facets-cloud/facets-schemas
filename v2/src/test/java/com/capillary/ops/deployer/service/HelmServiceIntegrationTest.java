@@ -1,8 +1,8 @@
 package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.App;
-import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.Probe;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
@@ -15,13 +15,16 @@ import hapi.chart.ChartOuterClass;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import mockit.Expectations;
 import org.apache.commons.io.IOUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.microbean.helm.chart.URLChartLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -43,11 +45,21 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+
+@RunWith(Parameterized.class)
 @ContextConfiguration(classes = {App.class})
 @ActiveProfiles({"helminttest", "dev"})
 @TestPropertySource("/application-dev.properties")
 public class HelmServiceIntegrationTest {
+
+    @Parameterized.Parameters(name = "{index}: Test with version={0}")
+    public static Collection<String> data() {
+        String[] data = new String[] { "v1.12.10", "v1.14.9" };
+        return Arrays.asList(data);
+    }
+
+    @Parameterized.Parameter
+    public String version;
 
     private static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -82,11 +94,12 @@ public class HelmServiceIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
+        System.out.println("Setup started");
         clusterName = "deployer-helminttest-" + System.currentTimeMillis();
         kindExecutable = getExecutable("kind");
         kubectlExecutable = getExecutable("kubectl");
         helmExecutable = getExecutable("helm");
-        createCluster();
+        createCluster(version);
         kubeConfigPath = getKubeConfigPath();
         installTiller();
         k8sToken = getK8sToken();
@@ -137,11 +150,12 @@ public class HelmServiceIntegrationTest {
                 .stream()
                 .filter(x -> x.getName().equals(application.getName()))
                 .findFirst().get();
-        Container sidecar =
+        Optional<Container> sidecarO =
             k8sdeployment.getSpec().getTemplate().getSpec().getContainers()
                 .stream()
                 .filter(x -> x.getName().equals("jmx"))
-                .findFirst().get();
+                .findFirst();
+        Assert.assertTrue(sidecarO.isPresent());
         String image = container.getImage();
         Assert.assertEquals("nginx:latest", image);
 
