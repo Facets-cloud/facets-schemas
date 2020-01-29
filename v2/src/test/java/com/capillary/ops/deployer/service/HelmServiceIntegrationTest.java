@@ -24,7 +24,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runner.Runner;
 import org.junit.runners.Parameterized;
+import org.junit.runners.model.InitializationError;
+import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
+import org.junit.runners.parameterized.ParametersRunnerFactory;
+import org.junit.runners.parameterized.TestWithParameters;
 import org.microbean.helm.chart.URLChartLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -45,13 +51,26 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-
-@RunWith(Parameterized.class)
 @ContextConfiguration(classes = {App.class})
 @ActiveProfiles({"helminttest", "dev"})
 @TestPropertySource("/application-dev.properties")
+@RunWith(Parameterized.class)
+@Parameterized.UseParametersRunnerFactory(HelmServiceIntegrationTest.SpringParametersRunnerFactory.class)
 public class HelmServiceIntegrationTest {
-
+    public static class SpringParametersRunnerFactory implements ParametersRunnerFactory {
+        @Override
+        public Runner createRunnerForTestWithParameters(TestWithParameters test) throws InitializationError {
+            final BlockJUnit4ClassRunnerWithParameters runnerWithParameters = new BlockJUnit4ClassRunnerWithParameters(test);
+            return new SpringJUnit4ClassRunner(test.getTestClass().getJavaClass()) {
+                @Override
+                protected Object createTest() throws Exception {
+                    final Object testInstance = runnerWithParameters.createTest();
+                    getTestContextManager().prepareTestInstance(testInstance);
+                    return testInstance;
+                }
+            };
+        }
+    }
     @Parameterized.Parameters(name = "{index}: Test with version={0}")
     public static Collection<String> data() {
         String[] data = new String[] { "v1.12.10", "v1.14.9" };
@@ -94,7 +113,7 @@ public class HelmServiceIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        System.out.println("Setup started");
+        System.out.println("Setup started with K8s version: " + version);
         clusterName = "deployer-helminttest-" + System.currentTimeMillis();
         kindExecutable = getExecutable("kind");
         kubectlExecutable = getExecutable("kubectl");
@@ -392,10 +411,6 @@ public class HelmServiceIntegrationTest {
 
     private void createCluster(String version) throws IOException, InterruptedException {
         runCommand(new String[]{kindExecutable.getAbsolutePath(), "create", "cluster", "--name", clusterName, "--image", "kindest/node:" + version});
-    }
-
-    private void createCluster() throws IOException, InterruptedException {
-        createCluster("v1.12.10");
     }
 
     private void destroyCluster() throws IOException, InterruptedException {
