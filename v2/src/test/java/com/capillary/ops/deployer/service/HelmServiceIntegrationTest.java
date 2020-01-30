@@ -152,12 +152,13 @@ public class HelmServiceIntegrationTest {
         };
 
         Application application = createApplication("helmint-test-1", ApplicationFamily.CRM);
+        final String applicationName = application.getName();
         Deployment deployment = createDeployment(application);
 
         new Expectations(iamService) {
             {
                 iamService.getApplicationRole((Application) any, (Environment) any);
-                result = "helmint-test-1-role";
+                result = applicationName + "-role";
             }
         };
         // deploy new app, internal
@@ -190,9 +191,10 @@ public class HelmServiceIntegrationTest {
         Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
         Assert.assertEquals("0.0.0.0/0", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
-        Assert.assertEquals("helmint-test-1-dns.local.internal", service.getMetadata().getAnnotations().get("external-dns.alpha.kubernetes.io/hostname"));
+        Assert.assertEquals(applicationName+ "-dns.local.internal", service.getMetadata().getAnnotations().get(
+            "external-dns.alpha.kubernetes.io/hostname"));
         Assert.assertEquals(1, pods.size());
-        Assert.assertNull(pods.get(0).getSpec().getEnableServiceLinks());
+///        Assert.assertNull(pods.get(0).getSpec().getEnableServiceLinks());
 
         deployment.getConfigurations().forEach(
                 config -> {
@@ -201,13 +203,14 @@ public class HelmServiceIntegrationTest {
                         .collect(Collectors.toList());
                 Assert.assertEquals(1, env1.size());
                 String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                Assert.assertEquals("helmint-test-1-configs", env1SecretName);
-                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                Assert.assertEquals(applicationName + "-configs", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName(
+                    applicationName + "-configs").get();
                 Assert.assertEquals(config.getValue(),
                         new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
         });
 
-        Assert.assertEquals("helmint-test-1-role", pods.get(0).getMetadata().getAnnotations().get("iam.amazonaws.com/role"));
+        Assert.assertEquals(applicationName + "-role", pods.get(0).getMetadata().getAnnotations().get("iam.amazonaws.com/role"));
 
         //ZK publish
         Assert.assertEquals("TEST_ZK_SERVICE_NAME_1,TEST_ZK_SERVICE_NAME_2", service.getMetadata().getAnnotations().get("zk-name"));
@@ -267,8 +270,9 @@ public class HelmServiceIntegrationTest {
                         .collect(Collectors.toList());
                 Assert.assertEquals(1, env1.size());
                 String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                Assert.assertEquals("helmint-test-1-configs", env1SecretName);
-                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                Assert.assertEquals(applicationName + "-configs", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName(
+                    applicationName + "-configs").get();
                 Assert.assertEquals(config.getValue(),
                         new String(Base64.getDecoder().decode(configsSecret.getData().get(config.getName()))));
             });
@@ -281,8 +285,9 @@ public class HelmServiceIntegrationTest {
                         .collect(Collectors.toList());
                 Assert.assertEquals(1, env1.size());
                 String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                Assert.assertEquals("helmint-test-1-configs", env1SecretName);
-                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-configs").get();
+                Assert.assertEquals(applicationName + "-configs", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName(
+                    applicationName + "-configs").get();
                 Assert.assertEquals(commonConfig.getValue(),
                         new String(Base64.getDecoder().decode(configsSecret.getData().get(commonConfig.getKey()))));
             }
@@ -297,8 +302,9 @@ public class HelmServiceIntegrationTest {
                         .collect(Collectors.toList());
                 Assert.assertEquals(1, env1.size());
                 String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
-                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
+                Assert.assertEquals(applicationName + "-credentials", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName(
+                    applicationName + "-credentials").get();
                 Assert.assertEquals(commonCredential.getValue(),
                         new String(Base64.getDecoder().decode(configsSecret.getData().get(commonCredential.getKey()))));
             }
@@ -318,8 +324,9 @@ public class HelmServiceIntegrationTest {
                         .collect(Collectors.toList());
                 Assert.assertEquals(1, env1.size());
                 String env1SecretName = env1.get(0).getValueFrom().getSecretKeyRef().getName();
-                Assert.assertEquals("helmint-test-1-credentials", env1SecretName);
-                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName("helmint-test-1-credentials").get();
+                Assert.assertEquals(applicationName + "-credentials", env1SecretName);
+                Secret configsSecret = kubernetesClient.secrets().inNamespace("default").withName(
+                    applicationName + "-credentials").get();
                 Assert.assertEquals(credential.getSecretValue(),
                         new String(Base64.getDecoder().decode(configsSecret.getData().get(credential.getSecretName()))));
             });
@@ -515,6 +522,8 @@ public class HelmServiceIntegrationTest {
     }
 
     private Application createApplication(String name, ApplicationFamily applicationFamily) {
+        String replacedVersion = version.replace(".", "-");
+        name = name + replacedVersion;
         Port port1 = new Port("http", 8080L, 80L);
         Port port2 = new Port("https", 8081L, 443L);
 
@@ -574,6 +583,7 @@ public class HelmServiceIntegrationTest {
             }
         };
         Application application = createApplication("helmint-test-statefulset-1", ApplicationFamily.CRM);
+        String applicationName = application.getName();
         application.setPorts(Arrays.asList(new Port("http",80L,80L,Port.Protocol.HTTP)));
         application.setApplicationType(Application.ApplicationType.STATEFUL_SET);
         application.setPvcList(Arrays.asList(new PVC("data-pvc",PVC.AccessMode.ReadOnlyMany,100,"/usr/share/test","mnt")));
@@ -618,9 +628,9 @@ public class HelmServiceIntegrationTest {
 
         Assert.assertEquals("data-pvc-vol", statefulSet.getSpec().getVolumeClaimTemplates().get(0).getMetadata().getName());
         Assert.assertTrue(pods.get(0).getSpec().getContainers().get(0).getEnv().stream().anyMatch(x -> x.getName().equals("CREDENTIAL1")));
-        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-file-credentials").get().getData().containsKey("credentialfile1"));
-        Assert.assertFalse(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIALFILE1"));
-        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName("helmint-test-statefulset-1-credentials").get().getData().containsKey("CREDENTIAL1"));
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName(applicationName+ "-file-credentials").get().getData().containsKey("credentialfile1"));
+        Assert.assertFalse(kubernetesClient.secrets().inNamespace("default").withName(applicationName+ "-credentials").get().getData().containsKey("CREDENTIALFILE1"));
+        Assert.assertTrue(kubernetesClient.secrets().inNamespace("default").withName(applicationName+ "-credentials").get().getData().containsKey("CREDENTIAL1"));
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
