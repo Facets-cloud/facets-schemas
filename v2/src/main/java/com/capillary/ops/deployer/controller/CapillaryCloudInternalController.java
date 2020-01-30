@@ -45,6 +45,7 @@ public class CapillaryCloudInternalController {
 
     @DeleteMapping("/infraResources/k8sClusters/{infrastructureResourceName}/instances/{clusterName}")
     public K8sCluster deleteK8sCluster(@PathVariable String infrastructureResourceName, @PathVariable String clusterName) {
+        capillaryCloudFacade.deleteDeployerEnvironment(clusterName, infrastructureResourceName);
         return capillaryCloudFacade.deleteInstance(infrastructureResourceName, clusterName);
     }
 

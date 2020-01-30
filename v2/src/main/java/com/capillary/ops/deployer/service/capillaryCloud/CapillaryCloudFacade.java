@@ -141,4 +141,12 @@ public class CapillaryCloudFacade {
             environmentRepository.save(newEnvironment);
         }
     }
+
+    public void deleteDeployerEnvironment(String clusterName, String infrastructureResourceName) {
+        String environmentName = infrastructureResourceName + "-" + clusterName;
+        Cluster cluster = clusterRepository.findOneByName(clusterName).get();
+        Optional<Environment> existingEnvOptional =
+                environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(cluster.getApplicationFamily(), environmentName);
+        environmentRepository.delete(existingEnvOptional.get());
+    }
 }
