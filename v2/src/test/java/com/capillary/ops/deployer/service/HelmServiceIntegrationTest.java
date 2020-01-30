@@ -57,6 +57,10 @@ import java.util.stream.Collectors;
 @RunWith(Parameterized.class)
 @Parameterized.UseParametersRunnerFactory(HelmServiceIntegrationTest.SpringParametersRunnerFactory.class)
 public class HelmServiceIntegrationTest {
+
+    public static final String V12 = "v1.12.10";
+    public static final String V14 = "v1.14.9";
+
     public static class SpringParametersRunnerFactory implements ParametersRunnerFactory {
         @Override
         public Runner createRunnerForTestWithParameters(TestWithParameters test) throws InitializationError {
@@ -73,7 +77,7 @@ public class HelmServiceIntegrationTest {
     }
     @Parameterized.Parameters(name = "{index}: Test with version={0}")
     public static Collection<String> data() {
-        String[] data = new String[] { "v1.12.10", "v1.14.9" };
+        String[] data = new String[] { V12, V14 };
         return Arrays.asList(data);
     }
 
@@ -194,7 +198,12 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals(applicationName+ "-dns.local.internal", service.getMetadata().getAnnotations().get(
             "external-dns.alpha.kubernetes.io/hostname"));
         Assert.assertEquals(1, pods.size());
-///        Assert.assertNull(pods.get(0).getSpec().getEnableServiceLinks());
+        if(version.equals(V12)) {
+            Assert.assertNull(pods.get(0).getSpec().getEnableServiceLinks());
+        }
+        if(version.equals(V14)) {
+            Assert.assertFalse(pods.get(0).getSpec().getEnableServiceLinks());
+        }
 
         deployment.getConfigurations().forEach(
                 config -> {
