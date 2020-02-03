@@ -41,3 +41,4 @@ v2/src/main/resources/static/
 package-lock.json
 dist/
 .helm
+.terraform
