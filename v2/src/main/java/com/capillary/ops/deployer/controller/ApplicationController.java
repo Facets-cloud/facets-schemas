@@ -389,12 +389,38 @@ public class ApplicationController {
         return applicationFacade.disableNewrelicMonitoring(applicationFamily, applicationId, environment);
     }
 
+    @RolesAllowed("ADMIN")
+    @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/alerting", produces = "application/json")
+    public boolean enableAlerting(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                    @PathVariable("applicationId") String applicationId,
+                                    @PathVariable("environment") String environment) {
+        return applicationFacade.enableNewrelicAlerting(applicationFamily, applicationId, environment);
+    }
+
+    @RolesAllowed("ADMIN")
+    @DeleteMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/alerting", produces = "application/json")
+    public boolean disableAlerting(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                     @PathVariable("applicationId") String applicationId,
+                                     @PathVariable("environment") String environment) {
+        return applicationFacade.disableNewrelicAlerting(applicationFamily, applicationId, environment);
+    }
+
+    @RolesAllowed("ADMIN")
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
     public Monitoring getMonitoringDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                      @PathVariable("applicationId") String applicationId,
                                      @PathVariable("environment") String environment) {
         return applicationFacade.getMonitoringDetails(applicationFamily, applicationId, environment);
     }
+
+    @RolesAllowed("ADMIN")
+    @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/alerting", produces = "application/json")
+    public Alerting getAlertingDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                            @PathVariable("applicationId") String applicationId,
+                                            @PathVariable("environment") String environment) {
+        return applicationFacade.getAlertingDetails(applicationFamily, applicationId, environment);
+    }
+
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")

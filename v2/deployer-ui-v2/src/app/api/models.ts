@@ -1,4 +1,5 @@
 export { ActionExecution } from './models/action-execution';
+export { Alerting } from './models/alerting';
 export { Application } from './models/application';
 export { ApplicationAction } from './models/application-action';
 export { ApplicationDeploymentDetails } from './models/application-deployment-details';

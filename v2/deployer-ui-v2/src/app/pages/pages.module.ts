@@ -31,6 +31,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './application-page/monitoring/monitoring.component';
 import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-pod-action-dialog/excecute-pod-action-dialog.component';
 import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoComponent } from './application-page/executed-actions/executed-actions.component';
+import { AlertingComponent, AlertingEnableButtonComponent, NewRelicAlertLinkViewComponent } from './application-page/alerting/alerting.component';
 
 @NgModule({
   imports: [
@@ -91,11 +92,14 @@ import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoCo
     ButtonDownloadComponent,
     MonitoringComponent,
     NewRelicLinkViewComponent,
+    AlertingEnableButtonComponent,
+    NewRelicAlertLinkViewComponent,
     MonitoringEnableButtonComponent,
     ExcecutePodActionDialogComponent,
     ExecutedActionsComponent,
     DialogActionInfoComponent,
     ButtonActionInfoComponent,
+    AlertingComponent,
   ],
   entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent,
     ExcecutePodActionDialogComponent, DialogActionInfoComponent, ButtonActionInfoComponent],

@@ -100,6 +100,8 @@ public class Application {
 
     private String statusCallbackUrl;
 
+    private String newRelicAlertRecipients;
+
     public String getId() {
         return id;
     }
@@ -258,6 +260,14 @@ public class Application {
 
     public void setStrictGitFlowModeEnabled(boolean strictGitFlowModeEnabled) {
         this.strictGitFlowModeEnabled = strictGitFlowModeEnabled;
+    }
+
+    public String getNewRelicAlertRecipients() {
+        return newRelicAlertRecipients;
+    }
+
+    public void setNewRelicAlertRecipients(String newRelicAlertRecipients) {
+        this.newRelicAlertRecipients = newRelicAlertRecipients;
     }
 
     public String getStatusCallbackUrl() {

@@ -21,6 +21,7 @@ import { BitbucketPREvent } from '../models/bitbucket-prevent';
 import { GithubPREvent } from '../models/github-prevent';
 import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
+import { Alerting } from '../models/alerting';
 import { Deployment } from '../models/deployment';
 import { DeploymentStatusDetails } from '../models/deployment-status-details';
 import { Monitoring } from '../models/monitoring';
@@ -65,6 +66,9 @@ class ApplicationControllerService extends __BaseService {
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
   static readonly upsertEnvironmentUsingPOSTPath = '/api/{applicationFamily}/environments';
   static readonly getEnvironmentUsingGETPath = '/api/{applicationFamily}/environments/{id}';
+  static readonly getAlertingDetailsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/alerting';
+  static readonly enableAlertingUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/alerting';
+  static readonly disableAlertingUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/alerting';
   static readonly getCurrentDeploymentUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current';
   static readonly getDeploymentStatusUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus';
   static readonly deployUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/deployments';
@@ -1497,6 +1501,162 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetAlertingDetailsUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getAlertingDetailsUsingGETResponse(params: ApplicationControllerService.GetAlertingDetailsUsingGETParams): __Observable<__StrictHttpResponse<Alerting>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/alerting`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Alerting>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetAlertingDetailsUsingGETParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getAlertingDetailsUsingGET(params: ApplicationControllerService.GetAlertingDetailsUsingGETParams): __Observable<Alerting> {
+    return this.getAlertingDetailsUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Alerting)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.EnableAlertingUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  enableAlertingUsingPOSTResponse(params: ApplicationControllerService.EnableAlertingUsingPOSTParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/alerting`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.EnableAlertingUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  enableAlertingUsingPOST(params: ApplicationControllerService.EnableAlertingUsingPOSTParams): __Observable<boolean> {
+    return this.enableAlertingUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * @param params The `ApplicationControllerService.DisableAlertingUsingDELETEParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  disableAlertingUsingDELETEResponse(params: ApplicationControllerService.DisableAlertingUsingDELETEParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/alerting`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DisableAlertingUsingDELETEParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  disableAlertingUsingDELETE(params: ApplicationControllerService.DisableAlertingUsingDELETEParams): __Observable<boolean> {
+    return this.disableAlertingUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetCurrentDeploymentUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2724,6 +2884,69 @@ module ApplicationControllerService {
      * id
      */
     id: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getAlertingDetailsUsingGET
+   */
+  export interface GetAlertingDetailsUsingGETParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for enableAlertingUsingPOST
+   */
+  export interface EnableAlertingUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for disableAlertingUsingDELETE
+   */
+  export interface DisableAlertingUsingDELETEParams {
+
+    /**
+     * environment
+     */
+    environment: string;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
 
     /**
      * applicationFamily
