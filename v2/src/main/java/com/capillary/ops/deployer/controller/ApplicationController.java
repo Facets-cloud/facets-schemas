@@ -47,7 +47,7 @@ public class ApplicationController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
-    @RolesAllowed("ADMIN")
+    @RolesAllowed({"ADMIN", "MODERATOR"})
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application createApplication(@Valid @RequestBody  Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
@@ -56,7 +56,7 @@ public class ApplicationController {
         return applicationFacade.createApplication(application, host);
     }
 
-    @RolesAllowed("ADMIN")
+    @RolesAllowed({"ADMIN", "MODERATOR"})
     @PutMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application updateApplication(@Valid @RequestBody  Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
@@ -168,20 +168,20 @@ public class ApplicationController {
         return applicationFacade.createDeployment(applicationFamily, environment, applicationId, deployment);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
     @PostMapping(value = "/users", produces = "application/json")
     public User createUser(@RequestBody  User user) {
         return userFacade.createUser(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
     @PutMapping(value = "/users/{userId}", produces = "application/json")
     public User updateUser(@RequestBody User user, @PathVariable("userId") String userId) {
         user.setId(userId);
         return userFacade.createUser(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
     @GetMapping(value = "/users", produces = "application/json")
     public List<User> getUsers() {
         return userFacade.getAllUsers();
@@ -367,6 +367,7 @@ public class ApplicationController {
         return applicationFacade.getGlobalStats();
     }
 
+    @RolesAllowed({"ADMIN", "MODERATOR"})
     @DeleteMapping(value = "/{applicationFamily}/applications/{applicationId}", produces = "application/json")
     public boolean deleteApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                      @PathVariable("applicationId") String applicationId) {
