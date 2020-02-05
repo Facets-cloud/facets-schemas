@@ -13,19 +13,25 @@ import { MessageBus } from '../../@core/message-bus';
 export class ApplicationsMenuComponent implements OnInit {
 
   menuItems: NbMenuItem[] = [];
-  globalMenuItems: NbMenuItem[] = [
+  createAppMenuItems: NbMenuItem[] = [
     {
       title: 'Create Application',
       icon: 'plus-outline',
       link: 'applications/create',
     },
+  ];
+
+  userMgmtMenuItems: NbMenuItem[] = [
     {
       title: 'User Management',
       icon: 'people-outline',
       link: 'users',
     },
   ];
-  isAdmin: boolean = false;
+
+
+  isModerator: boolean = false;
+  isUserAdmin: boolean = false;
 
   constructor(private applicationControllerService: ApplicationControllerService,
     private nbMenuService: NbMenuService, private userService: UserService,
@@ -33,8 +39,11 @@ export class ApplicationsMenuComponent implements OnInit {
 
   ngOnInit() {
     this.userService.getUser().subscribe(user =>
-      this.isAdmin = user.authorities.map(x => x.authority).includes('ROLE_ADMIN'));
-
+        this.isModerator = (user.authorities.map(x => x.authority).includes('ROLE_MODERATOR'))
+        || user.authorities.map(x => x.authority).includes('ROLE_ADMIN'));
+    this.userService.getUser().subscribe(user =>
+        this.isUserAdmin = (user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
+        || user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN'));
     this.messageBus.application.subscribe(x => this.populateAppFamilies());
     this.populateAppFamilies();
   }
