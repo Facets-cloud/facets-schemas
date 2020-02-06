@@ -43,6 +43,13 @@ podCPULimit: 0.5
 secretFileMounts: []
 readinessPeriod: 30
 VALUES
+      "dynamic_environment_variables" = {
+        "DB1_RDS_ENDPOINT" = {
+          resource_type = "mysql"
+          resource_name = "db1"
+          attribute = "original_endpoint"
+        }
+      }
     }
     "demoapiservice" = {
       "helm_values" = <<VALUES
@@ -79,6 +86,21 @@ podCPULimit: 0.5
 secretFileMounts: []
 readinessPeriod: 30
 VALUES
+      "dynamic_environment_variables" = {
+        "DB1_RDS_ROOTPASSWORD" = {
+          resource_type = "mysql"
+          resource_name = "db1"
+          attribute = "root_passowrd"
+        }
+      }
+    }
+  }
+
+  dynamic_environment_variables_map = {
+    for i,j in local.instances:
+    i => {
+      for k,v in j["dynamic_environment_variables"]:
+        k => var.resources[v["resource_type"]][v["resource_name"]][v["attribute"]]
     }
   }
 }
@@ -101,6 +123,9 @@ resource "helm_release" "application" {
   name = each.key
 
   values = [
-    each.value["helm_values"]
+    each.value["helm_values"],
+    jsonencode({
+      configurations = merge(local.dynamic_environment_variables_map[each.key], yamldecode(each.value["helm_values"])["configurations"])
+    })
   ]
 }

@@ -27,3 +27,7 @@ variable "baseinfra" {
     })
   })
 }
+
+variable "resources" {
+  type = any
+}

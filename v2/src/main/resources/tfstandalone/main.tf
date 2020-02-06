@@ -33,6 +33,9 @@ module "application" {
   source = "./application"
   baseinfra = module.baseinfra.base_infra_details
   cluster = local.cluster
+  resources = {
+    "mysql" = module.mysql.mysql_details
+  }
 }
 
 data "http" "example" {
