@@ -50,4 +50,17 @@ public class CapillaryCloudInternalController {
     }
 
 
+    @GetMapping("/mockcluster")
+    public String getClusterMock() {
+        return "{\n" +
+                "\"name\": \"test009\",\n" +
+                "\"awsRegion\": \"us-west-2\",\n" +
+                "\"azs\": [\"us-west-2a\", \"us-west-2b\"],\n" +
+                "\"privateSubnetCIDR\": [\"10.200.100.0/24\", \"10.200.101.0/24\"],\n" +
+                "\"publicSubnetCIDR\": [\"10.200.110.0/24\", \"10.200.111.0/24\"],\n" +
+                "\"vpcCIDR\": \"10.200.0.0/16\"\n" +
+                "}";
+    }
+
+
 }
