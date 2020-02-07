@@ -50,6 +50,13 @@ VALUES
           attribute = "original_endpoint"
         }
       }
+      "iam_credential_requests" = [
+        {
+          resource_type = "s3"
+          resource_name = "bucket1"
+          permission = "READ_WRITE"
+        }
+      ]
     }
     "demoapiservice" = {
       "helm_values" = <<VALUES
@@ -93,6 +100,20 @@ VALUES
           attribute = "root_passowrd"
         }
       }
+      "iam_credential_requests" = [
+        {
+          resource_type = "s3"
+          resource_name = "bucket1"
+          permission = "READ_ONLY"
+        }
+      ]
+      "mysql_credential_requests" = [
+        {
+          resource_type = "mysql"
+          resource_name = "db1"
+          permission = "READ_WRITE"
+        }
+      ]
     }
   }
 
@@ -102,6 +123,20 @@ VALUES
       for k,v in j["dynamic_environment_variables"]:
         k => var.resources[v["resource_type"]][v["resource_name"]][v["attribute"]]
     }
+  }
+
+  policy_attachments_list = flatten([
+    for i,j in local.instances: [
+      for p in j["iam_credential_requests"]: try({
+        iam_policy = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]]
+        application_name = i
+      }, null)
+  ]
+  ])
+
+  policy_attachments_map = {
+    for i in local.policy_attachments_list:
+          "${i["iam_policy"]}-${i["application_name"]}" => i
   }
 }
 
@@ -128,4 +163,31 @@ resource "helm_release" "application" {
       configurations = merge(local.dynamic_environment_variables_map[each.key], yamldecode(each.value["helm_values"])["configurations"])
     })
   ]
+}
+
+resource "aws_iam_role" "application-role" {
+  for_each = local.instances
+  name = "${var.cluster.name}-${each.key}-application-role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "policy-attach" {
+  for_each = local.policy_attachments_map
+  role       = aws_iam_role.application-role[each.value["application_name"]].name
+  policy_arn = each.value["iam_policy"]
 }

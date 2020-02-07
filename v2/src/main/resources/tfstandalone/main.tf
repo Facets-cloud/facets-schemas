@@ -29,12 +29,20 @@ module "mysql" {
   cluster = local.cluster
 }
 
+module "s3" {
+  source = "./s3"
+  baseinfra = module.baseinfra.base_infra_details
+  cluster = local.cluster
+}
+
+
 module "application" {
   source = "./application"
   baseinfra = module.baseinfra.base_infra_details
   cluster = local.cluster
   resources = {
     "mysql" = module.mysql.mysql_details
+    "s3"    = module.s3.s3_details
   }
 }
 
