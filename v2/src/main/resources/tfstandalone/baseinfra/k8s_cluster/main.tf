@@ -154,9 +154,36 @@ resource "aws_iam_policy" "kube2iam-nodegroup-policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "test-attach" {
-  role       = "${module.k8s-cluster.node_groups["standard"].node_role_arn}"
-  policy_arn = "${aws_iam_policy.kube2iam-nodegroup-policy.arn}"
+resource "aws_iam_role_policy_attachment" "kube2iam-attach" {
+  role       = module.k8s-cluster.worker_iam_role_name
+  policy_arn = aws_iam_policy.kube2iam-nodegroup-policy.arn
+}
+
+resource "helm_release" "kube2iam" {
+  name       = "kube2iam"
+  repository = data.helm_repository.stable.metadata[0].name
+  chart      = "kube2iam"
+  version    = "2.1.0"
+
+  set {
+    name = "rbac.create"
+    value = "true"
+  }
+
+  set {
+    name = "host.iptables"
+    value = "true"
+  }
+
+  set {
+    name = "verbose"
+    value = "true"
+  }
+
+  set_string {
+    name = "host.interface"
+    value = "eni+"
+  }
 }
 
 //resource "restapi_object" "vpc_instance" {

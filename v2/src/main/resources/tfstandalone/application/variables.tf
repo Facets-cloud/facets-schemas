@@ -24,6 +24,7 @@ variable "baseinfra" {
       helm_details = object({
         tiller_sa = string
       })
+      node_group_iam_role_arn = string
     })
   })
 }

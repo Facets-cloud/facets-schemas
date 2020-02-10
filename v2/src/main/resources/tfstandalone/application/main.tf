@@ -161,7 +161,10 @@ resource "helm_release" "application" {
     each.value["helm_values"],
     jsonencode({
       configurations = merge(local.dynamic_environment_variables_map[each.key], yamldecode(each.value["helm_values"])["configurations"])
-    })
+    }),
+    <<ROLE
+roleName: ${aws_iam_role.application-role[each.key].arn}
+ROLE
   ]
 }
 
