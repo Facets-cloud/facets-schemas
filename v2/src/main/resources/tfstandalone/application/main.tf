@@ -180,6 +180,14 @@ resource "aws_iam_role" "application-role" {
       },
       "Effect": "Allow",
       "Sid": ""
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "${var.baseinfra.k8s_details.node_group_iam_role_arn}"
+      },
+      "Action": "sts:AssumeRole"
     }
   ]
 }

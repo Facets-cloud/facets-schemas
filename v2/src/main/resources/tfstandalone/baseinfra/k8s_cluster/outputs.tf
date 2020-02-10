@@ -8,5 +8,6 @@ output k8s_details {
     helm_details = {
       tiller_sa = kubernetes_service_account.tiller.metadata[0].name
     }
+    node_group_iam_role_arn = module.k8s-cluster.node_groups["standard"].node_role_arn
   }
 }
