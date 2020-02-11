@@ -4,8 +4,10 @@ locals {
 
 provider "aws" {
   region = local.cluster.awsRegion
-  profile = "tfmj"
   version = "~> 2.45.0"
+  role_arn     = "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role"
+  session_name = "capillary-cloud-tf"
+  external_id  = "123"
 }
 
 terraform {
@@ -13,8 +15,9 @@ terraform {
     bucket = "capillary-cloud-tfstate"
     key    = "tfstate"
     region = "us-east-1"
-    profile = "tfmj"
     dynamodb_table = "capillary-cloud-tflock"
+    role_arn = "arn:aws:iam::486456986266:role/service-role/codebuild-capillary-cloud-tf-apply-service-role"
+    session_name = "capillary-cloud-tf"
   }
 }
 
