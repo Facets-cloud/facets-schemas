@@ -1,13 +1,29 @@
 locals {
-  cluster = jsondecode(data.http.example.body)
+  // cluster = jsondecode(data.http.example.body)
+  cluster = {
+    "awsRegion" = "us-west-2",
+    "azs" = [
+      "us-west-2a", "us-west-2b"
+    ],
+    "name" = "test009",
+    "privateSubnetCIDR" = [
+      "10.200.100.0/24", "10.200.101.0/24"
+    ],
+    "publicSubnetCIDR" = [
+      "10.200.110.0/24", "10.200.111.0/24"
+    ],
+    "vpcCIDR": "10.200.0.0/16",
+    "iamRole": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
+    "externalId": "123"
+  }
 }
 
 provider "aws" {
   region = local.cluster.awsRegion
   version = "~> 2.45.0"
-  role_arn     = "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role"
+  role_arn     = local.cluster.iamRole
   session_name = "capillary-cloud-tf"
-  external_id  = "123"
+  external_id  = local.cluster.externalId
 }
 
 terraform {
@@ -49,10 +65,10 @@ module "application" {
   }
 }
 
-data "http" "example" {
-  url = "http://localhost:8080/internal/capillarycloud/api/mockcluster"
-  # Optional request headers
-  request_headers = {
-    Accept = "application/json"
-  }
-}
+//data "http" "example" {
+//  url = "http://localhost:8080/internal/capillarycloud/api/mockcluster"
+//  # Optional request headers
+//  request_headers = {
+//    Accept = "application/json"
+//  }
+//}
