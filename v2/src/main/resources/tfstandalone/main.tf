@@ -32,8 +32,6 @@ terraform {
     key    = "tfstate"
     region = "us-east-1"
     dynamodb_table = "capillary-cloud-tflock"
-    role_arn = "arn:aws:iam::486456986266:role/service-role/codebuild-capillary-cloud-tf-apply-service-role"
-    session_name = "capillary-cloud-tf"
   }
 }
 
