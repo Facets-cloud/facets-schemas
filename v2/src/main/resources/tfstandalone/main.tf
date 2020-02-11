@@ -23,7 +23,7 @@ provider "aws" {
   version = "~> 2.45.0"
   assume_role {
     role_arn = local.cluster.iamRole
-    session_name = "capillary-cloud-tf"
+    session_name = "capillary-cloud-tf-${uuid()}"
     external_id = local.cluster.externalId
   }
 }
