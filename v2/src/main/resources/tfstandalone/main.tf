@@ -21,9 +21,11 @@ locals {
 provider "aws" {
   region = local.cluster.awsRegion
   version = "~> 2.45.0"
-  role_arn     = local.cluster.iamRole
-  session_name = "capillary-cloud-tf"
-  external_id  = local.cluster.externalId
+  assume_role {
+    role_arn = local.cluster.iamRole
+    session_name = "capillary-cloud-tf"
+    external_id = local.cluster.externalId
+  }
 }
 
 terraform {
