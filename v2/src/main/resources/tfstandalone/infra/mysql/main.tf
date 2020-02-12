@@ -24,6 +24,7 @@ locals {
 resource "random_string" "root_password" {
   for_each = local.instances
   length = 12
+  override_special = "#$!"
 }
 
 resource "aws_db_subnet_group" "rds-subnet-group" {
