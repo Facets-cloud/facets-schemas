@@ -9,6 +9,10 @@ public class Stack {
 
     private StackStatus status;
 
+    private String vcsUrl;
+
+    private VCS vcs;
+
     public String getName() {
         return name;
     }
@@ -23,5 +27,21 @@ public class Stack {
 
     public void setStatus(StackStatus status) {
         this.status = status;
+    }
+
+    public VCS getVcs() {
+        return vcs;
+    }
+
+    public void setVcs(VCS vcs) {
+        this.vcs = vcs;
+    }
+
+    public String getVcsUrl() {
+        return vcsUrl;
+    }
+
+    public void setVcsUrl(String vcsUrl) {
+        this.vcsUrl = vcsUrl;
     }
 }

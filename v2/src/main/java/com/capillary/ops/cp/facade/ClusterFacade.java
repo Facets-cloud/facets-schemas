@@ -42,7 +42,7 @@ public class ClusterFacade {
             throw new RuntimeException("Invalid Stack Specified");
         }
         ClusterService service = factory.getService(request.getCloud());
-        AbstractCluster cluster = service.createCluster(request);
+        AbstractCluster cluster = service.createCluster(request, stack.get().getName());
         //Done: Persist Cluster Object
         //Persist to DB
         AbstractCluster saved = clusterRepository.save(cluster);

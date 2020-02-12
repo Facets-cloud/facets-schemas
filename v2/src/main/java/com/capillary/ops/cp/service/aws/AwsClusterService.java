@@ -15,10 +15,10 @@ import java.util.ArrayList;
 public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterRequest> {
 
     @Autowired
-    AwsAssumeRoleService awsAssumeRoleService;
+    private AwsAssumeRoleService awsAssumeRoleService;
 
     @Override
-    public AwsCluster createCluster(AwsClusterRequest request) {
+    public AwsCluster createCluster(AwsClusterRequest request, String stackName) {
         //DONE: Validations
         //1. Test the arn & external Id connectivity
         if (!awsAssumeRoleService.testRoleAccess(request.getRoleARN(), request.getExternalId())) {
@@ -41,6 +41,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
             add("10.250.111.0/24");
         }});
         cluster.setVpcCIDR("10.250.0.0/16");
+        cluster.setStackName(stackName);
         //TODO: return cluster object
         // return
         return cluster;

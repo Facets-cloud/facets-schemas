@@ -15,6 +15,8 @@ public abstract class AbstractCluster {
 
     private Cloud cloud;
 
+    private String stackName;
+
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
         this.cloud = cloud;
@@ -38,5 +40,13 @@ public abstract class AbstractCluster {
 
     public Cloud getCloud() {
         return cloud;
+    }
+
+    public String getStackName() {
+        return stackName;
+    }
+
+    public void setStackName(String stackName) {
+        this.stackName = stackName;
     }
 }

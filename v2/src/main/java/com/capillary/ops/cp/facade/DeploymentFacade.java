@@ -2,26 +2,31 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.TFBuildService;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class DeploymentFacade {
 
     @Autowired
-    ClusterFacade clusterFacade;
+    private ClusterFacade clusterFacade;
 
     @Autowired
-    TFBuildService tfBuildService;
+    private TFBuildService tfBuildService;
 
     /**
      * Create a new Deployment
      *
-     * @param clusterId
-     * @param deploymentRequest
-     * @return
+     * @param clusterId Id of the Cluster
+     * @param deploymentRequest Any Additional Deployment Params
+     * @return The Deployment Log Object
      */
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
