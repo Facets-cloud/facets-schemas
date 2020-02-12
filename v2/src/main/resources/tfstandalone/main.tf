@@ -37,38 +37,16 @@ terraform {
   }
 }
 
-module "baseinfra" {
-  source = "./baseinfra"
+module "infra" {
+  source = "./infra"
   cluster = local.cluster
 }
-
-module "mysql" {
-  source = "./mysql"
-  baseinfra = module.baseinfra.base_infra_details
-  cluster = local.cluster
-}
-
-module "s3" {
-  source = "./s3"
-  baseinfra = module.baseinfra.base_infra_details
-  cluster = local.cluster
-}
-
 
 module "application" {
   source = "./application"
-  baseinfra = module.baseinfra.base_infra_details
+  baseinfra = module.infra.infra_details.base_infra_details
   cluster = local.cluster
-  resources = {
-    "mysql" = module.mysql.mysql_details
-    "s3"    = module.s3.s3_details
-  }
+  resources = module.infra.infra_details.resources
 }
 
-//data "http" "example" {
-//  url = "http://localhost:8080/internal/capillarycloud/api/mockcluster"
-//  # Optional request headers
-//  request_headers = {
-//    Accept = "application/json"
-//  }
-//}
+

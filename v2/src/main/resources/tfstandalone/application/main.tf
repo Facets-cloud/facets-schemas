@@ -125,18 +125,14 @@ VALUES
     }
   }
 
-  policy_attachments_list = flatten([
+  policy_attachments_map = {for k in flatten([
     for i,j in local.instances: [
-      for p in j["iam_credential_requests"]: try({
+      for p in j["iam_credential_requests"]: {
         iam_policy = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]]
         application_name = i
-      }, null)
-  ]
-  ])
-
-  policy_attachments_map = {
-    for i in local.policy_attachments_list:
-          "${i["iam_policy"]}-${i["application_name"]}" => i
+      }
+  ]]):
+    "${k["iam_policy"]}-${k["application_name"]}" => k
   }
 }
 
