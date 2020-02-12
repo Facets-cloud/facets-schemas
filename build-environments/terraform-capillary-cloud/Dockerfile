@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 RUN apt-get update 
-RUN apt-get install -y wget unzip
+RUN apt-get install -y wget unzip curl
 RUN wget https://get.helm.sh/helm-v2.16.1-linux-amd64.tar.gz
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.14.1/bin/linux/amd64/kubectl
 RUN wget https://releases.hashicorp.com/terraform/0.12.20/terraform_0.12.20_linux_amd64.zip
