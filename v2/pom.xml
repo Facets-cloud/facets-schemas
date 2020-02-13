@@ -268,7 +268,7 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
-                                <argument>@angular/cli@latest</argument>
+                                <argument>@angular/cli@8.3.25</argument>
                             </arguments>
                         </configuration>
                     </execution>
