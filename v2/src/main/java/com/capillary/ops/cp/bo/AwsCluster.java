@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class AwsCluster extends AbstractCluster {
 
-    private Regions awsRegion;
+    private String awsRegion;
 
     private List<String> azs;
 
@@ -53,11 +53,11 @@ public class AwsCluster extends AbstractCluster {
         this.roleARN = roleARN;
     }
 
-    public Regions getAwsRegion() {
+    public String getAwsRegion() {
         return awsRegion;
     }
 
-    public void setAwsRegion(Regions awsRegion) {
+    public void setAwsRegion(String awsRegion) {
         this.awsRegion = awsRegion;
     }
 

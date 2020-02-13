@@ -28,7 +28,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         AwsCluster cluster = new AwsCluster(request.getClusterName());
         cluster.setRoleARN(request.getRoleARN());
         cluster.setExternalId(request.getExternalId());
-        cluster.setAwsRegion(request.getRegion());
+        cluster.setAwsRegion(request.getRegion().getName());
         cluster.setAzs(request.getAzs());
         //TODO: Variable Generations
         //1. Generate CIDRs etc.
