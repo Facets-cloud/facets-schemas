@@ -426,6 +426,7 @@ public class ApplicationFacade {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }
         deploymentRepository.save(deployment);
+        preDeployTasks(application,deployment);
         try {
             helmService.deploy(application, deployment);
         } catch (Exception e) {
@@ -434,8 +435,30 @@ public class ApplicationFacade {
                     application,
                     getDeploymentFailureMessage(deployment, application));
         }
-
         return deployment;
+    }
+
+    private void preDeployTasks(Application application, Deployment deployment) {
+        try {
+            switch (application.getApplicationFamily()) {
+                case CRM:
+                    if (deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
+
+                        Deployment currentDeployment = getCurrentDeployment(application.getApplicationFamily(), application.getId(), deployment.getEnvironment());
+                        if (currentDeployment != null && currentDeployment.getConfigurationsMap().get("zkPublish").equals(deployment.getConfigurationsMap().get("zkPublish"))) {
+                            logger.info("Skipping pre-deploy task for {} on {}", application.getName(), deployment.getEnvironment());
+                            break;
+                        }
+                        if (deployment.getConfigurationsMap().get("zkPublish").equals("true")) {
+                            Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(application.getApplicationFamily(), deployment.getEnvironment()).get();
+                            kubernetesService.deleteServiceCreatedByKubeCompassIfExists(application.getName(), environment);
+                        }
+                    }
+            }
+        }catch (Exception e)
+        {
+            logger.error("Error executing pre-deploy task", e);
+        }
     }
 
     private String getDeploymentFailureMessage(Deployment deployment, Application application) {

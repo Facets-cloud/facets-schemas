@@ -31,4 +31,6 @@ public interface IKubernetesService {
     void haltApplication(String deploymentName, Environment environment);
 
     void resumeApplication(String deploymentName, Environment environment);
+
+    void deleteServiceCreatedByKubeCompassIfExists(String appName, Environment environment);
 }
