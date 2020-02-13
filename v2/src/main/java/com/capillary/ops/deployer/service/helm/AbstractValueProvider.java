@@ -58,12 +58,7 @@ public abstract class AbstractValueProvider {
         Map<String, String> configMap = new HashMap<>();
         configMap.putAll(deployment.getConfigurationsMap());
         configMap.putAll(application.getCommonConfigs());
-        configMap.putAll(application.getDefaultConfigs());
         String clusterName = environment.getEnvironmentMetaData().getCapillaryCloudClusterName();
-        Map<String, String> dynamicConfigs = application.getDynamicConfigs();
-        Map<String, String> resolvedConfigs =
-                infrastructureResourceReferenceResolver.resolve(clusterName, dynamicConfigs);
-        configMap.putAll(resolvedConfigs);
         if(environment.getEnvironmentConfiguration().getCommonConfigs() != null) {
             configMap.putAll(environment.getEnvironmentConfiguration().getCommonConfigs());
         }
