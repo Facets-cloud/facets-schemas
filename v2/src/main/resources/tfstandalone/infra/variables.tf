@@ -6,7 +6,6 @@ variable "cluster" {
     privateSubnetCIDR = list(string)
     publicSubnetCIDR  = list(string)
     vpcCIDR = string
-    iamRole = string
     externalId = string
   })
 }

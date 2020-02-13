@@ -1,28 +1,28 @@
 locals {
-  // cluster = jsondecode(data.http.example.body)
-  cluster = {
-    "awsRegion" = "us-west-2",
-    "azs" = [
-      "us-west-2a", "us-west-2b"
-    ],
-    "name" = "test009",
-    "privateSubnetCIDR" = [
-      "10.200.100.0/24", "10.200.101.0/24"
-    ],
-    "publicSubnetCIDR" = [
-      "10.200.110.0/24", "10.200.111.0/24"
-    ],
-    "vpcCIDR": "10.200.0.0/16",
-    "iamRole": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
-    "externalId": "123"
-  }
+  cluster = jsondecode(data.http.cluster.body)
+//  cluster = {
+//    "awsRegion" = "us-west-2",
+//    "azs" = [
+//      "us-west-2a", "us-west-2b"
+//    ],
+//    "name" = "test009",
+//    "privateSubnetCIDR" = [
+//      "10.200.100.0/24", "10.200.101.0/24"
+//    ],
+//    "publicSubnetCIDR" = [
+//      "10.200.110.0/24", "10.200.111.0/24"
+//    ],
+//    "vpcCIDR": "10.200.0.0/16",
+//    "roleARN": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
+//    "externalId": "123"
+//  }
 }
 
 provider "aws" {
   region = local.cluster.awsRegion
   version = "~> 2.45.0"
   assume_role {
-    role_arn = local.cluster.iamRole
+    role_arn = local.cluster.roleARN
     session_name = "capillary-cloud-tf-${uuid()}"
     external_id = local.cluster.externalId
   }
@@ -49,4 +49,15 @@ module "application" {
   resources = module.infra.infra_details.resources
 }
 
+data "http" "cluster" {
+  request_headers = {
+    Accept = "application/json"
+    X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token
+  }
+
+  url = "https://${var.cc_host}/cc/v1/aws/clusters/${terraform.workspace}"
+}
+
+variable "cc_auth_token" {}
+variable "cc_host" {}
 
