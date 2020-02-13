@@ -6,6 +6,9 @@ public abstract class ClusterRequest {
     private String clusterName;
     private String stackName;
 
+    public ClusterRequest() {
+    }
+
     public ClusterRequest(Cloud aws) {
     }
 

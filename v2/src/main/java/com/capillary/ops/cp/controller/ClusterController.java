@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
  *
  * @param <T>
  */
-public interface ClusterController<T extends AbstractCluster> {
+public interface ClusterController<T extends AbstractCluster, CR extends ClusterRequest> {
 
     @PostMapping()
-    T createCluster(@RequestBody ClusterRequest request);
+    T createCluster(@RequestBody CR request);
 
     @GetMapping("{clusterId}")
     T getCluster(@PathVariable String clusterId);

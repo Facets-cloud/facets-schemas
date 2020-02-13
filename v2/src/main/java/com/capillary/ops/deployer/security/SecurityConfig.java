@@ -29,7 +29,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
     http
             .authorizeRequests()
-            .antMatchers("/internal/capillarycloud/api/**")
+            .antMatchers("/cc/**")
             .access("@internalRequestAccessController.authenticate(request)")
             .and()
             .authorizeRequests()

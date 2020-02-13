@@ -1,25 +1,20 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.App;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.helm.HelmValueProviderFactory;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
-import hapi.chart.ChartOuterClass;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.lang3.StringUtils;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.DirectoryChartLoader;
-import org.microbean.helm.chart.URLChartLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +22,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;

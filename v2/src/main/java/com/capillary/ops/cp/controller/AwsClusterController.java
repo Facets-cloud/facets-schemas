@@ -2,7 +2,7 @@ package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
-import com.capillary.ops.cp.bo.requests.ClusterRequest;
+import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("cc/v1/aws/clusters")
-public class AwsClusterController implements ClusterController<AwsCluster> {
+public class AwsClusterController implements ClusterController<AwsCluster, AwsClusterRequest> {
 
     @Autowired
     ClusterFacade clusterFacade;
@@ -26,7 +26,7 @@ public class AwsClusterController implements ClusterController<AwsCluster> {
      */
     @Override
     @PostMapping()
-    public AwsCluster createCluster(@RequestBody ClusterRequest request) {
+    public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
         return (AwsCluster) clusterFacade.createCluster(request);
     }
 
@@ -46,7 +46,5 @@ public class AwsClusterController implements ClusterController<AwsCluster> {
         }
         return (AwsCluster) cluster;
     }
-
-
 
 }

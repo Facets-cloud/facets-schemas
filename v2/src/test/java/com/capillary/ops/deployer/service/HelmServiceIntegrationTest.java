@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.App;
+import com.capillary.ops.App;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.Probe;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.repository.ApplicationRepository;

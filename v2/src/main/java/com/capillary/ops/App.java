@@ -1,4 +1,4 @@
-package com.capillary.ops.deployer;
+package com.capillary.ops;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
@@ -51,74 +51,11 @@ import java.util.concurrent.Executors;
 @EnableDistributedLock
 public class App {
 
-  @Value("${spring.redis.host}")
-  private String redisHost;
-
-  @Value("${spring.redis.port}")
-  private int redisPort;
-
   public static void main(String[] args) throws Exception {
     SpringApplication.run(App.class, args);
   }
 
-  @Bean
-  public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2)
-        .select()
-        .apis(RequestHandlerSelectors.any())
-        .paths(PathSelectors.any())
-        .build()
-        .genericModelSubstitutes(ResponseEntity.class);
-  }
 
-  @Bean(name = "codeBuildClient")
-  public CodeBuildClient codeBuildClient() throws Exception {
-    CodeBuildClient codeBuildClient =
-        CodeBuildClient.builder()
-            .region(Region.US_WEST_1)
-            .credentialsProvider(DefaultCredentialsProvider.create())
-            .build();
-    return codeBuildClient;
-  }
-
-  @Bean(name = "cloudWatchLogsClient")
-  public CloudWatchLogsClient cloudWatchLogsClient() throws Exception {
-    CloudWatchLogsClient cloudWatchClient =
-        CloudWatchLogsClient.builder()
-            .region(Region.US_WEST_1)
-            .credentialsProvider(DefaultCredentialsProvider.create())
-            .build();
-    return cloudWatchClient;
-  }
-
-  @Bean
-  public EcrClient getEcrClient() {
-    return EcrClient.builder().region(Region.US_WEST_1).build();
-  }
-
-  @Bean
-  public AmazonS3 getAmazonS3Client() {
-    return AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTHEAST_1).build();
-  }
-
-  @Bean
-  public RedisConnectionFactory redisConnectionFactory() {
-    LettuceConnectionFactory connectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
-    return connectionFactory;
-  }
-
-  @Bean
-  public StringRedisTemplate stringRedisTemplate() {
-    StringRedisTemplate redisTemplate = new StringRedisTemplate();
-    redisTemplate.setEnableTransactionSupport(true);
-    redisTemplate.setConnectionFactory(redisConnectionFactory());
-    return redisTemplate;
-  }
-
-  @Bean
-  public SimpleRedisLock prodRedisLock(final StringRedisTemplate stringRedisTemplate) {
-    return new SimpleRedisLock(stringRedisTemplate);
-  }
 
   @Configuration
   @Profile("dev")
@@ -159,10 +96,6 @@ public class App {
     return filterRegistrationBean;
   }
 
-  @Bean(name = "ECRChinaSyncPool")
-  public ExecutorService executorServicePool() {
-    ExecutorService pool = Executors.newFixedThreadPool(5);
-    return pool;
-  }
+
 
 }

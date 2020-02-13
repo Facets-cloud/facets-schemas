@@ -1,5 +1,8 @@
 package com.capillary.ops.cp.service.aws;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class AwsAssumeRoleService {
 
     /**

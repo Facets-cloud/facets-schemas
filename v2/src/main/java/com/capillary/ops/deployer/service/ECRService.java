@@ -1,6 +1,6 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.App;
+import com.capillary.ops.App;
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.google.common.base.Charsets;

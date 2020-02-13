@@ -15,7 +15,7 @@ import java.util.Optional;
  * All calls which can be made by the "Stack Managers"
  */
 @RestController
-@RequestMapping("sc/v1/stacks/")
+@RequestMapping("cc/v1/stacks/")
 public class StackController {
 
     @Autowired

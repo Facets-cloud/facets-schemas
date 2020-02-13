@@ -1,11 +1,9 @@
 package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.bo.requests.Cloud;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
-import com.capillary.ops.cp.repository.ClusterRepository;
+import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
@@ -24,7 +22,7 @@ public class ClusterFacade {
     private ClusterServiceFactory factory;
 
     @Autowired
-    private ClusterRepository clusterRepository;
+    private CpClusterRepository cpClusterRepository;
 
     @Autowired
     private StackRepository stackRepository;
@@ -45,7 +43,7 @@ public class ClusterFacade {
         AbstractCluster cluster = service.createCluster(request, stack.get().getName());
         //Done: Persist Cluster Object
         //Persist to DB
-        AbstractCluster saved = clusterRepository.save(cluster);
+        AbstractCluster saved = cpClusterRepository.save(cluster);
         return saved;
     }
 
@@ -55,7 +53,7 @@ public class ClusterFacade {
      * @param clusterId which clusterId?
      */
     public AbstractCluster getCluster(String clusterId) {
-        Optional<AbstractCluster> cluster = clusterRepository.findById(clusterId);
+        Optional<AbstractCluster> cluster = cpClusterRepository.findById(clusterId);
         return cluster.get();
     }
 }
