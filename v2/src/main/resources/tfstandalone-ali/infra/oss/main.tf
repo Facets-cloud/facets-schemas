@@ -49,8 +49,8 @@ resource "alicloud_ram_policy" "readonly" {
         ],
         "Effect": "Allow",
         "Resource": [
-          "arn:aws:s3:::${alicloud_oss_bucket.bucket[each.key].bucket}",
-          "arn:aws:s3:::${alicloud_oss_bucket.bucket[each.key].bucket}/*"
+          "acs:oss:*:*:${alicloud_oss_bucket.bucket[each.key].bucket}",
+          "acs:oss:*:*:${alicloud_oss_bucket.bucket[each.key].bucket}/*"
         ]
       }
     ],

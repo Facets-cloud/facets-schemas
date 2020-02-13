@@ -1,3 +1,7 @@
+variable "resources" {
+  type = any
+}
+
 variable "cluster" {
   type = object({
     name = string
@@ -13,7 +17,7 @@ variable "baseinfra" {
   type = object({
     vpc_details = object({
       vpc_id = string
-      vswitch_ids = list(string)
+      private_subnets = list(string)
     })
     k8s_details = object({
       cluster_id = string

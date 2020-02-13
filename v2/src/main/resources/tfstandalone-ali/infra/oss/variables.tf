@@ -16,10 +16,12 @@ variable "baseinfra" {
       private_subnets = list(string)
     })
     k8s_details = object({
-      auth = object({
-        host = string
-        cluster_ca_certificate = string
-        token = string
+      cluster_id = string
+      cluster_nodes = list(string)
+      security_group_id = list(string)
+      log_project_name = string
+      helm_details = object({
+        tiller_sa = string
       })
     })
   })

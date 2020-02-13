@@ -44,3 +44,10 @@ module "infra" {
   source = "./infra"
   cluster = local.cluster
 }
+
+module "application" {
+  source = "./application"
+  baseinfra = module.infra.infra_details.base_infra_details
+  cluster = local.cluster
+  resources = module.infra.infra_details.resources
+}
