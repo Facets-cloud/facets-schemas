@@ -28,6 +28,7 @@ locals {
 resource "random_string" "root_password" {
   for_each = local.instances
   length = 12
+  override_special = "#$!"
 }
 
 resource "alicloud_db_instance" "default" {
@@ -40,6 +41,13 @@ resource "alicloud_db_instance" "default" {
   instance_name = "${var.cluster.name}${each.key}"
   vswitch_id = var.baseinfra.vpc_details.vswitch_ids[0]
   monitoring_period = "60"
+}
+
+resource "alicloud_db_account" "account" {
+  for_each = local.instances
+  instance_id = alicloud_db_instance.default.id
+  name        = "root"
+  password    = random_string.root_password[each.key].result
 }
 
 provider "kubernetes" {

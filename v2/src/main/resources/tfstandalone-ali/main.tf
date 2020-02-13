@@ -35,6 +35,7 @@ terraform {
     prefix   = "cap-ali"
     key   = "tfstate"
     region = "cn-huhehaote"
+    # TODO: verify the tablestore endpoint before running
     tablestore_endpoint = "https://terraform-remote.cn-huhehaote.ots.aliyuncs.com"
     tablestore_table = "capillary-cloud-ali-tflock"
   }
