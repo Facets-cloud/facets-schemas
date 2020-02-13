@@ -413,7 +413,7 @@ public class HelmServiceIntegrationTest {
         application.setDnsType(Application.DnsType.PRIVATE);
         helmService.deploy(application, deployment);
         //kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
-        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()+ "-test").get();
 
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
