@@ -99,7 +99,7 @@ VALUES
       }
       "iam_credential_requests" = [
         {
-          resource_type = "s3"
+          resource_type = "oss"
           resource_name = "bucket1"
           permission = "READ_ONLY"
         }
@@ -125,20 +125,18 @@ VALUES
   policy_attachments_map = {for k in flatten([
   for i, j in local.instances: [
   for p in j["iam_credential_requests"]: {
-    iam_policy = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]]
+    iam_policy_name = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]].name
+    iam_policy_type = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]].type
     application_name = i
   }
   ]]):
-  "${k["iam_policy"]}-${k["application_name"]}" => k
+  "${k["iam_policy_name"]}-${k["application_name"]}" => k
   }
 }
 
 provider "helm" {
   kubernetes {
-    host = var.baseinfra.k8s_details.auth.host
-    cluster_ca_certificate = var.baseinfra.k8s_details.auth.cluster_ca_certificate
-    token = var.baseinfra.k8s_details.auth.token
-    load_config_file = false
+    config_path = "~/.captf/kube/ali/config"
   }
   version = "~> 0.10.4"
   service_account = var.baseinfra.k8s_details.helm_details.tiller_sa
@@ -156,7 +154,45 @@ resource "helm_release" "application" {
       configurations = merge(local.dynamic_environment_variables_map[each.key], yamldecode(each.value["helm_values"])["configurations"])
     }),
     <<ROLE
-roleName: ${aws_iam_role.application-role[each.key].arn}
+roleName: ${alicloud_ram_role.application-role[each.key].arn}
 ROLE
   ]
+}
+
+resource "alicloud_ram_role" "application-role" {
+  for_each = local.instances
+  name = "${var.cluster.name}-${each.key}-application-role"
+  description = "${var.cluster.name}-${each.key}-application-role"
+  document = <<EOF
+  {
+    "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": [
+            "ecs.aliyuncs.com"
+          ]
+        }
+      },
+      {
+        "Action": "sts:AssumeRole",
+        "Effect": "Allow",
+        "Principal": {
+            "RAM": [
+                "${var.baseinfra.k8s_details.node_group_iam_role_arn}"
+            ]
+        }
+      }
+    ],
+    "Version": "1"
+  }
+  EOF
+}
+
+resource "alicloud_ram_role_policy_attachment" "policy-attach" {
+  for_each = local.policy_attachments_map
+  policy_name = each.value["iam_policy_name"]
+  policy_type = each.value["iam_policy_type"]
+  role_name = alicloud_ram_role.application-role[each.value["application_name"]].name
 }
