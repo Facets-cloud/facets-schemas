@@ -108,7 +108,7 @@ export class BuildsListComponent implements OnInit, OnChanges {
         if (JSON.stringify(builds) !== JSON.stringify(this.builds)) {
           this.builds = builds;
           if (this.builds.filter(x => x.status === 'IN_PROGRESS').length > 0 && (!this.subscription || this.subscription.closed)) {
-            this.subscription = timer(0, 10000).subscribe(x => this.loadBuilds());
+            this.subscription = timer(0, 60000).subscribe(x => this.loadBuilds());
           } else if (this.subscription) {
               this.subscription.unsubscribe();
           }
