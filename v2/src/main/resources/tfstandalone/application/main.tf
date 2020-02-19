@@ -130,9 +130,10 @@ VALUES
       for p in j["iam_credential_requests"]: {
         iam_policy = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]]
         application_name = i
+        key = "${i}_${p["resource_type"]}_${p["resource_name"]}_${p["permission"]}"
       }
   ]]):
-    "${k["iam_policy"]}-${k["application_name"]}" => k
+    k.key => k
   }
 }
 
