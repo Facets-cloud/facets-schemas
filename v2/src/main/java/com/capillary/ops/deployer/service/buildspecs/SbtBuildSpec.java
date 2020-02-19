@@ -32,7 +32,7 @@ public class SbtBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("sbt clean package");
+        buildCommands.add("sbt 'set test in assembly := {}' clean assembly");
         buildCommands.add("docker build -t $APP_NAME:$TAG .");
         buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
         return buildCommands;
