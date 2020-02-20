@@ -57,7 +57,7 @@ public class ScheduledSystemChartSyncService {
                 helmService.deploy(environment, releaseName, chart.getChartPath(), valueMap);
             }
         } catch (Throwable t) {
-            logger.error("Could not sync chart for " + environment.getEnvironmentMetaData().getName(), t);
+            logger.error("Could not sync chart for " + environment.getEnvironmentMetaData().getName());
         }
     }
 }
