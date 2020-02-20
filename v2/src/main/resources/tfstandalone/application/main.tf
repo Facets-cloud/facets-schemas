@@ -7,7 +7,12 @@ provider "kubernetes" {
 }
 
 locals {
-  json_data = jsondecode(file("../stacks/test/application.json"))
+  json_data = jsondecode(file("../stacks/test/application/application.json"))
+  sizing_data = jsondecode(file("../stacks/test/application/sizing.json"))
+  sizing_map = {
+    for i, j in local.json_data["instances"]:
+      i => local.sizing_data[j["size"]]
+  }
   dynamic_environment_variables_map = {
     for i,j in local.json_data["instances"]:
     i => {
@@ -48,10 +53,7 @@ resource "helm_release" "application" {
   values = [
     jsonencode(each.value),
     jsonencode({
-      sizing = {
-        podCPULimit = 0.5,
-        podMemoryLimit = 0.5
-      }
+      sizing = local.sizing_map[each.key]
       credentials = {}
       hpa = each.value["scaling"]
       image = "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
