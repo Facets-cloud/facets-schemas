@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-{{- if .Values.crmTestDeployMode }}
+{{- if eq .Values.crmTestDeployMode "true" }}
   name: {{ .Release.Name }}-test
-{{- else }}
+{{- else if eq .Values.crmTestDeployMode "false" }}
   name: {{ .Release.Name }}
 {{- end }}
   annotations:

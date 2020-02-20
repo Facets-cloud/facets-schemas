@@ -442,6 +442,7 @@ public class ApplicationFacade {
         try {
             switch (application.getApplicationFamily()) {
                 case CRM:
+                    logger.info("Evaluating pre deploy task");
                     if (deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
 
                         Deployment currentDeployment = getCurrentDeployment(application.getApplicationFamily(), application.getId(), deployment.getEnvironment());
@@ -450,6 +451,7 @@ public class ApplicationFacade {
                             break;
                         }
                         if (deployment.getConfigurationsMap().get("zkPublish").equals("true")) {
+                            logger.info("Attempting to delete zk mirror service");
                             Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(application.getApplicationFamily(), deployment.getEnvironment()).get();
                             kubernetesService.deleteServiceCreatedByKubeCompassIfExists(application.getName(), environment);
                         }
