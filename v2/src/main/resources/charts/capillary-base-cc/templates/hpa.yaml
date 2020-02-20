@@ -1,0 +1,18 @@
+{{- if .Values.hpa.hpaEnabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: {{ .Release.Name }}
+    chart: {{ template "capillary-base.chart" . }}
+    heritage: {{ .Release.Service }}
+  name: {{ .Release.Name }}
+spec:
+  scaleTargetRef:
+    apiVersion: extensions/v1beta1
+    kind: Deployment
+    name: {{ .Release.Name }}
+  minReplicas: {{ default "1" .Values.hpa.hpaMinReplicas }}
+  maxReplicas: {{ default "2" .Values.hpa.hpaMaxReplicas }}
+  targetCPUUtilizationPercentage: {{ default "60" .Values.hpa.hpaMetricThreshold }}
+{{- end }}

@@ -1,0 +1,77 @@
+{
+  "instances": {
+    "demovisitorservice": {
+      "size": "S",
+      "deploymentStrategy": "RollingUpdate",
+      "lbType": "external",
+      "elbIdleTimeoutSeconds": 300,
+      "secretFileMounts": [],
+      "protocolGroup": "tcp",
+      "scaling": {
+        "hpaEnabled": true,
+        "hpaMinReplicas": 1,
+        "hpaMaxReplicas": 1,
+        "hpaMetricThreshold": 60
+      },
+      "liveness": {
+        "enableLivenessTCP": true,
+        "livenessPort": 8080,
+        "livenessInitialDelay": 10,
+        "livenessTimeout": 1,
+        "livenessFailureThreshold": 3,
+        "livenessPeriod": 30,
+        "livenessSuccessThreshold": 1
+      },
+      "readiness": {
+        "enableReadinessTCP": "true",
+        "readinessInitialDelay": 10,
+        "readinessFailureThreshold": 3,
+        "readinessSuccessThreshold": 1,
+        "readinessPort": 8080,
+        "readinessTimeout": 1,
+        "readinessPeriod": 30
+      },
+      "ports": [{
+        "name": "http",
+        "containerPort": 8080,
+        "lbPort": 80
+      }],
+      "build": {
+        "ci": "deployer",
+        "id": "abc"
+      },
+      "credentialRequests": {
+        "dbs": [
+          {
+            "resourceType": "mysql",
+            "resourceName": "db1",
+            "permission": "READ_WRITE",
+            "environment": {
+              "userName": "DB1_USERNAME",
+              "password": "DB1_PWD"
+            }
+          }
+        ],
+        "cloud": [
+          {
+            "resourceType": "s3",
+            "resourceName": "bucket1",
+            "permission": "READ_ONLY"
+          }
+        ]
+      },
+      "environmentVariables": {
+        "static": {
+          "var1": "val1"
+        },
+        "dynamic": {
+          "DB1_RDS_ROOTPASSWORD": {
+            "resourceType": "mysql",
+            "resourceName": "db1",
+            "attribute": "root_passowrd"
+          }
+        }
+      }
+    }
+  }
+}

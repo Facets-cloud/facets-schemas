@@ -7,130 +7,21 @@ provider "kubernetes" {
 }
 
 locals {
-  instances = {
-    "demovisitorservice" = {
-      "helm_values" = <<VALUES
-hpaMaxReplicas: 1
-livenessPort: 9922
-livenessInitialDelay: 10
-credentials: {}
-configurations: {}
-lbType: internal
-hpaEnabled: 'true'
-enableLivenessTCP: 'true'
-ports:
-- {name: http, containerPort: 9922, lbPort: 80}
-deploymentStrategy: RollingUpdate
-hpaMinReplicas: 1
-livenessTimeout: 1
-podMemoryLimit: 0.5
-readinessFailureThreshold: 3
-livenessFailureThreshold: 3
-enableReadinessTCP: 'true'
-deploymentId: abcd
-readinessSuccessThreshold: 1
-protocolGroup: tcp
-elbIdleTimeoutSeconds: 300
-hpaMetricThreshold: 60
-readinessInitialDelay: 10
-image: 486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demovisitorservice:101e298
-buildId: abcd
-readinessPort: 9922
-livenessPeriod: 30
-readinessTimeout: 1
-livenessSuccessThreshold: 1
-podCPULimit: 0.5
-secretFileMounts: []
-readinessPeriod: 30
-VALUES
-      "dynamic_environment_variables" = {
-        "DB1_RDS_ENDPOINT" = {
-          resource_type = "mysql"
-          resource_name = "db1"
-          attribute = "original_endpoint"
-        }
-      }
-      "iam_credential_requests" = [
-        {
-          resource_type = "s3"
-          resource_name = "bucket1"
-          permission = "READ_WRITE"
-        }
-      ]
-    }
-    "demoapiservice" = {
-      "helm_values" = <<VALUES
-hpaMaxReplicas: 1
-livenessPort: 8080
-livenessInitialDelay: 10
-credentials: {}
-configurations: {VISITOR_SERVICE: demovisitorservice.default}
-lbType: external
-hpaEnabled: 'true'
-enableLivenessTCP: 'true'
-ports:
-- {name: http, containerPort: 8080, lbPort: 80}
-deploymentStrategy: RollingUpdate
-hpaMinReplicas: 1
-livenessTimeout: 1
-podMemoryLimit: 0.5
-readinessFailureThreshold: 3
-livenessFailureThreshold: 3
-enableReadinessTCP: 'true'
-deploymentId: abcd
-readinessSuccessThreshold: 1
-protocolGroup: tcp
-elbIdleTimeoutSeconds: 300
-hpaMetricThreshold: 60
-readinessInitialDelay: 10
-image: 486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298
-buildId: abcd
-readinessPort: 8080
-livenessPeriod: 30
-readinessTimeout: 1
-livenessSuccessThreshold: 1
-podCPULimit: 0.5
-secretFileMounts: []
-readinessPeriod: 30
-VALUES
-      "dynamic_environment_variables" = {
-        "DB1_RDS_ROOTPASSWORD" = {
-          resource_type = "mysql"
-          resource_name = "db1"
-          attribute = "root_passowrd"
-        }
-      }
-      "iam_credential_requests" = [
-        {
-          resource_type = "s3"
-          resource_name = "bucket1"
-          permission = "READ_ONLY"
-        }
-      ]
-      "mysql_credential_requests" = [
-        {
-          resource_type = "mysql"
-          resource_name = "db1"
-          permission = "READ_WRITE"
-        }
-      ]
-    }
-  }
-
+  json_data = jsondecode(file("../stacks/test/application.json"))
   dynamic_environment_variables_map = {
-    for i,j in local.instances:
+    for i,j in local.json_data["instances"]:
     i => {
-      for k,v in j["dynamic_environment_variables"]:
-        k => var.resources[v["resource_type"]][v["resource_name"]][v["attribute"]]
+      for k,v in j["environmentVariables"]["dynamic"]:
+        k => var.resources[v["resourceType"]][v["resourceName"]][v["attribute"]]
     }
   }
 
   policy_attachments_map = {for k in flatten([
-    for i,j in local.instances: [
-      for p in j["iam_credential_requests"]: {
-        iam_policy = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]]
-        application_name = i
-        key = "${i}_${p["resource_type"]}_${p["resource_name"]}_${p["permission"]}"
+    for i,j in local.json_data["instances"]: [
+      for p in j["credentialRequests"]["cloud"]: {
+        iamPolicy = var.resources[p["resourceType"]][p["resourceName"]]["iam_policies"][p["permission"]]
+        applicationName = i
+        key = "${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"
       }
   ]]):
     k.key => k
@@ -150,14 +41,21 @@ provider "helm" {
 }
 
 resource "helm_release" "application" {
-  for_each = local.instances
-  chart = "../charts/capillary-base"
+  for_each = local.json_data["instances"]
+  chart = "../charts/capillary-base-cc"
   name = each.key
-
+  version = "0.1.1"
   values = [
-    each.value["helm_values"],
+    jsonencode(each.value),
     jsonencode({
-      configurations = merge(local.dynamic_environment_variables_map[each.key], yamldecode(each.value["helm_values"])["configurations"])
+      sizing = {
+        podCPULimit = 0.5,
+        podMemoryLimit = 0.5
+      }
+      credentials = {}
+      hpa = each.value["scaling"]
+      image = "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
+      configurations = merge(local.dynamic_environment_variables_map[each.key], each.value["environmentVariables"]["static"])
     }),
     <<ROLE
 roleName: ${aws_iam_role.application-role[each.key].arn}
@@ -166,7 +64,7 @@ ROLE
 }
 
 resource "aws_iam_role" "application-role" {
-  for_each = local.instances
+  for_each = local.json_data["instances"]
   name = "${var.cluster.name}-${each.key}-application-role"
 
   assume_role_policy = <<EOF
@@ -196,6 +94,6 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "policy-attach" {
   for_each = local.policy_attachments_map
-  role       = aws_iam_role.application-role[each.value["application_name"]].name
-  policy_arn = each.value["iam_policy"]
+  role       = aws_iam_role.application-role[each.value["applicationName"]].name
+  policy_arn = each.value["iamPolicy"]
 }

@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cp.capillary.in/schemas/application.schema.json",
+  "title": "Application",
+  "description": "Application Definition in the stack",
+  "type": "object",
+  "properties": {
+    "stackName": {
+      "description": "Name of the stack",
+      "type": "string"
+    },
+    "instances": {
+      "description": "List of Applications",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/definitions/application" }
+    }
+  },
+  "required": [ "stackName", "instances" ],
+  "definitions": {
+    "application": {
+      "type": "object",
+      "required": [ "veggieName", "veggieLike" ],
+      "properties": {
+        "veggieName": {
+          "type": "string",
+          "description": "The name of the vegetable."
+        },
+        "veggieLike": {
+          "type": "boolean",
+          "description": "Do I like this vegetable?"
+        }
+      }
+    }
+  }
+}

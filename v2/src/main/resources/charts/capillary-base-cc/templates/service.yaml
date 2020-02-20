@@ -1,0 +1,52 @@
+{{- if gt (len .Values.ports) 0 }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+  {{- if .Values.domainName }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}
+  {{- end }}
+#  {{- if and .Values.lbType (eq .Values.lbType "internal") }}
+#    service.beta.kubernetes.io/aws-load-balancer-internal: "0.0.0.0/0"
+#    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+#  {{- end }}
+  {{- if .Values.sslCertName }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.sslCertName }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+  {{- end }}
+  {{- if eq .Values.protocolGroup "httpOnly" }}
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+  {{- end }}
+  {{- if .Values.zkPublish }}
+    zk-name: "{{ .Values.zkName }}"
+  {{- end}}
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "{{ .Values.elbIdleTimeoutSeconds }}"
+    heritage: "deployer"
+  labels:
+    app: {{ .Release.Name  }}
+    chart: {{ template "capillary-base.chart" . }}
+    heritage: {{ .Release.Service }}
+  {{- if .Values.zkPublish }}
+    origin: k8s-cluster
+    zk-publish: "{{ .Values.zkPublish }}"
+  {{- end}}
+spec:
+#  {{- if and .Values.lbType (eq .Values.lbType "external") }}
+#  type: LoadBalancer
+#  {{- else }}
+  type: ClusterIP
+#  {{- end}}
+  ports:
+      {{- range .Values.ports }}
+      {{- with . }}
+    - port: {{ .lbPort }}
+      targetPort: {{ .containerPort }}
+      protocol: TCP
+      name: {{ .name }}
+      {{- end }}
+      {{- end }}
+  selector:
+    app: {{ .Release.Name }}
+    release: {{ .Release.Name }}
+{{- end }}
