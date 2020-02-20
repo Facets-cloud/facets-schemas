@@ -425,8 +425,8 @@ public class ApplicationFacade {
         if(mirror != null && ! mirror.isEmpty()) {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }
-        deploymentRepository.save(deployment);
         preDeployTasks(application,deployment);
+        deploymentRepository.save(deployment);
         try {
             helmService.deploy(application, deployment);
         } catch (Exception e) {

@@ -192,7 +192,7 @@ public class HelmServiceIntegrationTest {
         ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(deployment.getBuildId()))
                 .filter(pod -> pod.getMetadata().getLabels().get("app").equalsIgnoreCase(application.getName()))
                 .collect(Collectors.toList());
-        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName() + "-test").get();
         Assert.assertEquals("0.0.0.0/0", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
         Assert.assertEquals(applicationName+ "-dns.local.internal", service.getMetadata().getAnnotations().get(
