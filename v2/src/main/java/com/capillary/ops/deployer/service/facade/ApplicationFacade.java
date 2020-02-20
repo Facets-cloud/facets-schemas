@@ -295,8 +295,10 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build existingBuild = buildRepository.findOneByApplicationIdAndId(application.getId(), buildId).get();
         existingBuild = getBuildDetails(application, existingBuild, true);
-        if(applicationFamily.equals(ApplicationFamily.CRM) && !existingBuild.isPromoted() && build.isPromoted()){
-            ecrService.syncToChinaECR(existingBuild.getImage());
+        if (applicationFamily.equals(ApplicationFamily.CRM) || applicationFamily.equals(ApplicationFamily.OPS)) {
+            if (!existingBuild.isPromoted() && build.isPromoted()) {
+                ecrService.syncToChinaECR(existingBuild.getImage());
+            }
         }
         existingBuild.setPromoted(build.isPromoted());
         buildRepository.save(existingBuild);
