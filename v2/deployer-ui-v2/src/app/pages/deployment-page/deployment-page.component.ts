@@ -166,9 +166,30 @@ export class DeploymentPageComponent implements OnInit {
 
   }
 
-  validateConfig(event) {
+  isValidEnvVariableName(name: string) {
+    return /^[-._a-zA-Z0-9]+$/.test(name);
+  }
 
-    if (this.deployment.configurations.map(x => x.name).includes(event.newData['name'])) {
+  isValidEnvVariableValue(value: string) {
+    return !(/^$|\s+/.test(value));
+  }
+
+  validateConfig(event) {
+    const data = event.newData;
+
+    if (!this.isValidEnvVariableName(data['name'])) {
+      event.confirm.reject();
+      this.nbToastrService.danger('Environment variable key should match regex ^[-._a-zA-Z0-9]+$', 'Error');
+      return;
+    }
+
+    if (!this.isValidEnvVariableValue(data['value'])) {
+      event.confirm.reject();
+      this.nbToastrService.danger('Environment variable value should not contain whitespaces', 'Error');
+      return;
+    }
+
+    if (this.deployment.configurations.map(x => x.name).includes(data['name'])) {
       event.confirm.reject();
       this.nbToastrService.danger('Duplicate keys not allowed', 'Error');
     } else {
@@ -177,7 +198,6 @@ export class DeploymentPageComponent implements OnInit {
   }
 
   onDeleteConfirm(event) {
-    console.log(event);
     for (let i = 0; i < this.deployment.configurations.length; i++) {
       if (this.deployment.configurations[i].name === event.data['name']) {
         this.deployment.configurations.splice(i, 1);
