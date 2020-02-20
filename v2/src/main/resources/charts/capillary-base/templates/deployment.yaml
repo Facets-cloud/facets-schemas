@@ -122,6 +122,19 @@ spec:
 {{- if .Values.enableReadinessHTTP}}
 {{- template "readinessHTTPGet" . }}
 {{- end }}
+{{- if .Values.isJmxEnabled }}
+        - name: jmx
+          image: "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/jmx-sidecar:b9daadf"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ $releaseName }}-configs"
+                  key: NEWRELIC_KEY
+          #            - name: NRIA_VERBOSE
+          #              value: "1"
+{{- end }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
         environment: {{ .Values.nodeSelector }}

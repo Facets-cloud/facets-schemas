@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.helm;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.BuildType;
 import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.bo.Environment;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ public class BaseChartValueProvider extends AbstractValueProvider {
         this.addFields(getHealthCheckConfigs(application), yaml);
         this.addFields(getPortDetails(application), yaml);
         this.addField("elbIdleTimeoutSeconds", application.getElbIdleTimeoutSeconds(), yaml);
+        this.addField("isJmxEnabled", application.getBuildType().equals(BuildType.MVN), yaml);
         return yaml;
     }
 
