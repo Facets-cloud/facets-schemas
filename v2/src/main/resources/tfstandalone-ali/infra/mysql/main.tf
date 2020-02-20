@@ -39,13 +39,13 @@ resource "alicloud_db_instance" "default" {
   instance_storage = "20"
   instance_charge_type = "Postpaid"
   instance_name = "${var.cluster.name}${each.key}"
-  vswitch_id = var.baseinfra.vpc_details.vswitch_ids[0]
+  vswitch_id = var.vswitch_ids[0]
   monitoring_period = "60"
 }
 
 resource "alicloud_db_account" "account" {
   for_each = local.instances
-  instance_id = alicloud_db_instance.default.id
+  instance_id = alicloud_db_instance.default[each.key].id
   name        = "root"
   password    = random_string.root_password[each.key].result
 }
@@ -62,6 +62,6 @@ resource "kubernetes_service" "mysql-k8s-service" {
   }
   spec {
     type = "ExternalName"
-    external_name = alicloud_db_instance.default[each.key].instance_name
+    external_name = alicloud_db_instance.default[each.value].instance_name
   }
 }

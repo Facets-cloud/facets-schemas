@@ -1,10 +1,10 @@
 locals {
   // cluster = jsondecode(data.http.example.body)
   cluster = {
-    "aliRegion" = "cn-huhehaote",
+    "aliRegion" = "ap-southeast-3",
     "name" = "ali-test-01",
     "azs" = [
-      "cn-huhehaote-a", "cn-huhehaote-b"
+      "ap-southeast-3-a", "ap-southeast-3-b"
     ],
     "privateSubnetCIDR" = [
       "10.100.100.0/24", "10.100.101.0/24"
@@ -68,4 +68,8 @@ module "infra" {
 //  baseinfra = module.infra.infra_details.base_infra_details
 //  cluster = local.cluster
 //  resources = module.infra.infra_details.resources
+//}
+//
+//output "log-project-name" {
+//  value = module.infra.log-project-name
 //}

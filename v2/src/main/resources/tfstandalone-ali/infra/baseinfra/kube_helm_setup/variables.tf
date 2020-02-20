@@ -9,6 +9,6 @@ variable "cluster" {
   })
 }
 
-variable "kubernetes_cluster_id" {
+variable "kube_config_file_path" {
   type = string
 }

@@ -1,31 +1,34 @@
 provider "kubernetes" {
-  version = "~> 1.10"
-  config_path = "~/.captf/kube/ali/config"
-
-}
-
-resource "null_resource" "wait_k8s_cluster_creation" {
-  provisioner "local-exec" {
-    command = "echo ${var.kubernetes_cluster_id}"
-  }
+  version = "~>1.10.0"
+  config_path = var.kube_config_file_path
+//  load_config_file = true
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.captf/kube/ali/config"
+    config_path = var.kube_config_file_path
+//    load_config_file = true
   }
   version = "~> 0.10.4"
   service_account = kubernetes_service_account.tiller.metadata[0].name
   install_tiller = true
 }
 
+resource "null_resource" "wait_kube_config" {
+  provisioner "local-exec" {
+    command = "python infra/baseinfra/kube_helm_setup/wait_kube_config.py"
+  }
+}
+
 resource kubernetes_service_account "capillary-cloud-admin" {
+  depends_on = [null_resource.wait_kube_config]
   metadata {
     name = "capillary-cloud-admin"
   }
 }
 
 resource kubernetes_service_account "tiller" {
+  depends_on = [null_resource.wait_kube_config]
   metadata {
     name = "tiller"
     namespace = "kube-system"
@@ -33,6 +36,7 @@ resource kubernetes_service_account "tiller" {
 }
 
 resource kubernetes_cluster_role_binding "capillary-cloud-admin-crb" {
+  depends_on = [kubernetes_service_account.capillary-cloud-admin]
   metadata {
     name = "capillary-cloud-admin-crb"
   }
@@ -51,6 +55,7 @@ resource kubernetes_cluster_role_binding "capillary-cloud-admin-crb" {
 }
 
 resource kubernetes_cluster_role_binding "tiller-crb" {
+  depends_on = [kubernetes_service_account.tiller]
   metadata {
     name = "tiller-crb"
   }
@@ -80,6 +85,7 @@ data "helm_repository" "stable" {
 }
 
 resource "helm_release" "cluster-autoscaler" {
+  depends_on = [kubernetes_cluster_role_binding.capillary-cloud-admin-crb, kubernetes_cluster_role_binding.tiller-crb]
   name = "cluster-autoscaler"
   repository = data.helm_repository.stable.metadata[0].name
   chart = "cluster-autoscaler"
@@ -126,29 +132,29 @@ resource "alicloud_ram_policy" "policy" {
 //  role_name   = "${alicloud_ram_role.role.name}"
 //}
 
-resource "helm_release" "kube2iam" {
-  name = "kube2iam"
-  repository = data.helm_repository.stable.metadata[0].name
-  chart = "kube2iam"
-  version = "2.1.0"
-
-  set {
-    name = "rbac.create"
-    value = "true"
-  }
-
-  set {
-    name = "host.iptables"
-    value = "true"
-  }
-
-  set {
-    name = "verbose"
-    value = "true"
-  }
-
-  set_string {
-    name = "host.interface"
-    value = "eni+"
-  }
-}
+//resource "helm_release" "kube2iam" {
+//  name = "kube2iam"
+//  repository = data.helm_repository.stable.metadata[0].name
+//  chart = "kube2iam"
+//  version = "2.1.0"
+//
+//  set {
+//    name = "rbac.create"
+//    value = "true"
+//  }
+//
+//  set {
+//    name = "host.iptables"
+//    value = "true"
+//  }
+//
+//  set {
+//    name = "verbose"
+//    value = "true"
+//  }
+//
+//  set_string {
+//    name = "host.interface"
+//    value = "eni+"
+//  }
+//}

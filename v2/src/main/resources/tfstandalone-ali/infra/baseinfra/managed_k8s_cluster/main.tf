@@ -6,17 +6,16 @@ module "managed-k8s" {
   new_vpc = true
   vpc_cidr = var.cluster.vpcCIDR
   vswitch_cidrs = concat(
-  var.cluster.privateSubnetCIDR,
-  var.cluster.publicSubnetCIDR
+  var.cluster.privateSubnetCIDR
   )
   new_sls_project = true
   kube_config_path = "~/.captf/kube/ali/config"
 }
-//
+
 //provider "kubernetes" {
 //  version = "~> 1.10"
-//  config_path = "~/.captf/kube/ali/config"
-//  load_config_file = true
+//  load_config_file = local.kubeconfig_present != "" ? true : false
+//  config_path = local.kubeconfig_present != "" ? "~/.captf/kube/ali/config" : ""
 //}
 //
 //provider "helm" {
