@@ -8,3 +8,9 @@ module "k8scluster" {
   cluster = var.cluster
   vpc_details = module.vpc.vpc_details
 }
+
+module "peering" {
+  source = "./peering"
+  cluster = var.cluster
+  vpc_details = module.vpc.vpc_details
+}

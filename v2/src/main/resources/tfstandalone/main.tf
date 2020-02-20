@@ -1,21 +1,23 @@
 locals {
-  cluster = jsondecode(data.http.cluster.body)
-//  cluster = {
-//    "awsRegion" = "us-west-2",
-//    "azs" = [
-//      "us-west-2a", "us-west-2b"
-//    ],
-//    "name" = "test009",
-//    "privateSubnetCIDR" = [
-//      "10.200.100.0/24", "10.200.101.0/24"
-//    ],
-//    "publicSubnetCIDR" = [
-//      "10.200.110.0/24", "10.200.111.0/24"
-//    ],
-//    "vpcCIDR": "10.200.0.0/16",
-//    "roleARN": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
-//    "externalId": "123"
-//  }
+//  cluster = jsondecode(data.http.cluster.body)
+  devModeCluster = {
+    "awsRegion" = "us-west-2",
+    "azs" = [
+      "us-west-2a", "us-west-2b"
+    ],
+    "name" = "test009",
+    "privateSubnetCIDR" = [
+      "10.200.100.0/24", "10.200.101.0/24"
+    ],
+    "publicSubnetCIDR" = [
+      "10.200.110.0/24", "10.200.111.0/24"
+    ],
+    "vpcCIDR": "10.200.0.0/16",
+    "roleARN": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
+    "externalId": "123"
+  }
+  cluster = var.dev_mode == true ? local.devModeCluster : jsondecode(data.http.cluster[0].body)
+
 }
 
 provider "aws" {
@@ -50,6 +52,7 @@ module "application" {
 }
 
 data "http" "cluster" {
+  count = var.dev_mode ? 0 : 1
   request_headers = {
     Accept = "application/json"
     X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token
@@ -58,6 +61,17 @@ data "http" "cluster" {
   url = "https://${var.cc_host}/cc/v1/aws/clusters/${terraform.workspace}"
 }
 
-variable "cc_auth_token" {}
-variable "cc_host" {}
+variable "cc_auth_token" {
+  type = string
+  default = "cc20deal"
+}
 
+variable "cc_host" {
+  type = string
+  default = "deployerdev.capillary.in"
+}
+
+variable "dev_mode" {
+  type = bool
+  default = false
+}
