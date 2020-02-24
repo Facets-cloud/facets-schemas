@@ -6,6 +6,7 @@ variable "cluster" {
     privateSubnetCIDR = list(string)
     publicSubnetCIDR  = list(string)
     vpcCIDR = string
+    stackName = string
   })
 }
 
@@ -31,4 +32,14 @@ variable "baseinfra" {
 
 variable "resources" {
   type = any
+}
+
+variable "cc_auth_token" {
+  type = string
+  default = "cc20deal"
+}
+
+variable "cc_host" {
+  type = string
+  default = "deployerdev.capillary.in"
 }

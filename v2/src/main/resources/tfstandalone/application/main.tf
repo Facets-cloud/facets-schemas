@@ -7,8 +7,10 @@ provider "kubernetes" {
 }
 
 locals {
-  json_data = jsondecode(file("../stacks/test/application/application.json"))
-  sizing_data = jsondecode(file("../stacks/test/application/sizing.json"))
+  stackName = var.cluster.stackName
+  json_data = jsondecode(file("../stacks/${local.stackName}/application/application.json"))
+  sizing_data = jsondecode(file("../stacks/${local.stackName}/application/sizing.json"))
+  build_map = data.http.build
   sizing_map = {
     for i, j in local.json_data["instances"]:
       i => local.sizing_data[j["size"]]
@@ -56,7 +58,7 @@ resource "helm_release" "application" {
       sizing = local.sizing_map[each.key]
       credentials = {}
       hpa = each.value["scaling"]
-      image = "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
+      image = local.build_map[each.key]
       configurations = merge(local.dynamic_environment_variables_map[each.key], each.value["environmentVariables"]["static"])
     }),
     <<ROLE
@@ -98,4 +100,16 @@ resource "aws_iam_role_policy_attachment" "policy-attach" {
   for_each = local.policy_attachments_map
   role       = aws_iam_role.application-role[each.value["applicationName"]].name
   policy_arn = each.value["iamPolicy"]
+}
+
+data "http" "build" {
+  for_each = local.json_data["instances"]
+  request_headers = {
+    Accept = "application/json"
+//    X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token
+    X-DEPLOYER-INTERNAL-AUTH-TOKEN = "abcd"
+  }
+//  url = "https://${var.cc_host}/cc/v1/build/deployer/${each.value["build"]["id"]}"
+  url = "http://localhost:8080/cc/v1/build/deployer/${each.value["build"]["id"]}?strategy=QA"
+
 }

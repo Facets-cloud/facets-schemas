@@ -1,7 +1,9 @@
 locals {
 //  cluster = jsondecode(data.http.cluster.body)
   devModeCluster = {
+    "id" = "test009"
     "awsRegion" = "us-west-2",
+    "cloud" = "AWS"
     "azs" = [
       "us-west-2a", "us-west-2b"
     ],
@@ -14,7 +16,8 @@ locals {
     ],
     "vpcCIDR": "10.200.0.0/16",
     "roleARN": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
-    "externalId": "123"
+    "externalId": "123",
+    "stackName" : "test"
   }
   cluster = var.dev_mode == true ? local.devModeCluster : jsondecode(data.http.cluster[0].body)
 
@@ -49,6 +52,8 @@ module "application" {
   baseinfra = module.infra.infra_details.base_infra_details
   cluster = local.cluster
   resources = module.infra.infra_details.resources
+  cc_host = var.cc_host
+  cc_auth_token = var.cc_auth_token
 }
 
 data "http" "cluster" {

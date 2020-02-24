@@ -1,0 +1,27 @@
+package com.capillary.ops.cp.controller;
+
+import com.capillary.ops.cp.bo.BuildStrategy;
+import com.capillary.ops.cp.facade.BuildFacade;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("cc/v1/build/")
+public class BuildController {
+
+    @Autowired
+    BuildFacade buildFacade;
+
+    /**
+     * Get build from deployer
+     *
+     * @param applicationId Id of application in Deployer
+     * @return
+     */
+    @GetMapping("/deployer/{applicationId}")
+    String getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy) {
+        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298";
+        //        return buildFacade.getImageFromDeployer(applicationId, strategy);
+    }
+
+}
