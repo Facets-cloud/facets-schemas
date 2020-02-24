@@ -54,6 +54,7 @@ module "application" {
   resources = module.infra.infra_details.resources
   cc_host = var.cc_host
   cc_auth_token = var.cc_auth_token
+  dev_mode = var.dev_mode
 }
 
 data "http" "cluster" {

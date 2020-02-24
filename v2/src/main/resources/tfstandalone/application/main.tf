@@ -1,5 +1,5 @@
 provider "kubernetes" {
-  host                   = var.baseinfra.k8s_details.auth.host
+  host = var.baseinfra.k8s_details.auth.host
   cluster_ca_certificate = var.baseinfra.k8s_details.auth.cluster_ca_certificate
   token                  = var.baseinfra.k8s_details.auth.token
   load_config_file       = false
@@ -10,7 +10,11 @@ locals {
   stackName = var.cluster.stackName
   json_data = jsondecode(file("../stacks/${local.stackName}/application/application.json"))
   sizing_data = jsondecode(file("../stacks/${local.stackName}/application/sizing.json"))
-  build_map = data.http.build
+  dev_mode_build_map = {
+  for i, j in local.json_data["instances"]:
+    i => "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
+  }
+  build_map = var.dev_mode == true ? local.dev_mode_build_map : data.http.build
   sizing_map = {
     for i, j in local.json_data["instances"]:
       i => local.sizing_data[j["size"]]
@@ -37,10 +41,10 @@ locals {
 
 provider "helm" {
   kubernetes {
-    host                   = var.baseinfra.k8s_details.auth.host
+    host = var.baseinfra.k8s_details.auth.host
     cluster_ca_certificate = var.baseinfra.k8s_details.auth.cluster_ca_certificate
-    token                  = var.baseinfra.k8s_details.auth.token
-    load_config_file       = false
+    token = var.baseinfra.k8s_details.auth.token
+    load_config_file = false
   }
   version = "~> 0.10.4"
   service_account = var.baseinfra.k8s_details.helm_details.tiller_sa
@@ -98,18 +102,15 @@ EOF
 
 resource "aws_iam_role_policy_attachment" "policy-attach" {
   for_each = local.policy_attachments_map
-  role       = aws_iam_role.application-role[each.value["applicationName"]].name
+  role = aws_iam_role.application-role[each.value["applicationName"]].name
   policy_arn = each.value["iamPolicy"]
 }
 
 data "http" "build" {
-  for_each = local.json_data["instances"]
+  for_each = var.dev_mode ? {} :local.json_data["instances"]
   request_headers = {
     Accept = "application/json"
-//    X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token
-    X-DEPLOYER-INTERNAL-AUTH-TOKEN = "abcd"
+    X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token
   }
-//  url = "https://${var.cc_host}/cc/v1/build/deployer/${each.value["build"]["id"]}"
-  url = "http://localhost:8080/cc/v1/build/deployer/${each.value["build"]["id"]}?strategy=QA"
-
+  url = var.dev_mode ? "http://${var.cc_host}/cc/v1/build/deployer/${each.value["build"]["id"]}?strategy=QA":"https://${var.cc_host}/cc/v1/build/deployer/${each.value["build"]["id"]}?strategy=QA"
 }

@@ -20,8 +20,8 @@ public class BuildController {
      */
     @GetMapping("/deployer/{applicationId}")
     String getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy) {
-        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298";
-        //        return buildFacade.getImageFromDeployer(applicationId, strategy);
+        //        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298";
+        return buildFacade.getImageFromDeployer(applicationId, strategy);
     }
 
 }

@@ -43,3 +43,8 @@ variable "cc_host" {
   type = string
   default = "deployerdev.capillary.in"
 }
+
+variable "dev_mode" {
+  type = bool
+  default = false
+}
