@@ -12,6 +12,20 @@ locals {
       ]]):
     k.key => k
   }
+
+  mysql_users = {
+    for i,j in local.json_data["instances"]:
+      i => {for p in local.json_data["instances"][i]["credentialRequests"]["dbs"]["mysql"]:
+        p["environment"]["userName"] => mysql_user.mysql_user["${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"].user
+      }
+  }
+
+  mysql_passwords = {
+    for i,j in local.json_data["instances"]:
+      i => {for p in local.json_data["instances"][i]["credentialRequests"]["dbs"]["mysql"]:
+        p["environment"]["password"] => mysql_user.mysql_user["${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"].password
+      }
+  }
 }
 
 provider "mysql" {
