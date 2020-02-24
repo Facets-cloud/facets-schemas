@@ -41,6 +41,7 @@ output "cluster_id" {
 output "kube_config_file_path" {
   value = "~/.captf/kube/ali/config"
 }
+
 //
 //output "log-project-name" {
 //  value = module.managed-k8s.this_sls_project_name

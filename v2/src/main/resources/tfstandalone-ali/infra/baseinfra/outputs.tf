@@ -37,6 +37,10 @@ output "kube_config_file_path" {
 output "tiller_sa" {
   value = module.helm.tiller_sa
 }
+
+//output "kube_clusters" {
+//  value = module.k8scluster.kube_clusters
+//}
 //
 //output "k8s-details" {
 //  value = module.k8scluster.k8s_details

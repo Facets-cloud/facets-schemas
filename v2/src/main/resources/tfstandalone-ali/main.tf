@@ -4,7 +4,7 @@ locals {
     "aliRegion" = "ap-southeast-3",
     "name" = "ali-test-01",
     "azs" = [
-      "ap-southeast-3-a", "ap-southeast-3-b"
+      "ap-southeast-3a", "ap-southeast-3b"
     ],
     "privateSubnetCIDR" = [
       "10.100.100.0/24", "10.100.101.0/24"
@@ -72,4 +72,8 @@ module "infra" {
 //
 //output "log-project-name" {
 //  value = module.infra.log-project-name
+//}
+
+//output "kube_clusters" {
+//  value = module.infra.kube_clusters
 //}

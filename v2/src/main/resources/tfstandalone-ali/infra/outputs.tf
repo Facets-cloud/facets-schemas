@@ -15,3 +15,7 @@
 //output "log-project-name" {
 //  value = module.baseinfra.log-project-name
 //}
+
+//output "kube_clusters" {
+//  value = module.baseinfra.kube_clusters
+//}

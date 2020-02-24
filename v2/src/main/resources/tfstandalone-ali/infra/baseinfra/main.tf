@@ -7,4 +7,7 @@ module "helm" {
   source = "./kube_helm_setup"
   cluster = var.cluster
   kube_config_file_path = module.k8scluster.kube_config_file_path
+  k8s_cluster_id = module.k8scluster.cluster_id
+  vswitch_ids = module.k8scluster.vswitch_ids
+  security_group_id = module.k8scluster.security_group_id
 }
