@@ -21,6 +21,26 @@ locals {
   }
 }
 
+resource "aws_security_group" "allow_mysql" {
+  for_each = local.instances
+  name = "allow_mysql_${each.key}"
+  vpc_id = var.baseinfra.vpc_details.vpc_id
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = [var.cluster.vpcCIDR, "172.31.0.0/16"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+
+}
+
 resource "random_string" "root_password" {
   for_each = local.instances
   length = 12
@@ -46,6 +66,7 @@ resource "aws_db_instance" "rds-instance" {
   parameter_group_name = "default.mysql5.7"
   db_subnet_group_name = aws_db_subnet_group.rds-subnet-group[each.key].name
   skip_final_snapshot  = true
+  vpc_security_group_ids = [aws_security_group.allow_mysql[each.key].id]
 }
 
 provider "kubernetes" {

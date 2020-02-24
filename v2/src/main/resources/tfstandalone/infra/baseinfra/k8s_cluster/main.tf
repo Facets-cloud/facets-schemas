@@ -112,6 +112,7 @@ data "helm_repository" "stable" {
 }
 
 resource "helm_release" "cluster-autoscaler" {
+  depends_on = [module.k8s-cluster]
   name       = "cluster-autoscaler"
   repository = data.helm_repository.stable.metadata[0].name
   chart      = "cluster-autoscaler"
@@ -160,6 +161,7 @@ resource "aws_iam_role_policy_attachment" "kube2iam-attach" {
 }
 
 resource "helm_release" "kube2iam" {
+  depends_on = [module.k8s-cluster]
   name       = "kube2iam"
   repository = data.helm_repository.stable.metadata[0].name
   chart      = "kube2iam"
