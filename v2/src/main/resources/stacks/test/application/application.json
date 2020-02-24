@@ -41,17 +41,19 @@
         "id": "5ddfa58d7a9d110007fdc41a"
       },
       "credentialRequests": {
-        "dbs": [
-          {
-            "resourceType": "mysql",
-            "resourceName": "db1",
-            "permission": "READ_WRITE",
-            "environment": {
-              "userName": "DB1_USERNAME",
-              "password": "DB1_PWD"
+        "dbs": {
+          "mysql" : [
+            {
+              "resourceType": "mysql",
+              "resourceName": "db1",
+              "permission": "READ_WRITE",
+              "environment": {
+                "userName": "DB1_USERNAME",
+                "password": "DB1_PWD"
+              }
             }
-          }
-        ],
+          ]
+        },
         "cloud": [
           {
             "resourceType": "s3",
