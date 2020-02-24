@@ -3,7 +3,7 @@ locals {
     for i,j in local.json_data["instances"]: [
       for p in j["credentialRequests"]["dbs"]["mysql"]: {
         mysql_host = var.resources["mysql"][p["resourceName"]]["original_endpoint"]
-        mysql_root_password = var.resources["mysql"][p["resourceName"]]["root_passowrd"]
+        mysql_root_password = var.resources["mysql"][p["resourceName"]]["root_password"]
         mysql_grants = var.resources["mysql"][p["resourceName"]]["grants"][p["permission"]]
         applicationName = i
         key = "${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"

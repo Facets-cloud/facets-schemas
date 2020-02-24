@@ -70,7 +70,7 @@
           "DB1_RDS_ROOTPASSWORD": {
             "resourceType": "mysql",
             "resourceName": "db1",
-            "attribute": "root_passowrd"
+            "attribute": "root_password"
           }
         }
       }
