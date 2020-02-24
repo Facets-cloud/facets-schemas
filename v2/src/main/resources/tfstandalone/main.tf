@@ -81,3 +81,7 @@ variable "dev_mode" {
   type = bool
   default = false
 }
+
+output "test" {
+  value = module.application.test
+}
