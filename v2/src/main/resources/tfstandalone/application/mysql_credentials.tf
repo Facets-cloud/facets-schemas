@@ -23,7 +23,7 @@ locals {
   mysql_passwords = {
     for i,j in local.json_data["instances"]:
       i => {for p in local.json_data["instances"][i]["credentialRequests"]["dbs"]["mysql"]:
-        p["environment"]["password"] => mysql_user.mysql_user["${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"].password
+        p["environment"]["password"] => random_string.random_password["${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"].result
       }
   }
 }
