@@ -1,0 +1,726 @@
+[srv/intouch_backend_api/0]
+port = 1900
+host = 100.67.58.142
+
+[srv/nse_api/0]
+port = 1420
+host = 100.68.54.204
+
+[srv/ffc_notification_api]
+port = 2026
+host = 100.68.177.216
+
+[datastore]
+port = 6379
+host = 100.70.13.215
+
+[srv/sharingan_redis]
+port = 6379
+host = 100.67.182.233
+
+[srv/eventservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/pointsengineservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/emfservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/pointsengineruleservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/referral/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/datamanager/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/ruleconfigservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/dvsconfigservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/emfviewservice/0]
+port = 9199
+host = 100.64.180.199
+
+[srv/intouch_api_thrift_service/0]
+port = 3535
+host = 100.69.59.241
+
+[srv/storesense_api]
+port = 7070
+host = 100.68.129.41
+
+[srv/campaign_shard]
+port = 9998
+host = 100.66.86.2
+
+[srv/reachability]
+port = 9998
+host = 100.66.86.2
+
+[srv/campaign_shard_mgr]
+port = 9998
+host = 100.66.86.2
+
+[srv/bi_api]
+port = 2021
+host = 100.70.255.30
+
+[srv/hippocampus]
+port = 5000
+host = 100.65.5.82
+
+[srv/arya_api]
+port = 2020
+host = 100.68.173.164
+
+[srv/async]
+port = 6400
+host = 100.71.211.160
+
+[srv/fileservice]
+port = 8001
+host = 100.70.227.39
+
+[srv/graphite]
+port = 2003
+host = 100.67.103.78
+
+[srv/pebservice]
+port = 9800
+host = 100.65.141.78
+
+[srv/shopbook]
+port = 80
+host = 100.70.174.175
+
+[srv/authenticationservice]
+port = 80
+host = 100.70.174.175
+
+[srv/organization]
+port = 80
+host = 100.70.174.175
+
+[srv/filter_handler]
+port = 80
+host = 100.70.174.175
+
+[srv/java-lb]
+port = 2080
+host = 100.68.7.219
+
+[srv/reon_meta_api/0]
+port = 8045
+host = 100.70.249.196
+
+[srv/nsadmin]
+port = 9888
+host = 100.66.172.22
+
+[dbs/elasticsearch_service]
+port = 9200
+host = 100.64.122.239
+
+[srv/darknight/0]
+port = 8100
+host = 100.70.18.228
+
+[srv/zion/0]
+port = 8081
+host = 100.65.90.13
+
+[srv/nucleus_redis]
+port = 6379
+host = 100.64.36.243
+
+[srv/filter_node_api]
+port = 2051
+host = 100.67.80.108
+
+[srv/importservice]
+port = 80
+host = 100.65.196.4
+
+[srv/coupons_node_api]
+port = 2032
+host = 100.67.75.64
+
+[srv/iris/0]
+port = 9340
+host = 100.67.102.205
+
+[srv/subscription_service]
+port = 9630
+host = 100.70.36.141
+
+[srv/subscription_rule_service]
+port = 9630
+host = 100.70.36.141
+
+[srv/storesense_facedemography]
+port = 0
+host = 100.67.63.77
+
+[srv/aira_api]
+port = 2025
+host = 100.67.122.26
+
+[srv/sharingan_mongo]
+port = 27017
+host = 100.68.145.167
+
+[srv/scheduler]
+port = 8090
+host = 100.67.61.192
+
+[srv/cronscheduler]
+port = 8090
+host = 100.67.61.192
+
+[srv/dracarys]
+port = 3000
+host = 100.70.110.49
+
+[srv/creatives_api]
+port = 2022
+host = 100.68.249.69
+
+[srv/recommender_api_service/0]
+port = 1910
+host = 100.70.41.131
+
+[srv/luciservice/0]
+port = 9333
+host = 100.70.103.188
+
+[srv/nsm_broker_api]
+port = 2030
+host = 100.66.220.159
+
+[search/product]
+port = 8080
+host = 100.66.184.116
+
+[search/customer]
+port = 8080
+host = 100.66.184.116
+
+[srv/storecare]
+port = 8002
+host = 100.70.201.8
+
+[srv/registrar/0]
+port = 5080
+host = 100.64.233.163
+
+[srv/reon_core_api]
+port = 1990
+host = 100.69.19.196
+
+[srv/facebook]
+port = 9232
+host = 100.65.47.207
+
+[srv/veneno_listener_service]
+port = 8092
+host = 100.70.53.28
+
+[dbs/authorization]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/client_metadetails]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/scheduler]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/filters_automation]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/downloads]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/meta_masters]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/facebook_meta]
+host = 10.99.1.109
+user = capillary
+pass = "deal20hunt"
+
+[dbs/member_care/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/member_care/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/member_care/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/users/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/users/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/users/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/stores/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/stores/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/stores/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/campaigns/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/campaigns/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/campaigns/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/msging/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/msging/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/msging/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/segmentation_engine/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/segmentation_engine/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/segmentation_engine/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/masters/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/masters/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/masters/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/audit/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/audit/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/audit/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/social/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/social/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/social/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/purchasable_mgmt/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/purchasable_mgmt/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/purchasable_mgmt/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/Temp/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/Temp/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/Temp/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/passbook/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/passbook/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/passbook/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/package/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/package/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/package/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/health/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/health/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/health/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/referral/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/referral/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/referral/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/retail_insights/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/retail_insights/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/retail_insights/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/ffc_notification/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/ffc_notification/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/ffc_notification/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/traffic/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/traffic/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/traffic/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/facebook/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/facebook/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/facebook/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/kpi/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/kpi/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/kpi/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/wpmu/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/wpmu/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/wpmu/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/guvnor/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/guvnor/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/guvnor/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/jboss/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/jboss/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/jboss/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/temp/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/temp/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/temp/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/brakes/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/brakes/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/brakes/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/creative_assets/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/creative_assets/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/creative_assets/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/msging_master/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/msging_master/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/msging_master/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/survey_management/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/survey_management/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/survey_management/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[dbs/personalised_campaign/1]
+host = 10.99.1.95
+user = capillary
+pass = "deal20hunt"
+
+[dbs/personalised_campaign/2]
+host = 10.99.2.106
+user = capillary
+pass = "deal20hunt"
+
+[dbs/personalised_campaign/3]
+host = 10.99.1.138
+user = capillary
+pass = "deal20hunt"
+
+[srv/temporalengine]
+port = 8099
+host = 100.66.159.125
+
+[srv/packagemanager]
+port = 8099
+host = 100.66.159.125
+
+[srv/lifecycle]
+port = 8099
+host = 100.66.159.125
+
+[srv/lifecycle_reports]
+port = 8099
+host = 100.66.159.125
+
