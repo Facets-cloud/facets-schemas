@@ -23,7 +23,7 @@ locals {
 
 resource "aws_security_group" "allow_mysql" {
   for_each = local.instances
-  name = "allow_mysql_${each.key}"
+  name = "allow_mysql_${var.cluster.name}-${each.key}"
   vpc_id = var.baseinfra.vpc_details.vpc_id
   ingress {
     from_port   = 3306
