@@ -14,3 +14,9 @@ module "s3" {
   baseinfra = module.baseinfra.base_infra_details
   cluster = var.cluster
 }
+
+module "redis" {
+  source = "./redis"
+  baseinfra = module.baseinfra.base_infra_details
+  cluster = var.cluster
+}
