@@ -63,6 +63,7 @@ resource "aws_security_group" "allow_redis" {
 resource "aws_elasticache_replication_group" "cache-cluster" {
   for_each = local.instances
   replication_group_id = "${var.cluster.name}-${each.key}"
+  replication_group_description = "${var.cluster.name}-${each.key}"
   engine               = "redis"
   node_type            = "cache.m4.large"
   number_cache_clusters = 2
