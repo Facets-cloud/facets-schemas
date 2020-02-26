@@ -60,6 +60,7 @@ resource helm_release "mongo" {
   repository = data.helm_repository.stable.metadata[0].name
   chart      = "mongodb-replicaset"
   version    = "3.11.5"
+  timeout    = 600
 
   set_string {
     name = "persistentVolume.storageClass"
@@ -100,14 +101,14 @@ provider "kubernetes" {
   version                = "~> 1.10"
 }
 
-//resource "kubernetes_service" "mysql-k8s-service" {
-//  for_each = local.k8s_service_names_map
-//  metadata {
-//    name = each.key
-//  }
-//  spec {
-//    type = "ExternalName"
-//    external_name = aws_db_instance.rds-instance[each.value].address
-//  }
-//}
+resource "kubernetes_service" "mysql-k8s-service" {
+  for_each = local.k8s_service_names_map
+  metadata {
+    name = each.key
+  }
+  spec {
+    type = "ExternalName"
+    external_name = "mongo-rs-${each.value}-mongodb-replicaset-client.default"
+  }
+}
 
