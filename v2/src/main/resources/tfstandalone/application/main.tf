@@ -60,7 +60,7 @@ resource "helm_release" "application" {
     jsonencode(each.value),
     jsonencode({
       sizing = local.sizing_map[each.key]
-      credentials = merge(local.mysql_users[each.key], local.mysql_passwords[each.key], local.mongo_users[each.key], local.mysql_passwords[each.value])
+      credentials = merge(local.mysql_users[each.key], local.mysql_passwords[each.key], local.mongo_users[each.key], local.mysql_passwords[each.key])
       //credentials = {}
       hpa = each.value["scaling"]
       image = local.build_map[each.key]
