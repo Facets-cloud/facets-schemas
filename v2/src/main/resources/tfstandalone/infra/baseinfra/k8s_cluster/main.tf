@@ -132,16 +132,6 @@ resource "helm_release" "cluster-autoscaler" {
     name = "rbac.create"
     value = "true"
   }
-
-  values = [
-<<VAL
-nodeSelector:
-  node-role.kubernetes.io/master: ""
-tolerations:
-- effect: NoSchedule
-  key: node-role.kubernetes.io/master
-VAL
-  ]
 }
 
 resource "aws_iam_policy" "kube2iam-nodegroup-policy" {
@@ -195,6 +185,11 @@ resource "helm_release" "kube2iam" {
   set_string {
     name = "host.interface"
     value = "eni+"
+  }
+
+  set {
+    name = "extraArgs.auto-discover-default-role"
+    value = "true"
   }
 }
 
