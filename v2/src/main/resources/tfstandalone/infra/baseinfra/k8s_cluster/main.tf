@@ -201,7 +201,7 @@ resource "helm_release" "cluster-overprovisioner" {
 
   values = [
 <<DEPLOYMENTS
-deployments: []
+deployments:
   - name: overprovisioner
     annotations: {}
     replicaCount: 1
