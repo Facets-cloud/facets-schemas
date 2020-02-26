@@ -67,10 +67,15 @@
           "var1": "val1"
         },
         "dynamic": {
-          "DB1_RDS_ROOTPASSWORD": {
-            "resourceType": "mysql",
-            "resourceName": "db1",
-            "attribute": "root_password"
+          "MORNING_FILES_BUCKET_ARN": {
+            "resourceType": "s3",
+            "resourceName": "bucket1",
+            "attribute": "bucket_arn"
+          },
+          "MORNING_FILES_BUCKET_NAME": {
+            "resourceType": "s3",
+            "resourceName": "bucket1",
+            "attribute": "bucket_name"
           }
         }
       }
