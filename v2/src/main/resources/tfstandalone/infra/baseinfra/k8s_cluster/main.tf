@@ -207,8 +207,9 @@ deployments:
     replicaCount: 1
     nodeSelector: {}
     resources:
-      cpu: 1500m
-      memory: 1500Gi
+      requests:
+        cpu: 1500m
+        memory: 1500Gi
     tolerations: []
     affinity: {}
     labels: {}
