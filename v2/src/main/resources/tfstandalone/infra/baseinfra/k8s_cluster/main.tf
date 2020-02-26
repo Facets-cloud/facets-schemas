@@ -209,7 +209,7 @@ deployments:
     resources:
       requests:
         cpu: 1500m
-        memory: 1500Gi
+        memory: 1500Mi
     tolerations: []
     affinity: {}
     labels: {}
