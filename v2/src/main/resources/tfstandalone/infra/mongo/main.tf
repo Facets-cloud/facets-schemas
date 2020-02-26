@@ -82,6 +82,10 @@ resource helm_release "mongo" {
     value = random_string.root_password[each.key].result
   }
 
+  set {
+    name = "auth.enabled"
+    value = "true"
+  }
   values = [
 <<RESOURCES
 resources:
