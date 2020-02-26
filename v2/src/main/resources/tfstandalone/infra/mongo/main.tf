@@ -86,6 +86,22 @@ resource helm_release "mongo" {
     name = "auth.enabled"
     value = "true"
   }
+
+  set {
+    name = "auth.key"
+    value = "qGtPf3p21b6izuQL"
+  }
+
+  set {
+    name = "auth.metricsUser"
+    value = "root"
+  }
+
+  set {
+    name = "auth.metricsPassword"
+    value = random_string.root_password[each.key].result
+  }
+
   values = [
 <<RESOURCES
 resources:
