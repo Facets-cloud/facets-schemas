@@ -6,7 +6,7 @@ locals {
       data_volume_size = 10
       size = "SMALL"
     }
-    "mongo1" = {
+    "mongo2" = {
       name = "mongo2"
       k8s_service_names = ["mymongo2", "yourmongo2"]
       data_volume_size = 15
