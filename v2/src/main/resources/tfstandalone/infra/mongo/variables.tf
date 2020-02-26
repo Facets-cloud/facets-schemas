@@ -21,6 +21,9 @@ variable "baseinfra" {
         cluster_ca_certificate = string
         token = string
       })
+      helm_details = object({
+        tiller_sa = string
+      })
     })
   })
 }
