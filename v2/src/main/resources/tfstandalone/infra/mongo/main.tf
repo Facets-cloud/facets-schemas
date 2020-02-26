@@ -92,3 +92,22 @@ RESOURCES
 
 }
 
+provider "kubernetes" {
+  host                   = var.baseinfra.k8s_details.auth.host
+  cluster_ca_certificate = var.baseinfra.k8s_details.auth.cluster_ca_certificate
+  token                  = var.baseinfra.k8s_details.auth.token
+  load_config_file       = false
+  version                = "~> 1.10"
+}
+
+//resource "kubernetes_service" "mysql-k8s-service" {
+//  for_each = local.k8s_service_names_map
+//  metadata {
+//    name = each.key
+//  }
+//  spec {
+//    type = "ExternalName"
+//    external_name = aws_db_instance.rds-instance[each.value].address
+//  }
+//}
+
