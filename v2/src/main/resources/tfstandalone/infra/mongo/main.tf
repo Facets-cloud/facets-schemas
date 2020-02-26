@@ -1,12 +1,12 @@
 locals {
   instances = {
-    "db1" = {
+    "mongo1" = {
       name = "mongo1"
       k8s_service_names = ["mymongo1", "yourmongo1"]
       data_volume_size = 10
       size = "SMALL"
     }
-    "db2" = {
+    "mongo1" = {
       name = "mongo2"
       k8s_service_names = ["mymongo2", "yourmongo2"]
       data_volume_size = 15
