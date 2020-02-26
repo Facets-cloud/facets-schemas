@@ -52,6 +52,17 @@
                 "password": "DB1_PWD"
               }
             }
+          ],
+          "mongo" : [
+            {
+              "resourceType": "mongo",
+              "resourceName": "mongo2",
+              "permission": "READ_WRITE",
+              "environment": {
+                "userName": "MONGO2_USERNAME",
+                "password": "MONGO2_PWD"
+              }
+            }
           ]
         },
         "cloud": [
