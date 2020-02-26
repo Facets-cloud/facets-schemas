@@ -60,7 +60,7 @@ resource helm_release "mongo" {
   repository = data.helm_repository.stable.metadata[0].name
   chart      = "mongodb-replicaset"
   version    = "3.11.5"
-  timeout    = 600
+  timeout    = 900
 
   set_string {
     name = "persistentVolume.storageClass"
