@@ -193,6 +193,28 @@ resource "helm_release" "kube2iam" {
   }
 }
 
+resource "helm_release" "cluster-overprovisioner" {
+  name       = "cluster-overprovisioner"
+  repository = data.helm_repository.stable.metadata[0].name
+  chart      = "cluster-overprovisioner"
+  version    = "0.2.6"
+
+  values = [
+<<DEPLOYMENTS
+deployments: []
+  - name: overprovisioner
+    annotations: {}
+    replicaCount: 1
+    nodeSelector: {}
+    resources:
+      cpu: 1500m
+      memory: 1500Gi
+    tolerations: []
+    affinity: {}
+    labels: {}
+DEPLOYMENTS
+  ]
+}
 //resource "restapi_object" "vpc_instance" {
 //  path = "/internal/capillarycloud/api/infraResources/k8sClusters/${var.infraResourceName}/instances/${var.name}"
 //  read_path = "/internal/capillarycloud/api/infraResources/k8sClusters/${var.infraResourceName}/instances/${var.name}"
