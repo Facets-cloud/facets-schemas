@@ -82,6 +82,10 @@ resource helm_release "mongo" {
     value = random_string.root_password[each.key].result
   }
 
+  set {
+    name = "replicaSet.enabled"
+    value = "true"
+  }
   set_string {
     name = "mongodbDatabase"
     value = "admin"
