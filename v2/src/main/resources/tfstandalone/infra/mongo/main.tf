@@ -116,7 +116,7 @@ resource "kubernetes_service" "mysql-k8s-service" {
   }
   spec {
     type = "ExternalName"
-    external_name = "mongo-rs-${each.value}-mongodb-replicaset-client.default.svc.cluster.local"
+    external_name = "mongo-rs-${each.value}-mongodb.default.svc.cluster.local"
   }
 }
 
