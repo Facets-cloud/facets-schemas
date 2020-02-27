@@ -73,11 +73,6 @@ resource helm_release "mongo" {
   }
 
   set_string {
-    name = "mongodbUsername"
-    value = "root"
-  }
-
-  set_string {
     name = "mongodbRootPassword"
     value = random_string.root_password[each.key].result
   }
@@ -86,10 +81,7 @@ resource helm_release "mongo" {
     name = "replicaSet.enabled"
     value = "true"
   }
-  set_string {
-    name = "mongodbDatabase"
-    value = "admin"
-  }
+
   values = [
 <<RESOURCES
 resources:
@@ -116,7 +108,7 @@ resource "kubernetes_service" "mysql-k8s-service" {
   }
   spec {
     type = "ExternalName"
-    external_name = "mongo-rs-${each.value}-mongodb.default.svc.cluster.local"
+    external_name = "mongo-rs-${each.value}-mongodb.default.cluster.local"
   }
 }
 
