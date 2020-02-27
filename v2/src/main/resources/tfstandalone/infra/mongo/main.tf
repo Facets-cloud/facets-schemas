@@ -58,47 +58,27 @@ resource helm_release "mongo" {
   for_each = local.instances
   name       = "mongo-rs-${each.key}"
   repository = data.helm_repository.stable.metadata[0].name
-  chart      = "mongodb-replicaset"
-  version    = "3.11.5"
+  chart      = "mongodb"
+  version    = "7.8.6"
   timeout    = 900
 
   set_string {
-    name = "persistentVolume.storageClass"
+    name = "persistence.storageClass"
     value = "gp2"
   }
 
   set_string {
-    name = "persistentVolume.size"
+    name = "persistence.size"
     value = "${each.value["data_volume_size"]}Gi"
   }
 
   set_string {
-    name = "auth.adminUser"
+    name = "mongodbUsername"
     value = "root"
   }
 
   set_string {
-    name = "auth.adminPassword"
-    value = random_string.root_password[each.key].result
-  }
-
-  set {
-    name = "auth.enabled"
-    value = "true"
-  }
-
-  set {
-    name = "auth.key"
-    value = "qGtPf3p21b6izuQL"
-  }
-
-  set {
-    name = "auth.metricsUser"
-    value = "root"
-  }
-
-  set {
-    name = "auth.metricsPassword"
+    name = "mongodbRootPassword"
     value = random_string.root_password[each.key].result
   }
 
