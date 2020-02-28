@@ -29,6 +29,11 @@ public class Kube2IAMSystemChart implements ISystemChart {
         awsCreds.put("access_key",kube2IamConfiguration.getAwsAccessKeyID());
         awsCreds.put("secret_key",kube2IamConfiguration.getAwsSecretAccessKey());
         values.put("aws",awsCreds);
+
+        Map<String, Object> networkInterface = new HashMap<>();
+        awsCreds.put("interface",kube2IamConfiguration.getHostNetworkInterface());
+        values.put("host",networkInterface);
+
         return values;
     }
 

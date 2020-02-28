@@ -96,10 +96,9 @@ public abstract class AbstractValueProvider {
         String dnsPrefix = application.getDnsPrefix();
         ExternalDnsConfiguration privateDnsConfiguration =
                 environment.getEnvironmentConfiguration().getPrivateDnsConfiguration();
-        if(privateDnsConfiguration != null && Application.DnsType.PRIVATE.equals(application.getDnsType())) {
+        if(dnsPrefix != null && privateDnsConfiguration != null && Application.DnsType.PRIVATE.equals(application.getDnsType())) {
             return dnsPrefix + "." + privateDnsConfiguration.getZoneDns();
         }
-
         return null;
     }
 
@@ -107,15 +106,28 @@ public abstract class AbstractValueProvider {
         String dnsPrefix = application.getDnsPrefix();
         ExternalDnsConfiguration publicDnsConfiguration =
                 environment.getEnvironmentConfiguration().getPublicDnsConfiguration();
-        if(publicDnsConfiguration != null && Application.DnsType.PUBLIC.equals(application.getDnsType())) {
+        if(dnsPrefix != null && publicDnsConfiguration != null && Application.DnsType.PUBLIC.equals(application.getDnsType())) {
             return environment.getEnvironmentMetaData().getName() + "-" +
                     new StringJoiner(".")
                             .add(dnsPrefix)
                             .add(publicDnsConfiguration.getZoneDns())
                             .toString();
         }
-
         return null;
+    }
+
+    public Map<String, Object> getExternalDns(Application application, Environment environment) {
+        Map<String, Object> valueFields = new HashMap<>();
+        String fqdn = null;
+        if (application.getDnsType().equals(Application.DnsType.PRIVATE)) {
+            fqdn = getPrivateZoneDns(application, environment);
+        } else if (application.getDnsType().equals(Application.DnsType.PUBLIC)) {
+            fqdn = getPublicZoneDns(application, environment);
+        }
+        if (fqdn != null) {
+            valueFields.put("domainName", fqdn);
+        }
+        return valueFields;
     }
     
     public Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {

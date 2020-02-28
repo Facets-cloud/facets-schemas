@@ -18,8 +18,7 @@ public class StatefulSetChartValueProvider extends AbstractValueProvider {
         this.addField("persistentVolumeClaims", getPVCList(application), yaml);
         this.addField("lbType", getLbType(application), yaml);
         this.addField("sslCertName", getSSLCertificateName(application, environment), yaml);
-        this.addField("domainName", getPrivateZoneDns(application, environment), yaml);
-        this.addField("domainName", getPublicZoneDns(application, environment), yaml);
+        this.addFields(getExternalDns(application, environment), yaml);
         this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
         //this.addFields(getHPAConfigs(deployment), yaml);
         this.addField("replicaCount", deployment.getReplicas(),yaml);

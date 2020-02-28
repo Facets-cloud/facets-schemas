@@ -47,7 +47,7 @@ public class ApplicationController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
-    @RolesAllowed({"ADMIN", "MODERATOR"})
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', #applicationFamily + '_' + #environment + '_' + 'MODERATOR')")
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application createApplication(@Valid @RequestBody  Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
@@ -56,7 +56,7 @@ public class ApplicationController {
         return applicationFacade.createApplication(application, host);
     }
 
-    @RolesAllowed({"ADMIN", "MODERATOR"})
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', #applicationFamily + '_' + #environment + '_' + 'MODERATOR')")
     @PutMapping(value = "/{applicationFamily}/applications", produces = "application/json")
     public Application updateApplication(@Valid @RequestBody  Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
@@ -367,7 +367,7 @@ public class ApplicationController {
         return applicationFacade.getGlobalStats();
     }
 
-    @RolesAllowed({"ADMIN", "MODERATOR"})
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', #applicationFamily + '_' + #environment + '_' + 'MODERATOR')")
     @DeleteMapping(value = "/{applicationFamily}/applications/{applicationId}", produces = "application/json")
     public boolean deleteApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                      @PathVariable("applicationId") String applicationId) {

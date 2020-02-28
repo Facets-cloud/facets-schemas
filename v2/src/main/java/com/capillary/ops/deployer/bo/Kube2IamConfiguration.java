@@ -4,6 +4,7 @@ public class Kube2IamConfiguration {
     boolean enabled;
     String awsAccessKeyID;
     String awsSecretAccessKey;
+    String hostNetworkInterface;
 
     public Kube2IamConfiguration(){
     };
@@ -36,6 +37,14 @@ public class Kube2IamConfiguration {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getHostNetworkInterface() {
+        return hostNetworkInterface;
+    }
+
+    public void setHostNetworkInterface(String hostNetworkInterface) {
+        this.hostNetworkInterface = hostNetworkInterface;
     }
 }
 
