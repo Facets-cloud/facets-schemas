@@ -644,24 +644,5 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
-
-    @Test
-    public void testInstallOPS() throws Exception {
-        URLChartLoader chartLoader = new URLChartLoader();
-        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
-        new Expectations(helmService) {
-            {
-                helmService.getChart("capillary-base");
-                result = chart;
-            }
-        };
-
-        Application application = createApplication("helmint-test-ops-1", ApplicationFamily.OPS);
-        application.setPorts(new ArrayList<>());
-        Deployment deployment = createDeployment(application);
-        helmService.deploy(application, deployment);
-    }
-
-
 }
 

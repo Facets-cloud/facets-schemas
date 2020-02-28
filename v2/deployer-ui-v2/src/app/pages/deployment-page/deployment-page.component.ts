@@ -27,6 +27,7 @@ export class DeploymentPageComponent implements OnInit {
   deploymentStatus: DeploymentStatusDetails;
 
   settings = {
+    mode: 'inline',
     columns: {
       name: {
         title: 'Key',
@@ -55,6 +56,7 @@ export class DeploymentPageComponent implements OnInit {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true,
     },
     pager: {
       display: true,
@@ -235,6 +237,31 @@ export class DeploymentPageComponent implements OnInit {
     if (this.isZKPublishFalse(data['name'], data['value'])) {
         this.showWarningToastforUnpublish(10000);
     }
+  }
+
+  validateEditConfig(event) {
+    const data = event.newData;
+
+    if (!this.isValidEnvVariableName(data['name'])) {
+      event.confirm.reject();
+      this.nbToastrService.danger('Environment variable key should match regex ^[-._a-zA-Z0-9]+$', 'Error');
+      return;
+    }
+
+    if (!this.isValidEnvVariableValue(data['value'])) {
+      event.confirm.reject();
+      this.nbToastrService.danger('Environment variable value should not contain whitespaces', 'Error');
+      return;
+    }
+
+    if (this.isZKPublishTrue(data['name'], data['value'])) {
+      this.showWarningToastforPublish(10000);
+    }
+
+    if (this.isZKPublishFalse(data['name'], data['value'])) {
+        this.showWarningToastforUnpublish(10000);
+    }
+    event.confirm.resolve(event.newData);
   }
 
   onDeleteConfirm(event) {
