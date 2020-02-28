@@ -12,3 +12,5 @@ tolerations: []
 affinity: {}
 
 hpaEnabled: "true"
+
+crmTestDeployMode: ""
