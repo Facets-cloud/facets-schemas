@@ -125,6 +125,12 @@ public abstract class AbstractValueProvider {
                 if(deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
                     valueFields.put("zkPublish", deployment.getConfigurationsMap().get("zkPublish"));
                     valueFields.put("zkName", deployment.getConfigurationsMap().get("zkName"));
+                    if(deployment.getConfigurationsMap().get("zkPublish").equals("false")){
+                        valueFields.put("crmTestDeployMode","true");
+                    }
+                    else if(deployment.getConfigurationsMap().get("zkPublish").equals("true")) {
+                        valueFields.put("crmTestDeployMode","false");
+                    }
                 }
                 break;
             case ECOMMERCE:

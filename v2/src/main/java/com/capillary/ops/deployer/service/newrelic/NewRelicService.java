@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Profile("!dev")
 public class NewRelicService implements INewRelicService {
 
     @Value("${newrelic.apiKey}")

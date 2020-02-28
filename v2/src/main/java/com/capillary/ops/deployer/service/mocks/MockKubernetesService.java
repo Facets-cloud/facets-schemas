@@ -133,4 +133,9 @@ public class MockKubernetesService implements IKubernetesService {
     public void resumeApplication(String deploymentName, Environment environment) {
 
     }
+
+    @Override
+    public void deleteServiceCreatedByKubeCompassIfExists(String appName, Environment environment) {
+
+    }
 }

@@ -174,6 +174,38 @@ export class DeploymentPageComponent implements OnInit {
     return !(/^$|\s+/.test(value));
   }
 
+  isZKPublishTrue(name: string, value: string) {
+    if (name === 'zkPublish') {
+      if (value === 'true' ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isZKPublishFalse(name: string, value: string) {
+    if (name === 'zkPublish') {
+      if (value === 'false' ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  showWarningToastforPublish(duration) {
+    this.nbToastrService.warning(
+      'This will switch to K8s-mode and publish service to Zookeeper',
+      'Attention',
+      { duration });
+  }
+
+  showWarningToastforUnpublish(duration) {
+    this.nbToastrService.warning(
+      'This will switch to Test-mode and unpublish service from Zookeeper',
+      'Attention',
+      { duration });
+  }
+
   validateConfig(event) {
     const data = event.newData;
 
@@ -194,6 +226,14 @@ export class DeploymentPageComponent implements OnInit {
       this.nbToastrService.danger('Duplicate keys not allowed', 'Error');
     } else {
       event.confirm.resolve(event.newData);
+    }
+
+    if (this.isZKPublishTrue(data['name'], data['value'])) {
+      this.showWarningToastforPublish(10000);
+    }
+
+    if (this.isZKPublishFalse(data['name'], data['value'])) {
+        this.showWarningToastforUnpublish(10000);
     }
   }
 

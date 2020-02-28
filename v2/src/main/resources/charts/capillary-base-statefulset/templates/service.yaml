@@ -2,7 +2,11 @@
 apiVersion: v1
 kind: Service
 metadata:
+{{- if eq .Values.crmTestDeployMode "true" }}
+  name: {{ .Release.Name }}-test
+{{- else if eq .Values.crmTestDeployMode "false" }}
   name: {{ .Release.Name }}
+{{- end }}
   annotations:
   {{- if .Values.domainName }}
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.domainName }}

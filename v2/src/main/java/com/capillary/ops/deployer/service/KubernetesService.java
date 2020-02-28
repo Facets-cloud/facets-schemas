@@ -135,7 +135,10 @@ public class KubernetesService implements IKubernetesService {
         } else {
             applicationServiceDetails = getApplicationServiceDetails(deploymentName, kubernetesClient);
             applicationDeploymentDetails= getApplicationDeploymentDetails(deploymentName, kubernetesClient);
-            selectors = applicationServiceDetails.getSelectors();
+            if(application.getApplicationFamily().equals(ApplicationFamily.CRM) && applicationServiceDetails == null) {
+                applicationServiceDetails = getApplicationServiceDetails(deploymentName + "-test", kubernetesClient);
+            }
+            selectors = applicationServiceDetails.getSelectors(); 
         }
 
         List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(
@@ -226,6 +229,16 @@ public class KubernetesService implements IKubernetesService {
             deployment.getSpec().setReplicas(minReplicas);
         }
         kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).patch(deployment);
+    }
+
+    @Override
+    public void deleteServiceCreatedByKubeCompassIfExists(String appName, Environment environment) {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        io.fabric8.kubernetes.api.model.Service service = kubernetesClient.services().inNamespace("default").withName(appName).get();
+        if(service.getMetadata().getLabels().get("origin").equals("cap-zk")){
+            logger.info("Deleting {} service created by kube-compass on {}",appName, environment.getEnvironmentMetaData().getName());
+            kubernetesClient.services().inNamespace("default").withName(appName).delete();
+        }
     }
 
     private ApplicationServiceDetails getApplicationServiceDetails(String deploymentName, KubernetesClient kubernetesClient) {

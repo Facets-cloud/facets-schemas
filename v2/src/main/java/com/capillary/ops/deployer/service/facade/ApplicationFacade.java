@@ -425,6 +425,9 @@ public class ApplicationFacade {
         if(mirror != null && ! mirror.isEmpty()) {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }
+        if(env.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
+            preDeployTasks(application, deployment);
+        }
         deploymentRepository.save(deployment);
         try {
             helmService.deploy(application, deployment);
@@ -434,8 +437,32 @@ public class ApplicationFacade {
                     application,
                     getDeploymentFailureMessage(deployment, application));
         }
-
         return deployment;
+    }
+
+    private void preDeployTasks(Application application, Deployment deployment) {
+        try {
+            switch (application.getApplicationFamily()) {
+                case CRM:
+                    logger.info("Evaluating pre deploy task");
+                    if (deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
+
+                        Deployment currentDeployment = getCurrentDeployment(application.getApplicationFamily(), application.getId(), deployment.getEnvironment());
+                        if (currentDeployment != null && currentDeployment.getConfigurationsMap().get("zkPublish").equals(deployment.getConfigurationsMap().get("zkPublish"))) {
+                            logger.info("Skipping pre-deploy task for {} on {}", application.getName(), deployment.getEnvironment());
+                            break;
+                        }
+                        if (deployment.getConfigurationsMap().get("zkPublish").equals("true")) {
+                            logger.info("Attempting to delete zk mirror service");
+                            Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(application.getApplicationFamily(), deployment.getEnvironment()).get();
+                            kubernetesService.deleteServiceCreatedByKubeCompassIfExists(application.getName(), environment);
+                        }
+                    }
+            }
+        }catch (Exception e)
+        {
+            logger.error("Error executing pre-deploy task", e);
+        }
     }
 
     private String getDeploymentFailureMessage(Deployment deployment, Application application) {

@@ -39,6 +39,7 @@ public class EnvironmentConfiguration {
     private String newRelicClusterName;
     private boolean metricServerEnabled = false;
     private ClusterAutoscalerConfiguration clusterAutoscalerConfiguration;
+    private boolean preDeployTaskEnabled = false;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -166,5 +167,13 @@ public class EnvironmentConfiguration {
 
     public void setClusterAutoscalerConfiguration(ClusterAutoscalerConfiguration clusterAutoscalerConfiguration) {
         this.clusterAutoscalerConfiguration = clusterAutoscalerConfiguration;
+    }
+
+    public boolean isPreDeployTaskEnabled() {
+        return preDeployTaskEnabled;
+    }
+
+    public void setPreDeployTaskEnabled(boolean preDeployTaskEnabled) {
+        this.preDeployTaskEnabled = preDeployTaskEnabled;
     }
 }

@@ -192,7 +192,7 @@ public class HelmServiceIntegrationTest {
         ).filter(pod -> pod.getMetadata().getAnnotations().get("buildId").equalsIgnoreCase(deployment.getBuildId()))
                 .filter(pod -> pod.getMetadata().getLabels().get("app").equalsIgnoreCase(application.getName()))
                 .collect(Collectors.toList());
-        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName() + "-test").get();
         Assert.assertEquals("0.0.0.0/0", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("true", service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/azure-load-balancer-internal"));
         Assert.assertEquals(applicationName+ "-dns.local.internal", service.getMetadata().getAnnotations().get(
@@ -359,7 +359,7 @@ public class HelmServiceIntegrationTest {
         application.setLoadBalancerType(LoadBalancerType.EXTERNAL);
         application.setDnsType(Application.DnsType.PUBLIC);
         helmService.deploy(application, updatedDeployment);
-        Service updatedService = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Service updatedService = kubernetesClient.services().inNamespace("default").withName(application.getName() + "-test").get();
         String updatedDns = updatedService.getMetadata().getAnnotations().get("external-dns.alpha.kubernetes.io/hostname");
         Assert.assertEquals(clusterName + "-" + application.getName() + "-dns.local.public", updatedDns);
         Assert.assertFalse(updatedService.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
@@ -413,7 +413,7 @@ public class HelmServiceIntegrationTest {
         application.setDnsType(Application.DnsType.PRIVATE);
         helmService.deploy(application, deployment);
         //kubernetesClient.services().inNamespace("default").withName(application.getName()).delete();
-        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()+ "-test").get();
 
         Assert.assertTrue(service.getMetadata().getAnnotations().containsKey("service.beta.kubernetes.io/aws-load-balancer-internal"));
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
@@ -626,7 +626,7 @@ public class HelmServiceIntegrationTest {
         deployment.setHorizontalPodAutoscaler(null);
         helmService.deploy(application, deployment);
         StatefulSet statefulSet = kubernetesClient.apps().statefulSets().inNamespace("default").withName(application.getName()).get();
-        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName() + "-test").get();
 
         final List<Pod> pods = kubernetesClient.pods().inNamespace("default").list().getItems().stream().filter(
                 pod -> pod.getMetadata().getAnnotations() != null &&
