@@ -26,3 +26,9 @@ module "mongo" {
   baseinfra = module.baseinfra.base_infra_details
   cluster = var.cluster
 }
+
+module "rabbitmq" {
+  source = "./rabbitmq"
+  baseinfra = module.baseinfra.base_infra_details
+  cluster = var.cluster
+}
