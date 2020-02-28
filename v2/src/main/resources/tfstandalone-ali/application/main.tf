@@ -1,142 +1,50 @@
 provider "kubernetes" {
-  version = "~> 1.10"
-  config_path = "~/.captf/kube/ali/config"
+  host = var.baseinfra.k8s_details.auth.host
+  cluster_ca_certificate = var.baseinfra.k8s_details.auth.cluster_ca_certificate
+  token                  = var.baseinfra.k8s_details.auth.token
+  load_config_file       = false
+  version                = "~> 1.10"
 }
 
 locals {
-  instances = {
-    "demovisitorservice" = {
-      "helm_values" = <<VALUES
-hpaMaxReplicas: 1
-livenessPort: 9922
-livenessInitialDelay: 10
-credentials: {}
-configurations: {}
-lbType: internal
-hpaEnabled: 'true'
-enableLivenessTCP: 'true'
-ports:
-- {name: http, containerPort: 9922, lbPort: 80}
-deploymentStrategy: RollingUpdate
-hpaMinReplicas: 1
-livenessTimeout: 1
-podMemoryLimit: 0.5
-readinessFailureThreshold: 3
-livenessFailureThreshold: 3
-enableReadinessTCP: 'true'
-deploymentId: abcd
-readinessSuccessThreshold: 1
-protocolGroup: tcp
-elbIdleTimeoutSeconds: 300
-hpaMetricThreshold: 60
-readinessInitialDelay: 10
-image: 486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demovisitorservice:101e298
-buildId: abcd
-readinessPort: 9922
-livenessPeriod: 30
-readinessTimeout: 1
-livenessSuccessThreshold: 1
-podCPULimit: 0.5
-secretFileMounts: []
-readinessPeriod: 30
-VALUES
-      "dynamic_environment_variables" = {
-        "DB1_RDS_ENDPOINT" = {
-          resource_type = "mysql"
-          resource_name = "db1"
-          attribute = "original_endpoint"
-        }
-      }
-      "iam_credential_requests" = [
-        {
-          resource_type = "s3"
-          resource_name = "bucket1"
-          permission = "READ_WRITE"
-        }
-      ]
-    }
-    "demoapiservice" = {
-      "helm_values" = <<VALUES
-hpaMaxReplicas: 1
-livenessPort: 8080
-livenessInitialDelay: 10
-credentials: {}
-configurations: {VISITOR_SERVICE: demovisitorservice.default}
-lbType: external
-hpaEnabled: 'true'
-enableLivenessTCP: 'true'
-ports:
-- {name: http, containerPort: 8080, lbPort: 80}
-deploymentStrategy: RollingUpdate
-hpaMinReplicas: 1
-livenessTimeout: 1
-podMemoryLimit: 0.5
-readinessFailureThreshold: 3
-livenessFailureThreshold: 3
-enableReadinessTCP: 'true'
-deploymentId: abcd
-readinessSuccessThreshold: 1
-protocolGroup: tcp
-elbIdleTimeoutSeconds: 300
-hpaMetricThreshold: 60
-readinessInitialDelay: 10
-image: 486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298
-buildId: abcd
-readinessPort: 8080
-livenessPeriod: 30
-readinessTimeout: 1
-livenessSuccessThreshold: 1
-podCPULimit: 0.5
-secretFileMounts: []
-readinessPeriod: 30
-VALUES
-      "dynamic_environment_variables" = {
-        "DB1_RDS_ROOTPASSWORD" = {
-          resource_type = "mysql"
-          resource_name = "db1"
-          attribute = "root_passowrd"
-        }
-      }
-      "iam_credential_requests" = [
-        {
-          resource_type = "oss"
-          resource_name = "bucket1"
-          permission = "READ_ONLY"
-        }
-      ]
-      "mysql_credential_requests" = [
-        {
-          resource_type = "mysql"
-          resource_name = "db1"
-          permission = "READ_WRITE"
-        }
-      ]
-    }
+  stackName = var.cluster.stackName
+  json_data = jsondecode(file("../stacks/${local.stackName}/application/application.json"))
+  sizing_data = jsondecode(file("../stacks/${local.stackName}/application/sizing.json"))
+  dev_mode_build_map = {
+  for i, j in local.json_data["instances"]:
+    i => "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
   }
-
+  build_map = var.dev_mode == true ? local.dev_mode_build_map : data.http.build
+  sizing_map = {
+    for i, j in local.json_data["instances"]:
+      i => local.sizing_data[j["size"]]
+  }
   dynamic_environment_variables_map = {
-  for i, j in local.instances:
-  i => {
-  for k, v in j["dynamic_environment_variables"]:
-  k => var.resources[v["resource_type"]][v["resource_name"]][v["attribute"]]
-  }
+    for i,j in local.json_data["instances"]:
+    i => {
+      for k,v in j["environmentVariables"]["dynamic"]:
+        k => var.resources[v["resourceType"]][v["resourceName"]][v["attribute"]]
+    }
   }
 
   policy_attachments_map = {for k in flatten([
-  for i, j in local.instances: [
-  for p in j["iam_credential_requests"]: {
-    iam_policy_name = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]].name
-    iam_policy_type = var.resources[p["resource_type"]][p["resource_name"]]["iam_policies"][p["permission"]].type
-    application_name = i
-  }
+    for i,j in local.json_data["instances"]: [
+      for p in j["credentialRequests"]["cloud"]: {
+        iamPolicy = var.resources[p["resourceType"]][p["resourceName"]]["iam_policies"][p["permission"]]
+        applicationName = i
+        key = "${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"
+      }
   ]]):
-  "${k["iam_policy_name"]}-${k["application_name"]}" => k
+    k.key => k
   }
 }
 
 provider "helm" {
   kubernetes {
-    config_path = "~/.captf/kube/ali/config"
+    host = var.baseinfra.k8s_details.auth.host
+    cluster_ca_certificate = var.baseinfra.k8s_details.auth.cluster_ca_certificate
+    token = var.baseinfra.k8s_details.auth.token
+    load_config_file = false
   }
   version = "~> 0.10.4"
   service_account = var.baseinfra.k8s_details.helm_details.tiller_sa
@@ -144,55 +52,66 @@ provider "helm" {
 }
 
 resource "helm_release" "application" {
-  for_each = local.instances
-  chart = "../charts/capillary-base"
+  for_each = local.json_data["instances"]
+  chart = "../charts/capillary-base-cc"
   name = each.key
-
+  version = "0.1.1"
   values = [
-    each.value["helm_values"],
+    jsonencode(each.value),
     jsonencode({
-      configurations = merge(local.dynamic_environment_variables_map[each.key], yamldecode(each.value["helm_values"])["configurations"])
+      sizing = local.sizing_map[each.key]
+      credentials = merge(local.mysql_users[each.key], local.mysql_passwords[each.key], local.mongo_users[each.key], local.mongo_passwords[each.key])
+      //credentials = {}
+      hpa = each.value["scaling"]
+      image = local.build_map[each.key]
+      configurations = merge(local.dynamic_environment_variables_map[each.key], each.value["environmentVariables"]["static"])
     }),
     <<ROLE
-roleName: ${alicloud_ram_role.application-role[each.key].arn}
+roleName: ${aws_iam_role.application-role[each.key].arn}
 ROLE
   ]
 }
 
-resource "alicloud_ram_role" "application-role" {
-  for_each = local.instances
+resource "aws_iam_role" "application-role" {
+  for_each = local.json_data["instances"]
   name = "${var.cluster.name}-${each.key}-application-role"
-  description = "${var.cluster.name}-${each.key}-application-role"
-  document = <<EOF
-  {
-    "Statement": [
-      {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-          "Service": [
-            "ecs.aliyuncs.com"
-          ]
-        }
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
       },
-      {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-            "RAM": [
-                "${var.baseinfra.k8s_details.node_group_iam_role_arn}"
-            ]
-        }
-      }
-    ],
-    "Version": "1"
-  }
-  EOF
+      "Effect": "Allow",
+      "Sid": ""
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "${var.baseinfra.k8s_details.node_group_iam_role_arn}"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
 }
 
-resource "alicloud_ram_role_policy_attachment" "policy-attach" {
+resource "aws_iam_role_policy_attachment" "policy-attach" {
   for_each = local.policy_attachments_map
-  policy_name = each.value["iam_policy_name"]
-  policy_type = each.value["iam_policy_type"]
-  role_name = alicloud_ram_role.application-role[each.value["application_name"]].name
+  role = aws_iam_role.application-role[each.value["applicationName"]].name
+  policy_arn = each.value["iamPolicy"]
+}
+
+data "http" "build" {
+  for_each = var.dev_mode ? {} :local.json_data["instances"]
+  request_headers = {
+    Accept = "application/json"
+    X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token
+  }
+  url = var.dev_mode ? "http://${var.cc_host}/cc/v1/build/deployer/${each.value["build"]["id"]}?strategy=QA":"https://${var.cc_host}/cc/v1/build/deployer/${each.value["build"]["id"]}?strategy=QA"
 }
