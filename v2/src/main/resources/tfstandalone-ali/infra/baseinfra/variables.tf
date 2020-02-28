@@ -8,3 +8,11 @@ variable "cluster" {
     vpcCIDR = string
   })
 }
+
+variable "ec2_token_refresher_key_id" {
+  type = string
+}
+
+variable "ec2_token_refresher_key_secret" {
+  type = string
+}

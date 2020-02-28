@@ -34,20 +34,8 @@ provider "aws" {
 
 provider "alicloud" {
   region     = local.cluster.aliRegion
-  version = "1.70.3"
+  version = "1.71.1"
 }
-
-//terraform {
-//  backend "oss" {
-//    bucket = "capillary-cloud-ali-tfstate"
-//    prefix   = "cap-ali"
-//    key   = "tfstate"
-//    region = "cn-huhehaote"
-//    # TODO: verify the tablestore endpoint before running
-//    tablestore_endpoint = "https://terraform-remote.cn-huhehaote.ots.aliyuncs.com"
-//    tablestore_table = "capillary-cloud-ali-tflock"
-//  }
-//}
 
 terraform {
   backend "s3" {
@@ -61,19 +49,14 @@ terraform {
 module "infra" {
   source = "./infra"
   cluster = local.cluster
+  ec2_token_refresher_key_id = var.ali-ecr-token-refresher-key-id
+  ec2_token_refresher_key_secret = var.ali-ecr-token-refresher-key-secret
 }
-//
-//module "application" {
-//  source = "./application"
-//  baseinfra = module.infra.infra_details.base_infra_details
-//  cluster = local.cluster
-//  resources = module.infra.infra_details.resources
-//}
-//
-//output "log-project-name" {
-//  value = module.infra.log-project-name
-//}
 
-//output "kube_clusters" {
-//  value = module.infra.kube_clusters
-//}
+variable "ali-ecr-token-refresher-key-id" {
+  type = string
+}
+
+variable "ali-ecr-token-refresher-key-secret" {
+  type = string
+}

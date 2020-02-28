@@ -9,16 +9,8 @@ variable "cluster" {
   })
 }
 
-variable "k8s_cluster_id" {
-  type = string
-}
-
 variable "kube_config_file_path" {
   type = string
-}
-
-variable "vswitch_ids" {
-  type = list(string)
 }
 
 variable "wait_for_cluster_cmd" {
@@ -27,6 +19,26 @@ variable "wait_for_cluster_cmd" {
   default     = "until curl -k -s $ENDPOINT/healthz >/dev/null; do sleep 4; done"
 }
 
-variable "security_group_id" {
+variable "vpc_details" {
+  type = object({
+    vpc_id = string
+    vswitch_ids = list(string)
+  })
+}
+
+variable "k8s_details" {
+  type = object({
+    cluster_id = string
+    cluster_nodes = any
+    security_group_id = string
+    log_project_name = string
+  })
+}
+
+variable "ec2_token_refresher_key_id" {
+  type = string
+}
+
+variable "ec2_token_refresher_key_secret" {
   type = string
 }

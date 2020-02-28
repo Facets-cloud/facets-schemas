@@ -7,7 +7,8 @@ module "helm" {
   source = "./kube_helm_setup"
   cluster = var.cluster
   kube_config_file_path = module.k8scluster.kube_config_file_path
-  k8s_cluster_id = module.k8scluster.cluster_id
-  vswitch_ids = module.k8scluster.vswitch_ids
-  security_group_id = module.k8scluster.security_group_id
+  k8s_details = module.k8scluster.k8s_details
+  vpc_details = module.k8scluster.vpc_details
+  ec2_token_refresher_key_id = var.ec2_token_refresher_key_id
+  ec2_token_refresher_key_secret = var.ec2_token_refresher_key_secret
 }

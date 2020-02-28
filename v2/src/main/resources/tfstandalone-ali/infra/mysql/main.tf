@@ -39,7 +39,7 @@ resource "alicloud_db_instance" "default" {
   instance_storage = "20"
   instance_charge_type = "Postpaid"
   instance_name = "${var.cluster.name}${each.key}"
-  vswitch_id = var.vswitch_ids[0]
+  vswitch_id = var.baseinfra.vpc_details.vswitch_ids[0]
   monitoring_period = "60"
 }
 
