@@ -16,10 +16,20 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
     }
 
     @Override
+    protected List<String> getPreBuildCommands() {
+        return new ArrayList<>();
+    }
+
+    @Override
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("mvn clean deploy -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U");
         return buildCommands;
+    }
+
+    @Override
+    protected List<String> getPostBuildCommands() {
+        return new ArrayList<>();
     }
 
     @Override
