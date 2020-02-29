@@ -40,6 +40,7 @@ public class EnvironmentConfiguration {
     private boolean metricServerEnabled = false;
     private ClusterAutoscalerConfiguration clusterAutoscalerConfiguration;
     private boolean preDeployTaskEnabled = false;
+    private boolean jmxSideCarEnabled = false;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -175,5 +176,13 @@ public class EnvironmentConfiguration {
 
     public void setPreDeployTaskEnabled(boolean preDeployTaskEnabled) {
         this.preDeployTaskEnabled = preDeployTaskEnabled;
+    }
+
+    public boolean isJmxSideCarEnabled() {
+        return jmxSideCarEnabled;
+    }
+
+    public void setJmxSideCarEnabled(boolean jmxSideCarEnabled) {
+        this.jmxSideCarEnabled = jmxSideCarEnabled;
     }
 }
