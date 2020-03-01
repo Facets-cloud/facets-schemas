@@ -38,6 +38,7 @@ public class MockDataBootstrap {
         Environment nightly = createEnvironment("nightly", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
         EnvironmentConfiguration nightlyEcomEnvironmentConfiguration = new EnvironmentConfiguration();
         nightlyEcomEnvironmentConfiguration.setNewRelicClusterName("test");
+        nightlyEcomEnvironmentConfiguration.setJmxSideCarEnabled(true);
         nightly.setEnvironmentConfiguration(nightlyEcomEnvironmentConfiguration);
         environmentRepository.save(nightly);
         createEnvironment("stage", EnvironmentType.QA, ApplicationFamily.ECOMMERCE);
