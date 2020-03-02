@@ -4,7 +4,7 @@ kind: Service
 metadata:
 {{- if eq .Values.crmTestDeployMode "true" }}
   name: {{ .Release.Name }}-test
-{{- else if eq .Values.crmTestDeployMode "false" }}
+{{- else }}
   name: {{ .Release.Name }}
 {{- end }}
   annotations:

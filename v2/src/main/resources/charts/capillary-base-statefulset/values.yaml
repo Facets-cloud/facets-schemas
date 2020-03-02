@@ -13,4 +13,6 @@ affinity: {}
 
 hpaEnabled: "true"
 
+crmTestDeployMode: ""
+
 

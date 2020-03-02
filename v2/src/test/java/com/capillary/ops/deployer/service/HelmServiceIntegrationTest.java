@@ -517,6 +517,8 @@ public class HelmServiceIntegrationTest {
         environmentConfiguration.setCommonConfigs(ImmutableMap.of("commonconfig1", "commonconfig1value", "commonconfig2", "commonconfig2value"));
         environmentConfiguration.setCommonCredentials(ImmutableMap.of("commoncredential1", "commoncredential1value", "commoncredential2", "commoncredential2value"));
         environmentConfiguration.setKube2IamConfiguration(new Kube2IamConfiguration(true, "", ""));
+        environmentConfiguration.setJmxSideCarEnabled(true);
+        environmentConfiguration.setPreDeployTaskEnabled(true);
         Environment environment = new Environment(environmentMetaData, environmentConfiguration);
         environmentRepository.save(environment);
         return environment;
@@ -644,5 +646,5 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
+}
 
-    }
