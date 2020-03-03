@@ -5,6 +5,7 @@ output "infra_details" {
       mysql = module.mysql.mysql_details
       s3 = module.s3.s3_details
       mongo = module.mongo.mongo_details
+      rabbitmq = module.rabbitmq.rabbitmq_details
     }
   }
 }

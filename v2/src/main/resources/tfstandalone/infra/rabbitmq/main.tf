@@ -56,7 +56,7 @@ resource "random_string" "root_password" {
 
 resource helm_release "mongo" {
   for_each = local.instances
-  name       = "mongo-rs-${each.key}"
+  name       = "rmq-${each.key}"
   repository = data.helm_repository.stable.metadata[0].name
   chart      = "rabbitmq"
   version    = "6.18.1"
@@ -106,14 +106,14 @@ provider "kubernetes" {
   version                = "~> 1.10"
 }
 
-//resource "kubernetes_service" "mysql-k8s-service" {
-//  for_each = local.k8s_service_names_map
-//  metadata {
-//    name = each.key
-//  }
-//  spec {
-//    type = "ExternalName"
-//    external_name = "mongo-rs-${each.value}-mongodb.default.svc.cluster.local"
-//  }
-//}
+resource "kubernetes_service" "rmq-k8s-service" {
+  for_each = local.k8s_service_names_map
+  metadata {
+    name = each.key
+  }
+  spec {
+    type = "ExternalName"
+    external_name = "rmq-${each.value}-rabbitmq.default.svc.cluster.local"
+  }
+}
 
