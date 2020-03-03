@@ -86,7 +86,7 @@ resource kubernetes_service_account "capillary-cloud-admin" {
 }
 
 resource kubernetes_service_account "tiller" {
-  depends_on = [null_resource.wait_for_k8s_cluster]
+  depends_on = [null_resource.wait_for_k8s_cluster, kubernetes_cluster_role_binding.tiller-crb]
   metadata {
     name = "tiller"
     namespace = "kube-system"
@@ -113,7 +113,6 @@ resource kubernetes_cluster_role_binding "capillary-cloud-admin-crb" {
 }
 
 resource kubernetes_cluster_role_binding "tiller-crb" {
-  depends_on = [kubernetes_service_account.tiller]
   metadata {
     name = "tiller-crb"
   }
@@ -126,7 +125,7 @@ resource kubernetes_cluster_role_binding "tiller-crb" {
 
   subject {
     kind = "ServiceAccount"
-    name = kubernetes_service_account.tiller.metadata[0].name
+    name = "tiller"
     namespace = "kube-system"
   }
 }

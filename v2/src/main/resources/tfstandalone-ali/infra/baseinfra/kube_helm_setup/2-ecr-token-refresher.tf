@@ -7,7 +7,7 @@ resource "kubernetes_secret" "example" {
     aws_access_key_id = var.ec2_token_refresher_key_id
     aws_access_secret_key = var.ec2_token_refresher_key_secret
     aws_account = "486456986266"
-    aws_region = "us-east-1"
+    aws_region = "us-west-1"
   }
 }
 

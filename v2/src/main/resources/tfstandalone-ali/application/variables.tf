@@ -1,7 +1,7 @@
 variable "cluster" {
   type = object({
     name = string
-    awsRegion = string
+    aliRegion = string
     azs = list(string)
     privateSubnetCIDR = list(string)
     publicSubnetCIDR  = list(string)
@@ -14,20 +14,22 @@ variable "baseinfra" {
   type = object({
     vpc_details = object({
       vpc_id = string
-      private_subnets = list(string)
+      vswitch_ids = list(string)
     })
     k8s_details = object({
-      auth = object({
-        host = string
-        cluster_ca_certificate = string
-        token = string
-      })
-      helm_details = object({
-        tiller_sa = string
-      })
-      node_group_iam_role_arn = string
+      cluster_id = string
+      cluster_nodes = any
+      security_group_id = string
+      log_project_name = string
+    })
+    helm_details = object({
+      tiller_sa = string
     })
   })
+}
+
+variable "kube_config_file_path" {
+  type = string
 }
 
 variable "resources" {
