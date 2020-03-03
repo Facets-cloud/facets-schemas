@@ -205,9 +205,9 @@ public abstract class AbstractValueProvider {
             probeFields.put("readinessPort",healthCheck.getReadinessProbe().getPort());
             probeFields.put("readinessInitialDelay",healthCheck.getReadinessProbe().getInitialDelaySeconds());
             probeFields.put("readinessPeriod",healthCheck.getReadinessProbe().getPeriodSeconds());
-            probeFields.put("readinessFailureThreshold",healthCheck.getLivenessProbe().getFailureThreshold());
+            probeFields.put("readinessFailureThreshold",healthCheck.getReadinessProbe().getFailureThreshold());
             probeFields.put("readinessSuccessThreshold", 1);
-            probeFields.put("readinessTimeout",healthCheck.getLivenessProbe().getTimeout());
+            probeFields.put("readinessTimeout",healthCheck.getReadinessProbe().getTimeout());
         }
         return probeFields;
     }
