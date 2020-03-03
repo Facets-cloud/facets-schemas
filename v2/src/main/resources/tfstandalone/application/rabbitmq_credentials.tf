@@ -1,12 +1,12 @@
 locals {
-  mongo_users = {
+  rabbitmq_users = {
     for i,j in local.json_data["instances"]:
       i => {for p in local.json_data["instances"][i]["credentialRequests"]["queues"]["rabbitmq"]:
         p["environment"]["userName"] => "root"
       }
   }
 
-  mongo_passwords = {
+  rabbitmq_passwords = {
     for i,j in local.json_data["instances"]:
       i => {for p in local.json_data["instances"][i]["credentialRequests"]["queues"]["rabbitmq"]:
         p["environment"]["password"] => var.resources[p["resourceType"]][p["resourceName"]]["root_password"]
