@@ -17,7 +17,9 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
 
     @Override
     protected List<String> getPreBuildCommands() {
-        return new ArrayList<>();
+        List<String> preBuildCommands = new ArrayList<>();
+        preBuildCommands.add("ssh-keyscan mvnrepo.capillary.co.in >> /root/.ssh/known_hosts");
+        return preBuildCommands;
     }
 
     @Override

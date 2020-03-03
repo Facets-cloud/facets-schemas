@@ -51,6 +51,7 @@ public class MavenBuildSpec extends BuildSpec {
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
         preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
+        preBuildCommands.add("ssh-keyscan mvnrepo.capillary.co.in >> /root/.ssh/known_hosts");
         return preBuildCommands;
     }
 
