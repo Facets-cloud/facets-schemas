@@ -19,7 +19,7 @@ public class BaseChartValueProvider extends AbstractValueProvider {
         this.addField("sslCertName", getSSLCertificateName(application, environment), yaml);
         this.addFields(getExternalDns(application, environment), yaml);
         this.addField("deploymentStrategy", application.getDeploymentStrategy().name(), yaml);
-        this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
+        this.addFields(getFamilySpecificAttributes(application, deployment, environment), yaml);
         this.addFields(getHPAConfigs(deployment), yaml);
         this.addFields(getHealthCheckConfigs(application), yaml);
         this.addFields(getPortDetails(application), yaml);

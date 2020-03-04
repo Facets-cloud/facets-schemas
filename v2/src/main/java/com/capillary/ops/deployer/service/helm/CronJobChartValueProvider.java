@@ -16,7 +16,7 @@ public class CronJobChartValueProvider extends AbstractValueProvider {
         Map<String, Object> yaml = new HashMap<>();
         yaml.putAll(this.addBaseDetails(application, environment, deployment));
         this.addField("schedule", getSchedule(deployment), yaml);
-        this.addFields(getFamilySpecificAttributes(application, deployment), yaml);
+        this.addFields(getFamilySpecificAttributes(application, deployment, environment), yaml);
         return yaml;
     }
 }

@@ -130,18 +130,19 @@ public abstract class AbstractValueProvider {
         return valueFields;
     }
     
-    public Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment) {
+    public Map<String, Object> getFamilySpecificAttributes(Application application, Deployment deployment, Environment environment) {
         Map<String, Object> valueFields = new HashMap<>();
         switch (application.getApplicationFamily()) {
             case CRM:
                 if(deployment.getConfigurationsMap().containsKey("zkPublish") && deployment.getConfigurationsMap().containsKey("zkName")) {
                     valueFields.put("zkPublish", deployment.getConfigurationsMap().get("zkPublish"));
                     valueFields.put("zkName", deployment.getConfigurationsMap().get("zkName"));
-                    if(deployment.getConfigurationsMap().get("zkPublish").equals("false")){
-                        valueFields.put("crmTestDeployMode","true");
-                    }
-                    else if(deployment.getConfigurationsMap().get("zkPublish").equals("true")) {
-                        valueFields.put("crmTestDeployMode","false");
+                    if(environment.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
+                        if (deployment.getConfigurationsMap().get("zkPublish").equals("false")) {
+                            valueFields.put("crmTestDeployMode", "true");
+                        } else if (deployment.getConfigurationsMap().get("zkPublish").equals("true")) {
+                            valueFields.put("crmTestDeployMode", "false");
+                        }
                     }
                 }
                 break;
