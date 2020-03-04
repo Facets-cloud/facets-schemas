@@ -53,4 +53,7 @@ resource "mysql_grant" "mysql_grants" {
   host       = mysql_user.mysql_user[each.key].host
   database   = "*"
   privileges = each.value["mysql_grants"]
+  override_endpoint  = each.value["mysql_host"]
+  override_admin_username = "root"
+  override_admin_password = each.value["mysql_root_password"]
 }
