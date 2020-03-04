@@ -1,6 +1,6 @@
 {
   "instances": {
-    "demovisitorservice": {
+    "demovisitorservice2": {
       "size": "S",
       "deploymentStrategy": "RollingUpdate",
       "lbType": "external",
