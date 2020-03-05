@@ -33,7 +33,10 @@ public class IAMService implements IIAMService {
                 logger.info("No kube2iam configuration, not adding annotation");
                 return null;
             }
-            iamClient = IamClient.builder().region(Region.AWS_GLOBAL).credentialsProvider(() -> new AwsCredentials() {
+
+            Region region = environment.getEnvironmentMetaData().getName()
+                    .equalsIgnoreCase("cn-crm") ? Region.CN_NORTH_1 : Region.AWS_GLOBAL;
+            iamClient = IamClient.builder().region(region).credentialsProvider(() -> new AwsCredentials() {
                 @Override
                 public String accessKeyId() {
                     return kube2IamConfiguration.getAwsAccessKeyID();
