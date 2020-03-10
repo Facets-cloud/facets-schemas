@@ -1,0 +1,11 @@
+
+-- start  Schema : INNODB_SYS_FIELDS
+
+CREATE TEMPORARY TABLE `INNODB_SYS_FIELDS` (
+  `INDEX_ID` bigint(21) unsigned NOT NULL DEFAULT '0',
+  `NAME` varchar(193) NOT NULL DEFAULT '',
+  `POS` int(11) unsigned NOT NULL DEFAULT '0'
+) ENGINE=MEMORY DEFAULT CHARSET=utf8;
+
+
+-- end  Schema : INNODB_SYS_FIELDS

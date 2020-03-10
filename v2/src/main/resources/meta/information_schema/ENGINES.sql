@@ -1,0 +1,14 @@
+
+-- start  Schema : ENGINES
+
+CREATE TEMPORARY TABLE `ENGINES` (
+  `ENGINE` varchar(64) NOT NULL DEFAULT '',
+  `SUPPORT` varchar(8) NOT NULL DEFAULT '',
+  `COMMENT` varchar(80) NOT NULL DEFAULT '',
+  `TRANSACTIONS` varchar(3) DEFAULT NULL,
+  `XA` varchar(3) DEFAULT NULL,
+  `SAVEPOINTS` varchar(3) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=utf8;
+
+
+-- end  Schema : ENGINES
