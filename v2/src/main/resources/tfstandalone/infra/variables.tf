@@ -7,5 +7,6 @@ variable "cluster" {
     publicSubnetCIDR  = list(string)
     vpcCIDR = string
     externalId = string
+    stackName = string
   })
 }

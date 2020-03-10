@@ -1,6 +1,6 @@
 locals {
   mysql_credntial_requests = {for k in flatten([
-    for i,j in local.json_data["instances"]: [
+    for i,j in local.instances: [
       for p in j["credentialRequests"]["dbs"]["mysql"]: {
         mysql_host = var.resources["mysql"][p["resourceName"]]["original_endpoint"]
         mysql_root_password = var.resources["mysql"][p["resourceName"]]["root_password"]
@@ -14,15 +14,15 @@ locals {
   }
 
   mysql_users = {
-    for i,j in local.json_data["instances"]:
-      i => {for p in local.json_data["instances"][i]["credentialRequests"]["dbs"]["mysql"]:
+    for i,j in local.instances:
+      i => {for p in local.instances[i]["credentialRequests"]["dbs"]["mysql"]:
         p["environment"]["userName"] => mysql_user.mysql_user["${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"].user
       }
   }
 
   mysql_passwords = {
-    for i,j in local.json_data["instances"]:
-      i => {for p in local.json_data["instances"][i]["credentialRequests"]["dbs"]["mysql"]:
+    for i,j in local.instances:
+      i => {for p in local.instances[i]["credentialRequests"]["dbs"]["mysql"]:
         p["environment"]["password"] => random_string.random_password["${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"].result
       }
   }

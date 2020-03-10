@@ -8,19 +8,23 @@ provider "kubernetes" {
 
 locals {
   stackName = var.cluster.stackName
-  json_data = jsondecode(file("../stacks/${local.stackName}/application/application.json"))
+  apps = fileset("../stacks/${local.stackName}/application/instances", "*.json")
+  instances = {
+    for app in local.apps:
+          replace(app, ".json", "") => jsondecode(file("../stacks/${local.stackName}/application/instances/${app}"))
+  }
   sizing_data = jsondecode(file("../stacks/${local.stackName}/application/sizing.json"))
   dev_mode_build_map = {
-  for i, j in local.json_data["instances"]:
-    i => "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
+  for i, j in local.instances:
+    i => local.instances[i][""]
   }
   build_map = var.dev_mode == true ? local.dev_mode_build_map : data.http.build
   sizing_map = {
-    for i, j in local.json_data["instances"]:
+    for i, j in local.instances:
       i => local.sizing_data[j["size"]]
   }
   dynamic_environment_variables_map = {
-    for i,j in local.json_data["instances"]:
+    for i,j in local.instances:
     i => {
       for k,v in j["environmentVariables"]["dynamic"]:
         k => var.resources[v["resourceType"]][v["resourceName"]][v["attribute"]]
@@ -28,7 +32,7 @@ locals {
   }
 
   policy_attachments_map = {for k in flatten([
-    for i,j in local.json_data["instances"]: [
+    for i,j in local.instances: [
       for p in j["credentialRequests"]["cloud"]: {
         iamPolicy = var.resources[p["resourceType"]][p["resourceName"]]["iam_policies"][p["permission"]]
         applicationName = i
@@ -52,7 +56,7 @@ provider "helm" {
 }
 
 resource "helm_release" "application" {
-  for_each = local.json_data["instances"]
+  for_each = local.instances
   chart = "../charts/capillary-base-cc"
   name = each.key
   version = "0.1.1"
@@ -73,7 +77,7 @@ ROLE
 }
 
 resource "aws_iam_role" "application-role" {
-  for_each = local.json_data["instances"]
+  for_each = local.instances
   name = "${var.cluster.name}-${each.key}-application-role"
 
   assume_role_policy = <<EOF
@@ -108,7 +112,7 @@ resource "aws_iam_role_policy_attachment" "policy-attach" {
 }
 
 data "http" "build" {
-  for_each = var.dev_mode ? {} :local.json_data["instances"]
+  for_each = var.dev_mode ? {} :local.instances
   request_headers = {
     Accept = "application/json"
     X-DEPLOYER-INTERNAL-AUTH-TOKEN = var.cc_auth_token

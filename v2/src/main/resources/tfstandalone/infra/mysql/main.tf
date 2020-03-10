@@ -1,13 +1,9 @@
 locals {
+  stackName = var.cluster.stackName
+  definitions = fileset("../stacks/${local.stackName}/mysql/instances", "*.json")
   instances = {
-    "db1" = {
-      name = "db1"
-      k8s_service_names = ["mydb1", "yourdb1"]
-    }
-    "db2" = {
-      name = "db2"
-      k8s_service_names = ["mydb2", "yourdb2"]
-    }
+    for def in local.definitions:
+        replace(def, ".json", "") => jsondecode(file("../stacks/${local.stackName}/mysql/instances/${def}"))
   }
 
   k8s_service_names_transpose = transpose({

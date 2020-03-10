@@ -1,0 +1,82 @@
+{
+  "size": "S",
+  "deploymentStrategy": "RollingUpdate",
+  "lbType": "internal",
+  "elbIdleTimeoutSeconds": 300,
+  "secretFileMounts": [],
+  "protocolGroup": "tcp",
+  "scaling": {
+    "hpaEnabled": true,
+    "hpaMinReplicas": 1,
+    "hpaMaxReplicas": 1,
+    "hpaMetricThreshold": 60
+  },
+  "liveness": {
+    "enableLivenessTCP": true,
+    "livenessPort": 8081,
+    "livenessInitialDelay": 10,
+    "livenessTimeout": 1,
+    "livenessFailureThreshold": 3,
+    "livenessPeriod": 30,
+    "livenessSuccessThreshold": 1
+  },
+  "readiness": {
+    "enableReadinessTCP": "true",
+    "readinessInitialDelay": 10,
+    "readinessFailureThreshold": 3,
+    "readinessSuccessThreshold": 1,
+    "readinessPort": 8081,
+    "readinessTimeout": 1,
+    "readinessPeriod": 30
+  },
+  "ports": [{
+    "name": "http",
+    "containerPort": 8081,
+    "lbPort": 8081
+  }],
+  "build": {
+    "ci": "deployer",
+    "id": "5d249d1ac34d8300055ba9b6",
+    "dev_mode_default": "486456986266.dkr.ecr.us-west-1.amazonaws.com/crm/zion:6035fd1"
+  },
+  "credentialRequests": {
+    "dbs": {
+      "mysql" : [
+        {
+          "resourceType": "mysql",
+          "resourceName": "metadb",
+          "permission": "READ_WRITE",
+          "environment": {
+            "userName": "AUTHENTICATION_DB_MYSQL_USERNAME",
+            "password": "AUTHENTICATION_DB_MYSQL_PASSWORD"
+          }
+        }
+      ],
+      "mongo" : [
+      ]
+    },
+    "queues": {
+      "rabbitmq" : [
+      ]
+    },
+    "cloud": [
+    ]
+  },
+  "environmentVariables": {
+    "static": {
+      "XMS": "1024m",
+      "XMX": "1024m",
+      "newrelic_enabled" : false,
+      "CLUSTER" : "cc-nightly",
+      "metrics.post-to.newrelic.enabled" : false,
+      "TZ" : "Asia/Kolkata",
+      "REDIS_HOST" : "session-cache.default",
+      "REDIS_PORT" : 6379,
+      "EXTRA_OPTIONS" : "-XX:+UseG1GC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:-OmitStackTraceInFastThrow",
+      "ZK_ENSEMBLE_IP" : "zk-service-discovery.default:2181",
+      "ZK_CLUSTER" : "localcluster"
+    },
+    "dynamic": {
+    }
+  }
+}

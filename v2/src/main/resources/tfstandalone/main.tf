@@ -19,7 +19,28 @@ locals {
     "externalId": "123",
     "stackName" : "test"
   }
-  cluster = var.dev_mode == true ? local.devModeCluster : jsondecode(data.http.cluster[0].body)
+
+  crmDevModeCluster = {
+    "id" = "cc-nightly"
+    "awsRegion" = "us-west-2",
+    "cloud" = "AWS"
+    "azs" = [
+      "us-west-2a", "us-west-2b"
+    ],
+    "name" = "test009",
+    "privateSubnetCIDR" = [
+      "10.201.100.0/24", "10.201.101.0/24"
+    ],
+    "publicSubnetCIDR" = [
+      "10.201.110.0/24", "10.201.111.0/24"
+    ],
+    "vpcCIDR": "10.201.0.0/16",
+    "roleARN": "arn:aws:iam::486456986266:role/capillary-cloud-freemium-role",
+    "externalId": "123",
+    "stackName" : "crm"
+  }
+
+  cluster = var.dev_mode == true ? local.crmDevModeCluster : jsondecode(data.http.cluster[0].body)
 
 }
 

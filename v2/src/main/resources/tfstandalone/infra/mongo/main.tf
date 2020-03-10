@@ -101,7 +101,7 @@ provider "kubernetes" {
   version                = "~> 1.10"
 }
 
-resource "kubernetes_service" "mysql-k8s-service" {
+resource "kubernetes_service" "mongo-k8s-service" {
   for_each = local.k8s_service_names_map
   metadata {
     name = each.key

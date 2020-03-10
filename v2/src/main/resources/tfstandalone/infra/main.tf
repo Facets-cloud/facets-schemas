@@ -9,11 +9,11 @@ module "mysql" {
   cluster = var.cluster
 }
 
-module "s3" {
-  source = "./s3"
-  baseinfra = module.baseinfra.base_infra_details
-  cluster = var.cluster
-}
+//module "s3" {
+//  source = "./s3"
+//  baseinfra = module.baseinfra.base_infra_details
+//  cluster = var.cluster
+//}
 
 module "redis" {
   source = "./redis"
@@ -21,14 +21,20 @@ module "redis" {
   cluster = var.cluster
 }
 
-module "mongo" {
-  source = "./mongo"
-  baseinfra = module.baseinfra.base_infra_details
-  cluster = var.cluster
-}
+//module "mongo" {
+//  source = "./mongo"
+//  baseinfra = module.baseinfra.base_infra_details
+//  cluster = var.cluster
+//}
 
-module "rabbitmq" {
-  source = "./rabbitmq"
+//module "rabbitmq" {
+//  source = "./rabbitmq"
+//  baseinfra = module.baseinfra.base_infra_details
+//  cluster = var.cluster
+//}
+
+module "zookeeper" {
+  source = "./zookeeper"
   baseinfra = module.baseinfra.base_infra_details
   cluster = var.cluster
 }

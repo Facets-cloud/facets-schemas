@@ -1,12 +1,9 @@
 locals {
+  stackName = var.cluster.stackName
+  definitions = fileset("../stacks/${local.stackName}/redis/instances", "*.json")
   instances = {
-    "redis1" = {
-      name = "redis1"
-      k8s_service_names = ["myredis1", "yourredis1"]
-      parameter_overrides = {
-        maxmemory-policy = "allkeys-lru"
-      }
-    }
+    for def in local.definitions:
+      replace(def, ".json", "") => jsondecode(file("../stacks/${local.stackName}/redis/instances/${def}"))
   }
 
   k8s_service_names_transpose = transpose({
