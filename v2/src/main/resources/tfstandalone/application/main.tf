@@ -16,7 +16,7 @@ locals {
   sizing_data = jsondecode(file("../stacks/${local.stackName}/application/sizing.json"))
   dev_mode_build_map = {
   for i, j in local.instances:
-    i => local.instances[i][""]
+    i => local.instances[i]["build"]["dev_mode_default"]
   }
   build_map = var.dev_mode == true ? local.dev_mode_build_map : data.http.build
   sizing_map = {
