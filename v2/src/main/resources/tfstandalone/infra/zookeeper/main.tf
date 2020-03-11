@@ -36,11 +36,6 @@ resource helm_release "zookeeper" {
   chart      = "zookeeper"
   version    = "2.1.3"
   timeout    = 900
-
-  set_string {
-    name = "image.tag"
-    value = "3.4"
-  }
 }
 
 provider "kubernetes" {
