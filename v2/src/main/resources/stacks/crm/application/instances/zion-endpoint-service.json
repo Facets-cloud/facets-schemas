@@ -1,5 +1,5 @@
 {
-  "size": "S",
+  "size": "L",
   "deploymentStrategy": "RollingUpdate",
   "lbType": "internal",
   "elbIdleTimeoutSeconds": 300,
@@ -64,8 +64,8 @@
   },
   "environmentVariables": {
     "static": {
-      "XMS": "1024m",
-      "XMX": "1024m",
+      "XMS": "768m",
+      "XMX": "768m",
       "newrelic_enabled" : "false",
       "CLUSTER" : "cc-nightly",
       "metrics.post-to.newrelic.enabled" : "false",

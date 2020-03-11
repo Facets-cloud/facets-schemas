@@ -29,15 +29,10 @@ provider "helm" {
   install_tiller = true
 }
 
-data "helm_repository" "incubator" {
-  name = "incubator"
-  url  = "https://kubernetes-charts-incubator.storage.googleapis.com"
-}
-
 resource helm_release "zookeeper" {
   for_each = local.instances
   name       = "zk-${each.key}"
-  repository = data.helm_repository.incubator.metadata[0].name
+  repository = "https://kubernetes-charts-incubator.storage.googleapis.com"
   chart      = "zookeeper"
   version    = "2.1.3"
   timeout    = 900
