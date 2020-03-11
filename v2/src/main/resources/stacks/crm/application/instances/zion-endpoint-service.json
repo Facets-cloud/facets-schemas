@@ -73,7 +73,7 @@
       "REDIS_HOST" : "session-cache.default",
       "REDIS_PORT" : "6379",
       "EXTRA_OPTIONS" : "-XX:+UseG1GC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:-OmitStackTraceInFastThrow",
-      "ZK_ENSEMBLE_IP" : "zk-service-discovery.default:2181",
+      "ZK_ENSEMBLE_IP" : "zk-service-discovery-zookeeper.default:2181",
       "ZK_CLUSTER" : "localcluster",
       "SD_K8S_MODE" : "true"
     },
