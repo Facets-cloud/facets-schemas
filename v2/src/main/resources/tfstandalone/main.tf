@@ -27,7 +27,7 @@ locals {
     "azs" = [
       "us-west-2a", "us-west-2b"
     ],
-    "name" = "test009",
+    "name" = "cc-nightly",
     "privateSubnetCIDR" = [
       "10.201.100.0/24", "10.201.101.0/24"
     ],
@@ -101,8 +101,4 @@ variable "cc_host" {
 variable "dev_mode" {
   type = bool
   default = false
-}
-
-output "test" {
-  value = module.application.test
 }
