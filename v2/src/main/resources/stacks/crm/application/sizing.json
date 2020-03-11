@@ -13,7 +13,7 @@
   },
   "L": {
     "podCPULimit": 1,
-    "podMemoryLimit": 1
+    "podMemoryLimit": 2
   },
   "XL": {
     "podCPULimit": 2,
