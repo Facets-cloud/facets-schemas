@@ -66,12 +66,12 @@
     "static": {
       "XMS": "1024m",
       "XMX": "1024m",
-      "newrelic_enabled" : false,
+      "newrelic_enabled" : "false",
       "CLUSTER" : "cc-nightly",
-      "metrics.post-to.newrelic.enabled" : false,
+      "metrics.post-to.newrelic.enabled" : "false",
       "TZ" : "Asia/Kolkata",
       "REDIS_HOST" : "session-cache.default",
-      "REDIS_PORT" : 6379,
+      "REDIS_PORT" : "6379",
       "EXTRA_OPTIONS" : "-XX:+UseG1GC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:-OmitStackTraceInFastThrow",
       "ZK_ENSEMBLE_IP" : "zk-service-discovery.default:2181",
       "ZK_CLUSTER" : "localcluster"

@@ -31,7 +31,7 @@ provider "helm" {
 
 data "helm_repository" "incubator" {
   name = "incubator"
-  url  = "http://storage.googleapis.com/kubernetes-charts-incubator"
+  url  = "https://kubernetes-charts-incubator.storage.googleapis.com"
 }
 
 resource helm_release "zookeeper" {
