@@ -8,7 +8,7 @@ CREATE TABLE `groups` (
   `notes` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`group_id`),
   UNIQUE KEY `org_id` (`org_id`,`group_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3790 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : groups

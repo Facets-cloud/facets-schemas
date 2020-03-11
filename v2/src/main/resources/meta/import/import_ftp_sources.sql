@@ -22,7 +22,7 @@ CREATE TABLE `import_ftp_sources` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `location_hash` (`location_hash`),
   KEY `cron_reference` (`org_id`,`ref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=784 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : import_ftp_sources

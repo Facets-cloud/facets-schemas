@@ -17,7 +17,7 @@ CREATE TABLE `loggable_users` (
   `last_updated_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=125370 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Stores the salt and password in md5 for all the users.';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Stores the salt and password in md5 for all the users.';
 
 
 -- end  Schema : loggable_users

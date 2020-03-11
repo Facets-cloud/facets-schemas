@@ -9,7 +9,7 @@ CREATE TABLE `m_task_properties` (
   `p_value` mediumtext,
   PRIMARY KEY (`id`),
   KEY `task_id_index` (`task_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3846268 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_task_properties

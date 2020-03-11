@@ -10,7 +10,7 @@ CREATE TABLE `resources_mapping` (
   `last_updated_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `module_id` (`module_id`,`parent_resource_id`,`child_resource_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : resources_mapping

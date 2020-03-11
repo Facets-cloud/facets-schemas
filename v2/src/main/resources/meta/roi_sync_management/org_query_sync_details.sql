@@ -28,7 +28,7 @@ CREATE TABLE `org_query_sync_details` (
   KEY `cron_id_index` (`cron_id`),
   KEY `request_id_index` (`request_id`),
   KEY `start_time_index` (`start_time`)
-) ENGINE=MyISAM AUTO_INCREMENT=8262765 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : org_query_sync_details

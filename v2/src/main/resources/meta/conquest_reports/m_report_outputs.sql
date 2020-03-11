@@ -9,7 +9,7 @@ CREATE TABLE `m_report_outputs` (
   `o_desc` mediumtext,
   PRIMARY KEY (`id`),
   KEY `report_id_index` (`report_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=279330 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_report_outputs

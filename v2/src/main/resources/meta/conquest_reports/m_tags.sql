@@ -12,7 +12,7 @@ CREATE TABLE `m_tags` (
   PRIMARY KEY (`id`),
   KEY `org_id_is_configurable` (`org_id`,`is_configurable`),
   KEY `tag_name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=357 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_tags

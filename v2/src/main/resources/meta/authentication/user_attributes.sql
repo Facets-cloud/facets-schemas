@@ -14,7 +14,7 @@ CREATE TABLE `user_attributes` (
   UNIQUE KEY `identifier` (`identifier`,`identifier_type`,`cluster_region`),
   UNIQUE KEY `cluster_region` (`cluster_region`,`identifier`),
   KEY `ref_id` (`ref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=357770 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Stores different attributes for each user.';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Stores different attributes for each user.';
 
 
 -- end  Schema : user_attributes

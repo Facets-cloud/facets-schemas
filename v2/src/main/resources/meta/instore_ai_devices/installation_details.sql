@@ -17,7 +17,7 @@ CREATE TABLE `installation_details` (
   `store_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`,`org_id`),
   KEY `org_id` (`org_id`,`store_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2061 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : installation_details

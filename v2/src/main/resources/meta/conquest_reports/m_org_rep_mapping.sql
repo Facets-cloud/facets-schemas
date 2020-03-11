@@ -8,7 +8,7 @@ CREATE TABLE `m_org_rep_mapping` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `org_id` (`org_id`,`rep_id`),
   KEY `rep_id_index` (`rep_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=688 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : m_org_rep_mapping

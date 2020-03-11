@@ -10,7 +10,7 @@ CREATE TABLE `filter_execution` (
   `last_updated_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `filter_id_step_type` (`filter_id`,`execution_step_number`,`execution_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : filter_execution

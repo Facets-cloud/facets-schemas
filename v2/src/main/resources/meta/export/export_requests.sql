@@ -20,7 +20,7 @@ CREATE TABLE `export_requests` (
   KEY `org_id` (`org_id`),
   KEY `profile_idx` (`profile`,`org_id`),
   KEY `request_idx` (`request_ref_id`,`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15935 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : export_requests

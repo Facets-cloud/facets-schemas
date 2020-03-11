@@ -15,7 +15,7 @@ CREATE TABLE `scd_data_locations` (
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `name_idx` (`table_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=146300 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : scd_data_locations

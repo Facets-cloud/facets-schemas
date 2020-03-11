@@ -11,7 +11,7 @@ CREATE TABLE `otp_history` (
   `expires_on` timestamp NULL DEFAULT NULL,
   `status` enum('VALIDATED','OPEN','EXPIRED') COLLATE utf8mb4_unicode_ci DEFAULT 'OPEN',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=141805 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : otp_history

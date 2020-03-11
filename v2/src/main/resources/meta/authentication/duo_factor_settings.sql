@@ -14,7 +14,7 @@ CREATE TABLE `duo_factor_settings` (
   `two_factor_validity_hours` int(11) DEFAULT '24',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unq` (`org_id`,`type`,`module`)
-) ENGINE=InnoDB AUTO_INCREMENT=967 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : duo_factor_settings

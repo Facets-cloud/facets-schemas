@@ -12,7 +12,7 @@ CREATE TABLE `currency_ratio_inr` (
   PRIMARY KEY (`id`),
   KEY `currency_id_is_active` (`currency_id`,`is_active`),
   KEY `auto_update_time` (`auto_update_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : currency_ratio_inr

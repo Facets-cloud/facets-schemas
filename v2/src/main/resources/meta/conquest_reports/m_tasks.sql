@@ -11,7 +11,7 @@ CREATE TABLE `m_tasks` (
   `is_temp` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `wf_id_index` (`wf_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=857173 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_tasks

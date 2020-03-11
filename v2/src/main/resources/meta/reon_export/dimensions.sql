@@ -10,7 +10,7 @@ CREATE TABLE `dimensions` (
   PRIMARY KEY (`id`,`org_id`),
   UNIQUE KEY `name` (`org_id`,`template_id`,`name`),
   KEY `template_id` (`org_id`,`template_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2197 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : dimensions

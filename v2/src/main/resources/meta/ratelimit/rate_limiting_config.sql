@@ -16,7 +16,7 @@ CREATE TABLE `rate_limiting_config` (
   `last_modified_by` int(11) NOT NULL,
   `auto_update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 -- end  Schema : rate_limiting_config

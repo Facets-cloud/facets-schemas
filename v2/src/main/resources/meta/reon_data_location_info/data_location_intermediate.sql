@@ -14,7 +14,7 @@ CREATE TABLE `data_location_intermediate` (
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `table_location` (`org_id`,`db_name`,`table_name`,`run_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3628241 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : data_location_intermediate

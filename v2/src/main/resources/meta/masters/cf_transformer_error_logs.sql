@@ -10,7 +10,7 @@ CREATE TABLE `cf_transformer_error_logs` (
   `auto_update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`org_id`),
   KEY `idx_org_cf` (`auto_update_time`,`org_id`,`cf_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1635403 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : cf_transformer_error_logs

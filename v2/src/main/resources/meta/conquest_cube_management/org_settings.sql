@@ -23,7 +23,7 @@ CREATE TABLE `org_settings` (
   KEY `org_id_index` (`org_id`),
   KEY `is_valid_index` (`is_valid`),
   KEY `schema_name_index` (`schema_name`)
-) ENGINE=MyISAM AUTO_INCREMENT=917 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : org_settings

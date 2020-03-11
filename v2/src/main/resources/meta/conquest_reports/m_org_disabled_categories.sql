@@ -7,7 +7,7 @@ CREATE TABLE `m_org_disabled_categories` (
   `category_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_org_disabled_categories

@@ -8,7 +8,7 @@ CREATE TABLE `m_campaign_properties` (
   `property_value` mediumtext,
   PRIMARY KEY (`id`),
   KEY `key_id` (`key_id`,`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=446 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_campaign_properties

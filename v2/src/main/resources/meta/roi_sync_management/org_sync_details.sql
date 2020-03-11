@@ -29,7 +29,7 @@ CREATE TABLE `org_sync_details` (
   KEY `start_time_index` (`start_time`),
   KEY `is_finished_index` (`is_finished`),
   KEY `is_successfull_index` (`is_successfull`)
-) ENGINE=MyISAM AUTO_INCREMENT=69723 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : org_sync_details

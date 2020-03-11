@@ -11,7 +11,7 @@ CREATE TABLE `m_static_variables` (
   `is_enabled` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `IX_Enabled` (`is_enabled`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_static_variables

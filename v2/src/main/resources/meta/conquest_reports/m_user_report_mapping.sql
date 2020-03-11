@@ -9,7 +9,7 @@ CREATE TABLE `m_user_report_mapping` (
   `is_template_mapping` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=225634 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_user_report_mapping

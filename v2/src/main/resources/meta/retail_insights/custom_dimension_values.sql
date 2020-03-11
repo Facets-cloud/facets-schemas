@@ -8,7 +8,7 @@ CREATE TABLE `custom_dimension_values` (
   `label` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `value_id` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : custom_dimension_values

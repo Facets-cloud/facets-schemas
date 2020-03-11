@@ -10,7 +10,7 @@ CREATE TABLE `banding_range` (
   `scope_id` int(11) NOT NULL DEFAULT '-1000',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3373 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : banding_range

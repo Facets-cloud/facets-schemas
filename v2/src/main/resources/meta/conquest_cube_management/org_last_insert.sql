@@ -15,7 +15,7 @@ CREATE TABLE `org_last_insert` (
   KEY `Copied_Upto_Index` (`Copied_Upto`),
   KEY `FKC4810FA7ADE33771` (`fk_id`),
   KEY `FKC4810FA766EBDD2E` (`fk_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=59099 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : org_last_insert

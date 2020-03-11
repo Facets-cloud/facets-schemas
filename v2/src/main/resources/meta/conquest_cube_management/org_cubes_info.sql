@@ -11,7 +11,7 @@ CREATE TABLE `org_cubes_info` (
   UNIQUE KEY `org_id` (`org_id`),
   KEY `FK273AA5AAC46363BC` (`failover_shard_info_id`),
   KEY `FK273AA5AA661800CC` (`primary_shard_info_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=919 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : org_cubes_info

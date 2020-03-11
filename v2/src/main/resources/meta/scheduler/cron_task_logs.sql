@@ -13,7 +13,7 @@ CREATE TABLE `cron_task_logs` (
   KEY `last_updated_time_idx` (`last_updated_time`),
   KEY `ref_status_idx` (`ref_id`,`status`),
   KEY `scheduled_time_idx` (`scheduled_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=49148879 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : cron_task_logs

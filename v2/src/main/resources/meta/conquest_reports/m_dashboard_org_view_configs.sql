@@ -8,7 +8,7 @@ CREATE TABLE `m_dashboard_org_view_configs` (
   `is_enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IX_OrgId` (`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : m_dashboard_org_view_configs

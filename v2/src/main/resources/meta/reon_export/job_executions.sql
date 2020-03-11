@@ -27,7 +27,7 @@ CREATE TABLE `job_executions` (
   `priority` tinyint(3) NOT NULL,
   PRIMARY KEY (`id`,`org_id`),
   KEY `execution` (`org_id`,`job_group_id`,`job_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=98752 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : job_executions

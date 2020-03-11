@@ -34,7 +34,7 @@ CREATE TABLE `org_table_sync_details` (
   KEY `is_successfull_index` (`is_successfull`),
   KEY `cron_id_index` (`cron_id`),
   KEY `request_id_index` (`request_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=209988 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : org_table_sync_details

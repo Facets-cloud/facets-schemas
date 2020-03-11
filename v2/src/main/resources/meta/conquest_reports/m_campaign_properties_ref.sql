@@ -7,7 +7,7 @@ CREATE TABLE `m_campaign_properties_ref` (
   `property_key` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `org_key` (`org_id`,`property_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=141 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_campaign_properties_ref

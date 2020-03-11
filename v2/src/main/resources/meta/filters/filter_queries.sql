@@ -15,7 +15,7 @@ CREATE TABLE `filter_queries` (
   KEY `org_id` (`org_id`),
   KEY `session_id` (`session_id`),
   KEY `time_taken_secs` (`time_taken_secs`)
-) ENGINE=InnoDB AUTO_INCREMENT=1911632 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='logs all filter queries';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='logs all filter queries';
 
 
 -- end  Schema : filter_queries

@@ -13,7 +13,7 @@ CREATE TABLE `event_token_config` (
   `last_changed_date` datetime NOT NULL,
   `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 -- end  Schema : event_token_config

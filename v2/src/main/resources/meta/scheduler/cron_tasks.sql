@@ -17,7 +17,7 @@ CREATE TABLE `cron_tasks` (
   `params` mediumtext COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`,`org_id`),
   KEY `status` (`status`,`scheduled_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=215640 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : cron_tasks

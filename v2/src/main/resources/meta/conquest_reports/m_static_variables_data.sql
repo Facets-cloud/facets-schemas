@@ -12,7 +12,7 @@ CREATE TABLE `m_static_variables_data` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `IX_OrgId_IsActive_Key` (`org_id`,`is_active`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_static_variables_data

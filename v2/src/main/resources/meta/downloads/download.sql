@@ -14,7 +14,7 @@ CREATE TABLE `download` (
   PRIMARY KEY (`id`),
   KEY `expiry_time` (`expiry_time`),
   KEY `store_id` (`scheduled_by`)
-) ENGINE=InnoDB AUTO_INCREMENT=11901 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : download

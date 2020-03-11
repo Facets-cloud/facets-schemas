@@ -16,7 +16,7 @@ CREATE TABLE `m_stage_inputs` (
   `i_index` int(11) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `stage_id_index` (`stage_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=649378 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_stage_inputs

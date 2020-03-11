@@ -9,7 +9,7 @@ CREATE TABLE `total_attempt` (
   `hit_count` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `hourly` (`day`,`hour`)
-) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : total_attempt

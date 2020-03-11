@@ -20,7 +20,7 @@ CREATE TABLE `ftp_background_import` (
   PRIMARY KEY (`id`),
   KEY `tempdb` (`tempdb_status`),
   KEY `file_id` (`file_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=49417 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='table for background ftp synch';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='table for background ftp synch';
 
 
 -- end  Schema : ftp_background_import

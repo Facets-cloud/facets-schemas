@@ -14,7 +14,7 @@ CREATE TABLE `import_system_configs` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_idx` (`name`),
   KEY `config_type_idx` (`config_type`,`id`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : import_system_configs

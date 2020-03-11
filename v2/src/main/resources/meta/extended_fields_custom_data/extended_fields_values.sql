@@ -11,7 +11,7 @@ CREATE TABLE `extended_fields_values` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_value` (`org_id`,`value`,`ef_id`),
   KEY `ef_idOrgIdAndId` (`ef_id`,`org_id`,`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1226550 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : extended_fields_values

@@ -13,7 +13,7 @@ CREATE TABLE `template_filters` (
   PRIMARY KEY (`id`,`org_id`),
   UNIQUE KEY `name` (`template_name`,`dimension_name`,`attribute_name`),
   KEY `job_template` (`org_id`,`template_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : template_filters

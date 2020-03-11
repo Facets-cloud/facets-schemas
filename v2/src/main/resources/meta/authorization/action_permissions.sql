@@ -10,7 +10,7 @@ CREATE TABLE `action_permissions` (
   `last_updated_by` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `action_id` (`action_id`,`permission_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9860 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : action_permissions

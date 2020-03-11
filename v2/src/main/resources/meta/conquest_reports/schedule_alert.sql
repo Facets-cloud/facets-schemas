@@ -9,7 +9,7 @@ CREATE TABLE `schedule_alert` (
   `is_sent` tinyint(4) DEFAULT '0',
   `email_id` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : schedule_alert

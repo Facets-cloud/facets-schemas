@@ -6,7 +6,7 @@ CREATE TABLE `m_workflows` (
   `w_name` varchar(256) DEFAULT NULL,
   `w_desc` mediumtext,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=259020 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_workflows

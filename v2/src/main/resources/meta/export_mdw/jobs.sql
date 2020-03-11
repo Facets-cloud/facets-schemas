@@ -26,7 +26,7 @@ CREATE TABLE `jobs` (
   UNIQUE KEY `export_request_idx` (`export_request_id`),
   KEY `status_idx` (`org_id`,`status`),
   KEY `status_x` (`status`,`soft_deadline`)
-) ENGINE=InnoDB AUTO_INCREMENT=207099 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : jobs

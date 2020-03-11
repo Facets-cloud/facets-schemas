@@ -16,7 +16,7 @@ CREATE TABLE `banding` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `band_org_unique` (`scope_id`,`name`),
   KEY `scope_dim_table` (`scope_id`,`dim_table_id`,`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=756 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : banding

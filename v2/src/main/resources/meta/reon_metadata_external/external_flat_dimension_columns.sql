@@ -23,7 +23,7 @@ CREATE TABLE `external_flat_dimension_columns` (
   `scd_table_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`column_id`),
   UNIQUE KEY `dim_table_id_column_name` (`dim_table_id`,`scope_id`,`column_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1894 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : external_flat_dimension_columns

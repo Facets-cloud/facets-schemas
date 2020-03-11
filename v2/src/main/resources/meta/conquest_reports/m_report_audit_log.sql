@@ -12,7 +12,7 @@ CREATE TABLE `m_report_audit_log` (
   `logging_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`,`entity_type`,`entity_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=22980 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_report_audit_log

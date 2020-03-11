@@ -11,7 +11,7 @@ CREATE TABLE `response_time` (
   `time_in_miliseconds` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `hourly_api` (`day`,`hour`,`client`,`api_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=25113 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : response_time

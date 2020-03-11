@@ -11,7 +11,7 @@ CREATE TABLE `cf_transform_scheduler_stats` (
   `count_processed` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `timestamp` (`time`)
-) ENGINE=InnoDB AUTO_INCREMENT=256770 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Scheduled-run''s stats';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Scheduled-run''s stats';
 
 
 -- end  Schema : cf_transform_scheduler_stats

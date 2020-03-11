@@ -8,7 +8,7 @@ CREATE TABLE `backup_m_dashboard_view_settings` (
   `value` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `dashboard_view_id` (`dashboard_view_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=229 DEFAULT CHARSET=latin1 COMMENT='Properties for the view display';
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='Properties for the view display';
 
 
 -- end  Schema : backup_m_dashboard_view_settings

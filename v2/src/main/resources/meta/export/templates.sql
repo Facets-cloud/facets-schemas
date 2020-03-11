@@ -15,7 +15,7 @@ CREATE TABLE `templates` (
   PRIMARY KEY (`id`),
   KEY `org_profile_idx` (`org_id`,`profile`),
   KEY `update_time_idx` (`org_id`,`last_updated_on`)
-) ENGINE=InnoDB AUTO_INCREMENT=23936 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : templates

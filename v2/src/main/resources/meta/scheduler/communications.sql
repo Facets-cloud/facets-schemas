@@ -19,7 +19,7 @@ CREATE TABLE `communications` (
   PRIMARY KEY (`id`,`org_id`),
   KEY `status_id_idx` (`status`,`id`),
   KEY `org_id` (`org_id`,`notification_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1046487 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : communications

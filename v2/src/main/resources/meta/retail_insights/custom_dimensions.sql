@@ -9,7 +9,7 @@ CREATE TABLE `custom_dimensions` (
   `base_dimension` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_valid` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : custom_dimensions

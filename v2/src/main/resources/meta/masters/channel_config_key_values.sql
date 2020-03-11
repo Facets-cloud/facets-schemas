@@ -13,7 +13,7 @@ CREATE TABLE `channel_config_key_values` (
   `auto_update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_id` (`key_id`,`account_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6083 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 -- end  Schema : channel_config_key_values

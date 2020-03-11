@@ -8,7 +8,7 @@ CREATE TABLE `import_conf_keys_values_bkp` (
   `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'config key values',
   PRIMARY KEY (`id`),
   UNIQUE KEY `Key_template_index` (`key_id`,`template_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2053070 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Table that stores the import config key values for each temp';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Table that stores the import config key values for each temp';
 
 
 -- end  Schema : import_conf_keys_values_bkp

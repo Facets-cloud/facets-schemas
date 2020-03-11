@@ -29,7 +29,7 @@ CREATE TABLE `queued_jobs` (
   KEY `scheduler_id` (`org_id`,`scheduler_task_id`,`queued_on`),
   KEY `export_job_idx` (`export_job_id`),
   KEY `ref_id` (`org_id`,`ref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=292916 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : queued_jobs

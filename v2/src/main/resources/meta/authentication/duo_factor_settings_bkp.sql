@@ -13,7 +13,7 @@ CREATE TABLE `duo_factor_settings_bkp` (
   `otp_session_validity` int(11) DEFAULT '15' COMMENT 'validity of session in minutes',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unq` (`org_id`,`type`,`module`)
-) ENGINE=InnoDB AUTO_INCREMENT=967 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : duo_factor_settings_bkp

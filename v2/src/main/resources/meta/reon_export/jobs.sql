@@ -16,7 +16,7 @@ CREATE TABLE `jobs` (
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`org_id`),
   UNIQUE KEY `job` (`org_id`,`job_group_id`,`template_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20332 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : jobs

@@ -6,7 +6,7 @@ CREATE TABLE `display_images` (
   `type` varchar(255) NOT NULL,
   `image_url` varchar(1024) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 -- end  Schema : display_images

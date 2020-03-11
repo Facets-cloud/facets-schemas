@@ -14,7 +14,7 @@ CREATE TABLE `vertical_to_org_mapping` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniqueOrgVerticalId` (`org_id`,`vertical_id`),
   KEY `org_id` (`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=770 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : vertical_to_org_mapping

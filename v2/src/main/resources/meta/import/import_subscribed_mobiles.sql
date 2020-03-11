@@ -9,7 +9,7 @@ CREATE TABLE `import_subscribed_mobiles` (
   `unsubscribed_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `group_subscribe_email` (`group_subscribe_id`,`mobile`,`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : import_subscribed_mobiles

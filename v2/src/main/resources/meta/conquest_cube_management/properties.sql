@@ -7,7 +7,7 @@ CREATE TABLE `properties` (
   `value` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `attribute` (`attribute`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : properties

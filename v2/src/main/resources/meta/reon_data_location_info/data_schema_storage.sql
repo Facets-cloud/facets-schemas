@@ -11,7 +11,7 @@ CREATE TABLE `data_schema_storage` (
   `updated_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `table_location` (`name_space`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=125719 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : data_schema_storage

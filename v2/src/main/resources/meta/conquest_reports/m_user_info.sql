@@ -9,7 +9,7 @@ CREATE TABLE `m_user_info` (
   `zoneConceptConfig` enum('ZONESANDCONCEPTS','ZONES','CONCEPTS') NOT NULL DEFAULT 'ZONES',
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_login` (`user_login`)
-) ENGINE=MyISAM AUTO_INCREMENT=1647 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_user_info

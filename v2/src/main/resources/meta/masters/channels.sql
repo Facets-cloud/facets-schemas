@@ -8,7 +8,7 @@ CREATE TABLE `channels` (
   `added_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniqueName` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 -- end  Schema : channels

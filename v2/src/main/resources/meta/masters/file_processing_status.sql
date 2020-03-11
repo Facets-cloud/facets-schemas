@@ -13,7 +13,7 @@ CREATE TABLE `file_processing_status` (
   `status` enum('NONE','PROCESSING','FINISHED','ERROR') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'NONE',
   PRIMARY KEY (`id`),
   KEY `org_id_idx` (`org_id`,`acc_id`,`value_id`,`key_id`,`file_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1356386 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : file_processing_status

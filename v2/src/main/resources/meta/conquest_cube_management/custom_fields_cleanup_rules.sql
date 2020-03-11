@@ -15,7 +15,7 @@ CREATE TABLE `custom_fields_cleanup_rules` (
   PRIMARY KEY (`cf_id`),
   UNIQUE KEY `id` (`id`),
   KEY `source_last_updated` (`source_last_updated`)
-) ENGINE=InnoDB AUTO_INCREMENT=6026 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 -- end  Schema : custom_fields_cleanup_rules

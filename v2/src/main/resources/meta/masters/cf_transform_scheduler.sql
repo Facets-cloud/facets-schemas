@@ -13,7 +13,7 @@ CREATE TABLE `cf_transform_scheduler` (
   `latest_cfv_id_processed` bigint(20) NOT NULL,
   `auto_update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=863 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : cf_transform_scheduler

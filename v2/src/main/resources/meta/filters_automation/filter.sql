@@ -12,7 +12,7 @@ CREATE TABLE `filter` (
   `last_updated_by` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `desc_idx` (`description`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : filter

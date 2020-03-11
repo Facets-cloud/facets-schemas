@@ -8,7 +8,7 @@ CREATE TABLE `m_visualization_configs` (
   `json_value` text,
   PRIMARY KEY (`id`),
   KEY `schedule_id` (`schedule_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_visualization_configs

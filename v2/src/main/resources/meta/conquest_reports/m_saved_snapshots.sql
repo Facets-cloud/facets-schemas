@@ -13,7 +13,7 @@ CREATE TABLE `m_saved_snapshots` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `IX_OrgId_UserId_IsActive` (`org_id`,`user_id`,`is_active`)
-) ENGINE=MyISAM AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_saved_snapshots

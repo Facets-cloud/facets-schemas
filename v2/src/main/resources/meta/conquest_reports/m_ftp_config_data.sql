@@ -13,7 +13,7 @@ CREATE TABLE `m_ftp_config_data` (
   `updated_by` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id_active_idx` (`org_id`,`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_ftp_config_data

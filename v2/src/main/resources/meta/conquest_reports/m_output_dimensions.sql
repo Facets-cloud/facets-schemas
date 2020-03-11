@@ -8,7 +8,7 @@ CREATE TABLE `m_output_dimensions` (
   `d_is_col_dimension` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `output_id_index` (`output_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1624 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_output_dimensions

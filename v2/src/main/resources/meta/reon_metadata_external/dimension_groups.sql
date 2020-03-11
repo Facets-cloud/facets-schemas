@@ -25,7 +25,7 @@ CREATE TABLE `dimension_groups` (
   `last_updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`column_id`),
   UNIQUE KEY `dim_table_id_column_name` (`dim_table_id`,`parent_attribute`,`column_name`,`scope_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : dimension_groups

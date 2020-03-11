@@ -20,7 +20,7 @@ CREATE TABLE `integration_clients` (
   UNIQUE KEY `client_key` (`client_key`),
   UNIQUE KEY `org_id` (`org_id`,`client_name`),
   KEY `auto_time_idx` (`auto_update_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : integration_clients

@@ -9,7 +9,7 @@ CREATE TABLE `filter_properties` (
   `last_updated_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `filter_id_prop_type` (`filter_id`,`property_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=157 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : filter_properties

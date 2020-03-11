@@ -10,7 +10,7 @@ CREATE TABLE `user_login_history` (
   `login_attempted_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ref_id` (`ref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17849698 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Login history for each user.';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Login history for each user.';
 
 
 -- end  Schema : user_login_history

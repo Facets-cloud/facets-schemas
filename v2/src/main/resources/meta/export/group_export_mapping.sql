@@ -12,7 +12,7 @@ CREATE TABLE `group_export_mapping` (
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`),
   KEY `export_mapping_id` (`export_mapping_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4772 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : group_export_mapping

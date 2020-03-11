@@ -18,7 +18,7 @@ CREATE TABLE `cron_run_details` (
   KEY `start_time_index` (`start_time`),
   KEY `is_finished_index` (`is_finished`),
   KEY `finished_with_error_index` (`finished_with_error`)
-) ENGINE=MyISAM AUTO_INCREMENT=41954 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : cron_run_details

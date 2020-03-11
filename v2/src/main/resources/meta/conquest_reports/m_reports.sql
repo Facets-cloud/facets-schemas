@@ -19,7 +19,7 @@ CREATE TABLE `m_reports` (
   KEY `rep_id_index` (`rep_id`),
   KEY `category_id` (`category_id`),
   KEY `is_deleted` (`is_deleted`)
-) ENGINE=MyISAM AUTO_INCREMENT=9846 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_reports

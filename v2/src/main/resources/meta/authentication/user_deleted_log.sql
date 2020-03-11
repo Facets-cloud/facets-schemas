@@ -11,7 +11,7 @@ CREATE TABLE `user_deleted_log` (
   `deleted_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ref_id` (`ref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4657 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : user_deleted_log

@@ -15,7 +15,7 @@ CREATE TABLE `user_cookies` (
   PRIMARY KEY (`id`),
   KEY `user_hash_idx` (`ref_id`,`cookie_hash`),
   KEY `cookie_hash_idx` (`cookie_hash`)
-) ENGINE=InnoDB AUTO_INCREMENT=35302798 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='SSO.';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='SSO.';
 
 
 -- end  Schema : user_cookies

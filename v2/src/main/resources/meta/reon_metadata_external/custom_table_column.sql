@@ -23,7 +23,7 @@ CREATE TABLE `custom_table_column` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `table_cols` (`custom_table_id`,`asset_id`,`scope_id`),
   KEY `scope_is_synced` (`scope_id`,`is_data_synced`)
-) ENGINE=InnoDB AUTO_INCREMENT=38968 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : custom_table_column

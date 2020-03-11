@@ -26,7 +26,7 @@ CREATE TABLE `jobs` (
   KEY `profile_idx` (`profile`,`org_id`),
   KEY `source_idx` (`source_type`,`source_ref_id`,`org_id`),
   KEY `status_idx` (`status`,`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15919 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : jobs

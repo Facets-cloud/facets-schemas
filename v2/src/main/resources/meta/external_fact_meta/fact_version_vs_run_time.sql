@@ -11,7 +11,7 @@ CREATE TABLE `fact_version_vs_run_time` (
   `is_valid` tinyint(1) NOT NULL DEFAULT '1',
   `added_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : fact_version_vs_run_time

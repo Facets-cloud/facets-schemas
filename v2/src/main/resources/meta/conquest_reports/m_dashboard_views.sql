@@ -15,7 +15,7 @@ CREATE TABLE `m_dashboard_views` (
   `created_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`,`category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=utf8 COMMENT='List of views present as part of view';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='List of views present as part of view';
 
 
 -- end  Schema : m_dashboard_views

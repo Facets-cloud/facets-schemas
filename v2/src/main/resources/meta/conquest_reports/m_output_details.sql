@@ -13,7 +13,7 @@ CREATE TABLE `m_output_details` (
   PRIMARY KEY (`id`),
   KEY `output_id_index` (`output_id`),
   KEY `dimension_id_index` (`dimension_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1670 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_output_details

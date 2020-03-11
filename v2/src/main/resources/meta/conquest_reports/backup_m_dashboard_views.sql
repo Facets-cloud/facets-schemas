@@ -14,7 +14,7 @@ CREATE TABLE `backup_m_dashboard_views` (
   `created_on` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`,`category_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=77 DEFAULT CHARSET=latin1 COMMENT='List of views present as part of view';
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COMMENT='List of views present as part of view';
 
 
 -- end  Schema : backup_m_dashboard_views

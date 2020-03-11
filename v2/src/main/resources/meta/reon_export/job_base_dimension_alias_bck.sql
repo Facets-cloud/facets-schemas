@@ -10,7 +10,7 @@ CREATE TABLE `job_base_dimension_alias_bck` (
   `alias_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11832 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : job_base_dimension_alias_bck

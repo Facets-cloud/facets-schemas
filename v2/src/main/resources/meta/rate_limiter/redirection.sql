@@ -10,7 +10,7 @@ CREATE TABLE `redirection` (
   `deleted_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `deleted_on` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=217 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : redirection

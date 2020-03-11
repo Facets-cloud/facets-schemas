@@ -11,7 +11,7 @@ CREATE TABLE `m_report_stages` (
   PRIMARY KEY (`id`),
   KEY `report_id_index` (`report_id`),
   KEY `wf_id_index` (`wf_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=259019 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_report_stages

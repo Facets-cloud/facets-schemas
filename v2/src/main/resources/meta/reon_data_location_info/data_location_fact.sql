@@ -17,7 +17,7 @@ CREATE TABLE `data_location_fact` (
   `last_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `table_data_location` (`org_id`,`table_id`,`partition_value`)
-) ENGINE=InnoDB AUTO_INCREMENT=6922281 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : data_location_fact

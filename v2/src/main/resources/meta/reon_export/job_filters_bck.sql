@@ -13,7 +13,7 @@ CREATE TABLE `job_filters_bck` (
   PRIMARY KEY (`id`,`org_id`),
   UNIQUE KEY `name` (`id`,`dimension_name`,`attribute_name`) USING BTREE,
   KEY `job_template` (`org_id`,`job_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1035 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : job_filters_bck

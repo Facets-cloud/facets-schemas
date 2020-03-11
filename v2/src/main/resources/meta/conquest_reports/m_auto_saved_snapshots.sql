@@ -9,7 +9,7 @@ CREATE TABLE `m_auto_saved_snapshots` (
   `saved_on` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `IX_jobId` (`job_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=689578 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_auto_saved_snapshots

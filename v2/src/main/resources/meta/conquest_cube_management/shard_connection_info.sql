@@ -10,7 +10,7 @@ CREATE TABLE `shard_connection_info` (
   PRIMARY KEY (`id`),
   KEY `FK9C11630EBD4DA97D` (`shard_id`),
   KEY `FK9C11630ED2CE9A7A` (`shard_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : shard_connection_info

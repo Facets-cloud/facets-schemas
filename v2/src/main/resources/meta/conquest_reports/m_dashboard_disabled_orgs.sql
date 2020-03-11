@@ -6,7 +6,7 @@ CREATE TABLE `m_dashboard_disabled_orgs` (
   `org_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `org_id` (`org_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_dashboard_disabled_orgs

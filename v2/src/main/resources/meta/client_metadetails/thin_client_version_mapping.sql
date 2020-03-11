@@ -12,7 +12,7 @@ CREATE TABLE `thin_client_version_mapping` (
   PRIMARY KEY (`id`),
   KEY `org_id` (`org_id`,`store_id`),
   KEY `version_idx` (`store_id`,`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='mapping a version of thin client to a store center';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='mapping a version of thin client to a store center';
 
 
 -- end  Schema : thin_client_version_mapping

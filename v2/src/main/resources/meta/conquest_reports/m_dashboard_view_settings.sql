@@ -8,7 +8,7 @@ CREATE TABLE `m_dashboard_view_settings` (
   `value` mediumtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `dashboard_view_id` (`dashboard_view_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=679 DEFAULT CHARSET=utf8 COMMENT='Properties for the view display';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Properties for the view display';
 
 
 -- end  Schema : m_dashboard_view_settings

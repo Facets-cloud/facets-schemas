@@ -30,7 +30,7 @@ CREATE TABLE `import_files_history` (
   KEY `status_idx` (`import_status`),
   KEY `start_time_idx` (`start_time`),
   KEY `end_time_idx` (`end_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=163657 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : import_files_history

@@ -10,7 +10,7 @@ CREATE TABLE `partition_identifiers` (
   PRIMARY KEY (`id`,`org_id`),
   UNIQUE KEY `name` (`org_id`,`template_id`,`dimension_name`),
   KEY `template_id` (`org_id`,`template_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=752 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : partition_identifiers

@@ -12,7 +12,7 @@ CREATE TABLE `dsl_last_notification` (
   `previous_end_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `org_sync` (`org_id`,`sync_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1823 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : dsl_last_notification

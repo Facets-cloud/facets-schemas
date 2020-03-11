@@ -15,7 +15,7 @@ CREATE TABLE `verification_log` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `identifier` (`identifier`,`verfication_code`),
   KEY `ref_id` (`ref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36157 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Verify the identifier based on code passed to it.';
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Verify the identifier based on code passed to it.';
 
 
 -- end  Schema : verification_log

@@ -19,7 +19,7 @@ CREATE TABLE `org_channel_accounts` (
   UNIQUE KEY `uniqueUUID` (`uuid`),
   UNIQUE KEY `uniqueAccountName` (`account_name`,`org_id`),
   UNIQUE KEY `uniqueSrcAcntId` (`org_id`,`channel_id`,`source_account_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=663 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : org_channel_accounts

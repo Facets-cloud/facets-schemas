@@ -12,7 +12,7 @@ CREATE TABLE `export_configs` (
   `is_valid` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `org_config_key_idx` (`org_id`,`config_key`,`is_valid`)
-) ENGINE=InnoDB AUTO_INCREMENT=2762 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : export_configs

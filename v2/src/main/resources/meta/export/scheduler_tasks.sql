@@ -17,7 +17,7 @@ CREATE TABLE `scheduler_tasks` (
   PRIMARY KEY (`id`),
   KEY `status_idx` (`org_id`,`status`(1)),
   KEY `last_updated_idx` (`org_id`,`last_updated_on`)
-) ENGINE=InnoDB AUTO_INCREMENT=29830 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : scheduler_tasks

@@ -34,7 +34,7 @@ CREATE TABLE `m_scheduled_run_log` (
   KEY `start_time` (`start_time`),
   KEY `report_id` (`report_id`),
   KEY `org_id` (`org_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=327325 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 
 -- end  Schema : m_scheduled_run_log

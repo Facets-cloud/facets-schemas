@@ -23,7 +23,7 @@ CREATE TABLE `export_requests` (
   PRIMARY KEY (`id`),
   KEY `profile_idx` (`org_id`,`profile`),
   KEY `source_idx` (`org_id`,`source_type`,`source_ref_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=207099 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : export_requests

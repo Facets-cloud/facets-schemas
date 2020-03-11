@@ -22,7 +22,7 @@ CREATE TABLE `m_scheduled_runs` (
   PRIMARY KEY (`id`),
   KEY `creator_intouch_id` (`creator_intouch_id`,`org_id`,`report_id`),
   KEY `org_id` (`org_id`,`is_active`,`is_valid`,`is_deleted`)
-) ENGINE=MyISAM AUTO_INCREMENT=20098 DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED;
 
 
 -- end  Schema : m_scheduled_runs

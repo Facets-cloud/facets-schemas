@@ -12,7 +12,7 @@ CREATE TABLE `shard_info` (
   `data_load` bigint(20) NOT NULL,
   `data_load_factor` double NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : shard_info

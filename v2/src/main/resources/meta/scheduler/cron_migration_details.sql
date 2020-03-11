@@ -9,7 +9,7 @@ CREATE TABLE `cron_migration_details` (
   `v2_cron_id` int(11) DEFAULT NULL,
   `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`org_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21291 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : cron_migration_details

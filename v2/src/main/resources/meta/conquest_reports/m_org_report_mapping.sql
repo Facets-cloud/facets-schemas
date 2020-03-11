@@ -7,7 +7,7 @@ CREATE TABLE `m_org_report_mapping` (
   `report_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `org_id_index` (`org_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2720 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : m_org_report_mapping

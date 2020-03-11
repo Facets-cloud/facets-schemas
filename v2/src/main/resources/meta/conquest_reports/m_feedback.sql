@@ -16,7 +16,7 @@ CREATE TABLE `m_feedback` (
   `os` varchar(64) DEFAULT NULL,
   `device` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 
 -- end  Schema : m_feedback

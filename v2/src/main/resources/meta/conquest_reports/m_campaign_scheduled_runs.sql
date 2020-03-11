@@ -11,7 +11,7 @@ CREATE TABLE `m_campaign_scheduled_runs` (
   `schedule_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `org_campaign` (`org_id`,`campaign_id`,`report_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=14734 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 
 -- end  Schema : m_campaign_scheduled_runs

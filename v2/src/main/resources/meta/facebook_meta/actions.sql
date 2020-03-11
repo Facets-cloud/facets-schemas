@@ -9,7 +9,7 @@ CREATE TABLE `actions` (
   `created_by` int(11) NOT NULL DEFAULT '-1',
   `created_on` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 -- end  Schema : actions

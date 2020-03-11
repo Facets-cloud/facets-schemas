@@ -11,7 +11,7 @@ CREATE TABLE `base_name` (
   PRIMARY KEY (`id`,`org_id`),
   UNIQUE KEY `name` (`org_id`,`template_name`,`name`),
   KEY `template_name` (`org_id`,`template_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- end  Schema : base_name

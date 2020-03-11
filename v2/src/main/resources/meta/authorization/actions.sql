@@ -19,7 +19,7 @@ CREATE TABLE `actions` (
   `offline_source` enum('SMS','MISSED_CALL','ALL') COLLATE utf8mb4_unicode_ci DEFAULT 'ALL',
   PRIMARY KEY (`id`),
   UNIQUE KEY `module_id` (`module_id`,`code`,`name`,`namespace`,`resource_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1731 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16;
 
 
 -- end  Schema : actions
