@@ -15,6 +15,7 @@ if `mysql -u$mysql_user -p$mysql_password -h $mysql_host -e "use $database; show
         mysql -u$mysql_user -p$mysql_password -h $mysql_host $temp_database < $schema_file
         mysqldiff --server1=$mysql_user:$mysql_password@$mysql_host ${database}.${table}:${temp_database}.${table} --difftype=sql -q -c > /tmp/${mysql_host}/${temp_database}.sql
         mysql -u$mysql_user -p$mysql_password -h $mysql_host $database < /tmp/${mysql_host}/${temp_database}.sql
+        mysql -u$mysql_user -p$mysql_password -h $mysql_host -e "drop database if exists $temp_database;"
     else
         mysql -u$mysql_user -p$mysql_password -h $mysql_host $database < $schema_file
 fi
