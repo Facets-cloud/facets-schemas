@@ -12,3 +12,4 @@ RUN mv ./terraform /usr/bin/
 RUN tar -xf helm-v2.16.1-linux-amd64.tar.gz
 RUN chmod +x linux-amd64/helm
 RUN mv ./linux-amd64/helm /usr/bin/
+RUN apt-get install -y mysql-utilities
