@@ -106,7 +106,7 @@ resource "kubernetes_service" "mysql-k8s-service" {
 
 resource "null_resource" "schema_sync" {
   for_each = local.schema_files
-  triggers {
+  triggers = {
     file_content = filemd5(each.value["file_name"])
   }
 
