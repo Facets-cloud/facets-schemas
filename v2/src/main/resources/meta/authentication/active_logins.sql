@@ -10,7 +10,6 @@ CREATE TABLE `active_logins` (
   `user_ip` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `login_attempted_at` datetime NOT NULL,
   `last_updated_on` datetime NOT NULL,
-  `rohit` int,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ref_id` (`ref_id`,`sso_cookie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=16 COMMENT='Maintains the active login for a user at any given time.';
