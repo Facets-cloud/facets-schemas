@@ -6,7 +6,7 @@ mysql_password=$3
 database=$4
 table=$5
 schema_file=$6
-temp_database=$(echo "mig_db_${database}_t_${table}" | md5 | cut -d ' ' -f1)
+temp_database=$(echo "mig_db_${database}_t_${table}" | md5sum | cut -d ' ' -f1)
 
 mysql -u$mysql_user -p$mysql_password -h $mysql_host -e "create database if not exists $database"
 if `mysql -u$mysql_user -p$mysql_password -h $mysql_host -e "use $database; show create table $table;" &> /dev/null`;
