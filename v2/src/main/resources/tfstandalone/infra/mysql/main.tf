@@ -106,6 +106,10 @@ resource "kubernetes_service" "mysql-k8s-service" {
 
 resource "null_resource" "schema_sync" {
   for_each = local.schema_files
+  triggers {
+    file_content = filemd5(each.value["file_name"])
+  }
+
   provisioner "local-exec" {
     command = "/bin/bash scripts/sync_table.sh ${aws_db_instance.rds-instance[each.value["instance_name"]].address} root ${random_string.root_password[each.value["instance_name"]].result} ${each.value["db"]} ${each.value["table"]} ${each.value["file_name"]}"
   }
