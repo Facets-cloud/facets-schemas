@@ -15,6 +15,23 @@ locals {
     for k, v in local.k8s_service_names_transpose:
         k => element(v, 0)
   }
+
+  schema_files = {
+    for o in flatten([
+      for i, j in local.instances:
+      [
+        for f in fileset(j["schema_dir"], "*/*.sql"):
+          {
+            file_name = f
+            instance_name = i
+            key = "${i}_${f}"
+            db = element(split("/", f), 0)
+            table = element(split(".", element(split("/", f), 1)), 0)
+          }
+      ]
+    ]):
+      o.key => o
+  }
 }
 
 resource "aws_security_group" "allow_mysql" {
@@ -84,5 +101,12 @@ resource "kubernetes_service" "mysql-k8s-service" {
   spec {
     type = "ExternalName"
     external_name = aws_db_instance.rds-instance[each.value].address
+  }
+}
+
+resource "null_resource" "schema_sync" {
+  for_each = local.schema_files
+  provisioner "local-exec" {
+    command = "/bin/bash scripts/sync_table.sh ${aws_db_instance.rds-instance[each.value["instance_name"]].address} root ${random_string.root_password[each.value["instance_name"]].result} ${each.value["db"]} ${each.value["table"]} ${each.value["file_name"]}"
   }
 }

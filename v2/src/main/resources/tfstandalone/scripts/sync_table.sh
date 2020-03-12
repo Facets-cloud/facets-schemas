@@ -8,6 +8,7 @@ table=$5
 schema_file=$6
 temp_database="mig_db_${database}_t_${table}"
 
+mysql -u$mysql_user -p$mysql_password -h $mysql_host -e "create database if not exists $database"
 if `mysql -u$mysql_user -p$mysql_password -h $mysql_host -e "use $database; show create table $table;" &> /dev/null`;
     then
         mkdir -p /tmp/$mysql_host

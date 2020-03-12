@@ -1,4 +1,5 @@
 {
   "k8s_service_names" : ["authentication-db-mysql", "authorization-db-mysql"],
-  "name": "metadb"
+  "name": "metadb",
+  "schema_dir": "../meta"
 }
