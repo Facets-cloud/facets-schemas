@@ -22,7 +22,7 @@ locals {
       [
         for f in fileset(j["schema_dir"], "*/*.sql"):
           {
-            file_name = j["schema_dir"] + "/" + f
+            file_name = "${j["schema_dir"]}/${f}"
             instance_name = i
             key = "${i}_${f}"
             db = element(split("/", f), 0)
