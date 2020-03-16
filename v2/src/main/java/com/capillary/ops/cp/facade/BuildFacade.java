@@ -27,11 +27,15 @@ public class BuildFacade {
         switch (strategy) {
 
             case QA:
+                build =
+                    ccBuildRepository.findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc(applicationId);
+                break;
             case STAGING:
-                build = ccBuildRepository.findOneByApplicationIdAndPromotedIsFalseOrderByTimestampDesc(applicationId);
+                build =
+                    ccBuildRepository.findFirstByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(applicationId);
                 break;
             case PROD:
-                build = ccBuildRepository.findOneByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+                build = ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
                 break;
         }
         if (build.isPresent()) {

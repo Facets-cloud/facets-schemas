@@ -24,6 +24,7 @@ public class Build {
     private String triggeredBy;
     private String description;
     private boolean promoted = false;
+    private boolean promotable = false;
     private boolean testBuild = false;
 
     public Build() {
@@ -148,7 +149,16 @@ public class Build {
                 ", triggeredBy='" + triggeredBy + '\'' +
                 ", description='" + description + '\'' +
                 ", promoted=" + promoted +
+                ", promotable" + promotable +
                 ", testBuild=" + testBuild +
                 '}';
+    }
+
+    public boolean isPromotable() {
+        return promotable;
+    }
+
+    public void setPromotable(boolean promotable) {
+        this.promotable = promotable;
     }
 }
