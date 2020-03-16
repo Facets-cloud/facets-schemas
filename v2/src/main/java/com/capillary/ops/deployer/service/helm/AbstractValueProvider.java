@@ -3,7 +3,6 @@ package com.capillary.ops.deployer.service.helm;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.IAMService;
 import com.capillary.ops.deployer.service.SecretService;
-import com.capillary.ops.deployer.service.capillaryCloud.InfrastructureResourceReferenceResolver;
 import com.capillary.ops.deployer.service.interfaces.IIAMService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -25,9 +24,6 @@ public abstract class AbstractValueProvider {
 
     @Autowired
     private IIAMService iamService;
-
-    @Autowired
-    private InfrastructureResourceReferenceResolver infrastructureResourceReferenceResolver;
 
     public String getImage(Deployment deployment) {
         return deployment.getImage();

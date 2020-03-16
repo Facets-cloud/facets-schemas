@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.codebuild.model.StatusType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Profile("dev")
+@Profile("dev || helminttest")
 @Service
 public class MockCodeBuildService implements ICodeBuildService {
 
