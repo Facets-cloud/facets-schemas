@@ -52,7 +52,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(classes = {App.class})
+@ContextConfiguration(classes = {App.class, TestConfiguration.class})
 @ActiveProfiles({"helminttest", "dev"})
 @TestPropertySource("/application-dev.properties")
 @RunWith(Parameterized.class)
