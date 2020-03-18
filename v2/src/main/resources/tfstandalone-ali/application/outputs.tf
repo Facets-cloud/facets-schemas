@@ -7,7 +7,7 @@
 
 output "test2" {
   value = {
-  for i, j in local.json_data["instances"]:
+  for i, j in local.instances:
     i => merge(local.dynamic_environment_variables_map[i], j["environmentVariables"]["static"])
   }
 }

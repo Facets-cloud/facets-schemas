@@ -36,7 +36,8 @@
   }],
   "build": {
     "ci": "deployer",
-    "id": "5ddfa58d7a9d110007fdc41a"
+    "id": "5ddfa58d7a9d110007fdc41a",
+    "dev_mode_default": "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298"
   },
   "credentialRequests": {
     "dbs": {
