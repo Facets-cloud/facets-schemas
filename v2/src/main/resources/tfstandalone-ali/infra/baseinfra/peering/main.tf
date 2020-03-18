@@ -1,8 +1,8 @@
-//provider "aws" {
-//  region = var.tooling-vpc.region
-//  version = "~> 2.45.0"
-//  profile = "tfmj"
-//}
+provider "aws" {
+  region = var.tooling-vpc.region
+  version = "~> 2.45.0"
+  profile = "tfmj"
+}
 //
 //provider "alicloud" {
 //  region     = var.cluster.aliRegion
