@@ -1,4 +1,9 @@
 locals {
+  permission_callsigns = {
+    "READ_WRITE" = "rw",
+    "READ_ONLY" = "ro"
+  }
+
   mysql_credntial_requests = {for k in flatten([
     for i,j in local.instances: [
       for p in j["credentialRequests"]["dbs"]["mysql"]: {
@@ -7,7 +12,7 @@ locals {
         mysql_grants = var.resources["mysql"][p["resourceName"]]["grants"][p["permission"]]
         applicationName = i
         key = "${i}-${p["resourceType"]}-${p["resourceName"]}-${p["permission"]}"
-        user = lower("${i}-${p["permission"]}")
+        user = lower("${i}-${local.permission_callsigns[p["permission"]]}")
       }
       ]]):
     k.key => k
