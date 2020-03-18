@@ -1,0 +1,7 @@
+
+-- start  Schema : redeemable_customer_points_summary
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `redeemable_customer_points_summary` AS select `cps`.`id` AS `id`,`cps`.`org_id` AS `org_id`,`cps`.`program_id` AS `program_id`,`cps`.`customer_id` AS `customer_id`,`cps`.`points_category_id` AS `points_category_id`,`cps`.`current_points` AS `current_points`,`cps`.`cumulative_points` AS `cumulative_points`,`cps`.`cumulative_purchases` AS `cumulative_purchases`,`cps`.`points_redeemed` AS `points_redeemed`,`cps`.`points_expired` AS `points_expired`,`cps`.`points_returned` AS `points_returned`,`cps`.`backlog_points` AS `backlog_points`,`cps`.`reissued_points` AS `reissued_points`,`cps`.`last_awarded_on` AS `last_awarded_on`,`cps`.`last_updated_on` AS `last_updated_on`,`cps`.`last_updated_by_till` AS `last_updated_by_till`,`cps`.`auto_update_time` AS `auto_update_time` from ((`customer_points_summary` `cps` join `points_categories` `pc` on(((`cps`.`org_id` = `pc`.`org_id`) and (`cps`.`program_id` = `pc`.`program_id`) and (`cps`.`points_category_id` = `pc`.`id`)))) join `program` `p` on(((`p`.`org_id` = `cps`.`org_id`) and (`p`.`id` = `cps`.`program_id`)))) where ((`pc`.`is_redeemable` = 1) and (`p`.`is_default` = 1));
+
+
+-- end  Schema : redeemable_customer_points_summary
