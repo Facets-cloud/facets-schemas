@@ -1,0 +1,83 @@
+{
+  "size": "L",
+  "deploymentStrategy": "RollingUpdate",
+  "lbType": "internal",
+  "elbIdleTimeoutSeconds": 300,
+  "secretFileMounts": [],
+  "protocolGroup": "tcp",
+  "scaling": {
+    "hpaEnabled": true,
+    "hpaMinReplicas": 1,
+    "hpaMaxReplicas": 1,
+    "hpaMetricThreshold": 60
+  },
+  "liveness": {
+    "enableLivenessTCP": true,
+    "livenessPort": 4080,
+    "livenessInitialDelay": 10,
+    "livenessTimeout": 1,
+    "livenessFailureThreshold": 3,
+    "livenessPeriod": 30,
+    "livenessSuccessThreshold": 1
+  },
+  "readiness": {
+    "enableReadinessTCP": "true",
+    "readinessInitialDelay": 10,
+    "readinessFailureThreshold": 3,
+    "readinessSuccessThreshold": 1,
+    "readinessPort": 4080,
+    "readinessTimeout": 1,
+    "readinessPeriod": 30
+  },
+  "ports": [{
+    "name": "http",
+    "containerPort": 4080,
+    "lbPort": 4080
+  }],
+  "build": {
+    "ci": "deployer",
+    "id": "5e4aef6efd152c0008e3fbe1",
+    "dev_mode_default": "486456986266.dkr.ecr.us-west-1.amazonaws.com/crm/shard-manager-service:c9e444c"
+  },
+  "credentialRequests": {
+    "dbs": {
+      "mysql" : [
+        {
+          "resourceType": "mysql",
+          "resourceName": "metadb",
+          "permission": "READ_WRITE",
+          "environment": {
+            "userName": "INTOUCH_META_DB_MYSQL_MASTER_PASSWORD",
+            "password": "INTOUCH_META_DB_MYSQL_MASTER_USERNAME"
+          }
+        }
+      ],
+      "mongo" : [
+      ]
+    },
+    "queues": {
+      "rabbitmq" : [
+      ]
+    },
+    "cloud": [
+    ]
+  },
+  "environmentVariables": {
+    "static": {
+      "XMS": "768m",
+      "XMX": "768m",
+      "newrelic_enabled" : "false",
+      "CLUSTER" : "cc-nightly",
+      "metrics.post-to.newrelic.enabled" : "false",
+      "TZ" : "Asia/Kolkata",
+      "REDIS_HOST" : "session-cache.default",
+      "REDIS_PORT" : "6379",
+      "EXTRA_OPTIONS" : "-XX:+UseG1GC -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:-OmitStackTraceInFastThrow",
+      "ZK_ENSEMBLE_IP" : "zk-service-discovery-zookeeper.default:2181",
+      "ZK_CLUSTER" : "localcluster",
+      "SD_K8S_MODE" : "true"
+    },
+    "dynamic": {
+    }
+  }
+}
