@@ -3,6 +3,7 @@ module "baseinfra" {
   cluster = var.cluster
   ec2_token_refresher_key_id = var.ec2_token_refresher_key_id
   ec2_token_refresher_key_secret = var.ec2_token_refresher_key_secret
+  tooling-vpc = var.tooling-vpc
 }
 
 module "mysql" {

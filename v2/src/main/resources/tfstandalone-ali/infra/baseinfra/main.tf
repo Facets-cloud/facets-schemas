@@ -12,3 +12,10 @@ module "helm" {
   ec2_token_refresher_key_id = var.ec2_token_refresher_key_id
   ec2_token_refresher_key_secret = var.ec2_token_refresher_key_secret
 }
+
+module "peering" {
+  source = "./peering"
+  cluster = var.cluster
+  vpc_details = module.k8scluster.vpc_details
+  tooling-vpc = var.tooling-vpc
+}

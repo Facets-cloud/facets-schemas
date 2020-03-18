@@ -17,3 +17,11 @@ variable "ec2_token_refresher_key_id" {
 variable "ec2_token_refresher_key_secret" {
   type = string
 }
+
+variable "tooling-vpc" {
+  type = object({
+    cidr = string
+    private_subnet_id = string
+    region = string
+  })
+}

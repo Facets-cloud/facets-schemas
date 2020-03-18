@@ -10,12 +10,11 @@ variable "cluster" {
   })
 }
 
-variable "ec2_token_refresher_key_id" {
-  type = string
-}
-
-variable "ec2_token_refresher_key_secret" {
-  type = string
+variable "vpc_details" {
+  type = object({
+    vpc_id = string
+    vswitch_ids = list(string)
+  })
 }
 
 variable "tooling-vpc" {

@@ -17,6 +17,12 @@ locals {
   cluster = var.dev_mode == true ? local.devModeCluster : jsondecode(data.http.cluster[0].body)
 
   awsRegion = "us-east-1"
+
+  tooling-vpc = {
+    cidr = "172.31.0.0/16"
+    private_subnet_id = "subnet-ac2908f7"
+    region = "us-west-1"
+  }
 }
 
 data "http" "cluster" {
@@ -53,6 +59,7 @@ module "infra" {
   cluster = local.cluster
   ec2_token_refresher_key_id = var.ali-ecr-token-refresher-key-id
   ec2_token_refresher_key_secret = var.ali-ecr-token-refresher-key-secret
+  tooling-vpc = local.tooling-vpc
 }
 
 module "application" {
@@ -75,8 +82,4 @@ variable "ali-ecr-token-refresher-key-secret" {
 variable "dev_mode" {
   type = bool
   default = false
-}
-
-output "mysq_connection_string" {
-  value = module.infra.infra_details.resources.mysql
 }
