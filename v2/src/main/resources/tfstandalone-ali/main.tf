@@ -83,3 +83,7 @@ variable "dev_mode" {
   type = bool
   default = false
 }
+
+output "mysql" {
+  value = module.infra.infra_details.resources
+}

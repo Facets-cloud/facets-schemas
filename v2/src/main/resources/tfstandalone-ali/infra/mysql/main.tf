@@ -41,7 +41,7 @@ resource "alicloud_db_instance" "default" {
   instance_name = "${var.cluster.name}${each.key}"
   vswitch_id = var.baseinfra.vpc_details.vswitch_ids[1]
   monitoring_period = "60"
-  security_ips = [var.cluster.vpcCIDR]
+  security_ips = [var.cluster.vpcCIDR, var.tooling-vpc.cidr]
 }
 
 resource "alicloud_db_account" "account" {
@@ -61,11 +61,11 @@ provider "kubernetes" {
 //  url = "http://ifconfig.co"
 //}
 //
-resource "alicloud_db_connection" "db_connection" {
-  for_each = local.instances
-  instance_id       = alicloud_db_instance.default[each.key].id
-  connection_prefix = "tf-${alicloud_db_instance.default[each.key].instance_name}"
-}
+//resource "alicloud_db_connection" "db_connection" {
+//  for_each = local.instances
+//  instance_id       = alicloud_db_instance.default[each.key].id
+//  connection_prefix = "tf-${alicloud_db_instance.default[each.key].instance_name}"
+//}
 
 resource "kubernetes_service" "mysql-k8s-service" {
   for_each = local.k8s_service_names_map
