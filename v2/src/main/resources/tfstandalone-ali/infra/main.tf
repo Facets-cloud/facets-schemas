@@ -10,6 +10,7 @@ module "mysql" {
   source = "./mysql"
   baseinfra = module.baseinfra.base_infra_details
   cluster = var.cluster
+  tooling-vpc = var.tooling-vpc
 }
 
 module "oss" {
