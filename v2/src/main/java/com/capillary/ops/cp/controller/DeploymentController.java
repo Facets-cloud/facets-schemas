@@ -35,7 +35,7 @@ public class DeploymentController {
      * @return List of Logs
      */
     @GetMapping("{id}")
-    List<String> getLogs(@PathVariable String id) {
+    List<String> getLogs(@PathVariable String clusterId, @PathVariable String id) {
         throw new NotImplementedException("Getting Logs is Not implemented yet");
     }
 

@@ -10,6 +10,7 @@ export interface EnvironmentConfiguration {
   commonConfigs?: {[key: string]: string};
   commonCredentials?: {[key: string]: string};
   ecrMirrorRepo?: string;
+  jmxSideCarEnabled?: boolean;
   k8sLoggingConfiguration?: K8sLoggingConfiguration;
   kube2IamConfiguration?: Kube2IamConfiguration;
   kubernetesApiEndpoint?: string;
@@ -17,6 +18,7 @@ export interface EnvironmentConfiguration {
   metricServerEnabled?: boolean;
   newRelicClusterName?: string;
   nodeGroup?: string;
+  preDeployTaskEnabled?: boolean;
   privateDnsConfiguration?: ExternalDnsConfiguration;
   publicDnsConfiguration?: ExternalDnsConfiguration;
   s3DumpAwsConfig?: S3DumpAwsConfig;

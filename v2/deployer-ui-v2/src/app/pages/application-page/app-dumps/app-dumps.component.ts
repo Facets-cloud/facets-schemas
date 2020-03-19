@@ -79,18 +79,19 @@ export class AppDumpsComponent implements OnInit, OnChanges {
       date: date,
     }).subscribe(files => {
       const dumps = [];
-      files.forEach(file => {
+      Object.keys(files).forEach(file => {
         const fileParts = file.split('/');
         dumps.push({
           hour: this.getFileHour(file),
           name: fileParts[fileParts.length - 1],
-          path: file,
+          path: files[file],
           application: this.application,
           environment: this.environment,
           date: date,
         });
       });
       this.dumpFiles = dumps;
+      console.log(this.dumpFiles);
       this.showDumpFiles = true;
     });
   }

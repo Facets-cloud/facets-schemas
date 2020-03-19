@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -59,6 +61,19 @@ public class S3DumpService {
         logger.info("returning object with content length: {}", contentLength);
 
         return new S3DumpFile(inputStream, contentLength);
+    }
+
+    public String getS3URL(String path) {
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(defaultS3BucketRegion)).build();
+        String url = amazonS3.generatePresignedUrl(defaultS3Bucket, path, getExpireTime(3600)).toString();
+        return url;
+    }
+
+    private Date getExpireTime(int seconds) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, seconds);
+        return calendar.getTime();
     }
 
     public S3DumpFile downloadObject(String bucketName, String path, Regions region) {

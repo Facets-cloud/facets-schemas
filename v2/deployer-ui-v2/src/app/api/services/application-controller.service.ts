@@ -1830,7 +1830,7 @@ class ApplicationControllerService extends __BaseService {
    *
    * @return OK
    */
-  getDumpFileListUsingGETResponse(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<__StrictHttpResponse<Array<string>>> {
+  getDumpFileListUsingGETResponse(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<__StrictHttpResponse<{[key: string]: string}>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -1851,7 +1851,7 @@ class ApplicationControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<string>>;
+        return _r as __StrictHttpResponse<{[key: string]: string}>;
       })
     );
   }
@@ -1868,9 +1868,9 @@ class ApplicationControllerService extends __BaseService {
    *
    * @return OK
    */
-  getDumpFileListUsingGET(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<Array<string>> {
+  getDumpFileListUsingGET(params: ApplicationControllerService.GetDumpFileListUsingGETParams): __Observable<{[key: string]: string}> {
     return this.getDumpFileListUsingGETResponse(params).pipe(
-      __map(_r => _r.body as Array<string>)
+      __map(_r => _r.body as {[key: string]: string})
     );
   }
 

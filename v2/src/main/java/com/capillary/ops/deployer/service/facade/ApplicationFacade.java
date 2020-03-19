@@ -22,6 +22,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -535,6 +536,10 @@ public class ApplicationFacade {
         return s3DumpService.downloadObject(path);
     }
 
+    public String getS3URL(String path) {
+        return s3DumpService.getS3URL(path);
+    }
+
     public S3DumpFile downloadTestReport(ApplicationFamily applicationFamily, String applicationId, String buildId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Build build = buildRepository.findOneByApplicationIdAndId(applicationId, buildId).get();
@@ -553,11 +558,15 @@ public class ApplicationFacade {
         throw new NotFoundException("Artifacts can only be downloaded for successful or failed builds");
     }
 
-    public List<String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {
+    public Map<String, String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {
         Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         String releaseName = getReleaseName(application, env);
-        return s3DumpService.listObjects(applicationFamily, environment, releaseName, getDateForDump(date));
+        List<String> paths = s3DumpService.listObjects(applicationFamily, environment, releaseName, getDateForDump(date));
+        if (paths == null) {
+            return new HashMap<>();
+        }
+        return paths.stream().collect(Collectors.toMap(x->x, x->getS3URL(x)));
     }
 
     private String getDateForDump(String date) {

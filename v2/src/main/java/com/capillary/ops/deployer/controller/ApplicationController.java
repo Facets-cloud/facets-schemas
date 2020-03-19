@@ -27,10 +27,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static com.capillary.ops.deployer.bo.Application.*;
 
@@ -234,10 +231,10 @@ public class ApplicationController {
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps", produces = "application/json")
-    public ResponseEntity<List<String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                   @PathVariable("environment") String environment,
-                                                   @PathVariable String applicationId,
-                                                   @RequestParam(required = false) String date) {
+    public ResponseEntity<Map<String, String>> getDumpFileList(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                               @PathVariable("environment") String environment,
+                                                               @PathVariable String applicationId,
+                                                               @RequestParam(required = false) String date) {
         if (date != null && !applicationFacade.isDateValid(date)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

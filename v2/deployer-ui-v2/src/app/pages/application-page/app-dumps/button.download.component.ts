@@ -23,7 +23,7 @@ export class ButtonDownloadComponent implements OnInit {
     const appFamily = application.applicationFamily;
     const env = this.rowData.environment;
 
-    return `/api/${appFamily}/${env}/applications/${application.id}/dumps/download?path=${this.rowData.path}`;
+    return this.rowData.path;
   }
 
 }
