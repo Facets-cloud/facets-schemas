@@ -1,5 +1,0 @@
-{
-  "k8s_service_names" : ["session-cache"],
-  "name": "session-cache",
-  "parameter_overrides" : {}
-}

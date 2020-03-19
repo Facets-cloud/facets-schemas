@@ -1,5 +1,0 @@
-{
-  "k8s_service_names" : ["warehouse-db-mysql-master-shard-1", "intouch-db-mysql-master-shard-1"],
-  "name": "dbmaster",
-  "schema_dir": "../schema/dbmaster"
-}

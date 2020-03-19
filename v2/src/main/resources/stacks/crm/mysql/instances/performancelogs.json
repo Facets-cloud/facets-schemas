@@ -1,5 +1,0 @@
-{
-  "k8s_service_names" : ["intouch-db-mysql-performance-logs"],
-  "name": "performancelogs",
-  "schema_dir": "../schema/performancelogs"
-}

@@ -1,4 +1,0 @@
-{
-  "name" : "service-discovery",
-  "k8s_service_names" : []
-}

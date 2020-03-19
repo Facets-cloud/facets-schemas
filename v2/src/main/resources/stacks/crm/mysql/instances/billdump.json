@@ -1,5 +1,0 @@
-{
-  "k8s_service_names" : ["intouch-db-mysql-product", "intouch-db-mysql-billdump"],
-  "name": "billdump",
-  "schema_dir": "../schema/billdump"
-}
