@@ -27,3 +27,11 @@ variable "baseinfra" {
     })
   })
 }
+
+variable "tooling-vpc" {
+  type = object({
+    cidr = string
+    private_subnet_id = string
+    region = string
+  })
+}
