@@ -1,8 +1,0 @@
-export DOCKER_REGISTRY_SERVER=https://${AWS_ACCOUNT}.dkr.ecr.${AWS_REGION}.amazonaws.com
-export DOCKER_USER=AWS
-export DOCKER_PASSWORD=`aws ecr get-login --region ${AWS_REGION} --registry-ids ${AWS_ACCOUNT} | cut -d' ' -f6`
-kubectl delete secret aws-ecr-token-nurego || true
-kubectl create secret docker-registry aws-ecr-token-nurego --docker-server=$DOCKER_REGISTRY_SERVER --docker-username=$DOCKER_USER --docker-password=$DOCKER_PASSWORD --docker-email=no@email.local
-
-kubectl patch serviceaccount ecr-token-refresher-nurego -p '{"imagePullSecrets":[{"name":"aws-ecr-token-nurego"}]}'
-kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"aws-ecr-token-nurego"}]}'
