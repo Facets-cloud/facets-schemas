@@ -1,5 +1,0 @@
-{
-  "k8s_service_names" : ["customer-merge"],
-  "name": "customer-merge",
-  "parameter_overrides" : {}
-}
