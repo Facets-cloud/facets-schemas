@@ -47,6 +47,9 @@ export class BuildsListComponent implements OnInit, OnChanges {
       id: {
         title: 'Build ID',
       },
+      tag: {
+        title: 'Build Tag',
+      },
       description: {
         title: 'Build Description',
       },
