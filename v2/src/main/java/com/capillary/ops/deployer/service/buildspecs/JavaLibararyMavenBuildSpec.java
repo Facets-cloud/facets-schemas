@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service.buildspecs;
 import com.capillary.ops.deployer.bo.Application;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
@@ -42,5 +43,10 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
     @Override
     public String getBuildEnvironmentImage() {
         return "486456986266.dkr.ecr.us-west-1.amazonaws.com/mavenjavalibrary:v1.0";
+    }
+
+    @Override
+    protected List<String> getCachePaths() {
+        return Arrays.asList("/root/.m2/repository/*");
     }
 }
