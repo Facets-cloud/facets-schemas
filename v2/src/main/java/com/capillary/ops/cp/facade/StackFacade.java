@@ -45,11 +45,11 @@ public class StackFacade {
         try {
             JSONParser parser = new JSONParser(new FileReader(stackFile));
             LinkedHashMap<String, Object> vars = parser.object();
-            Map<String, String> stringVars = new HashMap(vars);
+            Map<String, String> stringVars = new HashMap((Map) vars.get("variables"));
             stack.setStackVars(stringVars);
-        } catch (FileNotFoundException | ParseException e) {
+        } catch (Throwable e) {
             throw new IllegalArgumentException(
-                "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath());
+                "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);
         }
         return stackRepository.save(stack);
     }

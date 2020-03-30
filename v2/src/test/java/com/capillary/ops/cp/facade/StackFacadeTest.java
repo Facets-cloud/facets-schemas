@@ -94,7 +94,7 @@ public class StackFacadeTest {
         FileUtils.deleteDirectory(stackPath);
         stackPath.mkdirs();
         File file = new File("/tmp/repos/aa/stack.json");
-        String data = "{\"var1\":\"val1\"}";
+        String data = "{\"variables\":{\"var1\":\"val1\"}}";
         Files.write(file.toPath(), data.getBytes());
         new Expectations() {
 
@@ -143,5 +143,35 @@ public class StackFacadeTest {
             }
         };
         Stack stack = stackFacade.createStack(s);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createStackWithStackWrongJson() throws GitAPIException, IOException {
+        Stack s = new Stack();
+        s.setName("Unique");
+        File stackPath = new File("/tmp/repos/aa/");
+        FileUtils.deleteDirectory(stackPath);
+        stackPath.mkdirs();
+        File file = new File("/tmp/repos/aa/stack.json");
+        String data = "{\"variables\":\"val1\"}";
+        Files.write(file.toPath(), data.getBytes());
+        new Expectations() {
+
+            {
+                stackRepository.findById(anyString);
+                result = Optional.empty();
+            }
+
+            {
+                gitService.checkout(anyString, anyString, anyString);
+                result = stackPath.toPath();
+            }
+        };
+        try {
+            Stack stack = stackFacade.createStack(s);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }
