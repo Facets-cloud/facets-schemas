@@ -4,11 +4,9 @@ import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
 import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -23,6 +21,12 @@ public class StackFacade {
     @Autowired
     GitService gitService;
 
+    /**
+     * Create a stack given details
+     *
+     * @param stack
+     * @return
+     */
     public Stack createStack(Stack stack) {
 
         if (stackRepository.findById(stack.getName()).isPresent()) {
