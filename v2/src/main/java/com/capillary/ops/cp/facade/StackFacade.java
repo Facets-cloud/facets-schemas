@@ -5,6 +5,7 @@ import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
 import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Service
 public class StackFacade {
 
     @Autowired
