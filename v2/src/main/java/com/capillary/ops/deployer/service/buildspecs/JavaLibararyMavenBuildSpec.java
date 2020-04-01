@@ -47,6 +47,6 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
 
     @Override
     protected List<String> getCachePaths() {
-        return Arrays.asList("/root/.m2/repository/*");
+        return Arrays.asList("/root/.m2/repository/**/*");
     }
 }
