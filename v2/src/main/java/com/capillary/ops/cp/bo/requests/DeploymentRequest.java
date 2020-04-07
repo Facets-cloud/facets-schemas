@@ -9,7 +9,7 @@ public class DeploymentRequest {
 
     String tag;
 
-    String releaseId;
+    private ReleaseType releaseType;
 
     public String getId() {
         return id;
@@ -27,11 +27,11 @@ public class DeploymentRequest {
         this.tag = tag;
     }
 
-    public String getReleaseId() {
-        return releaseId;
+    public ReleaseType getReleaseType() {
+        return releaseType;
     }
 
-    public void setReleaseId(String releaseId) {
-        this.releaseId = releaseId;
+    public void setReleaseType(ReleaseType releaseType) {
+        this.releaseType = releaseType;
     }
 }

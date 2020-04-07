@@ -30,7 +30,8 @@ public class DeploymentFacade {
      */
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        String buildId = tfBuildService.deployLatest(cluster);
+        //TODO: Save Deployment requests for audit purpose
+        String buildId = tfBuildService.deployLatest(cluster, deploymentRequest.getReleaseType());
         DeploymentLog log = new DeploymentLog(buildId);
         return log;
     }
