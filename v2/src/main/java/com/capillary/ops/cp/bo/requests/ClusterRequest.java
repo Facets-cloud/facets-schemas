@@ -1,10 +1,13 @@
 package com.capillary.ops.cp.bo.requests;
 
+import java.util.TimeZone;
+
 public abstract class ClusterRequest {
 
     private Cloud cloud;
     private String clusterName;
     private String stackName;
+    private TimeZone tz;
 
     public ClusterRequest() {
     }
@@ -30,5 +33,13 @@ public abstract class ClusterRequest {
 
     public void setStackName(String stackName) {
         this.stackName = stackName;
+    }
+
+    public TimeZone getTz() {
+        return tz;
+    }
+
+    public void setTz(TimeZone tz) {
+        this.tz = tz;
     }
 }
