@@ -3,7 +3,7 @@ package com.capillary.ops.cp.controller;
 import com.capillary.ops.cp.bo.Resource;
 import com.capillary.ops.cp.bo.ResourceType;
 import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.facade.StackFacade;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class StackController {
 
     @Autowired
-    StackRepository repository;
+    StackFacade stackFacade;
 
     /**
      * Given a stack get all resources
@@ -45,6 +45,6 @@ public class StackController {
      */
     @PostMapping
     public Stack createStack(@RequestBody Stack stack) {
-        return repository.save(stack);
+        return stackFacade.createStack(stack);
     }
 }

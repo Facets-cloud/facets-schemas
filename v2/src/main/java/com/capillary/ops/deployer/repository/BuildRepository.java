@@ -15,16 +15,32 @@ public interface BuildRepository extends MongoRepository<Build, String> {
     /**
      * Find Latest Production Build
      *
-     * @param applicationId Id of Application
-     * @return Build Object
-     */
-    Optional<Build> findOneByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(String applicationId);
-
-    /**
-     * Find Latest Test Build
+     * Latest Promoted
      *
      * @param applicationId Id of Application
      * @return Build Object
      */
-    Optional<Build> findOneByApplicationIdAndPromotedIsFalseOrderByTimestampDesc(String applicationId);
+    Optional<Build> findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(String applicationId);
+
+
+    /**
+     * Find Latest Staging Build
+     *
+     * Latest Promotable
+     *
+     * @param applicationId Id of Application
+     * @return Build Object
+     */
+    Optional<Build> findFirstByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(String applicationId);
+
+    /**
+     * Find Latest Test Build
+     *
+     * Non Promotable build.
+     *
+     * @param applicationId Id of Application
+     * @return Build Object
+     */
+    Optional<Build> findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc(String applicationId);
+
 }
