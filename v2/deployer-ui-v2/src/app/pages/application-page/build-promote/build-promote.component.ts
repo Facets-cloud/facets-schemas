@@ -22,7 +22,7 @@ export class BuildPromoteComponent implements OnInit, OnChanges {
   position = NbPosition.BOTTOM;
   adjustment = 'noop';
   promotionTypes = ['RELEASE','HOTFIX'];
-  promotionIntent = "RELEASE";
+  promotionIntent : any = "RELEASE";
   ngOnChanges(changes: SimpleChanges): void {
   }
 
