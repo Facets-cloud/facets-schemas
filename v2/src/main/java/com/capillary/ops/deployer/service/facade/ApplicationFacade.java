@@ -303,6 +303,12 @@ public class ApplicationFacade {
             }
         }
         existingBuild.setPromoted(build.isPromoted());
+        if(build.isPromoted()){
+            if(build.isPromoted() && build.getPromotionIntent().equals(PromotionIntent.NA)){
+                throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
+            }
+            existingBuild.setPromotionIntent(build.getPromotionIntent());
+        }
         buildRepository.save(existingBuild);
         return getBuildDetails(application, existingBuild);
     }

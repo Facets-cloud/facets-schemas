@@ -24,6 +24,7 @@ public class Build {
     private String triggeredBy;
     private String description;
     private boolean promoted = false;
+    private PromotionIntent promotionIntent = PromotionIntent.NA;
     private boolean promotable = false;
     private boolean testBuild = false;
 
@@ -160,5 +161,13 @@ public class Build {
 
     public void setPromotable(boolean promotable) {
         this.promotable = promotable;
+    }
+
+    public PromotionIntent getPromotionIntent() {
+        return promotionIntent;
+    }
+
+    public void setPromotionIntent(PromotionIntent promotionIntent) {
+        this.promotionIntent = promotionIntent;
     }
 }

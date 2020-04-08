@@ -55,12 +55,11 @@
     "socicon": "3.0.5",
     "typeface-exo": "0.0.22",
     "web-animations-js": "github:angular/web-animations-js#release_pr208",
-    "zone.js": "~0.9.1",
-    "@angular/cli": "8.3.25"
+    "zone.js": "~0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.800.2",
-    "@angular/cli": "8.3.25",
+    "@angular/cli": "^8.3.25",
     "@angular/compiler-cli": "^8.0.0",
     "@angular/language-service": "8.0.0",
     "@compodoc/compodoc": "1.0.1",
