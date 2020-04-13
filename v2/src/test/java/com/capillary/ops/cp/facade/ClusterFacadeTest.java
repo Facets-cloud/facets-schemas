@@ -74,6 +74,8 @@ public class ClusterFacadeTest {
             .equals(tz.getDisplayName());
         assert commonEnvironmentVariables.containsKey("AWS_REGION") && commonEnvironmentVariables.get("AWS_REGION")
             .equals(region.getName());
+        assert commonEnvironmentVariables.containsKey("CLUSTER") && commonEnvironmentVariables.get("CLUSTER")
+            .equals(clusterName);
         assert commonEnvironmentVariables.containsKey("Test1") && commonEnvironmentVariables.get("Test1")
             .equals("Val1");
     }
