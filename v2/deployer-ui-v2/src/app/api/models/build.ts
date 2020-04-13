@@ -9,6 +9,7 @@ export interface Build {
   image?: string;
   promoted?: boolean;
   promotionIntent?: 'NA' | 'HOTFIX' | 'RELEASE' |'NOT_CC_ENABLED'| 'null';
+  promotable?: boolean;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
   tag?: string;
   testBuild?: boolean;
