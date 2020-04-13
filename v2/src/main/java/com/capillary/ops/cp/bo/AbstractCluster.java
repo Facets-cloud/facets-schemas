@@ -24,6 +24,8 @@ public abstract class AbstractCluster {
 
     private String stackName;
 
+    private BuildStrategy releaseStream;
+
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();
 
     public AbstractCluster(String name, Cloud cloud) {
@@ -74,5 +76,13 @@ public abstract class AbstractCluster {
 
     public void setTz(TimeZone tz) {
         this.tz = tz.getDisplayName();
+    }
+
+    public BuildStrategy getReleaseStream() {
+        return releaseStream;
+    }
+
+    public void setReleaseStream(BuildStrategy releaseStream) {
+        this.releaseStream = releaseStream;
     }
 }

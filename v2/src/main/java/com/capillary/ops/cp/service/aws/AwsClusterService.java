@@ -20,7 +20,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
     private AwsAssumeRoleService awsAssumeRoleService;
 
     @Override
-    public AwsCluster createCluster(AwsClusterRequest request, String stackName) {
+    public AwsCluster createCluster(AwsClusterRequest request) {
         //DONE: Validations
         //1. Test the arn & external Id connectivity
         if (!awsAssumeRoleService.testRoleAccess(request.getRoleARN(), request.getExternalId())) {
@@ -33,18 +33,11 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setExternalId(request.getExternalId());
         cluster.setAwsRegion(request.getRegion().getName());
         cluster.setAzs(request.getAzs());
+        cluster.setReleaseStream(request.getReleaseStream());
         //TODO: Variable Generations
-        //1. Generate CIDRs.
-        cluster.setPrivateSubnetCIDR(new ArrayList<String>() {{
-            add("10.250.100.0/24");
-            add("10.250.101.0/24");
-        }});
-        cluster.setPublicSubnetCIDR(new ArrayList<String>() {{
-            add("10.250.110.0/24");
-            add("10.250.111.0/24");
-        }});
+        //1. Generate CIDR.
         cluster.setVpcCIDR("10.250.0.0/16");
-        cluster.setStackName(stackName);
+        cluster.setStackName(request.getStackName());
         return cluster;
     }
 }

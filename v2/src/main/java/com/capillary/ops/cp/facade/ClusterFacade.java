@@ -44,7 +44,7 @@ public class ClusterFacade {
         }
         Stack stackObj = stack.get();
         ClusterService service = factory.getService(request.getCloud());
-        AbstractCluster cluster = service.createCluster(request, stackObj.getName());
+        AbstractCluster cluster = service.createCluster(request);
         //Done: Persist Cluster Object
         //Persist to DB
         AbstractCluster saved = cpClusterRepository.save(cluster);

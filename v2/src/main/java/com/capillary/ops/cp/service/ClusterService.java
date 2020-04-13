@@ -12,8 +12,7 @@ public interface ClusterService<C extends AbstractCluster, CR extends ClusterReq
      * Create a cluster as per the cloud specific implementation
      *
      * @param request Cluster creation request
-     * @param stackName Name of the Tag
      * @return Cluster Object
      */
-    C createCluster(CR request, String stackName);
+    C createCluster(CR request);
 }
