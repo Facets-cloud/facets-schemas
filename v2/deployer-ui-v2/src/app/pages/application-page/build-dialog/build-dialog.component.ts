@@ -56,7 +56,7 @@ export class BuildDialogComponent implements OnInit, OnChanges {
     this.menu.onItemClick().subscribe(
       x => {
         this.build.tag = x.item.title;
-        this.build.promotable = x.item.promotable;
+        this.build.promotable = (x.item.parent.title == "tags")
         this.popover.hide();
       },
     );
@@ -82,7 +82,6 @@ export class BuildDialogComponent implements OnInit, OnChanges {
       x => {
         return {
           title: x,
-          promotable: false,
         };
       },
     );
@@ -91,7 +90,6 @@ export class BuildDialogComponent implements OnInit, OnChanges {
       x => {
         return {
           title: x,
-          promotable: true,
         };
       },
     );
