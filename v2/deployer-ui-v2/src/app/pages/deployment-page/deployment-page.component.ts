@@ -173,7 +173,7 @@ export class DeploymentPageComponent implements OnInit {
   }
 
   isValidEnvVariableValue(value: string) {
-    return !(/^$|\s+/.test(value));
+    return true;
   }
 
   isZKPublishTrue(name: string, value: string) {
