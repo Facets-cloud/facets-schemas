@@ -8,7 +8,6 @@ import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
-import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class BuildFacade {
      * @param releaseType
      * @return Image name
      */
-    public String getImageFromDeployer(String applicationId, BuildStrategy strategy, ReleaseType releaseType) {
+    public Build getImageFromDeployer(String applicationId, BuildStrategy strategy, ReleaseType releaseType) {
         Optional<Build> build = Optional.empty();
         switch (strategy) {
 
@@ -60,7 +59,7 @@ public class BuildFacade {
             Application application = applicationRepository.findOneByApplicationFamilyAndId(family,
                 applicationId).get();
             Build buildDetails = applicationFacade.getBuildDetails(application, build.get(), true);
-            return buildDetails.getImage();
+            return buildDetails;
         }
         throw new NotFoundException("No Build Found");
     }
