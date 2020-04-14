@@ -24,6 +24,11 @@ public class BuildController {
     Build getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy,
         @RequestParam(defaultValue = "RELEASE") ReleaseType releaseType) {
         //        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298";
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return buildFacade.getImageFromDeployer(applicationId, strategy, releaseType);
     }
 
