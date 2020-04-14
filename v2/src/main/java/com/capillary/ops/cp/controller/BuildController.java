@@ -21,7 +21,7 @@ public class BuildController {
      * @return
      */
     @GetMapping("/deployer/{applicationId}")
-    Build getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy,
+    synchronized Build getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy,
         @RequestParam(defaultValue = "RELEASE") ReleaseType releaseType) {
         //        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298";
         try {
