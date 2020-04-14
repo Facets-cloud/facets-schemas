@@ -23,11 +23,6 @@ public class BuildFacade {
     @Autowired
     BuildService buildService;
 
-    @Autowired
-    private ApplicationRepository applicationRepository;
-
-    @Autowired
-    private ApplicationFacade applicationFacade;
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -54,12 +49,7 @@ public class BuildFacade {
                 break;
         }
         if (build.isPresent()) {
-            logger.info("Resolved Build for ApplicationId: {} : {}", applicationId, build.get());
-            ApplicationFamily family = ApplicationFamily.CRM;
-            Application application = applicationRepository.findOneByApplicationFamilyAndId(family,
-                applicationId).get();
-            Build buildDetails = applicationFacade.getBuildDetails(application, build.get(), true);
-            return buildDetails;
+            return build.get();
         }
         throw new NotFoundException("No Build Found");
     }
