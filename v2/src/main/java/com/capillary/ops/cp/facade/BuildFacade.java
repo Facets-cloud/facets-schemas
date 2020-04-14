@@ -10,12 +10,15 @@ import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+
 public class BuildFacade {
 
     @Autowired
@@ -26,6 +29,8 @@ public class BuildFacade {
 
     @Autowired
     private ApplicationFacade applicationFacade;
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Given an Application Id get a Build Image
@@ -50,6 +55,7 @@ public class BuildFacade {
                 break;
         }
         if (build.isPresent()) {
+            logger.info("Resolved Build for ApplicationId: {} : {}", applicationId, build.get());
             ApplicationFamily family = ApplicationFamily.CRM;
             Application application = applicationRepository.findOneByApplicationFamilyAndId(family,
                 applicationId).get();

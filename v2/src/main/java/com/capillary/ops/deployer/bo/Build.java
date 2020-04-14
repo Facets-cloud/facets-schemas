@@ -137,22 +137,12 @@ public class Build {
 
     @Override
     public String toString() {
-        return "Build{" +
-                "id='" + id + '\'' +
-                ", codeBuildId='" + codeBuildId + '\'' +
-                ", applicationId='" + applicationId + '\'' +
-                ", applicationFamily=" + applicationFamily +
-                ", tag='" + tag + '\'' +
-                ", status=" + status +
-                ", environmentVariables=" + environmentVariables +
-                ", timestamp=" + timestamp +
-                ", image='" + image + '\'' +
-                ", triggeredBy='" + triggeredBy + '\'' +
-                ", description='" + description + '\'' +
-                ", promoted=" + promoted +
-                ", promotable" + promotable +
-                ", testBuild=" + testBuild +
-                '}';
+        return "Build{" + "id='" + id + '\'' + ", codeBuildId='" + codeBuildId + '\'' + ", applicationId='"
+            + applicationId + '\'' + ", applicationFamily=" + applicationFamily + ", tag='" + tag + '\'' + ", status="
+            + status + ", environmentVariables=" + environmentVariables + ", timestamp=" + timestamp + ", image='"
+            + image + '\'' + ", triggeredBy='" + triggeredBy + '\'' + ", description='" + description + '\''
+            + ", promoted=" + promoted + ", promotionIntent=" + promotionIntent + ", promotable=" + promotable
+            + ", testBuild=" + testBuild + '}';
     }
 
     public boolean isPromotable() {
