@@ -3,7 +3,6 @@ package com.capillary.ops.deployer.repository;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PromotionIntent;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,11 +40,10 @@ public interface BuildRepository extends MongoRepository<Build, String> {
      * Non Promotable build.
      *
      * @param applicationId Id of Application
-     * @param status
      * @return Build Object
      */
-    Optional<Build> findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseAndStatusOrderByTimestampDesc(
-        String applicationId, StatusType status);
+    Optional<Build> findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseOrderByTimestampDesc(
+        String applicationId);
 
     Optional<Build> findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(String applicationId, PromotionIntent hotfix);
 }

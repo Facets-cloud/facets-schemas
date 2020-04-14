@@ -6,7 +6,6 @@ import com.capillary.ops.deployer.bo.PromotionIntent;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.Optional;
 
@@ -69,8 +68,7 @@ public class BuildService {
      */
     public Optional<Build> getQABuild(String applicationId) {
         return ccBuildRepository
-            .findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseAndStatusOrderByTimestampDesc(applicationId,
-                StatusType.SUCCEEDED);
+            .findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseOrderByTimestampDesc(applicationId);
     }
 
     /**
