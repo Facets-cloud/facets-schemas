@@ -93,7 +93,7 @@ public class BuildRepositoryTest {
     @Test
     public void testBuildQA() {
 
-        Optional<Build> build = buildRepository.findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc("1");
+        Optional<Build> build = buildRepository.findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseOrderByTimestampDesc("1");
         assert build.isPresent();
         assert build.get().getCodeBuildId().equals("latestNightly");
     }

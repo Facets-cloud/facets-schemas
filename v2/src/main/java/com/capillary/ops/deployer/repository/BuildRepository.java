@@ -41,6 +41,6 @@ public interface BuildRepository extends MongoRepository<Build, String> {
      * @param applicationId Id of Application
      * @return Build Object
      */
-    Optional<Build> findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc(String applicationId);
+    Optional<Build> findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseOrderByTimestampDesc(String applicationId);
 
 }

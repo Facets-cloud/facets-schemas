@@ -28,7 +28,7 @@ public class BuildFacade {
 
             case QA:
                 build =
-                    ccBuildRepository.findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc(applicationId);
+                    ccBuildRepository.findFirstByApplicationIdAndPromotableIsFalseAndPromotedIsFalseOrderByTimestampDesc(applicationId);
                 break;
             case STAGING:
                 build =
@@ -39,7 +39,11 @@ public class BuildFacade {
                 break;
         }
         if (build.isPresent()) {
-            return build.get().getImage();
+            String image = build.get().getImage();
+            if(image == null || image.isEmpty()) {
+                throw new NotFoundException("Empty Image Found in " + build.get().getDescription());
+            }
+            return image;
         }
         throw new NotFoundException("No Build Found");
     }
