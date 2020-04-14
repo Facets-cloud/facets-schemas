@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.BuildStrategy;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.facade.BuildFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,10 @@ public class BuildController {
      * @return
      */
     @GetMapping("/deployer/{applicationId}")
-    String getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy) {
+    String getImageFromDeployer(@PathVariable String applicationId, @RequestParam BuildStrategy strategy,
+        @RequestParam(defaultValue = "RELEASE") ReleaseType releaseType) {
         //        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/demoapiservice:101e298";
-        return buildFacade.getImageFromDeployer(applicationId, strategy);
+        return buildFacade.getImageFromDeployer(applicationId, strategy, releaseType);
     }
 
 }

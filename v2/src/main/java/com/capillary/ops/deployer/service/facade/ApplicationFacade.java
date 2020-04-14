@@ -346,7 +346,7 @@ public class ApplicationFacade {
         return repositoryUrlParts[repositoryUrlParts.length - 2];
     }
 
-    private Build getBuildDetails(Application application, Build build, boolean includeImage) {
+    public Build getBuildDetails(Application application, Build build, boolean includeImage) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
                 codeBuildService.getBuild(application, build.getCodeBuildId());
         StatusType status = codeBuildServiceBuild.buildStatus();
