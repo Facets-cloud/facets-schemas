@@ -858,4 +858,8 @@ public class ApplicationFacade {
         String newRelicServiceAlertsURL = newRelicService.getAlertsURL(application, environment);
         return new Alerting(applicationFamily, applicationId, environmentName, newRelicServiceAlertsURL);
     }
+
+    public boolean deleteApplicaitonSecret(String environment, ApplicationFamily applicationFamily, String applicationId, String secretName) {
+        return secretService.deleteApplicationSecret(environment, applicationFamily, applicationId, secretName);
+    }
 }
