@@ -31,9 +31,9 @@ public class StackFacade {
      */
     public Stack createStack(Stack stack) {
 
-//        if (stackRepository.findById(stack.getName()).isPresent()) {
-//            throw new IllegalStateException("Stack already exists and cannot be created again");
-//        }
+        if (stackRepository.findById(stack.getName()).isPresent()) {
+            throw new IllegalStateException("Stack already exists and cannot be created again");
+        }
         Path location;
         try {
             location = gitService.checkout(stack.getVcsUrl(), stack.getUser(), stack.getAppPassword());
