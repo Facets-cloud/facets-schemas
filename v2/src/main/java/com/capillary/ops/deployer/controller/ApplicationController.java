@@ -318,6 +318,15 @@ public class ApplicationController {
         return applicationFacade.updateApplicaitonSecrets(environment, applicationFamily, applicationId, applicationSecrets);
     }
 
+    @JsonView(UserView.SecretName.class)
+    @DeleteMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets/{secretName}")
+    public boolean deleteApplicationSecret(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                            @PathVariable("environment") String environment,
+                                                            @PathVariable("applicationId") String applicationId,
+                                                            @PathVariable("secretName") String secretName) {
+        return applicationFacade.deleteApplicaitonSecret(environment, applicationFamily, applicationId, secretName);
+    }
+
     @GetMapping("/{applicationFamily}/environmentMetaData")
     public ResponseEntity<List<EnvironmentMetaData>> getEnvironmentMetaData(
             @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {

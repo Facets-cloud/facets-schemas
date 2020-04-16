@@ -54,4 +54,10 @@ public class SecretService {
 
         return applicationSecretsRepository.saveAll(secrets);
     }
+
+    public boolean deleteApplicationSecret(String environment, ApplicationFamily applicationFamily, String applicationId, String secretName) {
+        ApplicationSecret existing = applicationSecretsRepository.findOneByEnvironmentNameAndApplicationFamilyAndApplicationIdAndSecretName(environment, applicationFamily, applicationId, secretName).get();
+        applicationSecretsRepository.delete(existing);
+        return true;
+    }
 }
