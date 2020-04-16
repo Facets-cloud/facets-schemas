@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.util.List;
 import java.util.Optional;
 
 @DataMongoTest
@@ -93,8 +94,9 @@ public class BuildRepositoryTest {
     @Test
     public void testBuildQA() {
 
-        Optional<Build> build = buildRepository.findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc("1");
-        assert build.isPresent();
-        assert build.get().getCodeBuildId().equals("latestNightly");
+        List<Build> build =
+            buildRepository.findFirst20ByApplicationIdAndPromotableIsFalseAndPromotedIsFalseAndTestBuildIsFalseOrderByTimestampDesc("1");
+        assert build.size() > 0;
+        assert build.get(0).getCodeBuildId().equals("latestNightly");
     }
 }

@@ -3,6 +3,7 @@ import { Build } from '../../../api/models';
 import { NbDialogConfig, NbDialogService } from '@nebular/theme';
 import { BuildInfoComponent } from '../build-info/build-info.component';
 import { BuildLogsComponent } from '../build-logs/build-logs.component';
+import { BuildPromoteComponent} from '../build-promote/build-promote.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApplicationControllerService } from '../../../api/services';
 import { MessageBus } from '../../../@core/message-bus';
@@ -36,12 +37,20 @@ export class SmartTableCustomActionsComponent implements OnInit {
   }
 
   promoteBuild() {
-    this.applicationControllerService.updateBuildUsingPUT({
-      applicationFamily: this.rowData.applicationFamily,
-      applicationId: this.rowData.applicationId,
-      build: { promoted: true },
-      buildId: this.rowData.id,
-    }).subscribe(build => { this.rowData = build; this.messageBus.buildTopic.next(true); });
+     if(this.rowData.applicationFamily == "CRM"){
+        const dialogRef = this.dialogService.open(BuildPromoteComponent, { context: { build: this.rowData } });
+
+        dialogRef.onClose.subscribe(x => {
+            this.messageBus.buildTopic.next(true);
+        });
+     }else{
+        this.applicationControllerService.updateBuildUsingPUT({
+              applicationFamily: this.rowData.applicationFamily,
+              applicationId: this.rowData.applicationId,
+              build: { promoted: true, promotionIntent: "NOT_CC_ENABLED" },
+              buildId: this.rowData.id,
+            }).subscribe(build => { this.rowData = build; this.messageBus.buildTopic.next(true); });
+     }
   }
 
   openBuildPage() {

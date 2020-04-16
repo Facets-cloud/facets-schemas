@@ -11,6 +11,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { AppInfoComponent } from './application-page/app-info/app-info.component';
 import { BuildsListComponent } from './application-page/builds-list/builds-list.component';
 import { BuildDialogComponent } from './application-page/build-dialog/build-dialog.component';
+import { BuildPromoteComponent } from './application-page/build-promote/build-promote.component';
 import { BuildInfoComponent } from './application-page/build-info/build-info.component';
 import { SmartTableCustomActionsComponent } from './application-page/smart-table-custom-actions/smart-table-custom-actions.component';
 import { BuildLogsComponent } from './application-page/build-logs/build-logs.component';
@@ -70,6 +71,7 @@ import { AlertingComponent, AlertingEnableButtonComponent, NewRelicAlertLinkView
     AppInfoComponent,
     BuildsListComponent,
     BuildDialogComponent,
+    BuildPromoteComponent,
     BuildInfoComponent,
     SmartTableCustomActionsComponent,
     BuildLogsComponent,

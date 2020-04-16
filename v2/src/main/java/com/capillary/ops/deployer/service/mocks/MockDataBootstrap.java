@@ -82,12 +82,27 @@ public class MockDataBootstrap {
         Build build = new Build();
         build.setApplicationId(application.getId());
         build.setCodeBuildId(UUID.randomUUID().toString());
-        build.setImage(UUID.randomUUID().toString());
+        build.setImage("QABuild");
         build.setStatus(StatusType.SUCCEEDED);
         build.setTriggeredBy("admin");
         build.setEnvironmentVariables(ImmutableMap.of("key", "value"));
         build.setDescription("test build");
         build.setTag("tag/1.0");
+        build.setPromotable(false);
+        build.setPromoted(false);
+        build.setTimestamp(System.currentTimeMillis());
+        buildRepository.save(build);
+        build = new Build();
+        build.setApplicationId(application.getId());
+        build.setCodeBuildId(UUID.randomUUID().toString());
+        build.setImage("ReleaseBuild");
+        build.setStatus(StatusType.SUCCEEDED);
+        build.setTriggeredBy("admin");
+        build.setEnvironmentVariables(ImmutableMap.of("key", "value"));
+        build.setDescription("test build");
+        build.setTag("tag/1.0");
+        build.setPromotable(true);
+        build.setPromoted(true);
         build.setTimestamp(System.currentTimeMillis());
         buildRepository.save(build);
     }
@@ -103,6 +118,7 @@ public class MockDataBootstrap {
         application.setLoadBalancerType(LoadBalancerType.INTERNAL);
         application.setPorts(new ArrayList<>(getPorts()));
         Application result = applicationRepository.save(application);
+        System.out.println("Application Id: "+ result.getId() + " Family:" + result.getApplicationFamily());
         createBuild(result);
         ApplicationSecretRequest request = new ApplicationSecretRequest();
         request.setSecretName("DB_PASSWORD");

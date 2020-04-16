@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.repository;
 
 import com.capillary.ops.deployer.bo.Build;
+import com.capillary.ops.deployer.bo.PromotionIntent;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface BuildRepository extends MongoRepository<Build, String> {
 
     /**
      * Find Latest Production Build
-     *
+     * <p>
      * Latest Promoted
      *
      * @param applicationId Id of Application
@@ -22,10 +23,9 @@ public interface BuildRepository extends MongoRepository<Build, String> {
      */
     Optional<Build> findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(String applicationId);
 
-
     /**
      * Find Latest Staging Build
-     *
+     * <p>
      * Latest Promotable
      *
      * @param applicationId Id of Application
@@ -35,12 +35,15 @@ public interface BuildRepository extends MongoRepository<Build, String> {
 
     /**
      * Find Latest Test Build
-     *
+     * <p>
      * Non Promotable build.
      *
      * @param applicationId Id of Application
      * @return Build Object
      */
-    Optional<Build> findFirstByApplicationIdAndPromotableIsFalseOrderByTimestampDesc(String applicationId);
+    List<Build> findFirst20ByApplicationIdAndPromotableIsFalseAndPromotedIsFalseAndTestBuildIsFalseOrderByTimestampDesc(
+        String applicationId);
 
+    Optional<Build> findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(
+        String applicationId, PromotionIntent hotfix);
 }

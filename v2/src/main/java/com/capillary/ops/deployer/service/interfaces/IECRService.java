@@ -6,11 +6,14 @@ import java.time.Instant;
 import java.util.List;
 
 public interface IECRService {
+
     void createRepository(Application application);
+
     List<String> listImages(Application application);
 
     String findImageBetweenTimes(Application application, Instant from, Instant to);
 
     void syncToChinaECR(String ImageURL);
+
     void deleteRepository(Application application);
 }

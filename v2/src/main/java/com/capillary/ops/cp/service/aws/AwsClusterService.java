@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * AWS implementation of the Facade
@@ -18,7 +20,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
     private AwsAssumeRoleService awsAssumeRoleService;
 
     @Override
-    public AwsCluster createCluster(AwsClusterRequest request, String stackName) {
+    public AwsCluster createCluster(AwsClusterRequest request) {
         //DONE: Validations
         //1. Test the arn & external Id connectivity
         if (!awsAssumeRoleService.testRoleAccess(request.getRoleARN(), request.getExternalId())) {
@@ -27,23 +29,15 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         //DONE: Variable Assignment
         AwsCluster cluster = new AwsCluster(request.getClusterName());
         cluster.setRoleARN(request.getRoleARN());
+        cluster.setTz(request.getTz());
         cluster.setExternalId(request.getExternalId());
         cluster.setAwsRegion(request.getRegion().getName());
         cluster.setAzs(request.getAzs());
+        cluster.setReleaseStream(request.getReleaseStream());
         //TODO: Variable Generations
-        //1. Generate CIDRs etc.
-        cluster.setPrivateSubnetCIDR(new ArrayList<String>() {{
-            add("10.250.100.0/24");
-            add("10.250.101.0/24");
-        }});
-        cluster.setPublicSubnetCIDR(new ArrayList<String>() {{
-            add("10.250.110.0/24");
-            add("10.250.111.0/24");
-        }});
+        //1. Generate CIDR.
         cluster.setVpcCIDR("10.250.0.0/16");
-        cluster.setStackName(stackName);
-        //TODO: return cluster object
-        // return
+        cluster.setStackName(request.getStackName());
         return cluster;
     }
 }

@@ -24,6 +24,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { BuildInfoComponent } from './pages/application-page/build-info/build-info.component';
 import { BuildDialogComponent } from './pages/application-page/build-dialog/build-dialog.component';
+import {BuildPromoteComponent} from './pages/application-page/build-promote/build-promote.component';
 import { PagesModule } from './pages/pages.module';
 import { SmartTableCustomActionsComponent } from './pages/application-page/smart-table-custom-actions/smart-table-custom-actions.component';
 import { BuildLogsComponent } from './pages/application-page/build-logs/build-logs.component';
@@ -62,6 +63,7 @@ import { NewRelicAlertLinkViewComponent, AlertingEnableButtonComponent } from '.
     BuildInfoComponent,
     SmartTableCustomActionsComponent,
     BuildLogsComponent,
+    BuildPromoteComponent,
     SecretStatusColumnComponent,
     RequestCredentialDialogComponent,
     SetCredentialValueDialogComponent,

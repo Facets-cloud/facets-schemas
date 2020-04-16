@@ -24,6 +24,7 @@ public class Build {
     private String triggeredBy;
     private String description;
     private boolean promoted = false;
+    private PromotionIntent promotionIntent = PromotionIntent.NA;
     private boolean promotable = false;
     private boolean testBuild = false;
 
@@ -136,22 +137,12 @@ public class Build {
 
     @Override
     public String toString() {
-        return "Build{" +
-                "id='" + id + '\'' +
-                ", codeBuildId='" + codeBuildId + '\'' +
-                ", applicationId='" + applicationId + '\'' +
-                ", applicationFamily=" + applicationFamily +
-                ", tag='" + tag + '\'' +
-                ", status=" + status +
-                ", environmentVariables=" + environmentVariables +
-                ", timestamp=" + timestamp +
-                ", image='" + image + '\'' +
-                ", triggeredBy='" + triggeredBy + '\'' +
-                ", description='" + description + '\'' +
-                ", promoted=" + promoted +
-                ", promotable" + promotable +
-                ", testBuild=" + testBuild +
-                '}';
+        return "Build{" + "id='" + id + '\'' + ", codeBuildId='" + codeBuildId + '\'' + ", applicationId='"
+            + applicationId + '\'' + ", applicationFamily=" + applicationFamily + ", tag='" + tag + '\'' + ", status="
+            + status + ", environmentVariables=" + environmentVariables + ", timestamp=" + timestamp + ", image='"
+            + image + '\'' + ", triggeredBy='" + triggeredBy + '\'' + ", description='" + description + '\''
+            + ", promoted=" + promoted + ", promotionIntent=" + promotionIntent + ", promotable=" + promotable
+            + ", testBuild=" + testBuild + '}';
     }
 
     public boolean isPromotable() {
@@ -160,5 +151,13 @@ public class Build {
 
     public void setPromotable(boolean promotable) {
         this.promotable = promotable;
+    }
+
+    public PromotionIntent getPromotionIntent() {
+        return promotionIntent;
+    }
+
+    public void setPromotionIntent(PromotionIntent promotionIntent) {
+        this.promotionIntent = promotionIntent;
     }
 }

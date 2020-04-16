@@ -23,10 +23,6 @@ public class AwsCluster extends AbstractCluster {
 
     private List<String> azs;
 
-    private List<String> privateSubnetCIDR;
-
-    private List<String> publicSubnetCIDR;
-
     private String vpcCIDR;
 
     private String externalId;
@@ -67,22 +63,6 @@ public class AwsCluster extends AbstractCluster {
 
     public void setAzs(List<String> azs) {
         this.azs = azs;
-    }
-
-    public List<String> getPrivateSubnetCIDR() {
-        return privateSubnetCIDR;
-    }
-
-    public void setPrivateSubnetCIDR(List<String> privateSubnetCIDR) {
-        this.privateSubnetCIDR = privateSubnetCIDR;
-    }
-
-    public List<String> getPublicSubnetCIDR() {
-        return publicSubnetCIDR;
-    }
-
-    public void setPublicSubnetCIDR(List<String> publicSubnetCIDR) {
-        this.publicSubnetCIDR = publicSubnetCIDR;
     }
 
     public String getVpcCIDR() {

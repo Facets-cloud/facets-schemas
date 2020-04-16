@@ -56,6 +56,7 @@ export class BuildDialogComponent implements OnInit, OnChanges {
     this.menu.onItemClick().subscribe(
       x => {
         this.build.tag = x.item.title;
+        this.build.promotable = (x.item.parent.title == "tags")
         this.popover.hide();
       },
     );
