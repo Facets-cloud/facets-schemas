@@ -50,7 +50,7 @@ public class IAMService implements IIAMService {
             String appName = application.getName();
             String appFamily = application.getApplicationFamily().name().toLowerCase();
             String rolePath = ROOT_LEVEL + appFamily;
-            ListRolesResponse rolesList = iamClient.listRoles(ListRolesRequest.builder().pathPrefix(rolePath).build());
+            ListRolesResponse rolesList = iamClient.listRoles(ListRolesRequest.builder().pathPrefix(rolePath).maxItems(1000).build());
             Role appRole = rolesList.roles().stream().filter(role ->
                     role.roleName().equals(appName + "-" + environment.getEnvironmentMetaData().getName()))
                     .findFirst().orElse(null);
