@@ -2,9 +2,11 @@ package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
+import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,19 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
     @PostMapping()
     public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
         return (AwsCluster) clusterFacade.createCluster(request);
+    }
+
+    @Override
+    @PostMapping("{clusterId}/credentials")
+    public Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId) {
+        request.setClusterId(clusterId);
+        return clusterFacade.addClusterK8sCredentials(request);
+    }
+
+    @GetMapping("{clusterId}/deployments/{value}")
+    public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
+        @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
+        return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
     /**

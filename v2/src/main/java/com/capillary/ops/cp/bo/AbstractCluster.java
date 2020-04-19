@@ -3,6 +3,7 @@ package com.capillary.ops.cp.bo;
 import com.capillary.ops.cp.bo.requests.Cloud;
 import org.springframework.data.annotation.Id;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -16,14 +17,19 @@ public abstract class AbstractCluster {
     @Id
     private String id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private Cloud cloud;
 
+    @NotNull
     private String tz;
 
+    @NotNull
     private String stackName;
 
+    @NotNull
     private BuildStrategy releaseStream;
 
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();

@@ -1,6 +1,9 @@
 package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
+import com.capillary.ops.cp.bo.AbstractCluster;
+import com.capillary.ops.cp.bo.BuildStrategy;
+import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
@@ -22,8 +25,6 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +111,9 @@ public class ApplicationFacade {
 
     @Autowired
     private ActionExecutionRepository actionExecutionRepository;
+
+    @Autowired
+    private ClusterFacade clusterFacade;
 
     public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
@@ -668,6 +672,23 @@ public class ApplicationFacade {
     public List<EnvironmentMetaData> getEnvironmentMetaData(ApplicationFamily applicationFamily) {
         return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
                 .stream().map(Environment::getEnvironmentMetaData).collect(Collectors.toList());
+    }
+
+    public List<EnvironmentMetaData> getEnvironmentMetaDataCC(ApplicationFamily applicationFamily) {
+        List<AbstractCluster> clustersByStackName =
+            clusterFacade.getClustersByStackName(applicationFamily.name().toLowerCase());
+
+        List<EnvironmentMetaData> ccEnvs = clustersByStackName.stream().map(c -> {
+            EnvironmentMetaData environmentMetaData = new EnvironmentMetaData();
+            environmentMetaData.setCapillaryCloudClusterName(c.getName());
+            environmentMetaData.setName(c.getName());
+            environmentMetaData.setApplicationFamily(applicationFamily);
+            environmentMetaData.setCapCloud(true);
+            environmentMetaData.setEnvironmentType(
+                c.getReleaseStream().equals(BuildStrategy.QA) ? EnvironmentType.QA : EnvironmentType.PRODUCTION);
+            return environmentMetaData;
+        }).collect(Collectors.toList());
+        return ccEnvs;
     }
 
     public List<Environment> getEnvironments(ApplicationFamily applicationFamily) {

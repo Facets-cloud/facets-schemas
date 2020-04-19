@@ -2,16 +2,23 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
+import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
+import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.apps.DeploymentList;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -29,6 +36,9 @@ public class ClusterFacade {
 
     @Autowired
     private StackRepository stackRepository;
+
+    @Autowired
+    private K8sCredentialsRepository k8sCredentialsRepository;
 
     /**
      * Cluster agnostic request to create a new cluster
@@ -75,5 +85,33 @@ public class ClusterFacade {
         }
         clusterObj.addCommonEnvironmentVariables(stackVars);
         return clusterObj;
+    }
+
+    public List<AbstractCluster> getClustersByStackName(String stackName) {
+        if (!stackRepository.findById(stackName).isPresent()) {
+            throw new NotFoundException("Stack Not Found: " + stackName);
+        }
+        return cpClusterRepository.findAllByStackName(stackName);
+    }
+
+    public Boolean addClusterK8sCredentials(K8sCredentials request) {
+        k8sCredentialsRepository.save(request);
+        return true;
+    }
+
+    public Deployment getApplicationData(String clusterId, String key, String value) {
+        Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
+        K8sCredentials k8sCredentials = credentialsO.get();
+        DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
+            new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+        DeploymentList apps =
+            kubernetesClient.inNamespace("").extensions().deployments().withLabel(key, value).list();
+        if (apps.getItems().isEmpty()) {
+            throw new NotFoundException(
+                "Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
+        }
+        Deployment deployment = apps.getItems().get(0);
+        return deployment;
     }
 }

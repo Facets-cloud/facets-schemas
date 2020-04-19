@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.bo;
 
 public class EnvironmentMetaData {
 
+    private Boolean isCapCloud = false;
     private String capillaryCloudClusterName;
 
     public EnvironmentMetaData(EnvironmentType environmentType, String name, ApplicationFamily applicationFamily) {
@@ -54,5 +55,13 @@ public class EnvironmentMetaData {
 
     public void setCapillaryCloudClusterName(String capillaryCloudClusterName) {
         this.capillaryCloudClusterName = capillaryCloudClusterName;
+    }
+
+    public Boolean getCapCloud() {
+        return isCapCloud;
+    }
+
+    public void setCapCloud(Boolean capCloud) {
+        isCapCloud = capCloud;
     }
 }
