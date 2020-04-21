@@ -104,7 +104,8 @@ public class BuildService {
         Application application =
             applicationRepository.findOneByApplicationFamilyAndId(family, applicationId).get();
         Build buildDetails = applicationFacade.getBuildDetails(application, build, true);
-        if (buildDetails.getStatus() == StatusType.SUCCEEDED && !buildDetails.getImage().isEmpty()) {
+        if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getImage() != null &&
+            !buildDetails.getImage().isEmpty()) {
             return Optional.of(buildDetails);
         }
         return Optional.empty();
