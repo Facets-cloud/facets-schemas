@@ -30,9 +30,13 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
         return (AwsCluster) clusterFacade.createCluster(request);
     }
 
+    @PutMapping("{clusterId}")
+    public AwsCluster createCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
+        return (AwsCluster) clusterFacade.updateCluster(request, clusterId);
+    }
+
     /**
      * Get Cluster Details
-     * TODO: do we need separate method for TF?
      *
      * @param clusterId Id of the cluster
      * @return Cluster Object
@@ -41,10 +45,10 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
     @GetMapping("{clusterId}")
     public AwsCluster getCluster(@PathVariable String clusterId) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        if (!(cluster instanceof AwsCluster)) {
-            new NotFoundException("This Cluster is not defined in AWS");
+        if (cluster instanceof AwsCluster) {
+            return (AwsCluster) cluster;
         }
-        return (AwsCluster) cluster;
+        throw new NotFoundException("This Cluster is not defined in AWS");
     }
 
 }

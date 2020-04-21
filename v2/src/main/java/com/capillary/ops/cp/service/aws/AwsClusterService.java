@@ -6,10 +6,6 @@ import com.capillary.ops.cp.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * AWS implementation of the Facade
  */
@@ -39,5 +35,22 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setVpcCIDR("10.250.0.0/16");
         cluster.setStackName(request.getStackName());
         return cluster;
+    }
+
+    @Override
+    public AwsCluster updateCluster(AwsClusterRequest request, AwsCluster existing) {
+        if (checkChanged(existing.getTz(), request.getTz().getID())) {
+            existing.setTz(request.getTz());
+        }
+        if (checkChanged(existing.getRoleARN(), request.getRoleARN()) || checkChanged(existing.getExternalId(),
+            request.getExternalId())) {
+            existing.setRoleARN(request.getRoleARN());
+            existing.setExternalId(request.getExternalId());
+        }
+        return existing;
+    }
+
+    private boolean checkChanged(Object old, Object changed) {
+        return changed != null && !old.equals(changed);
     }
 }

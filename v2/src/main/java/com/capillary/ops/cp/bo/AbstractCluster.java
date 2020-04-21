@@ -2,6 +2,7 @@ package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.Cloud;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Cluster agnostic definition of a cluster
  */
+@CompoundIndex(def = "{'name':1, 'stackName':1}", name = "uniqueNamePerStack")
 public abstract class AbstractCluster {
 
     @Id
@@ -75,7 +77,7 @@ public abstract class AbstractCluster {
     }
 
     public void setTz(TimeZone tz) {
-        this.tz = tz.getDisplayName();
+        this.tz = tz.getID();
     }
 
     public BuildStrategy getReleaseStream() {
