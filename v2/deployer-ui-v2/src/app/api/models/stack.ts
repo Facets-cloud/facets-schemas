@@ -1,7 +1,9 @@
 /* tslint:disable */
 export interface Stack {
+  appPassword?: string;
   name?: string;
-  status?: 'DRAFT';
+  relativePath?: string;
+  user?: string;
   vcs?: 'GITHUB' | 'BITBUCKET';
   vcsUrl?: string;
 }

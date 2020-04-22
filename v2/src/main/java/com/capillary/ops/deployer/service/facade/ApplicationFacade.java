@@ -4,6 +4,7 @@ import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.facade.ClusterFacade;
+import com.capillary.ops.cp.service.CCAdapterService;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
@@ -112,8 +113,9 @@ public class ApplicationFacade {
     @Autowired
     private ActionExecutionRepository actionExecutionRepository;
 
+
     @Autowired
-    private ClusterFacade clusterFacade;
+    private CCAdapterService ccAdapterService;
 
     public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
@@ -389,7 +391,12 @@ public class ApplicationFacade {
 
     public Deployment getCurrentDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
         Optional<Deployment> deployment = deploymentRepository.findTopOneByApplicationFamilyAndApplicationIdAndEnvironmentOrderByTimestampDesc(applicationFamily, applicationId, environment);
-        return deployment.isPresent() ? deployment.get() : null;
+
+        if (deployment.isPresent()) {
+            return deployment.get();
+        }
+        Deployment ccDeployment = ccAdapterService.getCCDeployment(applicationFamily, applicationId, environment);
+        return ccDeployment;
     }
 
     public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,
@@ -675,19 +682,7 @@ public class ApplicationFacade {
     }
 
     public List<EnvironmentMetaData> getEnvironmentMetaDataCC(ApplicationFamily applicationFamily) {
-        List<AbstractCluster> clustersByStackName =
-            clusterFacade.getClustersByStackName(applicationFamily.name().toLowerCase());
-
-        List<EnvironmentMetaData> ccEnvs = clustersByStackName.stream().map(c -> {
-            EnvironmentMetaData environmentMetaData = new EnvironmentMetaData();
-            environmentMetaData.setCapillaryCloudClusterName(c.getName());
-            environmentMetaData.setName(c.getName());
-            environmentMetaData.setApplicationFamily(applicationFamily);
-            environmentMetaData.setCapCloud(true);
-            environmentMetaData.setEnvironmentType(
-                c.getReleaseStream().equals(BuildStrategy.QA) ? EnvironmentType.QA : EnvironmentType.PRODUCTION);
-            return environmentMetaData;
-        }).collect(Collectors.toList());
+        List<EnvironmentMetaData> ccEnvs = ccAdapterService.getCCEnvironmentMetaData(applicationFamily);
         return ccEnvs;
     }
 

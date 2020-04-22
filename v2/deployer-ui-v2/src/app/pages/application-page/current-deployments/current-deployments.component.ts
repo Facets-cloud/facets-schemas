@@ -19,7 +19,9 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
   @Input() application: Application;
 
   environments: EnvironmentMetaData[];
+  ccEnvironments: EnvironmentMetaData[];
   deployments: Deployment[] = [];
+  ccDeployments: Deployment[] = [];
   settingsDefault = {
     columns: {
       environment: {
@@ -146,6 +148,13 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
           this.environments = x;
           this.loadLatestDeployments();
         });
+
+      this.applicationControllerService.getCCEnvironmentMetaDataUsingGET(this.application.applicationFamily)
+        .subscribe(x => {
+          this.ccEnvironments = x;
+          debugger;
+          this.loadLatestCCDeployments();
+        });
     }
   }
 
@@ -166,6 +175,24 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
     }
     this.deployments = deployments;
   }
+
+  async loadLatestCCDeployments() {
+      const deployments = [];
+      for (const environment of this.ccEnvironments) {
+        const deployment: Deployment = await this.applicationControllerService.getCurrentDeploymentUsingGET({
+          environment: environment.name,
+          applicationFamily: this.application.applicationFamily,
+          applicationId: this.application.id,
+        }).toPromise();
+        if (deployment) {
+          deployment['minReplicas'] = deployment.horizontalPodAutoscaler.minReplicas;
+          deployment['maxReplicas'] = deployment.horizontalPodAutoscaler.maxReplicas;
+          deployment['cpuThreshold'] = deployment.horizontalPodAutoscaler.threshold;
+          deployments.push(deployment);
+        }
+      }
+      this.ccDeployments = deployments;
+    }
 
 }
 

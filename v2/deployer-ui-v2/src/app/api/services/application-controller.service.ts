@@ -8,6 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { ApplicationAction } from '../models/application-action';
+import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
@@ -19,7 +20,6 @@ import { ActionExecution } from '../models/action-execution';
 import { ApplicationSecretRequest } from '../models/application-secret-request';
 import { BitbucketPREvent } from '../models/bitbucket-prevent';
 import { GithubPREvent } from '../models/github-prevent';
-import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
 import { Alerting } from '../models/alerting';
 import { Deployment } from '../models/deployment';
@@ -38,6 +38,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
   static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
+  static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -84,6 +85,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly resumeApplicationUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/resume';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
+  static readonly deleteApplicationSecretUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets/{secretName}';
 
   constructor(
     config: __Configuration,
@@ -202,6 +204,42 @@ class ApplicationControllerService extends __BaseService {
   createGenericActionUsingPOST(params: ApplicationControllerService.CreateGenericActionUsingPOSTParams): __Observable<ApplicationAction> {
     return this.createGenericActionUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as ApplicationAction)
+    );
+  }
+
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getCCEnvironmentMetaDataUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<EnvironmentMetaData>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/cc/${applicationFamily}/environmentMetaData`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<EnvironmentMetaData>>;
+      })
+    );
+  }
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getCCEnvironmentMetaDataUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<EnvironmentMetaData>> {
+    return this.getCCEnvironmentMetaDataUsingGETResponse(applicationFamily).pipe(
+      __map(_r => _r.body as Array<EnvironmentMetaData>)
     );
   }
 
@@ -2470,6 +2508,63 @@ class ApplicationControllerService extends __BaseService {
       __map(_r => _r.body as Array<ApplicationSecret>)
     );
   }
+
+  /**
+   * @param params The `ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams` containing the following parameters:
+   *
+   * - `secretName`: secretName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  deleteApplicationSecretUsingDELETEResponse(params: ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets/${params.secretName}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams` containing the following parameters:
+   *
+   * - `secretName`: secretName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  deleteApplicationSecretUsingDELETE(params: ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams): __Observable<boolean> {
+    return this.deleteApplicationSecretUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
 }
 
 module ApplicationControllerService {
@@ -3292,6 +3387,32 @@ module ApplicationControllerService {
      * applicationSecrets
      */
     applicationSecrets: Array<ApplicationSecret>;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for deleteApplicationSecretUsingDELETE
+   */
+  export interface DeleteApplicationSecretUsingDELETEParams {
+
+    /**
+     * secretName
+     */
+    secretName: string;
+
+    /**
+     * environment
+     */
+    environment: string;
 
     /**
      * applicationId
