@@ -7,7 +7,7 @@ public class StackFile {
 
     private Map<String, String> stackVariables = new HashMap<>();
 
-    private Map<String, VariableDetails> clusterVariables = new HashMap<>();
+    private Map<String, VariableDetails> clusterVariablesMeta = new HashMap<>();
 
     public Map<String, String> getStackVariables() {
         return stackVariables;
@@ -17,12 +17,12 @@ public class StackFile {
         this.stackVariables = stackVariables;
     }
 
-    public Map<String, VariableDetails> getClusterVariables() {
-        return clusterVariables;
+    public Map<String, VariableDetails> getClusterVariablesMeta() {
+        return clusterVariablesMeta;
     }
 
-    public void setClusterVariables(Map<String, VariableDetails> clusterVariables) {
-        this.clusterVariables = clusterVariables;
+    public void setClusterVariablesMeta(Map<String, VariableDetails> clusterVariablesMeta) {
+        this.clusterVariablesMeta = clusterVariablesMeta;
     }
 
     public static class VariableDetails {

@@ -52,7 +52,7 @@ public class StackFacade {
             Gson gson = new Gson();
             StackFile file = gson.fromJson(new FileReader(stackFile), StackFile.class);
             stack.setStackVars(file.getStackVariables());
-            stack.setClusterVariablesMeta(file.getClusterVariables());
+            stack.setClusterVariablesMeta(file.getClusterVariablesMeta());
         } catch (Throwable e) {
             throw new IllegalArgumentException(
                 "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);
