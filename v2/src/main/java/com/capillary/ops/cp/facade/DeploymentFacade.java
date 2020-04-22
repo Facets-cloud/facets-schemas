@@ -7,12 +7,14 @@ import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@Loggable
 public class DeploymentFacade {
 
     @Autowired

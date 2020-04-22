@@ -10,6 +10,7 @@ import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
+@Loggable
 public class ClusterFacade {
 
     /**

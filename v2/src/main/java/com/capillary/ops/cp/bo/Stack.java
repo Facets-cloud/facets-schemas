@@ -2,6 +2,7 @@ package com.capillary.ops.cp.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class Stack {
 
     private String user;
 
+    @Transient
     private String appPassword;
 
     @JsonIgnore

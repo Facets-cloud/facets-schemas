@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ import java.util.Optional;
  * CodeBuild service to trigger TF Builds.
  */
 @Component
+@Loggable
 public class AwsCodeBuildService implements TFBuildService {
 
     private static final String CLUSTER_ID = "CLUSTER_ID";

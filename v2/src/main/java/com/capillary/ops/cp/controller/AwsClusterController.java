@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("cc/v1/aws/clusters")
+@Loggable
 public class AwsClusterController implements ClusterController<AwsCluster, AwsClusterRequest> {
 
     @Autowired

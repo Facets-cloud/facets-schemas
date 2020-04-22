@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
 import com.google.gson.Gson;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 
 @Service
+@Loggable
 public class StackFacade {
 
     @Autowired
@@ -28,7 +30,7 @@ public class StackFacade {
      * @return
      */
     public Stack createStack(Stack stack) {
-
+        stackRepository.findById(stack.getName());
 //        if (stackRepository.findById(stack.getName()).isPresent()) {
 //            throw new IllegalStateException("Stack already exists and cannot be created again");
 //        }

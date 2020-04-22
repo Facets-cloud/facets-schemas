@@ -8,6 +8,7 @@ import com.capillary.ops.deployer.bo.PromotionIntent;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
+import com.jcabi.aspects.Loggable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Loggable
 public class BuildService {
 
     @Autowired

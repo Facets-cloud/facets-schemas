@@ -3,6 +3,7 @@ package com.capillary.ops.cp.service.aws;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.service.ClusterService;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  * AWS implementation of the Facade
  */
 @Component
+@Loggable
 public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterRequest> {
 
     @Autowired

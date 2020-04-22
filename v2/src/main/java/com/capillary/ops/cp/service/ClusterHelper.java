@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
+import com.jcabi.aspects.Loggable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@Loggable
 public class ClusterHelper {
 
     /**

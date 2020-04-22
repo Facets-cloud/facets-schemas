@@ -1,8 +1,10 @@
 package com.capillary.ops.cp.service.aws;
 
+import com.jcabi.aspects.Loggable;
 import org.springframework.stereotype.Component;
 
 @Component
+@Loggable
 public class AwsAssumeRoleService {
 
     /**
