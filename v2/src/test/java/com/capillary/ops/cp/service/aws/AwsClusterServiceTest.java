@@ -53,7 +53,7 @@ public class AwsClusterServiceTest {
         assert cluster.getCloud().equals(Cloud.AWS);
         assert cluster.getStackName().equals(awsClusterRequest.getStackName());
         assert cluster.getName().equals(awsClusterRequest.getClusterName());
-        assert cluster.getTz().equals(awsClusterRequest.getTz().getDisplayName());
+        assert cluster.getTz().equals(awsClusterRequest.getTz().getID());
         assert cluster.getReleaseStream().equals(awsClusterRequest.getReleaseStream());
     }
 

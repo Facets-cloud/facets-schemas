@@ -2,7 +2,6 @@ package com.capillary.ops.cp.service;
 
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.deployer.bo.Application;
-import com.capillary.ops.deployer.bo.ApplicationFamily;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PromotionIntent;
 import com.capillary.ops.deployer.repository.ApplicationRepository;
@@ -102,13 +101,13 @@ public class BuildService {
 
     private Optional<Build> fetchValidBuildWithImage(String applicationId, Build build) {
         logger.info("Resolved Build for ApplicationId: {} : {}", applicationId, build);
-        ApplicationFamily family = ApplicationFamily.CRM;
-        Application application =
-            applicationRepository.findOneByApplicationFamilyAndId(family, applicationId).get();
-        Build buildDetails = applicationFacade.getBuildDetails(application, build, true);
-        if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getImage() != null &&
-            !buildDetails.getImage().isEmpty()) {
-            return Optional.of(buildDetails);
+        Optional<Application> application = applicationRepository.findById(applicationId);
+        if (application.isPresent()) {
+            Build buildDetails = applicationFacade.getBuildDetails(application.get(), build, true);
+            if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getImage() != null && !buildDetails
+                .getImage().isEmpty()) {
+                return Optional.of(buildDetails);
+            }
         }
         return Optional.empty();
     }
