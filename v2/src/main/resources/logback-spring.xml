@@ -5,7 +5,7 @@
     <logger name="io" level="ERROR"/>
     <logger name="com" level="ERROR"/>
     <logger name="springfox" level="ERROR"/>
-    <logger name="com.capillary" level="INFO"/>
+    <logger name="com.capillary" level="DEBUG"/>
 
     <appender name="DEPLOYER" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">

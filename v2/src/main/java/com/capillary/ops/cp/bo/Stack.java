@@ -2,6 +2,7 @@ package com.capillary.ops.cp.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 
 import java.util.Map;
 
@@ -18,10 +19,14 @@ public class Stack {
 
     private String user;
 
+    @Transient
     private String appPassword;
 
     @JsonIgnore
     private Map<String, String> stackVars;
+
+    @JsonIgnore
+    private Map<String, StackFile.VariableDetails> clusterVariablesMeta;
 
     public String getName() {
         return name;
@@ -77,5 +82,13 @@ public class Stack {
 
     public void setStackVars(Map<String, String> stackVars) {
         this.stackVars = stackVars;
+    }
+
+    public void setClusterVariablesMeta(Map<String, StackFile.VariableDetails> clusterVariablesMeta) {
+        this.clusterVariablesMeta = clusterVariablesMeta;
+    }
+
+    public Map<String, StackFile.VariableDetails> getClusterVariablesMeta() {
+        return clusterVariablesMeta;
     }
 }

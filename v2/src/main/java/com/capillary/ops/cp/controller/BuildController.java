@@ -4,11 +4,13 @@ import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.facade.BuildFacade;
 import com.capillary.ops.deployer.bo.Build;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("cc/v1/build/")
+@Loggable
 public class BuildController {
 
     @Autowired

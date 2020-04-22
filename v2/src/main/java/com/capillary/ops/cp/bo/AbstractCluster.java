@@ -1,7 +1,10 @@
 package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.Cloud;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -12,6 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Cluster agnostic definition of a cluster
  */
+@CompoundIndex(def = "{'name':1, 'stackName':1}", name = "uniqueNamePerStack")
 public abstract class AbstractCluster {
 
     @Id
@@ -32,7 +36,14 @@ public abstract class AbstractCluster {
     @NotNull
     private BuildStrategy releaseStream;
 
+    @Transient
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();
+
+    @JsonIgnore
+    private Map<String, String> userInputVars = new HashMap<>();
+
+    @Transient
+    private Map<String, String> secrets;
 
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
@@ -72,8 +83,8 @@ public abstract class AbstractCluster {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public void addCommonEnvironmentVariables(Map<String, String> commonEnvironmentVariables) {
-        this.commonEnvironmentVariables.putAll(commonEnvironmentVariables);
+    public void setCommonEnvironmentVariables(Map<String, String> commonEnvironmentVariables) {
+        this.commonEnvironmentVariables = commonEnvironmentVariables;
     }
 
     public String getTz() {
@@ -81,7 +92,7 @@ public abstract class AbstractCluster {
     }
 
     public void setTz(TimeZone tz) {
-        this.tz = tz.getDisplayName();
+        this.tz = tz.getID();
     }
 
     public BuildStrategy getReleaseStream() {
@@ -90,5 +101,21 @@ public abstract class AbstractCluster {
 
     public void setReleaseStream(BuildStrategy releaseStream) {
         this.releaseStream = releaseStream;
+    }
+
+    public Map<String, String> getUserInputVars() {
+        return userInputVars;
+    }
+
+    public void setUserInputVars(Map<String, String> userInputVars) {
+        this.userInputVars = userInputVars;
+    }
+
+    public void setSecrets(Map<String, String> secrets) {
+        this.secrets = secrets;
+    }
+
+    public Map<String, String> getSecrets() {
+        return secrets;
     }
 }

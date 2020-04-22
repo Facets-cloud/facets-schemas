@@ -4,6 +4,8 @@ import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.StackFacade;
+import com.capillary.ops.deployer.exceptions.NotImplementedException;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("cc/v1/stacks/")
+@Loggable()
 public class StackController {
 
     @Autowired

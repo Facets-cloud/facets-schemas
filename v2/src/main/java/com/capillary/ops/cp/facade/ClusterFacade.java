@@ -8,13 +8,16 @@ import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
+import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
+@Loggable
 public class ClusterFacade {
 
     /**
@@ -40,6 +44,9 @@ public class ClusterFacade {
     @Autowired
     private K8sCredentialsRepository k8sCredentialsRepository;
 
+    @Autowired
+    private ClusterHelper clusterHelper;
+
     /**
      * Cluster agnostic request to create a new cluster
      *
@@ -52,13 +59,50 @@ public class ClusterFacade {
         if (!stack.isPresent()) {
             throw new RuntimeException("Invalid Stack Specified");
         }
-        Stack stackObj = stack.get();
+        Optional<AbstractCluster> existing =
+            cpClusterRepository.findByNameAndStackName(request.getClusterName(), request.getStackName());
+        if (existing.isPresent()) {
+            throw new InvalidActionException(
+                "Existing cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
+                    .getStackName());
+        }
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.createCluster(request);
+        Map<String, String> secrets = clusterHelper.validateClusterVars(request.getClusterVars(), stack.get());
+        cluster.setUserInputVars(secrets);
         //Done: Persist Cluster Object
         //Persist to DB
-        AbstractCluster saved = cpClusterRepository.save(cluster);
-        return saved;
+        return cpClusterRepository.save(cluster);
+    }
+
+    /**
+     * Cluster agnostic request to update a new cluster
+     *
+     * @param request Other request Params
+     * @return The updated created cluster
+     */
+    public AbstractCluster updateCluster(ClusterRequest request, String clusterId) {
+        //Done: Check if stack exists
+        Optional<Stack> stack = stackRepository.findById(request.getStackName());
+        if (!stack.isPresent()) {
+            throw new RuntimeException("Invalid Stack Specified");
+        }
+        Stack stackObj = stack.get();
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException(
+                "No such cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
+                    .getStackName());
+        }
+        ClusterService service = factory.getService(request.getCloud());
+        AbstractCluster cluster = service.updateCluster(request, existing.get());
+        existing.get().getUserInputVars().putAll(request.getClusterVars());
+        Map<String, String> secrets =
+            clusterHelper.validateClusterVars(existing.get().getUserInputVars(), stack.get());
+        cluster.setUserInputVars(secrets);
+        //Done: Persist Cluster Object
+        //Persist to DB
+        return cpClusterRepository.save(cluster);
     }
 
     /**
@@ -74,16 +118,12 @@ public class ClusterFacade {
         AbstractCluster clusterObj = cluster.get();
         Optional<Stack> stack = stackRepository.findById(clusterObj.getStackName());
         if (!stack.isPresent()) {
-            throw new NotFoundException("Invalid Stack value in Specified Cluster Defination");
+            throw new NotFoundException("Invalid Stack value in Specified Cluster Definition");
         }
-        Stack stackObj = stack.get();
-        Map<String, String> stackVars = stackObj.getStackVars();
-        stackVars.put("CLUSTER", clusterObj.getName());
-        stackVars.put("TZ", clusterObj.getTz());
-        if (clusterObj instanceof AwsCluster) {
-            stackVars.put("AWS_REGION", ((AwsCluster) clusterObj).getAwsRegion());
-        }
-        clusterObj.addCommonEnvironmentVariables(stackVars);
+        Map<String, String> additionalCommonVars = clusterHelper.getCommonVariables(clusterObj, stack.get());
+        Map<String, String> secrets = clusterHelper.getSecrets(clusterObj, stack.get());
+        clusterObj.setCommonEnvironmentVariables(additionalCommonVars);
+        clusterObj.setSecrets(secrets);
         return clusterObj;
     }
 

@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("cc/v1/aws/clusters")
+@Loggable
 public class AwsClusterController implements ClusterController<AwsCluster, AwsClusterRequest> {
 
     @Autowired
@@ -45,9 +47,13 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
+    @PutMapping("{clusterId}")
+    public AwsCluster createCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
+        return (AwsCluster) clusterFacade.updateCluster(request, clusterId);
+    }
+
     /**
      * Get Cluster Details
-     * TODO: do we need separate method for TF?
      *
      * @param clusterId Id of the cluster
      * @return Cluster Object
@@ -56,10 +62,10 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
     @GetMapping("{clusterId}")
     public AwsCluster getCluster(@PathVariable String clusterId) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        if (!(cluster instanceof AwsCluster)) {
-            new NotFoundException("This Cluster is not defined in AWS");
+        if (cluster instanceof AwsCluster) {
+            return (AwsCluster) cluster;
         }
-        return (AwsCluster) cluster;
+        throw new NotFoundException("This Cluster is not defined in AWS");
     }
 
 }
