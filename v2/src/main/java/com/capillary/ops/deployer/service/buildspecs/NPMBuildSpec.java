@@ -39,7 +39,7 @@ public class NPMBuildSpec extends BuildSpec {
     protected List<String> getBuildCommands() {
         List<String> buildCommands = new ArrayList<>();
         buildCommands.add("npm install");
-        buildCommands.add("npm build --prod");
+        buildCommands.add("npm run-script build");
         buildCommands.add("docker build -t $APP_NAME:$TAG .");
         buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
         return buildCommands;
