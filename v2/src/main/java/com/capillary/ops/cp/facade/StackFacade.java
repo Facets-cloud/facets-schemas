@@ -1,18 +1,16 @@
 package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
-import org.apache.tomcat.util.json.JSONParser;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Service
 public class StackFacade {
@@ -49,10 +47,10 @@ public class StackFacade {
                 "No Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath());
         }
         try {
-            JSONParser parser = new JSONParser(new FileReader(stackFile));
-            LinkedHashMap<String, Object> vars = parser.object();
-            Map<String, String> stringVars = new HashMap((Map) vars.get("variables"));
-            stack.setStackVars(stringVars);
+            Gson gson = new Gson();
+            StackFile file = gson.fromJson(new FileReader(stackFile), StackFile.class);
+            stack.setStackVars(file.getStackVariables());
+            stack.setClusterVariablesMeta(file.getClusterVariables());
         } catch (Throwable e) {
             throw new IllegalArgumentException(
                 "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);

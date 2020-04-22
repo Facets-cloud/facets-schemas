@@ -4,9 +4,10 @@ import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
+import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -30,11 +31,14 @@ public class ClusterFacadeTest {
     private CpClusterRepository cpClusterRepository;
 
     @Injectable
+    private ClusterHelper clusterHelper;
+
+    @Injectable
     private StackRepository stackRepository;
 
     @Test
     public void getCluster() {
-        AwsClusterRequest request = new AwsClusterRequest();
+       /* AwsClusterRequest request = new AwsClusterRequest();
         String clusterName = "Test";
         String stack = "crm";
         Regions region = Regions.US_EAST_1;
@@ -79,5 +83,10 @@ public class ClusterFacadeTest {
             .equals(clusterName);
         assert commonEnvironmentVariables.containsKey("Test1") && commonEnvironmentVariables.get("Test1")
             .equals("Val1");
+        assert commonEnvironmentVariables.containsKey("envVar1") && commonEnvironmentVariables.get("envVar1")
+            .equals("envVal");
+        assert cluster1.getSecrets().containsKey("secret1") && cluster1.getSecrets().get("secret1")
+            .equals("secret1Val1");*/
     }
+
 }

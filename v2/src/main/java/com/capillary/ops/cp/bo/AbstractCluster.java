@@ -1,7 +1,9 @@
 package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.Cloud;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 
 import java.util.HashMap;
@@ -28,7 +30,14 @@ public abstract class AbstractCluster {
 
     private BuildStrategy releaseStream;
 
+    @Transient
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();
+
+    @JsonIgnore
+    private Map<String, String> userInputVars = new HashMap<>();
+
+    @Transient
+    private Map<String, String> secrets;
 
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
@@ -68,8 +77,8 @@ public abstract class AbstractCluster {
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public void addCommonEnvironmentVariables(Map<String, String> commonEnvironmentVariables) {
-        this.commonEnvironmentVariables.putAll(commonEnvironmentVariables);
+    public void setCommonEnvironmentVariables(Map<String, String> commonEnvironmentVariables) {
+        this.commonEnvironmentVariables = commonEnvironmentVariables;
     }
 
     public String getTz() {
@@ -86,5 +95,21 @@ public abstract class AbstractCluster {
 
     public void setReleaseStream(BuildStrategy releaseStream) {
         this.releaseStream = releaseStream;
+    }
+
+    public Map<String, String> getUserInputVars() {
+        return userInputVars;
+    }
+
+    public void setUserInputVars(Map<String, String> userInputVars) {
+        this.userInputVars = userInputVars;
+    }
+
+    public void setSecrets(Map<String, String> secrets) {
+        this.secrets = secrets;
+    }
+
+    public Map<String, String> getSecrets() {
+        return secrets;
     }
 }

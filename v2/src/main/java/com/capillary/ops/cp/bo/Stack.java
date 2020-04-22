@@ -23,6 +23,9 @@ public class Stack {
     @JsonIgnore
     private Map<String, String> stackVars;
 
+    @JsonIgnore
+    private Map<String, StackFile.VariableDetails> clusterVariablesMeta;
+
     public String getName() {
         return name;
     }
@@ -77,5 +80,13 @@ public class Stack {
 
     public void setStackVars(Map<String, String> stackVars) {
         this.stackVars = stackVars;
+    }
+
+    public void setClusterVariablesMeta(Map<String, StackFile.VariableDetails> clusterVariablesMeta) {
+        this.clusterVariablesMeta = clusterVariablesMeta;
+    }
+
+    public Map<String, StackFile.VariableDetails> getClusterVariablesMeta() {
+        return clusterVariablesMeta;
     }
 }

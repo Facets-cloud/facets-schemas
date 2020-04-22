@@ -1,6 +1,9 @@
 package com.capillary.ops.cp.bo.requests;
 
 import com.capillary.ops.cp.bo.BuildStrategy;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 public abstract class ClusterRequest {
@@ -10,6 +13,7 @@ public abstract class ClusterRequest {
     private String stackName;
     private TimeZone tz;
     private BuildStrategy releaseStream;
+    private Map<String, String> clusterVars = new HashMap<>();
 
     public ClusterRequest() {
     }
@@ -51,5 +55,13 @@ public abstract class ClusterRequest {
 
     public void setReleaseStream(BuildStrategy releaseStream) {
         this.releaseStream = releaseStream;
+    }
+
+    public Map<String, String> getClusterVars() {
+        return clusterVars;
+    }
+
+    public void setClusterVars(Map<String, String> clusterVars) {
+        this.clusterVars = clusterVars;
     }
 }
