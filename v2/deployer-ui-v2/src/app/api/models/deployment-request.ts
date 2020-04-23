@@ -1,6 +1,6 @@
 /* tslint:disable */
 export interface DeploymentRequest {
   id?: string;
-  releaseId?: string;
+  releaseType?: 'HOTFIX' | 'RELEASE';
   tag?: string;
 }

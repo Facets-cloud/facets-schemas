@@ -7,6 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
+import { Build } from '../models/build';
 
 /**
  * Build Controller
@@ -31,14 +32,17 @@ class BuildControllerService extends __BaseService {
    *
    * - `applicationId`: applicationId
    *
+   * - `releaseType`: releaseType
+   *
    * @return OK
    */
-  getImageFromDeployerUsingGETResponse(params: BuildControllerService.GetImageFromDeployerUsingGETParams): __Observable<__StrictHttpResponse<string>> {
+  getImageFromDeployerUsingGETResponse(params: BuildControllerService.GetImageFromDeployerUsingGETParams): __Observable<__StrictHttpResponse<Build>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.strategy != null) __params = __params.set('strategy', params.strategy.toString());
 
+    if (params.releaseType != null) __params = __params.set('releaseType', params.releaseType.toString());
     let req = new HttpRequest<any>(
       'GET',
       this.rootUrl + `/cc/v1/build/deployer/${params.applicationId}`,
@@ -46,13 +50,13 @@ class BuildControllerService extends __BaseService {
       {
         headers: __headers,
         params: __params,
-        responseType: 'text'
+        responseType: 'json'
       });
 
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<string>;
+        return _r as __StrictHttpResponse<Build>;
       })
     );
   }
@@ -63,11 +67,13 @@ class BuildControllerService extends __BaseService {
    *
    * - `applicationId`: applicationId
    *
+   * - `releaseType`: releaseType
+   *
    * @return OK
    */
-  getImageFromDeployerUsingGET(params: BuildControllerService.GetImageFromDeployerUsingGETParams): __Observable<string> {
+  getImageFromDeployerUsingGET(params: BuildControllerService.GetImageFromDeployerUsingGETParams): __Observable<Build> {
     return this.getImageFromDeployerUsingGETResponse(params).pipe(
-      __map(_r => _r.body as string)
+      __map(_r => _r.body as Build)
     );
   }
 }
@@ -88,6 +94,11 @@ module BuildControllerService {
      * applicationId
      */
     applicationId: string;
+
+    /**
+     * releaseType
+     */
+    releaseType?: 'HOTFIX' | 'RELEASE';
   }
 }
 

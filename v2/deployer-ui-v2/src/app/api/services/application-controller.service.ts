@@ -84,6 +84,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly resumeApplicationUsingPOSTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/resume';
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
+  static readonly deleteApplicationSecretUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets/{secretName}';
 
   constructor(
     config: __Configuration,
@@ -2470,6 +2471,63 @@ class ApplicationControllerService extends __BaseService {
       __map(_r => _r.body as Array<ApplicationSecret>)
     );
   }
+
+  /**
+   * @param params The `ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams` containing the following parameters:
+   *
+   * - `secretName`: secretName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  deleteApplicationSecretUsingDELETEResponse(params: ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets/${params.secretName}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams` containing the following parameters:
+   *
+   * - `secretName`: secretName
+   *
+   * - `environment`: environment
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  deleteApplicationSecretUsingDELETE(params: ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams): __Observable<boolean> {
+    return this.deleteApplicationSecretUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
 }
 
 module ApplicationControllerService {
@@ -2482,7 +2540,7 @@ module ApplicationControllerService {
     /**
      * buildType
      */
-    buildType: 'MVN' | 'JAVA8_LIBRARY' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3' | 'SBT' | 'NPM';
+    buildType: 'MVN' | 'JAVA8_LIBRARY' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3' | 'SBT' | 'NPM' | 'NPM_UI';
 
     /**
      * applicationAction
@@ -3292,6 +3350,32 @@ module ApplicationControllerService {
      * applicationSecrets
      */
     applicationSecrets: Array<ApplicationSecret>;
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for deleteApplicationSecretUsingDELETE
+   */
+  export interface DeleteApplicationSecretUsingDELETEParams {
+
+    /**
+     * secretName
+     */
+    secretName: string;
+
+    /**
+     * environment
+     */
+    environment: string;
 
     /**
      * applicationId

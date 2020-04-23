@@ -181,6 +181,8 @@ public class CodeBuildService implements ICodeBuildService {
                 return new SbtBuildSpec(application, testBuild);
             case NPM:
                 return new NPMBuildSpec(application, testBuild);
+            case NPM_UI:
+                return new NPMUIBuildSpec(application, testBuild);
             case JAVA8_LIBRARY:
                 return new JavaLibararyMavenBuildSpec(application, testBuild);
             default:

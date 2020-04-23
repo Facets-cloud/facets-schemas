@@ -7,9 +7,9 @@ export interface Build {
   environmentVariables?: {[key: string]: string};
   id?: string;
   image?: string;
-  promoted?: boolean;
-  promotionIntent?: 'NA' | 'HOTFIX' | 'RELEASE' |'NOT_CC_ENABLED'| 'null';
   promotable?: boolean;
+  promoted?: boolean;
+  promotionIntent?: 'NA' | 'NOT_CC_ENABLED' | 'HOTFIX' | 'RELEASE';
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
   tag?: string;
   testBuild?: boolean;
