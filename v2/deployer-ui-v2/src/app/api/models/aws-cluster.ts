@@ -9,6 +9,7 @@ export interface AwsCluster {
   name?: string;
   releaseStream?: 'QA' | 'STAGING' | 'PROD';
   roleARN?: string;
+  secrets?: {[key: string]: string};
   stackName?: string;
   tz?: string;
   vpcCIDR?: string;

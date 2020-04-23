@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NPMBuildSpec extends BuildSpec {
+public class NPMUIBuildSpec extends BuildSpec {
 
-    private static final Logger logger = LoggerFactory.getLogger(NPMBuildSpec.class);
+    private static final Logger logger = LoggerFactory.getLogger(NPMUIBuildSpec.class);
 
-    public NPMBuildSpec(Application application) {
+    public NPMUIBuildSpec(Application application) {
         super(application);
     }
 
-    public NPMBuildSpec(Application application, boolean testBuild) {
+    public NPMUIBuildSpec(Application application, boolean testBuild) {
         super(application, testBuild);
     }
 
@@ -39,7 +39,7 @@ public class NPMBuildSpec extends BuildSpec {
     protected List<String> getBuildCommands() {
         List<String> buildCommands = new ArrayList<>();
         buildCommands.add("npm install");
-        buildCommands.add("npm build --prod");
+        buildCommands.add("npm run-script build");
         buildCommands.add("docker build -t $APP_NAME:$TAG .");
         buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
         return buildCommands;
