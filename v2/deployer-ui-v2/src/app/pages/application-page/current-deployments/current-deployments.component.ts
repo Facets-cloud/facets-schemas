@@ -180,7 +180,7 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
       const deployments = [];
       for (const environment of this.ccEnvironments) {
         const deployment: Deployment = await this.applicationControllerService.getCurrentDeploymentUsingGET({
-          environment: environment.name,
+          environment: environment.capillaryCloudClusterName,
           applicationFamily: this.application.applicationFamily,
           applicationId: this.application.id,
         }).toPromise();
