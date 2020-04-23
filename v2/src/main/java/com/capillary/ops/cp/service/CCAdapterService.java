@@ -2,6 +2,7 @@ package com.capillary.ops.cp.service;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.BuildStrategy;
+import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.bo.*;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -14,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +23,14 @@ public class CCAdapterService {
 
     @Autowired
     private ClusterFacade clusterFacade;
+
+    public Optional<EnvironmentMetaData> getCCEnvironmentMeta(ApplicationFamily applicationFamily,
+        String environmentName){
+        List<EnvironmentMetaData> ccEnvironmentMetaData = getCCEnvironmentMetaData(applicationFamily);
+        Optional<EnvironmentMetaData> ccMeta =
+            ccEnvironmentMetaData.stream().filter(x->x.getName().equals(environmentName)).findFirst();
+        return ccMeta;
+    }
 
     public List<EnvironmentMetaData> getCCEnvironmentMetaData(ApplicationFamily applicationFamily) {
         List<AbstractCluster> clustersByStackName =
@@ -68,7 +78,16 @@ public class CCAdapterService {
         return null;
     }
 
-//    public static void main(String[] args) throws ParseException {
+    public EnvironmentConfiguration getCCEnvironmentConfiguration(String environmentName) {
+        String clusterId = environmentName;
+        K8sCredentials credentials = clusterFacade.getClusterK8sCredentials(clusterId).get();
+        EnvironmentConfiguration ec = new EnvironmentConfiguration();
+        ec.setKubernetesToken(credentials.getKubernetesToken());
+        ec.setKubernetesApiEndpoint(credentials.getKubernetesApiEndpoint());
+        return ec;
+    }
+
+    //    public static void main(String[] args) throws ParseException {
 //        SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 //        Date parse = sdfmt.parse("2020-12-31T23:55:55Z");
 //        System.out.println(parse);

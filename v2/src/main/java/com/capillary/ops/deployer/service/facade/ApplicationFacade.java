@@ -1,9 +1,6 @@
 package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.BuildStrategy;
-import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.service.CCAdapterService;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
@@ -537,10 +534,32 @@ public class ApplicationFacade {
         return kubernetesService.getApplicationPodDetails(application, environment, releaseName);
     }
 
-    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
-        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
-        DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName,
+        String applicationId) {
+        Application application =
+            applicationRepository.findFirstByApplicationFamily(applicationFamily).get();
+        Optional<Environment> environmentO = environmentRepository
+            .findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily,
+                environmentName);
+        DeploymentStatusDetails deploymentStatus = null;
+        if (!environmentO.isPresent()) {
+            // This can be a CC request
+            Optional<EnvironmentMetaData> ccMeta =
+                ccAdapterService.getCCEnvironmentMeta(applicationFamily, environmentName);
+            if(!ccMeta.isPresent()){
+                return null;
+            }
+            Environment environment = new Environment();
+            EnvironmentConfiguration ec = ccAdapterService.getCCEnvironmentConfiguration(environmentName);
+            environment.setEnvironmentConfiguration(ec);
+            environment.setEnvironmentMetaData(ccMeta.get());
+            deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, applicationId, true);
+        } else {
+            deploymentStatus = kubernetesService
+                .getDeploymentStatus(application, environmentO.get(), helmService.getReleaseName(application,
+                    environmentO.get()),
+                    false);
+        }
         return deploymentStatus;
     }
 

@@ -1,7 +1,6 @@
 package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
@@ -13,11 +12,11 @@ import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -97,8 +96,7 @@ public class ClusterFacade {
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.updateCluster(request, existing.get());
         existing.get().getUserInputVars().putAll(request.getClusterVars());
-        Map<String, String> secrets =
-            clusterHelper.validateClusterVars(existing.get().getUserInputVars(), stack.get());
+        Map<String, String> secrets = clusterHelper.validateClusterVars(existing.get().getUserInputVars(), stack.get());
         cluster.setUserInputVars(secrets);
         //Done: Persist Cluster Object
         //Persist to DB
@@ -145,13 +143,23 @@ public class ClusterFacade {
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
             new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
                 .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
-        DeploymentList apps =
-            kubernetesClient.inNamespace("").extensions().deployments().withLabel(key, value).list();
+        DeploymentList apps = kubernetesClient.inNamespace("").extensions().deployments().withLabel(key, value).list();
         if (apps.getItems().isEmpty()) {
             throw new NotFoundException(
                 "Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
         }
         Deployment deployment = apps.getItems().get(0);
         return deployment;
+    }
+
+    /**
+     * Should not be called by any controller, written for deployer integration
+     *
+     * @param clusterId
+     * @return
+     */
+    public Optional<K8sCredentials> getClusterK8sCredentials(String clusterId) {
+        Optional<K8sCredentials> credentials = k8sCredentialsRepository.findOneByClusterId(clusterId);
+        return credentials;
     }
 }

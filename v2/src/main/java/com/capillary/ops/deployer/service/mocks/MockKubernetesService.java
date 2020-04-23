@@ -49,7 +49,8 @@ public class MockKubernetesService implements IKubernetesService {
     }
 
     @Override
-    public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
+    public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment,
+        String deploymentName, boolean isCC) {
         ApplicationPodDetails pod1 =
                 new ApplicationPodDetails(application.getName() + "-old", new HashMap<>(),
                         "Running", "1111111122222.dkr.ecr.us-west-1.amazonaws.com/OPS/someappname:version1", "", "2019-06-07T06:46:21Z", true, 0, "NA");
