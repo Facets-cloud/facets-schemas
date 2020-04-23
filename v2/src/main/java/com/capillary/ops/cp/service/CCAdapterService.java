@@ -56,7 +56,7 @@ public class CCAdapterService {
             d.setConfigurations(envs);
             HPA hpa = new HPA(-1,-1,-1);
             d.setHorizontalPodAutoscaler(hpa);
-            SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-ddThh:mm:ssZ");
+            SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
             try {
                 Date parse = sdfmt.parse(ccDeployment.getMetadata().getCreationTimestamp());
                 d.setTimestamp(parse);
@@ -68,5 +68,10 @@ public class CCAdapterService {
         return null;
     }
 
+//    public static void main(String[] args) throws ParseException {
+//        SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//        Date parse = sdfmt.parse("2020-12-31T23:55:55Z");
+//        System.out.println(parse);
+//    }
 
 }
