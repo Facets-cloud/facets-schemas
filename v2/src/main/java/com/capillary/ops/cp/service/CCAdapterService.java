@@ -29,7 +29,7 @@ public class CCAdapterService {
         return clustersByStackName.stream().map(c -> {
             EnvironmentMetaData environmentMetaData = new EnvironmentMetaData();
             environmentMetaData.setCapillaryCloudClusterName(c.getName());
-            environmentMetaData.setName(c.getName());
+            environmentMetaData.setName(c.getId());
             environmentMetaData.setApplicationFamily(applicationFamily);
             environmentMetaData.setCapCloud(true);
             environmentMetaData.setEnvironmentType(
