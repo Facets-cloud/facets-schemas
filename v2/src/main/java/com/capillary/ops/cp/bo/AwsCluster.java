@@ -2,6 +2,7 @@ package com.capillary.ops.cp.bo;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.requests.Cloud;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * "\"vpcCIDR\": \"10.250.0.0/16\"\n" +
  * "}"
  */
+@Document
 public class AwsCluster extends AbstractCluster {
 
     private String awsRegion;

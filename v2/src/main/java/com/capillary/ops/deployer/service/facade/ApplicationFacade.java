@@ -23,6 +23,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
+import com.jcabi.aspects.Loggable;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ import java.util.stream.Stream;
 
 
 @Service
+@Loggable
 public class ApplicationFacade {
     @Autowired
     private ApplicationRepository applicationRepository;

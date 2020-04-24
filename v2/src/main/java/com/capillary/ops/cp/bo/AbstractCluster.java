@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Cluster agnostic definition of a cluster
  */
+@Document
 @CompoundIndex(def = "{'name':1, 'stackName':1}", name = "uniqueNamePerStack")
 public abstract class AbstractCluster {
 

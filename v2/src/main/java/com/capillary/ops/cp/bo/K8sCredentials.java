@@ -3,9 +3,11 @@ package com.capillary.ops.cp.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
+@Document
 public class K8sCredentials {
 
     @Id
