@@ -5,8 +5,8 @@ import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.bo.*;
+import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.EnvVar;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +14,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Loggable
 public class CCAdapterService {
 
     @Autowired
@@ -26,13 +26,13 @@ public class CCAdapterService {
 
     public Optional<EnvironmentMetaData> getCCEnvironmentMeta(ApplicationFamily applicationFamily,
         String environmentName){
-        List<EnvironmentMetaData> ccEnvironmentMetaData = getCCEnvironmentMetaData(applicationFamily);
+        List<EnvironmentMetaData> ccEnvironmentMetaData = getCCEnvironmentMetaList(applicationFamily);
         Optional<EnvironmentMetaData> ccMeta =
-            ccEnvironmentMetaData.stream().filter(x->x.getName().equals(environmentName)).findFirst();
+            ccEnvironmentMetaData.stream().filter(x->x.getCapillaryCloudClusterName().equals(environmentName)).findFirst();
         return ccMeta;
     }
 
-    public List<EnvironmentMetaData> getCCEnvironmentMetaData(ApplicationFamily applicationFamily) {
+    public List<EnvironmentMetaData> getCCEnvironmentMetaList(ApplicationFamily applicationFamily) {
         List<AbstractCluster> clustersByStackName =
             clusterFacade.getClustersByStackName(applicationFamily.name().toLowerCase());
 

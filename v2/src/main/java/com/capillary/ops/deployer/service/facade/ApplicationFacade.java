@@ -540,15 +540,18 @@ public class ApplicationFacade {
         String applicationId) {
         Application application =
             applicationRepository.findById(applicationId).get();
+        logger.info("Application from repo: {}", application.getName());
         Optional<Environment> environmentO = environmentRepository
             .findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily,
                 environmentName);
         DeploymentStatusDetails deploymentStatus = null;
         if (!environmentO.isPresent()) {
             // This can be a CC request
+            logger.info("This may be a cc request for {}", application.getName());
             Optional<EnvironmentMetaData> ccMeta =
                 ccAdapterService.getCCEnvironmentMeta(applicationFamily, environmentName);
             if(!ccMeta.isPresent()){
+                logger.info("No such Environment present in CC {}", environmentName);
                 return null;
             }
             Environment environment = new Environment();
@@ -703,7 +706,7 @@ public class ApplicationFacade {
     }
 
     public List<EnvironmentMetaData> getEnvironmentMetaDataCC(ApplicationFamily applicationFamily) {
-        List<EnvironmentMetaData> ccEnvs = ccAdapterService.getCCEnvironmentMetaData(applicationFamily);
+        List<EnvironmentMetaData> ccEnvs = ccAdapterService.getCCEnvironmentMetaList(applicationFamily);
         return ccEnvs;
     }
 
