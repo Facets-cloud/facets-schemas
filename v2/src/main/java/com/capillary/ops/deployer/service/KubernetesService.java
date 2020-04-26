@@ -9,6 +9,7 @@ import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
@@ -39,8 +40,9 @@ import java.util.stream.Collectors;
 
 import static com.capillary.ops.deployer.bo.Application.ApplicationType.SCHEDULED_JOB;
 
-@Profile("!dev")
+@Profile("!devee")
 @Service
+@Loggable
 public class KubernetesService implements IKubernetesService {
 
     private static final Logger logger = LoggerFactory.getLogger(KubernetesService.class);
@@ -130,9 +132,12 @@ public class KubernetesService implements IKubernetesService {
 
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         if(isCC){
-            PodList podList = kubernetesClient.pods().inNamespace("").withLabel("deployerid", deploymentName).list();
-            if(podList.getItems().size()>0){
-                deploymentName = podList.getItems().get(0).getMetadata().getName();
+
+            DeploymentList deploymentList =
+                kubernetesClient.extensions().deployments().inNamespace("").withLabel("deployerid", deploymentName)
+                    .list();
+            if(deploymentList.getItems().size()>0){
+                deploymentName = deploymentList.getItems().get(0).getMetadata().getName();
             }else{
                 throw new NotFoundException("No CC Service found for this appid");
             }

@@ -539,7 +539,7 @@ public class ApplicationFacade {
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName,
         String applicationId) {
         Application application =
-            applicationRepository.findFirstByApplicationFamily(applicationFamily).get();
+            applicationRepository.findById(applicationId).get();
         Optional<Environment> environmentO = environmentRepository
             .findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily,
                 environmentName);
