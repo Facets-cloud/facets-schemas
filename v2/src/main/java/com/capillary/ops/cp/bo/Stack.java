@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Document
@@ -25,10 +26,10 @@ public class Stack {
     private String appPassword;
 
     @JsonIgnore
-    private Map<String, String> stackVars;
+    private Map<String, String> stackVars = new HashMap<>();
 
     @JsonIgnore
-    private Map<String, StackFile.VariableDetails> clusterVariablesMeta;
+    private Map<String, StackFile.VariableDetails> clusterVariablesMeta = new HashMap<>();
 
     public String getName() {
         return name;
