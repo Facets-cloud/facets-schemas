@@ -34,21 +34,10 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
         return (AwsCluster) clusterFacade.createCluster(request);
     }
 
+
     @Override
-    @PostMapping("{clusterId}/credentials")
-    public Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId) {
-        request.setClusterId(clusterId);
-        return clusterFacade.addClusterK8sCredentials(request);
-    }
-
-    @GetMapping("{clusterId}/deployments/{value}")
-    public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
-        @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
-        return clusterFacade.getApplicationData(clusterId, lookupKey, value);
-    }
-
     @PutMapping("{clusterId}")
-    public AwsCluster createCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
+    public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
         return (AwsCluster) clusterFacade.updateCluster(request, clusterId);
     }
 

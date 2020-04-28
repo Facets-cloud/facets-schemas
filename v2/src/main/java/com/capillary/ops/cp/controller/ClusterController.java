@@ -1,7 +1,9 @@
 package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
+import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.K8sCredentials;
+import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.facade.DeploymentFacade;
@@ -10,6 +12,7 @@ import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
@@ -22,7 +25,8 @@ public interface ClusterController<T extends AbstractCluster, CR extends Cluster
 
     T createCluster(@RequestBody CR request);
 
-    Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId);
+    @PutMapping("{clusterId}")
+    T updateCluster(@RequestBody CR request, @PathVariable String clusterId);
 
     T getCluster(@PathVariable String clusterId);
 
