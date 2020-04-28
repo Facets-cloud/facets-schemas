@@ -1,14 +1,14 @@
 package com.capillary.ops.cp.facade;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.K8sCredentials;
-import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
+import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.cp.service.ClusterService;
+import com.capillary.ops.cp.service.OverrideService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -46,6 +46,9 @@ public class ClusterFacade {
     @Autowired
     private ClusterHelper clusterHelper;
 
+    @Autowired
+    private OverrideService overrideService;
+
     /**
      * Cluster agnostic request to create a new cluster
      *
@@ -71,7 +74,8 @@ public class ClusterFacade {
         cluster.setUserInputVars(secrets);
         //Done: Persist Cluster Object
         //Persist to DB
-        return cpClusterRepository.save(cluster);
+        AbstractCluster save = cpClusterRepository.save(cluster);
+        return this.getCluster(save.getId());
     }
 
     /**
@@ -100,7 +104,8 @@ public class ClusterFacade {
         cluster.setUserInputVars(secrets);
         //Done: Persist Cluster Object
         //Persist to DB
-        return cpClusterRepository.save(cluster);
+        cpClusterRepository.save(cluster);
+        return this.getCluster(clusterId);
     }
 
     /**
@@ -161,5 +166,14 @@ public class ClusterFacade {
     public Optional<K8sCredentials> getClusterK8sCredentials(String clusterId) {
         Optional<K8sCredentials> credentials = k8sCredentialsRepository.findOneByClusterId(clusterId);
         return credentials;
+    }
+
+    public AbstractCluster override(String clusterId, List<OverrideRequest> request) {
+
+        request.stream().forEach(req -> {
+            overrideService.save(clusterId, req);
+        });
+
+        return this.getCluster(clusterId);
     }
 }
