@@ -12,15 +12,13 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
-import software.amazon.awssdk.services.codebuild.model.ResourceNotFoundException;
-import software.amazon.awssdk.services.codebuild.model.StartBuildRequest;
+import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * CodeBuild service to trigger TF Builds.
@@ -81,6 +79,27 @@ public class AwsCodeBuildService implements TFBuildService {
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName).environmentVariablesOverride(environmentVariables)
                 .build();
+
+        ListBuildsForProjectRequest listBuildsForProjectRequest =
+            ListBuildsForProjectRequest.builder().projectName(buildName).sortOrder(SortOrderType.DESCENDING).build();
+
+        ListBuildsForProjectResponse listBuildsForProjectResponse =
+            getCodeBuildClient().listBuildsForProject(listBuildsForProjectRequest);
+        List<String> buildIds = listBuildsForProjectResponse.ids();
+        List<String> shortListedBuilds = buildIds.stream().limit(10).collect(Collectors.toList());
+
+        BatchGetBuildsRequest batchGetBuildsRequest = BatchGetBuildsRequest.builder().ids(shortListedBuilds).build();
+        BatchGetBuildsResponse batchGetBuildsResponse = getCodeBuildClient().batchGetBuilds(batchGetBuildsRequest);
+        List<Build> builds = batchGetBuildsResponse.builds();
+        List<Build> runningBuilds = builds.stream().filter(b -> b.buildStatus().equals(StatusType.IN_PROGRESS)).filter(
+            b -> b.environment().environmentVariables().contains(
+                EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
+                    .type(EnvironmentVariableType.PLAINTEXT).build())).collect(Collectors.toList());
+
+        if(runningBuilds.size() > 0){
+            throw new IllegalStateException("Build is already in Progress: " + runningBuilds.get(0).id());
+        }
+
         try {
             return getCodeBuildClient().startBuild(startBuildRequest).build().id();
         } catch (ResourceNotFoundException ex) {
