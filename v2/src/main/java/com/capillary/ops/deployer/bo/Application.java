@@ -31,6 +31,11 @@ public class Application {
         STATEFUL_SET
     }
 
+    public enum ResourceAllocationStrategy {
+        GENERAL_PURPOSE,
+        CPU_INTENSIVE
+    }
+
     public Application(ApplicationType applicationType, String name, @NotNull VCSProvider vcsProvider, @NotNull String repositoryUrl, @NotBlank String applicationRootDirectory, @NotNull List<Port> ports, @NotNull LoadBalancerType loadBalancerType, List<PVC> pvcList, @NotNull BuildType buildType, @NotNull ApplicationFamily applicationFamily, String dnsPrefix, HealthCheck healthCheck, DnsType dnsType, Map<String, String> commonConfigs) {
         this.applicationType = applicationType;
         this.name = name;
@@ -101,6 +106,8 @@ public class Application {
     private String statusCallbackUrl;
 
     private String newRelicAlertRecipients;
+
+    private ResourceAllocationStrategy resourceAllocationStrategy = ResourceAllocationStrategy.GENERAL_PURPOSE;
 
     public String getId() {
         return id;
@@ -281,5 +288,13 @@ public class Application {
     public List<String> getStatusCallbackUrls() {
         Set<String> callbackUrls = Sets.newHashSet(this.statusCallbackUrl, DEFAULT_STATUS_CALLBACK_URL);
         return callbackUrls.stream().filter(x -> !StringUtils.isEmpty(x)).collect(Collectors.toList());
+    }
+
+    public ResourceAllocationStrategy getResourceAllocationStrategy() {
+        return resourceAllocationStrategy;
+    }
+
+    public void setResourceAllocationStrategy(ResourceAllocationStrategy resourceAllocationStrategy) {
+        this.resourceAllocationStrategy = resourceAllocationStrategy;
     }
 }

@@ -22,7 +22,8 @@ public interface IKubernetesService {
 
     void createOrUpdateSecret(Environment environment, String secretName, Map<String, String> secretMap);
 
-    DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName);
+    DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName,
+        boolean isCC);
 
     List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName);
 

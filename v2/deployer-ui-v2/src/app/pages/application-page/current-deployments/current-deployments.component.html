@@ -9,3 +9,8 @@
 <div *ngIf="application?.applicationType === 'STATEFUL_SET'">
   <ng2-smart-table *ngIf="deployments.length > 0" [settings]="settingsStatefulSet" [source]="deployments"></ng2-smart-table>
 </div>
+
+<div style="padding-top:30px;">
+  <p>Capillary Cloud Deployments</p>
+  <ng2-smart-table *ngIf="ccDeployments.length > 0" [settings]="settingsDefault" [source]="ccDeployments"></ng2-smart-table>
+</div>

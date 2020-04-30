@@ -6,6 +6,7 @@ import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration
 import { ApplicationControllerService } from './services/application-controller.service';
 import { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 import { BuildControllerService } from './services/build-controller.service';
+import { CommonClusterControllerService } from './services/common-cluster-controller.service';
 import { DeploymentControllerService } from './services/deployment-controller.service';
 import { StackControllerService } from './services/stack-controller.service';
 import { BasicErrorControllerService } from './services/basic-error-controller.service';
@@ -26,6 +27,7 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     ApplicationControllerService,
     AwsClusterControllerService,
     BuildControllerService,
+    CommonClusterControllerService,
     DeploymentControllerService,
     StackControllerService,
     BasicErrorControllerService

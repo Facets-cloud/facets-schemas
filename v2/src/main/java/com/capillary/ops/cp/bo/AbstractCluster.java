@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -14,20 +16,26 @@ import java.util.stream.Collectors;
 /**
  * Cluster agnostic definition of a cluster
  */
+@Document
 @CompoundIndex(def = "{'name':1, 'stackName':1}", name = "uniqueNamePerStack")
 public abstract class AbstractCluster {
 
     @Id
     private String id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private Cloud cloud;
 
+    @NotNull
     private String tz;
 
+    @NotNull
     private String stackName;
 
+    @NotNull
     private BuildStrategy releaseStream;
 
     @Transient

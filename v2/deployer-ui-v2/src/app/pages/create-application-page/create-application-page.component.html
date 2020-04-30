@@ -118,6 +118,17 @@
                   </nb-select>
                 </div>
               </div>
+              <div class="form-group row">
+                <label for="resourceAllocationStrategy" class="label col-sm-4">Resource Allocation Strategy</label>
+                <div class="col-sm-8">
+                  <nb-select fullWidth size="small" required [(ngModel)]="application.resourceAllocationStrategy"
+                    #resourceAllocationStrategy="ngModel" name="resourceAllocationStrategy" id="resourceAllocationStrategy" placeholder="Deployment Strategy"
+                    fixedWidth>
+                    <nb-option value="GENERAL_PURPOSE">General Purpose</nb-option>
+                    <nb-option value="CPU_INTENSIVE">CPU Intensive</nb-option>
+                  </nb-select>
+                </div>
+              </div>
               <div class="form-group row" *ngIf="application?.applicationType !== 'SCHEDULED_JOB'">
                 <label for="newRelicAlertRecipients" class="label col-sm-4">New Relic Alert Recipients</label>
                 <div class="col-sm-8">

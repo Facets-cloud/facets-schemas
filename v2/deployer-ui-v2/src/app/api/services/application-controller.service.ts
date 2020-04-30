@@ -8,6 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { ApplicationAction } from '../models/application-action';
+import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
@@ -19,7 +20,6 @@ import { ActionExecution } from '../models/action-execution';
 import { ApplicationSecretRequest } from '../models/application-secret-request';
 import { BitbucketPREvent } from '../models/bitbucket-prevent';
 import { GithubPREvent } from '../models/github-prevent';
-import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { Environment } from '../models/environment';
 import { Alerting } from '../models/alerting';
 import { Deployment } from '../models/deployment';
@@ -38,6 +38,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
   static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
+  static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -85,6 +86,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
   static readonly deleteApplicationSecretUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets/{secretName}';
+  static readonly redeployUsingPOSTPath = '/api/{applicationFamily}/{environment}/redeployment';
 
   constructor(
     config: __Configuration,
@@ -203,6 +205,42 @@ class ApplicationControllerService extends __BaseService {
   createGenericActionUsingPOST(params: ApplicationControllerService.CreateGenericActionUsingPOSTParams): __Observable<ApplicationAction> {
     return this.createGenericActionUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as ApplicationAction)
+    );
+  }
+
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getCCEnvironmentMetaDataUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<EnvironmentMetaData>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/cc/${applicationFamily}/environmentMetaData`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<EnvironmentMetaData>>;
+      })
+    );
+  }
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getCCEnvironmentMetaDataUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<EnvironmentMetaData>> {
+    return this.getCCEnvironmentMetaDataUsingGETResponse(applicationFamily).pipe(
+      __map(_r => _r.body as Array<EnvironmentMetaData>)
     );
   }
 
@@ -2528,6 +2566,53 @@ class ApplicationControllerService extends __BaseService {
       __map(_r => _r.body as boolean)
     );
   }
+
+  /**
+   * @param params The `ApplicationControllerService.RedeployUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  redeployUsingPOSTResponse(params: ApplicationControllerService.RedeployUsingPOSTParams): __Observable<__StrictHttpResponse<{[key: string]: boolean}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/redeployment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{[key: string]: boolean}>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.RedeployUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  redeployUsingPOST(params: ApplicationControllerService.RedeployUsingPOSTParams): __Observable<{[key: string]: boolean}> {
+    return this.redeployUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as {[key: string]: boolean})
+    );
+  }
 }
 
 module ApplicationControllerService {
@@ -3381,6 +3466,22 @@ module ApplicationControllerService {
      * applicationId
      */
     applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for redeployUsingPOST
+   */
+  export interface RedeployUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
 
     /**
      * applicationFamily

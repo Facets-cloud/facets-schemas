@@ -4,10 +4,12 @@ import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.actions.TriggerStatus;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
@@ -40,6 +42,7 @@ import static com.capillary.ops.deployer.bo.Application.ApplicationType.SCHEDULE
 
 @Profile("!dev")
 @Service
+@Loggable
 public class KubernetesService implements IKubernetesService {
 
     private static final Logger logger = LoggerFactory.getLogger(KubernetesService.class);
@@ -76,7 +79,7 @@ public class KubernetesService implements IKubernetesService {
         }
 
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
-        return kubernetesClient.extensions().deployments().inNamespace(namespace).list();
+        return kubernetesClient.apps().deployments().inNamespace(namespace).list();
     }
 
     @Override
@@ -124,8 +127,21 @@ public class KubernetesService implements IKubernetesService {
     }
 
     @Override
-    public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName) {
+    public DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment,
+        String deploymentName, boolean isCC) {
+
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        if(isCC){
+
+            DeploymentList deploymentList =
+                kubernetesClient.extensions().deployments().inNamespace("").withLabel("deployerid", deploymentName)
+                    .list();
+            if(deploymentList.getItems().size()>0){
+                deploymentName = deploymentList.getItems().get(0).getMetadata().getName();
+            }else{
+                throw new NotFoundException("No CC Service found for this appid");
+            }
+        }
         ApplicationServiceDetails applicationServiceDetails = null;
         ApplicationDeploymentDetails applicationDeploymentDetails;
         Map<String, String> selectors = new HashMap<>();

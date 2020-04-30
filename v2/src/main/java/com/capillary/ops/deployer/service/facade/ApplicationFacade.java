@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
+import com.capillary.ops.cp.service.CCAdapterService;
+import com.capillary.ops.deployer.Deployer;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
@@ -22,8 +24,8 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import com.jcabi.aspects.Loggable;
+import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,7 @@ import java.util.stream.Stream;
 
 
 @Service
+@Loggable
 public class ApplicationFacade {
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -110,6 +113,10 @@ public class ApplicationFacade {
 
     @Autowired
     private ActionExecutionRepository actionExecutionRepository;
+
+
+    @Autowired
+    private CCAdapterService ccAdapterService;
 
     public Application createApplication(Application application, String host) {
         if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
@@ -385,7 +392,12 @@ public class ApplicationFacade {
 
     public Deployment getCurrentDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
         Optional<Deployment> deployment = deploymentRepository.findTopOneByApplicationFamilyAndApplicationIdAndEnvironmentOrderByTimestampDesc(applicationFamily, applicationId, environment);
-        return deployment.isPresent() ? deployment.get() : null;
+
+        if (deployment.isPresent()) {
+            return deployment.get();
+        }
+        Deployment ccDeployment = ccAdapterService.getCCDeployment(applicationFamily, applicationId, environment);
+        return ccDeployment;
     }
 
     public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,
@@ -396,10 +408,6 @@ public class ApplicationFacade {
         return codeBuildService.getBuildLogs(application, build.getCodeBuildId(), nextToken);
     }
 
-    @RedisLocked(
-            expression = "#applicationFamily + '_' + #environment + '_' + #applicationId + '_' + #deployment.getBuildId()",
-            expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
-    )
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
         deployment.setTimestamp(new Date());
         Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
@@ -435,17 +443,19 @@ public class ApplicationFacade {
         if(mirror != null && ! mirror.isEmpty()) {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }
-        if(env.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
+        if(env.getEnvironmentConfiguration() != null && env.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
             preDeployTasks(application, deployment);
         }
-        deploymentRepository.save(deployment);
         try {
+            deploymentRepository.save(deployment);
             helmService.deploy(application, deployment);
         } catch (Exception e) {
+            deploymentRepository.delete(deployment);
             logger.error("error happened while deploying application");
-            postMessageToFlock(
-                    application,
-                    getDeploymentFailureMessage(deployment, application));
+//            postMessageToFlock(
+//                    application,
+//                    getDeploymentFailureMessage(deployment, application));
+            throw e;
         }
         return deployment;
     }
@@ -526,10 +536,35 @@ public class ApplicationFacade {
         return kubernetesService.getApplicationPodDetails(application, environment, releaseName);
     }
 
-    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
-        Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
-        DeploymentStatusDetails deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, helmService.getReleaseName(application, environment));
+    public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName,
+        String applicationId) {
+        Application application =
+            applicationRepository.findById(applicationId).get();
+        logger.info("Application from repo: {}", application.getName());
+        Optional<Environment> environmentO = environmentRepository
+            .findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily,
+                environmentName);
+        DeploymentStatusDetails deploymentStatus = null;
+        if (!environmentO.isPresent()) {
+            // This can be a CC request
+            logger.info("This may be a cc request for {}", application.getName());
+            Optional<EnvironmentMetaData> ccMeta =
+                ccAdapterService.getCCEnvironmentMeta(applicationFamily, environmentName);
+            if(!ccMeta.isPresent()){
+                logger.info("No such Environment present in CC {}", environmentName);
+                return null;
+            }
+            Environment environment = new Environment();
+            EnvironmentConfiguration ec = ccAdapterService.getCCEnvironmentConfiguration(environmentName);
+            environment.setEnvironmentConfiguration(ec);
+            environment.setEnvironmentMetaData(ccMeta.get());
+            deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, applicationId, true);
+        } else {
+            deploymentStatus = kubernetesService
+                .getDeploymentStatus(application, environmentO.get(), helmService.getReleaseName(application,
+                    environmentO.get()),
+                    false);
+        }
         return deploymentStatus;
     }
 
@@ -668,6 +703,11 @@ public class ApplicationFacade {
     public List<EnvironmentMetaData> getEnvironmentMetaData(ApplicationFamily applicationFamily) {
         return environmentRepository.findByEnvironmentMetaDataApplicationFamily(applicationFamily)
                 .stream().map(Environment::getEnvironmentMetaData).collect(Collectors.toList());
+    }
+
+    public List<EnvironmentMetaData> getEnvironmentMetaDataCC(ApplicationFamily applicationFamily) {
+        List<EnvironmentMetaData> ccEnvs = ccAdapterService.getCCEnvironmentMetaList(applicationFamily);
+        return ccEnvs;
     }
 
     public List<Environment> getEnvironments(ApplicationFamily applicationFamily) {
@@ -861,5 +901,29 @@ public class ApplicationFacade {
 
     public boolean deleteApplicaitonSecret(String environment, ApplicationFamily applicationFamily, String applicationId, String secretName) {
         return secretService.deleteApplicationSecret(environment, applicationFamily, applicationId, secretName);
+    }
+
+    public Map<String, Boolean> redeploy(ApplicationFamily applicationFamily, String environmentName) {
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        DeploymentList deployments = kubernetesService.getDeployments(environment);
+        List<String> deploymentIds = deployments.getItems().stream()
+                .filter(x -> x.getSpec().getTemplate() != null)
+                .filter(x -> x.getSpec().getTemplate().getMetadata() != null)
+                .filter(x -> x.getSpec().getTemplate().getMetadata().getAnnotations() != null)
+                .filter(x -> x.getSpec().getTemplate().getMetadata().getAnnotations().containsKey("deploymentId"))
+                .map(x -> x.getSpec().getTemplate().getMetadata().getAnnotations().get("deploymentId"))
+                .collect(Collectors.toList());
+        Map<String, Boolean> ret = new HashMap<>();
+        for (String deploymentId: deploymentIds) {
+            Deployment deployment = deploymentRepository.findById(deploymentId).get();
+            Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, deployment.getApplicationId()).get();
+            try {
+                helmService.deploy(application, deployment);
+                ret.put(application.getId(), true);
+            } catch (Throwable t) {
+                ret.put(application.getId(), false);
+            }
+        }
+        return ret;
     }
 }

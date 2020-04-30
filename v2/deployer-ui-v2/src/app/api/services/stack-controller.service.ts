@@ -8,7 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { Stack } from '../models/stack';
-import { Resource } from '../models/resource';
+import { AbstractCluster } from '../models/abstract-cluster';
 
 /**
  * Stack Controller
@@ -18,7 +18,7 @@ import { Resource } from '../models/resource';
 })
 class StackControllerService extends __BaseService {
   static readonly createStackUsingPOSTPath = '/cc/v1/stacks/';
-  static readonly getClusterResourcesUsingGETPath = '/cc/v1/stacks/{stackName}/resources';
+  static readonly getClustersUsingGETPath = '/cc/v1/stacks/{stackName}/clusters';
 
   constructor(
     config: __Configuration,
@@ -64,23 +64,17 @@ class StackControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `StackControllerService.GetClusterResourcesUsingGETParams` containing the following parameters:
-   *
-   * - `stackName`: stackName
-   *
-   * - `type`: type
-   *
+   * @param stackName stackName
    * @return OK
    */
-  getClusterResourcesUsingGETResponse(params: StackControllerService.GetClusterResourcesUsingGETParams): __Observable<__StrictHttpResponse<Array<Resource>>> {
+  getClustersUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Array<AbstractCluster>>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
 
-    if (params.type != null) __params = __params.set('type', params.type.toString());
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/stacks/${params.stackName}/resources`,
+      this.rootUrl + `/cc/v1/stacks/${stackName}/clusters`,
       __body,
       {
         headers: __headers,
@@ -91,43 +85,22 @@ class StackControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<Resource>>;
+        return _r as __StrictHttpResponse<Array<AbstractCluster>>;
       })
     );
   }
   /**
-   * @param params The `StackControllerService.GetClusterResourcesUsingGETParams` containing the following parameters:
-   *
-   * - `stackName`: stackName
-   *
-   * - `type`: type
-   *
+   * @param stackName stackName
    * @return OK
    */
-  getClusterResourcesUsingGET(params: StackControllerService.GetClusterResourcesUsingGETParams): __Observable<Array<Resource>> {
-    return this.getClusterResourcesUsingGETResponse(params).pipe(
-      __map(_r => _r.body as Array<Resource>)
+  getClustersUsingGET(stackName: string): __Observable<Array<AbstractCluster>> {
+    return this.getClustersUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Array<AbstractCluster>)
     );
   }
 }
 
 module StackControllerService {
-
-  /**
-   * Parameters for getClusterResourcesUsingGET
-   */
-  export interface GetClusterResourcesUsingGETParams {
-
-    /**
-     * stackName
-     */
-    stackName: string;
-
-    /**
-     * type
-     */
-    type?: string;
-  }
 }
 
 export { StackControllerService }

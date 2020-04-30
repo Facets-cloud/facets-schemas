@@ -4,6 +4,8 @@ import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.helm.HelmValueProviderFactory;
 import com.capillary.ops.deployer.repository.EnvironmentRepository;
 import com.capillary.ops.deployer.service.interfaces.IHelmService;
+import com.github.alturkovic.lock.Interval;
+import com.github.alturkovic.lock.redis.alias.RedisLocked;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.*;
@@ -26,6 +28,7 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Profile("!dev | helminttest")
@@ -60,6 +63,10 @@ public class HelmService implements IHelmService {
         }
     }
 
+    @RedisLocked(
+            expression = "#application.getApplicationFamily() + '_' + #deployment.getEnvironment() + '_' + #application.getId() + '_' + #deployment.getBuildId()",
+            expiration = @Interval(value = "5", unit = TimeUnit.MINUTES)
+    )
     @Override
     public void deploy(Application application, Deployment deployment) {
         ApplicationFamily applicationFamily = application.getApplicationFamily();

@@ -8,12 +8,6 @@ import java.util.stream.Collectors;
 
 public class Deployment {
 
-    public enum ConcurrencyPolicy {
-        Allow,
-        Forbid,
-        Replace
-    }
-
     public Deployment() {
     }
 
@@ -133,7 +127,7 @@ public class Deployment {
         if(configurations == null) {
             return new HashMap<>();
         }
-        return configurations.stream()
+        return configurations.stream().filter(e-> !(e.getName() == null || e.getValue() == null))
                 .collect(Collectors.toMap(EnvironmentVariable::getName, EnvironmentVariable::getValue));
     }
 

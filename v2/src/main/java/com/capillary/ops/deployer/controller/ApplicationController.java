@@ -333,6 +333,12 @@ public class ApplicationController {
         return new ResponseEntity<>(applicationFacade.getEnvironmentMetaData(applicationFamily), HttpStatus.OK);
     }
 
+    @GetMapping("cc/{applicationFamily}/environmentMetaData")
+    public ResponseEntity<List<EnvironmentMetaData>> getCCEnvironmentMetaData(
+        @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {
+        return new ResponseEntity<>(applicationFacade.getEnvironmentMetaDataCC(applicationFamily), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current", produces = "application/json")
     public Deployment getCurrentDeployment(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                  @PathVariable("applicationId") String applicationId, @PathVariable("environment") String environment) {
@@ -446,6 +452,12 @@ public class ApplicationController {
         return applicationFacade.resumeApplication(applicationFamily, applicationId, environment);
     }
 
+    @RolesAllowed("ADMIN")
+    @PostMapping(value = "/{applicationFamily}/{environment}/redeployment", produces = "application/json")
+    public Map<String, Boolean> redeploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                       @PathVariable("environment") String environment) {
+        return applicationFacade.redeploy(applicationFamily, environment);
+    }
 
 
 }

@@ -87,6 +87,13 @@ spec:
           {{- end }}
 {{- if or .Values.podCPULimit .Values.podMemoryLimit }}
           resources:
+            requests:
+              {{- if .Values.podCPURequest }}
+              cpu: {{ .Values.podCPURequest }}
+              {{- end}}
+              {{- if .Values.podMemoryRequest }}
+              memory: {{ .Values.podMemoryRequest }}Gi
+              {{- end}}
             limits:
             {{- if .Values.podCPULimit }}
               cpu: {{ .Values.podCPULimit }}

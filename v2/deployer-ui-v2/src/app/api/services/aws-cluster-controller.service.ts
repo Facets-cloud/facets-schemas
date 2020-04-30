@@ -19,7 +19,7 @@ import { AwsClusterRequest } from '../models/aws-cluster-request';
 class AwsClusterControllerService extends __BaseService {
   static readonly createClusterUsingPOSTPath = '/cc/v1/aws/clusters';
   static readonly getClusterUsingGETPath = '/cc/v1/aws/clusters/{clusterId}';
-  static readonly createClusterUsingPUTPath = '/cc/v1/aws/clusters/{clusterId}';
+  static readonly updateClusterUsingPUTPath = '/cc/v1/aws/clusters/{clusterId}';
 
   constructor(
     config: __Configuration,
@@ -101,7 +101,7 @@ class AwsClusterControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `AwsClusterControllerService.CreateClusterUsingPUTParams` containing the following parameters:
+   * @param params The `AwsClusterControllerService.UpdateClusterUsingPUTParams` containing the following parameters:
    *
    * - `request`: request
    *
@@ -109,7 +109,7 @@ class AwsClusterControllerService extends __BaseService {
    *
    * @return OK
    */
-  createClusterUsingPUTResponse(params: AwsClusterControllerService.CreateClusterUsingPUTParams): __Observable<__StrictHttpResponse<AwsCluster>> {
+  updateClusterUsingPUTResponse(params: AwsClusterControllerService.UpdateClusterUsingPUTParams): __Observable<__StrictHttpResponse<AwsCluster>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -133,7 +133,7 @@ class AwsClusterControllerService extends __BaseService {
     );
   }
   /**
-   * @param params The `AwsClusterControllerService.CreateClusterUsingPUTParams` containing the following parameters:
+   * @param params The `AwsClusterControllerService.UpdateClusterUsingPUTParams` containing the following parameters:
    *
    * - `request`: request
    *
@@ -141,8 +141,8 @@ class AwsClusterControllerService extends __BaseService {
    *
    * @return OK
    */
-  createClusterUsingPUT(params: AwsClusterControllerService.CreateClusterUsingPUTParams): __Observable<AwsCluster> {
-    return this.createClusterUsingPUTResponse(params).pipe(
+  updateClusterUsingPUT(params: AwsClusterControllerService.UpdateClusterUsingPUTParams): __Observable<AwsCluster> {
+    return this.updateClusterUsingPUTResponse(params).pipe(
       __map(_r => _r.body as AwsCluster)
     );
   }
@@ -151,9 +151,9 @@ class AwsClusterControllerService extends __BaseService {
 module AwsClusterControllerService {
 
   /**
-   * Parameters for createClusterUsingPUT
+   * Parameters for updateClusterUsingPUT
    */
-  export interface CreateClusterUsingPUTParams {
+  export interface UpdateClusterUsingPUTParams {
 
     /**
      * request

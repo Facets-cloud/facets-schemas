@@ -12,6 +12,8 @@ import { MessageBus } from '../../@core/message-bus';
 })
 export class DeploymentPageComponent implements OnInit {
 
+  deploymentFailed: boolean = false;
+  deploymentError: {error: {message: "unknown error"}};
   loading: boolean = true;
   appFamily: any;
   applicationId: string;
@@ -78,7 +80,6 @@ export class DeploymentPageComponent implements OnInit {
         this.applicationId = params.get('applicationId');
         this.buildId = params.get('buildId');
         this.loadBuild();
-        this.loadApplication();
       },
     );
   }
@@ -90,7 +91,7 @@ export class DeploymentPageComponent implements OnInit {
       buildId: this.buildId,
     }).subscribe(build => {
       this.build = build;
-      this.loadEnvironments();
+      this.loadApplication();
     });
   }
 
@@ -114,7 +115,10 @@ export class DeploymentPageComponent implements OnInit {
     this.applicationControllerService.getApplicationUsingGET({
       applicationFamily: this.appFamily,
       applicationId: this.applicationId,
-    }).subscribe(application => this.application = application);
+    }).subscribe(application => {
+      this.application = application;
+      this.loadEnvironments();
+    });
   }
 
   async deploy(stepper: NbStepperComponent) {
@@ -136,6 +140,12 @@ export class DeploymentPageComponent implements OnInit {
             this.appFamily, this.applicationId,
             'deploymentStatus', this.deployment.environment]));
       },
+      err => {
+        this.deploymentError = err;
+        this.deploymentFailed = true;
+        stepper.next();
+        console.log(err);
+      },
     );
   }
 
@@ -147,7 +157,7 @@ export class DeploymentPageComponent implements OnInit {
         applicationFamily: this.appFamily,
       },
     ).subscribe(
-      deployment => {
+      (deployment: Deployment) => {
         if (deployment) {
           this.deployment.podSize = deployment.podSize,
           this.deployment.configurations = deployment.configurations;
@@ -155,6 +165,9 @@ export class DeploymentPageComponent implements OnInit {
           this.deployment.schedule = deployment.schedule;
           this.deployment.replicas = deployment.replicas;
         }
+        stepper.next();
+      },
+      err => {
         stepper.next();
       },
     );

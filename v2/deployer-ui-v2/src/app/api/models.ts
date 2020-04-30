@@ -1,3 +1,4 @@
+export { AbstractCluster } from './models/abstract-cluster';
 export { ActionExecution } from './models/action-execution';
 export { Alerting } from './models/alerting';
 export { Application } from './models/application';
@@ -36,17 +37,16 @@ export { HPADetails } from './models/hpadetails';
 export { HealthCheck } from './models/health-check';
 export { InputStream } from './models/input-stream';
 export { InputStreamResource } from './models/input-stream-resource';
+export { K8sCredentials } from './models/k8s-credentials';
 export { K8sLoggingConfiguration } from './models/k8s-logging-configuration';
 export { Kube2IamConfiguration } from './models/kube-2iam-configuration';
 export { LogEvent } from './models/log-event';
-export { ModelAndView } from './models/model-and-view';
 export { Monitoring } from './models/monitoring';
 export { PVC } from './models/pvc';
 export { PodReplicationDetails } from './models/pod-replication-details';
 export { PodResource } from './models/pod-resource';
 export { Port } from './models/port';
 export { Probe } from './models/probe';
-export { Resource } from './models/resource';
 export { S3DumpAwsConfig } from './models/s3dump-aws-config';
 export { SSLConfigs } from './models/sslconfigs';
 export { SimpleOauth2User } from './models/simple-oauth-2user';
@@ -56,4 +56,3 @@ export { TokenPaginatedResponseLogEvent } from './models/token-paginated-respons
 export { URI } from './models/uri';
 export { URL } from './models/url';
 export { User } from './models/user';
-export { View } from './models/view';

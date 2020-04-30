@@ -2,7 +2,9 @@ package com.capillary.ops.cp.service;
 
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PromotionIntent;
+import com.capillary.ops.deployer.repository.ApplicationRepository;
 import com.capillary.ops.deployer.repository.BuildRepository;
+import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -17,6 +19,12 @@ public class BuildServiceTest {
 
     @Injectable
     BuildRepository ccBuildRepository;
+
+    @Injectable
+    private ApplicationRepository applicationRepository;
+
+    @Injectable
+    private ApplicationFacade applicationFacade;
 
     @Test
     public void getHotFixBuildLastReleaseBuildPresent() {
@@ -33,7 +41,8 @@ public class BuildServiceTest {
         new Expectations() {
 
             {
-                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
+                    PromotionIntent.RELEASE);
                 result = Optional.of(rBuild);
             }
 
@@ -54,18 +63,17 @@ public class BuildServiceTest {
         rBuild.setTimestamp(0L);
         rBuild.setCodeBuildId("R1");
 
-
         Build hfBuild = new Build();
         hfBuild.setTimestamp(100L);
         hfBuild.setCodeBuildId("HF1");
-
 
         String applicationId = "test";
 
         new Expectations() {
 
             {
-                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
+                    PromotionIntent.RELEASE);
                 result = Optional.of(rBuild);
             }
 
@@ -87,13 +95,14 @@ public class BuildServiceTest {
         rBuild.setTimestamp(0L);
         rBuild.setCodeBuildId("R1");
 
-
         String applicationId = "test";
 
         new Expectations() {
 
             {
-                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+                ccBuildRepository
+                    .findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
+                        PromotionIntent.RELEASE);
                 result = Optional.of(rBuild);
             }
 
@@ -114,13 +123,13 @@ public class BuildServiceTest {
         hfBuild.setTimestamp(0L);
         hfBuild.setCodeBuildId("HF1");
 
-
         String applicationId = "test";
 
         new Expectations() {
 
             {
-                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+                ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
+                    PromotionIntent.RELEASE);
                 result = Optional.empty();
             }
 
