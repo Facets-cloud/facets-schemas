@@ -161,24 +161,28 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
   async loadLatestDeployments() {
     const deployments = [];
     for (const environment of this.environments) {
-      const deployment: Deployment = await this.applicationControllerService.getCurrentDeploymentUsingGET({
-        environment: environment.name,
-        applicationFamily: this.application.applicationFamily,
-        applicationId: this.application.id,
-      }).toPromise();
-      if (deployment) {
-        deployment['minReplicas'] = deployment.horizontalPodAutoscaler.minReplicas;
-        deployment['maxReplicas'] = deployment.horizontalPodAutoscaler.maxReplicas;
-        deployment['cpuThreshold'] = deployment.horizontalPodAutoscaler.threshold;
-        deployments.push(deployment);
+      try {
+        const deployment: Deployment = await this.applicationControllerService.getCurrentDeploymentUsingGET({
+          environment: environment.name,
+          applicationFamily: this.application.applicationFamily,
+          applicationId: this.application.id,
+        }).toPromise();
+        if (deployment) {
+          deployment['minReplicas'] = deployment.horizontalPodAutoscaler.minReplicas;
+          deployment['maxReplicas'] = deployment.horizontalPodAutoscaler.maxReplicas;
+          deployment['cpuThreshold'] = deployment.horizontalPodAutoscaler.threshold;
+          deployments.push(deployment);
+        }
+      } catch (err) {
       }
     }
     this.deployments = deployments;
   }
 
   async loadLatestCCDeployments() {
-      const deployments = [];
-      for (const environment of this.ccEnvironments) {
+    const deployments = [];
+    for (const environment of this.ccEnvironments) {
+      try {
         const deployment: Deployment = await this.applicationControllerService.getCurrentDeploymentUsingGET({
           environment: environment.capillaryCloudClusterName,
           applicationFamily: this.application.applicationFamily,
@@ -190,9 +194,10 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
           deployment['cpuThreshold'] = deployment.horizontalPodAutoscaler.threshold;
           deployments.push(deployment);
         }
-      }
-      this.ccDeployments = deployments;
+      } catch (err) { }
     }
+    this.ccDeployments = deployments;
+  }
 
 }
 

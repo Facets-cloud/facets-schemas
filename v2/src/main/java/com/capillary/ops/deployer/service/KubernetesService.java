@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import static com.capillary.ops.deployer.bo.Application.ApplicationType.SCHEDULED_JOB;
 
-@Profile("!devee")
+@Profile("!dev")
 @Service
 @Loggable
 public class KubernetesService implements IKubernetesService {
