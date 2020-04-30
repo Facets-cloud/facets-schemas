@@ -34,6 +34,10 @@ public class BitbucketVcsService implements VcsService {
     @Autowired
     private DeployerHttpClient httpClient;
 
+    private static final int MAX_RESPONSE_PAGE_COUNT = 50;
+
+    private static final int NUMBER_OF_REFS_PER_PAGE = 100;
+
     private static final Logger logger = LoggerFactory.getLogger(BitbucketVcsService.class);
 
     private static final String BASE_URI = "https://api.bitbucket.org/2.0";
@@ -44,16 +48,20 @@ public class BitbucketVcsService implements VcsService {
 
 
     private List<JSONObject> getPaginatedResponse(String requestUri, String username, String password) throws IOException {
-
-
         JSONObject currentPage = httpClient.makeGETRequest(requestUri, username, password);
         List<JSONObject> responseValues = convertJsonArrayToList(currentPage);
         List<JSONObject> jsonValues = new ArrayList<>(responseValues);
+        int pageCount = 2;
+        while (currentPage.has("next")) {
+            currentPage = httpClient.makeGETRequest(currentPage.getString("next"), username, password);
+            jsonValues.addAll(convertJsonArrayToList(currentPage));
 
-        for (int page = 2; page <= currentPage.getInt("pagelen") ; page++) {
-            if (responseValues.size() > 0 && currentPage.has("next")) {
-                currentPage = httpClient.makeGETRequest(currentPage.getString("next"), username, password);
-                jsonValues.addAll(convertJsonArrayToList(currentPage));
+            /* Do not exceed MAX_RESPONSE_PAGE_COUNT pages
+               For example, for pageCount 50 and NUMBER_OF_REFS_PER_PAGE value 100, maximum 5000 refs will be fetched
+            */
+            pageCount++;
+            if (pageCount > MAX_RESPONSE_PAGE_COUNT) {
+                break;
             }
         }
 
@@ -93,6 +101,7 @@ public class BitbucketVcsService implements VcsService {
                 .add("refs")
                 .add("branches")
                 .toString();
+        requestUri = requestUri + "?pagelen=" + NUMBER_OF_REFS_PER_PAGE;
 
         List<JSONObject> jsonValues = this.getPaginatedResponse(requestUri, username, password);
 
@@ -117,6 +126,7 @@ public class BitbucketVcsService implements VcsService {
                 .add("refs")
                 .add("tags")
                 .toString();
+        requestUri = requestUri + "?pagelen=" + NUMBER_OF_REFS_PER_PAGE;
 
         List<JSONObject> jsonValues = this.getPaginatedResponse(requestUri, username, password);
 
