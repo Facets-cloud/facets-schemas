@@ -147,7 +147,7 @@ export class DeploymentPageComponent implements OnInit {
         applicationFamily: this.appFamily,
       },
     ).subscribe(
-      deployment => {
+      (deployment: Deployment) => {
         if (deployment) {
           this.deployment.podSize = deployment.podSize,
           this.deployment.configurations = deployment.configurations;
@@ -155,6 +155,9 @@ export class DeploymentPageComponent implements OnInit {
           this.deployment.schedule = deployment.schedule;
           this.deployment.replicas = deployment.replicas;
         }
+        stepper.next();
+      },
+      err => {
         stepper.next();
       },
     );

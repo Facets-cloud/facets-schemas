@@ -150,11 +150,11 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
         });
 
       this.applicationControllerService.getCCEnvironmentMetaDataUsingGET(this.application.applicationFamily)
-        .subscribe(x => {
+        .subscribe((x: EnvironmentMetaData[]) => {
           this.ccEnvironments = x;
-          debugger;
           this.loadLatestCCDeployments();
-        });
+        },
+        err => {});
     }
   }
 
