@@ -13,6 +13,7 @@ import { MessageBus } from '../../@core/message-bus';
 export class DeploymentPageComponent implements OnInit {
 
   deploymentFailed: boolean = false;
+  deploymentError: {error: {message: "unknown error"}};
   loading: boolean = true;
   appFamily: any;
   applicationId: string;
@@ -140,6 +141,7 @@ export class DeploymentPageComponent implements OnInit {
             'deploymentStatus', this.deployment.environment]));
       },
       err => {
+        this.deploymentError = err;
         this.deploymentFailed = true;
         stepper.next();
         console.log(err);

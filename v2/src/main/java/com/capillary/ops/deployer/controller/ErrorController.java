@@ -37,7 +37,8 @@ public class ErrorController {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorDetails> applicationAlreadyExists(
           Exception ex, WebRequest request) throws Exception {
-    throw ex;
+    return new ResponseEntity<>(
+            new ErrorDetails(ex.getMessage(), "500"), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)  // 404

@@ -408,10 +408,6 @@ public class ApplicationFacade {
         return codeBuildService.getBuildLogs(application, build.getCodeBuildId(), nextToken);
     }
 
-    @RedisLocked(
-            expression = "#applicationFamily + '_' + #environment + '_' + #applicationId + '_' + #deployment.getBuildId()",
-            expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
-    )
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
         deployment.setTimestamp(new Date());
         Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
@@ -450,14 +446,16 @@ public class ApplicationFacade {
         if(env.getEnvironmentConfiguration() != null && env.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
             preDeployTasks(application, deployment);
         }
-        deploymentRepository.save(deployment);
         try {
+            deploymentRepository.save(deployment);
             helmService.deploy(application, deployment);
         } catch (Exception e) {
+            deploymentRepository.delete(deployment);
             logger.error("error happened while deploying application");
-            postMessageToFlock(
-                    application,
-                    getDeploymentFailureMessage(deployment, application));
+//            postMessageToFlock(
+//                    application,
+//                    getDeploymentFailureMessage(deployment, application));
+            throw e;
         }
         return deployment;
     }

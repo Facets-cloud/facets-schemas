@@ -8,12 +8,6 @@ import java.util.stream.Collectors;
 
 public class Deployment {
 
-    public enum ConcurrencyPolicy {
-        Allow,
-        Forbid,
-        Replace
-    }
-
     public Deployment() {
     }
 

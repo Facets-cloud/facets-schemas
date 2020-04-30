@@ -95,7 +95,7 @@
       </nb-step>
       <nb-step [hidden]=true>
         <nb-alert size="tiny" *ngIf="!deploymentFailed" status="success" style="text-align: center">Successfully Deployed!!</nb-alert>
-        <nb-alert size="tiny" *ngIf="deploymentFailed" accent="danger" style="text-align: center">Deployment Failed!!</nb-alert>
+        <nb-alert size="tiny" *ngIf="deploymentFailed" accent="danger" style="text-align: center">Deployment Failed: {{deploymentError?.error?.message}}</nb-alert>
       </nb-step>
     </nb-stepper>
   </nb-card-body>
