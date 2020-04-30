@@ -79,7 +79,7 @@ public class KubernetesService implements IKubernetesService {
         }
 
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
-        return kubernetesClient.extensions().deployments().inNamespace(namespace).list();
+        return kubernetesClient.apps().deployments().inNamespace(namespace).list();
     }
 
     @Override

@@ -909,8 +909,11 @@ public class ApplicationFacade {
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         DeploymentList deployments = kubernetesService.getDeployments(environment);
         List<String> deploymentIds = deployments.getItems().stream()
-                .filter(x -> x.getMetadata().getAnnotations().containsKey("deploymentId"))
-                .map(x -> x.getMetadata().getAnnotations().get("deploymentId"))
+                .filter(x -> x.getSpec().getTemplate() != null)
+                .filter(x -> x.getSpec().getTemplate().getMetadata() != null)
+                .filter(x -> x.getSpec().getTemplate().getMetadata().getAnnotations() != null)
+                .filter(x -> x.getSpec().getTemplate().getMetadata().getAnnotations().containsKey("deploymentId"))
+                .map(x -> x.getSpec().getTemplate().getMetadata().getAnnotations().get("deploymentId"))
                 .collect(Collectors.toList());
         Map<String, Boolean> ret = new HashMap<>();
         for (String deploymentId: deploymentIds) {
