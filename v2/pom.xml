@@ -248,6 +248,23 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-jgitflow-plugin</artifactId>
+                <version>1.0-alpha21.1</version>
+                <configuration>
+                    <allowSnapshots>true</allowSnapshots>
+                    <noDeploy>true</noDeploy>
+                    <pushReleases>false</pushReleases>
+                    <enableFeatureVersions>true</enableFeatureVersions>
+                    <flowInitContext>
+                        <masterBranchName>production</masterBranchName>
+                        <developBranchName>master</developBranchName>
+                        <featureBranchPrefix>pheature</featureBranchPrefix>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </flowInitContext>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.4.1</version>
