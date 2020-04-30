@@ -21,7 +21,7 @@ public class CommonClusterController {
         return clusterFacade.addClusterK8sCredentials(request);
     }
 
-    @GetMapping("{clusterId}/deployments/{value}")
+    //@GetMapping("{clusterId}/deployments/{value}")
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
         @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);

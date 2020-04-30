@@ -21,6 +21,7 @@ export interface Application {
   ports?: Array<Port>;
   pvcList?: Array<PVC>;
   repositoryUrl?: string;
+  resourceAllocationStrategy?: 'GENERAL_PURPOSE' | 'CPU_INTENSIVE';
   statusCallbackUrl?: string;
   statusCallbackUrls?: Array<string>;
   strictGitFlowModeEnabled?: boolean;

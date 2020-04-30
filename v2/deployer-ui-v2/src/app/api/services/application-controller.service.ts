@@ -86,6 +86,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getApplicationSecretsUsingGETPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests';
   static readonly updateApplicationSecretsUsingPUTPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets';
   static readonly deleteApplicationSecretUsingDELETEPath = '/api/{applicationFamily}/{environment}/applications/{applicationId}/secrets/{secretName}';
+  static readonly redeployUsingPOSTPath = '/api/{applicationFamily}/{environment}/redeployment';
 
   constructor(
     config: __Configuration,
@@ -2565,6 +2566,53 @@ class ApplicationControllerService extends __BaseService {
       __map(_r => _r.body as boolean)
     );
   }
+
+  /**
+   * @param params The `ApplicationControllerService.RedeployUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  redeployUsingPOSTResponse(params: ApplicationControllerService.RedeployUsingPOSTParams): __Observable<__StrictHttpResponse<{[key: string]: boolean}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/redeployment`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{[key: string]: boolean}>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.RedeployUsingPOSTParams` containing the following parameters:
+   *
+   * - `environment`: environment
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  redeployUsingPOST(params: ApplicationControllerService.RedeployUsingPOSTParams): __Observable<{[key: string]: boolean}> {
+    return this.redeployUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as {[key: string]: boolean})
+    );
+  }
 }
 
 module ApplicationControllerService {
@@ -3418,6 +3466,22 @@ module ApplicationControllerService {
      * applicationId
      */
     applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for redeployUsingPOST
+   */
+  export interface RedeployUsingPOSTParams {
+
+    /**
+     * environment
+     */
+    environment: string;
 
     /**
      * applicationFamily

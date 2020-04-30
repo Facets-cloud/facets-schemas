@@ -21,6 +21,8 @@ export interface EnvironmentConfiguration {
   preDeployTaskEnabled?: boolean;
   privateDnsConfiguration?: ExternalDnsConfiguration;
   publicDnsConfiguration?: ExternalDnsConfiguration;
+  requestsToLimitsRatio?: number;
+  resourceAllocationStrategyDefinition?: {[key: string]: number};
   s3DumpAwsConfig?: S3DumpAwsConfig;
   spotTerminationHandlingEnabled?: boolean;
   sslConfigs?: SSLConfigs;

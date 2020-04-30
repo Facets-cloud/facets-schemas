@@ -9,7 +9,6 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { AwsCluster } from '../models/aws-cluster';
 import { AwsClusterRequest } from '../models/aws-cluster-request';
-import { K8sCredentials } from '../models/k8s-credentials';
 
 /**
  * Aws Cluster Controller
@@ -20,8 +19,7 @@ import { K8sCredentials } from '../models/k8s-credentials';
 class AwsClusterControllerService extends __BaseService {
   static readonly createClusterUsingPOSTPath = '/cc/v1/aws/clusters';
   static readonly getClusterUsingGETPath = '/cc/v1/aws/clusters/{clusterId}';
-  static readonly addClusterK8sCredentialsUsingPOSTPath = '/cc/v1/aws/clusters/{clusterId}/credentials';
-  static readonly createClusterUsingPUTPath = '/cc/v1/aws/clusters/{clusterId}';
+  static readonly updateClusterUsingPUTPath = '/cc/v1/aws/clusters/{clusterId}';
 
   constructor(
     config: __Configuration,
@@ -103,7 +101,7 @@ class AwsClusterControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `AwsClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams` containing the following parameters:
+   * @param params The `AwsClusterControllerService.UpdateClusterUsingPUTParams` containing the following parameters:
    *
    * - `request`: request
    *
@@ -111,54 +109,7 @@ class AwsClusterControllerService extends __BaseService {
    *
    * @return OK
    */
-  addClusterK8sCredentialsUsingPOSTResponse(params: AwsClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams): __Observable<__StrictHttpResponse<boolean>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    __body = params.request;
-
-    let req = new HttpRequest<any>(
-      'POST',
-      this.rootUrl + `/cc/v1/aws/clusters/${params.clusterId}/credentials`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'text'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
-      })
-    );
-  }
-  /**
-   * @param params The `AwsClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams` containing the following parameters:
-   *
-   * - `request`: request
-   *
-   * - `clusterId`: clusterId
-   *
-   * @return OK
-   */
-  addClusterK8sCredentialsUsingPOST(params: AwsClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams): __Observable<boolean> {
-    return this.addClusterK8sCredentialsUsingPOSTResponse(params).pipe(
-      __map(_r => _r.body as boolean)
-    );
-  }
-
-  /**
-   * @param params The `AwsClusterControllerService.CreateClusterUsingPUTParams` containing the following parameters:
-   *
-   * - `request`: request
-   *
-   * - `clusterId`: clusterId
-   *
-   * @return OK
-   */
-  createClusterUsingPUTResponse(params: AwsClusterControllerService.CreateClusterUsingPUTParams): __Observable<__StrictHttpResponse<AwsCluster>> {
+  updateClusterUsingPUTResponse(params: AwsClusterControllerService.UpdateClusterUsingPUTParams): __Observable<__StrictHttpResponse<AwsCluster>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -182,7 +133,7 @@ class AwsClusterControllerService extends __BaseService {
     );
   }
   /**
-   * @param params The `AwsClusterControllerService.CreateClusterUsingPUTParams` containing the following parameters:
+   * @param params The `AwsClusterControllerService.UpdateClusterUsingPUTParams` containing the following parameters:
    *
    * - `request`: request
    *
@@ -190,8 +141,8 @@ class AwsClusterControllerService extends __BaseService {
    *
    * @return OK
    */
-  createClusterUsingPUT(params: AwsClusterControllerService.CreateClusterUsingPUTParams): __Observable<AwsCluster> {
-    return this.createClusterUsingPUTResponse(params).pipe(
+  updateClusterUsingPUT(params: AwsClusterControllerService.UpdateClusterUsingPUTParams): __Observable<AwsCluster> {
+    return this.updateClusterUsingPUTResponse(params).pipe(
       __map(_r => _r.body as AwsCluster)
     );
   }
@@ -200,30 +151,14 @@ class AwsClusterControllerService extends __BaseService {
 module AwsClusterControllerService {
 
   /**
-   * Parameters for createClusterUsingPUT
+   * Parameters for updateClusterUsingPUT
    */
-  export interface CreateClusterUsingPUTParams {
+  export interface UpdateClusterUsingPUTParams {
 
     /**
      * request
      */
     request: AwsClusterRequest;
-
-    /**
-     * clusterId
-     */
-    clusterId: string;
-  }
-
-  /**
-   * Parameters for addClusterK8sCredentialsUsingPOST
-   */
-  export interface AddClusterK8sCredentialsUsingPOSTParams {
-
-    /**
-     * request
-     */
-    request: K8sCredentials;
 
     /**
      * clusterId

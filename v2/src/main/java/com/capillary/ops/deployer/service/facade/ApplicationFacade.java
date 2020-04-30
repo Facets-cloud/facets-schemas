@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.service.CCAdapterService;
+import com.capillary.ops.deployer.Deployer;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
@@ -24,6 +25,7 @@ import com.cronutils.parser.CronParser;
 import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
 import com.jcabi.aspects.Loggable;
+import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -901,5 +903,26 @@ public class ApplicationFacade {
 
     public boolean deleteApplicaitonSecret(String environment, ApplicationFamily applicationFamily, String applicationId, String secretName) {
         return secretService.deleteApplicationSecret(environment, applicationFamily, applicationId, secretName);
+    }
+
+    public Map<String, Boolean> redeploy(ApplicationFamily applicationFamily, String environmentName) {
+        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        DeploymentList deployments = kubernetesService.getDeployments(environment);
+        List<String> deploymentIds = deployments.getItems().stream()
+                .filter(x -> x.getMetadata().getAnnotations().containsKey("deploymentId"))
+                .map(x -> x.getMetadata().getAnnotations().get("deploymentId"))
+                .collect(Collectors.toList());
+        Map<String, Boolean> ret = new HashMap<>();
+        for (String deploymentId: deploymentIds) {
+            Deployment deployment = deploymentRepository.findById(deploymentId).get();
+            Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, deployment.getApplicationId()).get();
+            try {
+                helmService.deploy(application, deployment);
+                ret.put(application.getId(), true);
+            } catch (Throwable t) {
+                ret.put(application.getId(), false);
+            }
+        }
+        return ret;
     }
 }

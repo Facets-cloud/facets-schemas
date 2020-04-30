@@ -452,6 +452,12 @@ public class ApplicationController {
         return applicationFacade.resumeApplication(applicationFamily, applicationId, environment);
     }
 
+    @RolesAllowed("ADMIN")
+    @PostMapping(value = "/{applicationFamily}/{environment}/redeployment", produces = "application/json")
+    public Map<String, Boolean> redeploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                       @PathVariable("environment") String environment) {
+        return applicationFacade.redeploy(applicationFamily, environment);
+    }
 
 
 }

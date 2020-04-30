@@ -29,8 +29,12 @@ public abstract class AbstractValueProvider {
         return deployment.getImage();
     }
 
-    public Double getPodCPULimit(Deployment deployment) {
-        return deployment.getPodSize().getCpu();
+    public Double getPodCPULimit(Application application, Environment environment, Deployment deployment) {
+        Double cpuToMemoryRatio = environment
+                .getEnvironmentConfiguration()
+                .getResourceAllocationStrategyDefinition()
+                .get(application.getResourceAllocationStrategy());
+        return deployment.getPodSize().getMemory() * cpuToMemoryRatio;
     }
 
     public Double getPodMemoryLimit(Deployment deployment) {
@@ -323,8 +327,14 @@ public abstract class AbstractValueProvider {
         this.addField("deploymentId", deployment.getId(), yaml);
         this.addField("buildId", deployment.getBuildId(), yaml);
         this.addField("image", getImage(deployment), yaml);
-        this.addField("podCPULimit", getPodCPULimit(deployment), yaml);
+        this.addField("podCPULimit", getPodCPULimit(application, environment, deployment), yaml);
         this.addField("podMemoryLimit", getPodMemoryLimit(deployment), yaml);
+        this.addField("podCPURequest",
+                environment.getEnvironmentConfiguration().getRequestsToLimitsRatio() *
+                        getPodCPULimit(application, environment, deployment), yaml);
+        this.addField("podMemoryRequest",
+                environment.getEnvironmentConfiguration().getRequestsToLimitsRatio() *
+                        getPodMemoryLimit(deployment), yaml);
         this.addField("nodeSelector", getNodeGroup(environment), yaml);
         this.addField("ports", getPorts(application), yaml);
         this.addField("configurations", getConfigMap(environment, application, deployment), yaml);

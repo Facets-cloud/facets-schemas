@@ -1,6 +1,11 @@
 package com.capillary.ops.deployer.bo;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EnvironmentConfiguration {
 
@@ -41,6 +46,9 @@ public class EnvironmentConfiguration {
     private ClusterAutoscalerConfiguration clusterAutoscalerConfiguration;
     private boolean preDeployTaskEnabled = false;
     private boolean jmxSideCarEnabled = false;
+    private Map<Application.ResourceAllocationStrategy, Double> resourceAllocationStrategyDefinition =
+            new HashMap<>();
+    private double requestsToLimitsRatio = 1;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -184,5 +192,21 @@ public class EnvironmentConfiguration {
 
     public void setJmxSideCarEnabled(boolean jmxSideCarEnabled) {
         this.jmxSideCarEnabled = jmxSideCarEnabled;
+    }
+
+    public Map<Application.ResourceAllocationStrategy, Double> getResourceAllocationStrategyDefinition() {
+        return resourceAllocationStrategyDefinition;
+    }
+
+    public void setResourceAllocationStrategyDefinition(Map<Application.ResourceAllocationStrategy, Double> resourceAllocationStrategyDefinition) {
+        this.resourceAllocationStrategyDefinition = resourceAllocationStrategyDefinition;
+    }
+
+    public double getRequestsToLimitsRatio() {
+        return requestsToLimitsRatio;
+    }
+
+    public void setRequestsToLimitsRatio(double requestsToLimitsRatio) {
+        this.requestsToLimitsRatio = requestsToLimitsRatio;
     }
 }
