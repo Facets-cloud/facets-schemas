@@ -34,6 +34,9 @@ public abstract class AbstractValueProvider {
                 .getEnvironmentConfiguration()
                 .getResourceAllocationStrategyDefinition()
                 .get(application.getResourceAllocationStrategy());
+        if (cpuToMemoryRatio == null) {
+            cpuToMemoryRatio = 0.5;
+        }
         return deployment.getPodSize().getMemory() * cpuToMemoryRatio;
     }
 
