@@ -56,12 +56,12 @@ public abstract class AbstractValueProvider {
     
     public Map<String, String> getConfigMap(Environment environment, Application application, Deployment deployment) {
         Map<String, String> configMap = new HashMap<>();
-        configMap.putAll(deployment.getConfigurationsMap());
-        configMap.putAll(application.getCommonConfigs());
         String clusterName = environment.getEnvironmentMetaData().getCapillaryCloudClusterName();
         if(environment.getEnvironmentConfiguration().getCommonConfigs() != null) {
             configMap.putAll(environment.getEnvironmentConfiguration().getCommonConfigs());
         }
+        configMap.putAll(application.getCommonConfigs());
+        configMap.putAll(deployment.getConfigurationsMap());
         return configMap;
     }
 
