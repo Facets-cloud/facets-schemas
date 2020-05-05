@@ -646,5 +646,26 @@ public class HelmServiceIntegrationTest {
         Assert.assertEquals("300",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout"));
         Assert.assertEquals("http",service.getMetadata().getAnnotations().get("service.beta.kubernetes.io/aws-load-balancer-backend-protocol"));
     }
+
+
+    @Test
+    public void testInstallNoLoadBalancer() throws Exception {
+        URLChartLoader chartLoader = new URLChartLoader();
+        ChartOuterClass.Chart.Builder chart = chartLoader.load(this.getClass().getResource("/charts/capillary-base"));
+        new Expectations(helmService) {
+            {
+                helmService.getChart("capillary-base");
+                result = chart;
+            }
+        };
+
+        Application application = createApplication("helmint-test-no-elb-1", ApplicationFamily.CRM);
+        application.setLoadBalancerType(LoadBalancerType.NONE);
+        Deployment deployment = createDeployment(application);
+        helmService.deploy(application, deployment);
+
+        Service service = kubernetesClient.services().inNamespace("default").withName(application.getName()).get();
+        Assert.assertEquals("ClusterIP",service.getSpec().getType());
+    }
 }
 
