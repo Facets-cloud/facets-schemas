@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.service.facade;
 
+import com.amazonaws.auth.policy.resources.S3ObjectResource;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.service.CCAdapterService;
 import com.capillary.ops.deployer.Deployer;
 import com.capillary.ops.deployer.bo.*;
@@ -26,6 +28,7 @@ import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -361,7 +364,14 @@ public class ApplicationFacade {
         if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED) && includeImage) {
             build.setImage(ecrService.findImageBetweenTimes(application,
                     codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
-            build.setArtifactUrl(codeBuildServiceBuild.artifacts().location());
+            String artifactLocation = codeBuildServiceBuild.artifacts().location();
+            if(! StringUtils.isEmpty(artifactLocation)) {
+                URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
+                        "deployer-test-build-output", codeBuildServiceBuild.id() + "/" + application.getName(),
+                        DateUtils.addHours(new Date(), 2)
+                );
+                build.setArtifactUrl(url.toString());
+            }
         }
         return build;
     }
