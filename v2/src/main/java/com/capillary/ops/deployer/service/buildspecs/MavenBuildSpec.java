@@ -68,7 +68,7 @@ public class MavenBuildSpec extends BuildSpec {
     @Override
     protected List<String> getArtifactSpec() {
         if(Application.ApplicationType.SERVERLESS.equals(application.getApplicationType())) {
-            return Lists.newArrayList(this.application.getApplicationRootDirectory());
+            return Lists.newArrayList(this.application.getApplicationRootDirectory() + "/**/*");
         }
         return new ArrayList<>();
     }
