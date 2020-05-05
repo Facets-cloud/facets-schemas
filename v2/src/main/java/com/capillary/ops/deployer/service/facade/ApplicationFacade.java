@@ -367,7 +367,7 @@ public class ApplicationFacade {
             String artifactLocation = codeBuildServiceBuild.artifacts().location();
             if(! StringUtils.isEmpty(artifactLocation)) {
                 URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
-                        "deployer-test-build-output", codeBuildServiceBuild.id() + "/" + application.getName(),
+                        "deployer-test-build-output", codeBuildServiceBuild.id().split(":")[1] + "/" + application.getName(),
                         DateUtils.addHours(new Date(), 2)
                 );
                 build.setArtifactUrl(url.toString());
