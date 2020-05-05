@@ -361,6 +361,7 @@ public class ApplicationFacade {
         if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED) && includeImage) {
             build.setImage(ecrService.findImageBetweenTimes(application,
                     codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+            build.setArtifactUrl(codeBuildServiceBuild.artifacts().location());
         }
         return build;
     }
