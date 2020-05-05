@@ -97,6 +97,7 @@
                     fixedWidth>
                     <nb-option value="INTERNAL">INTERNAL</nb-option>
                     <nb-option value="EXTERNAL">EXTERNAL</nb-option>
+                    <nb-option value="NONE">NONE</nb-option>
                   </nb-select>
                 </div>
               </div>
@@ -122,7 +123,7 @@
                 <label for="resourceAllocationStrategy" class="label col-sm-4">Resource Allocation Strategy</label>
                 <div class="col-sm-8">
                   <nb-select fullWidth size="small" required [(ngModel)]="application.resourceAllocationStrategy"
-                    #resourceAllocationStrategy="ngModel" name="resourceAllocationStrategy" id="resourceAllocationStrategy" placeholder="Deployment Strategy"
+                    #resourceAllocationStrategy="ngModel" name="resourceAllocationStrategy" id="resourceAllocationStrategy" placeholder="Resource Allocation Strategy"
                     fixedWidth>
                     <nb-option value="GENERAL_PURPOSE">General Purpose</nb-option>
                     <nb-option value="CPU_INTENSIVE">CPU Intensive</nb-option>

@@ -36,7 +36,11 @@ metadata:
     zk-publish: "{{ .Values.zkPublish }}"
   {{- end}}
 spec:
+  {{- if and .Values.lbType (eq .Values.lbType "none") }}
+  type: ClusterIP
+  {{- else }}
   type: LoadBalancer
+  {{- end }}
   ports:
       {{- range .Values.ports }}
       {{- with . }}
