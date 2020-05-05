@@ -28,7 +28,8 @@ public class Application {
     public enum ApplicationType {
         SERVICE,
         SCHEDULED_JOB,
-        STATEFUL_SET
+        STATEFUL_SET,
+        SERVERLESS
     }
 
     public enum ResourceAllocationStrategy {
