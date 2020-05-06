@@ -1,13 +1,12 @@
 package com.capillary.ops.cp.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.gson.JsonObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * All overrides together more to come
@@ -27,8 +26,7 @@ public class OverrideObject {
 
     private String resourceName;
 
-    private JsonObject overrides;
-
+    private Map<String, Object> overrides;
 
     public String getClusterId() {
         return clusterId;
@@ -54,11 +52,11 @@ public class OverrideObject {
         this.resourceName = resourceName;
     }
 
-    public JsonObject getOverrides() {
+    public Map<String, Object> getOverrides() {
         return overrides;
     }
 
-    public void setOverrides(JsonObject overrides) {
+    public void setOverrides(Map<String, Object> overrides) {
         this.overrides = overrides;
     }
 }

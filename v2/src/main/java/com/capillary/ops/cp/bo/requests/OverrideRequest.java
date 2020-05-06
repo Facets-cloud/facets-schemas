@@ -1,9 +1,9 @@
 package com.capillary.ops.cp.bo.requests;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
+import java.util.Map;
 
 public class OverrideRequest {
 
@@ -13,8 +13,8 @@ public class OverrideRequest {
     @NotNull
     private String resourceName;
 
-    @NotNull
-    private JsonObject overrides;
+    @JsonUnwrapped
+    private Map<String, Object> overrides;
 
     public String getResourceType() {
         return resourceType;
@@ -38,11 +38,11 @@ public class OverrideRequest {
             + ", overrides=" + overrides + '}';
     }
 
-    public JsonObject getOverrides() {
+    public Map<String, Object> getOverrides() {
         return overrides;
     }
 
-    public void setOverrides(JsonObject overrides) {
+    public void setOverrides(Map<String, Object> overrides) {
         this.overrides = overrides;
     }
 }

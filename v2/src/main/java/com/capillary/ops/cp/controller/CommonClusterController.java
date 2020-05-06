@@ -1,10 +1,7 @@
 package com.capillary.ops.cp.controller;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.K8sCredentials;
-import com.capillary.ops.cp.bo.requests.OverrideRequest;
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.K8sCredentials;
+import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.jcabi.aspects.Loggable;
@@ -35,8 +32,15 @@ public class CommonClusterController {
     }
 
     @PostMapping("{clusterId}/overrides")
-    public AbstractCluster overrideSizing(@PathVariable String clusterId, @RequestBody List<OverrideRequest> request){
+    public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
+        @RequestBody List<OverrideRequest> request) {
 
         return clusterFacade.override(clusterId, request);
+    }
+
+    @GetMapping("{clusterId}/overrides")
+    public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
+        List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
+        return overrides;
     }
 }

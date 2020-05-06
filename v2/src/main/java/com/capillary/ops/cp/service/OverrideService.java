@@ -3,10 +3,11 @@ package com.capillary.ops.cp.service;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.repository.OverrideObjectRepository;
-import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,13 +33,13 @@ public class OverrideService {
             toSave.setOverrides(request.getOverrides());
         } else {
             toSave = existing.get();
-            JsonObject existingOverrides = toSave.getOverrides();
-            JsonObject newOverrides = request.getOverrides();
+            Map<String, Object> existingOverrides = toSave.getOverrides();
+            Map<String, Object> newOverrides = request.getOverrides();
 
             if (existingOverrides != null) {
                 Set<String> keys = newOverrides.keySet();
                 //TODO: change this to deep merge if required
-                keys.stream().forEach(k -> existingOverrides.add(k, newOverrides.get(k)));
+                keys.stream().forEach(k -> existingOverrides.put(k, newOverrides.get(k)));
                 toSave.setOverrides(existingOverrides);
             } else {
                 toSave.setOverrides(newOverrides);
@@ -48,4 +49,7 @@ public class OverrideService {
 
     }
 
+    public List<OverrideObject> findAllByClusterId(String clusterId) {
+        return overrideObjectRepository.findAllByClusterId(clusterId);
+    }
 }

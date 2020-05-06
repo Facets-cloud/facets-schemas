@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Loggable
@@ -168,12 +169,19 @@ public class ClusterFacade {
         return credentials;
     }
 
-    public AbstractCluster override(String clusterId, List<OverrideRequest> request) {
+    public List<OverrideObject> override(String clusterId, List<OverrideRequest> request) {
 
-        request.stream().forEach(req -> {
-            overrideService.save(clusterId, req);
-        });
+        List<OverrideObject> saved =
+            request.stream().map(req -> overrideService.save(clusterId, req)).collect(Collectors.toList());
 
-        return this.getCluster(clusterId);
+        return saved;
+    }
+
+    public List<OverrideObject> getOverrides(String clusterId) {
+        Optional<AbstractCluster> cluster = cpClusterRepository.findById(clusterId);
+        if (!cluster.isPresent()) {
+            throw new NotFoundException("No such Cluster" + clusterId);
+        }
+        return overrideService.findAllByClusterId(clusterId);
     }
 }
