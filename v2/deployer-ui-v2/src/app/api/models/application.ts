@@ -15,7 +15,7 @@ export interface Application {
   elbIdleTimeoutSeconds?: number;
   healthCheck?: HealthCheck;
   id?: string;
-  loadBalancerType?: 'INTERNAL' | 'EXTERNAL';
+  loadBalancerType?: 'INTERNAL' | 'EXTERNAL' | 'NONE';
   name?: string;
   newRelicAlertRecipients?: string;
   ports?: Array<Port>;

@@ -107,6 +107,10 @@ public class BuildService {
             if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getImage() != null && !buildDetails
                 .getImage().isEmpty()) {
                 return Optional.of(buildDetails);
+            } else if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getArtifactUrl() != null
+                    && !buildDetails.getArtifactUrl().isEmpty() &&
+                    application.get().getApplicationType().equals(Application.ApplicationType.SERVERLESS)) {
+                return Optional.of(buildDetails);
             }
         }
         return Optional.empty();

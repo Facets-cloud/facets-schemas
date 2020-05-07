@@ -27,6 +27,7 @@ public class Build {
     private PromotionIntent promotionIntent = PromotionIntent.NA;
     private boolean promotable = false;
     private boolean testBuild = false;
+    private String artifactUrl;
 
     public Build() {
     }
@@ -159,5 +160,13 @@ public class Build {
 
     public void setPromotionIntent(PromotionIntent promotionIntent) {
         this.promotionIntent = promotionIntent;
+    }
+
+    public String getArtifactUrl() {
+        return artifactUrl;
+    }
+
+    public void setArtifactUrl(String artifactUrl) {
+        this.artifactUrl = artifactUrl;
     }
 }
