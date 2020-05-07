@@ -19,7 +19,7 @@ public class OverrideObject {
     private String id;
 
     @JsonIgnore
-    @Indexed(name = "cluster_id_index", unique = true)
+    @Indexed(name = "cluster_id_index", unique = false)
     private String clusterId;
 
     private String resourceType;
