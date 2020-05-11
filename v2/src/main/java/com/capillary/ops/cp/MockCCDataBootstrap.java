@@ -2,6 +2,7 @@ package com.capillary.ops.cp;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.StackRepository;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 
 @Profile("dev")
 @Component
@@ -45,7 +43,7 @@ public class MockCCDataBootstrap {
         stackRepository.save(stack);
 
         AwsCluster cluster = new AwsCluster("cluster1");
-
+        cluster.setId("cluster1");
         cluster.setTz(TimeZone.getDefault());
         cluster.setAwsRegion(Regions.US_EAST_1.getName());
         cluster.setReleaseStream(BuildStrategy.QA);
@@ -60,6 +58,7 @@ public class MockCCDataBootstrap {
 
         AwsCluster cluster2 = new AwsCluster("cluster2");
 
+        cluster2.setId("cluster2");
         cluster2.setTz(TimeZone.getDefault());
         cluster2.setAwsRegion(Regions.US_WEST_2.getName());
         cluster2.setReleaseStream(BuildStrategy.PROD);

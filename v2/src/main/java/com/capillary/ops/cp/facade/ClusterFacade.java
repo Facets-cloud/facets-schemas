@@ -1,14 +1,14 @@
 package com.capillary.ops.cp.facade;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.K8sCredentials;
-import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
+import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.cp.service.ClusterService;
+import com.capillary.ops.cp.service.OverrideService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Loggable
@@ -45,6 +46,9 @@ public class ClusterFacade {
 
     @Autowired
     private ClusterHelper clusterHelper;
+
+    @Autowired
+    private OverrideService overrideService;
 
     /**
      * Cluster agnostic request to create a new cluster
@@ -71,7 +75,8 @@ public class ClusterFacade {
         cluster.setUserInputVars(secrets);
         //Done: Persist Cluster Object
         //Persist to DB
-        return cpClusterRepository.save(cluster);
+        AbstractCluster save = cpClusterRepository.save(cluster);
+        return this.getCluster(save.getId());
     }
 
     /**
@@ -100,7 +105,8 @@ public class ClusterFacade {
         cluster.setUserInputVars(secrets);
         //Done: Persist Cluster Object
         //Persist to DB
-        return cpClusterRepository.save(cluster);
+        cpClusterRepository.save(cluster);
+        return this.getCluster(clusterId);
     }
 
     /**
@@ -161,5 +167,21 @@ public class ClusterFacade {
     public Optional<K8sCredentials> getClusterK8sCredentials(String clusterId) {
         Optional<K8sCredentials> credentials = k8sCredentialsRepository.findOneByClusterId(clusterId);
         return credentials;
+    }
+
+    public List<OverrideObject> override(String clusterId, List<OverrideRequest> request) {
+
+        List<OverrideObject> saved =
+            request.stream().map(req -> overrideService.save(clusterId, req)).collect(Collectors.toList());
+
+        return saved;
+    }
+
+    public List<OverrideObject> getOverrides(String clusterId) {
+        Optional<AbstractCluster> cluster = cpClusterRepository.findById(clusterId);
+        if (!cluster.isPresent()) {
+            throw new NotFoundException("No such Cluster" + clusterId);
+        }
+        return overrideService.findAllByClusterId(clusterId);
     }
 }

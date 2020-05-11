@@ -1,11 +1,15 @@
 package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.K8sCredentials;
+import com.capillary.ops.cp.bo.OverrideObject;
+import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("cc/v1/clusters")
@@ -25,5 +29,18 @@ public class CommonClusterController {
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
         @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
+    }
+
+    @PostMapping("{clusterId}/overrides")
+    public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
+        @RequestBody List<OverrideRequest> request) {
+
+        return clusterFacade.override(clusterId, request);
+    }
+
+    @GetMapping("{clusterId}/overrides")
+    public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
+        List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
+        return overrides;
     }
 }
