@@ -32,6 +32,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setAwsRegion(request.getRegion().getName());
         cluster.setAzs(request.getAzs());
         cluster.setReleaseStream(request.getReleaseStream());
+        cluster.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
         //TODO: Variable Generations
         //1. Generate CIDR.
         cluster.setVpcCIDR("10.250.0.0/16");
@@ -48,6 +49,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
             request.getExternalId())) {
             existing.setRoleARN(request.getRoleARN());
             existing.setExternalId(request.getExternalId());
+        }
+        if (checkChanged(existing.getK8sRequestsToLimitsRatio(), request.getK8sRequestsToLimitsRatio())) {
+            existing.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
         }
         return existing;
     }

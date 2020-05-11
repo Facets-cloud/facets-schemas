@@ -47,6 +47,8 @@ public abstract class AbstractCluster {
     @Transient
     private Map<String, String> secrets;
 
+    private double k8sRequestsToLimitsRatio = 1;
+
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
         this.cloud = cloud;
@@ -119,5 +121,13 @@ public abstract class AbstractCluster {
 
     public Map<String, String> getSecrets() {
         return secrets;
+    }
+
+    public double getK8sRequestsToLimitsRatio() {
+        return k8sRequestsToLimitsRatio;
+    }
+
+    public void setK8sRequestsToLimitsRatio(double k8sRequestsToLimitsRatio) {
+        this.k8sRequestsToLimitsRatio = k8sRequestsToLimitsRatio;
     }
 }
