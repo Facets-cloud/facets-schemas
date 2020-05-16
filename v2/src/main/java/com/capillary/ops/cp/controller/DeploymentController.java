@@ -64,25 +64,10 @@ public class DeploymentController {
      * @param executionId Execution Id for automation suite
      * @return void
      */
-    @GetMapping("/qa/abortSuite")
-    String abortAutomationSuite(
+    @GetMapping("/qa/{executionId}/abortSuite")
+    void abortAutomationSuite(
             @PathVariable String clusterId,
             @PathVariable String executionId) {
-        throw new NotImplementedException("Abort job for automation suite is Not implemented yet");
+        deploymentFacade.abortAutomationSuite(clusterId, executionId);
     }
-
-    /**
-     * Get log for the deployment
-     *
-     * @param automationSuites List fo QA Automation Suites
-     * @param clusterId Cluster Id
-     * @return Map of moduleName: jobId
-     */
-    @GetMapping("/qa/triggerSuites")
-    List<String> triggerAutomationSuites(
-            @RequestBody List<QASuite> automationSuites,
-            @PathVariable String clusterId) {
-        throw new NotImplementedException("Getting Logs is Not implemented yet");
-    }
-
 }

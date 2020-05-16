@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -98,9 +95,7 @@ public class DeploymentFacade {
                 envVarMap.put(key, new EnvVarBuilder().withName(key).withValue(value).build());
             });
 
-            ObjectMeta metadata = jobTemplate.getMetadata();
-            String jobName = metadata.getName() + "-" + qaSuite.getId();
-            metadata.setName(jobName);
+            ObjectMeta metadata = getJobMetadataForQASuite(qaSuite, existingCronjob, jobTemplate);
             container.setEnv(new ArrayList<>(envVarMap.values()));
             Job job = new JobBuilder()
                     .withSpec(jobTemplate.getSpec())
@@ -119,6 +114,24 @@ public class DeploymentFacade {
         }
 
         return qaSuite.getId();
+    }
+
+    private ObjectMeta getJobMetadataForQASuite(QASuite qaSuite, CronJob existingCronjob, JobTemplateSpec jobTemplate) {
+        ObjectMeta metadata = jobTemplate.getMetadata();
+        String jobName = existingCronjob.getMetadata().getName() + "-" + qaSuite.getId();
+        metadata.setName(jobName);
+
+        Map<String, String> annotations = metadata.getAnnotations();
+        if (annotations == null) {
+            annotations = new HashMap<>();
+        }
+        annotations.put("source", "capillary-cloud");
+        annotations.put("cc-kind", "qaSuite");
+        annotations.put("cc-qaSuite-deploymentId", qaSuite.getDeploymentId());
+        annotations.put("cc-qaSuite-executionId", qaSuite.getId());
+        metadata.setAnnotations(annotations);
+
+        return metadata;
     }
 
     /**
@@ -168,9 +181,7 @@ public class DeploymentFacade {
 
     private CronJob getCronjobsInClusterWithName(String clusterId, String cronjobName) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
-        K8sCredentials k8sCredentials = credentialsO.get();
-        KubernetesClient kubernetesClient = getKubernetesClient(k8sCredentials);
+        KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
         List<CronJob> cronJobList = kubernetesClient.batch()
                 .cronjobs()
                 .inNamespace("default")
@@ -188,9 +199,7 @@ public class DeploymentFacade {
 
     private Job getJobInClusterWithName(String clusterId, String jobName) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
-        K8sCredentials k8sCredentials = credentialsO.get();
-        KubernetesClient kubernetesClient = getKubernetesClient(k8sCredentials);
+        KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
         List<Job> cronJobList = kubernetesClient.batch()
                 .jobs()
                 .inNamespace("default")
