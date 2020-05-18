@@ -2,16 +2,13 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentLog;
-import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
-import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.TFBuildService;
-import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 
 @Component
 @Loggable
@@ -26,7 +23,7 @@ public class DeploymentFacade {
     /**
      * Create a new Deployment
      *
-     * @param clusterId Id of the Cluster
+     * @param clusterId         Id of the Cluster
      * @param deploymentRequest Any Additional Deployment Params
      * @return The Deployment Log Object
      */

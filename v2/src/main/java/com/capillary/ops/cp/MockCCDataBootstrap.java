@@ -3,6 +3,7 @@ package com.capillary.ops.cp;
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.StackRepository;
@@ -63,6 +64,9 @@ public class MockCCDataBootstrap {
         cluster2.setAwsRegion(Regions.US_WEST_2.getName());
         cluster2.setReleaseStream(BuildStrategy.PROD);
         cluster2.setStackName(stack.getName());
+//        cluster2.setSchedules(new HashMap<ReleaseType, String>() {{
+//            put(ReleaseType.HOTFIX, "* * * * *");
+//        }});
         cpClusterRepository.save(cluster2);
 
 
