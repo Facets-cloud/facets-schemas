@@ -15,3 +15,4 @@ RUN mv ./linux-amd64/helm /usr/bin/
 RUN apt-get install -y mysql-utilities mysql-client npm python-pip jq
 RUN npm install -g serverless
 RUN pip install awscli
+RUN pip install requests
