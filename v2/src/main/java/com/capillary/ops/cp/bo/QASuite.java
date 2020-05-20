@@ -1,6 +1,6 @@
 package com.capillary.ops.cp.bo;
 
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotEmpty;
