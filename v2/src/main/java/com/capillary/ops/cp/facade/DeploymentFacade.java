@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.QASuite;
+import com.capillary.ops.cp.bo.QASuiteResult;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
@@ -90,7 +91,7 @@ public class DeploymentFacade {
             Container container = jobTemplate.getSpec().getTemplate().getSpec().getContainers().get(0);
 
             Map<String, EnvVar> envVarMap =
-                container.getEnv().stream().collect(Collectors.toMap(EnvVar::getName, Function.identity()));
+                    container.getEnv().stream().collect(Collectors.toMap(EnvVar::getName, Function.identity()));
             qaSuite.getEnvironmentVariables().forEach((key, value) -> {
                 envVarMap.put(key, new EnvVarBuilder().withName(key).withValue(value).build());
             });
@@ -196,13 +197,33 @@ public class DeploymentFacade {
 
     private KubernetesClient getKubernetesClient(K8sCredentials k8sCredentials) {
         return new DefaultKubernetesClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
-            .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
     }
 
     private KubernetesClient getKubernetesClientForCluster(String clusterId) {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
         return new DefaultKubernetesClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
-            .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+    }
+
+    /**
+     *
+     * @param clusterId
+     * @param executionId
+     * @param qaSuiteResult
+     */
+    public void validateSanityResult(String clusterId, String executionId, QASuiteResult qaSuiteResult) {
+        try {
+            if (qaSuiteResult.getStatus().equals("FAIL")) {
+                //Unpromote apps
+                //Helm rollback
+                //Schema/Data of DB rollback?
+            } else if (qaSuiteResult.getStatus().equals("PASS")) {
+                //Notify - all good
+            }
+        } catch (Exception e) {
+            logger.error("Error validating sanity results", e);
+        }
     }
 }

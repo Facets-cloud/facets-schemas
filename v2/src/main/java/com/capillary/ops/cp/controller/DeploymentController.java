@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.QASuiteResult;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.facade.DeploymentFacade;
@@ -71,5 +72,19 @@ public class DeploymentController {
             @PathVariable String clusterId,
             @PathVariable String executionId) {
         deploymentFacade.abortAutomationSuite(clusterId, executionId);
+    }
+
+    /**
+     * Validate the QA suite result
+     * @param clusterId
+     * @param executionId
+     * @param qaSuiteResult
+     */
+    @PostMapping("/qa/{executionId}/validateSanityResult")
+    void validateSanityResult(
+            @PathVariable String clusterId,
+            @PathVariable String executionId,
+            @Valid @RequestBody QASuiteResult qaSuiteResult) {
+        deploymentFacade.validateSanityResult(clusterId, executionId, qaSuiteResult);
     }
 }
