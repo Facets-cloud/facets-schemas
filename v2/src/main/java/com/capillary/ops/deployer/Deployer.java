@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.github.alturkovic.lock.redis.impl.SimpleRedisLock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -96,5 +95,13 @@ public class Deployer {
     public ExecutorService executorServicePool() {
         ExecutorService pool = Executors.newFixedThreadPool(5);
         return pool;
+    }
+
+    @Bean(name = "codebuildExecutorService")
+    public ExecutorService codebuildExecutorServicePool() {
+        int defaultThreadPoolSize = 5;
+        String threadPoolSizeEnvVariable = System.getenv("CODEBUILD_THREADPOOL_SIZE");
+        int threadPoolSize = threadPoolSizeEnvVariable != null ? Integer.parseInt(threadPoolSizeEnvVariable) : defaultThreadPoolSize;
+        return Executors.newFixedThreadPool(threadPoolSize);
     }
 }

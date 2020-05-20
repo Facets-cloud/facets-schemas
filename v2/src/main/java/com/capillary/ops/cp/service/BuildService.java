@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.List;
@@ -104,12 +105,10 @@ public class BuildService {
         Optional<Application> application = applicationRepository.findById(applicationId);
         if (application.isPresent()) {
             Build buildDetails = applicationFacade.getBuildDetails(application.get(), build, true);
-            if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getImage() != null && !buildDetails
-                .getImage().isEmpty()) {
+            if (buildDetails.getStatus() == StatusType.SUCCEEDED && !StringUtils.isEmpty(buildDetails.getImage())) {
                 return Optional.of(buildDetails);
-            } else if (buildDetails.getStatus() == StatusType.SUCCEEDED && buildDetails.getArtifactUrl() != null
-                    && !buildDetails.getArtifactUrl().isEmpty() &&
-                    application.get().getApplicationType().equals(Application.ApplicationType.SERVERLESS)) {
+            } else if (buildDetails.getStatus() == StatusType.SUCCEEDED && !StringUtils.isEmpty(buildDetails.getArtifactUrl()) &&
+                    Application.ApplicationType.SERVERLESS.equals(application.get().getApplicationType())) {
                 return Optional.of(buildDetails);
             }
         }

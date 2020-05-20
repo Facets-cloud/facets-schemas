@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -78,7 +79,7 @@ public class ECRService implements IECRService {
                 .filter(x -> x.imagePushedAt().isAfter(from) && x.imagePushedAt().isBefore(to))
                 .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTags().get(0))
                 .findFirst();
-        return imageOptional.isPresent() ? imageOptional.get() : null;
+        return imageOptional.orElse(null);
     }
 
     @Override

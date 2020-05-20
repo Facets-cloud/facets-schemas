@@ -1,10 +1,8 @@
 package com.capillary.ops.deployer.service.facade;
 
-import com.amazonaws.auth.policy.resources.S3ObjectResource;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.service.CCAdapterService;
-import com.capillary.ops.deployer.Deployer;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
@@ -34,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -356,12 +355,17 @@ public class ApplicationFacade {
         return repositoryUrlParts[repositoryUrlParts.length - 2];
     }
 
+    @Cacheable(
+            value = "codebuild",
+            key = "#application.id + '_' + #build.codeBuildId + '_' + #includeImage",
+            unless = "#result == null && (#result.getStatus().name() != 'SUCCEEDED') && #result.codeBuildId == null && #result.codeBuildId == ''"
+    )
     public Build getBuildDetails(Application application, Build build, boolean includeImage) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
                 codeBuildService.getBuild(application, build.getCodeBuildId());
         StatusType status = codeBuildServiceBuild.buildStatus();
         build.setStatus(status);
-        if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED) && includeImage) {
+        if(StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
             build.setImage(ecrService.findImageBetweenTimes(application,
                     codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
             String artifactLocation = codeBuildServiceBuild.artifacts().location();
