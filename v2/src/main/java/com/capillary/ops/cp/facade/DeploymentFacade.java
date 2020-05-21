@@ -3,8 +3,8 @@ package com.capillary.ops.cp.facade;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.K8sCredentials;
-import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.QASuite;
+import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.service.TFBuildService;
@@ -48,7 +48,7 @@ public class DeploymentFacade {
     /**
      * Create a new Deployment
      *
-     * @param clusterId Id of the Cluster
+     * @param clusterId         Id of the Cluster
      * @param deploymentRequest Any Additional Deployment Params
      * @return The Deployment Log Object
      */
@@ -62,7 +62,7 @@ public class DeploymentFacade {
 
     /**
      * Trigger job for automation suite
-     *
+     * <p>
      * Strategy:
      * --------
      * Get the existing cronjob in the kubernetes cluster with the same name as the module
@@ -72,7 +72,7 @@ public class DeploymentFacade {
      * Save the qaSuite in the repository and
      *
      * @param clusterId Id of the Cluster
-     * @param qaSuite qaSuite definition
+     * @param qaSuite   qaSuite definition
      * @return executionId for the automation job
      */
     public String triggerAutomationSuite(String clusterId, QASuite qaSuite) throws Exception {
@@ -85,28 +85,22 @@ public class DeploymentFacade {
         }
 
         qaSuite = qaSuiteRepository.save(qaSuite);
-        try{
+        try {
             JobTemplateSpec jobTemplate = existingCronjob.getSpec().getJobTemplate();
             Container container = jobTemplate.getSpec().getTemplate().getSpec().getContainers().get(0);
 
-            Map<String, EnvVar> envVarMap = container.getEnv().stream()
-                    .collect(Collectors.toMap(EnvVar::getName, Function.identity()));
+            Map<String, EnvVar> envVarMap =
+                container.getEnv().stream().collect(Collectors.toMap(EnvVar::getName, Function.identity()));
             qaSuite.getEnvironmentVariables().forEach((key, value) -> {
                 envVarMap.put(key, new EnvVarBuilder().withName(key).withValue(value).build());
             });
 
             ObjectMeta metadata = getJobMetadataForQASuite(qaSuite, existingCronjob, jobTemplate);
             container.setEnv(new ArrayList<>(envVarMap.values()));
-            Job job = new JobBuilder()
-                    .withSpec(jobTemplate.getSpec())
-                    .withMetadata(metadata)
-                    .build();
+            Job job = new JobBuilder().withSpec(jobTemplate.getSpec()).withMetadata(metadata).build();
 
             KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-            kubernetesClient.batch()
-                    .jobs()
-                    .inNamespace("default")
-                    .create(job);
+            kubernetesClient.batch().jobs().inNamespace("default").create(job);
         } catch (Exception e) {
             logger.error("error happened while triggering qa automation suite", e);
             qaSuiteRepository.delete(qaSuite);
@@ -136,13 +130,13 @@ public class DeploymentFacade {
 
     /**
      * Trigger job for automation suite
-     *
+     * <p>
      * Strategy:
      * --------
      * Get the existing cronjob in the kubernetes cluster with the given executionId
      * Delete the existing job for the automation suite
      *
-     * @param clusterId ID of the Cluster
+     * @param clusterId   ID of the Cluster
      * @param executionId automation suite execution ID
      * @return void
      */
@@ -158,11 +152,7 @@ public class DeploymentFacade {
         }
 
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        kubernetesClient.batch()
-                .jobs()
-                .inNamespace("default")
-                .withName(jobName)
-                .delete();
+        kubernetesClient.batch().jobs().inNamespace("default").withName(jobName).delete();
         logger.info(String.format("aborted qa job with name: %s, executionId: %s", module, executionId));
     }
 
@@ -171,10 +161,7 @@ public class DeploymentFacade {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
         KubernetesClient kubernetesClient = getKubernetesClient(k8sCredentials);
-        CronJobList cronJobList = kubernetesClient.batch()
-                .cronjobs()
-                .inNamespace("default")
-                .list();
+        CronJobList cronJobList = kubernetesClient.batch().cronjobs().inNamespace("default").list();
 
         return cronJobList.getItems();
     }
@@ -182,11 +169,7 @@ public class DeploymentFacade {
     private CronJob getCronjobsInClusterWithName(String clusterId, String cronjobName) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        List<CronJob> cronJobList = kubernetesClient.batch()
-                .cronjobs()
-                .inNamespace("default")
-                .list()
-                .getItems();
+        List<CronJob> cronJobList = kubernetesClient.batch().cronjobs().inNamespace("default").list().getItems();
 
         for (CronJob cronjob : cronJobList) {
             if (cronjob.getMetadata().getName().equals(cronjobName)) {
@@ -200,11 +183,7 @@ public class DeploymentFacade {
     private Job getJobInClusterWithName(String clusterId, String jobName) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        List<Job> cronJobList = kubernetesClient.batch()
-                .jobs()
-                .inNamespace("default")
-                .list()
-                .getItems();
+        List<Job> cronJobList = kubernetesClient.batch().jobs().inNamespace("default").list().getItems();
 
         for (Job job : cronJobList) {
             if (job.getMetadata().getName().equals(jobName)) {
@@ -216,20 +195,14 @@ public class DeploymentFacade {
     }
 
     private KubernetesClient getKubernetesClient(K8sCredentials k8sCredentials) {
-        return new DefaultKubernetesClient(
-                    new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
-                            .withOauthToken(k8sCredentials.getKubernetesToken())
-                            .withTrustCerts(true)
-                            .build());
+        return new DefaultKubernetesClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+            .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
     }
 
     private KubernetesClient getKubernetesClientForCluster(String clusterId) {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
-        return new DefaultKubernetesClient(
-                    new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
-                            .withOauthToken(k8sCredentials.getKubernetesToken())
-                            .withTrustCerts(true)
-                            .build());
+        return new DefaultKubernetesClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+            .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
     }
 }

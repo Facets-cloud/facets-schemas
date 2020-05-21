@@ -15,6 +15,7 @@ public abstract class ClusterRequest {
     private BuildStrategy releaseStream;
     private Map<String, String> clusterVars = new HashMap<>();
     private double k8sRequestsToLimitsRatio = 1;
+    private Map<ReleaseType, String> schedules;
 
     public ClusterRequest() {
     }
@@ -72,5 +73,13 @@ public abstract class ClusterRequest {
 
     public void setK8sRequestsToLimitsRatio(double k8sRequestsToLimitsRatio) {
         this.k8sRequestsToLimitsRatio = k8sRequestsToLimitsRatio;
+    }
+
+    public Map<ReleaseType, String> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Map<ReleaseType, String> schedules) {
+        this.schedules = schedules;
     }
 }

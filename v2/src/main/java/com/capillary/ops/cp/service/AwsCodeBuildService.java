@@ -6,6 +6,8 @@ import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,8 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +30,8 @@ import java.util.stream.Collectors;
 @Component
 @Loggable
 public class AwsCodeBuildService implements TFBuildService {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
 
@@ -62,11 +68,23 @@ public class AwsCodeBuildService implements TFBuildService {
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
             .type(EnvironmentVariableType.PLAINTEXT).build());
-        environmentVariables.add(EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken)
-            .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(
-            EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
+            EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
+                .build());
+        try {
+            environmentVariables.add(EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
+        } catch (Throwable t) {
+            logger.error("Not in Request context", t);
+            try {
+                environmentVariables.add(
+                    EnvironmentVariable.builder().name(HOST).value(InetAddress.getLocalHost().getHostAddress())
+                        .type(EnvironmentVariableType.PLAINTEXT).build());
+            } catch (UnknownHostException e) {
+                logger.error("Host name of current deployment not found");
+                throw new NotFoundException("Host name of current deployment not found");
+            }
+        }
         environmentVariables.add(EnvironmentVariable.builder().name(RELEASE_TYPE).value(releaseType.name())
             .type(EnvironmentVariableType.PLAINTEXT).build());
         String buildName = "";
@@ -96,7 +114,7 @@ public class AwsCodeBuildService implements TFBuildService {
                 EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
                     .type(EnvironmentVariableType.PLAINTEXT).build())).collect(Collectors.toList());
 
-        if(runningBuilds.size() > 0){
+        if (runningBuilds.size() > 0) {
             throw new IllegalStateException("Build is already in Progress: " + runningBuilds.get(0).id());
         }
 

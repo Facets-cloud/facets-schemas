@@ -9,6 +9,7 @@ import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.OverrideService;
+import com.capillary.ops.cp.service.ReleaseScheduleService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -50,6 +51,9 @@ public class ClusterFacade {
     @Autowired
     private OverrideService overrideService;
 
+    @Autowired
+    private ReleaseScheduleService releaseScheduleService;
+
     /**
      * Cluster agnostic request to create a new cluster
      *
@@ -71,12 +75,8 @@ public class ClusterFacade {
         }
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.createCluster(request);
-        Map<String, String> secrets = clusterHelper.validateClusterVars(request.getClusterVars(), stack.get());
-        cluster.setUserInputVars(secrets);
-        //Done: Persist Cluster Object
-        //Persist to DB
-        AbstractCluster save = cpClusterRepository.save(cluster);
-        return this.getCluster(save.getId());
+
+        return upsertCommonTasks(request, stack, cluster);
     }
 
     /**
@@ -100,13 +100,18 @@ public class ClusterFacade {
         }
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.updateCluster(request, existing.get());
-        existing.get().getUserInputVars().putAll(request.getClusterVars());
-        Map<String, String> secrets = clusterHelper.validateClusterVars(existing.get().getUserInputVars(), stack.get());
+        request.getClusterVars().putAll(existing.get().getUserInputVars());
+        return upsertCommonTasks(request, stack, cluster);
+    }
+
+    private AbstractCluster upsertCommonTasks(ClusterRequest request, Optional<Stack> stack,
+        AbstractCluster cluster) {
+        Map<String, String> secrets = clusterHelper.validateClusterVars(request.getClusterVars(), stack.get());
         cluster.setUserInputVars(secrets);
-        //Done: Persist Cluster Object
-        //Persist to DB
-        cpClusterRepository.save(cluster);
-        return this.getCluster(clusterId);
+        cluster.setSchedules(request.getSchedules());
+        AbstractCluster save = cpClusterRepository.save(cluster);
+        releaseScheduleService.upsertSchedule(save);
+        return this.getCluster(save.getId());
     }
 
     /**
