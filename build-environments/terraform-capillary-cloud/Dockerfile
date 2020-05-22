@@ -17,5 +17,5 @@ RUN npm install -g serverless
 RUN pip install awscli
 RUN pip install requests
 RUN apt-get install perl
-RUN apt-get install libmysql-diff-perl=0.50-1
+RUN apt-get install libmysql-diff-perl
 RUN COPY scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm
