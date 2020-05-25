@@ -14,7 +14,7 @@ public class QASuiteResult {
     @NotEmpty
     private String status;
 
-    Map<String, String> module;
+    Map<String, String> modules;
 
     public String getDeploymentId() {
         return deploymentId;
@@ -32,11 +32,11 @@ public class QASuiteResult {
         this.status = status;
     }
 
-    public Map<String, String> getModule() {
-        return module;
+    public Map<String, String> getModules() {
+        return modules;
     }
 
     public void setModule(Map<String, String> module) {
-        this.module = module;
+        this.modules = module;
     }
 }

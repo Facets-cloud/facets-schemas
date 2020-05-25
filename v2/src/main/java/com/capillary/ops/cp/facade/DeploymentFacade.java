@@ -8,8 +8,11 @@ import com.capillary.ops.cp.bo.QASuiteResult;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
+import com.capillary.ops.cp.service.BuildService;
+import com.capillary.ops.cp.service.CCHelmService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.service.HelmService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -43,6 +46,12 @@ public class DeploymentFacade {
 
     @Autowired
     private QASuiteRepository qaSuiteRepository;
+
+    @Autowired
+    private CCHelmService ccHelmService;
+
+    @Autowired
+    private BuildService buildService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -219,6 +228,15 @@ public class DeploymentFacade {
                 //Unpromote apps
                 //Helm rollback
                 //Schema/Data of DB rollback?
+                //redeployment = true
+                List<String> failureList = qaSuiteResult.getModules().entrySet().stream()
+                        .filter(m -> (m.equals("FAIL")))
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toList());
+                for(String module: failureList){
+                    ccHelmService.rollback(clusterId,module);
+                    buildService.unPromoteBuild(clusterId,"","");
+                }
             } else if (qaSuiteResult.getStatus().equals("PASS")) {
                 //Notify - all good
             }
