@@ -249,7 +249,7 @@ sub _diff_fields {
                     {
                         debug(3,"field '$field' changed");
 
-                        my $change = "CHANGE COLUMN $field $field $f2 ";
+                        my $change = "CHANGE COLUMN `$field` `$field` $f2 ";
                         $change .= " # was $f1" unless $self->{opts}{'no-old-defs'};
                         push @changes, $change;
                     }
@@ -267,7 +267,7 @@ sub _diff_fields {
         for my $field (keys %$fields2) {
             unless($fields1 && $fields1->{$field}) {
                 debug(3,"field '$field' added");
-                my $changes = "ADD COLUMN $field $fields2->{$field}";
+                my $changes = "ADD COLUMN `$field` $fields2->{$field}";
                 if ($table2->is_auto_inc($field)) {
                     if ($table2->isa_primary($field)) {
                         $changes .= ' PRIMARY KEY';
@@ -310,19 +310,19 @@ sub _diff_indices {
                     my $new_type = $table2->is_unique($index) ? 'UNIQUE' : 
                                    $table2->is_fulltext($index) ? 'FULLTEXT INDEX' : 'INDEX';
 
-                    my $changes = "DROP INDEX $index";
+                    my $changes = "DROP INDEX `$index`";
                     $changes .= " # was $old_type ($indices1->{$index})"
                         unless $self->{opts}{'no-old-defs'};
                     push @changes, $changes;
 
-                    $changes = "ADD $new_type $index ($indices2->{$index})";
+                    $changes = "ADD $new_type `$index` ($indices2->{$index})";
                     push @changes, $changes;
                 }
             } else {
                 debug(3,"index '$index' removed");
                 my $auto = _check_for_auto_col($table2, $indices1->{$index}, 1) || '';
                 my $changes = $auto ? _index_auto_col($table1, $indices1->{$index}) : '';
-                $changes .= "DROP INDEX $index";
+                $changes .= "DROP INDEX `$index`";
                 $changes .= " # was $old_type ($indices1->{$index})"
                     unless $self->{opts}{'no-old-defs'};
                 push @changes, $changes;
@@ -340,7 +340,7 @@ sub _diff_indices {
             );
             debug(3,"index '$index' added");
             my $new_type = $table2->is_unique($index) ? 'UNIQUE' : 'INDEX';
-            push @changes, "ADD $new_type $index ($indices2->{$index})";
+            push @changes, "ADD $new_type `$index` ($indices2->{$index})";
         }
     }
 
