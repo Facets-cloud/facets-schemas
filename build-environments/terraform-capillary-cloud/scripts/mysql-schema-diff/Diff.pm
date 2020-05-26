@@ -516,7 +516,11 @@ sub _diff_options {
       }
     }
 
-    if ($options1 ne $options2) {
+    my $option1_no_space = $options1;
+    my $option2_no_space = $options2;
+    $option1_no_space =~ s/ //gi;
+    $option2_no_space =~ s/ //gi;
+    if ($option1_no_space ne $option1_no_space) {
         my $change = " $options2";
         $change .= " # was " . ($options1 || 'blank') unless $self->{opts}{'no-old-defs'};
         push @changes, $change;
