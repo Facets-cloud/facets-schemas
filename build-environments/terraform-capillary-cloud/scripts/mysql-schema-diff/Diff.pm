@@ -489,22 +489,17 @@ sub _diff_options {
     my $options2 = $table2->options();
 
     # replace engine=innodb
-    $options1 =~ s/ENGINE=.* / /gi;
-    $options2 =~ s/ENGINE=.* / /gi;
-    $options1 =~ s/ENGINE=.*;/ /gi;
-    $options2 =~ s/ENGINE=.*;/ /gi;
+    $options1 =~ s/ENGINE=[a-z]*//gi;
+    $options2 =~ s/ENGINE=[a-z]*//gi;
 
-    # skip auto increment
-    $options1 =~ s/AUTO_INCREMENT=[0-9]*/ /gi;
-    $options2 =~ s/AUTO_INCREMENT=[0-9]*/ /gi;
 
     # skip key block size
-    $options1 =~ s/KEY_BLOCK_SIZE=[0-9]*/ /gi;
-    $options2 =~ s/KEY_BLOCK_SIZE=[0-9]*/ /gi;
+    $options1 =~ s/KEY_BLOCK_SIZE=[0-9]*//gi;
+    $options2 =~ s/KEY_BLOCK_SIZE=[0-9]*//gi;
 
     # skip row format
-    $options1 =~ s/ROW_FORMAT=[a-z]/ /gi;
-    $options2 =~ s/ROW_FORMAT=[a-z]/ /gi;
+    $options1 =~ s/ROW_FORMAT=[a-z]*//gi;
+    $options2 =~ s/ROW_FORMAT=[a-z]*//gi;
 
     return () unless $options1 || $options2;
 
@@ -521,7 +516,11 @@ sub _diff_options {
       }
     }
 
-    if ($options1 ne $options2) {
+    my $option1_no_space = $options1;
+    my $option2_no_space = $options2;
+    $option1_no_space =~ s/ //gi;
+    $option2_no_space =~ s/ //gi;
+    if ($option1_no_space ne $option1_no_space) {
         my $change = " $options2";
         $change .= " # was " . ($options1 || 'blank') unless $self->{opts}{'no-old-defs'};
         push @changes, $change;
