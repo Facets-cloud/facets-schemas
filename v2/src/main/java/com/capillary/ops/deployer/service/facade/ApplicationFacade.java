@@ -795,7 +795,7 @@ public class ApplicationFacade {
         ApplicationAction existingAction = applicationActionRepository.findById(applicationAction.getId()).get();
         if (CreationStatus.FULFILLED.equals(existingAction.getCreationStatus()) && isValidActoinArgument(applicationAction)) {
             Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
-            logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env, podName);
+            logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env.getEnvironmentMetaData().getName(), podName);
             ActionExecution actionExecution = kubernetesService.executeAction(existingAction, env, podName);
             actionExecution.setApplicationId(applicationId);
 
