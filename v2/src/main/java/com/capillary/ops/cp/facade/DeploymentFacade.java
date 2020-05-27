@@ -219,10 +219,9 @@ public class DeploymentFacade {
     /**
      *
      * @param clusterId
-     * @param executionId
      * @param qaSuiteResult
      */
-    public void validateSanityResult(String clusterId, String executionId, QASuiteResult qaSuiteResult) {
+    public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) {
         try {
             if (qaSuiteResult.getStatus().equals("FAIL")) {
                 //Unpromote apps

@@ -77,14 +77,12 @@ public class DeploymentController {
     /**
      * Validate the QA suite result
      * @param clusterId
-     * @param executionId
      * @param qaSuiteResult
      */
-    @PostMapping("/qa/{executionId}/validateSanityResult")
+    @PostMapping("/qa/validateSanityResult")
     void validateSanityResult(
             @PathVariable String clusterId,
-            @PathVariable String executionId,
             @Valid @RequestBody QASuiteResult qaSuiteResult) {
-        deploymentFacade.validateSanityResult(clusterId, executionId, qaSuiteResult);
+        deploymentFacade.validateSanityResult(clusterId, qaSuiteResult);
     }
 }

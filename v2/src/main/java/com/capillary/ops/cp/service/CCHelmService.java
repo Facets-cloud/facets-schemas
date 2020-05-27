@@ -30,8 +30,8 @@ public class CCHelmService {
     private static final Logger logger = LoggerFactory.getLogger(CCHelmService.class);
 
     private ReleaseManager getReleaseManager(String clusterId) {
-        Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
-        K8sCredentials k8sCredentials = credentialsO.get();
+        Optional<K8sCredentials> credentials = k8sCredentialsRepository.findOneByClusterId(clusterId);
+        K8sCredentials k8sCredentials = credentials.get();
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
                 new ConfigBuilder()
                         .withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
