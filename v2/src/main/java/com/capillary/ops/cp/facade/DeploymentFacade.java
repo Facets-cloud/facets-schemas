@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.QASuiteResult;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.service.BuildService;
@@ -26,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
 
 import java.util.*;
 import java.util.function.Function;
@@ -62,7 +65,7 @@ public class DeploymentFacade {
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         //TODO: Save Deployment requests for audit purpose
-        String buildId = tfBuildService.deployLatest(cluster, deploymentRequest.getReleaseType());
+        String buildId = tfBuildService.deployLatest(cluster, deploymentRequest);
         DeploymentLog log = new DeploymentLog(buildId);
         return log;
     }
@@ -232,7 +235,14 @@ public class DeploymentFacade {
 
                     buildService.unPromoteBuild(deployerId,deployerBuildId);
                 }
-
+                DeploymentRequest deploymentRequest = new DeploymentRequest();
+                deploymentRequest.setTag("test1");
+                deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+                deploymentRequest.setExtraEnv(Arrays.asList(EnvironmentVariable.builder()
+                        .name("REDEPLOYMENT_BUILD_ID")
+                        .value(qaSuiteResult.getDeploymentId())
+                        .type(EnvironmentVariableType.PLAINTEXT).build()));
+                createDeployment(clusterId,deploymentRequest);
             }
         } catch (Exception e) {
             logger.error("Error validating sanity results", e);
