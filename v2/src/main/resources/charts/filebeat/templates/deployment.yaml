@@ -1,0 +1,80 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: filebeat-parser
+  name: filebeat-parser
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: filebeat-parser
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: filebeat-parser
+    spec:
+      containers:
+        - args:
+            - -c
+            - /etc/filebeat.yml
+            - -e
+          env:
+            - name: TZ
+              value: Asia/Kolkata
+          image: docker.elastic.co/beats/filebeat:7.6.1
+          imagePullPolicy: IfNotPresent
+          name: filebeat-parser
+          resources:
+            limits:
+              cpu: "600"
+              memory: 1500Mi
+            requests:
+              cpu: 200m
+              memory: 1Gi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/filebeat.yml
+              name: config
+              readOnly: true
+              subPath: filebeat.yml
+            - mountPath: /usr/share/filebeat/data
+              name: data
+            - mountPath: /var/lib/docker/containers
+              name: varlibdockercontainers
+              readOnly: true
+            - mountPath: /var/log
+              name: varlog
+              readOnly: true
+            - mountPath: /var/log/efs/
+              name: efsvol
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: filebeat-config
+          name: config
+        - hostPath:
+            path: /var/lib/docker/containers
+            type: ""
+          name: varlibdockercontainers
+        - hostPath:
+            path: /var/log
+            type: ""
+          name: varlog
+        - emptyDir: {}
+          name: data
+        - name: efsvol
+          persistentVolumeClaim:
+            claimName: logs-efs-pvc
