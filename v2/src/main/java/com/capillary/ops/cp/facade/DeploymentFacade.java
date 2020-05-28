@@ -9,7 +9,6 @@ import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.service.BuildService;
-import com.capillary.ops.cp.service.CCHelmService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.HelmService;
@@ -18,6 +17,7 @@ import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.batch.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -46,9 +46,6 @@ public class DeploymentFacade {
 
     @Autowired
     private QASuiteRepository qaSuiteRepository;
-
-    @Autowired
-    private CCHelmService ccHelmService;
 
     @Autowired
     private BuildService buildService;
@@ -224,20 +221,18 @@ public class DeploymentFacade {
     public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) {
         try {
             if (qaSuiteResult.getStatus().equals("FAIL")) {
-                //Unpromote apps
-                //Helm rollback
-                //Schema/Data of DB rollback?
-                //redeployment = true
                 List<String> failureList = qaSuiteResult.getModules().entrySet().stream()
                         .filter(m -> (m.equals("FAIL")))
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toList());
                 for(String module: failureList){
-                    ccHelmService.rollback(clusterId,module);
-                    buildService.unPromoteBuild(clusterId,"","");
+                    Deployment application = clusterFacade.getApplicationData(clusterId,"app",module);
+                    String deployerId = application.getMetadata().getLabels().get("deployerid");
+                    String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
+
+                    buildService.unPromoteBuild(deployerId,deployerBuildId);
                 }
-            } else if (qaSuiteResult.getStatus().equals("PASS")) {
-                //Notify - all good
+
             }
         } catch (Exception e) {
             logger.error("Error validating sanity results", e);

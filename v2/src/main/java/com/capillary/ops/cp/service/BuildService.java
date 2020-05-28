@@ -137,7 +137,7 @@ public class BuildService {
         return build;
     }
 
-    public void unPromoteBuild(String ClusterId, String applicationId, String buildId)
+    public void unPromoteBuild(String applicationId, String buildId)
     {
         Optional<Build> currentBuild = ccBuildRepository.findOneByApplicationIdAndId(applicationId,buildId);
         if(currentBuild != null){
