@@ -4,10 +4,11 @@ import org.springframework.data.annotation.Id;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-public class Build {
+public class Build implements Serializable {
 
     @Id
     private String id;
@@ -27,6 +28,9 @@ public class Build {
     private PromotionIntent promotionIntent = PromotionIntent.NA;
     private boolean promotable = false;
     private boolean testBuild = false;
+    private String artifactUrl;
+
+    private static final long serialVersionUID = 3595193021269728012L;
 
     public Build() {
     }
@@ -137,12 +141,24 @@ public class Build {
 
     @Override
     public String toString() {
-        return "Build{" + "id='" + id + '\'' + ", codeBuildId='" + codeBuildId + '\'' + ", applicationId='"
-            + applicationId + '\'' + ", applicationFamily=" + applicationFamily + ", tag='" + tag + '\'' + ", status="
-            + status + ", environmentVariables=" + environmentVariables + ", timestamp=" + timestamp + ", image='"
-            + image + '\'' + ", triggeredBy='" + triggeredBy + '\'' + ", description='" + description + '\''
-            + ", promoted=" + promoted + ", promotionIntent=" + promotionIntent + ", promotable=" + promotable
-            + ", testBuild=" + testBuild + '}';
+        return "Build{" +
+                "id='" + id + '\'' +
+                ", codeBuildId='" + codeBuildId + '\'' +
+                ", applicationId='" + applicationId + '\'' +
+                ", applicationFamily=" + applicationFamily +
+                ", tag='" + tag + '\'' +
+                ", status=" + status +
+                ", environmentVariables=" + environmentVariables +
+                ", timestamp=" + timestamp +
+                ", image='" + image + '\'' +
+                ", triggeredBy='" + triggeredBy + '\'' +
+                ", description='" + description + '\'' +
+                ", promoted=" + promoted +
+                ", promotionIntent=" + promotionIntent +
+                ", promotable=" + promotable +
+                ", testBuild=" + testBuild +
+                ", artifactUrl='" + artifactUrl + '\'' +
+                '}';
     }
 
     public boolean isPromotable() {
@@ -159,5 +175,13 @@ public class Build {
 
     public void setPromotionIntent(PromotionIntent promotionIntent) {
         this.promotionIntent = promotionIntent;
+    }
+
+    public String getArtifactUrl() {
+        return artifactUrl;
+    }
+
+    public void setArtifactUrl(String artifactUrl) {
+        this.artifactUrl = artifactUrl;
     }
 }

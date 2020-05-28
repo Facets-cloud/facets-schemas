@@ -12,4 +12,10 @@ RUN mv ./terraform /usr/bin/
 RUN tar -xf helm-v2.16.1-linux-amd64.tar.gz
 RUN chmod +x linux-amd64/helm
 RUN mv ./linux-amd64/helm /usr/bin/
-RUN apt-get install -y mysql-utilities mysql-client
+RUN apt-get install -y mysql-utilities mysql-client npm python-pip jq
+RUN npm install -g serverless
+RUN pip install awscli
+RUN pip install requests
+RUN apt-get install perl -y
+RUN apt-get install libmysql-diff-perl -y
+COPY scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm

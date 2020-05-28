@@ -19,7 +19,9 @@ public class MavenBuildSpec extends BuildSpec {
     @Override
     protected List<String> getPostBuildCommands() {
         List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        if(configureDockerBuildSteps()) {
+            postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
+        }
         return postBuildCommands;
     }
 
@@ -32,8 +34,10 @@ public class MavenBuildSpec extends BuildSpec {
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U");
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        if(configureDockerBuildSteps()) {
+            buildCommands.add("docker build -t $APP_NAME:$TAG .");
+            buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
+        }
         return buildCommands;
     }
 
@@ -63,6 +67,9 @@ public class MavenBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getArtifactSpec() {
+        if(Application.ApplicationType.SERVERLESS.equals(application.getApplicationType())) {
+            return Lists.newArrayList(this.application.getApplicationRootDirectory() + "/**/*");
+        }
         return new ArrayList<>();
     }
 

@@ -98,7 +98,7 @@ export class AppDumpsComponent implements OnInit, OnChanges {
 
   listDumpFiles() {
     const app = this.application;
-    const dateString = this.date.toISOString().split('T')[0];
+    const dateString = new Date(this.date.getTime() - this.date.getTimezoneOffset() * 60000).toISOString().split('T')[0];
     this.fetchDumpFileList(app.applicationFamily, app.id, this.environment, dateString);
   }
 

@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.Cloud;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -46,6 +47,10 @@ public abstract class AbstractCluster {
 
     @Transient
     private Map<String, String> secrets;
+
+    private Map<ReleaseType, String> schedules = new HashMap<>();
+
+    private double k8sRequestsToLimitsRatio = 1;
 
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
@@ -119,5 +124,23 @@ public abstract class AbstractCluster {
 
     public Map<String, String> getSecrets() {
         return secrets;
+    }
+
+    public double getK8sRequestsToLimitsRatio() {
+        return k8sRequestsToLimitsRatio;
+    }
+
+    public void setK8sRequestsToLimitsRatio(double k8sRequestsToLimitsRatio) {
+        this.k8sRequestsToLimitsRatio = k8sRequestsToLimitsRatio;
+    }
+
+    public Map<ReleaseType, String> getSchedules() {
+        return schedules;
+    }
+
+    public void setSchedules(Map<ReleaseType, String> schedules) {
+        if (schedules != null) {
+            this.schedules = schedules;
+        }
     }
 }

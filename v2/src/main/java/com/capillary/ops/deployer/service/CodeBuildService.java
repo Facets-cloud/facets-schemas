@@ -1,7 +1,7 @@
 package com.capillary.ops.deployer.service;
 
-import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.Build;
+import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.service.buildspecs.*;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,16 @@ import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsResponse;
 import software.amazon.awssdk.services.cloudwatchlogs.model.OutputLogEvent;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
-import software.amazon.awssdk.services.codebuild.model.*;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
+import software.amazon.awssdk.services.codebuild.model.*;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Profile("!dev && !helminttest")
@@ -36,6 +40,10 @@ public class CodeBuildService implements ICodeBuildService {
 
     @Autowired
     Environment environment;
+
+    @Autowired
+    @Qualifier("codebuildExecutorService")
+    private ExecutorService codebuildExecutor;
 
     private static final Logger logger = LoggerFactory.getLogger(CodeBuildService.class);
 
@@ -249,12 +257,22 @@ public class CodeBuildService implements ICodeBuildService {
     @Override
     public software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId) {
         BuildSpec buildSpec = getBuildSpec(application);
-        BatchGetBuildsResponse batchGetBuildsResponse =
-                getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder().ids(codeBuildId).build());
+        Future<BatchGetBuildsResponse> future = codebuildExecutor.submit(() ->
+                getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
+                .ids(codeBuildId)
+                .build()));
+
+        BatchGetBuildsResponse batchGetBuildsResponse = null;
+        try {
+            batchGetBuildsResponse = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error("error happened while getting codebuild details", e);
+            return null;
+        }
+
         List<software.amazon.awssdk.services.codebuild.model.Build> builds = batchGetBuildsResponse.builds();
         if (builds.isEmpty()) return null;
-        software.amazon.awssdk.services.codebuild.model.Build build = builds.get(0);
-        return build;
+        return builds.get(0);
     }
 
     @Override

@@ -185,6 +185,9 @@ public abstract class BuildSpec {
     }
 
     public boolean configureDockerBuildSteps() {
+        if (Application.ApplicationType.SERVERLESS.equals(application.getApplicationType())) {
+            return false;
+        }
         return true;
     }
 

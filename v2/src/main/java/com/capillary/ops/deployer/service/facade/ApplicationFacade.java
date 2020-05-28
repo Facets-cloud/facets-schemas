@@ -1,8 +1,8 @@
 package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.service.CCAdapterService;
-import com.capillary.ops.deployer.Deployer;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
@@ -26,11 +26,13 @@ import com.github.alturkovic.lock.Interval;
 import com.github.alturkovic.lock.redis.alias.RedisLocked;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -353,14 +355,27 @@ public class ApplicationFacade {
         return repositoryUrlParts[repositoryUrlParts.length - 2];
     }
 
+    @Cacheable(
+            value = "codebuild",
+            key = "#application.id + '_' + #build.codeBuildId + '_' + #includeImage",
+            unless = "#result == null && (#result.getStatus().name() != 'SUCCEEDED') && #result.codeBuildId == null && #result.codeBuildId == ''"
+    )
     public Build getBuildDetails(Application application, Build build, boolean includeImage) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
                 codeBuildService.getBuild(application, build.getCodeBuildId());
         StatusType status = codeBuildServiceBuild.buildStatus();
         build.setStatus(status);
-        if(codeBuildServiceBuild.buildStatus().equals(StatusType.SUCCEEDED) && includeImage) {
+        if(StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
             build.setImage(ecrService.findImageBetweenTimes(application,
                     codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+            String artifactLocation = codeBuildServiceBuild.artifacts().location();
+            if(! StringUtils.isEmpty(artifactLocation)) {
+                URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
+                        "deployer-test-build-output", codeBuildServiceBuild.id().split(":")[1] + "/" + application.getName(),
+                        DateUtils.addHours(new Date(), 2)
+                );
+                build.setArtifactUrl(url.toString());
+            }
         }
         return build;
     }
@@ -780,7 +795,7 @@ public class ApplicationFacade {
         ApplicationAction existingAction = applicationActionRepository.findById(applicationAction.getId()).get();
         if (CreationStatus.FULFILLED.equals(existingAction.getCreationStatus()) && isValidActoinArgument(applicationAction)) {
             Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
-            logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env, podName);
+            logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env.getEnvironmentMetaData().getName(), podName);
             ActionExecution actionExecution = kubernetesService.executeAction(existingAction, env, podName);
             actionExecution.setApplicationId(applicationId);
 
