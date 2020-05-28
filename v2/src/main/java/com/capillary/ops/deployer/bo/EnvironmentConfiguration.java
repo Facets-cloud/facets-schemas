@@ -49,6 +49,7 @@ public class EnvironmentConfiguration {
     private Map<Application.ResourceAllocationStrategy, Double> resourceAllocationStrategyDefinition =
             new HashMap<>();
     private double requestsToLimitsRatio = 1;
+    private boolean filebeatEnabled = false;
 
     public String getKubernetesToken() {
         return kubernetesToken;
@@ -208,5 +209,13 @@ public class EnvironmentConfiguration {
 
     public void setRequestsToLimitsRatio(double requestsToLimitsRatio) {
         this.requestsToLimitsRatio = requestsToLimitsRatio;
+    }
+
+    public boolean isFilebeatEnabled() {
+        return filebeatEnabled;
+    }
+
+    public void setFilebeatEnabled(boolean filebeatEnabled) {
+        this.filebeatEnabled = filebeatEnabled;
     }
 }
