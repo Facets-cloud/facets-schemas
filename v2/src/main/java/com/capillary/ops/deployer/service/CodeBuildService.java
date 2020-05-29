@@ -283,10 +283,16 @@ public class CodeBuildService implements ICodeBuildService {
         List<software.amazon.awssdk.services.codebuild.model.Build> batchedBuilds = Lists.newArrayListWithExpectedSize(codeBuildIds.size());
         partition.forEach(x -> {
             logger.info("getting builds for {} codebuild ids", x.size());
-            BatchGetBuildsResponse batchGetBuildsResponse =
-                    getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
-                            .ids(x)
-                            .build());
+
+            BatchGetBuildsResponse batchGetBuildsResponse = null;
+            try {
+                batchGetBuildsResponse = codebuildExecutor.submit(() -> getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
+                        .ids(x)
+                        .build())).get();
+            } catch (Throwable e) {
+                logger.error("error happened while getting codebuild details", e);
+                throw new RuntimeException(e);
+            }
             batchedBuilds.addAll(batchGetBuildsResponse.builds());
         });
 
