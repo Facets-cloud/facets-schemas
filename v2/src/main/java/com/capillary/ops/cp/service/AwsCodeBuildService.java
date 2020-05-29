@@ -40,6 +40,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
+    public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
 
     @Value("${internalApiAuthToken}")
     private String authToken;
@@ -71,6 +72,9 @@ public class AwsCodeBuildService implements TFBuildService {
         environmentVariables.add(
             EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
+        environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
+                .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
+                .build());
         try {
             environmentVariables.add(EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
@@ -95,8 +99,13 @@ public class AwsCodeBuildService implements TFBuildService {
                 break;
         }
         StartBuildRequest startBuildRequest =
-            StartBuildRequest.builder().projectName(buildName).environmentVariablesOverride(environmentVariables)
-                .build();
+            StartBuildRequest.builder().projectName(buildName)
+                    .environmentVariablesOverride(environmentVariables)
+                    .secondarySourcesOverride(ProjectSource.builder()
+                            .type(SourceType.valueOf(stack.getVcs().name()))
+                            .location(stack.getVcsUrl())
+                            .build())
+                    .build();
 
         ListBuildsForProjectRequest listBuildsForProjectRequest =
             ListBuildsForProjectRequest.builder().projectName(buildName).sortOrder(SortOrderType.DESCENDING).build();
