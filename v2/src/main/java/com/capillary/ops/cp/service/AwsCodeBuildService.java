@@ -104,6 +104,7 @@ public class AwsCodeBuildService implements TFBuildService {
                     .secondarySourcesOverride(ProjectSource.builder()
                             .type(SourceType.valueOf(stack.getVcs().name()))
                             .location(stack.getVcsUrl())
+                            .sourceIdentifier("STACK")
                             .build())
                     .build();
 
