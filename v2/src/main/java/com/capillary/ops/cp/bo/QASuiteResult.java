@@ -16,6 +16,8 @@ public class QASuiteResult {
 
     Map<String, String> modules;
 
+    private boolean redeployment = false;
+
     public String getDeploymentId() {
         return deploymentId;
     }
@@ -38,5 +40,13 @@ public class QASuiteResult {
 
     public void setModule(Map<String, String> module) {
         this.modules = module;
+    }
+
+    public boolean isRedeployment() {
+        return redeployment;
+    }
+
+    public void setRedeployment(boolean redeployment) {
+        this.redeployment = redeployment;
     }
 }
