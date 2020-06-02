@@ -166,6 +166,36 @@ public class DeploymentFacade {
         logger.info(String.format("aborted qa job with name: %s, executionId: %s", module, executionId));
     }
 
+    /**
+     * Get job status for automation suite
+     *
+     * @param clusterId   ID of the Cluster
+     * @param executionId automation suite execution ID
+     * @return String
+     */
+    public String getAutomationSuiteStatus(String clusterId, String executionId) {
+        String jobStatus = "NA";
+        QASuite existingQASuite = qaSuiteRepository.findById(executionId).get();
+        String module = existingQASuite.getModule();
+        String jobName = module + "-" + executionId;
+        Job existingJob = getJobInClusterWithName(clusterId, jobName);
+        if (existingJob == null) {
+            logger.error("could not find active job for module: " + module);
+            throw new NotFoundException("Could not find active job for module " + module);
+        }
+
+        KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
+        Job qasuite = kubernetesClient.batch().jobs().inNamespace("default").withName(jobName).get();
+        if(qasuite.getStatus().getSucceeded()>0){
+            jobStatus = "SUCCESS";
+        }else if(qasuite.getStatus().getFailed()>0){
+            jobStatus = "FAIL";
+        }else if(qasuite.getStatus().getActive()>0){
+            jobStatus = "RUNNING";
+        }
+        return jobStatus;
+    }
+
     private List<CronJob> getCronjobsInCluster(String clusterId) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);

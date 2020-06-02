@@ -75,6 +75,20 @@ public class DeploymentController {
     }
 
     /**
+     * Get job status for automation suite
+     *
+     * @param clusterId Cluster Id
+     * @param executionId Execution Id for automation suite
+     * @return String
+     */
+    @GetMapping("/qa/{executionId}/status")
+    String getAutomationSuiteStatus(
+            @PathVariable String clusterId,
+            @PathVariable String executionId) {
+        return deploymentFacade.getAutomationSuiteStatus(clusterId, executionId);
+    }
+
+    /**
      * Validate the QA suite result
      * @param clusterId
      * @param qaSuiteResult
