@@ -1,10 +1,6 @@
 package com.capillary.ops.cp.facade;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.DeploymentLog;
-import com.capillary.ops.cp.bo.K8sCredentials;
-import com.capillary.ops.cp.bo.QASuite;
-import com.capillary.ops.cp.bo.QASuiteResult;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
@@ -12,7 +8,6 @@ import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.service.HelmService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -94,10 +89,17 @@ public class DeploymentFacade {
             throw new NotFoundException("could not find any automation suite with module name: " + module);
         }
 
+        String uniqueID = UUID.randomUUID().toString();
+        qaSuite.setJobReferenceId(uniqueID);
         qaSuite = qaSuiteRepository.save(qaSuite);
+
         try {
             JobTemplateSpec jobTemplate = existingCronjob.getSpec().getJobTemplate();
-            Container container = jobTemplate.getSpec().getTemplate().getSpec().getContainers().get(0);
+            Container container = jobTemplate.getSpec()
+                    .getTemplate()
+                    .getSpec()
+                    .getContainers()
+                    .get(0);
 
             Map<String, EnvVar> envVarMap =
                     container.getEnv().stream().collect(Collectors.toMap(EnvVar::getName, Function.identity()));
@@ -107,10 +109,15 @@ public class DeploymentFacade {
 
             ObjectMeta metadata = getJobMetadataForQASuite(qaSuite, existingCronjob, jobTemplate);
             container.setEnv(new ArrayList<>(envVarMap.values()));
-            Job job = new JobBuilder().withSpec(jobTemplate.getSpec()).withMetadata(metadata).build();
+            Job job = new JobBuilder().withSpec(jobTemplate.getSpec())
+                    .withMetadata(metadata)
+                    .build();
 
             KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-            kubernetesClient.batch().jobs().inNamespace("default").create(job);
+            kubernetesClient.batch()
+                    .jobs()
+                    .inNamespace("default")
+                    .create(job);
         } catch (Exception e) {
             logger.error("error happened while triggering qa automation suite", e);
             qaSuiteRepository.delete(qaSuite);
@@ -122,7 +129,7 @@ public class DeploymentFacade {
 
     private ObjectMeta getJobMetadataForQASuite(QASuite qaSuite, CronJob existingCronjob, JobTemplateSpec jobTemplate) {
         ObjectMeta metadata = jobTemplate.getMetadata();
-        String jobName = existingCronjob.getMetadata().getName() + "-" + qaSuite.getId();
+        String jobName = existingCronjob.getMetadata().getName() + "-" + qaSuite.getJobReferenceId();
         metadata.setName(jobName);
 
         Map<String, String> annotations = metadata.getAnnotations();
@@ -150,19 +157,31 @@ public class DeploymentFacade {
      * @param executionId automation suite execution ID
      * @return void
      */
-    public void abortAutomationSuite(String clusterId, String executionId) {
+    public void abortAutomationSuite(String clusterId, String executionId) throws Exception {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         QASuite existingQASuite = qaSuiteRepository.findById(executionId).get();
         String module = existingQASuite.getModule();
-        String jobName = module + "-" + executionId;
+        String jobName = module + "-" + existingQASuite.getJobReferenceId();
+
         Job existingJob = getJobInClusterWithName(clusterId, jobName);
         if (existingJob == null) {
             logger.error("could not find active job for module: " + module);
             throw new NotFoundException("Could not find active job for module " + module);
         }
 
+        K8sJobStatus jobStatus = getK8sJobStatus(existingJob);
+        if (!K8sJobStatus.RUNNING.equals(jobStatus)) {
+            String errorMessage = String.format("could not abort job %s in %s state, only running jobs can be stopped", jobName, jobStatus.name());
+            logger.error(errorMessage);
+            throw new Exception(errorMessage);
+        }
+
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        kubernetesClient.batch().jobs().inNamespace("default").withName(jobName).delete();
+        kubernetesClient.batch()
+                .jobs()
+                .inNamespace("default")
+                .withName(jobName)
+                .delete();
         logger.info(String.format("aborted qa job with name: %s, executionId: %s", module, executionId));
     }
 
@@ -174,10 +193,9 @@ public class DeploymentFacade {
      * @return String
      */
     public String getAutomationSuiteStatus(String clusterId, String executionId) {
-        String jobStatus = "NA";
         QASuite existingQASuite = qaSuiteRepository.findById(executionId).get();
         String module = existingQASuite.getModule();
-        String jobName = module + "-" + executionId;
+        String jobName = module + "-" + existingQASuite.getJobReferenceId();
         Job existingJob = getJobInClusterWithName(clusterId, jobName);
         if (existingJob == null) {
             logger.error("could not find active job for module: " + module);
@@ -185,14 +203,26 @@ public class DeploymentFacade {
         }
 
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        Job qasuite = kubernetesClient.batch().jobs().inNamespace("default").withName(jobName).get();
-        if(qasuite.getStatus().getSucceeded()>0){
-            jobStatus = "SUCCESS";
-        }else if(qasuite.getStatus().getFailed()>0){
-            jobStatus = "FAIL";
-        }else if(qasuite.getStatus().getActive()>0){
-            jobStatus = "RUNNING";
+        Job qasuite = kubernetesClient.batch()
+                .jobs()
+                .inNamespace("default")
+                .withName(jobName)
+                .get();
+
+        K8sJobStatus jobStatus = getK8sJobStatus(qasuite);
+        return jobStatus.name();
+    }
+
+    private K8sJobStatus getK8sJobStatus(Job qasuite) {
+        K8sJobStatus jobStatus = K8sJobStatus.NA;
+        if (qasuite.getStatus().getSucceeded() > 0) {
+            jobStatus = K8sJobStatus.SUCCESS;
+        } else if (qasuite.getStatus().getFailed() > 0) {
+            jobStatus = K8sJobStatus.FAILURE;
+        } else if (qasuite.getStatus().getActive() > 0) {
+            jobStatus = K8sJobStatus.RUNNING;
         }
+
         return jobStatus;
     }
 
@@ -209,7 +239,11 @@ public class DeploymentFacade {
     private CronJob getCronjobsInClusterWithName(String clusterId, String cronjobName) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        List<CronJob> cronJobList = kubernetesClient.batch().cronjobs().inNamespace("default").list().getItems();
+        List<CronJob> cronJobList = kubernetesClient.batch()
+                .cronjobs()
+                .inNamespace("default")
+                .list()
+                .getItems();
 
         for (CronJob cronjob : cronJobList) {
             if (cronjob.getMetadata().getName().equals(cronjobName)) {
@@ -223,7 +257,11 @@ public class DeploymentFacade {
     private Job getJobInClusterWithName(String clusterId, String jobName) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        List<Job> cronJobList = kubernetesClient.batch().jobs().inNamespace("default").list().getItems();
+        List<Job> cronJobList = kubernetesClient.batch()
+                .jobs()
+                .inNamespace("default")
+                .list()
+                .getItems();
 
         for (Job job : cronJobList) {
             if (job.getMetadata().getName().equals(jobName)) {
@@ -248,34 +286,38 @@ public class DeploymentFacade {
 
     /**
      *
-     * @param clusterId
-     * @param qaSuiteResult
+     * @param clusterId Id of the kubernetes cluster
+     * @param qaSuiteResult final result of QASuite
      */
-    public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) {
+    public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
         try {
             if (qaSuiteResult.getStatus().equals("FAIL")) {
                 List<String> failureList = qaSuiteResult.getModules().entrySet().stream()
-                        .filter(m -> (m.equals("FAIL")))
+                        .filter(m -> (K8sJobStatus.FAILURE.equals(m.getValue())))
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toList());
-                for(String module: failureList){
-                    Deployment application = clusterFacade.getApplicationData(clusterId,"app",module);
+
+                failureList.parallelStream().forEach(x -> {
+                    Deployment application = clusterFacade.getApplicationData(clusterId, "app", x);
                     String deployerId = application.getMetadata().getLabels().get("deployerid");
                     String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
+                    buildService.unPromoteBuild(deployerId, deployerBuildId);
+                });
 
-                    buildService.unPromoteBuild(deployerId,deployerBuildId);
-                }
                 DeploymentRequest deploymentRequest = new DeploymentRequest();
                 deploymentRequest.setTag("test1");
                 deploymentRequest.setReleaseType(ReleaseType.RELEASE);
-                deploymentRequest.setExtraEnv(Arrays.asList(EnvironmentVariable.builder()
+                deploymentRequest.setExtraEnv(Collections.singletonList(EnvironmentVariable.builder()
                         .name("REDEPLOYMENT_BUILD_ID")
                         .value(qaSuiteResult.getDeploymentId())
-                        .type(EnvironmentVariableType.PLAINTEXT).build()));
-                createDeployment(clusterId,deploymentRequest);
+                        .type(EnvironmentVariableType.PLAINTEXT)
+                        .build()));
+
+                createDeployment(clusterId, deploymentRequest);
             }
         } catch (Exception e) {
             logger.error("Error validating sanity results", e);
+            throw new Exception("unknown error happened while validating qa suite result");
         }
     }
 }

@@ -70,7 +70,7 @@ public class DeploymentController {
     @DeleteMapping("/qa/{executionId}/abortSuite")
     void abortAutomationSuite(
             @PathVariable String clusterId,
-            @PathVariable String executionId) {
+            @PathVariable String executionId) throws Exception {
         deploymentFacade.abortAutomationSuite(clusterId, executionId);
     }
 
@@ -96,7 +96,7 @@ public class DeploymentController {
     @PostMapping("/qa/validateSanityResult")
     void validateSanityResult(
             @PathVariable String clusterId,
-            @Valid @RequestBody QASuiteResult qaSuiteResult) {
+            @Valid @RequestBody QASuiteResult qaSuiteResult) throws Exception {
         deploymentFacade.validateSanityResult(clusterId, qaSuiteResult);
     }
 }
