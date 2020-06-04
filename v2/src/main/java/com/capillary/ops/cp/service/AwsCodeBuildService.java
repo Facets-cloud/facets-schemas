@@ -17,8 +17,6 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,9 +38,13 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
+    public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
 
     @Value("${internalApiAuthToken}")
     private String authToken;
+
+    @Value("${deployer.scheduler.host}")
+    private String hostName;
 
     @Autowired
     private HttpServletRequest requestContext;
@@ -71,19 +73,18 @@ public class AwsCodeBuildService implements TFBuildService {
         environmentVariables.add(
             EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
+        environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
+                .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
+                .build());
         try {
             environmentVariables.add(EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         } catch (Throwable t) {
             logger.error("Not in Request context", t);
-            try {
-                environmentVariables.add(
-                    EnvironmentVariable.builder().name(HOST).value(InetAddress.getLocalHost().getHostAddress())
-                        .type(EnvironmentVariableType.PLAINTEXT).build());
-            } catch (UnknownHostException e) {
-                logger.error("Host name of current deployment not found");
-                throw new NotFoundException("Host name of current deployment not found");
-            }
+            environmentVariables.add(
+                EnvironmentVariable.builder().name(HOST).value(hostName).type(EnvironmentVariableType.PLAINTEXT)
+                    .build());
+
         }
         environmentVariables.add(EnvironmentVariable.builder().name(RELEASE_TYPE).value(releaseType.name())
             .type(EnvironmentVariableType.PLAINTEXT).build());
@@ -95,8 +96,14 @@ public class AwsCodeBuildService implements TFBuildService {
                 break;
         }
         StartBuildRequest startBuildRequest =
-            StartBuildRequest.builder().projectName(buildName).environmentVariablesOverride(environmentVariables)
-                .build();
+            StartBuildRequest.builder().projectName(buildName)
+                    .environmentVariablesOverride(environmentVariables)
+                    .secondarySourcesOverride(ProjectSource.builder()
+                            .type(SourceType.valueOf(stack.getVcs().name()))
+                            .location(stack.getVcsUrl())
+                            .sourceIdentifier("STACK")
+                            .build())
+                    .build();
 
         ListBuildsForProjectRequest listBuildsForProjectRequest =
             ListBuildsForProjectRequest.builder().projectName(buildName).sortOrder(SortOrderType.DESCENDING).build();

@@ -9,6 +9,7 @@ import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,6 +30,7 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
      * @return Created Cluster Object
      */
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping()
     public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
         return (AwsCluster) clusterFacade.createCluster(request);
@@ -36,6 +38,7 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
 
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("{clusterId}")
     public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
         return (AwsCluster) clusterFacade.updateCluster(request, clusterId);

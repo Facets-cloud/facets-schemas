@@ -7,6 +7,7 @@ import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ public class DeploymentController {
      * @param deploymentRequest Request Params for deployments
      * @return The Deployment Log Object
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
@@ -64,7 +66,7 @@ public class DeploymentController {
      * @param executionId Execution Id for automation suite
      * @return void
      */
-    @GetMapping("/qa/{executionId}/abortSuite")
+    @DeleteMapping("/qa/{executionId}/abortSuite")
     void abortAutomationSuite(
             @PathVariable String clusterId,
             @PathVariable String executionId) {
