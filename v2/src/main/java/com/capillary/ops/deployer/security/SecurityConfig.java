@@ -4,6 +4,7 @@ import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
@@ -29,7 +30,11 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
     http
             .authorizeRequests()
-            .antMatchers("/cc/**")
+            .antMatchers(HttpMethod.GET, "/cc/**")
+            .access("@internalRequestAccessController.authenticate(request)")
+            .and()
+            .authorizeRequests()
+            .antMatchers("/cc/v1/clusters/{clusterId}/deployments/qa/**")
             .access("@internalRequestAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
@@ -41,7 +46,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .access("@bitbucketIpAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
-            .antMatchers("/api/**", "/capillarycloud/api/**")
+            .antMatchers("/api/**", "/capillarycloud/api/**", "/cc/**")
             .authenticated()
             .and()
             .oauth2Login()

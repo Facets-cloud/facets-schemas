@@ -7,6 +7,7 @@ import com.capillary.ops.cp.facade.ClusterFacade;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CommonClusterController {
     @Autowired
     ClusterFacade clusterFacade;
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("{clusterId}/credentials")
     public Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId) {
         request.setClusterId(clusterId);
@@ -31,6 +33,7 @@ public class CommonClusterController {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
         @RequestBody List<OverrideRequest> request) {
