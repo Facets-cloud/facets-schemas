@@ -138,9 +138,11 @@ public abstract class BuildSpec {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
         if(configureDockerBuildSteps()) {
-            installCommands.add(
-                    "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
-            installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
+            installCommands.add("apt-get update");
+            installCommands.add("apt-get install wget -y");
+            installCommands.add("wget https://github.com/genuinetools/img/releases/download/v0.5.6/img-linux-amd64");
+            installCommands.add("mv img-linux-amd64 /usr/bin/docker");
+            installCommands.add("chmod +x /usr/bin/docker");
         }
         installPhase.put("commands", installCommands);
         return installPhase;
@@ -149,11 +151,11 @@ public abstract class BuildSpec {
     private Map<String, Object> getInstallPhaseTest() {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
-        installCommands.add("apt-get install docker-ce=17.03.0~ce-0~ubuntu-xenial -y --allow-downgrades");
-        installCommands.add(
-                "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
-        installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
-        installPhase.put("commands", installCommands);
+//        installCommands.add("apt-get install docker-ce=17.03.0~ce-0~ubuntu-xenial -y --allow-downgrades");
+//        installCommands.add(
+//                "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
+//        installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
+//        installPhase.put("commands", installCommands);
         return installPhase;
     }
 
