@@ -1,0 +1,33 @@
+
+  <div class="align-left">
+
+    <nb-actions size="small">
+      <nb-action>
+        <div class="brand-font green large-font" routerLink="/cc/home">Capillary Cloud</div>
+      </nb-action>
+      <nb-action *ngIf="isClusterContext">
+        <nb-select size="small" [selected]="1">
+          <nb-option value="1" >Overview</nb-option>
+          <nb-option value="4">Applications</nb-option>
+          <nb-option value="2">Overrides</nb-option>
+          <nb-option value="3">Releases</nb-option>
+        </nb-select>
+      </nb-action>
+    </nb-actions>
+  </div>
+
+  <div class="align-right">
+    <nb-actions size="small" >
+      <nb-action *ngIf="isClusterContext">
+        <nb-select placeholder="Select Cluster" size="small" >
+          <nb-option value="1">Nightly</nb-option>
+          <nb-option value="2">APAC2</nb-option>
+          <nb-option value="3">Tata</nb-option>
+        </nb-select>
+      </nb-action>
+      <nb-action>
+        <nb-user name="Anshul Sao" title="Admin" [showTitle]="false"></nb-user>
+      </nb-action>
+    </nb-actions>
+  </div>
+
