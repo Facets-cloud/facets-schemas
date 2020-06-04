@@ -267,7 +267,13 @@ public class CodeBuildService implements ICodeBuildService {
             batchGetBuildsResponse = future.get();
         } catch (InterruptedException | ExecutionException e) {
             logger.error("error happened while getting codebuild details", e);
-            return null;
+            logger.info("retrying once");
+            try {
+                Thread.sleep(500);
+                return getBuild(application, codeBuildId);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
         List<software.amazon.awssdk.services.codebuild.model.Build> builds = batchGetBuildsResponse.builds();
