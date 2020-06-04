@@ -790,11 +790,20 @@ public class ApplicationFacade {
         return true;
     }
 
+    private Environment getEnvironmentWithCCFallback(ApplicationFamily applicationFamily, String environment) {
+        Optional<Environment> env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment);
+        if (env.isPresent()) {
+            return env.get();
+        }
+
+        return ccAdapterService.getEnvironment(applicationFamily, environment);
+    }
+
     public ActionExecution executeActionOnPod(ApplicationFamily applicationFamily, String environment,
                                               String applicationId, String podName, ApplicationAction applicationAction) {
         ApplicationAction existingAction = applicationActionRepository.findById(applicationAction.getId()).get();
         if (CreationStatus.FULFILLED.equals(existingAction.getCreationStatus()) && isValidActoinArgument(applicationAction)) {
-            Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
+            Environment env = getEnvironmentWithCCFallback(applicationFamily, environment);
             logger.info("executing action: {}, in environment: {}, on pod: {}", existingAction, env.getEnvironmentMetaData().getName(), podName);
             ActionExecution actionExecution = kubernetesService.executeAction(existingAction, env, podName);
             actionExecution.setApplicationId(applicationId);

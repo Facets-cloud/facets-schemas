@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,16 @@ public class CCAdapterService {
         ec.setKubernetesToken(credentials.getKubernetesToken());
         ec.setKubernetesApiEndpoint(credentials.getKubernetesApiEndpoint());
         return ec;
+    }
+
+    public Environment getEnvironment(ApplicationFamily applicationFamily, String environmentName) {
+        EnvironmentConfiguration ccEnvironmentConfiguration = getCCEnvironmentConfiguration(environmentName);
+        Optional<EnvironmentMetaData> ccEnvironmentMeta = getCCEnvironmentMeta(applicationFamily, environmentName);
+        if (!ccEnvironmentMeta.isPresent()) {
+            throw new NotFoundException("could not environment with this name and application family");
+        }
+
+        return new Environment(ccEnvironmentMeta.get(), ccEnvironmentConfiguration);
     }
 
     //    public static void main(String[] args) throws ParseException {

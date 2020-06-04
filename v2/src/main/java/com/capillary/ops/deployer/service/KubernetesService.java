@@ -191,7 +191,6 @@ public class KubernetesService implements IKubernetesService {
                              .readingInput(System.in)
                              .writingOutput(os)
                              .writingError(System.err)
-//                             .withTTY()
                              .usingListener(new KubeExecListener())
                              .exec(command)) {
             Thread.sleep(5 * 1000);
