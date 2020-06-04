@@ -17,8 +17,6 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +42,9 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Value("${internalApiAuthToken}")
     private String authToken;
+
+    @Value("${deployer.scheduler.host}")
+    private String hostName;
 
     @Autowired
     private HttpServletRequest requestContext;
@@ -80,14 +81,10 @@ public class AwsCodeBuildService implements TFBuildService {
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         } catch (Throwable t) {
             logger.error("Not in Request context", t);
-            try {
-                environmentVariables.add(
-                    EnvironmentVariable.builder().name(HOST).value(InetAddress.getLocalHost().getHostAddress())
-                        .type(EnvironmentVariableType.PLAINTEXT).build());
-            } catch (UnknownHostException e) {
-                logger.error("Host name of current deployment not found");
-                throw new NotFoundException("Host name of current deployment not found");
-            }
+            environmentVariables.add(
+                EnvironmentVariable.builder().name(HOST).value(hostName).type(EnvironmentVariableType.PLAINTEXT)
+                    .build());
+
         }
         environmentVariables.add(EnvironmentVariable.builder().name(RELEASE_TYPE).value(releaseType.name())
             .type(EnvironmentVariableType.PLAINTEXT).build());

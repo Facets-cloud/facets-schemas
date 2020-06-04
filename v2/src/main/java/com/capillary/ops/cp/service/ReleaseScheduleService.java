@@ -7,6 +7,7 @@ import com.jcabi.aspects.Loggable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class ReleaseScheduleService {
     @Autowired
     private HttpServletRequest requestContext;
 
+    @Value("${deployer.scheduler.enabled}")
+    private boolean enabled;
+
     private Map<String, ScheduleInfo> schedules = new HashMap<>();
 
     /**
@@ -63,6 +67,9 @@ public class ReleaseScheduleService {
      * @param cron        Cron Pattern
      */
     public void updateSchedule(AbstractCluster c, ReleaseType releaseType, String cron) {
+        if(!enabled){
+            return;
+        }
         String key = c.getId() + releaseType.name();
         if (schedules.containsKey(key)) {
             ScheduleInfo existing = schedules.get(key);
