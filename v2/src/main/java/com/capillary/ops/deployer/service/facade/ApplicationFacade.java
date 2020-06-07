@@ -615,7 +615,7 @@ public class ApplicationFacade {
     }
 
     public Map<String, String> listDumpFilesFromS3(ApplicationFamily applicationFamily, String environment, String applicationId, String date) {
-        Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
+        Environment env = getEnvironmentWithCCFallback(applicationFamily, environment);
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         String releaseName = getReleaseName(application, env);
         List<String> paths = s3DumpService.listObjects(applicationFamily, environment, releaseName, getDateForDump(date));

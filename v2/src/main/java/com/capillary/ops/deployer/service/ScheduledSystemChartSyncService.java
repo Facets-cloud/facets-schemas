@@ -53,7 +53,7 @@ public class ScheduledSystemChartSyncService {
             String releaseName = chart.getReleaseName(applicationFamily, environment);
             logger.info("looking for deployment with name: {}", releaseName);
             if (!helmService.doesReleaseExist(applicationFamily, environment, releaseName)) {
-                logger.info("chart is not deployed, going to deply chart with release name: {}", releaseName);
+                logger.info("chart is not deployed, going to deploy chart with release name: {}", releaseName);
                 helmService.deploy(environment, releaseName, chart.getChartPath(), valueMap);
             }
         } catch (Throwable t) {
