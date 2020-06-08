@@ -298,7 +298,7 @@ public class DeploymentFacade {
                         .collect(Collectors.toList());
 
                 executionIdList.parallelStream().forEach(x -> {
-                    String moduleName = qaSuiteRepository.findbyExecutionId(x).getModule();
+                    String moduleName = qaSuiteRepository.findByExecutionId(x).getModule();
                     Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
                     String deployerId = application.getMetadata().getLabels().get("deployerid");
                     String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
