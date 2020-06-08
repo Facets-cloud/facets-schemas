@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface QASuiteRepository extends MongoRepository<QASuite, String> {
 
+    QASuite findbyExecutionId(String id);
 
 }

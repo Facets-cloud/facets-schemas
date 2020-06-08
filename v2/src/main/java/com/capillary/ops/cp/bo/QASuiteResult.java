@@ -14,7 +14,7 @@ public class QASuiteResult {
     @NotEmpty
     private String status;
 
-    Map<String, K8sJobStatus> modules;
+    Map<String, K8sJobStatus> execIdStatusMap;
 
     private boolean redeployment = false;
 
@@ -34,12 +34,12 @@ public class QASuiteResult {
         this.status = status;
     }
 
-    public Map<String, K8sJobStatus> getModules() {
-        return modules;
+    public Map<String, K8sJobStatus> getExecIdStatusMap() {
+        return execIdStatusMap;
     }
 
-    public void setModule(Map<String, K8sJobStatus> module) {
-        this.modules = module;
+    public void setExecIdStatusMap(Map<String, K8sJobStatus> execIdStatusMap) {
+        this.execIdStatusMap = execIdStatusMap;
     }
 
     public boolean isRedeployment() {

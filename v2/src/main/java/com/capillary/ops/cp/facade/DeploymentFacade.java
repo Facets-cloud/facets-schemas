@@ -292,13 +292,14 @@ public class DeploymentFacade {
     public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
         try {
             if (qaSuiteResult.getStatus().equals("FAIL")) {
-                List<String> failureList = qaSuiteResult.getModules().entrySet().stream()
+                List<String> executionIdList = qaSuiteResult.getExecIdStatusMap().entrySet().stream()
                         .filter(m -> (K8sJobStatus.FAILURE.equals(m.getValue())))
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toList());
 
-                failureList.parallelStream().forEach(x -> {
-                    Deployment application = clusterFacade.getApplicationData(clusterId, "app", x);
+                executionIdList.parallelStream().forEach(x -> {
+                    String moduleName = qaSuiteRepository.findbyExecutionId(x).getModule();
+                    Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
                     String deployerId = application.getMetadata().getLabels().get("deployerid");
                     String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
                     buildService.unPromoteBuild(deployerId, deployerBuildId);
