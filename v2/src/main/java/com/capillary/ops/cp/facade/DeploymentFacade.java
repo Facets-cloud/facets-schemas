@@ -169,12 +169,12 @@ public class DeploymentFacade {
             throw new NotFoundException("Could not find active job for module " + module);
         }
 
-        K8sJobStatus jobStatus = getK8sJobStatus(existingJob);
+/*      K8sJobStatus jobStatus = getK8sJobStatus(existingJob);
         if (!K8sJobStatus.RUNNING.equals(jobStatus)) {
             String errorMessage = String.format("could not abort job %s in %s state, only running jobs can be stopped", jobName, jobStatus.name());
             logger.error(errorMessage);
             throw new Exception(errorMessage);
-        }
+        }*/
 
         KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
         kubernetesClient.batch()
