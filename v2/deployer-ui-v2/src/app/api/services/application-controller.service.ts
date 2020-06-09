@@ -131,7 +131,7 @@ class ApplicationControllerService extends __BaseService {
   /**
    * @return OK
    */
-  getApplicationTypesUsingGETResponse(): __Observable<__StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>>> {
+  getApplicationTypesUsingGETResponse(): __Observable<__StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET' | 'SERVERLESS'>>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -148,16 +148,16 @@ class ApplicationControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>>;
+        return _r as __StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET' | 'SERVERLESS'>>;
       })
     );
   }
   /**
    * @return OK
    */
-  getApplicationTypesUsingGET(): __Observable<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>> {
+  getApplicationTypesUsingGET(): __Observable<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET' | 'SERVERLESS'>> {
     return this.getApplicationTypesUsingGETResponse().pipe(
-      __map(_r => _r.body as Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET'>)
+      __map(_r => _r.body as Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET' | 'SERVERLESS'>)
     );
   }
 

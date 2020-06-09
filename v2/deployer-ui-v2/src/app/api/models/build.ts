@@ -2,6 +2,7 @@
 export interface Build {
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationId?: string;
+  artifactUrl?: string;
   codeBuildId?: string;
   description?: string;
   environmentVariables?: {[key: string]: string};

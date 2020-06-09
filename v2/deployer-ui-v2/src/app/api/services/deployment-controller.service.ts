@@ -9,6 +9,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { DeploymentLog } from '../models/deployment-log';
 import { DeploymentRequest } from '../models/deployment-request';
+import { QASuite } from '../models/qasuite';
 
 /**
  * Deployment Controller
@@ -18,6 +19,8 @@ import { DeploymentRequest } from '../models/deployment-request';
 })
 class DeploymentControllerService extends __BaseService {
   static readonly createDeploymentUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/';
+  static readonly triggerAutomationSuiteUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
+  static readonly abortAutomationSuiteUsingDELETEPath = '/cc/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
   static readonly getLogsUsingGETPath = '/cc/v1/clusters/{clusterId}/deployments/{id}';
 
   constructor(
@@ -71,6 +74,96 @@ class DeploymentControllerService extends __BaseService {
   createDeploymentUsingPOST(params: DeploymentControllerService.CreateDeploymentUsingPOSTParams): __Observable<DeploymentLog> {
     return this.createDeploymentUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * @param params The `DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams` containing the following parameters:
+   *
+   * - `clusterId`: clusterId
+   *
+   * - `automationSuite`: automationSuite
+   *
+   * @return OK
+   */
+  triggerAutomationSuiteUsingPOSTResponse(params: DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.automationSuite;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/triggerSuite`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * @param params The `DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams` containing the following parameters:
+   *
+   * - `clusterId`: clusterId
+   *
+   * - `automationSuite`: automationSuite
+   *
+   * @return OK
+   */
+  triggerAutomationSuiteUsingPOST(params: DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams): __Observable<string> {
+    return this.triggerAutomationSuiteUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
+   *
+   * - `executionId`: executionId
+   *
+   * - `clusterId`: clusterId
+   */
+  abortAutomationSuiteUsingDELETEResponse(params: DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/${params.executionId}/abortSuite`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  /**
+   * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
+   *
+   * - `executionId`: executionId
+   *
+   * - `clusterId`: clusterId
+   */
+  abortAutomationSuiteUsingDELETE(params: DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams): __Observable<null> {
+    return this.abortAutomationSuiteUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as null)
     );
   }
 
@@ -133,6 +226,38 @@ module DeploymentControllerService {
      * deploymentRequest
      */
     deploymentRequest: DeploymentRequest;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for triggerAutomationSuiteUsingPOST
+   */
+  export interface TriggerAutomationSuiteUsingPOSTParams {
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+
+    /**
+     * automationSuite
+     */
+    automationSuite: QASuite;
+  }
+
+  /**
+   * Parameters for abortAutomationSuiteUsingDELETE
+   */
+  export interface AbortAutomationSuiteUsingDELETEParams {
+
+    /**
+     * executionId
+     */
+    executionId: string;
 
     /**
      * clusterId

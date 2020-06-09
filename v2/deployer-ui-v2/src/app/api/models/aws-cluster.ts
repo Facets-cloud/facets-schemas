@@ -6,9 +6,11 @@ export interface AwsCluster {
   commonEnvironmentVariables?: {[key: string]: string};
   externalId?: string;
   id?: string;
+  k8sRequestsToLimitsRatio?: number;
   name?: string;
   releaseStream?: 'QA' | 'STAGING' | 'PROD';
   roleARN?: string;
+  schedules?: {[key: string]: string};
   secrets?: {[key: string]: string};
   stackName?: string;
   tz?: string;

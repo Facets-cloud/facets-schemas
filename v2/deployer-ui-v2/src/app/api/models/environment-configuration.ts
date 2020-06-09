@@ -10,6 +10,7 @@ export interface EnvironmentConfiguration {
   commonConfigs?: {[key: string]: string};
   commonCredentials?: {[key: string]: string};
   ecrMirrorRepo?: string;
+  filebeatEnabled?: boolean;
   jmxSideCarEnabled?: boolean;
   k8sLoggingConfiguration?: K8sLoggingConfiguration;
   kube2IamConfiguration?: Kube2IamConfiguration;
