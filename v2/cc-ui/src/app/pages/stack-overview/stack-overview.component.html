@@ -1,3 +1,14 @@
 <app-layout-one-column>
+  <nb-card accent="info">
+    <nb-card-header>Stack Overview</nb-card-header>
+    <nb-card-body>
+      This is a <b>{{stack?.name}}</b> stack, its source code is <a href={{stack?.vcsUrl}}>here</a>.
+    </nb-card-body>
+  </nb-card>
 
+  <nb-card accent="warning">
+    <nb-card-header>Clusters</nb-card-header>
+    <nb-card-body>
+    </nb-card-body>
+  </nb-card>
 </app-layout-one-column>

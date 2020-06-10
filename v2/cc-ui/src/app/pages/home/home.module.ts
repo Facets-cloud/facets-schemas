@@ -15,7 +15,7 @@ import {LayoutsModule} from '../../layouts/layouts.module';
   declarations: [HomeComponent],
   imports: [
     CommonModule,
-    RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
+    RouterModule,
     NbCardModule,
     LayoutsModule
   ]

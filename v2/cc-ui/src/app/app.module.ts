@@ -11,6 +11,7 @@ import {ClusterOverviewModule} from './pages/cluster-overview/cluster-overview.m
 import {ClusterReleasesModule} from './pages/cluster-releases/cluster-releases.module';
 import {HttpClientModule} from '@angular/common/http';
 import {GlobalErrorHandler} from './error-handler';
+import {StackOverviewModule} from './pages/stack-overview/stack-overview.module';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import {GlobalErrorHandler} from './error-handler';
     ClusterOverviewModule,
     ClusterReleasesModule,
     HttpClientModule,
+    StackOverviewModule
   ],
   providers: [{provide: ErrorHandler, useClass: GlobalErrorHandler}],
   bootstrap: [AppComponent]
