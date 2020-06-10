@@ -298,7 +298,12 @@ public class DeploymentFacade {
                         .collect(Collectors.toList());
 
                 executionIdList.parallelStream().forEach(x -> {
-                    String moduleName = qaSuiteRepository.findByExecutionId(x).getModule();
+                    Optional<QASuite> existingQASuite = qaSuiteRepository.findById(x);
+                    if (!existingQASuite.isPresent()) {
+                        logger.error("did not find qasuite for executionId: {}", x);
+                        throw new NotFoundException("Did not find qasuite for executionId: " + x);
+                    }
+                    String moduleName = existingQASuite.get().getModule();
                     Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
                     String deployerId = application.getMetadata().getLabels().get("deployerid");
                     String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
