@@ -4,5 +4,6 @@ public enum K8sJobStatus {
     NA,
     SUCCESS,
     FAILURE,
+    TIMEOUT,
     RUNNING
 }
