@@ -16,12 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping("cc-ui/v1/stacks/")
 @Loggable()
+@PreAuthorize("hasAnyRole('ADMIN')")
 public class UiStackController {
 
     @Autowired
     StackController stackController;
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("{stackName}/clusters")
     public List<AbstractCluster> getClusters(@PathVariable String stackName) {
         return stackController.getClusters(stackName);
@@ -33,15 +33,18 @@ public class UiStackController {
      * @param stack Stack definition object
      * @return
      */
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public Stack createStack(@RequestBody Stack stack) {
         return stackController.createStack(stack);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping()
     public List<Stack> getStacks() {
         return stackController.getStacks();
+    }
+
+    @GetMapping("{stackName}")
+    public Stack getStack(@PathVariable String stackName) {
+        return stackController.getStack(stackName);
     }
 }

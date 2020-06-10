@@ -6,9 +6,12 @@ import {ClusterReleasesComponent} from './pages/cluster-releases/cluster-release
 import {
   NbAuthComponent, NbLoginComponent, NbLogoutComponent
 } from '@nebular/auth';
+import {StackOverviewComponent} from './pages/stack-overview/stack-overview.component';
 
 
 const routes: Routes = [
+  {path: 'capc/home', component: HomeComponent},
+  {path: 'capc/stack/:stackName', component: StackOverviewComponent},
   {
     path: 'capc/cluster/:clusterId', component: ClusterOverviewComponent,
     children: [
@@ -18,7 +21,6 @@ const routes: Routes = [
       }
     ]
   },
-  {path: 'capc/home', component: HomeComponent},
   {path: 'capc', redirectTo: '/capc/home', pathMatch: 'full'},
   {path: '', redirectTo: '/capc/home', pathMatch: 'full'},
   {path: 'capc/**', redirectTo: '/capc/home'},

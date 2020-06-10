@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
+import java.util.List;
 
 @Service
 @Loggable
@@ -60,4 +61,11 @@ public class StackFacade {
         return stackRepository.save(stack);
     }
 
+    public List<Stack> getAllStacks() {
+        return stackRepository.findAll();
+    }
+
+    public Stack getStackByName(String stackName) {
+        return stackRepository.findById(stackName).get();
+    }
 }

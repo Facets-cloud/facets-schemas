@@ -31,15 +31,23 @@ public class StackController {
         return clusterFacade.getClustersByStackName(stackName);
     }
 
+    @GetMapping()
+    public List<Stack> getStacks() {
+        return stackFacade.getAllStacks();
+    }
+
     /**
      * Create a new stack
      *
      * @param stack Stack definition object
      * @return
      */
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public Stack createStack(@RequestBody Stack stack) {
         return stackFacade.createStack(stack);
+    }
+
+    public Stack getStack(String stackName) {
+        return stackFacade.getStackByName(stackName);
     }
 }

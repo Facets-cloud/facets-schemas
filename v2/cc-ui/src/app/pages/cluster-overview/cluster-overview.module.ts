@@ -5,7 +5,8 @@ import {NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule} from '@ne
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../components/components.module';
 import {AwsClusterControllerService} from '../../cc-api/services/aws-cluster-controller.service';
-import {HttpClientModule} from "@angular/common/http";
+import {HttpClientModule} from '@angular/common/http';
+import {LayoutsModule} from '../../layouts/layouts.module';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import {HttpClientModule} from "@angular/common/http";
     NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
     NbCardModule,
     ComponentsModule,
-    HttpClientModule
+    HttpClientModule,
+    LayoutsModule
   ]
 })
 export class ClusterOverviewModule {
