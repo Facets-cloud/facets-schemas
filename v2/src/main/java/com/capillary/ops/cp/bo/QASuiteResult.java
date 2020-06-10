@@ -12,7 +12,7 @@ public class QASuiteResult {
 
     @NotNull
     @NotEmpty
-    private String status;
+    private K8sJobStatus status;
 
     Map<String, K8sJobStatus> execIdStatusMap;
 
@@ -26,11 +26,11 @@ public class QASuiteResult {
         this.deploymentId = deploymentId;
     }
 
-    public String getStatus() {
+    public K8sJobStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(K8sJobStatus status) {
         this.status = status;
     }
 
