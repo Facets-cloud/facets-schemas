@@ -3,14 +3,14 @@
 
     <nb-actions size="small">
       <nb-action>
-        <div class="brand-font green large-font" routerLink="/cc/home">Capillary Cloud</div>
+        <div class="brand-font green large-font" routerLink="/capc/home">Capillary Cloud</div>
       </nb-action>
       <nb-action *ngIf="isClusterContext">
-        <nb-select size="small" [selected]="1">
-          <nb-option value="1" >Overview</nb-option>
-          <nb-option value="4">Applications</nb-option>
-          <nb-option value="2">Overrides</nb-option>
-          <nb-option value="3">Releases</nb-option>
+        <nb-select size="small" placeholder="Navigation">
+          <nb-option value="1"> <a routerLink="/capc/overview">Overview</a></nb-option>
+          <nb-option value="4" routerLink="/capc/applications">Applications</nb-option>
+          <nb-option value="2" routerLink="/capc/overrides">Overrides</nb-option>
+          <nb-option value="3" routerLink="/capc/releases">Releases</nb-option>
         </nb-select>
       </nb-action>
     </nb-actions>
@@ -26,7 +26,7 @@
         </nb-select>
       </nb-action>
       <nb-action>
-        <nb-user name="Anshul Sao" title="Admin" [showTitle]="false"></nb-user>
+        <nb-user [name]=user?.attributes?.name [picture]="user?.attributes?.picture" [showTitle]="false"></nb-user>
       </nb-action>
     </nb-actions>
   </div>
