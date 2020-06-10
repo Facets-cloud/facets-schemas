@@ -11,7 +11,6 @@ public class QASuiteResult {
     private String deploymentId;
 
     @NotNull
-    @NotEmpty
     private K8sJobStatus status;
 
     Map<String, K8sJobStatus> execIdStatusMap;
