@@ -5,5 +5,6 @@ public enum K8sJobStatus {
     SUCCESS,
     FAILURE,
     TIMEOUT,
+    CANCELLED,
     RUNNING
 }
