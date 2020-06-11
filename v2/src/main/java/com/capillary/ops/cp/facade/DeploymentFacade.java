@@ -292,23 +292,15 @@ public class DeploymentFacade {
     public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
         try {
             if (K8sJobStatus.FAILURE.equals(qaSuiteResult.getStatus())) {
-                List<String> executionIdList = qaSuiteResult.getExecIdStatusMap().entrySet().stream()
+                List<String> automationFailures = qaSuiteResult.getModuleStatusMap().entrySet().stream()
                         .filter(m -> (K8sJobStatus.FAILURE.equals(m.getValue())))
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toList());
 
-                logger.info("builds to unpromote: {}", executionIdList);
+                logger.info("builds to unpromote: {}", automationFailures);
 
-                executionIdList.parallelStream().forEach(x -> {
-                    Optional<QASuite> existingQASuite = qaSuiteRepository.findById(x);
-                    if (!existingQASuite.isPresent()) {
-                        logger.error("did not find qasuite for executionId: {}", x);
-                        throw new NotFoundException("Did not find qasuite for executionId: " + x);
-                    }
-
-                    String moduleName = existingQASuite.get().getModule();
+                automationFailures.parallelStream().forEach(moduleName -> {
                     logger.info("automation failure, unpormoting build for module: {}", moduleName);
-
                     Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
                     String deployerId = application.getMetadata().getLabels().get("deployerid");
                     String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
