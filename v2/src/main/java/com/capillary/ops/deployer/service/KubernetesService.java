@@ -154,7 +154,11 @@ public class KubernetesService implements IKubernetesService {
             if(application.getApplicationFamily().equals(ApplicationFamily.CRM) && applicationServiceDetails == null) {
                 applicationServiceDetails = getApplicationServiceDetails(deploymentName + "-test", kubernetesClient);
             }
-            selectors = applicationServiceDetails.getSelectors(); 
+            if(applicationServiceDetails == null){
+                selectors = ImmutableMap.of("app", deploymentName);
+            }else {
+                selectors = applicationServiceDetails.getSelectors();
+            }
         }
 
         List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(
