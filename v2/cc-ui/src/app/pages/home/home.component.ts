@@ -8,7 +8,29 @@ import {Stack} from '../../cc-api/models/stack';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  stacks: Array<Stack>;
+  stacks: Stack[];
+  tableSettings = {
+    columns: {
+      name: {
+        title: 'Stack Name',
+      },
+      vcsUrl: {
+        title: 'Repository',
+      },
+      relativePath: {
+        title: 'Path',
+      },
+      user: {
+        title: 'Repo User',
+      },
+      custom : {
+        type: 'html',
+        title: 'Actions',
+      }
+    },
+    actions: false,
+    hideSubHeader: true,
+  };
 
   constructor(private uiStackControllerService: UiStackControllerService) {
   }

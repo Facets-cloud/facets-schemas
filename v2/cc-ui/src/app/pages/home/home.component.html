@@ -1,19 +1,8 @@
 <app-layout-one-column>
     <nb-card accent="info">
-      <nb-card-header>Stack Selection</nb-card-header>
+      <nb-card-header>Stacks</nb-card-header>
       <nb-card-body>
-        <div class="row" *ngFor="let item of stacks">
-          <div class="col-lg-4 col-sm-12 col-md-6" routerLink="/capc/{{item.name}}">
-            <div class="selectable">
-              <div class="header large-font">
-                {{item.name | uppercase}}
-              </div>
-              <div class="body">
-                {{item.vcsUrl}}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ng2-smart-table [settings]="tableSettings" [source]="stacks"></ng2-smart-table>
       </nb-card-body>
     </nb-card>
 

@@ -4,6 +4,7 @@ import {StackOverviewComponent} from './stack-overview.component';
 import {NbCardModule} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {LayoutsModule} from '../../layouts/layouts.module';
+import {Ng2SmartTableModule} from 'ng2-smart-table';
 
 
 @NgModule({
@@ -13,6 +14,7 @@ import {LayoutsModule} from '../../layouts/layouts.module';
     RouterModule,
     LayoutsModule,
     NbCardModule,
+    Ng2SmartTableModule,
   ]
 })
 export class StackOverviewModule {

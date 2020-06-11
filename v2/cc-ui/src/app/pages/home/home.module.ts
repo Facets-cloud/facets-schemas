@@ -8,6 +8,7 @@ import {
 } from '@nebular/theme';
 import {ComponentsModule} from '../../components/components.module';
 import {LayoutsModule} from '../../layouts/layouts.module';
+import {Ng2SmartTableModule} from 'ng2-smart-table';
 
 
 
@@ -17,7 +18,8 @@ import {LayoutsModule} from '../../layouts/layouts.module';
     CommonModule,
     RouterModule,
     NbCardModule,
-    LayoutsModule
+    LayoutsModule,
+    Ng2SmartTableModule
   ]
 })
 export class HomeModule { }

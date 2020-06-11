@@ -11,7 +11,32 @@ import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
 })
 export class StackOverviewComponent implements OnInit {
   stack: Stack;
-  clusters: Array<AbstractCluster>;
+  clusters: AbstractCluster[];
+
+  clusterSettings = {
+    columns: {
+      id: {
+        title: 'ClusterId',
+      },
+      name: {
+        title: 'Cluster Name',
+      },
+      cloud: {
+        title: 'Cloud Provider',
+      },
+      releaseStream: {
+        title: 'Release Stream',
+      },
+      stackName: {
+        title: 'Stack Name',
+      },
+      tz: {
+        title: 'Time Zone',
+      }
+    },
+    actions: false,
+    hideSubHeader: true,
+  };
 
   constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService) {
   }

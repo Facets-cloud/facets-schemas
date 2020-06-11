@@ -9,7 +9,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (error) {
       if (error instanceof HttpErrorResponse) {
         if ((<HttpErrorResponse> error).status === 401) {
-          this.document.location.href = '/oauth2/authorization/google';
+          // this.document.location.href = '/oauth2/authorization/google';
         }
       }
       console.log(error);

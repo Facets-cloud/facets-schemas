@@ -7,13 +7,16 @@ import {
   NbAuthComponent, NbLoginComponent, NbLogoutComponent
 } from '@nebular/auth';
 import {StackOverviewComponent} from './pages/stack-overview/stack-overview.component';
+import {AuthGuard} from "./auth-guard.service";
 
 
 const routes: Routes = [
-  {path: 'capc/home', component: HomeComponent},
-  {path: 'capc/stack/:stackName', component: StackOverviewComponent},
   {
-    path: 'capc/cluster/:clusterId', component: ClusterOverviewComponent,
+    path: 'capc/home', component: HomeComponent, canActivate: [AuthGuard]
+  },
+  {path: 'capc/stack/:stackName', component: StackOverviewComponent, canActivate: [AuthGuard]},
+  {
+    path: 'capc/cluster/:clusterId', component: ClusterOverviewComponent, canActivate: [AuthGuard],
     children: [
       {
         path: 'releases',
