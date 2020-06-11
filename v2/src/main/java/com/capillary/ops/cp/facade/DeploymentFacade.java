@@ -219,13 +219,13 @@ public class DeploymentFacade {
         }
     }
 
-    private K8sJobStatus getK8sJobStatus(Job qasuite) {
+    private K8sJobStatus getK8sJobStatus(Job qaSuite) {
         K8sJobStatus jobStatus = K8sJobStatus.NA;
-        if (qasuite.getStatus().getSucceeded() > 0) {
+        if (qaSuite.getStatus().getSucceeded() != null && qaSuite.getStatus().getSucceeded() > 0) {
             jobStatus = K8sJobStatus.SUCCESS;
-        } else if (qasuite.getStatus().getFailed() > 0) {
+        } else if (qaSuite.getStatus().getFailed() != null && qaSuite.getStatus().getFailed() > 0) {
             jobStatus = K8sJobStatus.FAILURE;
-        } else if (qasuite.getStatus().getActive() > 0) {
+        } else if (qaSuite.getStatus().getActive() != null && qaSuite.getStatus().getActive() > 0) {
             jobStatus = K8sJobStatus.RUNNING;
         }
 
