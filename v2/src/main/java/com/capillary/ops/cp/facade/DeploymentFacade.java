@@ -192,25 +192,31 @@ public class DeploymentFacade {
      * @param executionId automation suite execution ID
      * @return String
      */
-    public String getAutomationSuiteStatus(String clusterId, String executionId) {
-        QASuite existingQASuite = qaSuiteRepository.findById(executionId).get();
-        String module = existingQASuite.getModule();
-        String jobName = module + "-" + existingQASuite.getJobReferenceId();
-        Job existingJob = getJobInClusterWithName(clusterId, jobName);
-        if (existingJob == null) {
-            logger.error("could not find active job for module: " + module);
-            throw new NotFoundException("Could not find active job for module " + module);
+    public String getAutomationSuiteStatus(String clusterId, String executionId) throws Exception{
+        try {
+            QASuite existingQASuite = qaSuiteRepository.findById(executionId).get();
+            String module = existingQASuite.getModule();
+            String jobName = module + "-" + existingQASuite.getJobReferenceId();
+
+            KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
+            Job qaSuite = kubernetesClient.batch()
+                    .jobs()
+                    .inNamespace("default")
+                    .withName(jobName)
+                    .get();
+
+            if (qaSuite == null) {
+                logger.info("Could not find active job for module: " + module);
+                return K8sJobStatus.NA.name();
+            }
+
+            K8sJobStatus jobStatus = getK8sJobStatus(qaSuite);
+            return jobStatus.name();
         }
-
-        KubernetesClient kubernetesClient = getKubernetesClientForCluster(clusterId);
-        Job qasuite = kubernetesClient.batch()
-                .jobs()
-                .inNamespace("default")
-                .withName(jobName)
-                .get();
-
-        K8sJobStatus jobStatus = getK8sJobStatus(qasuite);
-        return jobStatus.name();
+        catch (Exception e){
+            logger.error("Error while fetching QA job status", e);
+            throw new Exception("Error while fetching QA job status");
+        }
     }
 
     private K8sJobStatus getK8sJobStatus(Job qasuite) {
