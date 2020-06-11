@@ -84,7 +84,7 @@ public class DeploymentController {
     @GetMapping("/qa/{executionId}/status")
     String getAutomationSuiteStatus(
             @PathVariable String clusterId,
-            @PathVariable String executionId) {
+            @PathVariable String executionId) throws Exception {
         return deploymentFacade.getAutomationSuiteStatus(clusterId, executionId);
     }
 
