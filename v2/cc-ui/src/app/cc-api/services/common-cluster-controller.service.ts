@@ -18,9 +18,9 @@ import { OverrideRequest } from '../models/override-request';
   providedIn: 'root',
 })
 class CommonClusterControllerService extends __BaseService {
-  static readonly addClusterK8sCredentialsUsingPOSTPath = '/cc/v1/clusters/{clusterId}/credentials';
-  static readonly getOverridesUsingGETPath = '/cc/v1/clusters/{clusterId}/overrides';
-  static readonly overrideSizingUsingPOSTPath = '/cc/v1/clusters/{clusterId}/overrides';
+  static readonly addClusterK8sCredentialsUsingPOSTPath = '/cc/v1/tableData/{clusterId}/credentials';
+  static readonly getOverridesUsingGETPath = '/cc/v1/tableData/{clusterId}/overrides';
+  static readonly overrideSizingUsingPOSTPath = '/cc/v1/tableData/{clusterId}/overrides';
 
   constructor(
     config: __Configuration,

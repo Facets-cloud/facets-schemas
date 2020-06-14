@@ -17,9 +17,9 @@ import { AwsClusterRequest } from '../models/aws-cluster-request';
   providedIn: 'root',
 })
 class AwsClusterControllerService extends __BaseService {
-  static readonly createClusterUsingPOSTPath = '/cc/v1/aws/clusters';
-  static readonly getClusterUsingGETPath = '/cc/v1/aws/clusters/{clusterId}';
-  static readonly updateClusterUsingPUTPath = '/cc/v1/aws/clusters/{clusterId}';
+  static readonly createClusterUsingPOSTPath = '/cc/v1/aws/tableData';
+  static readonly getClusterUsingGETPath = '/cc/v1/aws/tableData/{clusterId}';
+  static readonly updateClusterUsingPUTPath = '/cc/v1/aws/tableData/{clusterId}';
 
   constructor(
     config: __Configuration,

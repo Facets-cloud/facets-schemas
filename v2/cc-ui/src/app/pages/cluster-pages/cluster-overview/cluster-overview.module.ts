@@ -3,10 +3,10 @@ import {CommonModule} from '@angular/common';
 import {ClusterOverviewComponent} from './cluster-overview.component';
 import {NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule} from '@nebular/theme';
 import {ActivatedRoute, RouterModule} from '@angular/router';
-import {ComponentsModule} from '../../components/components.module';
-import {AwsClusterControllerService} from '../../cc-api/services/aws-cluster-controller.service';
+import {ComponentsModule} from '../../../components/components.module';
+import {AwsClusterControllerService} from '../../../cc-api/services/aws-cluster-controller.service';
 import {HttpClientModule} from '@angular/common/http';
-import {LayoutsModule} from '../../layouts/layouts.module';
+import {LayoutsModule} from '../../../layouts/layouts.module';
 
 
 @NgModule({

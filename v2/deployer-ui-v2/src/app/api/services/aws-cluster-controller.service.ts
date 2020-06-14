@@ -20,7 +20,6 @@ class AwsClusterControllerService extends __BaseService {
   static readonly createClusterUsingPOSTPath = '/cc/v1/aws/clusters';
   static readonly getClusterUsingGETPath = '/cc/v1/aws/clusters/{clusterId}';
   static readonly updateClusterUsingPUTPath = '/cc/v1/aws/clusters/{clusterId}';
-  static readonly getClusterUIUsingGETPath = '/cc/v1/aws/clusters/{clusterId}/ui';
 
   constructor(
     config: __Configuration,
@@ -144,42 +143,6 @@ class AwsClusterControllerService extends __BaseService {
    */
   updateClusterUsingPUT(params: AwsClusterControllerService.UpdateClusterUsingPUTParams): __Observable<AwsCluster> {
     return this.updateClusterUsingPUTResponse(params).pipe(
-      __map(_r => _r.body as AwsCluster)
-    );
-  }
-
-  /**
-   * @param clusterId clusterId
-   * @return OK
-   */
-  getClusterUIUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<AwsCluster>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/cc/v1/aws/clusters/${clusterId}/ui`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<AwsCluster>;
-      })
-    );
-  }
-  /**
-   * @param clusterId clusterId
-   * @return OK
-   */
-  getClusterUIUsingGET(clusterId: string): __Observable<AwsCluster> {
-    return this.getClusterUIUsingGETResponse(clusterId).pipe(
       __map(_r => _r.body as AwsCluster)
     );
   }

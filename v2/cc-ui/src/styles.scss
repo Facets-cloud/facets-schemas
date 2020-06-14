@@ -10,7 +10,17 @@
   @include nb-theme-global();
 }
 
-;
+/**
+Smart Table Actions
+ */
+.ng2-smart-actions ng2-st-tbody-edit-delete{
+  display: none !important;
+}
+
+a.ng2-smart-action.ng2-smart-action-custom-custom {
+  color: #1e6bb8 !important;
+  zoom: 0.5;
+}
 
 /* You can add global styles to this file, and also import other style files */
 .align-right {

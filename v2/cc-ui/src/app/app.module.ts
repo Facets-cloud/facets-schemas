@@ -7,13 +7,17 @@ import {NbThemeModule, NbLayoutModule} from '@nebular/theme';
 import {NbEvaIconsModule} from '@nebular/eva-icons';
 import {HomeModule} from './pages/home/home.module';
 import {AppComponent} from './app.component';
-import {ClusterOverviewModule} from './pages/cluster-overview/cluster-overview.module';
-import {ClusterReleasesModule} from './pages/cluster-releases/cluster-releases.module';
+
 import {HttpClientModule} from '@angular/common/http';
 import {GlobalErrorHandler} from './error-handler';
 import {StackOverviewModule} from './pages/stack-overview/stack-overview.module';
 import {NbAuthModule, NbPasswordAuthStrategy} from '@nebular/auth';
 import {AuthGuard} from './auth-guard.service';
+import {ClusterPagesModule} from './pages/cluster-pages/cluster-pages.module';
+import {ClusterOverridesModule} from './pages/cluster-pages/cluster-overrides/cluster-overrides.module';
+import {ClusterReleasesModule} from './pages/cluster-pages/cluster-releases/cluster-releases.module';
+import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/cluster-overview.module';
+
 
 @NgModule({
   declarations: [
@@ -37,6 +41,8 @@ import {AuthGuard} from './auth-guard.service';
     HomeModule,
     ClusterOverviewModule,
     ClusterReleasesModule,
+    ClusterOverridesModule,
+    ClusterPagesModule,
     HttpClientModule,
     StackOverviewModule
   ],

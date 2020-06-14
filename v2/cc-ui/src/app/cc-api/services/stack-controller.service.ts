@@ -19,7 +19,7 @@ import { AbstractCluster } from '../models/abstract-cluster';
 class StackControllerService extends __BaseService {
   static readonly getStacksUsingGETPath = '/cc/v1/stacks/';
   static readonly createStackUsingPOSTPath = '/cc/v1/stacks/';
-  static readonly getClustersUsingGETPath = '/cc/v1/stacks/{stackName}/clusters';
+  static readonly getClustersUsingGETPath = '/cc/v1/stacks/{stackName}/tableData';
 
   constructor(
     config: __Configuration,

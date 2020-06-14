@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import {
   NbActionsModule, NbButtonModule, NbCardModule, NbLayoutModule, NbSelectModule, NbSidebarModule, NbSidebarService,
   NbUserModule
-} from "@nebular/theme";
-import {HeaderComponent} from "./header/header.component";
-import {RouterModule} from "@angular/router";
+} from '@nebular/theme';
+import {HeaderComponent} from './header/header.component';
+import {RouterModule} from '@angular/router';
 
 
 

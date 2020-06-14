@@ -9,7 +9,7 @@
   <nb-card accent="warning">
     <nb-card-header>Clusters</nb-card-header>
     <nb-card-body>
-      <ng2-smart-table [settings]="clusterSettings" [source]="clusters"></ng2-smart-table>
+      <ng2-smart-table [settings]="clusterSettings" [source]="tableData" (custom)="gotoPage($event)"></ng2-smart-table>
     </nb-card-body>
   </nb-card>
 </app-layout-one-column>

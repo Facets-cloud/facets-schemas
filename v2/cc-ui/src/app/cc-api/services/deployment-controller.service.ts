@@ -18,10 +18,10 @@ import { QASuite } from '../models/qasuite';
   providedIn: 'root',
 })
 class DeploymentControllerService extends __BaseService {
-  static readonly createDeploymentUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/';
-  static readonly triggerAutomationSuiteUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
-  static readonly abortAutomationSuiteUsingDELETEPath = '/cc/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
-  static readonly getLogsUsingGETPath = '/cc/v1/clusters/{clusterId}/deployments/{id}';
+  static readonly createDeploymentUsingPOSTPath = '/cc/v1/tableData/{clusterId}/deployments/';
+  static readonly triggerAutomationSuiteUsingPOSTPath = '/cc/v1/tableData/{clusterId}/deployments/qa/triggerSuite';
+  static readonly abortAutomationSuiteUsingDELETEPath = '/cc/v1/tableData/{clusterId}/deployments/qa/{executionId}/abortSuite';
+  static readonly getLogsUsingGETPath = '/cc/v1/tableData/{clusterId}/deployments/{id}';
 
   constructor(
     config: __Configuration,

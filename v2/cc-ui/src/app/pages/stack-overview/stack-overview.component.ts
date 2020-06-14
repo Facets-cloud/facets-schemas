@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UiStackControllerService} from '../../cc-api/services/ui-stack-controller.service';
 import {Stack} from '../../cc-api/models/stack';
 import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
@@ -11,7 +11,8 @@ import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
 })
 export class StackOverviewComponent implements OnInit {
   stack: Stack;
-  clusters: AbstractCluster[];
+  tableData: any[];
+
 
   clusterSettings = {
     columns: {
@@ -34,11 +35,17 @@ export class StackOverviewComponent implements OnInit {
         title: 'Time Zone',
       }
     },
-    actions: false,
+    actions: {
+      edit: false,
+      delete: false,
+      add: false,
+      position: 'right',
+      custom: [{name: 'View', title: 'View'}]
+    },
     hideSubHeader: true,
   };
 
-  constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService) {
+  constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -53,10 +60,17 @@ export class StackOverviewComponent implements OnInit {
       );
       this.uiStackControllerService.getClustersUsingGET1(p.stackName).subscribe(
         c => {
-          this.clusters = c;
+          this.tableData = c;
         }
       );
     });
   }
 
+  gotoPage(x): void {
+    if (x.action === 'View') {
+      const clusterId = x.data.id;
+      console.log('Navigate to ' + clusterId);
+      this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId]);
+    }
+  }
 }

@@ -6,11 +6,10 @@
         <div class="brand-font green large-font" routerLink="/capc/home">Capillary Cloud</div>
       </nb-action>
       <nb-action *ngIf="isClusterContext">
-        <nb-select size="small" placeholder="Navigation">
-          <nb-option value="1"> <a routerLink="/capc/overview">Overview</a></nb-option>
-          <nb-option value="4" routerLink="/capc/applications">Applications</nb-option>
-          <nb-option value="2" routerLink="/capc/overrides">Overrides</nb-option>
-          <nb-option value="3" routerLink="/capc/releases">Releases</nb-option>
+        <nb-select size="small" placeholder="Navigation" [(selected)]="currentNav" (selectedChange)="navToPage()">
+          <nb-option #cluster *ngFor="let nav of navs" value="{{nav}}" size="small">
+            {{nav}}
+          </nb-option>
         </nb-select>
       </nb-action>
     </nb-actions>
@@ -19,10 +18,10 @@
   <div class="align-right">
     <nb-actions size="small" >
       <nb-action *ngIf="isClusterContext">
-        <nb-select placeholder="Select Cluster" size="small" >
-          <nb-option value="1">Nightly</nb-option>
-          <nb-option value="2">APAC2</nb-option>
-          <nb-option value="3">Tata</nb-option>
+        <nb-select size="small" placeholder="Select Cluster" [(selected)]="currentCluster" (selectedChange)="navToCluster()">
+          <nb-option #cluster *ngFor="let cluster of clusters" value="{{cluster.id}}" size="small">
+            {{cluster.name}} on {{cluster.cloud}}
+          </nb-option>
         </nb-select>
       </nb-action>
       <nb-action>
