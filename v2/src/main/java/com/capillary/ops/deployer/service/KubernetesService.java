@@ -154,7 +154,11 @@ public class KubernetesService implements IKubernetesService {
             if(application.getApplicationFamily().equals(ApplicationFamily.CRM) && applicationServiceDetails == null) {
                 applicationServiceDetails = getApplicationServiceDetails(deploymentName + "-test", kubernetesClient);
             }
-            selectors = applicationServiceDetails.getSelectors(); 
+            if(applicationServiceDetails == null){
+                selectors = ImmutableMap.of("app", deploymentName);
+            }else {
+                selectors = applicationServiceDetails.getSelectors();
+            }
         }
 
         List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(
@@ -191,7 +195,6 @@ public class KubernetesService implements IKubernetesService {
                              .readingInput(System.in)
                              .writingOutput(os)
                              .writingError(System.err)
-//                             .withTTY()
                              .usingListener(new KubeExecListener())
                              .exec(command)) {
             Thread.sleep(5 * 1000);

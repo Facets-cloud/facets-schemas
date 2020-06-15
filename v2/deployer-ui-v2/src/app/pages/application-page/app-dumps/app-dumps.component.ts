@@ -19,6 +19,8 @@ export class AppDumpsComponent implements OnInit, OnChanges {
 
   environments: Array<EnvironmentMetaData> = [];
 
+  ccEnvironments: Array<EnvironmentMetaData> = [];
+
   environment: string;
 
   date: Date = new Date();
@@ -61,6 +63,12 @@ export class AppDumpsComponent implements OnInit, OnChanges {
       .subscribe(meta => {
         this.environments = meta;
       });
+
+    this.applicationControllerService
+      .getCCEnvironmentMetaDataUsingGET(this.application.applicationFamily)
+      .subscribe(meta => {
+        this.ccEnvironments = meta;
+      });
   }
 
   getFileHour(fileString: string) {
@@ -99,6 +107,14 @@ export class AppDumpsComponent implements OnInit, OnChanges {
   listDumpFiles() {
     const app = this.application;
     const dateString = new Date(this.date.getTime() - this.date.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    
+    this.ccEnvironments.forEach(element => {
+      if (element.capCloud == true && element.name == this.environment) {
+        this.fetchDumpFileList(app.applicationFamily, app.id, element.capillaryCloudClusterName, dateString);
+        return;
+      }
+    });
+    
     this.fetchDumpFileList(app.applicationFamily, app.id, this.environment, dateString);
   }
 

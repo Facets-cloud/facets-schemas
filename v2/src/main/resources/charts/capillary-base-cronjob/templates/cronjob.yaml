@@ -10,9 +10,9 @@ metadata:
     chart: {{ template "capillary-base-cronjob.chart" . }}
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-{{- if .Values.roleName }}
-    iam.amazonaws.com/role: {{ .Values.roleName }}
-{{- end }}
+  {{- if .Values.roleName }}
+      iam.amazonaws.com/role: {{ .Values.roleName }}
+  {{- end }}
 spec:
   schedule: "{{ .Values.schedule }}"
   successfulJobsHistoryLimit: 10
@@ -28,6 +28,9 @@ spec:
             deploymentId: {{ .Values.deploymentId }}
             buildId: {{ .Values.buildId }}
             cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+            {{- if .Values.roleName }}
+            iam.amazonaws.com/role: {{ .Values.roleName }}
+            {{- end }}  
         spec:
 
           restartPolicy: "Never"
