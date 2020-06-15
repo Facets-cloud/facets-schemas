@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {NbCardModule, NbLayoutModule, NbListModule, NbSidebarModule} from '@nebular/theme';
+import {NbCardModule, NbLayoutModule, NbListModule, NbMenuModule, NbMenuService, NbSidebarModule} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 import {ClusterOverridesComponent} from './cluster-overrides.component';
@@ -16,7 +16,11 @@ import {ClusterOverridesComponent} from './cluster-overrides.component';
     NbCardModule,
     ComponentsModule,
     NbSidebarModule,
-    NbListModule
+    NbListModule,
+    NbMenuModule
+  ],
+  providers: [
+    NbMenuService
   ]
 })
 export class ClusterOverridesModule {

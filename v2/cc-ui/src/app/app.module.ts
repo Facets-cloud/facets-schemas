@@ -3,7 +3,7 @@ import {ErrorHandler, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NbThemeModule, NbLayoutModule} from '@nebular/theme';
+import {NbThemeModule, NbLayoutModule, NbMenuModule} from '@nebular/theme';
 import {NbEvaIconsModule} from '@nebular/eva-icons';
 import {HomeModule} from './pages/home/home.module';
 import {AppComponent} from './app.component';
@@ -44,7 +44,8 @@ import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/clus
     ClusterOverridesModule,
     ClusterPagesModule,
     HttpClientModule,
-    StackOverviewModule
+    StackOverviewModule,
+    NbMenuModule.forRoot()
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},
