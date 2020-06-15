@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.service.TFBuildService;
@@ -43,6 +44,9 @@ public class DeploymentFacade {
     @Autowired
     private QASuiteRepository qaSuiteRepository;
 
+    @Autowired
+    private DeploymentLogRepository deploymentLogRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
     /**
@@ -56,7 +60,13 @@ public class DeploymentFacade {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         //TODO: Save Deployment requests for audit purpose
         String buildId = tfBuildService.deployLatest(cluster, deploymentRequest.getReleaseType());
-        DeploymentLog log = new DeploymentLog(buildId);
+        DeploymentLog log = new DeploymentLog();
+        log.setCodebuildId(buildId);
+        log.setClusterId(clusterId);
+        log.setDescription(deploymentRequest.getTag());
+        log.setReleaseType(deploymentRequest.getReleaseType());
+        log.setCreatedOn(new Date());
+        deploymentLogRepository.save(log);
         return log;
     }
 
@@ -204,5 +214,9 @@ public class DeploymentFacade {
         K8sCredentials k8sCredentials = credentialsO.get();
         return new DefaultKubernetesClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
             .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+    }
+
+    public List<DeploymentLog> getAllDeployments(String clusterId) {
+        return deploymentLogRepository.findFirst50ByOrderByCreatedOnDesc();
     }
 }
