@@ -419,7 +419,7 @@
                             <workingDirectory>${basedir}</workingDirectory>
                             <executable>mv</executable>
                             <arguments>
-                                <argument>cc-ui/dist/cc-ui</argument>
+                                <argument>cc-ui/dist/capc</argument>
                                 <argument>src/main/resources/static/capc</argument>
                             </arguments>
                         </configuration>

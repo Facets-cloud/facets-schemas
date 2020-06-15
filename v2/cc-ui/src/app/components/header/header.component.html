@@ -20,7 +20,7 @@
       <nb-action *ngIf="isClusterContext">
         <nb-select size="small" placeholder="Select Cluster" [(selected)]="currentCluster" (selectedChange)="navToCluster()">
           <nb-option #cluster *ngFor="let cluster of clusters" value="{{cluster.id}}" size="small">
-            {{cluster.name}} on {{cluster.cloud}}
+            {{cluster.name}} of {{cluster.stackName | uppercase}}
           </nb-option>
         </nb-select>
       </nb-action>
