@@ -2,6 +2,7 @@ package com.capillary.ops.cp.service;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -56,11 +57,14 @@ public class AwsCodeBuildService implements TFBuildService {
      * Deploy the latest build in the specified clusterId
      *
      * @param cluster     Cluster Information
-     * @param releaseType
+     * @param deploymentRequest Additional params
      * @return
      */
     @Override
-    public String deployLatest(AbstractCluster cluster, ReleaseType releaseType) {
+    public String deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest)
+    {
+        ReleaseType releaseType = deploymentRequest.getReleaseType();
+        List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv();
         Optional<Stack> stackO = stackRepository.findById(cluster.getStackName());
         if (!stackO.isPresent()) {
             throw new NotFoundException("The Stack for this cluster does not exist NOW");
@@ -88,6 +92,11 @@ public class AwsCodeBuildService implements TFBuildService {
         }
         environmentVariables.add(EnvironmentVariable.builder().name(RELEASE_TYPE).value(releaseType.name())
             .type(EnvironmentVariableType.PLAINTEXT).build());
+
+        if(!extraEnv.isEmpty()){
+            environmentVariables.addAll(extraEnv);
+        }
+
         String buildName = "";
         switch (cluster.getCloud()) {
 
