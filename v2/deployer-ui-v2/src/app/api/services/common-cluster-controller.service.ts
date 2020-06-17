@@ -8,6 +8,8 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { K8sCredentials } from '../models/k8s-credentials';
+import { OverrideObject } from '../models/override-object';
+import { OverrideRequest } from '../models/override-request';
 
 /**
  * Common Cluster Controller
@@ -17,6 +19,8 @@ import { K8sCredentials } from '../models/k8s-credentials';
 })
 class CommonClusterControllerService extends __BaseService {
   static readonly addClusterK8sCredentialsUsingPOSTPath = '/cc/v1/clusters/{clusterId}/credentials';
+  static readonly getOverridesUsingGETPath = '/cc/v1/clusters/{clusterId}/overrides';
+  static readonly overrideSizingUsingPOSTPath = '/cc/v1/clusters/{clusterId}/overrides';
 
   constructor(
     config: __Configuration,
@@ -71,6 +75,89 @@ class CommonClusterControllerService extends __BaseService {
       __map(_r => _r.body as boolean)
     );
   }
+
+  /**
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getOverridesUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<Array<OverrideObject>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/clusters/${clusterId}/overrides`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<OverrideObject>>;
+      })
+    );
+  }
+  /**
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getOverridesUsingGET(clusterId: string): __Observable<Array<OverrideObject>> {
+    return this.getOverridesUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as Array<OverrideObject>)
+    );
+  }
+
+  /**
+   * @param params The `CommonClusterControllerService.OverrideSizingUsingPOSTParams` containing the following parameters:
+   *
+   * - `request`: request
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  overrideSizingUsingPOSTResponse(params: CommonClusterControllerService.OverrideSizingUsingPOSTParams): __Observable<__StrictHttpResponse<Array<OverrideObject>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.request;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/overrides`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<OverrideObject>>;
+      })
+    );
+  }
+  /**
+   * @param params The `CommonClusterControllerService.OverrideSizingUsingPOSTParams` containing the following parameters:
+   *
+   * - `request`: request
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  overrideSizingUsingPOST(params: CommonClusterControllerService.OverrideSizingUsingPOSTParams): __Observable<Array<OverrideObject>> {
+    return this.overrideSizingUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as Array<OverrideObject>)
+    );
+  }
 }
 
 module CommonClusterControllerService {
@@ -84,6 +171,22 @@ module CommonClusterControllerService {
      * request
      */
     request: K8sCredentials;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for overrideSizingUsingPOST
+   */
+  export interface OverrideSizingUsingPOSTParams {
+
+    /**
+     * request
+     */
+    request: Array<OverrideRequest>;
 
     /**
      * clusterId

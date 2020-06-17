@@ -365,6 +365,65 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>npm-install-cc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>cc-ui</workingDirectory>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>npm-rebuild-node-sass-cc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>cc-ui</workingDirectory>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>rebuild</argument>
+                                <argument>node-sass</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>generate-ui-cc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>cc-ui</workingDirectory>
+                            <executable>node_modules/@angular/cli/bin/ng</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>--prod</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>copy-ui-cc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <executable>mv</executable>
+                            <arguments>
+                                <argument>cc-ui/dist/capc</argument>
+                                <argument>src/main/resources/static/capc</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

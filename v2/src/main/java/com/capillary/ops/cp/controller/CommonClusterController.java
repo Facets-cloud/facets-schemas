@@ -20,7 +20,6 @@ public class CommonClusterController {
     @Autowired
     ClusterFacade clusterFacade;
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("{clusterId}/credentials")
     public Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId) {
         request.setClusterId(clusterId);
@@ -33,7 +32,6 @@ public class CommonClusterController {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
         @RequestBody List<OverrideRequest> request) {

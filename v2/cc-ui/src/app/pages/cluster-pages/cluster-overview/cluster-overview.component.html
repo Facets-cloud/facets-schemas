@@ -1,0 +1,34 @@
+<app-layout-one-column>
+
+  <nb-card accent="info">
+    <nb-card-header>Cluster Information</nb-card-header>
+    <nb-card-body>
+      <div class="row">
+        <div class="col-8 offset-2">
+          <table class="table table-striped table-sm">
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">Key</th>
+              <th scope="col">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr scope=row *ngFor="let item of clusterInfo | keyvalue">
+              <td scope="col">{{item.key}}</td>
+              <td scope="col">{{item.value}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </nb-card-body>
+  </nb-card>
+
+  <nb-card accent="warning">
+    <nb-card-header>Cluster Pages</nb-card-header>
+    <nb-card-body>
+
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>
+

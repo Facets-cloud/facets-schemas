@@ -1,0 +1,32 @@
+
+  <div class="align-left">
+
+    <nb-actions size="small">
+      <nb-action>
+        <div class="brand-font green large-font" routerLink="/capc/home">Capillary Cloud</div>
+      </nb-action>
+      <nb-action *ngIf="isClusterContext">
+        <nb-select size="small" placeholder="Navigation" [(selected)]="currentNav" (selectedChange)="navToPage()">
+          <nb-option #cluster *ngFor="let nav of navs" value="{{nav}}" size="small">
+            {{nav}}
+          </nb-option>
+        </nb-select>
+      </nb-action>
+    </nb-actions>
+  </div>
+
+  <div class="align-right">
+    <nb-actions size="small" >
+      <nb-action *ngIf="isClusterContext">
+        <nb-select size="small" placeholder="Select Cluster" [(selected)]="currentCluster" (selectedChange)="navToCluster()">
+          <nb-option #cluster *ngFor="let cluster of clusters" value="{{cluster.id}}" size="small">
+            {{cluster.name}} of {{cluster.stackName | uppercase}}
+          </nb-option>
+        </nb-select>
+      </nb-action>
+      <nb-action>
+        <nb-user [name]=user?.attributes?.name [picture]="user?.attributes?.picture" [showTitle]="false"></nb-user>
+      </nb-action>
+    </nb-actions>
+  </div>
+

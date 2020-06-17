@@ -2,6 +2,7 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
@@ -46,6 +47,9 @@ public class DeploymentFacade {
     private QASuiteRepository qaSuiteRepository;
 
     @Autowired
+    private DeploymentLogRepository deploymentLogRepository;
+
+    @Autowired
     private BuildService buildService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
@@ -61,7 +65,13 @@ public class DeploymentFacade {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         //TODO: Save Deployment requests for audit purpose
         String buildId = tfBuildService.deployLatest(cluster, deploymentRequest);
-        DeploymentLog log = new DeploymentLog(buildId);
+        DeploymentLog log = new DeploymentLog();
+        log.setCodebuildId(buildId);
+        log.setClusterId(clusterId);
+        log.setDescription(deploymentRequest.getTag());
+        log.setReleaseType(deploymentRequest.getReleaseType());
+        log.setCreatedOn(new Date());
+        deploymentLogRepository.save(log);
         return log;
     }
 
@@ -328,5 +338,9 @@ public class DeploymentFacade {
             logger.error("Error validating sanity results", e);
             throw new Exception("unknown error happened while validating qa suite result");
         }
+    }
+
+    public List<DeploymentLog> getAllDeployments(String clusterId) {
+        return deploymentLogRepository.findFirst50ByOrderByCreatedOnDesc();
     }
 }

@@ -1,0 +1,18 @@
+<nb-layout>
+  <nb-layout-header fixed size="small">
+    <app-header></app-header>
+  </nb-layout-header>
+  <nb-sidebar>
+    <nb-menu [items]="menuItems" tag="overrides-menu" ></nb-menu>
+  </nb-sidebar>
+  <nb-layout-column class="container-fluid">
+    <nb-card accent="info">
+      <nb-card-header>Overrides for {{currentSelection?.resourceName}}</nb-card-header>
+      <nb-card-body>
+        <div style="text-align: center;" class="table-responsive">
+          {{currentSelection?.overrides | json}}
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </nb-layout-column>
+</nb-layout>

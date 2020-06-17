@@ -17,6 +17,7 @@ import { AbstractCluster } from '../models/abstract-cluster';
   providedIn: 'root',
 })
 class StackControllerService extends __BaseService {
+  static readonly getStacksUsingGETPath = '/cc/v1/stacks/';
   static readonly createStackUsingPOSTPath = '/cc/v1/stacks/';
   static readonly getClustersUsingGETPath = '/cc/v1/stacks/{stackName}/clusters';
 
@@ -25,6 +26,39 @@ class StackControllerService extends __BaseService {
     http: HttpClient
   ) {
     super(config, http);
+  }
+
+  /**
+   * @return OK
+   */
+  getStacksUsingGETResponse(): __Observable<__StrictHttpResponse<Array<Stack>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/stacks/`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<Stack>>;
+      })
+    );
+  }
+  /**
+   * @return OK
+   */
+  getStacksUsingGET(): __Observable<Array<Stack>> {
+    return this.getStacksUsingGETResponse().pipe(
+      __map(_r => _r.body as Array<Stack>)
+    );
   }
 
   /**

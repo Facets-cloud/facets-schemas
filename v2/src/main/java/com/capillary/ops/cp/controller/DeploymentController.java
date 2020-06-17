@@ -15,7 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("cc/v1/clusters/{clusterId}/deployments/")
+@RequestMapping("cc/v1/clusters/{clusterId}/deployments")
 @Loggable
 public class DeploymentController {
 
@@ -29,7 +29,6 @@ public class DeploymentController {
      * @param deploymentRequest Request Params for deployments
      * @return The Deployment Log Object
      */
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
@@ -41,7 +40,7 @@ public class DeploymentController {
      * @param id Deployment Id
      * @return List of Logs
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     List<String> getLogs(@PathVariable String clusterId, @PathVariable String id) {
         throw new NotImplementedException("Getting Logs is Not implemented yet");
     }
@@ -72,6 +71,11 @@ public class DeploymentController {
             @PathVariable String clusterId,
             @PathVariable String executionId) throws Exception {
         deploymentFacade.abortAutomationSuite(clusterId, executionId);
+    }
+
+    @GetMapping()
+    List<DeploymentLog> getDeployments(@PathVariable String clusterId) {
+        return deploymentFacade.getAllDeployments(clusterId);
     }
 
     /**

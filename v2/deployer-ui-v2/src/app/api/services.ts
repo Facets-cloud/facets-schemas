@@ -1,4 +1,6 @@
 export { ApplicationControllerService } from './services/application-controller.service';
+export { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
+export { UiStackControllerService } from './services/ui-stack-controller.service';
 export { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 export { BuildControllerService } from './services/build-controller.service';
 export { CommonClusterControllerService } from './services/common-cluster-controller.service';
