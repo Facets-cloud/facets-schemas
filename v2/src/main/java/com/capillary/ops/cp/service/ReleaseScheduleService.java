@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.service;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
+import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.jcabi.aspects.Loggable;
@@ -86,7 +87,9 @@ public class ReleaseScheduleService {
         CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
         ScheduledFuture<?> schedule = poolScheduler.schedule(() -> {
             logger.info("Initiating Release of type {} for cluster {} ({})", releaseType, c.getId(), c.getName());
-            tfBuildService.deployLatest(c, releaseType);
+            DeploymentRequest deploymentRequest = new DeploymentRequest();
+            deploymentRequest.setReleaseType(releaseType);
+            tfBuildService.deployLatest(c, deploymentRequest);
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
     }

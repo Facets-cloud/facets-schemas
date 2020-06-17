@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.QASuiteResult;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.facade.DeploymentFacade;
@@ -69,7 +70,33 @@ public class DeploymentController {
     @DeleteMapping("/qa/{executionId}/abortSuite")
     void abortAutomationSuite(
             @PathVariable String clusterId,
-            @PathVariable String executionId) {
+            @PathVariable String executionId) throws Exception {
         deploymentFacade.abortAutomationSuite(clusterId, executionId);
+    }
+
+    /**
+     * Get job status for automation suite
+     *
+     * @param clusterId Cluster Id
+     * @param executionId Execution Id for automation suite
+     * @return String
+     */
+    @GetMapping("/qa/{executionId}/status")
+    String getAutomationSuiteStatus(
+            @PathVariable String clusterId,
+            @PathVariable String executionId) throws Exception {
+        return deploymentFacade.getAutomationSuiteStatus(clusterId, executionId);
+    }
+
+    /**
+     * Validate the QA suite result
+     * @param clusterId
+     * @param qaSuiteResult
+     */
+    @PostMapping("/qa/validateSanityResult")
+    void validateSanityResult(
+            @PathVariable String clusterId,
+            @Valid @RequestBody QASuiteResult qaSuiteResult) throws Exception {
+        deploymentFacade.validateSanityResult(clusterId, qaSuiteResult);
     }
 }
