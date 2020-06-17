@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * All calls which can be made by the "Cluster Managers"
  */
@@ -50,7 +55,11 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("{clusterId}")
     public AwsCluster getCluster(@PathVariable String clusterId) {
-        return awsClusterController.getCluster(clusterId);
+        AwsCluster cluster = awsClusterController.getCluster(clusterId);
+        Map<String, String> secrets =
+            cluster.getSecrets().keySet().stream().collect(Collectors.toMap(Function.identity(), x -> "****"));
+        cluster.setSecrets(secrets);
+        return cluster;
     }
 
 }

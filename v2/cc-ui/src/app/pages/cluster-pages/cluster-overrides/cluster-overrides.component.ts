@@ -30,6 +30,8 @@ export class ClusterOverridesComponent implements OnInit {
       }
       this.clusterService.getOverridesUsingGET1(p.clusterId).subscribe(
         res => {
+          this.menuItems = [];
+          this.lookupMap = {};
           const groupMap = {};
           res.forEach(x => {
             const arr = groupMap[x.resourceType] ? groupMap[x.resourceType] : [];
