@@ -68,7 +68,7 @@ public class UiDeploymentController {
      * @return void
      */
     @DeleteMapping("/qa/{executionId}/abortSuite")
-    void abortAutomationSuite(@PathVariable String clusterId, @PathVariable String executionId) {
+    void abortAutomationSuite(@PathVariable String clusterId, @PathVariable String executionId) throws Exception {
         deploymentFacade.abortAutomationSuite(clusterId, executionId);
     }
 
