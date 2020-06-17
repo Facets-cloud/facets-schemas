@@ -13,9 +13,6 @@ public class QASuite {
     @JsonIgnore
     private String id;
 
-    @JsonIgnore
-    private String jobReferenceId;
-
     @NotNull
     @NotEmpty
     private String module;
@@ -30,14 +27,6 @@ public class QASuite {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getJobReferenceId() {
-        return jobReferenceId;
-    }
-
-    public void setJobReferenceId(String jobReferenceId) {
-        this.jobReferenceId = jobReferenceId;
     }
 
     public String getModule() {
