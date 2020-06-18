@@ -13,6 +13,8 @@ public class QASuite {
     @JsonIgnore
     private String id;
 
+    private String runId;
+
     @JsonIgnore
     private String jobReferenceId;
 
@@ -30,6 +32,14 @@ public class QASuite {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getRunId() {
+        return runId;
+    }
+
+    public void setRunId(String runId) {
+        this.runId = runId;
     }
 
     public String getJobReferenceId() {

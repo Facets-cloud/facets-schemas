@@ -5,6 +5,14 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 public class QASuiteResult {
+    public QASuiteResult() {}
+
+    public QASuiteResult(QASuiteResult qaSuiteResult) {
+        this.deploymentId = qaSuiteResult.deploymentId;
+        this.status = qaSuiteResult.status;
+        this.moduleStatusMap = qaSuiteResult.moduleStatusMap;
+        this.redeployment = qaSuiteResult.redeployment;
+    }
 
     @NotNull
     @NotEmpty
@@ -47,5 +55,11 @@ public class QASuiteResult {
 
     public void setRedeployment(boolean redeployment) {
         this.redeployment = redeployment;
+    }
+
+    public QASuiteResult withModuleStatusMap(Map<String, K8sJobStatus> moduleStatusMap) {
+        QASuiteResult copy = new QASuiteResult(this);
+        copy.setModuleStatusMap(moduleStatusMap);
+        return copy;
     }
 }
