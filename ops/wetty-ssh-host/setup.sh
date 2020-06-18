@@ -11,3 +11,8 @@ ln -s /usr/share/s3cmd/s3cmd /usr/bin/s3cmd
 useradd -ms /bin/bash -p $(openssl passwd -1 capk8s) capk8s
 chown capk8s -R /home/capk8s
 ls -lrth /home
+sed -ri 's/#MaxStartups 10:30:100/MaxStartups 50:30:100/g' /etc/ssh/sshd_config
+sed -ri 's/#ClientAliveInterval 0/ClientAliveInterval 60/g' /etc/ssh/sshd_config
+sed -ri 's/#ClientAliveCountMax 3/ClientAliveCountMax 30/g' /etc/ssh/sshd_config
+sed -ri 's/#MaxSessions 10/MaxSessions 50/g' /etc/ssh/sshd_config
+cat /etc/ssh/sshd_config
