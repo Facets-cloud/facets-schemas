@@ -15,4 +15,11 @@ sed -ri 's/#MaxStartups 10:30:100/MaxStartups 50:30:100/g' /etc/ssh/sshd_config
 sed -ri 's/#ClientAliveInterval 0/ClientAliveInterval 60/g' /etc/ssh/sshd_config
 sed -ri 's/#ClientAliveCountMax 3/ClientAliveCountMax 30/g' /etc/ssh/sshd_config
 sed -ri 's/#MaxSessions 10/MaxSessions 50/g' /etc/ssh/sshd_config
+sed -ri 's/#LogLevel INFO/LogLevel INFO/g' /etc/ssh/sshd_config
+sed -ri 's/#SyslogFacility AUTH/SyslogFacility AUTH/g' /etc/ssh/sshd_config
+
+echo "ServerAliveCountMax 30" >> /etc/ssh/ssh_config
+echo "ServerAliveInterval 60" >> /etc/ssh/ssh_config
+echo "LogLevel INFO" >> /etc/ssh/ssh_config
 cat /etc/ssh/sshd_config
+cat /etc/ssh/ssh_config
