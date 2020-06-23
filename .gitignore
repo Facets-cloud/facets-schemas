@@ -42,4 +42,5 @@ dist/
 .helm
 .terraform
 capillary-cloud-tf/stacks/crm
+capillary-cloud-tf/stacks/connectplus
 venv/
