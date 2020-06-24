@@ -3,14 +3,19 @@
     <app-header></app-header>
   </nb-layout-header>
   <nb-sidebar>
-    <nb-menu [items]="menuItems" tag="overrides-menu" ></nb-menu>
+    <nb-menu [items]="menuItems" tag="overrides-menu"></nb-menu>
   </nb-sidebar>
   <nb-layout-column class="container-fluid">
     <nb-card accent="info">
       <nb-card-header>Overrides for {{currentSelection?.resourceName}}</nb-card-header>
       <nb-card-body>
-        <div style="text-align: center;" class="table-responsive">
-          {{currentSelection?.overrides | json}}
+        <div>
+          <json-editor [options]="editorOptions" [data]="currentSelection?.overrides"
+                       (change)="editOverrides()" #editor></json-editor>
+        </div>
+        <div style="margin: 1rem 0 1rem 0">
+          <button nbButton fullWidth disabled="disabled" *ngIf="!enableSubmitForOverride">No changes</button>
+          <button nbButton fullWidth status="info" *ngIf="enableSubmitForOverride" (click)="submitOverrides()">Submit the Overrides</button>
         </div>
       </nb-card-body>
     </nb-card>

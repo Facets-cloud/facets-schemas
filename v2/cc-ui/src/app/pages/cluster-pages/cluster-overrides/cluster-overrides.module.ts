@@ -1,9 +1,13 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {NbCardModule, NbLayoutModule, NbListModule, NbMenuModule, NbMenuService, NbSidebarModule} from '@nebular/theme';
+import {
+  NbButtonModule, NbCardModule, NbLayoutModule, NbListModule, NbMenuModule, NbMenuService,
+  NbSidebarModule, NbToastrService
+} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 import {ClusterOverridesComponent} from './cluster-overrides.component';
+import {NgJsonEditorModule} from 'ang-jsoneditor';
 
 
 @NgModule({
@@ -17,10 +21,13 @@ import {ClusterOverridesComponent} from './cluster-overrides.component';
     ComponentsModule,
     NbSidebarModule,
     NbListModule,
-    NbMenuModule
+    NbMenuModule,
+    NgJsonEditorModule,
+    NbButtonModule
   ],
   providers: [
-    NbMenuService
+    NbMenuService,
+    NbToastrService
   ]
 })
 export class ClusterOverridesModule {
