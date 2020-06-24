@@ -21,6 +21,7 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -100,7 +101,10 @@ public class ClusterFacade {
         }
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.updateCluster(request, existing.get());
-        request.getClusterVars().putAll(existing.get().getUserInputVars());
+        Map<String, String> mergedClusterVars = new HashMap<>();
+        mergedClusterVars.putAll(existing.get().getUserInputVars());
+        mergedClusterVars.putAll(request.getClusterVars());
+        request.setClusterVars(mergedClusterVars);
         return upsertCommonTasks(request, stack, cluster);
     }
 
