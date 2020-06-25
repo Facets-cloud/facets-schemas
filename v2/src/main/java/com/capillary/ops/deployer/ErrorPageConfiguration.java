@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -24,7 +26,7 @@ public class ErrorPageConfiguration implements WebMvcConfigurer {
         registry.addViewController("/pages/**").setViewName("forward:/index.html");
         registry.addViewController("/").setViewName("redirect:/index.html");
         registry.addViewController("/capc").setViewName("forward:/capc/index.html");
-        registry.addViewController("/capc/").setViewName("forward:/capc/index.html");
+        registry.addViewController("/capc/{spring:(?!index)}*/**").setViewName("forward:/capc/index.html");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 
     }
@@ -44,4 +46,17 @@ public class ErrorPageConfiguration implements WebMvcConfigurer {
 //                .addResourceLocations("classpath:/static/")
 //                .setCacheControl(CacheControl.noCache());
 //    }
+
+    public static void main(String[] args){
+        PathMatcher pathMatcher = new AntPathMatcher();
+        String pattern = "/capc/{spring:(?!index)}*/**";
+        boolean match = pathMatcher.match(pattern, "/capc/index.html");
+        boolean match1 = pathMatcher.match(pattern, "/capc/home");
+
+        boolean match2 = pathMatcher.match(pattern, "/capc/home/a");
+
+        System.out.println(match);
+        System.out.println(match1);
+        System.out.println(match2);
+    }
 }
