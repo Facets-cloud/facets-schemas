@@ -50,6 +50,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .authenticated()
             .and()
             .oauth2Login()
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
             .userInfoEndpoint()
             .userService(oAuth2UserService)
             .and()
@@ -57,7 +58,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .csrf().disable()
             .exceptionHandling()
             .authenticationEntryPoint(
-                    (a,b,c) -> {b.sendError(HttpServletResponse.SC_UNAUTHORIZED);}
+                    (a,b,c) -> b.sendError(HttpServletResponse.SC_UNAUTHORIZED)
             )
             .and()
             .cors();
