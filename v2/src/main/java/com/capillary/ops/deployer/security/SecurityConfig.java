@@ -30,11 +30,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
     http
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/cc/**")
-            .access("@internalRequestAccessController.authenticate(request)")
-            .and()
-            .authorizeRequests()
-            .antMatchers("/cc/v1/clusters/{clusterId}/deployments/qa/**")
+            .antMatchers("/cc/**")
             .access("@internalRequestAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
@@ -46,7 +42,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .access("@bitbucketIpAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
-            .antMatchers("/api/**", "/capillarycloud/api/**", "/cc/**")
+            .antMatchers("/api/**", "/capillarycloud/api/**")
             .authenticated()
             .and()
             .oauth2Login()

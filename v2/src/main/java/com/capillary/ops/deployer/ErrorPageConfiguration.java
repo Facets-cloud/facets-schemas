@@ -26,7 +26,7 @@ public class ErrorPageConfiguration implements WebMvcConfigurer {
         registry.addViewController("/pages/**").setViewName("forward:/index.html");
         registry.addViewController("/").setViewName("redirect:/index.html");
         registry.addViewController("/capc").setViewName("forward:/capc/index.html");
-        registry.addViewController("/capc/{spring:(?!index)}*/**").setViewName("forward:/capc/index.html");
+        registry.addViewController("/capc/{spring:[^\\.]*}/**").setViewName("forward:/capc/index.html");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 
     }
@@ -49,14 +49,19 @@ public class ErrorPageConfiguration implements WebMvcConfigurer {
 
     public static void main(String[] args){
         PathMatcher pathMatcher = new AntPathMatcher();
-        String pattern = "/capc/{spring:(?!index)}*/**";
+        String pattern = "/capc/{spring:[^\\.]*}/**";
         boolean match = pathMatcher.match(pattern, "/capc/index.html");
         boolean match1 = pathMatcher.match(pattern, "/capc/home");
-
         boolean match2 = pathMatcher.match(pattern, "/capc/home/a");
+        boolean match3 = pathMatcher.match(pattern, "/capc/abc.css");
+        boolean match4 = pathMatcher.match(pattern, "/capc/abc.js");
+        boolean match5 = pathMatcher.match(pattern, "/capc/abc/ss.js");
 
         System.out.println(match);
         System.out.println(match1);
         System.out.println(match2);
+        System.out.println(match3);
+        System.out.println(match4);
+        System.out.println(match5);
     }
 }
