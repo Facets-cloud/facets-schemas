@@ -18,4 +18,5 @@ RUN pip install awscli
 RUN pip install requests
 RUN apt-get install perl -y
 RUN apt-get install libmysql-diff-perl -y
+RUN apt-get install zip
 COPY scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm
