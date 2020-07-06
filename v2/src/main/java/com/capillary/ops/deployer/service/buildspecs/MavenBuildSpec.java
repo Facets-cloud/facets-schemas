@@ -44,7 +44,10 @@ public class MavenBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("mvn clean test");
+        buildCommands.add("mvn clean test sonar:sonar -Dmaven.test.failure.ignore=false " +
+                "-Dsonar.host.url=http://sonar.capillary.in/ ");
+        // failures will be handled from sonar
+        // removed -Dsonar.language=java jacoco:report as they are defaulted
         return buildCommands;
     }
 
