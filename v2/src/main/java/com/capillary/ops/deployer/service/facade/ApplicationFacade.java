@@ -968,7 +968,7 @@ public class ApplicationFacade {
             String message = "Status :" + body.getQualityGate().getStatus() + "<br>";
             for ( Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
-                if(cond.getStatus().equalsIgnoreCase("OK")){
+                if(!cond.getStatus().equalsIgnoreCase("OK")){
                     message += cond.getMetric() + " " + cond.getOperator() + " " + cond.getValue() + "<br>";
                 }
             }
