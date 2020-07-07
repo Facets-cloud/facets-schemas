@@ -5,7 +5,8 @@ import java.util.Map;
 
 public class CallbackBody {
 
-    public static final String PR_ID_KEY = "sonar.analysis.pullRequestId";
+    public static final String APP_ID = "sonar.analysis.appId";
+    public static final String PR_NUMBER = "sonar.analysis.pr.number";
 
     public CallbackBody() {
     }
@@ -34,8 +35,12 @@ public class CallbackBody {
         return properties;
     }
 
-    public String getPullRequestId() {
-        return properties.getOrDefault(PR_ID_KEY, null);
+    public String getPrNumber() {
+        return properties.getOrDefault(PR_NUMBER, null);
+    }
+
+    public String getAppId() {
+        return properties.getOrDefault(APP_ID, null);
     }
 
     public void setProperties(Map<String, String> properties) {

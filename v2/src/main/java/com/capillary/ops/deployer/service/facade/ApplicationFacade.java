@@ -237,7 +237,8 @@ public class ApplicationFacade {
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
         build.setTestBuild(true);
-        build.getEnvironmentVariables().putIfAbsent("pullRequestId", pullRequest.getId());
+        build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
+        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
         buildRepository.save(build);
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
@@ -958,10 +959,11 @@ public class ApplicationFacade {
 
     // to add the pr based on the status of sonar callback
     public boolean processSonarCallback(CallbackBody body){
-        String prId = body.getPullRequestId();
+        Integer prNumber = Integer.parseInt(body.getPrNumber());
+        String appId = body.getAppId();
         // it has a pr id
-        if(prId != null) {
-            PullRequest pullRequest = pullRequestRepository.findById(prId).get();
+        if(prNumber != null) {
+            PullRequest pullRequest = pullRequestRepository.findAllByApplicationIdAndNumber(appId, prNumber).get(0);
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
 
