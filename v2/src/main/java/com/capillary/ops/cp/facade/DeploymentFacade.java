@@ -397,7 +397,7 @@ public class DeploymentFacade {
     private String unpromoteBuild(String clusterId, String moduleName) {
         Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
         String deployerId = application.getMetadata().getLabels().get("deployerid");
-        String deployerBuildId = application.getMetadata().getLabels().get("deployerBuildId");
+        String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels().get("deployerBuildId");
         buildService.unPromoteBuild(deployerId, deployerBuildId);
         return deployerBuildId;
     }
