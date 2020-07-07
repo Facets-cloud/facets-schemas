@@ -5,7 +5,6 @@ import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
-import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
@@ -24,14 +23,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
-import static com.capillary.ops.deployer.bo.Application.*;
+import static com.capillary.ops.deployer.bo.Application.ApplicationType;
 
 
 @RestController
@@ -461,11 +459,4 @@ public class ApplicationController {
         return applicationFacade.redeploy(applicationFamily, environment);
     }
 
-
-    @PermitAll
-    @PostMapping("callback/sonar")
-    public boolean sonarCallBack(@RequestBody CallbackBody body){
-
-        return applicationFacade.processSonarCallback(body);
-    }
 }

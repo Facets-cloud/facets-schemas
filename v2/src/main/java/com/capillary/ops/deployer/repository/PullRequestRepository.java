@@ -11,5 +11,7 @@ import java.util.Optional;
 public interface PullRequestRepository extends MongoRepository<PullRequest, String> {
     public List<PullRequest> findAllByBuildStatusAndUpdatedAtAfter(StatusType buildStatus, Date updatedAt);
     public List<PullRequest> findAllByApplicationIdAndSha(String applicationId, String sha);
+    public List<PullRequest> findAllByApplicationIdAndNumber(String applicationId, int number);
+
     public Optional<PullRequest> findById(String pullRequestId);
 }

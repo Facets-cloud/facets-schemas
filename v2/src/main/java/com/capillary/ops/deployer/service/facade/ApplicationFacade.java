@@ -237,7 +237,12 @@ public class ApplicationFacade {
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
         build.setTestBuild(true);
-        build.getEnvironmentVariables().putIfAbsent("pullRequestId", pullRequest.getId());
+
+        if(build.getEnvironmentVariables() == null)
+            build.setEnvironmentVariables(new HashMap<>());
+
+        build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
+        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
         buildRepository.save(build);
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
@@ -958,18 +963,22 @@ public class ApplicationFacade {
 
     // to add the pr based on the status of sonar callback
     public boolean processSonarCallback(CallbackBody body){
-        String prId = body.getPullRequestId();
+        Integer prNumber = Integer.parseInt(body.getPrNumber());
+        String appId = body.getAppId();
         // it has a pr id
-        if(prId != null) {
-            PullRequest pullRequest = pullRequestRepository.findById(prId).get();
+        if(prNumber != null) {
+            PullRequest pullRequest = pullRequestRepository.findAllByApplicationIdAndNumber(appId, prNumber).get(0);
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
 
-            String message = "Status :" + body.getQualityGate().getStatus() + "<br>";
+            final String newline = "----- ";
+            String message = "Status :" + body.getQualityGate().getStatus() ;
             for ( Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
-                if(!cond.getStatus().equalsIgnoreCase("OK")){
-                    message += cond.getMetric() + " " + cond.getOperator() + " " + cond.getValue() + "<br>";
+                if(!cond.getStatus().equalsIgnoreCase("OK") && cond.getValue() != null ){
+                    String value = cond.getValue();
+                    message += newline + cond.getMetric() + " " + cond.getOperator() + " " + cond.getErrorThreshold()
+                            + "("+  value + ")" ;
                 }
             }
 
