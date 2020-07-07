@@ -9,6 +9,8 @@ import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.actions.CreationStatus;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
+import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
+import com.capillary.ops.deployer.bo.webhook.sonar.Condition;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.*;
 import com.capillary.ops.deployer.repository.*;
@@ -116,6 +118,8 @@ public class ApplicationFacade {
     @Autowired
     private ActionExecutionRepository actionExecutionRepository;
 
+    @Autowired
+    private PullRequestRepository pullRequestRepository;
 
     @Autowired
     private CCAdapterService ccAdapterService;
@@ -233,6 +237,7 @@ public class ApplicationFacade {
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
         build.setTestBuild(true);
+        build.getEnvironmentVariables().putIfAbsent("pullRequestId", pullRequest.getId());
         buildRepository.save(build);
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
@@ -949,5 +954,31 @@ public class ApplicationFacade {
             }
         }
         return ret;
+    }
+
+    // to add the pr based on the status of sonar callback
+    public boolean processSonarCallback(CallbackBody body){
+        String prId = body.getPullRequestId();
+        // it has a pr id
+        if(prId != null) {
+            PullRequest pullRequest = pullRequestRepository.findById(prId).get();
+            Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
+            VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+
+            String message = "Status :" + body.getQualityGate().getStatus() + "<br>";
+            for ( Condition cond : body.getQualityGate().getConditions()) {
+                // if any condition is not ok
+                if(!cond.getStatus().equalsIgnoreCase("OK")){
+                    message += cond.getMetric() + " " + cond.getOperator() + " " + cond.getValue() + "<br>";
+                }
+            }
+
+            // report all the failed
+            vcsService.commentOnPullRequest(pullRequest, message);
+
+        }
+
+
+        return true;
     }
 }
