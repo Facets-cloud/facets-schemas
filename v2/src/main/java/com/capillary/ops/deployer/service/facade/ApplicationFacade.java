@@ -971,11 +971,14 @@ public class ApplicationFacade {
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
 
-            String message = "Status :" + body.getQualityGate().getStatus() + "<br>";
+            final String newline = "\\\\n";
+            String message = "Status :" + body.getQualityGate().getStatus() +  newline;
             for ( Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
                 if(!cond.getStatus().equalsIgnoreCase("OK")){
-                    message += cond.getMetric() + " " + cond.getOperator() + " " + cond.getValue() + "<br>";
+                    String value = cond.getValue() == null ? "0" : cond.getValue();
+                    message += cond.getMetric() + " " + cond.getOperator() + " " + cond.getErrorThreshold()
+                            + "("+  value + ")" + newline;
                 }
             }
 
