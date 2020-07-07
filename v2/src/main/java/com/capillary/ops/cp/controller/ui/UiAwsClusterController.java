@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.controller.AwsClusterController;
 import com.capillary.ops.cp.controller.ClusterController;
+import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,9 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     @Autowired
     AwsClusterController awsClusterController;
 
+    @Autowired
+    private AclService aclService;
+
     /**
      * Request to create a cluster of a particular Stack
      *
@@ -39,7 +43,7 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PutMapping("{clusterId}")
     public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
         return awsClusterController.updateCluster(request, clusterId);
@@ -52,7 +56,7 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
      * @return Cluster Object
      */
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #clusterId)")
     @GetMapping("{clusterId}")
     public AwsCluster getCluster(@PathVariable String clusterId) {
         AwsCluster cluster = awsClusterController.getCluster(clusterId);

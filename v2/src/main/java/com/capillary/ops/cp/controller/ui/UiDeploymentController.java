@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.facade.DeploymentFacade;
+import com.capillary.ops.cp.service.AclService;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class UiDeploymentController {
 
     @Autowired
     DeploymentFacade deploymentFacade;
+
+    @Autowired
+    private AclService aclService;
 
     /**
      * Create a new Deployment for latest definition of this cluster

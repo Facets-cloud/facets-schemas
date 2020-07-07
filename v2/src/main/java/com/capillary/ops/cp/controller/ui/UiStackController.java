@@ -3,8 +3,10 @@ package com.capillary.ops.cp.controller.ui;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.controller.StackController;
+import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +18,16 @@ import java.util.List;
 @RestController
 @RequestMapping("cc-ui/v1/stacks/")
 @Loggable()
-@PreAuthorize("hasAnyRole('ADMIN')")
 public class UiStackController {
 
     @Autowired
     StackController stackController;
 
+    @Autowired
+    private AclService aclService;
+
     @GetMapping("{stackName}/clusters")
+    @PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
     public List<AbstractCluster> getClusters(@PathVariable String stackName) {
         return stackController.getClusters(stackName);
     }
@@ -34,16 +39,19 @@ public class UiStackController {
      * @return
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Stack createStack(@RequestBody Stack stack) {
         return stackController.createStack(stack);
     }
 
     @GetMapping()
+    @PostFilter("hasAnyRole('ADMIN') or @aclService.hasStackReadAccess(authentication, filterObject.name)")
     public List<Stack> getStacks() {
         return stackController.getStacks();
     }
 
     @GetMapping("{stackName}")
+    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasStackReadAccess(authentication, #stackName)")
     public Stack getStack(@PathVariable String stackName) {
         return stackController.getStack(stackName);
     }
