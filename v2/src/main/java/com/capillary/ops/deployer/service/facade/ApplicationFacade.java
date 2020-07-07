@@ -237,6 +237,10 @@ public class ApplicationFacade {
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
         build.setTestBuild(true);
+
+        if(build.getEnvironmentVariables() == null)
+            build.setEnvironmentVariables(new HashMap<>());
+
         build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
         build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
         buildRepository.save(build);
