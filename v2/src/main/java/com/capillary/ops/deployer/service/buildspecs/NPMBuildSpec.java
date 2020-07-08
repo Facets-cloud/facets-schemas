@@ -48,6 +48,7 @@ public class NPMBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
+        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in");
         return buildCommands;
     }
 
@@ -64,7 +65,9 @@ public class NPMBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommandsTest() {
-        return new ArrayList<>();
+        List<String> preBuildCommandsTest =  new ArrayList<>();
+        preBuildCommandsTest.add("npm install -g sonarqube-scanner ");
+        return preBuildCommandsTest;
     }
 
     @Override
