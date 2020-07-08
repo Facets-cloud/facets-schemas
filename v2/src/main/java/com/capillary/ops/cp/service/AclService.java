@@ -22,6 +22,7 @@ public class AclService {
 
     private static final List<String> validStackGetSuffixes = Lists.newArrayList("READ", "WRITE", "ADMIN");
     private static final List<String> validStackUpdateSuffixes = Lists.newArrayList("WRITE", "ADMIN");
+    private static final String ADMIN_ROLE = "ADMIN";
 
     private Set<String> getRolesForAuthority(Authentication authentication) {
         return authentication.getAuthorities().stream()
@@ -32,6 +33,9 @@ public class AclService {
 
     public boolean hasStackAccess(Authentication authentication, String stackName, List<String> validRoleSuffixes) {
         Set<String> roles = getRolesForAuthority(authentication);
+        if (roles.contains(ADMIN_ROLE)) {
+            return true;
+        }
 
         stackName = stackName.toUpperCase();
         for (String role: roles) {
@@ -54,8 +58,12 @@ public class AclService {
 
     public boolean hasClusterAccess(Authentication authentication, String stackName, String clusterId,
                                     List<String> validRoleSuffixes) {
-        Set<String> roles = getRolesForAuthority(authentication);
         final String stack = stackName.toUpperCase();
+
+        Set<String> roles = getRolesForAuthority(authentication);
+        if (roles.contains(ADMIN_ROLE)) {
+            return true;
+        }
 
         Set<String> stackLevelRoles = new HashSet<>();
         validRoleSuffixes.forEach(capability -> stackLevelRoles.add(stack + "_" + capability));
