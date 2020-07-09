@@ -146,15 +146,8 @@ public abstract class BuildSpec {
         return installPhase;
     }
 
-    private Map<String, Object> getInstallPhaseTest() {
-        List<String> installCommands = new ArrayList<>();
-        Map<String, Object> installPhase = new HashMap<>();
-        installCommands.add("apt-get install docker-ce=17.03.0~ce-0~ubuntu-xenial -y --allow-downgrades");
-        installCommands.add(
-                "nohup dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay&");
-        installCommands.add("timeout 15 sh -c \"until docker info; do echo .; sleep 1; done\"");
-        installPhase.put("commands", installCommands);
-        return installPhase;
+    protected Map<String, Object> getInstallPhaseTest() {
+        return new HashMap<>();
     }
 
     public Map<String, Object> getCache() {
