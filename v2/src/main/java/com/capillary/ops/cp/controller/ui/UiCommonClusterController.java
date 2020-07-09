@@ -3,6 +3,7 @@ package com.capillary.ops.cp.controller.ui;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
+import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,16 @@ public class UiCommonClusterController {
     @Autowired
     ClusterFacade clusterFacade;
 
+    @Autowired
+    private AclService aclService;
+
     //@GetMapping("{clusterId}/deployments/{value}")
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
         @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
         @RequestBody List<OverrideRequest> request) {
@@ -33,7 +37,7 @@ public class UiCommonClusterController {
         return clusterFacade.override(clusterId, request);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #clusterId)")
     @GetMapping("{clusterId}/overrides")
     public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
         List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
