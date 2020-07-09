@@ -88,6 +88,8 @@ public class NPMBuildSpec extends BuildSpec {
 
     @Override
     public String getBuildEnvironmentImage() {
-        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/nodejsbuildimage:f18f9d0";
+        //return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/nodejsbuildimage:f18f9d0";
+        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/crm/nodejsbase-with-pcu:07cb83a-21";
     }
+
 }
