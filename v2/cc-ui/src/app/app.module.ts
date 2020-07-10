@@ -45,7 +45,7 @@ import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/clus
     ClusterPagesModule,
     HttpClientModule,
     StackOverviewModule,
-    NbMenuModule.forRoot()
+    NbMenuModule.forRoot(),
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},

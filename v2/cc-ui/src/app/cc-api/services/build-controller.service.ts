@@ -26,6 +26,7 @@ class BuildControllerService extends __BaseService {
   }
 
   /**
+   * getImageFromDeployer
    * @param params The `BuildControllerService.GetImageFromDeployerUsingGETParams` containing the following parameters:
    *
    * - `strategy`: strategy
@@ -45,7 +46,7 @@ class BuildControllerService extends __BaseService {
     if (params.releaseType != null) __params = __params.set('releaseType', params.releaseType.toString());
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/build/deployer/${params.applicationId}`,
+      this.rootUrl + `/cc/v1/build/deployer/${encodeURIComponent(params.applicationId)}`,
       __body,
       {
         headers: __headers,
@@ -61,6 +62,7 @@ class BuildControllerService extends __BaseService {
     );
   }
   /**
+   * getImageFromDeployer
    * @param params The `BuildControllerService.GetImageFromDeployerUsingGETParams` containing the following parameters:
    *
    * - `strategy`: strategy

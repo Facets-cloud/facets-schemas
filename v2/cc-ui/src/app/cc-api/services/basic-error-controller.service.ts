@@ -32,6 +32,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingGETResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -56,6 +57,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingGET(): __Observable<ModelAndView> {
@@ -65,6 +67,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingHEADResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -89,6 +92,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingHEAD(): __Observable<ModelAndView> {
@@ -98,6 +102,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingPOSTResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -122,6 +127,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingPOST(): __Observable<ModelAndView> {
@@ -131,6 +137,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingPUTResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -155,6 +162,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingPUT(): __Observable<ModelAndView> {
@@ -164,6 +172,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingDELETEResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -188,6 +197,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingDELETE(): __Observable<ModelAndView> {
@@ -197,6 +207,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingOPTIONSResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -221,6 +232,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingOPTIONS(): __Observable<ModelAndView> {
@@ -230,6 +242,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingPATCHResponse(): __Observable<__StrictHttpResponse<ModelAndView>> {
@@ -254,6 +267,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * errorHtml
    * @return OK
    */
   errorHtmlUsingPATCH(): __Observable<ModelAndView> {

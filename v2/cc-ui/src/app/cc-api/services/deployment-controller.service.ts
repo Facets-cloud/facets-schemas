@@ -10,6 +10,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 import { DeploymentLog } from '../models/deployment-log';
 import { DeploymentRequest } from '../models/deployment-request';
 import { QASuite } from '../models/qasuite';
+import { QASuiteResult } from '../models/qasuite-result';
 
 /**
  * Deployment Controller
@@ -18,10 +19,13 @@ import { QASuite } from '../models/qasuite';
   providedIn: 'root',
 })
 class DeploymentControllerService extends __BaseService {
-  static readonly createDeploymentUsingPOSTPath = '/cc/v1/tableData/{clusterId}/deployments/';
-  static readonly triggerAutomationSuiteUsingPOSTPath = '/cc/v1/tableData/{clusterId}/deployments/qa/triggerSuite';
-  static readonly abortAutomationSuiteUsingDELETEPath = '/cc/v1/tableData/{clusterId}/deployments/qa/{executionId}/abortSuite';
-  static readonly getLogsUsingGETPath = '/cc/v1/tableData/{clusterId}/deployments/{id}';
+  static readonly getDeploymentsUsingGETPath = '/cc/v1/clusters/{clusterId}/deployments';
+  static readonly createDeploymentUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments';
+  static readonly triggerAutomationSuiteUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
+  static readonly validateSanityResultUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/qa/validateSanityResult';
+  static readonly abortAutomationSuiteUsingDELETEPath = '/cc/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
+  static readonly getAutomationSuiteStatusUsingGETPath = '/cc/v1/clusters/{clusterId}/deployments/qa/{executionId}/status';
+  static readonly getLogsUsingGETPath = '/cc/v1/clusters/{clusterId}/deployments/{id}';
 
   constructor(
     config: __Configuration,
@@ -31,6 +35,45 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
+   * getDeployments
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getDeploymentsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<Array<DeploymentLog>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(clusterId)}/deployments`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<DeploymentLog>>;
+      })
+    );
+  }
+  /**
+   * getDeployments
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getDeploymentsUsingGET(clusterId: string): __Observable<Array<DeploymentLog>> {
+    return this.getDeploymentsUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as Array<DeploymentLog>)
+    );
+  }
+
+  /**
+   * createDeployment
    * @param params The `DeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
    *
    * - `deploymentRequest`: deploymentRequest
@@ -47,7 +90,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/`,
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments`,
       __body,
       {
         headers: __headers,
@@ -63,6 +106,7 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
+   * createDeployment
    * @param params The `DeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
    *
    * - `deploymentRequest`: deploymentRequest
@@ -78,6 +122,7 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
+   * triggerAutomationSuite
    * @param params The `DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams` containing the following parameters:
    *
    * - `clusterId`: clusterId
@@ -94,7 +139,7 @@ class DeploymentControllerService extends __BaseService {
     __body = params.automationSuite;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/triggerSuite`,
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/triggerSuite`,
       __body,
       {
         headers: __headers,
@@ -110,6 +155,7 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
+   * triggerAutomationSuite
    * @param params The `DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams` containing the following parameters:
    *
    * - `clusterId`: clusterId
@@ -125,21 +171,22 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
+   * validateSanityResult
+   * @param params The `DeploymentControllerService.ValidateSanityResultUsingPOSTParams` containing the following parameters:
    *
-   * - `executionId`: executionId
+   * - `qaSuiteResult`: qaSuiteResult
    *
    * - `clusterId`: clusterId
    */
-  abortAutomationSuiteUsingDELETEResponse(params: DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams): __Observable<__StrictHttpResponse<null>> {
+  validateSanityResultUsingPOSTResponse(params: DeploymentControllerService.ValidateSanityResultUsingPOSTParams): __Observable<__StrictHttpResponse<null>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-
+    __body = params.qaSuiteResult;
 
     let req = new HttpRequest<any>(
-      'DELETE',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/${params.executionId}/abortSuite`,
+      'POST',
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/validateSanityResult`,
       __body,
       {
         headers: __headers,
@@ -155,6 +202,52 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
+   * validateSanityResult
+   * @param params The `DeploymentControllerService.ValidateSanityResultUsingPOSTParams` containing the following parameters:
+   *
+   * - `qaSuiteResult`: qaSuiteResult
+   *
+   * - `clusterId`: clusterId
+   */
+  validateSanityResultUsingPOST(params: DeploymentControllerService.ValidateSanityResultUsingPOSTParams): __Observable<null> {
+    return this.validateSanityResultUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as null)
+    );
+  }
+
+  /**
+   * abortAutomationSuite
+   * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
+   *
+   * - `executionId`: executionId
+   *
+   * - `clusterId`: clusterId
+   */
+  abortAutomationSuiteUsingDELETEResponse(params: DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams): __Observable<__StrictHttpResponse<null>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/${encodeURIComponent(params.executionId)}/abortSuite`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<null>;
+      })
+    );
+  }
+  /**
+   * abortAutomationSuite
    * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
    *
    * - `executionId`: executionId
@@ -168,6 +261,56 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
+   * getAutomationSuiteStatus
+   * @param params The `DeploymentControllerService.GetAutomationSuiteStatusUsingGETParams` containing the following parameters:
+   *
+   * - `executionId`: executionId
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  getAutomationSuiteStatusUsingGETResponse(params: DeploymentControllerService.GetAutomationSuiteStatusUsingGETParams): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/${encodeURIComponent(params.executionId)}/status`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * getAutomationSuiteStatus
+   * @param params The `DeploymentControllerService.GetAutomationSuiteStatusUsingGETParams` containing the following parameters:
+   *
+   * - `executionId`: executionId
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  getAutomationSuiteStatusUsingGET(params: DeploymentControllerService.GetAutomationSuiteStatusUsingGETParams): __Observable<string> {
+    return this.getAutomationSuiteStatusUsingGETResponse(params).pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * getLogs
    * @param params The `DeploymentControllerService.GetLogsUsingGETParams` containing the following parameters:
    *
    * - `id`: id
@@ -184,7 +327,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/${params.id}`,
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/${encodeURIComponent(params.id)}`,
       __body,
       {
         headers: __headers,
@@ -200,6 +343,7 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
+   * getLogs
    * @param params The `DeploymentControllerService.GetLogsUsingGETParams` containing the following parameters:
    *
    * - `id`: id
@@ -250,9 +394,41 @@ module DeploymentControllerService {
   }
 
   /**
+   * Parameters for validateSanityResultUsingPOST
+   */
+  export interface ValidateSanityResultUsingPOSTParams {
+
+    /**
+     * qaSuiteResult
+     */
+    qaSuiteResult: QASuiteResult;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
    * Parameters for abortAutomationSuiteUsingDELETE
    */
   export interface AbortAutomationSuiteUsingDELETEParams {
+
+    /**
+     * executionId
+     */
+    executionId: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for getAutomationSuiteStatusUsingGET
+   */
+  export interface GetAutomationSuiteStatusUsingGETParams {
 
     /**
      * executionId
