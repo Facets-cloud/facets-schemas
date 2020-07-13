@@ -40,6 +40,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
+    public static final String STACK_NAME = "STACK_NAME";
 
     @Value("${internalApiAuthToken}")
     private String authToken;
@@ -77,6 +78,8 @@ public class AwsCodeBuildService implements TFBuildService {
         environmentVariables.add(
             EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
+        environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
+            .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
