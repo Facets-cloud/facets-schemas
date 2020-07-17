@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
   NbButtonModule, NbCardModule, NbLayoutModule, NbListModule, NbMenuModule, NbMenuService,
-  NbSidebarModule, NbToastrService, NbInputModule, NbDialogService, NbIconModule, NbSpinnerModule
+  NbSidebarModule, NbToastrService, NbInputModule, NbDialogService, NbIconModule, NbSpinnerModule, NbDialogRef
 } from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';

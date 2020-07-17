@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { JsonEditorOptions, JsonEditorComponent } from 'ang-jsoneditor';
-import { OverrideObject, AwsCluster } from 'src/app/cc-api/models';
+import { OverrideObject } from 'src/app/cc-api/models';
 import { NbToastrService } from '@nebular/theme';
 import { UiCommonClusterControllerService } from 'src/app/cc-api/services';
 
@@ -17,9 +17,10 @@ export class PopupAppOverrideComponent implements OnInit {
   newOverrideInstanceName: string = "";
   newOverrideCurrentSelection: OverrideObject = {};
 
-  @ViewChild('editorNewOverride', {static: false}) editorNewOverride: JsonEditorComponent;
+  @ViewChild('editorNewOverride', { static: false }) editorNewOverride: JsonEditorComponent;
 
   @Input() clusterId: string;
+  @Input() existingOverrides: {};
 
   constructor(
     private toastrService: NbToastrService,
@@ -29,6 +30,24 @@ export class PopupAppOverrideComponent implements OnInit {
     this.newOverrideEditorOptions = new JsonEditorOptions();
     this.newOverrideEditorOptions.modes = ['code', 'tree', 'view']; // set code mode for new override
     this.newOverrideEditorOptions.mode = 'code'; // set code mode for new override
+  }
+
+  searchExistingOerride() {
+    let overrides = this.existingOverrides;
+    let instance = overrides[this.newOverrideInstanceName];
+
+    if (!instance) {
+      this.newOverrideCurrentSelection = {};
+      return;
+    }
+
+    if (instance["resourceType"] != this.newOverrideModuleType) {
+      this.newOverrideCurrentSelection = {};
+      return;
+    }
+
+    this.newOverrideCurrentSelection = instance;
+    this.editNewOverrides();
   }
 
   isEmptyObject(obj: Object) {
@@ -47,7 +66,7 @@ export class PopupAppOverrideComponent implements OnInit {
 
     return true;
   }
-  
+
   editNewOverrides() {
     if (!this.areValidNewOverrides()) {
       this.enableSubmitForNewOverrides = false;
@@ -84,6 +103,7 @@ export class PopupAppOverrideComponent implements OnInit {
         r => {
           console.log(r);
           this.toastrService.success("New Overrides Added", "Success");
+          location.reload();
         }
       );
     } catch {

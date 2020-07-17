@@ -1,9 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {UiCommonClusterControllerService} from '../../../cc-api/services/ui-common-cluster-controller.service';
-import {ActivatedRoute} from '@angular/router';
-import {OverrideObject} from '../../../cc-api/models/override-object';
-import {NbMenuItem, NbMenuService, NbToastrService, NbDialogService} from '@nebular/theme';
-import {JsonEditorComponent, JsonEditorOptions} from 'ang-jsoneditor';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { UiCommonClusterControllerService } from '../../../cc-api/services/ui-common-cluster-controller.service';
+import { ActivatedRoute } from '@angular/router';
+import { OverrideObject } from '../../../cc-api/models/override-object';
+import { NbMenuItem, NbMenuService, NbToastrService, NbDialogService } from '@nebular/theme';
+import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { UiStackControllerService, UiAwsClusterControllerService } from 'src/app/cc-api/services';
 import { AwsClusterRequest, AbstractCluster } from 'src/app/cc-api/models';
 import { PopupAppOverrideComponent } from './popup-app-override/popup-app-override.component';
@@ -65,13 +65,13 @@ export class ClusterOverridesComponent implements OnInit {
   currentSelection: OverrideObject;
   editorOptions: JsonEditorOptions;
   enableSubmitForOverride = false;
-  
-  @ViewChild('editor', {static: false}) editor: JsonEditorComponent;
-  
+
+  @ViewChild('editor', { static: false }) editor: JsonEditorComponent;
+
   private clusterId: any;
 
   constructor(
-    private clusterService: UiCommonClusterControllerService, 
+    private clusterService: UiCommonClusterControllerService,
     private activatedRoute: ActivatedRoute, private menuService: NbMenuService,
     private dialogService: NbDialogService) {
   }
@@ -79,14 +79,14 @@ export class ClusterOverridesComponent implements OnInit {
   ngOnInit(): void {
     this.editorOptions = new JsonEditorOptions();
     this.editorOptions.modes = ['code', 'tree', 'view']; // set all allowed modes
-    
+
     this.activatedRoute.params.subscribe(p => {
       if (!p.clusterId) {
         console.log(p);
       }
-      
+
       this.clusterId = p.clusterId;
-      
+
       this.clusterService.getOverridesUsingGET1(p.clusterId).subscribe(
         res => {
           this.menuItems = [];
@@ -141,8 +141,6 @@ export class ClusterOverridesComponent implements OnInit {
     }
   }
 
-
-
   search(searchString) {
     if (searchString.length === 0) {
       this.menuItems.forEach(
@@ -168,9 +166,9 @@ export class ClusterOverridesComponent implements OnInit {
   }
 
   addOverride() {
-    this.dialogService.open(PopupAppOverrideComponent, { context: { clusterId: this.clusterId } });
+    this.dialogService.open(PopupAppOverrideComponent, { context: { clusterId: this.clusterId, existingOverrides: this.lookupMap } });
   }
-  
+
   submitOverrides() {
     try {
       const newOverrides = this.editor.get();
@@ -180,9 +178,9 @@ export class ClusterOverridesComponent implements OnInit {
         request: [this.currentSelection],
         clusterId: this.clusterId
       }).subscribe(r => {
-          console.log(r);
-          this.enableSubmitForOverride = false;
-        }
+        console.log(r);
+        this.enableSubmitForOverride = false;
+      }
       );
     } catch {
       this.enableSubmitForOverride = false;

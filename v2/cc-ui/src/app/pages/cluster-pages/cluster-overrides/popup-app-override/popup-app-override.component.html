@@ -3,23 +3,25 @@
     <nb-card-body>
         <div style="margin-bottom: 2em;">
             <div style="margin-bottom: 2em;">
-              <p style="font-size: 16px;">Module Type</p>
-              <input type="text" (change)="editNewOverrides()" [(ngModel)] ='newOverrideModuleType' 
-                nbInput fullWidth placeholder="application">
+                <p style="font-size: 16px;">Module Type</p>
+                <input type="text" (change)="editNewOverrides()" (input)="searchExistingOerride()"
+                    [(ngModel)]='newOverrideModuleType' nbInput fullWidth placeholder="application">
             </div>
             <div>
-              <p style="font-size: 16px;">Instance Name</p>       
-              <input type="text" (change)="editNewOverrides()" [(ngModel)] ='newOverrideInstanceName'
-                nbInput fullWidth placeholder="intouch-api">
+                <p style="font-size: 16px;">Instance Name</p>
+                <input type="text" (change)="editNewOverrides()" (input)="searchExistingOerride()"
+                    [(ngModel)]='newOverrideInstanceName' nbInput fullWidth placeholder="intouch-api">
             </div>
-          </div>
-          <div>
+        </div>
+        <div>
             <p style="font-size: 16px;">Overrides</p>
-            <json-editor [options]="newOverrideEditorOptions" [data]="newOverrideCurrentSelection?.overrides" (change)="editNewOverrides()" #editorNewOverride></json-editor>
-          </div>
-          <div style="margin: 1rem 0 1rem 0">
+            <json-editor [options]="newOverrideEditorOptions" [data]="newOverrideCurrentSelection?.overrides"
+                (change)="editNewOverrides()" #editorNewOverride></json-editor>
+        </div>
+        <div style="margin: 1rem 0 1rem 0">
             <button nbButton fullWidth disabled="disabled" *ngIf="!enableSubmitForNewOverrides">Invalid Content</button>
-            <button nbButton fullWidth status="info" *ngIf="enableSubmitForNewOverrides" (click)="submitNewOverrides()">Submit new Overrides</button>
-          </div>
+            <button nbButton fullWidth status="info" *ngIf="enableSubmitForNewOverrides"
+                (click)="submitNewOverrides()">Submit new Overrides</button>
+        </div>
     </nb-card-body>
 </nb-card>
