@@ -29,14 +29,6 @@
   nbSpinnerMessage="Updating...">
     <nb-card-header>New Overrides</nb-card-header>
     <nb-card-body>
-      <div style="margin-bottom: 2em;">
-        <p style="font-size: 16px;">Stack Username</p>
-        <input type="text" [(ngModel)]='stackUsername' nbInput fullWidth placeholder="Github Username">
-      </div>
-      <div style="margin-bottom: 2em;">
-        <p style="font-size: 16px;">Stack Password</p>
-        <input type="password" [(ngModel)]='stackPassword' nbInput fullWidth placeholder="Github password">
-      </div>
       <div>
         <p style="font-size: 16px;">Cluster Variables</p>
         <ng2-smart-table (createConfirm)="validateValue($event)" (editConfirm)="validateValue($event)"

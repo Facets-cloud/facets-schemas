@@ -69,12 +69,11 @@ export class ClusterOverviewComponent implements OnInit {
 
   cluster: AbstractCluster;
 
-  stackUsername: string = "";
-  stackPassword: string = "";
   enableSubmitForClusterOverrides: boolean = true;
   clusterVariablesSource: LocalDataSource = new LocalDataSource();
   addOverrideSpinner: boolean = false;
   stackName: string;
+  extraEnvVars = ["TZ", "CLUSTER", "AWS_REGION"];
 
   constructor(
     private aWSClusterService: UiAwsClusterControllerService,
@@ -90,7 +89,7 @@ export class ClusterOverviewComponent implements OnInit {
       if (p.clusterId) {
         clusterId = p.clusterId;
         this.aWSClusterService.getClusterUsingGET1(clusterId).subscribe(t => {
-          this.updateTableSourceWithSecrets(t);
+          this.updateTableSourceWithStackVariables(t);
           this.cluster = t;
           this.clusterInfo = flat.flatten(t);
         });
@@ -100,7 +99,7 @@ export class ClusterOverviewComponent implements OnInit {
     });
   }
 
-  updateTableSourceWithSecrets(cluster: AbstractCluster) {
+  updateTableSourceWithStackVariables(cluster: AbstractCluster) {
     let dataSource = [];
     Object.keys(cluster.secrets).forEach(element => {
       dataSource.push({"name": element, "value": cluster.secrets[element]});
@@ -108,7 +107,9 @@ export class ClusterOverviewComponent implements OnInit {
 
 
     Object.keys(cluster.commonEnvironmentVariables).forEach(element => {
-      dataSource.push({"name": element, "value": cluster.commonEnvironmentVariables[element]});
+      if (!this.extraEnvVars.includes(element)) {
+        dataSource.push({"name": element, "value": cluster.commonEnvironmentVariables[element]});
+      }
     });
 
     this.clusterVariablesSource.load(dataSource);
@@ -123,15 +124,11 @@ export class ClusterOverviewComponent implements OnInit {
     this.enableSubmitForClusterOverrides = true;
     try {
       this.addOverrideSpinner = true;
-      this.stackService.getStackUsingGET(this.stackName).subscribe(existingStack => {
-        existingStack.user = this.stackUsername;
-        existingStack.appPassword = this.stackPassword;
-        this.stackService.createStackUsingPOST1(existingStack).subscribe(s => {
-          this.addOverrideSpinner = false;
-          this.toastrService.success("Updated Stack", "Success");
-          this.updateCluster();
-        });
-      });
+      this.stackService.reloadStackUsingGET1(this.stackName).subscribe(existingStack => {
+        this.addOverrideSpinner = false;
+        this.toastrService.success("Updated Stack", "Success");
+        this.updateCluster();
+      })
     } catch(err) {
       console.log(err);
       this.addOverrideSpinner = false;
@@ -142,8 +139,6 @@ export class ClusterOverviewComponent implements OnInit {
   private resetClusterOverrides() {
     this.addOverrideSpinner = false;
     this.clusterVariablesSource.reset();
-    this.stackUsername = "";
-    this.stackPassword = "";
   }
 
   private updateCluster() {
