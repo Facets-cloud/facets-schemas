@@ -85,15 +85,7 @@ public class DeploymentFacade {
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         //TODO: Save Deployment requests for audit purpose
-        String buildId = tfBuildService.deployLatest(cluster, deploymentRequest);
-        DeploymentLog log = new DeploymentLog();
-        log.setCodebuildId(buildId);
-        log.setClusterId(clusterId);
-        log.setDescription(deploymentRequest.getTag());
-        log.setReleaseType(deploymentRequest.getReleaseType());
-        log.setCreatedOn(new Date());
-        deploymentLogRepository.save(log);
-        return log;
+        return tfBuildService.deployLatest(cluster, deploymentRequest);
     }
 
     /**

@@ -40,11 +40,11 @@ public class ReleaseScheduleService {
     @Autowired
     private HttpServletRequest requestContext;
 
-    @Autowired
-    private DeploymentFacade deploymentFacade;
-
     @Value("${deployer.scheduler.enabled}")
     private boolean enabled;
+
+    @Autowired
+    private TFBuildService tfBuildService;
 
     private Map<String, ScheduleInfo> schedules = new HashMap<>();
 
@@ -90,7 +90,7 @@ public class ReleaseScheduleService {
             logger.info("Initiating Release of type {} for cluster {} ({})", releaseType, c.getId(), c.getName());
             DeploymentRequest deploymentRequest = new DeploymentRequest();
             deploymentRequest.setReleaseType(releaseType);
-            deploymentFacade.createDeployment(c.getId(), deploymentRequest);
+            tfBuildService.deployLatest(c, deploymentRequest);
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
     }

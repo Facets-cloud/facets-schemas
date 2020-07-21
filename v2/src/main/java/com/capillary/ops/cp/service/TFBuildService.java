@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface TFBuildService {
 
-    String deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest);
+    DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest);
 
     StatusType getDeploymentStatus(String runId);
 

@@ -4,10 +4,13 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.bo.AbstractCluster;
+import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.CodeBuildService;
 import com.google.gson.Gson;
@@ -70,6 +73,8 @@ public class AwsCodeBuildService implements TFBuildService {
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String artifactS3BucketRegion;
 
+    @Autowired
+    private DeploymentLogRepository deploymentLogRepository;
     /**
      * Deploy the latest build in the specified clusterId
      *
@@ -78,7 +83,7 @@ public class AwsCodeBuildService implements TFBuildService {
      * @return
      */
     @Override
-    public String deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest)
+    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest)
     {
         ReleaseType releaseType = deploymentRequest.getReleaseType();
         List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv();
@@ -154,7 +159,15 @@ public class AwsCodeBuildService implements TFBuildService {
         }
 
         try {
-            return getCodeBuildClient().startBuild(startBuildRequest).build().id();
+            String buildId = getCodeBuildClient().startBuild(startBuildRequest).build().id();
+            DeploymentLog log = new DeploymentLog();
+            log.setCodebuildId(buildId);
+            log.setClusterId(cluster.getId());
+            log.setDescription(deploymentRequest.getTag());
+            log.setReleaseType(deploymentRequest.getReleaseType());
+            log.setCreatedOn(new Date());
+            return deploymentLogRepository.save(log);
+
         } catch (ResourceNotFoundException ex) {
             throw new RuntimeException("No Build defined for " + cluster.getCloud(), ex);
         }
