@@ -6,8 +6,6 @@ import {NbLayoutModule, NbInputModule, NbDialogService, NbToastrModule, NbDialog
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
-
-
 @NgModule({
   declarations: [ClusterPagesComponent],
   imports: [
@@ -20,6 +18,7 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
     NbEvaIconsModule,
     NbToastrModule.forRoot(),
     NbDialogModule.forRoot(),
-  ]
+    NbLayoutModule,
+  ],
 })
 export class ClusterPagesModule { }

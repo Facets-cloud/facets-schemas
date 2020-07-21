@@ -73,7 +73,7 @@ public class UiDeploymentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
     @GetMapping("/{deploymentId}")
-    DeploymentLog getDeployment(@PathVariable String deploymentId) {
+    DeploymentLog getDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.getDeployment(deploymentId);
     }
 }

@@ -2,34 +2,143 @@
   <nb-layout-header fixed size="small">
     <app-header></app-header>
   </nb-layout-header>
-  <nb-sidebar>
-Test
-  </nb-sidebar>
   <nb-layout-column class="container-fluid">
     <nb-card accent="info">
-      <nb-card-header>Cluster Information</nb-card-header>
+      <nb-card-header>Releases</nb-card-header>
       <nb-card-body>
         <div style="text-align: center;" class="table-responsive">
           <table class="table table-bordered">
             <thead>
             <tr scope=row>
-              <th scope="col">Temp</th>
-              <th scope="col">Cluster Name</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
+              <th class="vert-center" scope="col">Id</th>
+              <th class="vert-center" scope="col">Start Time</th>
+              <th class="vert-center" scope="col">Release Type</th>
+              <th class="vert-center" scope="col">Status</th>
+              <th class="vert-center" scope="col">Details</th>
+            </tr>
+            <tr scope=row *ngFor="let deployment of deployments">
+              <td class="vert-center" scope="col">{{deployment.id}}</td>
+              <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
+              <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
+              <td class="vert-center" scope="col">{{deployment.status}}</td>
+              <td scope="col"><button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"><nb-icon icon="info"></nb-icon></button>
+              </td>
             </tr>
             </thead>
           </table>
         </div>
       </nb-card-body>
     </nb-card>
-
-    <nb-card accent="warning">
-      <nb-card-header>Cluster Pages</nb-card-header>
-      <nb-card-body>
-
-      </nb-card-body>
-    </nb-card>
-
   </nb-layout-column>
 </nb-layout>
+
+<ng-template #dialog let-data let-ref="dialogRef">
+  <nb-card size=giant>
+    <nb-card-header>Release Details</nb-card-header>
+    <nb-card-body>
+      <nb-tabset>
+        <nb-tab tabTitle="Applications">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Build Id</th>
+                <th class="vert-center" scope="col">Build Description</th>
+              </tr>
+              <tr *ngFor="let item of data.application_builds | keyvalue">
+                <td class="vert-center" scope="col">{{item.key}}</td>
+                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
+                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+
+        <nb-tab tabTitle="Statefulsets">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Build Id</th>
+                <th class="vert-center" scope="col">Build Description</th>
+              </tr>
+              <tr *ngFor="let item of data.statefulset_builds | keyvalue">
+                <td class="vert-center" scope="col">{{item.key}}</td>
+                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
+                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+
+        <nb-tab tabTitle="CronJobs">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Build Id</th>
+                <th class="vert-center" scope="col">Build Description</th>
+              </tr>
+              <tr *ngFor="let item of data.cronjob_builds | keyvalue">
+                <td class="vert-center" scope="col">{{item.key}}</td>
+                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
+                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+
+        <nb-tab tabTitle="BootstrapJobs">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Build Id</th>
+                <th class="vert-center" scope="col">Build Description</th>
+              </tr>
+              <tr *ngFor="let item of data.bootstrap_job_builds | keyvalue">
+                <td class="vert-center" scope="col">{{item.key}}</td>
+                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
+                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+
+        <nb-tab tabTitle="Serverless">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Build Id</th>
+                <th class="vert-center" scope="col">Build Description</th>
+              </tr>
+              <tr *ngFor="let item of data.serverless_builds | keyvalue">
+                <td class="vert-center" scope="col">{{item.key}}</td>
+                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
+                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+
+        <nb-tab tabTitle="QaSuites">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Build Id</th>
+                <th class="vert-center" scope="col">Build Description</th>
+              </tr>
+              <tr *ngFor="let item of data.qasuite_builds | keyvalue">
+                <td class="vert-center" scope="col">{{item.key}}</td>
+                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
+                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+      </nb-tabset>
+    </nb-card-body>
+  </nb-card>
+</ng-template>

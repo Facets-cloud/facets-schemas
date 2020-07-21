@@ -44,7 +44,7 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
   ],
 })
 export class ApiModule {
-  static forRoot(customParams: ApiConfigurationInterface): ModuleWithProviders<ApiModule> {
+  static forRoot(customParams: ApiConfigurationInterface): ModuleWithProviders {
     return {
       ngModule: ApiModule,
       providers: [

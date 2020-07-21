@@ -166,13 +166,19 @@ public class AwsCodeBuildService implements TFBuildService {
     }
 
     @Override
+    public Map<String, StatusType> getDeploymentStatuses(List<String> runIds) {
+        return codeBuildService.getBuilds(BUILD_REGION, runIds)
+                .stream().collect(Collectors.toMap(x->x.id(), x->x.buildStatus()));
+    }
+
+    @Override
     public Map<String, Object> getDeploymentReport(String runId) {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
-        String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/report.json", runId.split(":")[1]);
         try {
+            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/report.json", runId.split(":")[1]);
             String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
             return new Gson().fromJson(report, HashMap.class);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             return new HashMap<>();
         }
     }

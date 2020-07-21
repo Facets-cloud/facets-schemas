@@ -35,7 +35,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * getDeployments
    * @param clusterId clusterId
    * @return OK
    */
@@ -46,7 +45,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(clusterId)}/deployments`,
+      this.rootUrl + `/cc/v1/clusters/${clusterId}/deployments`,
       __body,
       {
         headers: __headers,
@@ -62,7 +61,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * getDeployments
    * @param clusterId clusterId
    * @return OK
    */
@@ -73,7 +71,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * createDeployment
    * @param params The `DeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
    *
    * - `deploymentRequest`: deploymentRequest
@@ -90,7 +87,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments`,
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments`,
       __body,
       {
         headers: __headers,
@@ -106,7 +103,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * createDeployment
    * @param params The `DeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
    *
    * - `deploymentRequest`: deploymentRequest
@@ -122,7 +118,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * triggerAutomationSuite
    * @param params The `DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams` containing the following parameters:
    *
    * - `clusterId`: clusterId
@@ -139,7 +134,7 @@ class DeploymentControllerService extends __BaseService {
     __body = params.automationSuite;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/triggerSuite`,
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/triggerSuite`,
       __body,
       {
         headers: __headers,
@@ -155,7 +150,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * triggerAutomationSuite
    * @param params The `DeploymentControllerService.TriggerAutomationSuiteUsingPOSTParams` containing the following parameters:
    *
    * - `clusterId`: clusterId
@@ -171,7 +165,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * validateSanityResult
    * @param params The `DeploymentControllerService.ValidateSanityResultUsingPOSTParams` containing the following parameters:
    *
    * - `qaSuiteResult`: qaSuiteResult
@@ -186,7 +179,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/validateSanityResult`,
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/validateSanityResult`,
       __body,
       {
         headers: __headers,
@@ -202,7 +195,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * validateSanityResult
    * @param params The `DeploymentControllerService.ValidateSanityResultUsingPOSTParams` containing the following parameters:
    *
    * - `qaSuiteResult`: qaSuiteResult
@@ -216,7 +208,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * abortAutomationSuite
    * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
    *
    * - `executionId`: executionId
@@ -231,7 +222,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'DELETE',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/${encodeURIComponent(params.executionId)}/abortSuite`,
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/${params.executionId}/abortSuite`,
       __body,
       {
         headers: __headers,
@@ -247,7 +238,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * abortAutomationSuite
    * @param params The `DeploymentControllerService.AbortAutomationSuiteUsingDELETEParams` containing the following parameters:
    *
    * - `executionId`: executionId
@@ -261,7 +251,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * getAutomationSuiteStatus
    * @param params The `DeploymentControllerService.GetAutomationSuiteStatusUsingGETParams` containing the following parameters:
    *
    * - `executionId`: executionId
@@ -278,7 +267,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/qa/${encodeURIComponent(params.executionId)}/status`,
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/qa/${params.executionId}/status`,
       __body,
       {
         headers: __headers,
@@ -294,7 +283,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * getAutomationSuiteStatus
    * @param params The `DeploymentControllerService.GetAutomationSuiteStatusUsingGETParams` containing the following parameters:
    *
    * - `executionId`: executionId
@@ -310,7 +298,6 @@ class DeploymentControllerService extends __BaseService {
   }
 
   /**
-   * getLogs
    * @param params The `DeploymentControllerService.GetLogsUsingGETParams` containing the following parameters:
    *
    * - `id`: id
@@ -327,7 +314,7 @@ class DeploymentControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/${encodeURIComponent(params.id)}`,
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments/${params.id}`,
       __body,
       {
         headers: __headers,
@@ -343,7 +330,6 @@ class DeploymentControllerService extends __BaseService {
     );
   }
   /**
-   * getLogs
    * @param params The `DeploymentControllerService.GetLogsUsingGETParams` containing the following parameters:
    *
    * - `id`: id

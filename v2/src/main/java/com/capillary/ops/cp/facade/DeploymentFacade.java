@@ -35,6 +35,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
+import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
 import java.util.*;
@@ -429,6 +430,9 @@ public class DeploymentFacade {
 
     public List<DeploymentLog> getAllDeployments(String clusterId) {
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        Map<String, StatusType> deploymentStatuses = tfBuildService.getDeploymentStatuses(
+                deployments.stream().map(x -> x.getCodebuildId()).collect(Collectors.toList()));
+        deployments.stream().forEach(x -> x.setStatus(deploymentStatuses.get(x.getCodebuildId())));
         return deployments;
     }
 

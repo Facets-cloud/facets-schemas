@@ -14,5 +14,7 @@ public interface TFBuildService {
 
     StatusType getDeploymentStatus(String runId);
 
+    Map<String, StatusType> getDeploymentStatuses(List<String> runIds);
+
     Map<String, Object> getDeploymentReport(String runId);
 }

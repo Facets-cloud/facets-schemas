@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClusterReleasesComponent } from './cluster-releases.component';
-import {NbCardModule, NbLayoutModule, NbSidebarModule, NbSidebarService} from '@nebular/theme';
+import {NbCardModule, NbLayoutModule, NbSidebarModule, NbSidebarService, NbIconComponent, NbIconModule, NbButtonModule, NbSpinnerModule, NbDialogModule, NbDialogService, NbTabsetModule} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 
@@ -16,8 +16,13 @@ import {ComponentsModule} from '../../../components/components.module';
     NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
     NbCardModule,
     ComponentsModule,
-    NbSidebarModule
+    NbSidebarModule,
+    NbIconModule,
+    NbButtonModule,
+    NbSpinnerModule,
+    NbDialogModule.forRoot(),
+    NbTabsetModule,
   ],
-  providers: [NbSidebarService]
+  providers: [NbSidebarService, NbDialogService]
 })
 export class ClusterReleasesModule { }

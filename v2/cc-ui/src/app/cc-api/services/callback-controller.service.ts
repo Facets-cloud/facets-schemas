@@ -26,7 +26,6 @@ class CallbackControllerService extends __BaseService {
   }
 
   /**
-   * sonarCallBack
    * @param body body
    * @return OK
    */
@@ -53,7 +52,6 @@ class CallbackControllerService extends __BaseService {
     );
   }
   /**
-   * sonarCallBack
    * @param body body
    * @return OK
    */

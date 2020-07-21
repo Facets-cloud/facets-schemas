@@ -3,7 +3,7 @@ import {ErrorHandler, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NbThemeModule, NbLayoutModule, NbMenuModule} from '@nebular/theme';
+import {NbThemeModule, NbLayoutModule, NbMenuModule, NbDialogService} from '@nebular/theme';
 import {NbEvaIconsModule} from '@nebular/eva-icons';
 import {HomeModule} from './pages/home/home.module';
 import {AppComponent} from './app.component';
