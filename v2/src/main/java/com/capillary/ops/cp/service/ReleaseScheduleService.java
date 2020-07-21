@@ -35,9 +35,6 @@ public class ReleaseScheduleService {
     private CpClusterRepository cpClusterRepository;
 
     @Autowired
-    private TFBuildService tfBuildService;
-
-    @Autowired
     private TaskScheduler poolScheduler;
 
     @Autowired
