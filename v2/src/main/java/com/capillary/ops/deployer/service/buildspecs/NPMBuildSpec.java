@@ -48,6 +48,7 @@ public class NPMBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
+        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in");
         return buildCommands;
     }
 
@@ -64,7 +65,9 @@ public class NPMBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommandsTest() {
-        return new ArrayList<>();
+        List<String> preBuildCommandsTest =  new ArrayList<>();
+        preBuildCommandsTest.add("npm install -g sonarqube-scanner ");
+        return preBuildCommandsTest;
     }
 
     @Override
@@ -87,4 +90,5 @@ public class NPMBuildSpec extends BuildSpec {
     public String getBuildEnvironmentImage() {
         return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/nodejsbuildimage:f18f9d0";
     }
+
 }
