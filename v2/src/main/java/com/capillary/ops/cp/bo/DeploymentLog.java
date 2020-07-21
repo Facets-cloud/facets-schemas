@@ -3,10 +3,13 @@ package com.capillary.ops.cp.bo;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.Date;
+import java.util.Map;
 
 @Document
 public class DeploymentLog {
@@ -26,6 +29,11 @@ public class DeploymentLog {
 
     private ReleaseType releaseType;
 
+    @Transient
+    private StatusType status;
+
+    @Transient
+    private Map<String, Object> buildSummary;
 
     public String getId() {
         return id;
@@ -73,5 +81,21 @@ public class DeploymentLog {
 
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
+    }
+
+    public StatusType getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusType status) {
+        this.status = status;
+    }
+
+    public Map<String, Object> getBuildSummary() {
+        return buildSummary;
+    }
+
+    public void setBuildSummary(Map<String, Object> buildSummary) {
+        this.buildSummary = buildSummary;
     }
 }

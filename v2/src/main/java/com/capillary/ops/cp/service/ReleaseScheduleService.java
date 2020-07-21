@@ -3,6 +3,7 @@ package com.capillary.ops.cp.service;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.jcabi.aspects.Loggable;
 import org.slf4j.Logger;
@@ -41,6 +42,9 @@ public class ReleaseScheduleService {
 
     @Autowired
     private HttpServletRequest requestContext;
+
+    @Autowired
+    private DeploymentFacade deploymentFacade;
 
     @Value("${deployer.scheduler.enabled}")
     private boolean enabled;
@@ -89,7 +93,7 @@ public class ReleaseScheduleService {
             logger.info("Initiating Release of type {} for cluster {} ({})", releaseType, c.getId(), c.getName());
             DeploymentRequest deploymentRequest = new DeploymentRequest();
             deploymentRequest.setReleaseType(releaseType);
-            tfBuildService.deployLatest(c, deploymentRequest);
+            deploymentFacade.createDeployment(c.getId(), deploymentRequest);
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
     }

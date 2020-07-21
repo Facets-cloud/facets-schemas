@@ -1,12 +1,19 @@
 package com.capillary.ops.cp.service;
 
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.service.CodeBuildService;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import com.jcabi.aspects.Loggable;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +25,9 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +60,15 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Autowired
     private StackRepository stackRepository;
+
+    @Autowired
+    private CodeBuildService codeBuildService;
+
+    @Value("${aws.s3bucket.testOutputBucket.name}")
+    private String artifactS3Bucket;
+
+    @Value("${aws.s3bucket.testOutputBucket.region}")
+    private String artifactS3BucketRegion;
 
     /**
      * Deploy the latest build in the specified clusterId
@@ -141,6 +157,23 @@ public class AwsCodeBuildService implements TFBuildService {
             return getCodeBuildClient().startBuild(startBuildRequest).build().id();
         } catch (ResourceNotFoundException ex) {
             throw new RuntimeException("No Build defined for " + cluster.getCloud(), ex);
+        }
+    }
+
+    @Override
+    public StatusType getDeploymentStatus(String runId) {
+        return codeBuildService.getBuild(BUILD_REGION, runId).buildStatus();
+    }
+
+    @Override
+    public Map<String, Object> getDeploymentReport(String runId) {
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+        String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/report.json", runId.split(":")[1]);
+        try {
+            String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
+            return new Gson().fromJson(report, HashMap.class);
+        } catch (IOException e) {
+            return new HashMap<>();
         }
     }
 

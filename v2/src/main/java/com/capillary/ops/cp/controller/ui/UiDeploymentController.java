@@ -40,17 +40,6 @@ public class UiDeploymentController {
     }
 
     /**
-     * Get log for the deployment
-     *
-     * @param id Deployment Id
-     * @return List of Logs
-     */
-    @GetMapping("/{id}")
-    List<String> getLogs(@PathVariable String clusterId, @PathVariable String id) {
-        throw new NotImplementedException("Getting Logs is Not implemented yet");
-    }
-
-    /**
      * Trigger job for automation suite
      *
      * @param automationSuite QA Automation Suite
@@ -80,5 +69,11 @@ public class UiDeploymentController {
     @GetMapping()
     List<DeploymentLog> getDeployments(@PathVariable String clusterId) {
         return deploymentFacade.getAllDeployments(clusterId);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
+    @GetMapping("/{deploymentId}")
+    DeploymentLog getDeployment(@PathVariable String deploymentId) {
+        return deploymentFacade.getDeployment(deploymentId);
     }
 }

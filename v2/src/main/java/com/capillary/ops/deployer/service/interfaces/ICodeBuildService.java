@@ -4,6 +4,7 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
+import software.amazon.awssdk.regions.Region;
 
 import java.util.List;
 
@@ -19,6 +20,10 @@ public interface ICodeBuildService {
     software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId);
 
     List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds);
+
+    software.amazon.awssdk.services.codebuild.model.Build getBuild(Region region, String codeBuildId);
+
+    List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Region region, List<String> codeBuildIds);
 
     void deleteProject(Application application);
 }
