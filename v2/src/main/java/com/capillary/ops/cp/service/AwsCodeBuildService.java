@@ -162,7 +162,7 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Override
     public StatusType getDeploymentStatus(String runId) {
-        return codeBuildService.getBuild(BUILD_REGION, runId).buildStatus();
+        return codeBuildService.getBuild(BUILD_REGION, runId).secondarySourceVersions()
     }
 
     @Override

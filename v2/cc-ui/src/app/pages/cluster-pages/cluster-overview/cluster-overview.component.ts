@@ -151,7 +151,7 @@ export class ClusterOverviewComponent implements OnInit {
     awsClusterRequest.clusterName = this.cluster.name;
     awsClusterRequest.stackName = this.cluster.stackName;
     awsClusterRequest.clusterVars = {};
-    
+
     this.clusterVariablesSource.getAll().then(value => {
       value.forEach(element => {
         awsClusterRequest.clusterVars[element.name] = element.value;
@@ -171,7 +171,7 @@ export class ClusterOverviewComponent implements OnInit {
       } catch(err) {
         console.log(err);
         this.addOverrideSpinner = false;
-        this.toastrService.danger("Updated Stack", "Error");      
+        this.toastrService.danger("Updated Stack", "Error");
       }
     });
 
