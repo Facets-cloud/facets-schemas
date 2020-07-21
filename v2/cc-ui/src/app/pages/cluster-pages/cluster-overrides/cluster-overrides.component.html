@@ -3,6 +3,11 @@
     <app-header></app-header>
   </nb-layout-header>
   <nb-sidebar>
+    <button nbButton style="margin-bottom: 10px;" outline fullWidth shape="round" status="primary"
+      (click)="addOverride()">
+      <nb-icon icon="plus-outline"></nb-icon>Add Override
+    </button>
+    <input type="text" nbInput fullWidth shape="round" placeholder="Search" (input)="search($event.target.value)">
     <nb-menu [items]="menuItems" tag="overrides-menu"></nb-menu>
   </nb-sidebar>
   <nb-layout-column class="container-fluid">
@@ -10,12 +15,13 @@
       <nb-card-header>Overrides for {{currentSelection?.resourceName}}</nb-card-header>
       <nb-card-body>
         <div>
-          <json-editor [options]="editorOptions" [data]="currentSelection?.overrides"
-                       (change)="editOverrides()" #editor></json-editor>
+          <json-editor [options]="editorOptions" [data]="currentSelection?.overrides" (change)="editOverrides()"
+            #editor></json-editor>
         </div>
         <div style="margin: 1rem 0 1rem 0">
           <button nbButton fullWidth disabled="disabled" *ngIf="!enableSubmitForOverride">No changes</button>
-          <button nbButton fullWidth status="info" *ngIf="enableSubmitForOverride" (click)="submitOverrides()">Submit the Overrides</button>
+          <button nbButton fullWidth status="info" *ngIf="enableSubmitForOverride" (click)="submitOverrides()">Submit
+            the Overrides</button>
         </div>
       </nb-card-body>
     </nb-card>

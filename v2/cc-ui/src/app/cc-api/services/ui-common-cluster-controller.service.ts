@@ -17,8 +17,8 @@ import { OverrideRequest } from '../models/override-request';
   providedIn: 'root',
 })
 class UiCommonClusterControllerService extends __BaseService {
-  static readonly getOverridesUsingGET1Path = '/cc-ui/v1/tableData/{clusterId}/overrides';
-  static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/tableData/{clusterId}/overrides';
+  static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
+  static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
 
   constructor(
     config: __Configuration,
@@ -28,6 +28,7 @@ class UiCommonClusterControllerService extends __BaseService {
   }
 
   /**
+   * getOverrides
    * @param clusterId clusterId
    * @return OK
    */
@@ -38,7 +39,7 @@ class UiCommonClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc-ui/v1/clusters/${clusterId}/overrides`,
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/overrides`,
       __body,
       {
         headers: __headers,
@@ -54,6 +55,7 @@ class UiCommonClusterControllerService extends __BaseService {
     );
   }
   /**
+   * getOverrides
    * @param clusterId clusterId
    * @return OK
    */
@@ -64,6 +66,7 @@ class UiCommonClusterControllerService extends __BaseService {
   }
 
   /**
+   * overrideSizing
    * @param params The `UiCommonClusterControllerService.OverrideSizingUsingPOST1Params` containing the following parameters:
    *
    * - `request`: request
@@ -80,7 +83,7 @@ class UiCommonClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc-ui/v1/clusters/${params.clusterId}/overrides`,
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/overrides`,
       __body,
       {
         headers: __headers,
@@ -96,6 +99,7 @@ class UiCommonClusterControllerService extends __BaseService {
     );
   }
   /**
+   * overrideSizing
    * @param params The `UiCommonClusterControllerService.OverrideSizingUsingPOST1Params` containing the following parameters:
    *
    * - `request`: request

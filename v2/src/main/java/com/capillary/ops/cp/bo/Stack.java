@@ -22,7 +22,7 @@ public class Stack {
 
     private String user;
 
-    @Transient
+//    @Transient
     private String appPassword;
 
     @JsonIgnore

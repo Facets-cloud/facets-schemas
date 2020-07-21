@@ -44,6 +44,12 @@ public class UiStackController {
         return stackController.createStack(stack);
     }
 
+    @GetMapping("{stackName}/reload")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public Stack reloadStack(@PathVariable String stackName) {
+        return stackController.reloadStack(stackName);
+    }
+
     @GetMapping()
     @PostFilter("hasAnyRole('ADMIN') or @aclService.hasStackReadAccess(authentication, filterObject.name)")
     public List<Stack> getStacks() {

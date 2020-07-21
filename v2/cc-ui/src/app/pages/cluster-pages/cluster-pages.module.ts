@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClusterPagesComponent } from './cluster-pages.component';
 import {RouterModule} from '@angular/router';
-import {NbLayoutModule} from '@nebular/theme';
+import {NbLayoutModule, NbInputModule, NbDialogService, NbToastrModule, NbDialogModule, NbIconModule, NbButtonModule} from '@nebular/theme';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 
 
@@ -11,7 +13,13 @@ import {NbLayoutModule} from '@nebular/theme';
   imports: [
     CommonModule,
     RouterModule,
-    NbLayoutModule
+    NbLayoutModule,
+    NbInputModule,
+    NbIconModule,
+    NbButtonModule,
+    NbEvaIconsModule,
+    NbToastrModule.forRoot(),
+    NbDialogModule.forRoot(),
   ]
 })
 export class ClusterPagesModule { }

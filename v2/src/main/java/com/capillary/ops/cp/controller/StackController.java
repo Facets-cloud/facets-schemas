@@ -45,6 +45,11 @@ public class StackController {
         return stackFacade.createStack(stack);
     }
 
+    @GetMapping("{stackName}/reload")
+    public Stack reloadStack(@PathVariable String stackName) {
+        return stackFacade.reloadStack(stackName);
+    }
+
     public Stack getStack(String stackName) {
         return stackFacade.getStackByName(stackName);
     }

@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Loggable
@@ -59,6 +61,15 @@ public class StackFacade {
                 "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);
         }
         return stackRepository.save(stack);
+    }
+
+    public Stack reloadStack(String stackName) {
+        Optional<Stack> optionalStack = stackRepository.findById(stackName);
+        if (!optionalStack.isPresent()) {
+            throw new NotFoundException("Stack with name " + stackName + " not found");
+        }
+
+        return createStack(optionalStack.get());
     }
 
     public List<Stack> getAllStacks() {
