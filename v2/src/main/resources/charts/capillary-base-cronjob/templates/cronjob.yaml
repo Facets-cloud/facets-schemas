@@ -11,7 +11,7 @@ metadata:
   annotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
   {{- if .Values.roleName }}
-      iam.amazonaws.com/role: {{ .Values.roleName }}
+    iam.amazonaws.com/role: {{ .Values.roleName }}
   {{- end }}
 spec:
   schedule: "{{ .Values.schedule }}"
