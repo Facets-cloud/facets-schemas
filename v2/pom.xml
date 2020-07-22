@@ -254,6 +254,7 @@
                     <noDeploy>true</noDeploy>
                     <pushReleases>false</pushReleases>
                     <enableFeatureVersions>true</enableFeatureVersions>
+                    <noReleaseBuild>true</noReleaseBuild>
                     <flowInitContext>
                         <masterBranchName>production</masterBranchName>
                         <developBranchName>master</developBranchName>
