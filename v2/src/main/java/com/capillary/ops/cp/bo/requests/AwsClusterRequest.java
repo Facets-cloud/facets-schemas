@@ -14,6 +14,8 @@ public class AwsClusterRequest extends ClusterRequest {
 
     private List<String> azs;
 
+    private String vpcCIDR;
+
     public AwsClusterRequest() {
         super(Cloud.AWS);
     }
@@ -48,5 +50,13 @@ public class AwsClusterRequest extends ClusterRequest {
 
     public void setAzs(List<String> azs) {
         this.azs = azs;
+    }
+
+    public String getVpcCIDR() {
+        return vpcCIDR;
+    }
+
+    public void setVpcCIDR(String vpcCIDR) {
+        this.vpcCIDR = vpcCIDR;
     }
 }
