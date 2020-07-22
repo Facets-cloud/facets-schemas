@@ -38,7 +38,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
         //TODO: Variable Generations
         //1. Generate CIDR.
-        cluster.setVpcCIDR("10.250.0.0/16");
+        cluster.setVpcCIDR(request.getVpcCIDR());
         cluster.setStackName(request.getStackName());
         return cluster;
     }
