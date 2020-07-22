@@ -7,10 +7,13 @@ import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
+import com.capillary.ops.cp.service.AwsCodeBuildService;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.service.CodeBuildService;
+import com.google.common.collect.ImmutableMap;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -28,8 +31,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
+import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
 import java.util.*;
@@ -79,15 +85,7 @@ public class DeploymentFacade {
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         //TODO: Save Deployment requests for audit purpose
-        String buildId = tfBuildService.deployLatest(cluster, deploymentRequest);
-        DeploymentLog log = new DeploymentLog();
-        log.setCodebuildId(buildId);
-        log.setClusterId(clusterId);
-        log.setDescription(deploymentRequest.getTag());
-        log.setReleaseType(deploymentRequest.getReleaseType());
-        log.setCreatedOn(new Date());
-        deploymentLogRepository.save(log);
-        return log;
+        return tfBuildService.deployLatest(cluster, deploymentRequest);
     }
 
     /**
@@ -423,6 +421,17 @@ public class DeploymentFacade {
     }
 
     public List<DeploymentLog> getAllDeployments(String clusterId) {
-        return deploymentLogRepository.findFirst50ByOrderByCreatedOnDesc();
+        List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        Map<String, StatusType> deploymentStatuses = tfBuildService.getDeploymentStatuses(
+                deployments.stream().map(x -> x.getCodebuildId()).collect(Collectors.toList()));
+        deployments.stream().forEach(x -> x.setStatus(deploymentStatuses.get(x.getCodebuildId())));
+        return deployments;
+    }
+
+    public DeploymentLog getDeployment(String deploymentId) {
+        DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
+        deployment.setStatus(tfBuildService.getDeploymentStatus(deployment.getCodebuildId()));
+        deployment.setBuildSummary(tfBuildService.getDeploymentReport(deployment.getCodebuildId()));
+        return deployment;
     }
 }

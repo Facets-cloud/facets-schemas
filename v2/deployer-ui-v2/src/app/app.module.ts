@@ -45,7 +45,6 @@ import { NewRelicAlertLinkViewComponent, AlertingEnableButtonComponent } from '.
     AppRoutingModule,
     FormsModule,
     ThemeModule.forRoot(),
-
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),

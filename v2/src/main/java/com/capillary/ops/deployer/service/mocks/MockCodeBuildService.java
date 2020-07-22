@@ -8,6 +8,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.*;
@@ -60,6 +61,16 @@ public class MockCodeBuildService implements ICodeBuildService {
     @Override
     public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
         return codeBuildIds.parallelStream().map(x -> getBuild(application, x)).collect(Collectors.toList());
+    }
+
+    @Override
+    public software.amazon.awssdk.services.codebuild.model.Build getBuild(Region region, String codeBuildId) {
+        return null;
+    }
+
+    @Override
+    public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Region region, List<String> codeBuildIds) {
+        return null;
     }
 
     @Override

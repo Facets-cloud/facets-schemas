@@ -17,9 +17,9 @@ import { AwsClusterRequest } from '../models/aws-cluster-request';
   providedIn: 'root',
 })
 class UiAwsClusterControllerService extends __BaseService {
-  static readonly createClusterUsingPOST1Path = '/cc-ui/v1/aws/tableData';
-  static readonly getClusterUsingGET1Path = '/cc-ui/v1/aws/tableData/{clusterId}';
-  static readonly updateClusterUsingPUT1Path = '/cc-ui/v1/aws/tableData/{clusterId}';
+  static readonly createClusterUsingPOST1Path = '/cc-ui/v1/aws/clusters';
+  static readonly getClusterUsingGET1Path = '/cc-ui/v1/aws/clusters/{clusterId}';
+  static readonly updateClusterUsingPUT1Path = '/cc-ui/v1/aws/clusters/{clusterId}';
 
   constructor(
     config: __Configuration,

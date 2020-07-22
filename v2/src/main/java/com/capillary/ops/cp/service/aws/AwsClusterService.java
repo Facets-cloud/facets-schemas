@@ -7,6 +7,9 @@ import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
+
 /**
  * AWS implementation of the Facade
  */
@@ -42,9 +45,13 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
 
     @Override
     public AwsCluster updateCluster(AwsClusterRequest request, AwsCluster existing) {
+        if (request.getTz() == null || request.getTz().getID() == null){
+            request.setTz(new SimpleTimeZone(0, existing.getTz()));
+        }
         if (checkChanged(existing.getTz(), request.getTz().getID())) {
             existing.setTz(request.getTz());
         }
+
         if (checkChanged(existing.getRoleARN(), request.getRoleARN()) || checkChanged(existing.getExternalId(),
             request.getExternalId())) {
             existing.setRoleARN(request.getRoleARN());

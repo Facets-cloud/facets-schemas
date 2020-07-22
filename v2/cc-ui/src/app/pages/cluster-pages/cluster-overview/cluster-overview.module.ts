@@ -1,18 +1,21 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ClusterOverviewComponent} from './cluster-overview.component';
-import {NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule} from '@nebular/theme';
-import {ActivatedRoute, RouterModule} from '@angular/router';
+import {NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService, NbInputModule, NbSpinnerModule} from '@nebular/theme';
+import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 import {AwsClusterControllerService} from '../../../cc-api/services/aws-cluster-controller.service';
 import {HttpClientModule} from '@angular/common/http';
 import {LayoutsModule} from '../../../layouts/layouts.module';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
   declarations: [ClusterOverviewComponent],
   providers: [
     AwsClusterControllerService,
+    NbToastrService,
   ],
   imports: [
     CommonModule,
@@ -22,7 +25,13 @@ import {LayoutsModule} from '../../../layouts/layouts.module';
     NbCardModule,
     ComponentsModule,
     HttpClientModule,
-    LayoutsModule
+    LayoutsModule,
+    NbAccordionModule,
+    Ng2SmartTableModule,
+    FormsModule,
+    NbInputModule,
+    NbButtonModule,
+    NbSpinnerModule
   ]
 })
 export class ClusterOverviewModule {

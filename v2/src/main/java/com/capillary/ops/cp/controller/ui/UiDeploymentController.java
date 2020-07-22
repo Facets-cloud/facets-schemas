@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.facade.DeploymentFacade;
+import com.capillary.ops.cp.service.AclService;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class UiDeploymentController {
     @Autowired
     DeploymentFacade deploymentFacade;
 
+    @Autowired
+    private AclService aclService;
+
     /**
      * Create a new Deployment for latest definition of this cluster
      *
@@ -33,17 +37,6 @@ public class UiDeploymentController {
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
-    }
-
-    /**
-     * Get log for the deployment
-     *
-     * @param id Deployment Id
-     * @return List of Logs
-     */
-    @GetMapping("/{id}")
-    List<String> getLogs(@PathVariable String clusterId, @PathVariable String id) {
-        throw new NotImplementedException("Getting Logs is Not implemented yet");
     }
 
     /**
@@ -76,5 +69,11 @@ public class UiDeploymentController {
     @GetMapping()
     List<DeploymentLog> getDeployments(@PathVariable String clusterId) {
         return deploymentFacade.getAllDeployments(clusterId);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
+    @GetMapping("/{deploymentId}")
+    DeploymentLog getDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
+        return deploymentFacade.getDeployment(deploymentId);
     }
 }

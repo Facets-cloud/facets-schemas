@@ -7,6 +7,7 @@ import com.capillary.ops.cp.bo.StackFile;
 import com.jcabi.aspects.Loggable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -64,10 +65,10 @@ public class ClusterHelper {
 
         List<String> requiredKeys =
             stackClusterVariables.entrySet().stream().filter(e -> e.getValue().isRequired())
-                .map(e -> e.getKey()).collect(Collectors.toList());
+                .map(Map.Entry::getKey).collect(Collectors.toList());
 
         List<String> allValidKeys =
-            stackClusterVariables.entrySet().stream().map(e -> e.getKey()).collect(Collectors.toList());
+                new ArrayList<>(stackClusterVariables.keySet());
 
         if (!clusterVars.keySet().containsAll(requiredKeys)) {
             throw new IllegalArgumentException("Not all required keys are specified, Required keys: " + requiredKeys);

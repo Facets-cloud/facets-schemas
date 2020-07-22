@@ -3,6 +3,7 @@ package com.capillary.ops.cp.service;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.jcabi.aspects.Loggable;
 import org.slf4j.Logger;
@@ -34,9 +35,6 @@ public class ReleaseScheduleService {
     private CpClusterRepository cpClusterRepository;
 
     @Autowired
-    private TFBuildService tfBuildService;
-
-    @Autowired
     private TaskScheduler poolScheduler;
 
     @Autowired
@@ -44,6 +42,9 @@ public class ReleaseScheduleService {
 
     @Value("${deployer.scheduler.enabled}")
     private boolean enabled;
+
+    @Autowired
+    private TFBuildService tfBuildService;
 
     private Map<String, ScheduleInfo> schedules = new HashMap<>();
 

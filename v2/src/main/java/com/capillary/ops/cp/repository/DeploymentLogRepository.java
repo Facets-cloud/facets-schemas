@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface DeploymentLogRepository extends MongoRepository<DeploymentLog, String> {
 
-    List<DeploymentLog> findFirst50ByOrderByCreatedOnDesc();
+    List<DeploymentLog> findFirst50ByClusterIdOrderByCreatedOnDesc(String clusterId);
 }

@@ -4,7 +4,7 @@
 
     <groupId>com.capillary.ops</groupId>
     <artifactId>deployer</artifactId>
-    <version>1.1.4</version>
+    <version>1.2</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -253,6 +253,7 @@
                     <noDeploy>true</noDeploy>
                     <pushReleases>false</pushReleases>
                     <enableFeatureVersions>true</enableFeatureVersions>
+                    <noReleaseBuild>true</noReleaseBuild>
                     <flowInitContext>
                         <masterBranchName>production</masterBranchName>
                         <developBranchName>master</developBranchName>

@@ -4,10 +4,8 @@ import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.StackFacade;
-import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,6 +43,11 @@ public class StackController {
     @PostMapping
     public Stack createStack(@RequestBody Stack stack) {
         return stackFacade.createStack(stack);
+    }
+
+    @GetMapping("{stackName}/reload")
+    public Stack reloadStack(@PathVariable String stackName) {
+        return stackFacade.reloadStack(stackName);
     }
 
     public Stack getStack(String stackName) {

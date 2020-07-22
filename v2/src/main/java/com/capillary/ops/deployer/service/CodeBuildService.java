@@ -257,10 +257,15 @@ public class CodeBuildService implements ICodeBuildService {
     @Override
     public software.amazon.awssdk.services.codebuild.model.Build getBuild(Application application, String codeBuildId) {
         BuildSpec buildSpec = getBuildSpec(application);
+        return getBuild(buildSpec.getAwsRegion(), codeBuildId);
+    }
+
+    @Override
+    public software.amazon.awssdk.services.codebuild.model.Build getBuild(Region region, String codeBuildId) {
         Future<BatchGetBuildsResponse> future = codebuildExecutor.submit(() ->
-                getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
-                .ids(codeBuildId)
-                .build()));
+                getCodeBuildClient(region).batchGetBuilds(BatchGetBuildsRequest.builder()
+                        .ids(codeBuildId)
+                        .build()));
 
         BatchGetBuildsResponse batchGetBuildsResponse = null;
         try {
@@ -270,7 +275,7 @@ public class CodeBuildService implements ICodeBuildService {
             logger.info("retrying once");
             try {
                 Thread.sleep(500);
-                return getBuild(application, codeBuildId);
+                return getBuild(region, codeBuildId);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
@@ -284,6 +289,11 @@ public class CodeBuildService implements ICodeBuildService {
     @Override
     public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Application application, List<String> codeBuildIds) {
         BuildSpec buildSpec = getBuildSpec(application);
+        return getBuilds(buildSpec.getAwsRegion(), codeBuildIds);
+    }
+
+    @Override
+    public List<software.amazon.awssdk.services.codebuild.model.Build> getBuilds(Region region, List<String> codeBuildIds) {
         List<List<String>> partition = Lists.partition(codeBuildIds, 90);
         logger.info("total size of builds: {}, total partitions created: {}", codeBuildIds.size(), partition.size());
         List<software.amazon.awssdk.services.codebuild.model.Build> batchedBuilds = Lists.newArrayListWithExpectedSize(codeBuildIds.size());
@@ -292,7 +302,7 @@ public class CodeBuildService implements ICodeBuildService {
 
             BatchGetBuildsResponse batchGetBuildsResponse = null;
             try {
-                batchGetBuildsResponse = codebuildExecutor.submit(() -> getCodeBuildClient(buildSpec.getAwsRegion()).batchGetBuilds(BatchGetBuildsRequest.builder()
+                batchGetBuildsResponse = codebuildExecutor.submit(() -> getCodeBuildClient(region).batchGetBuilds(BatchGetBuildsRequest.builder()
                         .ids(x)
                         .build())).get();
             } catch (Throwable e) {

@@ -17,8 +17,8 @@ import { OverrideRequest } from '../models/override-request';
   providedIn: 'root',
 })
 class UiCommonClusterControllerService extends __BaseService {
-  static readonly getOverridesUsingGET1Path = '/cc-ui/v1/tableData/{clusterId}/overrides';
-  static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/tableData/{clusterId}/overrides';
+  static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
+  static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
 
   constructor(
     config: __Configuration,

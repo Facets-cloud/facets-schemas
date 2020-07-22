@@ -4,7 +4,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
 import { ApplicationControllerService } from './services/application-controller.service';
+import { CallbackControllerService } from './services/callback-controller.service';
 import { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
+import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 import { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 import { UiStackControllerService } from './services/ui-stack-controller.service';
 import { AwsClusterControllerService } from './services/aws-cluster-controller.service';
@@ -28,7 +30,9 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
   providers: [
     ApiConfiguration,
     ApplicationControllerService,
+    CallbackControllerService,
     UiAwsClusterControllerService,
+    UiDeploymentControllerService,
     UiCommonClusterControllerService,
     UiStackControllerService,
     AwsClusterControllerService,
