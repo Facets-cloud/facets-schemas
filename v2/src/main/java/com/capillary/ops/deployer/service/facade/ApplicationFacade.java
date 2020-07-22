@@ -368,7 +368,7 @@ public class ApplicationFacade {
     @Cacheable(
             value = "codebuild",
             key = "#application.id + '_' + #build.codeBuildId + '_' + #includeImage",
-            unless = "#result == null && (#result.getStatus().name() != 'SUCCEEDED') && #result.codeBuildId == null && #result.codeBuildId == ''"
+            unless = "#result == null || (#result.getStatus().name() != 'SUCCEEDED') || #result.codeBuildId == null || #result.codeBuildId == ''"
     )
     public Build getBuildDetails(Application application, Build build, boolean includeImage) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
