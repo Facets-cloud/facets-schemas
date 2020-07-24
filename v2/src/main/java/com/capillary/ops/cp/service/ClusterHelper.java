@@ -4,10 +4,12 @@ import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
+import com.google.common.collect.Maps;
 import com.jcabi.aspects.Loggable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -84,10 +86,14 @@ public class ClusterHelper {
     private Map<String, String> transformVars(Map<String, String> clusterVars,
         Map<String, StackFile.VariableDetails> stackDefinition,
         Predicate<Map.Entry<String, StackFile.VariableDetails>> predicate) {
-        return stackDefinition.entrySet().stream().filter(predicate).collect(Collectors.toMap(Map.Entry::getKey, e -> {
-            String clusterVal = clusterVars.get(e.getKey());
-            String stackVal = e.getValue().getValue();
-            return clusterVal == null ? stackVal : clusterVal;
-        }));
+        Map<String, StackFile.VariableDetails> filteredVars = stackDefinition.entrySet().stream().filter(predicate).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        HashMap<String, String> clusterVarValues = Maps.newHashMapWithExpectedSize(filteredVars.size());
+        filteredVars.forEach((k, v) -> {
+            String clusterVal = clusterVars.get(k);
+            String value = clusterVal == null ? v.getValue() : clusterVal;
+            clusterVarValues.put(k, value);
+        });
+
+        return clusterVarValues;
     }
 }

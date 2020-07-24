@@ -7,6 +7,7 @@ import { AwsClusterRequest, AbstractCluster } from 'src/app/cc-api/models';
 import { UiStackControllerService } from 'src/app/cc-api/services';
 import { LocalDataSource } from 'ng2-smart-table';
 import {AwsCluster} from "../../../cc-api/models/aws-cluster";
+import { element } from 'protractor';
 
 @Component({
   selector: 'app-cluster-overview',
@@ -21,7 +22,7 @@ export class ClusterOverviewComponent implements OnInit {
         title: 'Variable Name',
         filter: false,
         width: '50%',
-        editable: true,
+        editable: false,
       },
       value: {
         title: 'Variable Value',
@@ -54,7 +55,7 @@ export class ClusterOverviewComponent implements OnInit {
       perPage: 5,
     },
     actions: {
-      add: true,
+      add: false,
       edit: true,
       delete: true,
       // class: "my-custom-class",
@@ -71,7 +72,9 @@ export class ClusterOverviewComponent implements OnInit {
   cluster: AwsCluster;
 
   enableSubmitForClusterOverrides = true;
-  clusterVariablesSource: LocalDataSource = new LocalDataSource();
+  nonSensitiveClusterSource: LocalDataSource = new LocalDataSource();
+  sensitiveClusterSource: LocalDataSource = new LocalDataSource();
+  originalClusterVariablesSource = [];
   addOverrideSpinner = false;
   stackName: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION'];
@@ -101,19 +104,23 @@ export class ClusterOverviewComponent implements OnInit {
   }
 
   updateTableSourceWithStackVariables(cluster: AbstractCluster) {
-    const dataSource = [];
-    // Object.keys(cluster.secrets).forEach(element => {
-    //   dataSource.push({name: element, value: cluster.secrets[element]});
-    // });
-
-
+    let dataSource = [];
     Object.keys(cluster.commonEnvironmentVariables).forEach(element => {
       if (!this.extraEnvVars.includes(element)) {
         dataSource.push({name: element, value: cluster.commonEnvironmentVariables[element]});
+        let clone = {name: element, value: cluster.commonEnvironmentVariables[element]}
+        this.originalClusterVariablesSource.push(clone);
       }
     });
+    this.nonSensitiveClusterSource.load(dataSource);
 
-    this.clusterVariablesSource.load(dataSource);
+    dataSource = [];
+    Object.keys(cluster.secrets).forEach(element => {
+      dataSource.push({name: element, value: cluster.secrets[element]});
+      let clone = {name: element, value: cluster.secrets[element]}
+      this.originalClusterVariablesSource.push(clone);
+    });
+    this.sensitiveClusterSource.load(dataSource);
   }
 
   validateValue(event) {
@@ -124,27 +131,91 @@ export class ClusterOverviewComponent implements OnInit {
   submitClusterOverrides() {
     this.enableSubmitForClusterOverrides = true;
     try {
-      this.addOverrideSpinner = true;
-      this.stackService.reloadStackUsingGET1(this.stackName).subscribe(existingStack => {
+      this.updateCluster();
+    } catch (err) {
+      console.log(err);
+      this.addOverrideSpinner = false;
+      // this.toastrService.danger('Error updating stack variables', 'Error');
+    }
+  }
+
+  refreshStack() {
+    this.addOverrideSpinner = true;
+    try {
+      this.stackService.reloadStackUsingGET1(this.cluster.stackName).subscribe(stack => {
         this.addOverrideSpinner = false;
-        this.toastrService.success('Updated Stack', 'Success');
-        this.updateCluster();
+        location.reload();
       });
     } catch (err) {
       console.log(err);
       this.addOverrideSpinner = false;
-      this.toastrService.danger('Error updating stack variables', 'Error');
     }
   }
 
   private resetClusterOverrides() {
     this.addOverrideSpinner = false;
-    this.clusterVariablesSource.reset();
+    this.nonSensitiveClusterSource.reset();
+    this.sensitiveClusterSource.reset();
   }
 
-  private updateCluster() {
-    this.addOverrideSpinner = true;
+  private hasClusterVariableChanged(source, variableName: string) {
+    let originalValue = null;
+    this.originalClusterVariablesSource.forEach(element => {
+      if (element.name === variableName) {
+        originalValue = element.value;
+      }
+    })
+    
+    let newValue = null;
+    source.forEach(element => {
+      if (element.name === variableName) {
+        newValue = element.value;
+      }
+    })
 
+    if (originalValue && newValue != originalValue) {
+      return true;
+    }
+
+    return false;
+  }
+
+  isEmptyObject(obj: Object) {
+    return (obj && (Object.keys(obj).length === 0));
+  }
+
+  private async updateCluster() {
+    this.addOverrideSpinner = true;
+    
+    let awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
+    
+    if (this.isEmptyObject(awsClusterRequest.clusterVars)) {
+      this.toastrService.danger('No variables have changed, cannot update', 'Error');
+      this.addOverrideSpinner = false;
+      return;
+    }
+
+    try {
+      this.aWSClusterService.updateClusterUsingPUT1({
+        request: awsClusterRequest,
+        clusterId: this.cluster.id
+      }).subscribe(c => {
+        console.log(c);
+        this.resetClusterOverrides();
+        this.addOverrideSpinner = false;
+        this.toastrService.success('Updated cluster variables', 'Success');
+        location.reload();
+      });
+    } catch (err) {
+      console.log(err);
+      this.addOverrideSpinner = false;
+      this.toastrService.danger('Cannot update stack', 'Error');
+    }
+
+    console.log(awsClusterRequest);
+  }
+
+  private async constructUpdateClusterRequest() {
     let awsClusterRequest: AwsClusterRequest = {};
 
     awsClusterRequest = {};
@@ -153,33 +224,20 @@ export class ClusterOverviewComponent implements OnInit {
     awsClusterRequest.stackName = this.cluster.stackName;
     awsClusterRequest.clusterVars = {};
 
-    this.clusterVariablesSource.getAll().then(value => {
-      value.forEach(element => {
+    let nonSensitiveSource = await this.nonSensitiveClusterSource.getAll();
+    nonSensitiveSource.forEach(element => {
+      if (this.hasClusterVariableChanged(nonSensitiveSource, element.name)) {
         awsClusterRequest.clusterVars[element.name] = element.value;
-      });
-
-      try {
-        this.aWSClusterService.updateClusterUsingPUT1({
-          request: awsClusterRequest,
-          clusterId: this.cluster.id
-        }).subscribe(c => {
-          console.log(c);
-          this.resetClusterOverrides();
-          this.addOverrideSpinner = false;
-          this.toastrService.success('Updated cluster variables', 'Success');
-          location.reload();
-        });
-      } catch (err) {
-        console.log(err);
-        this.addOverrideSpinner = false;
-        this.toastrService.danger('Updated Stack', 'Error');
       }
     });
 
-    console.log(awsClusterRequest);
-  }
-
-  onCustomAction(event) {
-    console.log(event);
+    let sensitiveSource = await this.sensitiveClusterSource.getAll();
+    sensitiveSource.forEach(element => {
+      if (this.hasClusterVariableChanged(sensitiveSource, element.name)) {
+        awsClusterRequest.clusterVars[element.name] = element.value;
+      }
+    });
+    
+    return awsClusterRequest;
   }
 }

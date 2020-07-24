@@ -65,5 +65,4 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
         cluster.setSecrets(secrets);
         return cluster;
     }
-
 }
