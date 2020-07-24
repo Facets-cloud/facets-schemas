@@ -13,6 +13,7 @@ import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.CodeBuildService;
+import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.jcabi.aspects.Loggable;
@@ -65,7 +66,7 @@ public class AwsCodeBuildService implements TFBuildService {
     private StackRepository stackRepository;
 
     @Autowired
-    private CodeBuildService codeBuildService;
+    private ICodeBuildService codeBuildService;
 
     @Value("${aws.s3bucket.testOutputBucket.name}")
     private String artifactS3Bucket;

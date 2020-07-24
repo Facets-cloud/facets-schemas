@@ -13,4 +13,5 @@ export interface AwsClusterRequest {
   schedules?: {[key: string]: string};
   stackName?: string;
   tz?: TimeZone;
+  vpcCIDR?: string;
 }

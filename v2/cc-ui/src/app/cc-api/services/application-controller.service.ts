@@ -96,6 +96,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationFamilies
    * @return OK
    */
   getApplicationFamiliesUsingGETResponse(): __Observable<__StrictHttpResponse<Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>>> {
@@ -120,6 +121,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationFamilies
    * @return OK
    */
   getApplicationFamiliesUsingGET(): __Observable<Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>> {
@@ -129,6 +131,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationTypes
    * @return OK
    */
   getApplicationTypesUsingGETResponse(): __Observable<__StrictHttpResponse<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET' | 'SERVERLESS'>>> {
@@ -153,6 +156,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationTypes
    * @return OK
    */
   getApplicationTypesUsingGET(): __Observable<Array<'SERVICE' | 'SCHEDULED_JOB' | 'STATEFUL_SET' | 'SERVERLESS'>> {
@@ -162,6 +166,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * createGenericAction
    * @param params The `ApplicationControllerService.CreateGenericActionUsingPOSTParams` containing the following parameters:
    *
    * - `buildType`: buildType
@@ -178,7 +183,7 @@ class ApplicationControllerService extends __BaseService {
     __body = params.applicationAction;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/buildType/${params.buildType}/actions`,
+      this.rootUrl + `/api/buildType/${encodeURIComponent(params.buildType)}/actions`,
       __body,
       {
         headers: __headers,
@@ -194,6 +199,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * createGenericAction
    * @param params The `ApplicationControllerService.CreateGenericActionUsingPOSTParams` containing the following parameters:
    *
    * - `buildType`: buildType
@@ -209,6 +215,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getCCEnvironmentMetaData
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -219,7 +226,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/cc/${applicationFamily}/environmentMetaData`,
+      this.rootUrl + `/api/cc/${encodeURIComponent(applicationFamily)}/environmentMetaData`,
       __body,
       {
         headers: __headers,
@@ -235,6 +242,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getCCEnvironmentMetaData
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -245,6 +253,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * me
    * @return OK
    */
   meUsingGETResponse(): __Observable<__StrictHttpResponse<SimpleOauth2User>> {
@@ -269,6 +278,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * me
    * @return OK
    */
   meUsingGET(): __Observable<SimpleOauth2User> {
@@ -278,6 +288,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * globalStats
    * @return OK
    */
   globalStatsUsingGETResponse(): __Observable<__StrictHttpResponse<GlobalStats>> {
@@ -302,6 +313,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * globalStats
    * @return OK
    */
   globalStatsUsingGET(): __Observable<GlobalStats> {
@@ -311,6 +323,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getUsers
    * @return OK
    */
   getUsersUsingGETResponse(): __Observable<__StrictHttpResponse<Array<User>>> {
@@ -335,6 +348,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getUsers
    * @return OK
    */
   getUsersUsingGET(): __Observable<Array<User>> {
@@ -344,6 +358,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * createUser
    * @param user user
    * @return OK
    */
@@ -370,6 +385,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * createUser
    * @param user user
    * @return OK
    */
@@ -380,6 +396,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * updateUser
    * @param params The `ApplicationControllerService.UpdateUserUsingPUTParams` containing the following parameters:
    *
    * - `userId`: userId
@@ -396,7 +413,7 @@ class ApplicationControllerService extends __BaseService {
     __body = params.user;
     let req = new HttpRequest<any>(
       'PUT',
-      this.rootUrl + `/api/users/${params.userId}`,
+      this.rootUrl + `/api/users/${encodeURIComponent(params.userId)}`,
       __body,
       {
         headers: __headers,
@@ -412,6 +429,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * updateUser
    * @param params The `ApplicationControllerService.UpdateUserUsingPUTParams` containing the following parameters:
    *
    * - `userId`: userId
@@ -427,6 +445,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplications
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -437,7 +456,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${applicationFamily}/applications`,
+      this.rootUrl + `/api/${encodeURIComponent(applicationFamily)}/applications`,
       __body,
       {
         headers: __headers,
@@ -453,6 +472,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplications
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -463,6 +483,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * createApplication
    * @param params The `ApplicationControllerService.CreateApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `applicationFamily`: applicationFamily
@@ -479,7 +500,7 @@ class ApplicationControllerService extends __BaseService {
     __body = params.application;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/applications`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications`,
       __body,
       {
         headers: __headers,
@@ -495,6 +516,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * createApplication
    * @param params The `ApplicationControllerService.CreateApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `applicationFamily`: applicationFamily
@@ -510,6 +532,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * updateApplication
    * @param params The `ApplicationControllerService.UpdateApplicationUsingPUTParams` containing the following parameters:
    *
    * - `applicationFamily`: applicationFamily
@@ -526,7 +549,7 @@ class ApplicationControllerService extends __BaseService {
     __body = params.application;
     let req = new HttpRequest<any>(
       'PUT',
-      this.rootUrl + `/api/${params.applicationFamily}/applications`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications`,
       __body,
       {
         headers: __headers,
@@ -542,6 +565,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * updateApplication
    * @param params The `ApplicationControllerService.UpdateApplicationUsingPUTParams` containing the following parameters:
    *
    * - `applicationFamily`: applicationFamily
@@ -557,6 +581,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplication
    * @param params The `ApplicationControllerService.GetApplicationUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -573,7 +598,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}`,
       __body,
       {
         headers: __headers,
@@ -589,6 +614,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplication
    * @param params The `ApplicationControllerService.GetApplicationUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -604,6 +630,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * deleteApplication
    * @param params The `ApplicationControllerService.DeleteApplicationUsingDELETEParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -620,7 +647,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'DELETE',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}`,
       __body,
       {
         headers: __headers,
@@ -636,6 +663,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * deleteApplication
    * @param params The `ApplicationControllerService.DeleteApplicationUsingDELETEParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -651,6 +679,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationBranches
    * @param params The `ApplicationControllerService.GetApplicationBranchesUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -667,7 +696,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/branches`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/branches`,
       __body,
       {
         headers: __headers,
@@ -683,6 +712,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationBranches
    * @param params The `ApplicationControllerService.GetApplicationBranchesUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -698,6 +728,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getBuilds
    * @param params The `ApplicationControllerService.GetBuildsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -714,7 +745,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds`,
       __body,
       {
         headers: __headers,
@@ -730,6 +761,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getBuilds
    * @param params The `ApplicationControllerService.GetBuildsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -745,6 +777,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * build
    * @param params The `ApplicationControllerService.BuildUsingPOSTParams` containing the following parameters:
    *
    * - `build`: build
@@ -764,7 +797,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds`,
       __body,
       {
         headers: __headers,
@@ -780,6 +813,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * build
    * @param params The `ApplicationControllerService.BuildUsingPOSTParams` containing the following parameters:
    *
    * - `build`: build
@@ -797,6 +831,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getBuild
    * @param params The `ApplicationControllerService.GetBuildUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -816,7 +851,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds/${encodeURIComponent(params.buildId)}`,
       __body,
       {
         headers: __headers,
@@ -832,6 +867,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getBuild
    * @param params The `ApplicationControllerService.GetBuildUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -849,6 +885,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * updateBuild
    * @param params The `ApplicationControllerService.UpdateBuildUsingPUTParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -871,7 +908,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'PUT',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds/${encodeURIComponent(params.buildId)}`,
       __body,
       {
         headers: __headers,
@@ -887,6 +924,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * updateBuild
    * @param params The `ApplicationControllerService.UpdateBuildUsingPUTParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -906,6 +944,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * downloadTestReport
    * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -925,7 +964,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}/downloadArtifacts`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds/${encodeURIComponent(params.buildId)}/downloadArtifacts`,
       __body,
       {
         headers: __headers,
@@ -941,6 +980,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * downloadTestReport
    * @param params The `ApplicationControllerService.DownloadTestReportUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -958,6 +998,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getBuildLogs
    * @param params The `ApplicationControllerService.GetBuildLogsUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -980,7 +1021,7 @@ class ApplicationControllerService extends __BaseService {
     if (params.nextToken != null) __params = __params.set('nextToken', params.nextToken.toString());
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/builds/${params.buildId}/logs`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds/${encodeURIComponent(params.buildId)}/logs`,
       __body,
       {
         headers: __headers,
@@ -996,6 +1037,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getBuildLogs
    * @param params The `ApplicationControllerService.GetBuildLogsUsingGETParams` containing the following parameters:
    *
    * - `buildId`: buildId
@@ -1015,6 +1057,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getExecutedActionsForApplication
    * @param params The `ApplicationControllerService.GetExecutedActionsForApplicationUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1031,7 +1074,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/executedActions`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/executedActions`,
       __body,
       {
         headers: __headers,
@@ -1047,6 +1090,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getExecutedActionsForApplication
    * @param params The `ApplicationControllerService.GetExecutedActionsForApplicationUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1062,6 +1106,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getImages
    * @param params The `ApplicationControllerService.GetImagesUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1078,7 +1123,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/images`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/images`,
       __body,
       {
         headers: __headers,
@@ -1094,6 +1139,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getImages
    * @param params The `ApplicationControllerService.GetImagesUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1109,6 +1155,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationSecretRequests
    * @param params The `ApplicationControllerService.GetApplicationSecretRequestsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1125,7 +1172,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/secretRequests`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/secretRequests`,
       __body,
       {
         headers: __headers,
@@ -1141,6 +1188,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationSecretRequests
    * @param params The `ApplicationControllerService.GetApplicationSecretRequestsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1156,6 +1204,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * createAppSecretRequest
    * @param params The `ApplicationControllerService.CreateAppSecretRequestUsingPOSTParams` containing the following parameters:
    *
    * - `applicationSecretRequests`: applicationSecretRequests
@@ -1175,7 +1224,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/secretRequests`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/secretRequests`,
       __body,
       {
         headers: __headers,
@@ -1191,6 +1240,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * createAppSecretRequest
    * @param params The `ApplicationControllerService.CreateAppSecretRequestUsingPOSTParams` containing the following parameters:
    *
    * - `applicationSecretRequests`: applicationSecretRequests
@@ -1208,6 +1258,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationTags
    * @param params The `ApplicationControllerService.GetApplicationTagsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1224,7 +1275,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/tags`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/tags`,
       __body,
       {
         headers: __headers,
@@ -1240,6 +1291,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationTags
    * @param params The `ApplicationControllerService.GetApplicationTagsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1255,6 +1307,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * processWebhookPRBitbucket
    * @param params The `ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams` containing the following parameters:
    *
    * - `webhook`: webhook
@@ -1280,7 +1333,7 @@ class ApplicationControllerService extends __BaseService {
     if (params.Host != null) __headers = __headers.set('Host', params.Host.toString());
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/webhooks/pr/bitbucket`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/webhooks/pr/bitbucket`,
       __body,
       {
         headers: __headers,
@@ -1296,6 +1349,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * processWebhookPRBitbucket
    * @param params The `ApplicationControllerService.ProcessWebhookPRBitbucketUsingPOSTParams` containing the following parameters:
    *
    * - `webhook`: webhook
@@ -1317,6 +1371,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * processWebhookPRGithub
    * @param params The `ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams` containing the following parameters:
    *
    * - `webhook`: webhook
@@ -1339,7 +1394,7 @@ class ApplicationControllerService extends __BaseService {
     if (params.Host != null) __headers = __headers.set('Host', params.Host.toString());
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/webhooks/pr/github`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/webhooks/pr/github`,
       __body,
       {
         headers: __headers,
@@ -1355,6 +1410,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * processWebhookPRGithub
    * @param params The `ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams` containing the following parameters:
    *
    * - `webhook`: webhook
@@ -1374,6 +1430,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getEnvironmentMetaData
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -1384,7 +1441,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${applicationFamily}/environmentMetaData`,
+      this.rootUrl + `/api/${encodeURIComponent(applicationFamily)}/environmentMetaData`,
       __body,
       {
         headers: __headers,
@@ -1400,6 +1457,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getEnvironmentMetaData
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -1410,6 +1468,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getEnvironments
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -1420,7 +1479,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${applicationFamily}/environments`,
+      this.rootUrl + `/api/${encodeURIComponent(applicationFamily)}/environments`,
       __body,
       {
         headers: __headers,
@@ -1436,6 +1495,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getEnvironments
    * @param applicationFamily applicationFamily
    * @return OK
    */
@@ -1446,6 +1506,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * upsertEnvironment
    * @param params The `ApplicationControllerService.UpsertEnvironmentUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1462,7 +1523,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/environments`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/environments`,
       __body,
       {
         headers: __headers,
@@ -1478,6 +1539,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * upsertEnvironment
    * @param params The `ApplicationControllerService.UpsertEnvironmentUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1493,6 +1555,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getEnvironment
    * @param params The `ApplicationControllerService.GetEnvironmentUsingGETParams` containing the following parameters:
    *
    * - `id`: id
@@ -1509,7 +1572,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/environments/${params.id}`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/environments/${encodeURIComponent(params.id)}`,
       __body,
       {
         headers: __headers,
@@ -1525,6 +1588,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getEnvironment
    * @param params The `ApplicationControllerService.GetEnvironmentUsingGETParams` containing the following parameters:
    *
    * - `id`: id
@@ -1540,6 +1604,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getAlertingDetails
    * @param params The `ApplicationControllerService.GetAlertingDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1559,7 +1624,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/alerting`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/alerting`,
       __body,
       {
         headers: __headers,
@@ -1575,6 +1640,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getAlertingDetails
    * @param params The `ApplicationControllerService.GetAlertingDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1592,6 +1658,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * enableAlerting
    * @param params The `ApplicationControllerService.EnableAlertingUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1611,7 +1678,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/alerting`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/alerting`,
       __body,
       {
         headers: __headers,
@@ -1627,6 +1694,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * enableAlerting
    * @param params The `ApplicationControllerService.EnableAlertingUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1644,6 +1712,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * disableAlerting
    * @param params The `ApplicationControllerService.DisableAlertingUsingDELETEParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1663,7 +1732,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'DELETE',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/alerting`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/alerting`,
       __body,
       {
         headers: __headers,
@@ -1679,6 +1748,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * disableAlerting
    * @param params The `ApplicationControllerService.DisableAlertingUsingDELETEParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1696,6 +1766,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getCurrentDeployment
    * @param params The `ApplicationControllerService.GetCurrentDeploymentUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1715,7 +1786,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/deployment/current`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/deployment/current`,
       __body,
       {
         headers: __headers,
@@ -1731,6 +1802,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getCurrentDeployment
    * @param params The `ApplicationControllerService.GetCurrentDeploymentUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1748,6 +1820,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getDeploymentStatus
    * @param params The `ApplicationControllerService.GetDeploymentStatusUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1767,7 +1840,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/deploymentStatus`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/deploymentStatus`,
       __body,
       {
         headers: __headers,
@@ -1783,6 +1856,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getDeploymentStatus
    * @param params The `ApplicationControllerService.GetDeploymentStatusUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1800,6 +1874,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * deploy
    * @param params The `ApplicationControllerService.DeployUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1822,7 +1897,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/deployments`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/deployments`,
       __body,
       {
         headers: __headers,
@@ -1838,6 +1913,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * deploy
    * @param params The `ApplicationControllerService.DeployUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1857,6 +1933,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getDumpFileList
    * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1879,7 +1956,7 @@ class ApplicationControllerService extends __BaseService {
     if (params.date != null) __params = __params.set('date', params.date.toString());
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/dumps`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/dumps`,
       __body,
       {
         headers: __headers,
@@ -1895,6 +1972,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getDumpFileList
    * @param params The `ApplicationControllerService.GetDumpFileListUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1914,6 +1992,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * downloadDumpFile
    * @param params The `ApplicationControllerService.DownloadDumpFileUsingGETParams` containing the following parameters:
    *
    * - `path`: path
@@ -1936,7 +2015,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/dumps/download`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/dumps/download`,
       __body,
       {
         headers: __headers,
@@ -1952,6 +2031,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * downloadDumpFile
    * @param params The `ApplicationControllerService.DownloadDumpFileUsingGETParams` containing the following parameters:
    *
    * - `path`: path
@@ -1971,6 +2051,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * haltApplication
    * @param params The `ApplicationControllerService.HaltApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -1990,7 +2071,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/halt`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/halt`,
       __body,
       {
         headers: __headers,
@@ -2006,6 +2087,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * haltApplication
    * @param params The `ApplicationControllerService.HaltApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2023,6 +2105,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getMonitoringDetails
    * @param params The `ApplicationControllerService.GetMonitoringDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2042,7 +2125,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/monitoring`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/monitoring`,
       __body,
       {
         headers: __headers,
@@ -2058,6 +2141,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getMonitoringDetails
    * @param params The `ApplicationControllerService.GetMonitoringDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2075,6 +2159,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * enableMonitoring
    * @param params The `ApplicationControllerService.EnableMonitoringUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2094,7 +2179,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/monitoring`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/monitoring`,
       __body,
       {
         headers: __headers,
@@ -2110,6 +2195,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * enableMonitoring
    * @param params The `ApplicationControllerService.EnableMonitoringUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2127,6 +2213,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * disableMonitoring
    * @param params The `ApplicationControllerService.DisableMonitoringUsingDELETEParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2146,7 +2233,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'DELETE',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/monitoring`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/monitoring`,
       __body,
       {
         headers: __headers,
@@ -2162,6 +2249,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * disableMonitoring
    * @param params The `ApplicationControllerService.DisableMonitoringUsingDELETEParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2179,6 +2267,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationPodDetails
    * @param params The `ApplicationControllerService.GetApplicationPodDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2198,7 +2287,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/podDetails`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/podDetails`,
       __body,
       {
         headers: __headers,
@@ -2214,6 +2303,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationPodDetails
    * @param params The `ApplicationControllerService.GetApplicationPodDetailsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2231,6 +2321,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getActionsForPod
    * @param params The `ApplicationControllerService.GetActionsForPodUsingGETParams` containing the following parameters:
    *
    * - `podName`: podName
@@ -2253,7 +2344,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/pods/${params.podName}/actions`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/pods/${encodeURIComponent(params.podName)}/actions`,
       __body,
       {
         headers: __headers,
@@ -2269,6 +2360,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getActionsForPod
    * @param params The `ApplicationControllerService.GetActionsForPodUsingGETParams` containing the following parameters:
    *
    * - `podName`: podName
@@ -2288,6 +2380,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * executeActionOnPod
    * @param params The `ApplicationControllerService.ExecuteActionOnPodUsingPOSTParams` containing the following parameters:
    *
    * - `podName`: podName
@@ -2313,7 +2406,7 @@ class ApplicationControllerService extends __BaseService {
     __body = params.applicationAction;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/pods/${params.podName}/actions/executeAction`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/pods/${encodeURIComponent(params.podName)}/actions/executeAction`,
       __body,
       {
         headers: __headers,
@@ -2329,6 +2422,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * executeActionOnPod
    * @param params The `ApplicationControllerService.ExecuteActionOnPodUsingPOSTParams` containing the following parameters:
    *
    * - `podName`: podName
@@ -2350,6 +2444,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * resumeApplication
    * @param params The `ApplicationControllerService.ResumeApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2369,7 +2464,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/resume`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/resume`,
       __body,
       {
         headers: __headers,
@@ -2385,6 +2480,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * resumeApplication
    * @param params The `ApplicationControllerService.ResumeApplicationUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2402,6 +2498,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * getApplicationSecrets
    * @param params The `ApplicationControllerService.GetApplicationSecretsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2421,7 +2518,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secretRequests`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/secretRequests`,
       __body,
       {
         headers: __headers,
@@ -2437,6 +2534,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * getApplicationSecrets
    * @param params The `ApplicationControllerService.GetApplicationSecretsUsingGETParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2454,6 +2552,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * updateApplicationSecrets
    * @param params The `ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2476,7 +2575,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'PUT',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/secrets`,
       __body,
       {
         headers: __headers,
@@ -2492,6 +2591,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * updateApplicationSecrets
    * @param params The `ApplicationControllerService.UpdateApplicationSecretsUsingPUTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2511,6 +2611,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * deleteApplicationSecret
    * @param params The `ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams` containing the following parameters:
    *
    * - `secretName`: secretName
@@ -2533,7 +2634,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'DELETE',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/applications/${params.applicationId}/secrets/${params.secretName}`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/applications/${encodeURIComponent(params.applicationId)}/secrets/${encodeURIComponent(params.secretName)}`,
       __body,
       {
         headers: __headers,
@@ -2549,6 +2650,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * deleteApplicationSecret
    * @param params The `ApplicationControllerService.DeleteApplicationSecretUsingDELETEParams` containing the following parameters:
    *
    * - `secretName`: secretName
@@ -2568,6 +2670,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * redeploy
    * @param params The `ApplicationControllerService.RedeployUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
@@ -2584,7 +2687,7 @@ class ApplicationControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/api/${params.applicationFamily}/${params.environment}/redeployment`,
+      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/${encodeURIComponent(params.environment)}/redeployment`,
       __body,
       {
         headers: __headers,
@@ -2600,6 +2703,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
+   * redeploy
    * @param params The `ApplicationControllerService.RedeployUsingPOSTParams` containing the following parameters:
    *
    * - `environment`: environment
