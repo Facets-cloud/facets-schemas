@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
   user: SimpleOauth2User;
   currentNav = '';
   navs = [
-    'overview', 'overrides', 'releases'
+    'overview', 'overrides', 'releases', 'disaster-recovery'
   ];
   clusters: AbstractCluster[];
   currentCluster = '';
