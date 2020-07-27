@@ -15,7 +15,9 @@
 /**
 Smart Table Actions
  */
-
+.cc-no-standard ng2-st-tbody-edit-delete {
+  display: none!important;
+}
 .nb-edit:before {
   content: "\e943";
 }
