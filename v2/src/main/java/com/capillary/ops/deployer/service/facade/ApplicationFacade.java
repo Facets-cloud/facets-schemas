@@ -78,6 +78,9 @@ public class ApplicationFacade {
     private DeploymentRepository deploymentRepository;
 
     @Autowired
+    private TestBuildDetailsRepository testBuildDetailsRepository;
+
+    @Autowired
     private IKubernetesService kubernetesService;
 
     @Autowired
@@ -244,6 +247,8 @@ public class ApplicationFacade {
         build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
         build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
         buildRepository.save(build);
+        build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
+        build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name() );
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
         build.setCodeBuildId(testBuildId);
@@ -353,6 +358,13 @@ public class ApplicationFacade {
         List<String> tags = vcsService.getTags(repositoryOwner, repositoryName);
 
         return tags;
+    }
+
+    public TestBuildDetails getTestBuildDetails(ApplicationFamily applicationFamily, String applicationId,
+                                              String buildId){
+        TestBuildDetails build = testBuildDetailsRepository.findFirstByBuildId(buildId).get();
+        return build;
+
     }
 
     private String getRepositoryName(Application application) {
@@ -967,6 +979,10 @@ public class ApplicationFacade {
         String appId = body.getAppId();
         // it has a pr id
         if(prNumber != null) {
+
+            TestBuildDetails testBuildDetails = getTestBuildDetails(body);
+            testBuildDetailsRepository.save(testBuildDetails);
+
             PullRequest pullRequest = pullRequestRepository.findAllByApplicationIdAndNumber(appId, prNumber).get(0);
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
@@ -989,5 +1005,22 @@ public class ApplicationFacade {
 
 
         return true;
+    }
+    private  TestBuildDetails getTestBuildDetails(CallbackBody callbackBody){
+
+        TestBuildDetails ret = new TestBuildDetails();
+        ret.setBuildId(callbackBody.getDeployerBuildId());
+        ret.setPrId(callbackBody.getPrNumber());
+        ret.setTestStatusRules(callbackBody.getQualityGate().getConditions());
+        ret.setApplicationId(callbackBody.getAppId());
+        ret.setApplicationFamily(callbackBody.getApplicationFamily());
+
+        switch (callbackBody.getStatus()){
+            case "OK" :  ret.setTestStatus(TestBuildDetails.Status.PASS); break;
+
+            default: ret.setTestStatus(TestBuildDetails.Status.FAIL); break;
+        }
+        return  ret;
+
     }
 }

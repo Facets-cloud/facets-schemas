@@ -111,6 +111,15 @@ public class ApplicationController {
         return build;
     }
 
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/testDetails", produces =
+            "application/json")
+    public TestBuildDetails getTestBuildDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
+        TestBuildDetails build = applicationFacade.getTestBuildDetails(applicationFamily, applicationId, buildId);
+        //build.setApplicationFamily(applicationFamily);
+        return build;
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'PROMOTERS')")
     @PutMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
     public Build updateBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
