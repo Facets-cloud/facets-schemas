@@ -40,6 +40,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         //1. Generate CIDR.
         cluster.setVpcCIDR(request.getVpcCIDR());
         cluster.setStackName(request.getStackName());
+        cluster.setCdPipelineParent(request.getCdPipelineParent());
         return cluster;
     }
 
@@ -59,6 +60,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         }
         if (checkChanged(existing.getK8sRequestsToLimitsRatio(), request.getK8sRequestsToLimitsRatio())) {
             existing.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
+        }
+        if (checkChanged(existing.getCdPipelineParent(), request.getCdPipelineParent())) {
+            existing.setCdPipelineParent(request.getCdPipelineParent());
         }
         return existing;
     }

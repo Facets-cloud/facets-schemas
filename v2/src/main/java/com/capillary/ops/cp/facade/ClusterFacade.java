@@ -67,6 +67,11 @@ public class ClusterFacade {
         if (!stack.isPresent()) {
             throw new RuntimeException("Invalid Stack Specified");
         }
+
+        if (request.getCdPipelineParent() != null && ! cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
+            throw new RuntimeException("Invalid CD parent cluster");
+        }
+
         Optional<AbstractCluster> existing =
             cpClusterRepository.findByNameAndStackName(request.getClusterName(), request.getStackName());
         if (existing.isPresent()) {
@@ -99,6 +104,11 @@ public class ClusterFacade {
                 "No such cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
                     .getStackName());
         }
+
+        if (request.getCdPipelineParent() != null && ! cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
+            throw new RuntimeException("Invalid CD parent cluster");
+        }
+
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.updateCluster(request, existing.get());
         Map<String, String> mergedClusterVars = new HashMap<>();

@@ -10,12 +10,9 @@ import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
-import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.service.CodeBuildService;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import com.jcabi.aspects.Loggable;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -29,7 +26,6 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -129,6 +125,36 @@ public class AwsCodeBuildService implements TFBuildService {
                 buildName = BUILD_NAME;
                 break;
         }
+
+        String primarySourceVersion = "master";
+
+        ProjectSourceVersion secondarySourceVersion =
+                ProjectSourceVersion.builder().sourceIdentifier("STACK").sourceVersion("master").build();
+
+
+        if (cluster.getCdPipelineParent() != null) {
+            Boolean fetchedSourceVersions = false;
+            List<DeploymentLog> pipelineParentDeployments =
+                    deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(cluster.getCdPipelineParent());
+            for (DeploymentLog d: pipelineParentDeployments) {
+                Build build = getBuild(d.getCodebuildId());
+                if (StatusType.SUCCEEDED.equals(build.buildStatus())) {
+                    primarySourceVersion = build.sourceVersion();
+                    String stackSourceVersion = build.secondarySourceVersions().stream()
+                            .filter(x -> "STACK".equalsIgnoreCase(x.sourceIdentifier()))
+                            .findFirst().get().sourceVersion();
+                    secondarySourceVersion =
+                            ProjectSourceVersion.builder().sourceIdentifier("STACK")
+                                    .sourceVersion(stackSourceVersion).build();
+                    fetchedSourceVersions= true;
+                    break;
+                }
+            }
+            if(!fetchedSourceVersions) {
+                throw new RuntimeException("No reference build found");
+            }
+        }
+
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
@@ -137,6 +163,8 @@ public class AwsCodeBuildService implements TFBuildService {
                             .location(stack.getVcsUrl())
                             .sourceIdentifier("STACK")
                             .build())
+                    .secondarySourcesVersionOverride(secondarySourceVersion)
+                    .sourceVersion(primarySourceVersion)
                     .build();
 
         ListBuildsForProjectRequest listBuildsForProjectRequest =
@@ -176,7 +204,11 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Override
     public StatusType getDeploymentStatus(String runId) {
-        return codeBuildService.getBuild(BUILD_REGION, runId).buildStatus();
+        return getBuild(runId).buildStatus();
+    }
+
+    private Build getBuild(String runId) {
+        return codeBuildService.getBuild(BUILD_REGION, runId);
     }
 
     @Override
