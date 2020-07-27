@@ -1,6 +1,6 @@
 
-
-.cc-info{
+.cc-info {
+  overflow-wrap: break-word;
   .cc-key {
     color: #222b45;
     font-family: Open Sans, sans-serif;
@@ -10,3 +10,29 @@
   }
   height: 100%;
 }
+
+.cc-card-action {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  >div{
+    padding:0.625rem;
+  }
+  .cc-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5.75rem;
+    height: 4.75rem;
+    font-size: 3.75rem;
+    border-radius: .25rem;
+    background: radial-gradient(#33bdff, #274bdb);
+  }
+  .cc-icon-text{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+}
+
+

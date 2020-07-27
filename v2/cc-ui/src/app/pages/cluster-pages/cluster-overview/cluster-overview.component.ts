@@ -2,12 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UiAwsClusterControllerService} from '../../../cc-api/services/ui-aws-cluster-controller.service';
 import flat from 'flat';
-import { NbToastrService } from '@nebular/theme';
-import { AwsClusterRequest, AbstractCluster } from 'src/app/cc-api/models';
-import { UiStackControllerService } from 'src/app/cc-api/services';
-import { LocalDataSource } from 'ng2-smart-table';
+import {NbToastrService} from '@nebular/theme';
+import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
+import {UiStackControllerService} from 'src/app/cc-api/services';
+import {LocalDataSource} from 'ng2-smart-table';
 import {AwsCluster} from "../../../cc-api/models/aws-cluster";
-import { element } from 'protractor';
+import {element} from 'protractor';
 
 @Component({
   selector: 'app-cluster-overview',
@@ -29,27 +29,10 @@ export class ClusterOverviewComponent implements OnInit {
         filter: false,
         width: '50%',
         editable: true,
-        editor: { type: 'text' },
+        editor: {type: 'text'},
       }
     },
     noDataMessage: '',
-    add: {
-      addButtonContent: '&#10133;',
-      createButtonContent: '&#10003;',
-      cancelButtonContent: '&#10005;',
-      confirmCreate: true,
-    },
-    delete: {
-      deleteButtonContent: '&#9986;',
-      confirmDelete: false,
-    },
-    edit: {
-      editButtonContent: '&#9998;',
-      saveButtonContent: '&#10003;',
-      cancelButtonContent: '&#10005;',
-      editConfirm: true,
-      confirmSave: true,
-    },
     pager: {
       display: true,
       perPage: 5,
@@ -57,13 +40,20 @@ export class ClusterOverviewComponent implements OnInit {
     actions: {
       add: false,
       edit: true,
-      delete: true,
+      delete: false,
       // class: "my-custom-class",
       // custom: [
       //   { name: 'editrecord', title: '<i>&#9986;</i>'},
       //   { name: 'deleterecord', title: '<i>&#9998;</i>' }
       // ],
       position: 'right',
+    },
+    edit: {
+      inputClass: '',
+      editButtonContent: '<i class="eva-edit-outline eva"></i>',
+      saveButtonContent: '<i class="eva-checkmark-outline eva"></i>',
+      cancelButtonContent: '<i class="eva-close-outline eva"></i>',
+      confirmSave: false,
     },
   };
 
@@ -79,12 +69,11 @@ export class ClusterOverviewComponent implements OnInit {
   stackName: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION'];
 
-  constructor(
-    private aWSClusterService: UiAwsClusterControllerService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private toastrService: NbToastrService,
-    private stackService: UiStackControllerService) {
+  constructor(private aWSClusterService: UiAwsClusterControllerService,
+              private route: ActivatedRoute,
+              private router: Router,
+              private toastrService: NbToastrService,
+              private stackService: UiStackControllerService) {
   }
 
   ngOnInit(): void {
@@ -165,7 +154,7 @@ export class ClusterOverviewComponent implements OnInit {
         originalValue = element.value;
       }
     })
-    
+
     let newValue = null;
     source.forEach(element => {
       if (element.name === variableName) {
@@ -186,9 +175,9 @@ export class ClusterOverviewComponent implements OnInit {
 
   private async updateCluster() {
     this.addOverrideSpinner = true;
-    
+
     let awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
-    
+
     if (this.isEmptyObject(awsClusterRequest.clusterVars)) {
       this.toastrService.danger('No variables have changed, cannot update', 'Error');
       this.addOverrideSpinner = false;
@@ -237,7 +226,7 @@ export class ClusterOverviewComponent implements OnInit {
         awsClusterRequest.clusterVars[element.name] = element.value;
       }
     });
-    
+
     return awsClusterRequest;
   }
 }

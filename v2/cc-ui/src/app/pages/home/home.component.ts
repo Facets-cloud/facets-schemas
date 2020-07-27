@@ -23,10 +23,6 @@ export class HomeComponent implements OnInit {
       },
       user: {
         title: 'Repo User',
-      },
-      custom: {
-        type: 'html',
-        title: 'Actions',
       }
     },
     actions: {
