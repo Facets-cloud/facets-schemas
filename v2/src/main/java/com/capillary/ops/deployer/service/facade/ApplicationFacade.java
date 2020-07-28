@@ -407,6 +407,7 @@ public class ApplicationFacade {
 
     private List<Build> getBuildDetails(Application application, List<Build> builds) {
         Map<String, Build> codeBuildToBuildMap = builds.parallelStream()
+                .filter(build -> build.getCodeBuildId()!=null)
                 .collect(Collectors.toMap(Build::getCodeBuildId, Function.identity()));
         List<software.amazon.awssdk.services.codebuild.model.Build> codeBuildServiceBuilds =
                 codeBuildService.getBuilds(application, new ArrayList<>(codeBuildToBuildMap.keySet()));
