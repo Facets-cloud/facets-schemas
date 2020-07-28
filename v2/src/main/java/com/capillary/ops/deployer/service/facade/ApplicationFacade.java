@@ -221,7 +221,7 @@ public class ApplicationFacade {
             pullRequest.setAction(webhookAction);
             pullRequest.setApplicationId(application.getId());
             if (!application.isCiEnabled() || !vcsService.shouldTriggerBuild(application, pullRequest)) {
-                return true;
+                //return true;
             }
 
             return processPullRequest(application, pullRequest);
@@ -248,10 +248,10 @@ public class ApplicationFacade {
             build.setEnvironmentVariables(new HashMap<>());
 
         build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
-        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
         build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
         build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name() );
         buildRepository.save(build);
+        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
         build.setCodeBuildId(testBuildId);
