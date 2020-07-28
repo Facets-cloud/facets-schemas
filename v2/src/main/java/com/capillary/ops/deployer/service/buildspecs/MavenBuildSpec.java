@@ -46,9 +46,13 @@ public class MavenBuildSpec extends BuildSpec {
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("mvn clean test sonar:sonar -Dmaven.test.failure.ignore=false " +
-                "-Dsonar.host.url=http://sonar.capillary.in/ " +
-                "-D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +
-                "-D"+ CallbackBody.APP_ID+"=$appId ");
+                " -Dsonar.host.url=http://sonar.capillary.in/ " +
+                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.branch.name=${CODEBUILD_RESOLVED_SOURCE_VERSION}" +
+                " -D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +
+                " -D"+ CallbackBody.DEPLOYER_BUILD_ID+"=$deployerBuildId " +
+                " -D"+ CallbackBody.APP_FAMILY+"=$appFamily " +
+                " -D"+ CallbackBody.APP_ID+"=$appId ");
         // failures will be handled from sonar
         // removed -Dsonar.language=java jacoco:report as they are defaulted
         return buildCommands;

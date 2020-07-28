@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,13 @@ public class NPMUIBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
+        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
+                " -Dsonar.branch.name=${CODEBUILD_RESOLVED_SOURCE_VERSION}" +
+                " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +
+                " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
+                " -D" + CallbackBody.APP_ID + "=$appId " +
+                " -D" + CallbackBody.APP_FAMILY+"=$appFamily " +
+                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}");
         return buildCommands;
     }
 
@@ -85,6 +93,6 @@ public class NPMUIBuildSpec extends BuildSpec {
 
     @Override
     public String getBuildEnvironmentImage() {
-        return  "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/nodejsbuildimage:f18f9d0";
+        return "486456986266.dkr.ecr.us-west-1.amazonaws.com/ops/nodejsbuildimage:f18f9d0";
     }
 }
