@@ -219,6 +219,7 @@ public class ApplicationFacade {
             PullRequest pullRequest = webhook.toPullRequest();
             pullRequest.setHost(host);
             pullRequest.setAction(webhookAction);
+            pullRequest.setApplicationId(application.getId());
             if (!application.isCiEnabled() || !vcsService.shouldTriggerBuild(application, pullRequest)) {
                 return true;
             }
@@ -234,9 +235,11 @@ public class ApplicationFacade {
 
     private boolean processPullRequest(Application application, PullRequest pullRequest) {
         Build build = new Build();
+        build.setApplicationId(pullRequest.getApplicationId());
         int pullRequestNumber = pullRequest.getNumber();
         build.setApplicationId(application.getId());
         build.setTag(pullRequest.getSourceBranch());
+        build.setApplicationFamily(application.getApplicationFamily());
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
         build.setTestBuild(true);
@@ -246,9 +249,9 @@ public class ApplicationFacade {
 
         build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
         build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
-        buildRepository.save(build);
         build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
         build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name() );
+        buildRepository.save(build);
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
         build.setCodeBuildId(testBuildId);
