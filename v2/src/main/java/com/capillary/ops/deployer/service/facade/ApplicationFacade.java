@@ -221,7 +221,7 @@ public class ApplicationFacade {
             pullRequest.setAction(webhookAction);
             pullRequest.setApplicationId(application.getId());
             if (!application.isCiEnabled() || !vcsService.shouldTriggerBuild(application, pullRequest)) {
-                //return true;
+                return true;
             }
 
             return processPullRequest(application, pullRequest);
