@@ -23,7 +23,10 @@ public class TestBuildDetails {
 
 
     private String prId;
-    private String destBranch;
+    private String branch;
+    private String branchType;
+
+    private String sonarUrl;
 
     private Status testStatus;
 
@@ -56,14 +59,6 @@ public class TestBuildDetails {
 
     public void setPrId(String prId) {
         this.prId = prId;
-    }
-
-    public String getDestBranch() {
-        return destBranch;
-    }
-
-    public void setDestBranch(String destBranch) {
-        this.destBranch = destBranch;
     }
 
     public Status getTestStatus() {
@@ -104,5 +99,29 @@ public class TestBuildDetails {
 
     public void setApplicationFamily(String applicationFamily) {
         this.applicationFamily = applicationFamily;
+    }
+
+    public String getSonarUrl() {
+        return sonarUrl;
+    }
+
+    public void setSonarUrl(String sonarUrl) {
+        this.sonarUrl = sonarUrl;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public String getBranchType() {
+        return branchType;
+    }
+
+    public void setBranchType(String branchType) {
+        this.branchType = branchType;
     }
 }

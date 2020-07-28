@@ -16,6 +16,7 @@ public class CallbackBody {
     private String status;
     private QualityGate qualityGate;
     private Map<String, String> properties;
+    private Branch branch;
 
     public String getStatus() {
         return status;
@@ -55,5 +56,13 @@ public class CallbackBody {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 }

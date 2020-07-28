@@ -987,8 +987,9 @@ public class ApplicationFacade {
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
 
-            final String newline = "----- ";
+            final String newline = "-----         ";
             String message = "Status :" + body.getQualityGate().getStatus() ;
+            message = message + newline + "Sonar url: " + testBuildDetails.getSonarUrl();
             for ( Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
                 if(!cond.getStatus().equalsIgnoreCase("OK") && cond.getValue() != null ){
@@ -1014,6 +1015,9 @@ public class ApplicationFacade {
         ret.setTestStatusRules(callbackBody.getQualityGate().getConditions());
         ret.setApplicationId(callbackBody.getAppId());
         ret.setApplicationFamily(callbackBody.getApplicationFamily());
+        ret.setBranch(callbackBody.getBranch().getName());
+        ret.setBranchType(callbackBody.getBranch().getType());
+        ret.setSonarUrl(callbackBody.getBranch().getUrl());
 
         switch (callbackBody.getStatus()){
             case "OK" :  ret.setTestStatus(TestBuildDetails.Status.PASS); break;

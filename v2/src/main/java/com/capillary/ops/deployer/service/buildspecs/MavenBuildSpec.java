@@ -48,6 +48,7 @@ public class MavenBuildSpec extends BuildSpec {
         buildCommands.add("mvn clean test sonar:sonar -Dmaven.test.failure.ignore=false " +
                 " -Dsonar.host.url=http://sonar.capillary.in/ " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.branch.name=${CODEBUILD_RESOLVED_SOURCE_VERSION}" +
                 " -D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +
                 " -D"+ CallbackBody.DEPLOYER_BUILD_ID+"=$deployerBuildId " +
                 " -D"+ CallbackBody.APP_FAMILY+"=$appFamily " +
