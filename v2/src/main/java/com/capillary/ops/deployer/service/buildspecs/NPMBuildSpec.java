@@ -50,7 +50,7 @@ public class NPMBuildSpec extends BuildSpec {
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
-                " -Dsonar.branch.name=${CODEBUILD_RESOLVED_SOURCE_VERSION}" +
+                " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
                 " -D" + CallbackBody.APP_ID + "=$appId " +
