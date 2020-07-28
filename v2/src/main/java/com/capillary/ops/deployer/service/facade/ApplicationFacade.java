@@ -248,10 +248,11 @@ public class ApplicationFacade {
             build.setEnvironmentVariables(new HashMap<>());
 
         build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
-        build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
+        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
         build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name() );
         buildRepository.save(build);
-        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
+
+        build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
         build.setCodeBuildId(testBuildId);
