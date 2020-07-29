@@ -68,6 +68,6 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
     }
 
     private boolean checkChanged(Object old, Object changed) {
-        return changed != null && !old.equals(changed);
+        return changed != null && !changed.equals(old);
     }
 }
