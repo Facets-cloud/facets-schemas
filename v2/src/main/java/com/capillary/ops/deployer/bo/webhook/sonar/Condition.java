@@ -14,6 +14,10 @@ public class Condition{
         return metric;
     }
 
+    public String getMetricLabel() {
+        return metric.replace("_", " ");
+    }
+
     public void setMetric(String metric) {
         this.metric = metric;
     }
