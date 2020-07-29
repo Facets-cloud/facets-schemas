@@ -323,10 +323,14 @@ public class DeploymentFacade {
      * @param qaSuiteResult final result of QASuite
      */
     synchronized public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
-        Map<String, String> failedBuilds = new HashMap<>();
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
+        existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
+        Map<String, String> failedBuilds = new HashMap<>();
         try {
             if (K8sJobStatus.FAILURE.equals(qaSuiteResult.getStatus()) && qaSuiteResult.getDeploymentId() != null) {
+                logger.info("sanity failure for cluster: {}, with result: {}", cluster.getId(), qaSuiteResult);
+
                 Map<String, K8sJobStatus> notFailedJobs = filterNotFailedQASuites(qaSuiteResult.getModuleStatusMap());
                 QASuiteResult copy = qaSuiteResult.withModuleStatusMap(notFailedJobs);
                 List<String> automationFailures = getFailedModules(qaSuiteResult);
@@ -341,7 +345,7 @@ public class DeploymentFacade {
                     failedBuilds.put(moduleName, unpromoteBuild);
                 });
 
-                if (cluster.getReleaseStream().equals(BuildStrategy.PROD)) {
+                if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
                     deployModulesWithRevertedBuilds(clusterId, qaSuiteResult.getDeploymentId());
                 }
             }

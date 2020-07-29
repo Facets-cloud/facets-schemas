@@ -1,5 +1,7 @@
 package com.capillary.ops.cp.bo;
 
+import org.springframework.data.annotation.Id;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
@@ -8,11 +10,15 @@ public class QASuiteResult {
     public QASuiteResult() {}
 
     public QASuiteResult(QASuiteResult qaSuiteResult) {
+        this.id = qaSuiteResult.id;
         this.deploymentId = qaSuiteResult.deploymentId;
         this.status = qaSuiteResult.status;
         this.moduleStatusMap = qaSuiteResult.moduleStatusMap;
         this.redeployment = qaSuiteResult.redeployment;
     }
+
+    @Id
+    private String id;
 
     @NotNull
     @NotEmpty
@@ -24,6 +30,14 @@ public class QASuiteResult {
     Map<String, K8sJobStatus> moduleStatusMap;
 
     private boolean redeployment = false;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getDeploymentId() {
         return deploymentId;
