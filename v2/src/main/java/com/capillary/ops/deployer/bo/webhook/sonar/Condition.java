@@ -1,6 +1,8 @@
 package com.capillary.ops.deployer.bo.webhook.sonar;
 
-public class Condition{
+import net.logstash.logback.encoder.org.apache.commons.lang.WordUtils;
+
+public class Condition {
     public Condition() {
     }
 
@@ -15,7 +17,7 @@ public class Condition{
     }
 
     public String getMetricLabel() {
-        return metric.replace("_", " ");
+        return WordUtils.capitalize(metric.replace("_", " "));
     }
 
     public void setMetric(String metric) {
