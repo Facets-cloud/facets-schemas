@@ -1,12 +1,12 @@
 package com.capillary.ops.deployer.bo;
 
+import com.capillary.ops.deployer.bo.webhook.sonar.Condition;
 import org.springframework.data.annotation.Id;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 public class Build implements Serializable {
 
@@ -27,8 +27,8 @@ public class Build implements Serializable {
     private boolean promoted = false;
     private PromotionIntent promotionIntent = PromotionIntent.NA;
     private boolean promotable = false;
-    private boolean testBuild = false;
     private String artifactUrl;
+    private boolean testBuild = false;
 
     private static final long serialVersionUID = 3595193021269728012L;
 

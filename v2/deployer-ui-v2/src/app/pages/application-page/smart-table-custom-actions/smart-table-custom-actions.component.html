@@ -3,3 +3,4 @@
 <button *ngIf="rowData.status === 'SUCCEEDED' && !rowData.testBuild" (click)="deploy()"  nbTooltip="Deploy Build" nbButton appearance="ghost"><nb-icon pack="eva" icon="paper-plane-outline"></nb-icon></button>
 <button (click)="promoteBuild()" *ngIf="rowData.allowPromotion && rowData.status === 'SUCCEEDED' && !rowData.promoted && !rowData.testBuild" nbTooltip="Promote Build" nbButton appearance="ghost"><nb-icon pack="eva" icon="star-outline"></nb-icon></button>
 <button (click)="openBuildPage()" nbTooltip="Build Details" nbButton appearance="ghost"><nb-icon pack="eva" icon="external-link-outline"></nb-icon></button>
+<button *ngIf="rowData.testBuild" (click)="showTestDetails()" nbTooltip="Test Details" nbButton appearance="ghost"><nb-icon pack="eva" icon="eye-outline"></nb-icon></button>

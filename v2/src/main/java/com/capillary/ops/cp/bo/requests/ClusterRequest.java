@@ -12,6 +12,7 @@ public abstract class ClusterRequest {
     private Cloud cloud;
     private String clusterName;
     private String stackName;
+    private String cdPipelineParent;
 
     @ApiParam(type = "string")
     private TimeZone tz;
@@ -85,5 +86,13 @@ public abstract class ClusterRequest {
 
     public void setSchedules(Map<ReleaseType, String> schedules) {
         this.schedules = schedules;
+    }
+
+    public String getCdPipelineParent() {
+        return cdPipelineParent;
+    }
+
+    public void setCdPipelineParent(String cdPipelineParent) {
+        this.cdPipelineParent = cdPipelineParent;
     }
 }

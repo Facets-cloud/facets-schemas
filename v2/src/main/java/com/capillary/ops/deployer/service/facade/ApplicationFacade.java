@@ -78,6 +78,9 @@ public class ApplicationFacade {
     private DeploymentRepository deploymentRepository;
 
     @Autowired
+    private TestBuildDetailsRepository testBuildDetailsRepository;
+
+    @Autowired
     private IKubernetesService kubernetesService;
 
     @Autowired
@@ -216,6 +219,7 @@ public class ApplicationFacade {
             PullRequest pullRequest = webhook.toPullRequest();
             pullRequest.setHost(host);
             pullRequest.setAction(webhookAction);
+            pullRequest.setApplicationId(application.getId());
             if (!application.isCiEnabled() || !vcsService.shouldTriggerBuild(application, pullRequest)) {
                 return true;
             }
@@ -231,9 +235,11 @@ public class ApplicationFacade {
 
     private boolean processPullRequest(Application application, PullRequest pullRequest) {
         Build build = new Build();
+        build.setApplicationId(pullRequest.getApplicationId());
         int pullRequestNumber = pullRequest.getNumber();
         build.setApplicationId(application.getId());
         build.setTag(pullRequest.getSourceBranch());
+        build.setApplicationFamily(application.getApplicationFamily());
         build.setDescription("Built via pull request " + pullRequestNumber);
         build.setTriggeredBy("capbuilder");
         build.setTestBuild(true);
@@ -243,7 +249,10 @@ public class ApplicationFacade {
 
         build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
         build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
+        build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name() );
         buildRepository.save(build);
+
+        build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
 
         String testBuildId = codeBuildService.triggerBuild(application, build, true);
         build.setCodeBuildId(testBuildId);
@@ -355,6 +364,13 @@ public class ApplicationFacade {
         return tags;
     }
 
+    public TestBuildDetails getTestBuildDetails(ApplicationFamily applicationFamily, String applicationId,
+                                              String buildId){
+        TestBuildDetails build = testBuildDetailsRepository.findFirstByBuildId(buildId).get();
+        return build;
+
+    }
+
     private String getRepositoryName(Application application) {
         String[] repositoryUrlParts = application.getRepositoryUrl().split("/");
         return repositoryUrlParts[repositoryUrlParts.length - 1];
@@ -368,7 +384,7 @@ public class ApplicationFacade {
     @Cacheable(
             value = "codebuild",
             key = "#application.id + '_' + #build.codeBuildId + '_' + #includeImage",
-            unless = "#result == null && (#result.getStatus().name() != 'SUCCEEDED') && #result.codeBuildId == null && #result.codeBuildId == ''"
+            unless = "#result == null || (#result.getStatus().name() != 'SUCCEEDED') || #result.codeBuildId == null || #result.codeBuildId == ''"
     )
     public Build getBuildDetails(Application application, Build build, boolean includeImage) {
         software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
@@ -392,6 +408,7 @@ public class ApplicationFacade {
 
     private List<Build> getBuildDetails(Application application, List<Build> builds) {
         Map<String, Build> codeBuildToBuildMap = builds.parallelStream()
+                .filter(build -> build.getCodeBuildId()!=null)
                 .collect(Collectors.toMap(Build::getCodeBuildId, Function.identity()));
         List<software.amazon.awssdk.services.codebuild.model.Build> codeBuildServiceBuilds =
                 codeBuildService.getBuilds(application, new ArrayList<>(codeBuildToBuildMap.keySet()));
@@ -967,12 +984,17 @@ public class ApplicationFacade {
         String appId = body.getAppId();
         // it has a pr id
         if(prNumber != null) {
+
+            TestBuildDetails testBuildDetails = getTestBuildDetails(body);
+            testBuildDetailsRepository.save(testBuildDetails);
+
             PullRequest pullRequest = pullRequestRepository.findAllByApplicationIdAndNumber(appId, prNumber).get(0);
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
 
-            final String newline = "----- ";
+            final String newline = "-----         ";
             String message = "Status :" + body.getQualityGate().getStatus() ;
+            message = message + newline + "Sonar url: " + testBuildDetails.getSonarUrl();
             for ( Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
                 if(!cond.getStatus().equalsIgnoreCase("OK") && cond.getValue() != null ){
@@ -989,5 +1011,25 @@ public class ApplicationFacade {
 
 
         return true;
+    }
+    private  TestBuildDetails getTestBuildDetails(CallbackBody callbackBody){
+
+        TestBuildDetails ret = new TestBuildDetails();
+        ret.setBuildId(callbackBody.getDeployerBuildId());
+        ret.setPrId(callbackBody.getPrNumber());
+        ret.setTestStatusRules(callbackBody.getQualityGate().getConditions());
+        ret.setApplicationId(callbackBody.getAppId());
+        ret.setApplicationFamily(callbackBody.getApplicationFamily());
+        ret.setBranch(callbackBody.getBranch().getName());
+        ret.setBranchType(callbackBody.getBranch().getType());
+        ret.setSonarUrl(callbackBody.getBranch().getUrl());
+
+        switch (callbackBody.getStatus()){
+            case "OK" :  ret.setTestStatus(TestBuildDetails.Status.PASS); break;
+
+            default: ret.setTestStatus(TestBuildDetails.Status.FAIL); break;
+        }
+        return  ret;
+
     }
 }

@@ -1,7 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ClusterOverviewComponent} from './cluster-overview.component';
-import {NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService, NbInputModule, NbSpinnerModule} from '@nebular/theme';
+import {
+  NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService,
+  NbInputModule, NbSpinnerModule, NbIconModule, NbListModule, NbUserModule
+} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 import {AwsClusterControllerService} from '../../../cc-api/services/aws-cluster-controller.service';
@@ -9,6 +12,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {LayoutsModule} from '../../../layouts/layouts.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule } from '@angular/forms';
+import {NbEvaIconsModule} from "@nebular/eva-icons";
 
 
 @NgModule({
@@ -31,7 +35,11 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     NbInputModule,
     NbButtonModule,
-    NbSpinnerModule
+    NbSpinnerModule,
+    NbIconModule,
+    NbEvaIconsModule,
+    NbListModule,
+    NbUserModule
   ]
 })
 export class ClusterOverviewModule {

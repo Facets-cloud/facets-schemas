@@ -35,7 +35,7 @@ import { NumberComponentDynamicComponent } from './pages/create-application-page
 import { ActionsColumn, DeploymentDetailsDialog, CurrentStatusColumn } from './pages/application-page/current-deployments/current-deployments.component';
 import { NewRelicLinkViewComponent, MonitoringEnableButtonComponent } from './pages/application-page/monitoring/monitoring.component';
 import { NewRelicAlertLinkViewComponent, AlertingEnableButtonComponent } from './pages/application-page/alerting/alerting.component';
-
+import { TestBuildDetailsComponent } from './pages/application-page/test-build-details/test-build-details.component';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -74,6 +74,7 @@ import { NewRelicAlertLinkViewComponent, AlertingEnableButtonComponent } from '.
     NewRelicAlertLinkViewComponent,
     MonitoringEnableButtonComponent,
     AlertingEnableButtonComponent,
+    TestBuildDetailsComponent,
   ],
 })
 export class AppModule {

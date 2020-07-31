@@ -31,6 +31,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingGETResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -55,6 +56,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingGET(): __Observable<{[key: string]: {}}> {
@@ -64,6 +66,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingHEADResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -88,6 +91,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingHEAD(): __Observable<{[key: string]: {}}> {
@@ -97,6 +101,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingPOSTResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -121,6 +126,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingPOST(): __Observable<{[key: string]: {}}> {
@@ -130,6 +136,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingPUTResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -154,6 +161,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingPUT(): __Observable<{[key: string]: {}}> {
@@ -163,6 +171,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingDELETEResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -187,6 +196,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingDELETE(): __Observable<{[key: string]: {}}> {
@@ -196,6 +206,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingOPTIONSResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -220,6 +231,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingOPTIONS(): __Observable<{[key: string]: {}}> {
@@ -229,6 +241,7 @@ class BasicErrorControllerService extends __BaseService {
   }
 
   /**
+   * error
    * @return OK
    */
   errorUsingPATCHResponse(): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
@@ -253,6 +266,7 @@ class BasicErrorControllerService extends __BaseService {
     );
   }
   /**
+   * error
    * @return OK
    */
   errorUsingPATCH(): __Observable<{[key: string]: {}}> {

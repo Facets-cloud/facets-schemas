@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -90,7 +87,8 @@ public class ReleaseScheduleService {
             logger.info("Initiating Release of type {} for cluster {} ({})", releaseType, c.getId(), c.getName());
             DeploymentRequest deploymentRequest = new DeploymentRequest();
             deploymentRequest.setReleaseType(releaseType);
-            tfBuildService.deployLatest(c, deploymentRequest);
+            AbstractCluster cluster = cpClusterRepository.findById(c.getId()).get();
+            tfBuildService.deployLatest(cluster, deploymentRequest);
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
     }

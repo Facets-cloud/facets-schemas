@@ -38,8 +38,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
         //TODO: Variable Generations
         //1. Generate CIDR.
-        cluster.setVpcCIDR("10.250.0.0/16");
+        cluster.setVpcCIDR(request.getVpcCIDR());
         cluster.setStackName(request.getStackName());
+        cluster.setCdPipelineParent(request.getCdPipelineParent());
         return cluster;
     }
 
@@ -60,10 +61,13 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         if (checkChanged(existing.getK8sRequestsToLimitsRatio(), request.getK8sRequestsToLimitsRatio())) {
             existing.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
         }
+        if (checkChanged(existing.getCdPipelineParent(), request.getCdPipelineParent())) {
+            existing.setCdPipelineParent(request.getCdPipelineParent());
+        }
         return existing;
     }
 
     private boolean checkChanged(Object old, Object changed) {
-        return changed != null && !old.equals(changed);
+        return changed != null && !changed.equals(old);
     }
 }

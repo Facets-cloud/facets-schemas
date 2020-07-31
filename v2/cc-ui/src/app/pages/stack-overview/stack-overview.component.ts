@@ -40,7 +40,7 @@ export class StackOverviewComponent implements OnInit {
       delete: false,
       add: false,
       position: 'right',
-      custom: [{name: 'View', title: 'View'}]
+      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>', type: 'html'}]
     },
     hideSubHeader: true,
   };

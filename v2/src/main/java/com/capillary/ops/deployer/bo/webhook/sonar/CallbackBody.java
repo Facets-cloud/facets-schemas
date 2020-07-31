@@ -7,6 +7,8 @@ public class CallbackBody {
 
     public static final String APP_ID = "sonar.analysis.appId";
     public static final String PR_NUMBER = "sonar.analysis.pr.number";
+    public static final String DEPLOYER_BUILD_ID = "sonar.analysis.deployer.build.id";
+    public static final String APP_FAMILY = "sonar.analysis.app.family";
 
     public CallbackBody() {
     }
@@ -14,6 +16,7 @@ public class CallbackBody {
     private String status;
     private QualityGate qualityGate;
     private Map<String, String> properties;
+    private Branch branch;
 
     public String getStatus() {
         return status;
@@ -39,11 +42,27 @@ public class CallbackBody {
         return properties.getOrDefault(PR_NUMBER, null);
     }
 
+    public String getDeployerBuildId(){
+        return properties.getOrDefault(DEPLOYER_BUILD_ID, null);
+    }
+
+    public String getApplicationFamily(){
+        return properties.getOrDefault(APP_FAMILY, null);
+    }
+
     public String getAppId() {
         return properties.getOrDefault(APP_ID, null);
     }
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 }

@@ -33,7 +33,7 @@ import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonC
 import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-pod-action-dialog/excecute-pod-action-dialog.component';
 import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoComponent } from './application-page/executed-actions/executed-actions.component';
 import { AlertingComponent, AlertingEnableButtonComponent, NewRelicAlertLinkViewComponent } from './application-page/alerting/alerting.component';
-
+import { TestBuildDetailsComponent } from './application-page/test-build-details/test-build-details.component';
 @NgModule({
   imports: [
     PagesRoutingModule,
@@ -102,6 +102,7 @@ import { AlertingComponent, AlertingEnableButtonComponent, NewRelicAlertLinkView
     DialogActionInfoComponent,
     ButtonActionInfoComponent,
     AlertingComponent,
+    TestBuildDetailsComponent,
   ],
   entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent,
     ExcecutePodActionDialogComponent, DialogActionInfoComponent, ButtonActionInfoComponent],

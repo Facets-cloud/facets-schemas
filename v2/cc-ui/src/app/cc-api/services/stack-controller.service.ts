@@ -30,6 +30,7 @@ class StackControllerService extends __BaseService {
   }
 
   /**
+   * getStacks
    * @return OK
    */
   getStacksUsingGETResponse(): __Observable<__StrictHttpResponse<Array<Stack>>> {
@@ -54,6 +55,7 @@ class StackControllerService extends __BaseService {
     );
   }
   /**
+   * getStacks
    * @return OK
    */
   getStacksUsingGET(): __Observable<Array<Stack>> {
@@ -63,6 +65,7 @@ class StackControllerService extends __BaseService {
   }
 
   /**
+   * createStack
    * @param stack stack
    * @return OK
    */
@@ -89,6 +92,7 @@ class StackControllerService extends __BaseService {
     );
   }
   /**
+   * createStack
    * @param stack stack
    * @return OK
    */
@@ -99,6 +103,7 @@ class StackControllerService extends __BaseService {
   }
 
   /**
+   * getClusters
    * @param stackName stackName
    * @return OK
    */
@@ -109,7 +114,7 @@ class StackControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/stacks/${stackName}/clusters`,
+      this.rootUrl + `/cc/v1/stacks/${encodeURIComponent(stackName)}/clusters`,
       __body,
       {
         headers: __headers,
@@ -125,6 +130,7 @@ class StackControllerService extends __BaseService {
     );
   }
   /**
+   * getClusters
    * @param stackName stackName
    * @return OK
    */
@@ -135,6 +141,7 @@ class StackControllerService extends __BaseService {
   }
 
   /**
+   * reloadStack
    * @param stackName stackName
    * @return OK
    */
@@ -145,7 +152,7 @@ class StackControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/stacks/${stackName}/reload`,
+      this.rootUrl + `/cc/v1/stacks/${encodeURIComponent(stackName)}/reload`,
       __body,
       {
         headers: __headers,
@@ -161,6 +168,7 @@ class StackControllerService extends __BaseService {
     );
   }
   /**
+   * reloadStack
    * @param stackName stackName
    * @return OK
    */

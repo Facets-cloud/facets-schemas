@@ -7,13 +7,10 @@ import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
-import com.capillary.ops.cp.service.AwsCodeBuildService;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.service.CodeBuildService;
-import com.google.common.collect.ImmutableMap;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -31,8 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
@@ -328,10 +323,14 @@ public class DeploymentFacade {
      * @param qaSuiteResult final result of QASuite
      */
     synchronized public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
-        Map<String, String> failedBuilds = new HashMap<>();
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
+        existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
+        Map<String, String> failedBuilds = new HashMap<>();
         try {
             if (K8sJobStatus.FAILURE.equals(qaSuiteResult.getStatus()) && qaSuiteResult.getDeploymentId() != null) {
+                logger.info("sanity failure for cluster: {}, with result: {}", cluster.getId(), qaSuiteResult);
+
                 Map<String, K8sJobStatus> notFailedJobs = filterNotFailedQASuites(qaSuiteResult.getModuleStatusMap());
                 QASuiteResult copy = qaSuiteResult.withModuleStatusMap(notFailedJobs);
                 List<String> automationFailures = getFailedModules(qaSuiteResult);
@@ -346,16 +345,9 @@ public class DeploymentFacade {
                     failedBuilds.put(moduleName, unpromoteBuild);
                 });
 
-                DeploymentRequest deploymentRequest = new DeploymentRequest();
-                deploymentRequest.setTag("test1");
-                deploymentRequest.setReleaseType(ReleaseType.RELEASE);
-                deploymentRequest.setExtraEnv(Collections.singletonList(EnvironmentVariable.builder()
-                        .name("REDEPLOYMENT_BUILD_ID")
-                        .value(qaSuiteResult.getDeploymentId())
-                        .type(EnvironmentVariableType.PLAINTEXT)
-                        .build()));
-
-                createDeployment(clusterId, deploymentRequest);
+                if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
+                    deployModulesWithRevertedBuilds(clusterId, qaSuiteResult.getDeploymentId());
+                }
             }
         } catch (Exception e) {
             logger.error("Error validating sanity results", e);
@@ -363,6 +355,19 @@ public class DeploymentFacade {
         } finally {
             sendSanityFailureNotification(cluster, failedBuilds);
         }
+    }
+
+    private void deployModulesWithRevertedBuilds(String clusterId, String deploymentId) {
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setTag("test1");
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setExtraEnv(Collections.singletonList(EnvironmentVariable.builder()
+                .name("REDEPLOYMENT_BUILD_ID")
+                .value(deploymentId)
+                .type(EnvironmentVariableType.PLAINTEXT)
+                .build()));
+
+        createDeployment(clusterId, deploymentRequest);
     }
 
     private void sendSanityFailureNotification(AbstractCluster cluster, Map<String, String> failedBuilds) {

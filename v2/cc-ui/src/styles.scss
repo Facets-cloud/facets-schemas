@@ -15,13 +15,11 @@
 /**
 Smart Table Actions
  */
-.ng2-smart-actions ng2-st-tbody-edit-delete{
-  display: none !important;
+.cc-no-standard ng2-st-tbody-edit-delete {
+  display: none!important;
 }
-
-a.ng2-smart-action.ng2-smart-action-custom-custom {
-  color: #1e6bb8 !important;
-  zoom: 0.5;
+.nb-edit:before {
+  content: "\e943";
 }
 
 /* You can add global styles to this file, and also import other style files */

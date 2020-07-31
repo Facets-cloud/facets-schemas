@@ -39,6 +39,8 @@ public abstract class AbstractCluster {
     @NotNull
     private BuildStrategy releaseStream;
 
+    private String cdPipelineParent;
+
     @Transient
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();
 
@@ -142,5 +144,13 @@ public abstract class AbstractCluster {
         if (schedules != null) {
             this.schedules = schedules;
         }
+    }
+
+    public String getCdPipelineParent() {
+        return cdPipelineParent;
+    }
+
+    public void setCdPipelineParent(String cdPipelineParent) {
+        this.cdPipelineParent = cdPipelineParent;
     }
 }

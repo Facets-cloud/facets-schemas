@@ -29,6 +29,7 @@ class UiAwsClusterControllerService extends __BaseService {
   }
 
   /**
+   * createCluster
    * @param request request
    * @return OK
    */
@@ -55,6 +56,7 @@ class UiAwsClusterControllerService extends __BaseService {
     );
   }
   /**
+   * createCluster
    * @param request request
    * @return OK
    */
@@ -65,6 +67,7 @@ class UiAwsClusterControllerService extends __BaseService {
   }
 
   /**
+   * getCluster
    * @param clusterId clusterId
    * @return OK
    */
@@ -75,7 +78,7 @@ class UiAwsClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc-ui/v1/aws/clusters/${clusterId}`,
+      this.rootUrl + `/cc-ui/v1/aws/clusters/${encodeURIComponent(clusterId)}`,
       __body,
       {
         headers: __headers,
@@ -91,6 +94,7 @@ class UiAwsClusterControllerService extends __BaseService {
     );
   }
   /**
+   * getCluster
    * @param clusterId clusterId
    * @return OK
    */
@@ -101,6 +105,7 @@ class UiAwsClusterControllerService extends __BaseService {
   }
 
   /**
+   * updateCluster
    * @param params The `UiAwsClusterControllerService.UpdateClusterUsingPUT1Params` containing the following parameters:
    *
    * - `request`: request
@@ -117,7 +122,7 @@ class UiAwsClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'PUT',
-      this.rootUrl + `/cc-ui/v1/aws/clusters/${params.clusterId}`,
+      this.rootUrl + `/cc-ui/v1/aws/clusters/${encodeURIComponent(params.clusterId)}`,
       __body,
       {
         headers: __headers,
@@ -133,6 +138,7 @@ class UiAwsClusterControllerService extends __BaseService {
     );
   }
   /**
+   * updateCluster
    * @param params The `UiAwsClusterControllerService.UpdateClusterUsingPUT1Params` containing the following parameters:
    *
    * - `request`: request

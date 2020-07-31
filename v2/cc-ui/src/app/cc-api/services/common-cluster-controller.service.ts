@@ -30,6 +30,7 @@ class CommonClusterControllerService extends __BaseService {
   }
 
   /**
+   * addClusterK8sCredentials
    * @param params The `CommonClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams` containing the following parameters:
    *
    * - `request`: request
@@ -46,7 +47,7 @@ class CommonClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/credentials`,
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/credentials`,
       __body,
       {
         headers: __headers,
@@ -62,6 +63,7 @@ class CommonClusterControllerService extends __BaseService {
     );
   }
   /**
+   * addClusterK8sCredentials
    * @param params The `CommonClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams` containing the following parameters:
    *
    * - `request`: request
@@ -77,6 +79,7 @@ class CommonClusterControllerService extends __BaseService {
   }
 
   /**
+   * getOverrides
    * @param clusterId clusterId
    * @return OK
    */
@@ -87,7 +90,7 @@ class CommonClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/cc/v1/clusters/${clusterId}/overrides`,
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(clusterId)}/overrides`,
       __body,
       {
         headers: __headers,
@@ -103,6 +106,7 @@ class CommonClusterControllerService extends __BaseService {
     );
   }
   /**
+   * getOverrides
    * @param clusterId clusterId
    * @return OK
    */
@@ -113,6 +117,7 @@ class CommonClusterControllerService extends __BaseService {
   }
 
   /**
+   * overrideSizing
    * @param params The `CommonClusterControllerService.OverrideSizingUsingPOSTParams` containing the following parameters:
    *
    * - `request`: request
@@ -129,7 +134,7 @@ class CommonClusterControllerService extends __BaseService {
 
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/overrides`,
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/overrides`,
       __body,
       {
         headers: __headers,
@@ -145,6 +150,7 @@ class CommonClusterControllerService extends __BaseService {
     );
   }
   /**
+   * overrideSizing
    * @param params The `CommonClusterControllerService.OverrideSizingUsingPOSTParams` containing the following parameters:
    *
    * - `request`: request
