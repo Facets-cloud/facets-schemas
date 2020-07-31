@@ -27,17 +27,8 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
     @Override
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
-//        buildCommands.add("mvn clean deploy -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test" +
-//                ".skip=true -U");
-        buildCommands.add("mvn clean test sonar:sonar -Dmaven.test.failure.ignore=false -DskipFormat=true " +
-                " -Dsonar.host.url=http://sonar.capillary.in/ " +
-                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
-                " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
-                " -D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +
-                " -D"+ CallbackBody.DEPLOYER_BUILD_ID+"=$deployerBuildId " +
-                " -D"+ CallbackBody.APP_FAMILY+"=$appFamily " +
-                " -D"+ CallbackBody.APP_ID+"=$appId ");
-
+        buildCommands.add("mvn clean deploy -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test" +
+                ".skip=true -U");
         return buildCommands;
     }
 
