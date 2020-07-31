@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { Build } from '../../../api/models';
 import { NbDialogConfig, NbDialogService } from '@nebular/theme';
 import { BuildInfoComponent } from '../build-info/build-info.component';
+import { TestBuildDetailsComponent } from '../test-build-details/test-build-details.component';
 import { BuildLogsComponent } from '../build-logs/build-logs.component';
 import { BuildPromoteComponent} from '../build-promote/build-promote.component';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -26,6 +27,10 @@ export class SmartTableCustomActionsComponent implements OnInit {
 
   showBuildDetails() {
     this.dialogService.open(BuildInfoComponent, { context: { build: this.rowData } });
+  }
+
+ showTestDetails() {
+    this.dialogService.open(TestBuildDetailsComponent, { context: { build: this.rowData } });
   }
 
   showBuildLogs() {

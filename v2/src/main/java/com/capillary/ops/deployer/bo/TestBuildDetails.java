@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -70,6 +71,7 @@ public class TestBuildDetails {
     }
 
     public List<Condition> getTestStatusRules() {
+        testStatusRules.sort(Comparator.comparing(Condition::getStatus));
         return testStatusRules;
     }
 

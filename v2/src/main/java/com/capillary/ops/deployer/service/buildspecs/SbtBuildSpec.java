@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -41,7 +42,16 @@ public class SbtBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("sbt clean test");
+        //buildCommands.add("sbt clean test");
+        buildCommands.add("sbt clean package test sonarScan -Dmaven.test.failure.ignore=false " +
+                " -Dsonar.host.url=http://sonar.capillary.in/ " +
+                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
+                " -D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +
+                " -D"+ CallbackBody.DEPLOYER_BUILD_ID+"=$deployerBuildId " +
+                " -D"+ CallbackBody.APP_FAMILY+"=$appFamily " +
+                " -D"+ CallbackBody.APP_ID+"=$appId ");
+
         return buildCommands;
     }
 
