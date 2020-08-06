@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface BuildRepository extends MongoRepository<Build, String> {
+    public interface BuildRepository extends MongoRepository<Build, String> {
 
     List<Build> findByApplicationIdOrderByTimestampDesc(String applicationId);
 
@@ -52,5 +52,8 @@ public interface BuildRepository extends MongoRepository<Build, String> {
     List<Build> findBuildDistinctByTestBuildAndTimestampGreaterThan(Boolean testBuild, Date timestamp);
 
     List<String> findApplicationIdDistinctByTestBuildAndTimestampGreaterThan(Boolean testBuild, Date timestamp);
+
+    Integer countBuildByApplicationIdAndTimestampBetween(
+            String applicationId, Long periodEndDate, Long periodStartDate);
 
 }

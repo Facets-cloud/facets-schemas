@@ -1042,8 +1042,10 @@ public class ApplicationFacade {
 
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void testBuildMasterBranch() {
+
+        logger.info("Triggering all test builds on master branch");
 
         Calendar c = Calendar.getInstance();
         Date y = new Date();
@@ -1054,9 +1056,69 @@ public class ApplicationFacade {
         List<String> applicationIds = buildRepository.
                 findApplicationIdDistinctByTestBuildAndTimestampGreaterThan(true, date);
 
-        applicationIds.parallelStream().forEach(id->{
+        applicationIds.parallelStream().forEach(id -> {
             Application application = applicationRepository.findById(id).get();
             triggerTestBuild(application, "master", 0);
         });
+    }
+
+    public List<ApplicationMetrics> getApplicationMetricSummary(ApplicationFamily applicationFamily,
+                                                                String applicationId) {
+
+        List<ApplicationMetrics> ret = new ArrayList<>();
+
+        Date today = new Date();
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -7);
+        Date lastWeek = c.getTime();
+
+        c.add(Calendar.DATE, -7);
+        Date lastTwoWeek = c.getTime();
+
+        ApplicationMetrics oldMetrics = getMetricsFromDeployer(applicationId, lastTwoWeek, lastWeek);
+        ApplicationMetrics recentMetrics = getMetricsFromDeployer(applicationId, lastWeek, today);
+
+
+        ret.add(oldMetrics);
+        ret.add(recentMetrics);
+
+        return ret;
+    }
+
+    private ApplicationMetrics getMetricsFromDeployer(String applicationId, Date periodStartDate,
+                                                      Date periodEndDate){
+
+        ApplicationMetrics metrics = new ApplicationMetrics(applicationId, periodEndDate);
+
+        TestBuildDetails buildDetails = testBuildDetailsRepository
+                .findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(
+                        applicationId, periodEndDate.getTime());
+
+        updateMetricObject( buildDetails.getTestStatusRules(), metrics);
+
+        Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
+                applicationId, periodEndDate.getTime(), periodStartDate.getTime());
+        metrics.setBuildFailures(failedBuilds);
+
+        return metrics;
+
+    }
+    private void updateMetricObject(List<Condition> map, ApplicationMetrics metrics) {
+
+        if(map == null)
+            return;
+
+        map.stream().forEach(cond -> {
+            if(cond.getMetric().equalsIgnoreCase(""))
+                metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
+        });
+    }
+
+    private void updateMetricObject(Map<String, Double> map, ApplicationMetrics metrics) {
+
+        metrics.setApplicationId("appli");
+        metrics.setBuildFailures(0);
     }
 }
