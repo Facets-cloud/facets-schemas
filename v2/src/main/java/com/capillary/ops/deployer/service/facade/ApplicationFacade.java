@@ -1099,7 +1099,7 @@ public class ApplicationFacade {
             updateMetricObject( buildDetails.getTestStatusRules(), metrics);
 
         Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
-                applicationId, periodEndDate.getTime(), periodStartDate.getTime());
+                applicationId, periodStartDate.getTime(), periodEndDate.getTime());
         metrics.setBuildFailures(failedBuilds);
 
         return metrics;
