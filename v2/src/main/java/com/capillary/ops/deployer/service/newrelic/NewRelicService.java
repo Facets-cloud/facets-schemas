@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -398,22 +399,23 @@ public class NewRelicService implements INewRelicService {
     }
 
     @Override
-    public Map<String, Double> getMetrics(String applicationName, Date startDate, Date endDate) {
+    @Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
+    public Map<String, Double> getMetrics(String applicationName, Integer fromDate, Integer toDate) {
 
         Map<String, Double> ret = new HashMap<>();
 
-        String failureCountQuery = "SELECT count(*) as failures " +
-                " FROM Transaction where http.statusCode > 0 " +
-                " and appName LIKE  '%-"+applicationName+"' " +
-                " SINCE "+startDate.getTime()+" UNTIL  " + endDate.getTime();
-
-        fireNrqlQuery(failureCountQuery, ret);
+//        String failureCountQuery = "SELECT count(*) as failures " +
+//                " FROM Transaction where http.statusCode >=500  " +
+//                " and appName LIKE  '%-"+applicationName+"' " +
+//                "SINCE "+fromDate+" days AGO UNTIL "+toDate+" day ago ";
+//
+//        fireNrqlQuery(failureCountQuery, ret);
 
 
         String percentile95Query = "SELECT percentile(totalTime, 95) as f " +
-                " FROM Transaction where http.statusCode >= 500 " +
-                " and appName LIKE  '%-"+applicationName+"' " +
-                " SINCE "+startDate.getTime()+" UNTIL  " + endDate.getTime();
+                " FROM Transaction where " +
+                " appName LIKE  '%-"+applicationName+"' " +
+                "SINCE "+fromDate+" days AGO UNTIL "+toDate+" day ago ";
 
         fireNrqlQuery(percentile95Query, ret);
 

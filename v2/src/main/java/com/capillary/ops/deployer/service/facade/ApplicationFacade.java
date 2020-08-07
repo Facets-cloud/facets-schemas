@@ -1043,7 +1043,7 @@ public class ApplicationFacade {
 
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void testBuildMasterBranch() {
 
         logger.info("Triggering all test builds on master branch");
@@ -1076,18 +1076,8 @@ public class ApplicationFacade {
 
         Map<String, ApplicationMetrics> ret = new HashMap<>();
 
-        Date today = new Date();
-
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.DATE, -7);
-        Date lastWeek = c.getTime();
-
-        c.add(Calendar.DATE, -7);
-        Date lastTwoWeek = c.getTime();
-
-        ApplicationMetrics oldMetrics = getMetricsFromDeployer(applicationId, lastTwoWeek, lastWeek);
-        ApplicationMetrics recentMetrics = getMetricsFromDeployer(applicationId, lastWeek, today);
+        ApplicationMetrics oldMetrics = getMetricsFromDeployer(applicationId, 14, 8);
+        ApplicationMetrics recentMetrics = getMetricsFromDeployer(applicationId, 7, 0);
 
         ret.putIfAbsent("old",oldMetrics);
         ret.putIfAbsent("new",recentMetrics);
@@ -1095,8 +1085,20 @@ public class ApplicationFacade {
         return ret;
     }
 
-    private ApplicationMetrics getMetricsFromDeployer(String applicationId, Date periodStartDate,
-                                                      Date periodEndDate){
+    @Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
+    private ApplicationMetrics getMetricsFromDeployer(String applicationId, Integer fromDate,
+                                                      Integer toDate){
+
+        Date today = new Date();
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -7);
+        Date periodStartDate = c.getTime();
+
+        c.add(Calendar.DATE, -7);
+        Date periodEndDate = c.getTime();
+
 
         ApplicationMetrics metrics = new ApplicationMetrics(applicationId, periodEndDate);
 
@@ -1116,7 +1118,7 @@ public class ApplicationFacade {
         // new relic data
         Application application = applicationRepository.findById(applicationId).get();
         Map<String, Double> newrelicMetrics = newRelicService.getMetrics(
-                application.getName(), periodStartDate, periodEndDate);
+                application.getName(), fromDate, toDate);
         if(newrelicMetrics!=null)
             updateMetricObject(newrelicMetrics, metrics);
 

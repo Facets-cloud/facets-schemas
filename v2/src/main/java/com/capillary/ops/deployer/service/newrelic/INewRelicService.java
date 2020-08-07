@@ -22,5 +22,5 @@ public interface INewRelicService {
 
     String getAlertsURL(Application application, Environment environment);
 
-    public Map<String, Double> getMetrics(String applicationName, Date startDate, Date endDate);
+    public Map<String, Double> getMetrics(String applicationName, Integer startDate, Integer endDate);
 }

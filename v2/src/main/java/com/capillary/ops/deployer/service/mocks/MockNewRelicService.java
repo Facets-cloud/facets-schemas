@@ -45,7 +45,7 @@ public class MockNewRelicService implements INewRelicService {
     }
 
     @Override
-    public Map<String, Double> getMetrics(String applicationName, Date startDate, Date endDate) {
+    public Map<String, Double> getMetrics(String applicationName, Integer startDate, Integer endDate) {
         Map<String, Double> ret = new HashMap<>();
         ret.putIfAbsent("error_count", 2.0);
         return ret;
