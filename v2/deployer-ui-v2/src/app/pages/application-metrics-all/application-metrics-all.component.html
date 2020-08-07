@@ -13,16 +13,18 @@
       </nb-select>
     </span>
 
-    <!--    {{applicationMetricsWrappers[0]?.recentMetrics.date | date: "dd-MM-yyyy"}}-->
-<!--    Vs-->
-<!--    {{applicationMetricsWrappers[0]?.lastWeekMetrics.date | date: "dd-MM-yyyy"}}-->
 
   </nb-card-header>
   <nb-card-body>
 
-    <div style="text-align: center;" class="table-responsive">
-      <table class="table table-bordered" settings=""
-             [ngClass]="{'visually-hidden': applicationMetricsWrappers.length==0}" >
+    <div style="text-align: center;" class="table-responsive" [ngClass]="{'visually-hidden': applicationMetricsWrappers.length==0}" >
+
+      <nb-card-header>Comparison Period
+        {{applicationMetricsWrappers[0]?.recentMetrics.date | date: "dd-MM-yyyy"}}
+        Vs
+        {{applicationMetricsWrappers[0]?.lastWeekMetrics.date | date: "dd-MM-yyyy"}}
+      </nb-card-header>
+      <table class="table table-bordered" settings="" >
 
         <tbody>
         <tr>
