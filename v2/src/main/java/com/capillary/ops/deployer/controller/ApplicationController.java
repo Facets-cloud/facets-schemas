@@ -479,4 +479,16 @@ public class ApplicationController {
 
         return ret;
     }
+    @PreAuthorize("true")
+    @GetMapping(value = "/{applicationFamily}/appmetrics", produces =
+            "application/json")
+    public List<ApplicationMetricsWrapper> getAllApplicationMetrics(
+            @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+        List<ApplicationMetricsWrapper> ret = applicationFacade.getAllApplicationMetrics(applicationFamily);
+
+        return ret;
+
+
+
+    }
 }

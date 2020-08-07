@@ -1,0 +1,93 @@
+<nb-card size=medium>
+
+  <nb-card-header>
+    Stats for :
+
+    <span style="margin: auto;">
+      <nb-select required [(ngModel)]="applicationFamily" #appFamily="ngModel" name="appFamily"
+                 id="appFamily" placeholder="Select Application Family"
+                 [selected]="applicationFamily" (selectedChange)="loadMetrics()" >
+        <nb-option #cluster *ngFor="let appFamily of appFamilies" value="{{appFamily}}">
+          {{appFamily}}
+        </nb-option>
+      </nb-select>
+    </span>
+
+    <!--    {{applicationMetricsWrappers[0]?.recentMetrics.date | date: "dd-MM-yyyy"}}-->
+<!--    Vs-->
+<!--    {{applicationMetricsWrappers[0]?.lastWeekMetrics.date | date: "dd-MM-yyyy"}}-->
+
+  </nb-card-header>
+  <nb-card-body>
+
+    <div style="text-align: center;" class="table-responsive">
+      <table class="table table-bordered" settings=""
+             [ngClass]="{'visually-hidden': applicationMetricsWrappers.length==0}" >
+
+        <tbody>
+        <tr>
+          <th width="20%">Service</th>
+          <th>Build Failures</th>
+          <th>Critical Code Smells</th>
+          <th>Unit Test Coverage</th>
+          <th>Unit Tests</th>
+          <th>5xx</th>
+          <th>95%ile</th>
+        </tr>
+        </tbody>
+
+        <tbody>
+        <tr *ngFor="let app of applicationMetricsWrappers">
+          <td>{{app.application.name}}</td>
+          <td [ngClass]="{'metricDown': app?.recentMetrics.buildFailures > app?.recentMetrics.buildFailures}">
+            {{app.recentMetrics.buildFailures}}
+            ({{app.recentMetrics.buildFailures - app.lastWeekMetrics.buildFailures}})
+          </td>
+
+          <td
+            [ngClass]="{'metricDown': app?.recentMetrics.criticalCodeSmells > app?.recentMetrics.criticalCodeSmells}">
+            {{app.recentMetrics.criticalCodeSmells}}
+            ({{app.recentMetrics.criticalCodeSmells - app.lastWeekMetrics.criticalCodeSmells}})
+          </td>
+
+          <td [ngClass]="{'metricDown': app?.recentMetrics.unitTestCoverage < app?.recentMetrics.unitTestCoverage}">
+            {{app.recentMetrics.unitTestCoverage}}
+            ({{app.recentMetrics.unitTestCoverage - app.lastWeekMetrics.unitTestCoverage}})
+          </td>
+
+          <td [ngClass]="{'metricDown': app?.recentMetrics.unitTests < app?.recentMetrics.unitTests}">
+            {{app.recentMetrics.unitTests}}
+            ({{app.recentMetrics.unitTests - app.lastWeekMetrics.unitTests}})
+          </td>
+
+          <td [ngClass]="{'metricDown': app?.recentMetrics.errors > app?.recentMetrics.errors}">
+            {{app.recentMetrics.errors}}
+            ({{app.recentMetrics.errors - app.lastWeekMetrics.errors}})
+          </td>
+
+          <td [ngClass]="{'metricDown': app?.recentMetrics.responseTime > app?.recentMetrics.responseTime}">
+            {{app.recentMetrics.responseTime}}
+            ({{app.recentMetrics.responseTime - app.lastWeekMetrics.responseTime}})
+          </td>
+
+        </tr>
+        </tbody>
+
+        <!--        alerts?: number;-->
+        <!--        criticalCodeSmells?: number;-->
+        <!--        errors?: number;-->
+        <!--        fatalErrorsFromLogs?: number;-->
+        <!--        issuesReported?: number;-->
+        <!--        outages?: number;-->
+        <!--        regressionCoverage?: number;-->
+        <!--        regressionFailures?: number;-->
+        <!--        responseTime?: number;-->
+        <!--        unitTests?: number;-->
+
+
+      </table>
+    </div>
+
+
+  </nb-card-body>
+</nb-card>

@@ -30,8 +30,8 @@ import { AppDumpsComponent } from './application-page/app-dumps/app-dumps.compon
 import { ButtonDownloadComponent } from './application-page/app-dumps/button.download.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MonitoringComponent, NewRelicLinkViewComponent, MonitoringEnableButtonComponent }from './application-page/monitoring/monitoring.component';
-import { ApplicationMetricsComponent }from './application-page/application-metrics/application-metrics.component';
-
+import { ApplicationMetricsComponent } from './application-page/application-metrics/application-metrics.component';
+import { ApplicationMetricsAllComponent} from "./application-metrics-all/application-metrics-all.component";
 import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-pod-action-dialog/excecute-pod-action-dialog.component';
 import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoComponent } from './application-page/executed-actions/executed-actions.component';
 import { AlertingComponent, AlertingEnableButtonComponent, NewRelicAlertLinkViewComponent } from './application-page/alerting/alerting.component';
@@ -105,7 +105,8 @@ import { TestBuildDetailsComponent } from './application-page/test-build-details
     ButtonActionInfoComponent,
     AlertingComponent,
     TestBuildDetailsComponent,
-ApplicationMetricsComponent,
+    ApplicationMetricsComponent,
+    ApplicationMetricsAllComponent,
   ],
   entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent,
     ExcecutePodActionDialogComponent, DialogActionInfoComponent, ButtonActionInfoComponent],

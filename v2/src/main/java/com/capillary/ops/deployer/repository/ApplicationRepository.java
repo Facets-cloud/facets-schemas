@@ -14,4 +14,10 @@ public interface ApplicationRepository extends MongoRepository<Application, Stri
     Optional<Application> findOneByApplicationFamilyAndId(ApplicationFamily applicationFamily, String applicationId);
 
     Optional<Application> findFirstByApplicationFamily(ApplicationFamily applicationFamily);
+
+    List<Application> findByApplicationFamilyAndApplicationType(ApplicationFamily applicationFamily,
+                                              Application.ApplicationType applicationType);
+
+    List<Application> findByApplicationType(Application.ApplicationType applicationType);
+
 }

@@ -1048,19 +1048,27 @@ public class ApplicationFacade {
 
         logger.info("Triggering all test builds on master branch");
 
-        Calendar c = Calendar.getInstance();
-        Date y = new Date();
-        c.setTime(y);
-        c.add(Calendar.DATE, -7);
-        Date date = c.getTime();
+        List<Application> applications = applicationRepository.findAll();
 
-        List<String> applicationIds = buildRepository.
-                findApplicationIdDistinctByTestBuildAndTimestampGreaterThan(true, date);
-
-        applicationIds.parallelStream().forEach(id -> {
-            Application application = applicationRepository.findById(id).get();
-            triggerTestBuild(application, "master", 0);
+        // build for all ci enabled projects
+        applications.parallelStream().forEach(application -> {
+            if(application.isCiEnabled())
+                triggerTestBuild(application, "master", 0);
         });
+
+//        Calendar c = Calendar.getInstance();
+//        Date y = new Date();
+//        c.setTime(y);
+//        c.add(Calendar.DATE, -7);
+//        Date date = c.getTime();
+//
+//        List<String> applicationIds = buildRepository.
+//                findApplicationIdDistinctByTestBuildAndTimestampGreaterThan(true, date);
+
+//        applicationIds.parallelStream().forEach(id -> {
+//            Application application = applicationRepository.findById(id).get();
+//            triggerTestBuild(application, "master", 0);
+//        });
     }
 
     public Map<String,ApplicationMetrics> getApplicationMetricSummary(ApplicationFamily applicationFamily,
@@ -1148,5 +1156,20 @@ public class ApplicationFacade {
 
         metrics.setResponseTime(map.getOrDefault("percentile_95", 0.0));
         metrics.setErrors((int) Math.round(map.getOrDefault("failures", 0.0)));
+    }
+
+    public List<ApplicationMetricsWrapper> getAllApplicationMetrics(ApplicationFamily applicationFamily){
+
+        List<ApplicationMetricsWrapper> ret = new ArrayList<>();
+
+        List<Application> applications = applicationRepository.findByApplicationFamilyAndApplicationType(applicationFamily,
+                Application.ApplicationType.SERVICE);
+
+        applications.parallelStream().forEach(application -> {
+            Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
+            ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
+        });
+
+        return  ret;
     }
 }
