@@ -399,7 +399,7 @@ public class NewRelicService implements INewRelicService {
     }
 
     @Override
-    @Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
+    //@Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
     public Map<String, Double> getMetrics(String applicationName, Integer fromDate, Integer toDate) {
 
         Map<String, Double> ret = new HashMap<>();
