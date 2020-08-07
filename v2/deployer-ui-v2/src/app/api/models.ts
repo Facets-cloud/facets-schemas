@@ -4,6 +4,7 @@ export { Alerting } from './models/alerting';
 export { Application } from './models/application';
 export { ApplicationAction } from './models/application-action';
 export { ApplicationDeploymentDetails } from './models/application-deployment-details';
+export { ApplicationMetrics } from './models/application-metrics';
 export { ApplicationPodDetails } from './models/application-pod-details';
 export { ApplicationSecret } from './models/application-secret';
 export { ApplicationSecretRequest } from './models/application-secret-request';

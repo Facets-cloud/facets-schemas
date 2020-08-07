@@ -5,6 +5,8 @@ import com.capillary.ops.deployer.bo.Environment;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Map;
 
 public interface INewRelicService {
     void upsertDashboard(Application application,
@@ -19,4 +21,6 @@ public interface INewRelicService {
     void disableAlerts(Application application, Environment environment);
 
     String getAlertsURL(Application application, Environment environment);
+
+    public Map<String, Double> getMetrics(String applicationName, Date startDate, Date endDate);
 }

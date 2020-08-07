@@ -6,6 +6,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samskivert.mustache.Mustache;
@@ -30,11 +31,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,19 +46,24 @@ public class NewRelicService implements INewRelicService {
     @Value("${newrelic.apiKey}")
     private String newrelicApiKey;
 
+    @Value("${newrelic.queryKey}")
+    private String newrelicQueryKey;
+
+    private static final String newRelicAccountId = "67421";
+
     private static HttpClient httpClient = HttpClientBuilder.create()
             .setConnectionManager(new PoolingHttpClientConnectionManager()).build();
 
     private static final Logger logger = LoggerFactory.getLogger(NewRelicService.class);
 
-    enum AlertChannel{
+    enum AlertChannel {
         Email
     }
 
     @Override
     public void upsertDashboard(Application application,
                                 Environment environment) {
-        if(environment.getEnvironmentConfiguration().getNewRelicClusterName() == null) {
+        if (environment.getEnvironmentConfiguration().getNewRelicClusterName() == null) {
             throw new RuntimeException("NewRelic cluster name not configured");
         }
         try {
@@ -129,7 +136,7 @@ public class NewRelicService implements INewRelicService {
     }
 
     private String getDashboardId(Application application,
-                           Environment environment) {
+                                  Environment environment) {
         try {
             URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/dashboards.json");
             builder.setParameter("filter[title]", getDashboardTitle(application, environment));
@@ -257,8 +264,8 @@ public class NewRelicService implements INewRelicService {
         String responseBody = EntityUtils.toString(response.getEntity());
         JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
         if (jsonObject.getAsJsonArray("channels").size() > 0) {
-            for(JsonElement channel: jsonObject.getAsJsonArray("channels")){
-                if(channel.getAsJsonObject().get("name").getAsString().equals(applicationName)){
+            for (JsonElement channel : jsonObject.getAsJsonArray("channels")) {
+                if (channel.getAsJsonObject().get("name").getAsString().equals(applicationName)) {
                     channelId = channel.getAsJsonObject().get("id").getAsInt();
                 }
             }
@@ -269,7 +276,7 @@ public class NewRelicService implements INewRelicService {
     @Override
     public String getAlertsURL(Application application, Environment environment) {
         String alertsURL = null;
-        String baseURL = "https://alerts.newrelic.com/accounts/67421/policies/";
+        String baseURL = "https://alerts.newrelic.com/accounts/" + newRelicAccountId + "/policies/";
         try {
             Integer policyId = getAlertPolicy(application.getName());
             if (policyId != null && getAlertConditions(application, environment, policyId) != null) {
@@ -388,5 +395,49 @@ public class NewRelicService implements INewRelicService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Map<String, Double> getMetrics(String applicationName, Date startDate, Date endDate) {
+
+        String query = "SELECT count(apm.service.error.count) / count(apm.service.transaction.duration) as 'Non-web errors'," +
+                " max(apm.service.transaction.duration) as instances, " +
+                "max(apm.service.transaction.error.count) as error_count " +
+                "FROM Metric WHERE (entity.guid = 'Njc0MjF8QVBNfEFQUExJQ0FUSU9OfDM3MTE0Mzc4OQ') " +
+                "AND (transactionType = 'Other') SINCE 1596619192390 UNTIL 1596620992390 " +
+                " ";
+        Map<String, Double> ret = new HashMap<>();
+
+        URIBuilder builder = null;
+        try {
+            builder = new URIBuilder("https://insights-api.newrelic.com/v1/accounts/" + newRelicAccountId +
+                    "/query?nrql=" + URLEncoder.encode(query, "UTF-8"));
+            HttpGet request = new HttpGet(builder.build());
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("X-Query-Key", newrelicQueryKey);
+            HttpResponse response = httpClient.execute(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
+            //JsonElement results = jsonObject.get("results").getAsJsonArray().get(0).getAsJsonObject().get("key");
+            int size = jsonObject.get("results").getAsJsonArray().size();
+
+            JsonArray valuesList = jsonObject.get("results").getAsJsonArray();
+            JsonArray keysList = jsonObject.get("metadata").getAsJsonObject().get("contents").getAsJsonArray();
+
+            for (int i = 0; i < size; i++) {
+                String alias = valuesList.get(i).getAsJsonObject().keySet().toArray()[0].toString();
+
+                ret.putIfAbsent(
+                        keysList.get(i).getAsJsonObject().get("alias").getAsString(),
+                        valuesList.get(i).getAsJsonObject().get(alias).getAsDouble()
+                );
+            }
+
+            System.out.println(ret);
+        } catch (Exception e) {
+            logger.error("Failed to get ", e);
+        }
+
+        return ret;
     }
 }

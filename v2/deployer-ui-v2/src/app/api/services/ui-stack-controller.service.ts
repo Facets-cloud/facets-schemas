@@ -19,7 +19,9 @@ import { AbstractCluster } from '../models/abstract-cluster';
 class UiStackControllerService extends __BaseService {
   static readonly getStacksUsingGET1Path = '/cc-ui/v1/stacks/';
   static readonly createStackUsingPOST1Path = '/cc-ui/v1/stacks/';
+  static readonly getStackUsingGETPath = '/cc-ui/v1/stacks/{stackName}';
   static readonly getClustersUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/clusters';
+  static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
 
   constructor(
     config: __Configuration,
@@ -101,6 +103,42 @@ class UiStackControllerService extends __BaseService {
    * @param stackName stackName
    * @return OK
    */
+  getStackUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Stack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/${stackName}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Stack>;
+      })
+    );
+  }
+  /**
+   * @param stackName stackName
+   * @return OK
+   */
+  getStackUsingGET(stackName: string): __Observable<Stack> {
+    return this.getStackUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Stack)
+    );
+  }
+
+  /**
+   * @param stackName stackName
+   * @return OK
+   */
   getClustersUsingGET1Response(stackName: string): __Observable<__StrictHttpResponse<Array<AbstractCluster>>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
@@ -130,6 +168,42 @@ class UiStackControllerService extends __BaseService {
   getClustersUsingGET1(stackName: string): __Observable<Array<AbstractCluster>> {
     return this.getClustersUsingGET1Response(stackName).pipe(
       __map(_r => _r.body as Array<AbstractCluster>)
+    );
+  }
+
+  /**
+   * @param stackName stackName
+   * @return OK
+   */
+  reloadStackUsingGET1Response(stackName: string): __Observable<__StrictHttpResponse<Stack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/${stackName}/reload`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Stack>;
+      })
+    );
+  }
+  /**
+   * @param stackName stackName
+   * @return OK
+   */
+  reloadStackUsingGET1(stackName: string): __Observable<Stack> {
+    return this.reloadStackUsingGET1Response(stackName).pipe(
+      __map(_r => _r.body as Stack)
     );
   }
 }

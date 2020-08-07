@@ -1062,10 +1062,10 @@ public class ApplicationFacade {
         });
     }
 
-    public List<ApplicationMetrics> getApplicationMetricSummary(ApplicationFamily applicationFamily,
+    public Map<String,ApplicationMetrics> getApplicationMetricSummary(ApplicationFamily applicationFamily,
                                                                 String applicationId) {
 
-        List<ApplicationMetrics> ret = new ArrayList<>();
+        Map<String, ApplicationMetrics> ret = new HashMap<>();
 
         Date today = new Date();
 
@@ -1080,9 +1080,8 @@ public class ApplicationFacade {
         ApplicationMetrics oldMetrics = getMetricsFromDeployer(applicationId, lastTwoWeek, lastWeek);
         ApplicationMetrics recentMetrics = getMetricsFromDeployer(applicationId, lastWeek, today);
 
-
-        ret.add(oldMetrics);
-        ret.add(recentMetrics);
+        ret.putIfAbsent("old",oldMetrics);
+        ret.putIfAbsent("new",recentMetrics);
 
         return ret;
     }
@@ -1096,7 +1095,8 @@ public class ApplicationFacade {
                 .findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(
                         applicationId, periodEndDate.getTime());
 
-        updateMetricObject( buildDetails.getTestStatusRules(), metrics);
+        if(buildDetails!= null)
+            updateMetricObject( buildDetails.getTestStatusRules(), metrics);
 
         Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
                 applicationId, periodEndDate.getTime(), periodStartDate.getTime());
@@ -1110,10 +1110,28 @@ public class ApplicationFacade {
         if(map == null)
             return;
 
+        /*
+        blocker_violations
+        code_smells
+        critical_violations
+        security_hotspots_reviewed
+        tests
+         */
         map.stream().forEach(cond -> {
-            if(cond.getMetric().equalsIgnoreCase(""))
+            if(cond.getMetric().equalsIgnoreCase("line_coverage"))
                 metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
         });
+
+        map.stream().forEach(cond -> {
+            if(cond.getMetric().equalsIgnoreCase("tests"))
+                metrics.setUnitTests(Integer.parseInt(cond.getMetric()));
+        });
+
+        map.stream().forEach(cond -> {
+            if(cond.getMetric().equalsIgnoreCase("code_smells"))
+                metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
+        });
+
     }
 
     private void updateMetricObject(Map<String, Double> map, ApplicationMetrics metrics) {
