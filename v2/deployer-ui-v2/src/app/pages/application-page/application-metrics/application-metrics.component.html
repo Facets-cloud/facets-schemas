@@ -51,6 +51,17 @@
           <td>{{newMetrics?.unitTests - oldMetrics?.unitTests}}</td>
         </tr>
 
+        <tr [ngClass]="{'metricDown': newMetrics?.errors > oldMetrics?.errors}">
+          <td >Errors</td>
+          <td>{{newMetrics?.errors | number }} ({{oldMetrics?.errors | number }})</td>
+          <td>{{newMetrics?.errors - oldMetrics?.errors | number }}</td>
+        </tr>
+
+        <tr [ngClass]="{'metricDown': newMetrics?.responseTime > oldMetrics?.responseTime}">
+          <td >Response Time ( 95th Percentile)</td>
+          <td>{{newMetrics?.responseTime}} ({{oldMetrics?.responseTime}})</td>
+          <td>{{newMetrics?.responseTime - oldMetrics?.responseTime}}</td>
+        </tr>
 
 
         </tbody>

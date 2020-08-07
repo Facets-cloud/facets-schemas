@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.capillary.ops.App;
 import com.capillary.ops.cp.service.CCAdapterService;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
@@ -1091,6 +1092,7 @@ public class ApplicationFacade {
 
         ApplicationMetrics metrics = new ApplicationMetrics(applicationId, periodEndDate);
 
+        // sonar data
         TestBuildDetails buildDetails = testBuildDetailsRepository
                 .findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(
                         applicationId, periodEndDate.getTime());
@@ -1098,9 +1100,17 @@ public class ApplicationFacade {
         if(buildDetails!= null)
             updateMetricObject( buildDetails.getTestStatusRules(), metrics);
 
+        // test build data
         Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
                 applicationId, periodStartDate.getTime(), periodEndDate.getTime());
         metrics.setBuildFailures(failedBuilds);
+
+        // new relic data
+        Application application = applicationRepository.findById(applicationId).get();
+        Map<String, Double> newrelicMetrics = newRelicService.getMetrics(
+                application.getName(), periodStartDate, periodEndDate);
+        if(newrelicMetrics!=null)
+            updateMetricObject(newrelicMetrics, metrics);
 
         return metrics;
 
@@ -1136,7 +1146,7 @@ public class ApplicationFacade {
 
     private void updateMetricObject(Map<String, Double> map, ApplicationMetrics metrics) {
 
-        metrics.setApplicationId("appli");
-        metrics.setBuildFailures(0);
+        metrics.setResponseTime(map.getOrDefault("percentile_95", 0.0));
+        metrics.setErrors((int) Math.round(map.getOrDefault("failures", 0.0)));
     }
 }

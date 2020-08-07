@@ -400,14 +400,27 @@ public class NewRelicService implements INewRelicService {
     @Override
     public Map<String, Double> getMetrics(String applicationName, Date startDate, Date endDate) {
 
-        String query = "SELECT count(apm.service.error.count) / count(apm.service.transaction.duration) as 'Non-web errors'," +
-                " max(apm.service.transaction.duration) as instances, " +
-                "max(apm.service.transaction.error.count) as error_count " +
-                "FROM Metric WHERE (entity.guid = 'Njc0MjF8QVBNfEFQUExJQ0FUSU9OfDM3MTE0Mzc4OQ') " +
-                "AND (transactionType = 'Other') SINCE 1596619192390 UNTIL 1596620992390 " +
-                " ";
         Map<String, Double> ret = new HashMap<>();
 
+        String failureCountQuery = "SELECT count(*) as failures " +
+                " FROM Transaction where http.statusCode > 0 " +
+                " and appName LIKE  '%-"+applicationName+"' " +
+                " SINCE "+startDate.getTime()+" UNTIL  " + endDate.getTime();
+
+        fireNrqlQuery(failureCountQuery, ret);
+
+
+        String percentile95Query = "SELECT percentile(totalTime, 95) as f " +
+                " FROM Transaction where http.statusCode >= 500 " +
+                " and appName LIKE  '%-"+applicationName+"' " +
+                " SINCE "+startDate.getTime()+" UNTIL  " + endDate.getTime();
+
+        fireNrqlQuery(percentile95Query, ret);
+
+        return ret;
+    }
+
+    private void fireNrqlQuery(String query, Map<String, Double> ret) {
         URIBuilder builder = null;
         try {
             builder = new URIBuilder("https://insights-api.newrelic.com/v1/accounts/" + newRelicAccountId +
@@ -433,11 +446,8 @@ public class NewRelicService implements INewRelicService {
                 );
             }
 
-            System.out.println(ret);
         } catch (Exception e) {
             logger.error("Failed to get ", e);
         }
-
-        return ret;
     }
 }
