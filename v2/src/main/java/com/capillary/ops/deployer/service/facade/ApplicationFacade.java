@@ -1140,20 +1140,15 @@ public class ApplicationFacade {
         tests
          */
         map.stream().forEach(cond -> {
-            if(cond.getMetric().equalsIgnoreCase("line_coverage"))
+            if (cond.getMetric().equalsIgnoreCase("line_coverage"))
                 metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
-        });
-
-        map.stream().forEach(cond -> {
-            if(cond.getMetric().equalsIgnoreCase("tests"))
+            else if (cond.getMetric().equalsIgnoreCase("tests"))
                 metrics.setUnitTests(Integer.parseInt(cond.getMetric()));
-        });
 
-        map.stream().forEach(cond -> {
-            if(cond.getMetric().equalsIgnoreCase("code_smells"))
+            else if (cond.getMetric().equalsIgnoreCase("code_smells"))
                 metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
-        });
 
+        });
     }
 
     private void updateMetricObject(Map<String, Double> map, ApplicationMetrics metrics) {
@@ -1170,8 +1165,13 @@ public class ApplicationFacade {
                 Application.ApplicationType.SERVICE);
 
         applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList()).parallelStream().forEach(application -> {
-            Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
-            ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
+            try {
+                Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
+                ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
+            }catch (Exception ex){
+                logger.error("Failed to get the stats for application" , ex);
+
+            }
         });
 
         return  ret;
