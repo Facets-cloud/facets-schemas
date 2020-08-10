@@ -32,7 +32,7 @@ class ApplicationMetricsAllUiWrapper {
       indicator = 'green';
     else if( (newValue < oldValue) == !greaterIsBetter )
       indicator = 'red';
-    text = text.concat(indicator);
+    // text = text.concat(indicator);
 
     let diff: string ;
     if ( newValue > oldValue) {
