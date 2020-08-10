@@ -1167,7 +1167,7 @@ public class ApplicationFacade {
         List<Application> applications = applicationRepository.findByApplicationFamilyAndApplicationType(applicationFamily,
                 Application.ApplicationType.SERVICE);
 
-        applications.parallelStream().filter(t -> t.isCiEnabled()).forEach(application -> {
+        applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList()).parallelStream().forEach(application -> {
             Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
             ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
         });
