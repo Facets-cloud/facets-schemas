@@ -95,7 +95,6 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
 
         this.applicationMetricsWrappers = resp.body;
 
-        this.applicationFamily = this.appFamilies[0];
         this.metricsList = [];
         this.applicationMetricsWrappers.forEach(t => {
             this.metricsList.push(new ApplicationMetricsAllUiWrapper(t));
