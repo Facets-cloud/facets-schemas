@@ -33,8 +33,8 @@
           <th>Critical Code Smells</th>
           <th>Unit Test Coverage</th>
           <th>Unit Tests</th>
-          <th>5xx</th>
-          <th>95%ile</th>
+<!--          <th>5xx</th>-->
+<!--          <th>95%ile</th>-->
         </tr>
         </tbody>
 
@@ -62,15 +62,15 @@
             ({{app.recentMetrics.unitTests - app.lastWeekMetrics.unitTests}})
           </td>
 
-          <td [ngClass]="{'metricDown': app?.recentMetrics.errors > app?.recentMetrics.errors}">
-            {{app.recentMetrics.errors}}
-            ({{app.recentMetrics.errors - app.lastWeekMetrics.errors}})
-          </td>
+<!--          <td [ngClass]="{'metricDown': app?.recentMetrics.errors > app?.recentMetrics.errors}">-->
+<!--            {{app.recentMetrics.errors}}-->
+<!--            ({{app.recentMetrics.errors - app.lastWeekMetrics.errors}})-->
+<!--          </td>-->
 
-          <td [ngClass]="{'metricDown': app?.recentMetrics.responseTime > app?.recentMetrics.responseTime}">
-            {{app.recentMetrics.responseTime}}
-            ({{app.recentMetrics.responseTime - app.lastWeekMetrics.responseTime}})
-          </td>
+<!--          <td [ngClass]="{'metricDown': app?.recentMetrics.responseTime > app?.recentMetrics.responseTime}">-->
+<!--            {{app.recentMetrics.responseTime}}-->
+<!--            ({{app.recentMetrics.responseTime - app.lastWeekMetrics.responseTime}})-->
+<!--          </td>-->
 
         </tr>
         </tbody>

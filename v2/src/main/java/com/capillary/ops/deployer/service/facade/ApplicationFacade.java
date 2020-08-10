@@ -1085,7 +1085,7 @@ public class ApplicationFacade {
         return ret;
     }
 
-    @Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
+    //@Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
     private ApplicationMetrics getMetricsFromDeployer(String applicationId, Integer fromDate,
                                                       Integer toDate){
 
@@ -1116,11 +1116,11 @@ public class ApplicationFacade {
         metrics.setBuildFailures(failedBuilds);
 
         // new relic data
-        Application application = applicationRepository.findById(applicationId).get();
-        Map<String, Double> newrelicMetrics = newRelicService.getMetrics(
-                application.getName(), fromDate, toDate);
-        if(newrelicMetrics!=null)
-            updateMetricObject(newrelicMetrics, metrics);
+//        Application application = applicationRepository.findById(applicationId).get();
+//        Map<String, Double> newrelicMetrics = newRelicService.getMetrics(
+//                application.getName(), fromDate, toDate);
+//        if(newrelicMetrics!=null)
+//            updateMetricObject(newrelicMetrics, metrics);
 
         return metrics;
 
@@ -1167,7 +1167,7 @@ public class ApplicationFacade {
         List<Application> applications = applicationRepository.findByApplicationFamilyAndApplicationType(applicationFamily,
                 Application.ApplicationType.SERVICE);
 
-        applications.parallelStream().forEach(application -> {
+        applications.parallelStream().filter(t -> t.isCiEnabled()).forEach(application -> {
             Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
             ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
         });
