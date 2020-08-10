@@ -1093,10 +1093,11 @@ public class ApplicationFacade {
 
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-        c.add(Calendar.DATE, -7);
+        c.add(Calendar.DATE, -fromDate);
         Date periodStartDate = c.getTime();
 
-        c.add(Calendar.DATE, -7);
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -toDate);
         Date periodEndDate = c.getTime();
 
 
@@ -1121,6 +1122,7 @@ public class ApplicationFacade {
 //                application.getName(), fromDate, toDate);
 //        if(newrelicMetrics!=null)
 //            updateMetricObject(newrelicMetrics, metrics);
+        metrics.setDate(periodEndDate);
 
         return metrics;
 
