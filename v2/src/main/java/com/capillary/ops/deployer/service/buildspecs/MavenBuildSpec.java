@@ -34,7 +34,8 @@ public class MavenBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test.skip=true -U");
+        buildCommands.add("mvn clean package -Dmaven.test.failure.ignore=true -DskipFormat=true -Dmaven.test" +
+                ".skip=true -U");
         if(configureDockerBuildSteps()) {
             buildCommands.add("docker build -t $APP_NAME:$TAG .");
             buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
@@ -45,7 +46,7 @@ public class MavenBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("mvn clean test sonar:sonar -Dmaven.test.failure.ignore=false " +
+        buildCommands.add("mvn clean test sonar:sonar -Dmaven.test.failure.ignore=true " +
                 " -Dsonar.host.url=http://sonar.capillary.in/ " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
