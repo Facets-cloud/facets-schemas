@@ -1,7 +1,6 @@
 package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.OverrideObject;
-import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.service.AclService;
@@ -43,60 +42,5 @@ public class UiCommonClusterController {
     public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
         List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
         return overrides;
-    }
-
-    /**
-     * List snapshots for a particular resource inside a given cluster
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
-     * @param resourceType  Resource type -> e.g. aurora
-     * @param instanceName  Instance name -> e.g. billdump
-     * @return List of SnapshotInfo
-     */
-    @GetMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}")
-    public List<SnapshotInfo> listSnapshots(@PathVariable String clusterId, @PathVariable String resourceType,
-                                            @PathVariable String instanceName) {
-        return clusterFacade.listSnapshots(clusterId, resourceType, instanceName);
-    }
-
-    /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
-     * @param resourceType Resource type -> e.g. aurora
-     * @param instanceName Instance name -> e.g. billdump
-     * @param snapshotInfo Information about snapshot to be pinned
-     * @return SnapshotInfo
-     */
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
-    @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot")
-    public SnapshotInfo pinSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
-                                          @PathVariable String instanceName, @RequestBody SnapshotInfo snapshotInfo) {
-        return clusterFacade.pinSnapshot(clusterId, resourceType, instanceName, snapshotInfo);
-    }
-
-    /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
-     * @param resourceType Resource type -> e.g. aurora
-     * @param instanceName Instance name -> e.g. billdump
-     * @return SnapshotInfo
-     */
-    @GetMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot")
-    public SnapshotInfo getPinnedSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
-                                          @PathVariable String instanceName) {
-        return clusterFacade.getPinnedSnapshot(clusterId, resourceType, instanceName);
-    }
-
-    /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
-     * @param resourceType Resource type -> e.g. aurora
-     * @param instanceName Instance name -> e.g. billdump
-     * @return true/false
-     */
-    @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}")
-    public boolean createSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
-                                          @PathVariable String instanceName) {
-        return clusterFacade.createSnapshot(clusterId, resourceType, instanceName);
     }
 }

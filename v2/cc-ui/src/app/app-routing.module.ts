@@ -11,7 +11,6 @@ import {AuthGuard} from './auth-guard.service';
 import {ClusterOverridesComponent} from './pages/cluster-pages/cluster-overrides/cluster-overrides.component';
 import {AppComponent} from './app.component';
 import {ClusterPagesComponent} from './pages/cluster-pages/cluster-pages.component';
-import { ClusterDisasterRecoveryComponent } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.component';
 
 
 const routes: Routes = [
@@ -33,10 +32,6 @@ const routes: Routes = [
       {
         path: 'overrides',
         component: ClusterOverridesComponent,
-      },
-      {
-        path: 'disaster-recovery',
-        component: ClusterDisasterRecoveryComponent,
       },
       {path: '', redirectTo: 'overview', pathMatch: 'full'},
       {path: '**', redirectTo: 'overview', pathMatch: 'full'},

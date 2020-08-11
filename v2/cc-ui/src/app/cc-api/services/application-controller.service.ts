@@ -16,7 +16,6 @@ import { Application } from '../models/application';
 import { Build } from '../models/build';
 import { InputStreamResource } from '../models/input-stream-resource';
 import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
-import { TestBuildDetails } from '../models/test-build-details';
 import { ActionExecution } from '../models/action-execution';
 import { ApplicationSecretRequest } from '../models/application-secret-request';
 import { BitbucketPREvent } from '../models/bitbucket-prevent';
@@ -57,7 +56,6 @@ class ApplicationControllerService extends __BaseService {
   static readonly updateBuildUsingPUTPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}';
   static readonly downloadTestReportUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/downloadArtifacts';
   static readonly getBuildLogsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs';
-  static readonly getTestBuildDetailsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/testDetails';
   static readonly getExecutedActionsForApplicationUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/executedActions';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
   static readonly getApplicationSecretRequestsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
@@ -1055,60 +1053,6 @@ class ApplicationControllerService extends __BaseService {
   getBuildLogsUsingGET(params: ApplicationControllerService.GetBuildLogsUsingGETParams): __Observable<TokenPaginatedResponseLogEvent> {
     return this.getBuildLogsUsingGETResponse(params).pipe(
       __map(_r => _r.body as TokenPaginatedResponseLogEvent)
-    );
-  }
-
-  /**
-   * getTestBuildDetails
-   * @param params The `ApplicationControllerService.GetTestBuildDetailsUsingGETParams` containing the following parameters:
-   *
-   * - `buildId`: buildId
-   *
-   * - `applicationId`: applicationId
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  getTestBuildDetailsUsingGETResponse(params: ApplicationControllerService.GetTestBuildDetailsUsingGETParams): __Observable<__StrictHttpResponse<TestBuildDetails>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/api/${encodeURIComponent(params.applicationFamily)}/applications/${encodeURIComponent(params.applicationId)}/builds/${encodeURIComponent(params.buildId)}/testDetails`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<TestBuildDetails>;
-      })
-    );
-  }
-  /**
-   * getTestBuildDetails
-   * @param params The `ApplicationControllerService.GetTestBuildDetailsUsingGETParams` containing the following parameters:
-   *
-   * - `buildId`: buildId
-   *
-   * - `applicationId`: applicationId
-   *
-   * - `applicationFamily`: applicationFamily
-   *
-   * @return OK
-   */
-  getTestBuildDetailsUsingGET(params: ApplicationControllerService.GetTestBuildDetailsUsingGETParams): __Observable<TestBuildDetails> {
-    return this.getTestBuildDetailsUsingGETResponse(params).pipe(
-      __map(_r => _r.body as TestBuildDetails)
     );
   }
 
@@ -3018,27 +2962,6 @@ module ApplicationControllerService {
      * nextToken
      */
     nextToken?: string;
-  }
-
-  /**
-   * Parameters for getTestBuildDetailsUsingGET
-   */
-  export interface GetTestBuildDetailsUsingGETParams {
-
-    /**
-     * buildId
-     */
-    buildId: string;
-
-    /**
-     * applicationId
-     */
-    applicationId: string;
-
-    /**
-     * applicationFamily
-     */
-    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   }
 
   /**

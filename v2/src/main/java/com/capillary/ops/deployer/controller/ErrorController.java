@@ -2,7 +2,6 @@ package com.capillary.ops.deployer.controller;
 
 import com.capillary.ops.deployer.bo.ErrorDetails;
 import com.capillary.ops.deployer.exceptions.NoSuchInfrastructureResourceException;
-import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.github.alturkovic.lock.exception.LockNotAvailableException;
 import com.mongodb.MongoWriteException;
 import org.springframework.http.HttpStatus;
@@ -26,14 +25,6 @@ public class ErrorController {
           NoSuchElementException ex, WebRequest request) {
     return new ResponseEntity<>(
         new ErrorDetails("Requested resource not found", "404"), HttpStatus.NOT_FOUND);
-  }
-
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ErrorDetails> notFoundException(
-          NotFoundException ex, WebRequest request) {
-    String message = ex.getMessage() == null ? "Requested resource not found" : ex.getMessage();
-    return new ResponseEntity<>(
-        new ErrorDetails(message, "404"), HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(MongoWriteException.class)

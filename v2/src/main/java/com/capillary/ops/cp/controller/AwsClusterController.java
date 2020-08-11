@@ -2,7 +2,6 @@ package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AwsCluster;
-import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -10,8 +9,6 @@ import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * All calls which can be made by the "Cluster Managers"
@@ -60,4 +57,5 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
         }
         throw new NotFoundException("This Cluster is not defined in AWS");
     }
+
 }

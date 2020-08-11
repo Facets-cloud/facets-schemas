@@ -34,7 +34,7 @@ export class PopupAppOverrideComponent implements OnInit {
 
   searchExistingOerride() {
     let overrides = this.existingOverrides;
-    let instance = overrides[this.newOverrideModuleType + '-' + this.newOverrideInstanceName];
+    let instance = overrides[this.newOverrideInstanceName];
 
     if (!instance) {
       this.newOverrideCurrentSelection = {};

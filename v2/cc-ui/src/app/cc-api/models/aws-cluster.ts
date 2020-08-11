@@ -2,7 +2,6 @@
 export interface AwsCluster {
   awsRegion?: string;
   azs?: Array<string>;
-  cdPipelineParent?: string;
   cloud?: 'AWS';
   commonEnvironmentVariables?: {[key: string]: string};
   externalId?: string;

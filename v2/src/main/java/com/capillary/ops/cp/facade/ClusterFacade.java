@@ -1,16 +1,16 @@
 package com.capillary.ops.cp.facade;
 
-import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
-import com.capillary.ops.cp.repository.SnapshotInfoRepository;
 import com.capillary.ops.cp.repository.StackRepository;
-import com.capillary.ops.cp.service.*;
+import com.capillary.ops.cp.service.ClusterHelper;
+import com.capillary.ops.cp.service.ClusterService;
+import com.capillary.ops.cp.service.OverrideService;
+import com.capillary.ops.cp.service.ReleaseScheduleService;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
-import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
@@ -18,12 +18,13 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -53,14 +54,6 @@ public class ClusterFacade {
 
     @Autowired
     private ReleaseScheduleService releaseScheduleService;
-
-    @Autowired
-    private DRCloudFactorySelector drCloudFactorySelector;
-
-    @Autowired
-    private SnapshotInfoRepository snapshotInfoRepository;
-
-    private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
 
     /**
      * Cluster agnostic request to create a new cluster
@@ -209,60 +202,5 @@ public class ClusterFacade {
             throw new NotFoundException("No such Cluster" + clusterId);
         }
         return overrideService.findAllByClusterId(clusterId);
-    }
-
-    public List<SnapshotInfo> listSnapshots(String clusterId, String resourceType, String instanceName) {
-        Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
-        if (!existingCluster.isPresent()) {
-            throw new NotFoundException("No such cluster: " + clusterId);
-        }
-
-        AbstractCluster cluster = existingCluster.get();
-
-        DRCloudFactory drCloudFactory = drCloudFactorySelector.getDRCloudFactory(cluster.getCloud());
-        DRCloudService drService = drCloudFactory.getDRService(resourceType);
-        List<SnapshotInfo> snapshotInfos = drService.listSnapshots(cluster, instanceName);
-        snapshotInfos.sort(Comparator.comparing(SnapshotInfo::getStartTime).reversed());
-        return snapshotInfos;
-    }
-
-    public SnapshotInfo pinSnapshot(String clusterId, String resourceType, String instanceName,
-                                          SnapshotInfo snapshotInfo) {
-        Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
-        if (!existingCluster.isPresent()) {
-            throw new NotFoundException("No such cluster: " + clusterId);
-        }
-
-        AbstractCluster cluster = existingCluster.get();
-
-        DRCloudFactory drCloudFactory = drCloudFactorySelector.getDRCloudFactory(cluster.getCloud());
-        DRCloudService drService = drCloudFactory.getDRService(resourceType);
-        return drService.pinSnapshot(cluster.getId(), resourceType, instanceName, snapshotInfo);
-    }
-
-    public SnapshotInfo getPinnedSnapshot(String clusterId, String resourceType, String instanceName) {
-        Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
-        if (!existingCluster.isPresent()) {
-            throw new NotFoundException("No such cluster: " + clusterId);
-        }
-
-        AbstractCluster cluster = existingCluster.get();
-
-        DRCloudFactory drCloudFactory = drCloudFactorySelector.getDRCloudFactory(cluster.getCloud());
-        DRCloudService drService = drCloudFactory.getDRService(resourceType);
-        return drService.getPinnedSnapshot(cluster.getId(), resourceType, instanceName);
-    }
-
-    public boolean createSnapshot(String clusterId, String resourceType, String instanceName) {
-        Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
-        if (!existingCluster.isPresent()) {
-            throw new NotFoundException("No such cluster: " + clusterId);
-        }
-
-        AbstractCluster cluster = existingCluster.get();
-
-        DRCloudFactory drCloudFactory = drCloudFactorySelector.getDRCloudFactory(cluster.getCloud());
-        DRCloudService drService = drCloudFactory.getDRService(resourceType);
-        return drService.createSnapshot(cluster, resourceType, instanceName);
     }
 }

@@ -96,14 +96,13 @@ export class ClusterOverridesComponent implements OnInit {
             const arr = groupMap[x.resourceType] ? groupMap[x.resourceType] : [];
             arr.push(x);
             groupMap[x.resourceType] = arr;
-            this.lookupMap[x.resourceType + "-" + x.resourceName] = x;
+            this.lookupMap[x.resourceName] = x;
           });
           for (const appGroup in groupMap) {
             const applications = groupMap[appGroup].map(x => {
               this.currentSelection = this.currentSelection ? this.currentSelection : x;
               return {
-                title: x.resourceName,
-                resourceType: x.resourceType
+                title: x.resourceName
               };
             });
             const menuItem: NbMenuItem = {
@@ -118,15 +117,15 @@ export class ClusterOverridesComponent implements OnInit {
       );
 
       this.menuService.onItemClick().subscribe((event) => {
-        this.selectApp(event.item.title, event.item["resourceType"]);
+        this.selectApp(event.item.title);
       });
     });
 
     this.search("");
   }
 
-  selectApp(appName, resourceType): void {
-    this.currentSelection = this.lookupMap[resourceType + '-' + appName];
+  selectApp(appName): void {
+    this.currentSelection = this.lookupMap[appName];
   }
 
   editOverrides() {
