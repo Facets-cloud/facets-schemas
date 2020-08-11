@@ -6,6 +6,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.samskivert.mustache.Mustache;
@@ -27,14 +28,16 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,19 +47,24 @@ public class NewRelicService implements INewRelicService {
     @Value("${newrelic.apiKey}")
     private String newrelicApiKey;
 
+    @Value("${newrelic.queryKey}")
+    private String newrelicQueryKey;
+
+    private static final String newRelicAccountId = "67421";
+
     private static HttpClient httpClient = HttpClientBuilder.create()
             .setConnectionManager(new PoolingHttpClientConnectionManager()).build();
 
     private static final Logger logger = LoggerFactory.getLogger(NewRelicService.class);
 
-    enum AlertChannel{
+    enum AlertChannel {
         Email
     }
 
     @Override
     public void upsertDashboard(Application application,
                                 Environment environment) {
-        if(environment.getEnvironmentConfiguration().getNewRelicClusterName() == null) {
+        if (environment.getEnvironmentConfiguration().getNewRelicClusterName() == null) {
             throw new RuntimeException("NewRelic cluster name not configured");
         }
         try {
@@ -129,7 +137,7 @@ public class NewRelicService implements INewRelicService {
     }
 
     private String getDashboardId(Application application,
-                           Environment environment) {
+                                  Environment environment) {
         try {
             URIBuilder builder = new URIBuilder("https://api.newrelic.com/v2/dashboards.json");
             builder.setParameter("filter[title]", getDashboardTitle(application, environment));
@@ -257,8 +265,8 @@ public class NewRelicService implements INewRelicService {
         String responseBody = EntityUtils.toString(response.getEntity());
         JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
         if (jsonObject.getAsJsonArray("channels").size() > 0) {
-            for(JsonElement channel: jsonObject.getAsJsonArray("channels")){
-                if(channel.getAsJsonObject().get("name").getAsString().equals(applicationName)){
+            for (JsonElement channel : jsonObject.getAsJsonArray("channels")) {
+                if (channel.getAsJsonObject().get("name").getAsString().equals(applicationName)) {
                     channelId = channel.getAsJsonObject().get("id").getAsInt();
                 }
             }
@@ -269,7 +277,7 @@ public class NewRelicService implements INewRelicService {
     @Override
     public String getAlertsURL(Application application, Environment environment) {
         String alertsURL = null;
-        String baseURL = "https://alerts.newrelic.com/accounts/67421/policies/";
+        String baseURL = "https://alerts.newrelic.com/accounts/" + newRelicAccountId + "/policies/";
         try {
             Integer policyId = getAlertPolicy(application.getName());
             if (policyId != null && getAlertConditions(application, environment, policyId) != null) {
@@ -387,6 +395,61 @@ public class NewRelicService implements INewRelicService {
             return Resources.toString(url, Charsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    //@Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
+    public Map<String, Double> getMetrics(String applicationName, Integer fromDate, Integer toDate) {
+
+        Map<String, Double> ret = new HashMap<>();
+
+//        String failureCountQuery = "SELECT count(*) as failures " +
+//                " FROM Transaction where http.statusCode >=500  " +
+//                " and appName LIKE  '%-"+applicationName+"' " +
+//                "SINCE "+fromDate+" days AGO UNTIL "+toDate+" day ago ";
+//
+//        fireNrqlQuery(failureCountQuery, ret);
+
+
+        String percentile95Query = "SELECT percentile(totalTime, 95) as f " +
+                " FROM Transaction where " +
+                " appName LIKE  '%-"+applicationName+"' " +
+                "SINCE "+fromDate+" days AGO UNTIL "+toDate+" day ago ";
+
+        fireNrqlQuery(percentile95Query, ret);
+
+        return ret;
+    }
+
+    private void fireNrqlQuery(String query, Map<String, Double> ret) {
+        URIBuilder builder = null;
+        try {
+            builder = new URIBuilder("https://insights-api.newrelic.com/v1/accounts/" + newRelicAccountId +
+                    "/query?nrql=" + URLEncoder.encode(query, "UTF-8"));
+            HttpGet request = new HttpGet(builder.build());
+            request.setHeader("Content-Type", "application/json");
+            request.setHeader("X-Query-Key", newrelicQueryKey);
+            HttpResponse response = httpClient.execute(request);
+            String responseBody = EntityUtils.toString(response.getEntity());
+            JsonObject jsonObject = new Gson().fromJson(responseBody, JsonObject.class);
+            //JsonElement results = jsonObject.get("results").getAsJsonArray().get(0).getAsJsonObject().get("key");
+            int size = jsonObject.get("results").getAsJsonArray().size();
+
+            JsonArray valuesList = jsonObject.get("results").getAsJsonArray();
+            JsonArray keysList = jsonObject.get("metadata").getAsJsonObject().get("contents").getAsJsonArray();
+
+            for (int i = 0; i < size; i++) {
+                String alias = valuesList.get(i).getAsJsonObject().keySet().toArray()[0].toString();
+
+                ret.putIfAbsent(
+                        keysList.get(i).getAsJsonObject().get("alias").getAsString(),
+                        valuesList.get(i).getAsJsonObject().get(alias).getAsDouble()
+                );
+            }
+
+        } catch (Exception e) {
+            logger.error("Failed to get ", e);
         }
     }
 }

@@ -6,6 +6,10 @@ import com.capillary.ops.deployer.service.newrelic.INewRelicService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 @Profile("dev")
 @Service
 public class MockNewRelicService implements INewRelicService {
@@ -39,4 +43,13 @@ public class MockNewRelicService implements INewRelicService {
     public String getAlertsURL(Application application, Environment environment) {
         return null;
     }
+
+    @Override
+    public Map<String, Double> getMetrics(String applicationName, Integer startDate, Integer endDate) {
+        Map<String, Double> ret = new HashMap<>();
+        ret.putIfAbsent("error_count", 2.0);
+        return ret;
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.capillary.ops.App;
 import com.capillary.ops.cp.service.CCAdapterService;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -128,10 +131,10 @@ public class ApplicationFacade {
     private CCAdapterService ccAdapterService;
 
     public Application createApplication(Application application, String host) {
-        if(application.getHealthCheck().getLivenessProbe().getPort() == 0) {
+        if (application.getHealthCheck().getLivenessProbe().getPort() == 0) {
             application.getHealthCheck().setLivenessProbe(null);
         }
-        if(application.getHealthCheck().getReadinessProbe().getPort() == 0) {
+        if (application.getHealthCheck().getReadinessProbe().getPort() == 0) {
             application.getHealthCheck().setReadinessProbe(null);
         }
 
@@ -234,35 +237,39 @@ public class ApplicationFacade {
     }
 
     private boolean processPullRequest(Application application, PullRequest pullRequest) {
-        Build build = new Build();
-        build.setApplicationId(pullRequest.getApplicationId());
-        int pullRequestNumber = pullRequest.getNumber();
-        build.setApplicationId(application.getId());
-        build.setTag(pullRequest.getSourceBranch());
-        build.setApplicationFamily(application.getApplicationFamily());
-        build.setDescription("Built via pull request " + pullRequestNumber);
-        build.setTriggeredBy("capbuilder");
-        build.setTestBuild(true);
-
-        if(build.getEnvironmentVariables() == null)
-            build.setEnvironmentVariables(new HashMap<>());
-
-        build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", pullRequestNumber+"" );
-        build.getEnvironmentVariables().putIfAbsent("appId", application.getId() );
-        build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name() );
-        buildRepository.save(build);
-
-        build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId() );
-
-        String testBuildId = codeBuildService.triggerBuild(application, build, true);
-        build.setCodeBuildId(testBuildId);
-        buildRepository.save(build);
+        Build build = triggerTestBuild(application, pullRequest.getSourceBranch(), pullRequest.getNumber());
 
         VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
         vcsService.processPullRequest(pullRequest, build);
         vcsService.commentOnPullRequest(pullRequest, "Build started");
 
         return true;
+    }
+
+    private Build triggerTestBuild(Application application, String branch, Integer requestNumber) {
+        Build build = new Build();
+        build.setApplicationId(application.getId());
+        build.setApplicationId(application.getId());
+        build.setTag(branch);
+        build.setApplicationFamily(application.getApplicationFamily());
+        build.setDescription("Built via pull request " + requestNumber);
+        build.setTriggeredBy("capbuilder");
+        build.setTestBuild(true);
+
+        if (build.getEnvironmentVariables() == null)
+            build.setEnvironmentVariables(new HashMap<>());
+
+        build.getEnvironmentVariables().putIfAbsent("pullRequestNumber", requestNumber + "");
+        build.getEnvironmentVariables().putIfAbsent("appId", application.getId());
+        build.getEnvironmentVariables().putIfAbsent("appFamily", build.getApplicationFamily().name());
+        buildRepository.save(build);
+
+        build.getEnvironmentVariables().putIfAbsent("deployerBuildId", build.getId());
+
+        String testBuildId = codeBuildService.triggerBuild(application, build, true);
+        build.setCodeBuildId(testBuildId);
+        buildRepository.save(build);
+        return build;
     }
 
     @RedisLocked(
@@ -331,8 +338,8 @@ public class ApplicationFacade {
             }
         }
         existingBuild.setPromoted(build.isPromoted());
-        if(build.isPromoted()){
-            if(build.isPromoted() && build.getPromotionIntent().equals(PromotionIntent.NA)){
+        if (build.isPromoted()) {
+            if (build.isPromoted() && build.getPromotionIntent().equals(PromotionIntent.NA)) {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
@@ -365,7 +372,7 @@ public class ApplicationFacade {
     }
 
     public TestBuildDetails getTestBuildDetails(ApplicationFamily applicationFamily, String applicationId,
-                                              String buildId){
+                                                String buildId) {
         TestBuildDetails build = testBuildDetailsRepository.findFirstByBuildId(buildId).get();
         return build;
 
@@ -391,11 +398,11 @@ public class ApplicationFacade {
                 codeBuildService.getBuild(application, build.getCodeBuildId());
         StatusType status = codeBuildServiceBuild.buildStatus();
         build.setStatus(status);
-        if(StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
+        if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
             build.setImage(ecrService.findImageBetweenTimes(application,
                     codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
             String artifactLocation = codeBuildServiceBuild.artifacts().location();
-            if(! StringUtils.isEmpty(artifactLocation)) {
+            if (!StringUtils.isEmpty(artifactLocation)) {
                 URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
                         "deployer-test-build-output", codeBuildServiceBuild.id().split(":")[1] + "/" + application.getName(),
                         DateUtils.addHours(new Date(), 2)
@@ -408,7 +415,7 @@ public class ApplicationFacade {
 
     private List<Build> getBuildDetails(Application application, List<Build> builds) {
         Map<String, Build> codeBuildToBuildMap = builds.parallelStream()
-                .filter(build -> build.getCodeBuildId()!=null)
+                .filter(build -> build.getCodeBuildId() != null)
                 .collect(Collectors.toMap(Build::getCodeBuildId, Function.identity()));
         List<software.amazon.awssdk.services.codebuild.model.Build> codeBuildServiceBuilds =
                 codeBuildService.getBuilds(application, new ArrayList<>(codeBuildToBuildMap.keySet()));
@@ -453,8 +460,8 @@ public class ApplicationFacade {
     public Deployment createDeployment(ApplicationFamily applicationFamily, String environment, String applicationId, Deployment deployment) {
         deployment.setTimestamp(new Date());
         Environment env = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environment).get();
-        if(env.getEnvironmentMetaData().getEnvironmentType().equals(EnvironmentType.PRODUCTION)){
-            if(!getBuildPromotionStatus(applicationId, deployment.getBuildId())) {
+        if (env.getEnvironmentMetaData().getEnvironmentType().equals(EnvironmentType.PRODUCTION)) {
+            if (!getBuildPromotionStatus(applicationId, deployment.getBuildId())) {
                 logger.info("Build {} is not promoted", deployment.getBuildId());
                 throw new NotPromotedException("Build " + deployment.getBuildId() + " is not promoted");
             }
@@ -471,7 +478,7 @@ public class ApplicationFacade {
             throw new InvalidActionException("Invalid Action: cannot deploy a test build");
         }
 
-        if(StringUtils.isEmpty(build.getImage())) {
+        if (StringUtils.isEmpty(build.getImage())) {
             throw new NotFoundException("No image");
         }
 
@@ -482,10 +489,10 @@ public class ApplicationFacade {
         deployment.setImage(build.getImage());
         String mirror = env.getEnvironmentConfiguration() != null ?
                 env.getEnvironmentConfiguration().getEcrMirrorRepo() : null;
-        if(mirror != null && ! mirror.isEmpty()) {
+        if (mirror != null && !mirror.isEmpty()) {
             deployment.setImage(deployment.getImage().replaceAll(ecrRepoUrl, mirror));
         }
-        if(env.getEnvironmentConfiguration() != null && env.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
+        if (env.getEnvironmentConfiguration() != null && env.getEnvironmentConfiguration().isPreDeployTaskEnabled()) {
             preDeployTasks(application, deployment);
         }
         try {
@@ -521,8 +528,7 @@ public class ApplicationFacade {
                         }
                     }
             }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error("Error executing pre-deploy task", e);
         }
     }
@@ -567,7 +573,7 @@ public class ApplicationFacade {
     }
 
     private boolean getBuildPromotionStatus(String applicationId, String buildId) {
-        Optional<Build> build = buildRepository.findOneByApplicationIdAndId(applicationId,buildId);
+        Optional<Build> build = buildRepository.findOneByApplicationIdAndId(applicationId, buildId);
         return build.get().isPromoted();
     }
 
@@ -579,20 +585,20 @@ public class ApplicationFacade {
     }
 
     public DeploymentStatusDetails getDeploymentStatus(ApplicationFamily applicationFamily, String environmentName,
-        String applicationId) {
+                                                       String applicationId) {
         Application application =
-            applicationRepository.findById(applicationId).get();
+                applicationRepository.findById(applicationId).get();
         logger.info("Application from repo: {}", application.getName());
         Optional<Environment> environmentO = environmentRepository
-            .findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily,
-                environmentName);
+                .findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily,
+                        environmentName);
         DeploymentStatusDetails deploymentStatus = null;
         if (!environmentO.isPresent()) {
             // This can be a CC request
             logger.info("This may be a cc request for {}", application.getName());
             Optional<EnvironmentMetaData> ccMeta =
-                ccAdapterService.getCCEnvironmentMeta(applicationFamily, environmentName);
-            if(!ccMeta.isPresent()){
+                    ccAdapterService.getCCEnvironmentMeta(applicationFamily, environmentName);
+            if (!ccMeta.isPresent()) {
                 logger.info("No such Environment present in CC {}", environmentName);
                 return null;
             }
@@ -603,9 +609,9 @@ public class ApplicationFacade {
             deploymentStatus = kubernetesService.getDeploymentStatus(application, environment, applicationId, true);
         } else {
             deploymentStatus = kubernetesService
-                .getDeploymentStatus(application, environmentO.get(), helmService.getReleaseName(application,
-                    environmentO.get()),
-                    false);
+                    .getDeploymentStatus(application, environmentO.get(), helmService.getReleaseName(application,
+                            environmentO.get()),
+                            false);
         }
         return deploymentStatus;
     }
@@ -649,7 +655,7 @@ public class ApplicationFacade {
         if (paths == null) {
             return new HashMap<>();
         }
-        return paths.stream().collect(Collectors.toMap(x->x, x->getS3URL(x)));
+        return paths.stream().collect(Collectors.toMap(x -> x, x -> getS3URL(x)));
     }
 
     private String getDateForDump(String date) {
@@ -661,7 +667,7 @@ public class ApplicationFacade {
         return dateFormat.format(Calendar.getInstance().getTime());
     }
 
-     public boolean isDateValid(@RequestParam(required = false) String date) {
+    public boolean isDateValid(@RequestParam(required = false) String date) {
         if (date == null) {
             return false;
         }
@@ -725,17 +731,17 @@ public class ApplicationFacade {
                 .containsAll(applicationSecrets.parallelStream().map(ApplicationSecret::getSecretName).collect(Collectors.toList()));
     }
 
-    public void rollbackDeployment(ApplicationFamily applicationFamily, String environmentName, String applicationId){
+    public void rollbackDeployment(ApplicationFamily applicationFamily, String environmentName, String applicationId) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
-        helmService.rollback(application,environment);
+        helmService.rollback(application, environment);
     }
 
     private String getUserName() {
         String username = "";
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof OAuth2User) {
-            username = ((OAuth2User)principal).getName();
+            username = ((OAuth2User) principal).getName();
         } else {
             username = principal.toString();
         }
@@ -780,7 +786,7 @@ public class ApplicationFacade {
     }
 
     public List<ApplicationSecret> getApplicationSecrets(String environmentName, ApplicationFamily applicationFamily,
-                                                        String applicationId) {
+                                                         String applicationId) {
         Application existingApplication =
                 applicationRepository
                         .findOneByApplicationFamilyAndId(applicationFamily,
@@ -895,7 +901,7 @@ public class ApplicationFacade {
     }
 
     public boolean enableNewrelicAlerting(ApplicationFamily applicationFamily,
-                                            String applicationId, String environmentName) {
+                                          String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         newRelicService.createAlerts(application, environment);
@@ -903,7 +909,7 @@ public class ApplicationFacade {
     }
 
     public boolean disableNewrelicAlerting(ApplicationFamily applicationFamily,
-                                             String applicationId, String environmentName) {
+                                           String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         newRelicService.disableAlerts(application, environment);
@@ -943,7 +949,7 @@ public class ApplicationFacade {
     }
 
     public Alerting getAlertingDetails(ApplicationFamily applicationFamily, String applicationId,
-                                           String environmentName) {
+                                       String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
         String newRelicServiceAlertsURL = newRelicService.getAlertsURL(application, environment);
@@ -965,7 +971,7 @@ public class ApplicationFacade {
                 .map(x -> x.getSpec().getTemplate().getMetadata().getAnnotations().get("deploymentId"))
                 .collect(Collectors.toList());
         Map<String, Boolean> ret = new HashMap<>();
-        for (String deploymentId: deploymentIds) {
+        for (String deploymentId : deploymentIds) {
             Deployment deployment = deploymentRepository.findById(deploymentId).get();
             Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, deployment.getApplicationId()).get();
             try {
@@ -979,40 +985,40 @@ public class ApplicationFacade {
     }
 
     // to add the pr based on the status of sonar callback
-    public boolean processSonarCallback(CallbackBody body){
+    public boolean processSonarCallback(CallbackBody body) {
         Integer prNumber = Integer.parseInt(body.getPrNumber());
         String appId = body.getAppId();
-        // it has a pr id
-        if(prNumber != null) {
 
-            TestBuildDetails testBuildDetails = getTestBuildDetails(body);
-            testBuildDetailsRepository.save(testBuildDetails);
+        TestBuildDetails testBuildDetails = getTestBuildDetails(body);
+        testBuildDetailsRepository.save(testBuildDetails);
+
+        // it has a pr id
+        if (prNumber != null && prNumber > 0) {
 
             PullRequest pullRequest = pullRequestRepository.findAllByApplicationIdAndNumber(appId, prNumber).get(0);
             Application application = applicationRepository.findById(pullRequest.getApplicationId()).get();
             VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
 
             final String newline = "-----         ";
-            String message = "Status :" + body.getQualityGate().getStatus() ;
+            String message = "Status :" + body.getQualityGate().getStatus();
             message = message + newline + "Sonar url: " + testBuildDetails.getSonarUrl();
-            for ( Condition cond : body.getQualityGate().getConditions()) {
+            for (Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
-                if(!cond.getStatus().equalsIgnoreCase("OK") && cond.getValue() != null ){
+                if (!cond.getStatus().equalsIgnoreCase("OK") && cond.getValue() != null) {
                     String value = cond.getValue();
                     message += newline + cond.getMetric() + " " + cond.getOperator() + " " + cond.getErrorThreshold()
-                            + "("+  value + ")" ;
+                            + "(" + value + ")";
                 }
             }
 
             // report all the failed
             vcsService.commentOnPullRequest(pullRequest, message);
-
         }
-
 
         return true;
     }
-    private  TestBuildDetails getTestBuildDetails(CallbackBody callbackBody){
+
+    private TestBuildDetails getTestBuildDetails(CallbackBody callbackBody) {
 
         TestBuildDetails ret = new TestBuildDetails();
         ret.setBuildId(callbackBody.getDeployerBuildId());
@@ -1024,12 +1030,150 @@ public class ApplicationFacade {
         ret.setBranchType(callbackBody.getBranch().getType());
         ret.setSonarUrl(callbackBody.getBranch().getUrl());
 
-        switch (callbackBody.getStatus()){
-            case "OK" :  ret.setTestStatus(TestBuildDetails.Status.PASS); break;
+        switch (callbackBody.getStatus()) {
+            case "OK":
+                ret.setTestStatus(TestBuildDetails.Status.PASS);
+                break;
 
-            default: ret.setTestStatus(TestBuildDetails.Status.FAIL); break;
+            default:
+                ret.setTestStatus(TestBuildDetails.Status.FAIL);
+                break;
         }
-        return  ret;
+        return ret;
 
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void testBuildMasterBranch() {
+
+        logger.info("Triggering all test builds on master branch");
+
+        List<Application> applications = applicationRepository.findAll();
+
+        // build for all ci enabled projects
+        applications.parallelStream().forEach(application -> {
+            if(application.isCiEnabled())
+                triggerTestBuild(application, "master", 0);
+        });
+
+//        Calendar c = Calendar.getInstance();
+//        Date y = new Date();
+//        c.setTime(y);
+//        c.add(Calendar.DATE, -7);
+//        Date date = c.getTime();
+//
+//        List<String> applicationIds = buildRepository.
+//                findApplicationIdDistinctByTestBuildAndTimestampGreaterThan(true, date);
+
+//        applicationIds.parallelStream().forEach(id -> {
+//            Application application = applicationRepository.findById(id).get();
+//            triggerTestBuild(application, "master", 0);
+//        });
+    }
+
+    public Map<String,ApplicationMetrics> getApplicationMetricSummary(ApplicationFamily applicationFamily,
+                                                                String applicationId) {
+
+        Map<String, ApplicationMetrics> ret = new HashMap<>();
+
+        ApplicationMetrics oldMetrics = getMetricsFromDeployer(applicationId, 14, 8);
+        ApplicationMetrics recentMetrics = getMetricsFromDeployer(applicationId, 7, 0);
+
+        ret.putIfAbsent("old",oldMetrics);
+        ret.putIfAbsent("new",recentMetrics);
+
+        return ret;
+    }
+
+    //@Cacheable(key = "#applicationName + '_' + #fromDate + '_' + #toDate")
+    private ApplicationMetrics getMetricsFromDeployer(String applicationId, Integer fromDate,
+                                                      Integer toDate){
+
+        Date today = new Date();
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -fromDate);
+        Date periodStartDate = c.getTime();
+
+        c.setTime(new Date());
+        c.add(Calendar.DATE, -toDate);
+        Date periodEndDate = c.getTime();
+
+
+        ApplicationMetrics metrics = new ApplicationMetrics(applicationId, periodEndDate);
+
+        // sonar data
+        TestBuildDetails buildDetails = testBuildDetailsRepository
+                .findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(
+                        applicationId, periodEndDate.getTime());
+
+        if(buildDetails!= null)
+            updateMetricObject( buildDetails.getTestStatusRules(), metrics);
+
+        // test build data
+        Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
+                applicationId, periodStartDate.getTime(), periodEndDate.getTime());
+        metrics.setBuildFailures(failedBuilds);
+
+        // new relic data
+//        Application application = applicationRepository.findById(applicationId).get();
+//        Map<String, Double> newrelicMetrics = newRelicService.getMetrics(
+//                application.getName(), fromDate, toDate);
+//        if(newrelicMetrics!=null)
+//            updateMetricObject(newrelicMetrics, metrics);
+        metrics.setDate(periodEndDate);
+
+        return metrics;
+
+    }
+    private void updateMetricObject(List<Condition> map, ApplicationMetrics metrics) {
+
+        if(map == null)
+            return;
+
+        /*
+        blocker_violations
+        code_smells
+        critical_violations
+        security_hotspots_reviewed
+        tests
+         */
+        map.stream().forEach(cond -> {
+            if (cond.getMetric().equalsIgnoreCase("line_coverage"))
+                metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
+            else if (cond.getMetric().equalsIgnoreCase("tests"))
+                metrics.setUnitTests(Integer.parseInt(cond.getMetric()));
+
+            else if (cond.getMetric().equalsIgnoreCase("code_smells"))
+                metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
+
+        });
+    }
+
+    private void updateMetricObject(Map<String, Double> map, ApplicationMetrics metrics) {
+
+        metrics.setResponseTime(map.getOrDefault("percentile_95", 0.0));
+        metrics.setErrors((int) Math.round(map.getOrDefault("failures", 0.0)));
+    }
+
+    public List<ApplicationMetricsWrapper> getAllApplicationMetrics(ApplicationFamily applicationFamily){
+
+        List<ApplicationMetricsWrapper> ret = new ArrayList<>();
+
+        List<Application> applications = applicationRepository.findByApplicationFamilyAndApplicationType(applicationFamily,
+                Application.ApplicationType.SERVICE);
+
+        applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList()).parallelStream().forEach(application -> {
+            try {
+                Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
+                ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
+            }catch (Exception ex){
+                logger.error("Failed to get the stats for application" , ex);
+
+            }
+        });
+
+        return  ret;
     }
 }

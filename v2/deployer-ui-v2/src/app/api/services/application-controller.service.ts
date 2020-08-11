@@ -18,9 +18,11 @@ import { InputStreamResource } from '../models/input-stream-resource';
 import { TokenPaginatedResponseLogEvent } from '../models/token-paginated-response-log-event';
 import { TestBuildDetails } from '../models/test-build-details';
 import { ActionExecution } from '../models/action-execution';
+import { ApplicationMetrics } from '../models/application-metrics';
 import { ApplicationSecretRequest } from '../models/application-secret-request';
 import { BitbucketPREvent } from '../models/bitbucket-prevent';
 import { GithubPREvent } from '../models/github-prevent';
+import { ApplicationMetricsWrapper } from '../models/application-metrics-wrapper';
 import { Environment } from '../models/environment';
 import { Alerting } from '../models/alerting';
 import { Deployment } from '../models/deployment';
@@ -60,11 +62,13 @@ class ApplicationControllerService extends __BaseService {
   static readonly getTestBuildDetailsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/builds/{buildId}/testDetails';
   static readonly getExecutedActionsForApplicationUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/executedActions';
   static readonly getImagesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/images';
+  static readonly getApplicationMetricSummaryUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/metrics';
   static readonly getApplicationSecretRequestsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
   static readonly createAppSecretRequestUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/secretRequests';
   static readonly getApplicationTagsUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/tags';
   static readonly processWebhookPRBitbucketUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/bitbucket';
   static readonly processWebhookPRGithubUsingPOSTPath = '/api/{applicationFamily}/applications/{applicationId}/webhooks/pr/github';
+  static readonly getAllApplicationMetricsUsingGETPath = '/api/{applicationFamily}/appmetrics';
   static readonly getEnvironmentMetaDataUsingGETPath = '/api/{applicationFamily}/environmentMetaData';
   static readonly getEnvironmentsUsingGETPath = '/api/{applicationFamily}/environments';
   static readonly upsertEnvironmentUsingPOSTPath = '/api/{applicationFamily}/environments';
@@ -1163,6 +1167,53 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
+   * @param params The `ApplicationControllerService.GetApplicationMetricSummaryUsingGETParams` containing the following parameters:
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationMetricSummaryUsingGETResponse(params: ApplicationControllerService.GetApplicationMetricSummaryUsingGETParams): __Observable<__StrictHttpResponse<{[key: string]: ApplicationMetrics}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${params.applicationFamily}/applications/${params.applicationId}/metrics`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{[key: string]: ApplicationMetrics}>;
+      })
+    );
+  }
+  /**
+   * @param params The `ApplicationControllerService.GetApplicationMetricSummaryUsingGETParams` containing the following parameters:
+   *
+   * - `applicationId`: applicationId
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  getApplicationMetricSummaryUsingGET(params: ApplicationControllerService.GetApplicationMetricSummaryUsingGETParams): __Observable<{[key: string]: ApplicationMetrics}> {
+    return this.getApplicationMetricSummaryUsingGETResponse(params).pipe(
+      __map(_r => _r.body as {[key: string]: ApplicationMetrics})
+    );
+  }
+
+  /**
    * @param params The `ApplicationControllerService.GetApplicationSecretRequestsUsingGETParams` containing the following parameters:
    *
    * - `applicationId`: applicationId
@@ -1424,6 +1475,42 @@ class ApplicationControllerService extends __BaseService {
   processWebhookPRGithubUsingPOST(params: ApplicationControllerService.ProcessWebhookPRGithubUsingPOSTParams): __Observable<{}> {
     return this.processWebhookPRGithubUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as {})
+    );
+  }
+
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getAllApplicationMetricsUsingGETResponse(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<__StrictHttpResponse<Array<ApplicationMetricsWrapper>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/${applicationFamily}/appmetrics`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ApplicationMetricsWrapper>>;
+      })
+    );
+  }
+  /**
+   * @param applicationFamily applicationFamily
+   * @return OK
+   */
+  getAllApplicationMetricsUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<ApplicationMetricsWrapper>> {
+    return this.getAllApplicationMetricsUsingGETResponse(applicationFamily).pipe(
+      __map(_r => _r.body as Array<ApplicationMetricsWrapper>)
     );
   }
 
@@ -2955,6 +3042,22 @@ module ApplicationControllerService {
    * Parameters for getImagesUsingGET
    */
   export interface GetImagesUsingGETParams {
+
+    /**
+     * applicationId
+     */
+    applicationId: string;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
+
+  /**
+   * Parameters for getApplicationMetricSummaryUsingGET
+   */
+  export interface GetApplicationMetricSummaryUsingGETParams {
 
     /**
      * applicationId

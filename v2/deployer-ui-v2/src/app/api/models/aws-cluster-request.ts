@@ -2,6 +2,7 @@
 import { TimeZone } from './time-zone';
 export interface AwsClusterRequest {
   azs?: Array<string>;
+  cdPipelineParent?: string;
   cloud?: 'AWS';
   clusterName?: string;
   clusterVars?: {[key: string]: string};
@@ -13,4 +14,5 @@ export interface AwsClusterRequest {
   schedules?: {[key: string]: string};
   stackName?: string;
   tz?: TimeZone;
+  vpcCIDR?: string;
 }

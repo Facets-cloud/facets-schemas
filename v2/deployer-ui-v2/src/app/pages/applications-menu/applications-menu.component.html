@@ -8,3 +8,9 @@
 </div>
 <input type="text" nbInput fullWidth shape="round" placeholder="Search" (input)="search($event.target.value)">
 <nb-menu [items]="menuItems" tag="applications-menu"></nb-menu>
+<hr>
+
+<div style="margin-bottom: 1rem;">
+  <nb-menu [items]="applicationMetrics" tag="user-menu"></nb-menu>
+  <hr>
+</div>

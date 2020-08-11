@@ -43,7 +43,7 @@ public class SbtBuildSpec extends BuildSpec {
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
         //buildCommands.add("sbt clean test");
-        buildCommands.add("sbt clean package test sonarScan -Dmaven.test.failure.ignore=false " +
+        buildCommands.add("sbt clean package test sonarScan -Dmaven.test.failure.ignore=true " +
                 " -Dsonar.host.url=http://sonar.capillary.in/ " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +

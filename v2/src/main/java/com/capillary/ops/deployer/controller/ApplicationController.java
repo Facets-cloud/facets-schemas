@@ -385,7 +385,8 @@ public class ApplicationController {
 
     @GetMapping(value = "/stats")
     public GlobalStats globalStats() {
-        return applicationFacade.getGlobalStats();
+        GlobalStats x = applicationFacade.getGlobalStats();
+        return x;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', #applicationFamily + '_' + #environment + '_' + 'MODERATOR')")
@@ -468,4 +469,26 @@ public class ApplicationController {
         return applicationFacade.redeploy(applicationFamily, environment);
     }
 
+    @PreAuthorize("true")
+    @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/metrics", produces =
+            "application/json")
+    public Map<String,ApplicationMetrics> getApplicationMetricSummary(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                           @PathVariable("applicationId") String applicationId) {
+        Map<String, ApplicationMetrics> ret = applicationFacade.getApplicationMetricSummary(applicationFamily,
+                applicationId);
+
+        return ret;
+    }
+    @PreAuthorize("true")
+    @GetMapping(value = "/{applicationFamily}/appmetrics", produces =
+            "application/json")
+    public List<ApplicationMetricsWrapper> getAllApplicationMetrics(
+            @PathVariable("applicationFamily") ApplicationFamily applicationFamily) {
+        List<ApplicationMetricsWrapper> ret = applicationFacade.getAllApplicationMetrics(applicationFamily);
+
+        return ret;
+
+
+
+    }
 }

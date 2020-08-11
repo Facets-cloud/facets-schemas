@@ -27,7 +27,7 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
     @Override
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("mvn clean deploy -Dmaven.test.failure.ignore=false -DskipFormat=true -Dmaven.test" +
+        buildCommands.add("mvn clean deploy -Dmaven.test.failure.ignore=true -DskipFormat=true -Dmaven.test" +
                 ".skip=true -U");
         return buildCommands;
     }
