@@ -1140,13 +1140,19 @@ public class ApplicationFacade {
         tests
          */
         map.stream().forEach(cond -> {
-            if (cond.getMetric().equalsIgnoreCase("line_coverage"))
-                metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
-            else if (cond.getMetric().equalsIgnoreCase("tests"))
-                metrics.setUnitTests(Integer.parseInt(cond.getMetric()));
-
-            else if (cond.getMetric().equalsIgnoreCase("code_smells"))
-                metrics.setUnitTestCoverage(Integer.parseInt(cond.getMetric()));
+            if(cond.getValue() == null)
+                cond.setValue("0");
+            int value = Math.round(Float.parseFloat(cond.getValue()));
+            try {
+                if (cond.getMetric().equalsIgnoreCase("line_coverage"))
+                    metrics.setUnitTestCoverage(value);
+                else if (cond.getMetric().equalsIgnoreCase("tests"))
+                    metrics.setUnitTests(value);
+                else if (cond.getMetric().equalsIgnoreCase("code_smells"))
+                    metrics.setCriticalCodeSmells(value);
+            }catch (Exception ex){
+                logger.error("Error in parsing", ex);
+            }
 
         });
     }
