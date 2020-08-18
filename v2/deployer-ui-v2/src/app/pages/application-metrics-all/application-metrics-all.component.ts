@@ -128,8 +128,8 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
     },
     noDataMessage: 'No projects to show',
     pager: {
-      display: false,
-      perPage: 100,
+      display: true,
+      perPage: 10,
     },
     actions: {
       position: 'right',
