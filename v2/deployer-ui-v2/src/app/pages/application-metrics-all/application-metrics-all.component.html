@@ -22,7 +22,7 @@
     {{applicationMetricsWrappers[0]?.lastWeekMetrics.date | date: "dd-MM-yyyy"}}
   </nb-card-header>
 
-  <nb-card-body>
+</nb-card>
 
     <ng2-smart-table  [settings]='settings' [source]='metricsList'></ng2-smart-table>
 <!--    <div style="text-align: center;" class="table-responsive" [ngClass]="{'visually-hidden': applicationMetricsWrappers.length==0}" >-->
@@ -94,5 +94,3 @@
 <!--    </div>-->
 
 
-  </nb-card-body>
-</nb-card>
