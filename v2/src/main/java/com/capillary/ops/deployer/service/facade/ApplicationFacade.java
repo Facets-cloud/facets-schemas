@@ -115,6 +115,10 @@ public class ApplicationFacade {
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String testOutputS3BucketRegion;
 
+    @Value("${enable.cron}")
+    private Integer enableCron;
+
+
     @Autowired
     private INewRelicService newRelicService;
 
@@ -1030,8 +1034,9 @@ public class ApplicationFacade {
         ret.setBranchType(callbackBody.getBranch().getType());
         ret.setSonarUrl(callbackBody.getBranch().getUrl());
 
-        switch (callbackBody.getStatus()) {
+        switch (callbackBody.getStatus().toUpperCase()) {
             case "OK":
+            case "SUCCESS":
                 ret.setTestStatus(TestBuildDetails.Status.PASS);
                 break;
 
@@ -1046,6 +1051,8 @@ public class ApplicationFacade {
     @Scheduled(cron = "0 0 0 * * *")
     public void testBuildMasterBranch() {
 
+        if (enableCron != 1)
+            return;
         logger.info("Triggering all test builds on master branch");
 
         List<Application> applications = applicationRepository.findAll();

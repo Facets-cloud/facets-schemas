@@ -3,4 +3,4 @@ EXPOSE 8080
 COPY target/ /application/
 COPY src/main/resources/charts/ /charts/
 WORKDIR /application
-CMD java -jar *.jar
+CMD java -jar -Denable_cron=${enable_cron} *.jar
