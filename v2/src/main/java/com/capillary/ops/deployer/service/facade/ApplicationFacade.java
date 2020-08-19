@@ -115,8 +115,8 @@ public class ApplicationFacade {
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String testOutputS3BucketRegion;
 
-    @Value("${enable.cron}")
-    private Integer enableCron;
+    @Value("${enable.scheduled.test.build}")
+    private Integer enableScheduledTestBuild;
 
 
     @Autowired
@@ -1051,7 +1051,7 @@ public class ApplicationFacade {
     @Scheduled(cron = "0 0 0 * * *")
     public void testBuildMasterBranch() {
 
-        if (enableCron != 1)
+        if (enableScheduledTestBuild != 1)
             return;
         logger.info("Triggering all test builds on master branch");
 
