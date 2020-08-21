@@ -74,7 +74,7 @@ public class NPMUIBuildSpec extends BuildSpec {
     protected List<String> getPreBuildCommandsTest() {
         List<String> preBuildCommandsTest = new ArrayList<>();
         preBuildCommandsTest.add("npm install -g sonarqube-scanner ");
-        return new ArrayList<>();
+        return preBuildCommandsTest;
     }
 
     @Override
