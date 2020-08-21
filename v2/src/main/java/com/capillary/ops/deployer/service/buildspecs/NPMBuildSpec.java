@@ -55,7 +55,8 @@ public class NPMBuildSpec extends BuildSpec {
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
                 " -D" + CallbackBody.APP_ID + "=$appId " +
                 " -D" + CallbackBody.APP_FAMILY+"=$appFamily " +
-                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}");
+                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.exclusions=node_modules");
         return buildCommands;
     }
 
