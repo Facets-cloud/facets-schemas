@@ -75,7 +75,7 @@ public class BuildService {
      * @return
      */
     public Optional<Build> getStagingBuild(String applicationId) {
-        return ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+        return ccBuildRepository.findFirstByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(applicationId);
     }
 
     /**
