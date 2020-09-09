@@ -75,7 +75,11 @@ public class BuildService {
      * @return
      */
     public Optional<Build> getStagingBuild(String applicationId) {
-        return ccBuildRepository.findFirstByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(applicationId);
+        Optional<Build> promotableBuild = ccBuildRepository.findFirstByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(applicationId);
+        if(!promotableBuild.isPresent()) {
+            return getReleaseBuild(applicationId);
+        }
+        return promotableBuild;
     }
 
     /**
