@@ -1,4 +1,4 @@
-<nb-card size=medium>
+<nb-card >
 
   <nb-card-header>
     Stats for :
@@ -6,8 +6,8 @@
     <span style="margin: auto;">
       <nb-select required [(ngModel)]="applicationFamily" #appFamily="ngModel" name="appFamily"
                  id="appFamily" placeholder="Select Application Family"
-                 [selected]="applicationFamily" (selectedChange)="loadMetrics()" >
-        <nb-option #cluster *ngFor="let appFamily of appFamilies" value="{{appFamily}}" >
+                 [selected]="applicationFamily" (selectedChange)="loadMetrics()">
+        <nb-option #cluster *ngFor="let appFamily of appFamilies" value="{{appFamily}}">
           {{appFamily}}
         </nb-option>
       </nb-select>
@@ -22,77 +22,6 @@
     {{applicationMetricsWrappers[0]?.lastWeekMetrics.date | date: "dd-MM-yyyy"}}
   </nb-card-header>
 
-  <nb-card-body>
 
-    <ng2-smart-table  [settings]='settings' [source]='metricsList'></ng2-smart-table>
-<!--    <div style="text-align: center;" class="table-responsive" [ngClass]="{'visually-hidden': applicationMetricsWrappers.length==0}" >-->
-
-<!--      <table class="table table-bordered" settings="" >-->
-
-<!--        <tbody>-->
-<!--        <tr>-->
-<!--          <th width="20%">Service</th>-->
-<!--          <th>Build Failures</th>-->
-<!--          <th>Critical Code Smells</th>-->
-<!--          <th>Unit Test Coverage</th>-->
-<!--          <th>Unit Tests</th>-->
-<!--&lt;!&ndash;          <th>5xx</th>&ndash;&gt;-->
-<!--&lt;!&ndash;          <th>95%ile</th>&ndash;&gt;-->
-<!--        </tr>-->
-<!--        </tbody>-->
-
-<!--        <tbody>-->
-<!--        <tr *ngFor="let app of applicationMetricsWrappers">-->
-<!--          <td>{{app.application.name}}</td>-->
-<!--          <td [ngClass]="{'metricDown': app?.recentMetrics.buildFailures > app?.recentMetrics.buildFailures}">-->
-<!--            {{app.recentMetrics.buildFailures}}-->
-<!--            ({{app.recentMetrics.buildFailures - app.lastWeekMetrics.buildFailures}})-->
-<!--          </td>-->
-
-<!--          <td-->
-<!--            [ngClass]="{'metricDown': app?.recentMetrics.criticalCodeSmells > app?.recentMetrics.criticalCodeSmells}">-->
-<!--            {{app.recentMetrics.criticalCodeSmells}}-->
-<!--            ({{app.recentMetrics.criticalCodeSmells - app.lastWeekMetrics.criticalCodeSmells}})-->
-<!--          </td>-->
-
-<!--          <td [ngClass]="{'metricDown': app?.recentMetrics.unitTestCoverage < app?.recentMetrics.unitTestCoverage}">-->
-<!--            {{app.recentMetrics.unitTestCoverage}}-->
-<!--            ({{app.recentMetrics.unitTestCoverage - app.lastWeekMetrics.unitTestCoverage}})-->
-<!--          </td>-->
-
-<!--          <td [ngClass]="{'metricDown': app?.recentMetrics.unitTests < app?.recentMetrics.unitTests}">-->
-<!--            {{app.recentMetrics.unitTests}}-->
-<!--            ({{app.recentMetrics.unitTests - app.lastWeekMetrics.unitTests}})-->
-<!--          </td>-->
-
-<!--&lt;!&ndash;          <td [ngClass]="{'metricDown': app?.recentMetrics.errors > app?.recentMetrics.errors}">&ndash;&gt;-->
-<!--&lt;!&ndash;            {{app.recentMetrics.errors}}&ndash;&gt;-->
-<!--&lt;!&ndash;            ({{app.recentMetrics.errors - app.lastWeekMetrics.errors}})&ndash;&gt;-->
-<!--&lt;!&ndash;          </td>&ndash;&gt;-->
-
-<!--&lt;!&ndash;          <td [ngClass]="{'metricDown': app?.recentMetrics.responseTime > app?.recentMetrics.responseTime}">&ndash;&gt;-->
-<!--&lt;!&ndash;            {{app.recentMetrics.responseTime}}&ndash;&gt;-->
-<!--&lt;!&ndash;            ({{app.recentMetrics.responseTime - app.lastWeekMetrics.responseTime}})&ndash;&gt;-->
-<!--&lt;!&ndash;          </td>&ndash;&gt;-->
-
-<!--        </tr>-->
-<!--        </tbody>-->
-
-<!--        &lt;!&ndash;        alerts?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        criticalCodeSmells?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        errors?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        fatalErrorsFromLogs?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        issuesReported?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        outages?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        regressionCoverage?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        regressionFailures?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        responseTime?: number;&ndash;&gt;-->
-<!--        &lt;!&ndash;        unitTests?: number;&ndash;&gt;-->
-
-
-<!--      </table>-->
-<!--    </div>-->
-
-
-  </nb-card-body>
+<ng2-smart-table [settings]='settings' [source]='metricsList'></ng2-smart-table>
 </nb-card>

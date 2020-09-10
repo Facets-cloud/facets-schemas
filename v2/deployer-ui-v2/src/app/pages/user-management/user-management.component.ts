@@ -38,8 +38,8 @@ export class UserManagementComponent implements OnInit {
       confirmSave: true,
     },
     pager: {
-      display: true,
-      perPage: 10,
+      display: false,
+      perPage: 15,
     },
     actions: {
       position: 'right',
