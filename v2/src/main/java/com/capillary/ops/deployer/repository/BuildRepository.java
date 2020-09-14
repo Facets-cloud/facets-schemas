@@ -56,4 +56,9 @@ import java.util.Optional;
     Integer countBuildByApplicationIdAndTimestampBetween(
             String applicationId, Long periodEndDate, Long periodStartDate);
 
+    List<Build> findFirst20ByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(String applicationId, PromotionIntent release);
+
+    List<Build> findFirst20ByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(String applicationId);
+
+    List<Build> findFirst20ByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(String applicationId);
 }

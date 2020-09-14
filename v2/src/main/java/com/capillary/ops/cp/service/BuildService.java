@@ -40,13 +40,13 @@ public class BuildService {
      * @return
      */
     public Optional<Build> getHotFixBuild(String applicationId) {
-        Optional<Build> rBuild = ccBuildRepository
-            .findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
-                PromotionIntent.RELEASE);
+        Optional<Build> rBuild = getValidBuild(applicationId, ccBuildRepository
+            .findFirst20ByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
+                PromotionIntent.RELEASE));
 
-        Optional<Build> hfBuild = ccBuildRepository
-            .findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
-                PromotionIntent.HOTFIX);
+        Optional<Build> hfBuild = getValidBuild(applicationId, ccBuildRepository
+            .findFirst20ByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(applicationId,
+                PromotionIntent.HOTFIX));
 
         if (hfBuild.isPresent()) {
             if (!rBuild.isPresent()) {
@@ -65,7 +65,7 @@ public class BuildService {
      * @return
      */
     public Optional<Build> getReleaseBuild(String applicationId) {
-        return ccBuildRepository.findFirstByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId);
+        return getValidBuild(applicationId, ccBuildRepository.findFirst20ByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(applicationId));
     }
 
     /**
@@ -75,7 +75,7 @@ public class BuildService {
      * @return
      */
     public Optional<Build> getStagingBuild(String applicationId) {
-        Optional<Build> promotableBuild = ccBuildRepository.findFirstByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(applicationId);
+        Optional<Build> promotableBuild = getValidBuild(applicationId, ccBuildRepository.findFirst20ByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(applicationId));
         if(!promotableBuild.isPresent()) {
             return getReleaseBuild(applicationId);
         }
@@ -92,6 +92,10 @@ public class BuildService {
         List<Build> builds = ccBuildRepository
             .findFirst20ByApplicationIdAndPromotableIsFalseAndPromotedIsFalseAndTestBuildIsFalseOrderByTimestampDesc(
                 applicationId);
+        return getValidBuild(applicationId, builds);
+    }
+
+    private Optional<Build> getValidBuild(String applicationId, List<Build> builds) {
         if (builds.isEmpty()) {
             return Optional.empty();
         }
