@@ -12,6 +12,8 @@ public interface TFBuildService {
 
     DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest);
 
+    DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, String buildSpec);
+
     StatusType getDeploymentStatus(String runId);
 
     Map<String, StatusType> getDeploymentStatuses(List<String> runIds);

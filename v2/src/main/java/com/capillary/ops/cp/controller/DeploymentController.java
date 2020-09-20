@@ -2,13 +2,14 @@ package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuiteResult;
+import com.capillary.ops.cp.bo.requests.ApplicationHotfixRequest;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.QASuite;
+import com.capillary.ops.cp.bo.requests.HotfixRequest;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -102,5 +103,17 @@ public class DeploymentController {
             @PathVariable String clusterId,
             @Valid @RequestBody QASuiteResult qaSuiteResult) throws Exception {
         deploymentFacade.validateSanityResult(clusterId, qaSuiteResult);
+    }
+
+    @PostMapping("/hotfix")
+    public DeploymentLog deployHotfix(@PathVariable String clusterId,
+                                      @RequestBody HotfixRequest hotfixRequest) {
+        return deploymentFacade.deployHotfix(clusterId, hotfixRequest);
+    }
+
+    @PostMapping("/application/hotfix")
+    public DeploymentLog deployApplicationHotfix(@PathVariable String clusterId,
+                                      @RequestBody ApplicationHotfixRequest hotfixRequest) {
+        return deploymentFacade.deployApplicationHotfix(clusterId, hotfixRequest);
     }
 }

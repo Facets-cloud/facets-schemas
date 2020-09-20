@@ -1,8 +1,10 @@
 package com.capillary.ops.cp.controller;
 
+import com.capillary.ops.cp.bo.CloudCodeBuildSpec;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.SnapshotInfo;
+import com.capillary.ops.cp.bo.requests.CloudCodeBuildSpecRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.jcabi.aspects.Loggable;
@@ -86,5 +88,16 @@ public class CommonClusterController {
     public SnapshotInfo getPinnedSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
                                           @PathVariable String instanceName) {
         return clusterFacade.getPinnedSnapshot(clusterId, resourceType, instanceName);
+    }
+
+    @GetMapping("{clusterId}/buildSpec")
+    public CloudCodeBuildSpec getBuildSpec(@PathVariable String clusterId) {
+        return clusterFacade.getBuildSpec(clusterId);
+    }
+
+    @PutMapping("{clusterId}/buildSpec")
+    public CloudCodeBuildSpec updateBuildSpec(@PathVariable String clusterId,
+                                              @RequestBody CloudCodeBuildSpecRequest cloudCodeBuildSpecRequest) {
+        return clusterFacade.updateBuildSpec(clusterId, cloudCodeBuildSpecRequest);
     }
 }

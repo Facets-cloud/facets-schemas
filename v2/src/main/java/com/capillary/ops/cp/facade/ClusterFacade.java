@@ -2,6 +2,7 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.requests.CloudCodeBuildSpecRequest;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
@@ -13,6 +14,7 @@ import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.service.CloudBuildSpecService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
@@ -59,6 +61,9 @@ public class ClusterFacade {
 
     @Autowired
     private SnapshotInfoRepository snapshotInfoRepository;
+
+    @Autowired
+    private CloudBuildSpecService cloudBuildSpecService;
 
     private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
 
@@ -264,5 +269,27 @@ public class ClusterFacade {
         DRCloudFactory drCloudFactory = drCloudFactorySelector.getDRCloudFactory(cluster.getCloud());
         DRCloudService drService = drCloudFactory.getDRService(resourceType);
         return drService.createSnapshot(cluster, resourceType, instanceName);
+    }
+
+    public CloudCodeBuildSpec getBuildSpec(String clusterId) {
+        Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
+        if (!existingCluster.isPresent()) {
+            throw new NotFoundException("No such cluster: " + clusterId);
+        }
+
+        CloudCodeBuildSpec clusterBuildSpec = cloudBuildSpecService.getClusterBuildSpec(clusterId);
+        clusterBuildSpec.setClusterId(clusterId);
+
+        return clusterBuildSpec;
+    }
+
+    public CloudCodeBuildSpec updateBuildSpec(String clusterId, CloudCodeBuildSpecRequest cloudCodeBuildSpecRequest) {
+        Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
+        if (!existingCluster.isPresent()) {
+            throw new NotFoundException("No such cluster: " + clusterId);
+        }
+
+        CloudCodeBuildSpec cloudCodeBuildSpec = new CloudCodeBuildSpec(cloudCodeBuildSpecRequest);
+        return cloudBuildSpecService.updateClusterBuildSpec(clusterId, cloudCodeBuildSpec);
     }
 }

@@ -8,6 +8,14 @@ import java.util.List;
 
 public class DeploymentRequest {
 
+    public DeploymentRequest() {}
+
+    public DeploymentRequest(String tag, ReleaseType releaseType, List<EnvironmentVariable> extraEnv) {
+        this.tag = tag;
+        this.releaseType = releaseType;
+        this.extraEnv = extraEnv;
+    }
+
     @Id
     String id;
 
