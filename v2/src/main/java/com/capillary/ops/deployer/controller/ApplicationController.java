@@ -489,4 +489,11 @@ public class ApplicationController {
         return ret;
 
     }
+
+    @PutMapping(value = "/codebuild/builds/{codeBuildId}/refresh", produces = "application/json")
+    public Boolean updateApplication(@PathVariable("codeBuildId") String codeBuildId) {
+        applicationFacade.refreshBuildDetails(codeBuildId);
+        return true;
+    }
+
 }

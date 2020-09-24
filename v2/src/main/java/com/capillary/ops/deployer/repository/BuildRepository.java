@@ -61,4 +61,6 @@ import java.util.Optional;
     List<Build> findFirst20ByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(String applicationId);
 
     List<Build> findFirst20ByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(String applicationId);
+
+    Optional<Build> findOneByCodeBuildId(String codeBuildId);
 }

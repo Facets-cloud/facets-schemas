@@ -398,13 +398,23 @@ public class ApplicationFacade {
             unless = "#result == null || (#result.getStatus().name() != 'SUCCEEDED') || #result.codeBuildId == null || #result.codeBuildId == ''"
     )
     public Build getBuildDetails(Application application, Build build, boolean includeImage) {
-        software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
-                codeBuildService.getBuild(application, build.getCodeBuildId());
-        StatusType status = codeBuildServiceBuild.buildStatus();
-        build.setStatus(status);
-        if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
-            build.setImage(ecrService.findImageBetweenTimes(application,
-                    codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+
+        if (build.getStatus() != null && build.getStatus() != StatusType.IN_PROGRESS) {
+            return build;
+        } else {
+            software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
+                    codeBuildService.getBuild(application, build.getCodeBuildId());
+            StatusType status = codeBuildServiceBuild.buildStatus();
+            build.setStatus(status);
+            if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
+                build.setImage(ecrService.findImageBetweenTimes(application,
+                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+            }
+            buildRepository.save(build);
+        }
+        if(application.getApplicationType().equals(Application.ApplicationType.SERVERLESS)) {
+            software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
+                    codeBuildService.getBuild(application, build.getCodeBuildId());
             String artifactLocation = codeBuildServiceBuild.artifacts().location();
             if (!StringUtils.isEmpty(artifactLocation)) {
                 URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
@@ -415,6 +425,28 @@ public class ApplicationFacade {
             }
         }
         return build;
+    }
+
+    public void refreshBuildDetails(String codeBuildId) {
+        Optional<Build> buildOptional = buildRepository.findOneByCodeBuildId(codeBuildId);
+        if(! buildOptional.isPresent()) {
+            return;
+        } else {
+            Build build = buildOptional.get();
+            Optional<Application> applicationOptional = applicationRepository.findOneByApplicationFamilyAndId(build.getApplicationFamily(), build.getApplicationId());
+            if(! applicationOptional.isPresent()) {
+                return;
+            }
+            software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
+                    codeBuildService.getBuild(applicationOptional.get(), build.getCodeBuildId());
+            StatusType status = codeBuildServiceBuild.buildStatus();
+            build.setStatus(status);
+            if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus())) {
+                build.setImage(ecrService.findImageBetweenTimes(applicationOptional.get(),
+                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+            }
+            buildRepository.save(build);
+        }
     }
 
     private List<Build> getBuildDetails(Application application, List<Build> builds) {
