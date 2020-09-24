@@ -3,6 +3,10 @@ package com.capillary.ops.deployer.service.facade;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.App;
+import com.capillary.ops.cp.bo.Artifact;
+import com.capillary.ops.cp.bo.BuildStrategy;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.facade.ArtifactFacade;
 import com.capillary.ops.cp.service.CCAdapterService;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
@@ -118,6 +122,8 @@ public class ApplicationFacade {
     @Value("${enable.scheduled.test.build}")
     private Integer enableScheduledTestBuild;
 
+    @Autowired
+    private ArtifactFacade artifactFacade;
 
     @Autowired
     private INewRelicService newRelicService;
@@ -347,6 +353,16 @@ public class ApplicationFacade {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
+            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+                    BuildStrategy.PROD,
+                    ReleaseType.RELEASE,
+                    "deployer"));
+            if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
+                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+                        BuildStrategy.PROD,
+                        ReleaseType.HOTFIX,
+                        "deployer"));
+            }
         }
         buildRepository.save(existingBuild);
         return getBuildDetails(application, existingBuild);
@@ -446,6 +462,11 @@ public class ApplicationFacade {
                         codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
             }
             buildRepository.save(build);
+            // change to webhook
+            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+                    build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
+                    build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ? ReleaseType.HOTFIX : ReleaseType.RELEASE,
+                    "deployer"));
         }
     }
 

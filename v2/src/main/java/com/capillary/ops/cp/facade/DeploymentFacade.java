@@ -1,12 +1,12 @@
 package com.capillary.ops.cp.facade;
 
+import com.amazonaws.services.s3.transfer.TransferManager;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.*;
-import com.capillary.ops.cp.repository.DeploymentLogRepository;
-import com.capillary.ops.cp.repository.K8sCredentialsRepository;
-import com.capillary.ops.cp.repository.QASuiteRepository;
-import com.capillary.ops.cp.repository.QASuiteResultRepository;
+import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.BuildService;
+import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -31,9 +31,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
+import software.amazon.awssdk.services.codebuild.model.ProjectSource;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,6 +70,15 @@ public class DeploymentFacade {
 
     @Autowired
     private CloudBuildSpecService cloudBuildSpecService;
+
+    @Autowired
+    private OverrideObjectRepository overrideObjectRepository;
+
+    @Autowired
+    private GitService gitService;
+
+    @Autowired
+    private StackFacade stackFacade;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -467,4 +478,12 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest(hotfixRequest.getTag(), ReleaseType.HOTFIX, hotfixRequest.getExtraEnv());
         return tfBuildService.deployLatest(cluster, deploymentRequest, mergedBuildSpec);
     }
+
+//    private ProjectSource createStackSource(String clusterId, ReleaseType releaseType) {
+//        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+//        Stack stackByName = stackFacade.getStackByName(cluster.getStackName());
+//        List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(clusterId);
+//        Path checkout = gitService.checkout(stack.getVcsUrl(), stack.getUser(), stack.getAppPassword());
+//
+//    }
 }

@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.facade;
 
+import com.capillary.ops.cp.bo.Artifact;
 import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.service.BuildService;
@@ -24,6 +25,8 @@ public class BuildFacade {
     @Autowired
     BuildService buildService;
 
+    @Autowired
+    private ArtifactFacade artifactFacade;
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -50,7 +53,9 @@ public class BuildFacade {
                 break;
         }
         if (build.isPresent()) {
-            return build.get();
+            Build result = build.get();
+            artifactFacade.registerArtifact(new Artifact(applicationId, result.getImage(), strategy, releaseType, "deployer"));
+            return result;
         }
         throw new NotFoundException("No Build Found");
     }
