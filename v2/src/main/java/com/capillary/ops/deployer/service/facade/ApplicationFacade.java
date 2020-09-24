@@ -433,7 +433,7 @@ public class ApplicationFacade {
             return;
         } else {
             Build build = buildOptional.get();
-            Optional<Application> applicationOptional = applicationRepository.findOneByApplicationFamilyAndId(build.getApplicationFamily(), build.getApplicationId());
+            Optional<Application> applicationOptional = applicationRepository.findById(build.getApplicationId());
             if(! applicationOptional.isPresent()) {
                 return;
             }
