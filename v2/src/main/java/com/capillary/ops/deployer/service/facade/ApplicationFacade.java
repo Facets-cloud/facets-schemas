@@ -415,6 +415,18 @@ public class ApplicationFacade {
     )
     public Build getBuildDetails(Application application, Build build, boolean includeImage) {
 
+        if(application.getApplicationType().equals(Application.ApplicationType.SERVERLESS)) {
+            software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
+                    codeBuildService.getBuild(application, build.getCodeBuildId());
+            String artifactLocation = codeBuildServiceBuild.artifacts().location();
+            if (!StringUtils.isEmpty(artifactLocation)) {
+                URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
+                        "deployer-test-build-output", codeBuildServiceBuild.id().split(":")[1] + "/" + application.getName(),
+                        DateUtils.addHours(new Date(), 2)
+                );
+                build.setArtifactUrl(url.toString());
+            }
+        }
         if (build.getStatus() != null && build.getStatus() != StatusType.IN_PROGRESS) {
             return build;
         } else {
@@ -427,18 +439,6 @@ public class ApplicationFacade {
                         codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
             }
             buildRepository.save(build);
-        }
-        if(application.getApplicationType().equals(Application.ApplicationType.SERVERLESS)) {
-            software.amazon.awssdk.services.codebuild.model.Build codeBuildServiceBuild =
-                    codeBuildService.getBuild(application, build.getCodeBuildId());
-            String artifactLocation = codeBuildServiceBuild.artifacts().location();
-            if (!StringUtils.isEmpty(artifactLocation)) {
-                URL url = AmazonS3ClientBuilder.standard().build().generatePresignedUrl(
-                        "deployer-test-build-output", codeBuildServiceBuild.id().split(":")[1] + "/" + application.getName(),
-                        DateUtils.addHours(new Date(), 2)
-                );
-                build.setArtifactUrl(url.toString());
-            }
         }
         return build;
     }
