@@ -11,7 +11,6 @@ import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.service.CloudBuildSpecService;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
@@ -73,10 +72,6 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Autowired
     private DeploymentLogRepository deploymentLogRepository;
-
-    @Autowired
-    private CloudBuildSpecService cloudBuildSpecService;
-
     /**
      * Deploy the latest build in the specified clusterId
      *
@@ -85,13 +80,8 @@ public class AwsCodeBuildService implements TFBuildService {
      * @return
      */
     @Override
-    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest) {
-        String buildSpec = cloudBuildSpecService.getBuildSpec(cluster.getId());
-        return deployLatest(cluster, deploymentRequest, buildSpec);
-    }
-
-    @Override
-    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, String buildSpec) {
+    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest)
+    {
         ReleaseType releaseType = deploymentRequest.getReleaseType();
         List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv();
         Optional<Stack> stackO = stackRepository.findById(cluster.getStackName());
@@ -102,27 +92,27 @@ public class AwsCodeBuildService implements TFBuildService {
         //DONE: Check if code build is defined for the said cloud
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
-                .type(EnvironmentVariableType.PLAINTEXT).build());
+            .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(
-                EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
-                        .build());
+            EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
+                .build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
-                .type(EnvironmentVariableType.PLAINTEXT).build());
+            .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
         try {
             environmentVariables.add(EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
-                    .type(EnvironmentVariableType.PLAINTEXT).build());
+                .type(EnvironmentVariableType.PLAINTEXT).build());
         } catch (Throwable t) {
             logger.error("Not in Request context", t);
             environmentVariables.add(
-                    EnvironmentVariable.builder().name(HOST).value(hostName).type(EnvironmentVariableType.PLAINTEXT)
-                            .build());
+                EnvironmentVariable.builder().name(HOST).value(hostName).type(EnvironmentVariableType.PLAINTEXT)
+                    .build());
 
         }
         environmentVariables.add(EnvironmentVariable.builder().name(RELEASE_TYPE).value(releaseType.name())
-                .type(EnvironmentVariableType.PLAINTEXT).build());
+            .type(EnvironmentVariableType.PLAINTEXT).build());
 
         if(!extraEnv.isEmpty()){
             environmentVariables.addAll(extraEnv);
@@ -166,23 +156,22 @@ public class AwsCodeBuildService implements TFBuildService {
         }
 
         StartBuildRequest startBuildRequest =
-                StartBuildRequest.builder().projectName(buildName)
-                        .environmentVariablesOverride(environmentVariables)
-                        .buildspecOverride(buildSpec)
-                        .secondarySourcesOverride(ProjectSource.builder()
-                                .type(SourceType.valueOf(stack.getVcs().name()))
-                                .location(stack.getVcsUrl())
-                                .sourceIdentifier("STACK")
-                                .build())
-                        .secondarySourcesVersionOverride(secondarySourceVersion)
-                        .sourceVersion(primarySourceVersion)
-                        .build();
+            StartBuildRequest.builder().projectName(buildName)
+                    .environmentVariablesOverride(environmentVariables)
+                    .secondarySourcesOverride(ProjectSource.builder()
+                            .type(SourceType.valueOf(stack.getVcs().name()))
+                            .location(stack.getVcsUrl())
+                            .sourceIdentifier("STACK")
+                            .build())
+                    .secondarySourcesVersionOverride(secondarySourceVersion)
+                    .sourceVersion(primarySourceVersion)
+                    .build();
 
         ListBuildsForProjectRequest listBuildsForProjectRequest =
-                ListBuildsForProjectRequest.builder().projectName(buildName).sortOrder(SortOrderType.DESCENDING).build();
+            ListBuildsForProjectRequest.builder().projectName(buildName).sortOrder(SortOrderType.DESCENDING).build();
 
         ListBuildsForProjectResponse listBuildsForProjectResponse =
-                getCodeBuildClient().listBuildsForProject(listBuildsForProjectRequest);
+            getCodeBuildClient().listBuildsForProject(listBuildsForProjectRequest);
         List<String> buildIds = listBuildsForProjectResponse.ids();
         List<String> shortListedBuilds = buildIds.stream().limit(10).collect(Collectors.toList());
 
@@ -190,9 +179,9 @@ public class AwsCodeBuildService implements TFBuildService {
         BatchGetBuildsResponse batchGetBuildsResponse = getCodeBuildClient().batchGetBuilds(batchGetBuildsRequest);
         List<Build> builds = batchGetBuildsResponse.builds();
         List<Build> runningBuilds = builds.stream().filter(b -> b.buildStatus().equals(StatusType.IN_PROGRESS)).filter(
-                b -> b.environment().environmentVariables().contains(
-                        EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
-                                .type(EnvironmentVariableType.PLAINTEXT).build())).collect(Collectors.toList());
+            b -> b.environment().environmentVariables().contains(
+                EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
+                    .type(EnvironmentVariableType.PLAINTEXT).build())).collect(Collectors.toList());
 
         if (runningBuilds.size() > 0) {
             throw new IllegalStateException("Build is already in Progress: " + runningBuilds.get(0).id());

@@ -5,13 +5,17 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.*;
 import com.capillary.ops.cp.repository.*;
+import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.repository.DeploymentLogRepository;
+import com.capillary.ops.cp.repository.K8sCredentialsRepository;
+import com.capillary.ops.cp.repository.QASuiteRepository;
+import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.service.CloudBuildSpecService;
-import com.google.common.collect.ImmutableMap;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -67,9 +71,6 @@ public class DeploymentFacade {
 
     @Autowired
     private DeployerHttpClient httpClient;
-
-    @Autowired
-    private CloudBuildSpecService cloudBuildSpecService;
 
     @Autowired
     private OverrideObjectRepository overrideObjectRepository;
@@ -454,36 +455,4 @@ public class DeploymentFacade {
         deployment.setBuildSummary(tfBuildService.getDeploymentReport(deployment.getCodebuildId()));
         return deployment;
     }
-
-    public DeploymentLog deployHotfix(String clusterId, HotfixRequest hotfixRequest) {
-        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        CloudCodeBuildSpec cloudCodeBuildSpec = new CloudCodeBuildSpec(hotfixRequest.getBuildSpec());
-        String mergedBuildSpec = cloudBuildSpecService.getMergedBuildSpec(clusterId, cloudCodeBuildSpec);
-        DeploymentRequest deploymentRequest = new DeploymentRequest(hotfixRequest.getTag(), ReleaseType.HOTFIX, hotfixRequest.getExtraEnv());
-        return tfBuildService.deployLatest(cluster, deploymentRequest, mergedBuildSpec);
-    }
-
-    public DeploymentLog deployApplicationHotfix(String clusterId, ApplicationHotfixRequest hotfixRequest) {
-        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-
-        List<TerraformStep> tfSteps = new ArrayList<>();
-        hotfixRequest.getApplicationTargets().forEach(target -> {
-            String applicationTarget = String.format("'module.application.helm_release.application[\"%s\"]'", target);
-            tfSteps.add(new TerraformStep(TerraformStep.RunType.apply, applicationTarget, 10));
-        });
-
-        CloudCodeBuildSpecBuildPhase buildPhase = new CloudCodeBuildSpecBuildPhase(null, tfSteps, null);
-        CloudCodeBuildSpec codeBuildSpec = new CloudCodeBuildSpec(cluster.getId(), ImmutableMap.of("build", buildPhase));
-        String mergedBuildSpec = cloudBuildSpecService.getMergedBuildSpec(clusterId, codeBuildSpec);
-        DeploymentRequest deploymentRequest = new DeploymentRequest(hotfixRequest.getTag(), ReleaseType.HOTFIX, hotfixRequest.getExtraEnv());
-        return tfBuildService.deployLatest(cluster, deploymentRequest, mergedBuildSpec);
-    }
-
-//    private ProjectSource createStackSource(String clusterId, ReleaseType releaseType) {
-//        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-//        Stack stackByName = stackFacade.getStackByName(cluster.getStackName());
-//        List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(clusterId);
-//        Path checkout = gitService.checkout(stack.getVcsUrl(), stack.getUser(), stack.getAppPassword());
-//
-//    }
 }
