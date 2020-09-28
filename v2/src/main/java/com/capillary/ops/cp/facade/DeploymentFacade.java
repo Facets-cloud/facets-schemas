@@ -472,7 +472,7 @@ public class DeploymentFacade {
                 .stream().collect(Collectors.groupingBy(x -> x.getResourceType())).entrySet().stream()
                 .collect(Collectors.toMap(x -> x.getKey(),
                         x -> x.getValue().stream().collect(
-                                Collectors.toMap(y -> y.getInstanceName(), y -> y))));
+                                Collectors.toMap((SnapshotInfo y) -> y.getInstanceName(), (SnapshotInfo y) -> y))));
         List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(cluster.getId());
         return new DeploymentContext(cluster, allArtifacts, overrides, pinnedSnapshots);
     }

@@ -23,7 +23,7 @@ public class ArtifactFacade {
         return artifacts.stream().collect(Collectors.groupingBy(x -> x.getArtifactory())).entrySet().stream()
                 .collect(Collectors.toMap(x -> x.getKey(),
                         x -> x.getValue().stream().collect(
-                                Collectors.toMap(y -> y.getApplicationName(), y -> y))));
+                                Collectors.toMap((Artifact y) -> y.getApplicationName(), (Artifact y) -> y))));
     }
 
     public void registerArtifact(Artifact artifact) {
