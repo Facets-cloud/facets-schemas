@@ -15,6 +15,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
     public static final String STACK_NAME = "STACK_NAME";
+    private static final String CLUSTER_NAME = "CLUSTER_NAME";
 
     @Value("${internalApiAuthToken}")
     private String authToken;
@@ -72,6 +74,9 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Autowired
     private DeploymentLogRepository deploymentLogRepository;
+
+    @Autowired
+    private GitService gitService;
     /**
      * Deploy the latest build in the specified clusterId
      *
@@ -98,6 +103,8 @@ public class AwsCodeBuildService implements TFBuildService {
                 .build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
             .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
+                .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
@@ -128,8 +135,16 @@ public class AwsCodeBuildService implements TFBuildService {
 
         String primarySourceVersion = "master";
 
+        String masterHead = "";
+
+        try {
+            masterHead = gitService.getBranchHead(stack.getVcsUrl(), stack.getUser(), stack.getAppPassword(), "master");
+        } catch (GitAPIException e) {
+            throw new RuntimeException(e);
+        }
+
         ProjectSourceVersion secondarySourceVersion =
-                ProjectSourceVersion.builder().sourceIdentifier("STACK").sourceVersion("master").build();
+                ProjectSourceVersion.builder().sourceIdentifier("STACK").sourceVersion(masterHead).build();
 
 
         if (cluster.getCdPipelineParent() != null) {
@@ -139,7 +154,7 @@ public class AwsCodeBuildService implements TFBuildService {
             for (DeploymentLog d: pipelineParentDeployments) {
                 Build build = getBuild(d.getCodebuildId());
                 if (StatusType.SUCCEEDED.equals(build.buildStatus())) {
-                    primarySourceVersion = build.sourceVersion();
+                    primarySourceVersion = build.resolvedSourceVersion();
                     String stackSourceVersion = build.secondarySourceVersions().stream()
                             .filter(x -> "STACK".equalsIgnoreCase(x.sourceIdentifier()))
                             .findFirst().get().sourceVersion();
