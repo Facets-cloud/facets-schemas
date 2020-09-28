@@ -3,4 +3,4 @@ EXPOSE 8080
 COPY target/ /application/
 COPY src/main/resources/charts/ /charts/
 WORKDIR /application
-CMD java -jar *.jar
+CMD java -Xmx2048m -jar *.jar
