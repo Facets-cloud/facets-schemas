@@ -29,6 +29,13 @@ export class ApplicationsMenuComponent implements OnInit {
     },
   ];
 
+  applicationMetrics: NbMenuItem[] = [
+    {
+      title: 'Application Metrics',
+      icon: 'thermometer-outline',
+      link: 'family/metrics',
+    },
+  ];
 
   isModerator: boolean = false;
   isUserAdmin: boolean = false;

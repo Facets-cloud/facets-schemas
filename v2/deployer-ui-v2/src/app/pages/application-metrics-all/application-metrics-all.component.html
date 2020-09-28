@@ -1,0 +1,27 @@
+<nb-card >
+
+  <nb-card-header>
+    Stats for :
+
+    <span style="margin: auto;">
+      <nb-select required [(ngModel)]="applicationFamily" #appFamily="ngModel" name="appFamily"
+                 id="appFamily" placeholder="Select Application Family"
+                 [selected]="applicationFamily" (selectedChange)="loadMetrics()">
+        <nb-option #cluster *ngFor="let appFamily of appFamilies" value="{{appFamily}}">
+          {{appFamily}}
+        </nb-option>
+      </nb-select>
+    </span>
+
+
+  </nb-card-header>
+
+  <nb-card-header>Comparison Period
+    {{applicationMetricsWrappers[0]?.recentMetrics.date | date: "dd-MM-yyyy"}}
+    Vs
+    {{applicationMetricsWrappers[0]?.lastWeekMetrics.date | date: "dd-MM-yyyy"}}
+  </nb-card-header>
+
+
+<ng2-smart-table [settings]='settings' [source]='metricsList'></ng2-smart-table>
+</nb-card>

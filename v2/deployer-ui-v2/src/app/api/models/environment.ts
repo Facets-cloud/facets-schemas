@@ -5,4 +5,5 @@ export interface Environment {
   environmentConfiguration?: EnvironmentConfiguration;
   environmentMetaData?: EnvironmentMetaData;
   id?: string;
+  name?: string;
 }

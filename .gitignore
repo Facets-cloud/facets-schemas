@@ -44,3 +44,7 @@ dist/
 capillary-cloud-tf/stacks/crm
 capillary-cloud-tf/stacks/connectplus
 venv/
+capillary-cloud-tf/database_views
+capillary-cloud-tf/schema
+capillary-cloud-tf/seed_data
+key.pem

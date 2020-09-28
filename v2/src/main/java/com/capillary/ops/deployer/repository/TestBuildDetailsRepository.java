@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.repository;
 import com.capillary.ops.deployer.bo.TestBuildDetails;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,5 +13,8 @@ public interface TestBuildDetailsRepository extends MongoRepository<TestBuildDet
 
     Optional<TestBuildDetails> findFirstByBuildId(String buildId);
 
+
+    TestBuildDetails findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(String applicationId,
+                                                                                      Long timestamp);
 
 }

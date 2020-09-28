@@ -3,11 +3,13 @@ package com.capillary.ops.deployer.repository;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PromotionIntent;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface BuildRepository extends MongoRepository<Build, String> {
+    public interface BuildRepository extends MongoRepository<Build, String> {
 
     List<Build> findByApplicationIdOrderByTimestampDesc(String applicationId);
 
@@ -46,4 +48,19 @@ public interface BuildRepository extends MongoRepository<Build, String> {
 
     Optional<Build> findFirstByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(
         String applicationId, PromotionIntent hotfix);
+
+    List<Build> findBuildDistinctByTestBuildAndTimestampGreaterThan(Boolean testBuild, Date timestamp);
+
+    List<String> findApplicationIdDistinctByTestBuildAndTimestampGreaterThan(Boolean testBuild, Date timestamp);
+
+    Integer countBuildByApplicationIdAndTimestampBetween(
+            String applicationId, Long periodEndDate, Long periodStartDate);
+
+    List<Build> findFirst20ByApplicationIdAndPromotedIsTrueAndPromotionIntentOrderByTimestampDesc(String applicationId, PromotionIntent release);
+
+    List<Build> findFirst20ByApplicationIdAndPromotedIsTrueOrderByTimestampDesc(String applicationId);
+
+    List<Build> findFirst20ByApplicationIdAndPromotableIsTrueOrderByTimestampDesc(String applicationId);
+
+    Optional<Build> findOneByCodeBuildId(String codeBuildId);
 }

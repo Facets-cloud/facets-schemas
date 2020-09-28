@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.bo;
 
 import com.capillary.ops.deployer.bo.webhook.sonar.Condition;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ public class Build implements Serializable {
 
     @Id
     private String id;
+    @Indexed(name = "cb_id_index", unique = true)
     private String codeBuildId;
     @NotNull
     private String applicationId;

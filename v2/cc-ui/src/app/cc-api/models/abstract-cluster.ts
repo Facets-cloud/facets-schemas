@@ -1,5 +1,6 @@
 /* tslint:disable */
 export interface AbstractCluster {
+  cdPipelineParent?: string;
   cloud?: 'AWS';
   commonEnvironmentVariables?: {[key: string]: string};
   id?: string;

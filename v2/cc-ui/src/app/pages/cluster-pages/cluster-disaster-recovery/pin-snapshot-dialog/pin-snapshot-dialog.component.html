@@ -1,0 +1,11 @@
+<nb-card class="card-pin-snapshot">
+    <nb-card-body>
+        <div style="margin-bottom: 10px;">
+            <div>Pinning snapshot will remove the current instance and restore data from the snapshot</div>
+            <br>
+            <div><strong>Are you sure you want to proceed?</strong> </div>
+        </div>
+        <button class="btn-card-pin-snapshot" nbButton status="danger" (click)="proceed()">Proceed</button>
+        <button class="btn-card-pin-snapshot" style="float: right;" nbButton (click)="dismiss()">Cancel</button>
+    </nb-card-body>
+</nb-card>

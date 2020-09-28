@@ -1,6 +1,10 @@
 package com.capillary.ops.cp.facade;
 
+import com.amazonaws.services.s3.transfer.TransferManager;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.requests.*;
+import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
@@ -8,6 +12,7 @@ import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.service.BuildService;
+import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -30,9 +35,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
+import software.amazon.awssdk.services.codebuild.model.ProjectSource;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,6 +71,15 @@ public class DeploymentFacade {
 
     @Autowired
     private DeployerHttpClient httpClient;
+
+    @Autowired
+    private OverrideObjectRepository overrideObjectRepository;
+
+    @Autowired
+    private GitService gitService;
+
+    @Autowired
+    private StackFacade stackFacade;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -401,7 +417,7 @@ public class DeploymentFacade {
         Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
         String deployerId = application.getMetadata().getLabels().get("deployerid");
         String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels().get("deployerBuildId");
-        buildService.unPromoteBuild(deployerId, deployerBuildId);
+//        buildService.unPromoteBuild(deployerId, deployerBuildId);
         return deployerBuildId;
     }
 

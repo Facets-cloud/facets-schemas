@@ -55,7 +55,8 @@ public class NPMUIBuildSpec extends BuildSpec {
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
                 " -D" + CallbackBody.APP_ID + "=$appId " +
                 " -D" + CallbackBody.APP_FAMILY+"=$appFamily " +
-                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}");
+                " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.exclusions=node_modules");
         return buildCommands;
     }
 
@@ -72,7 +73,9 @@ public class NPMUIBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommandsTest() {
-        return new ArrayList<>();
+        List<String> preBuildCommandsTest = new ArrayList<>();
+        preBuildCommandsTest.add("npm install -g sonarqube-scanner ");
+        return preBuildCommandsTest;
     }
 
     @Override
