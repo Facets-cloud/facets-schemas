@@ -10,13 +10,18 @@ class ApplicationMetricsAllUiWrapper {
   unitTests?: string;
   unitTestCoverage ?: string;
   codeSmells ?: string;
+  sonarUrl ?: string;
   constructor(private apiObj: ApplicationMetricsWrapper) {
-    this.name = '<a href="' + apiObj.recentMetrics.sonarUrl + '">' + apiObj.application.name + '</a>';
+    let appUrl;
+    appUrl = 'pages/applications/' + apiObj.application.applicationFamily + '/' + apiObj.application.applicationFamily;
+    this.name = '<a href="' + appUrl + '" target="_blank">' + apiObj.application.name + '</a>';
     this.id = apiObj.application.id;
     this.buildFailures = this.getUiString(apiObj.recentMetrics.buildFailures, apiObj.lastWeekMetrics.buildFailures, false);
     this.unitTests = this.getUiString(apiObj.recentMetrics.unitTests, apiObj.lastWeekMetrics.unitTests, true);
     this.unitTestCoverage = this.getUiString(apiObj.recentMetrics.unitTestCoverage, apiObj.lastWeekMetrics.unitTestCoverage, true);
     this.codeSmells = this.getUiString(apiObj.recentMetrics.criticalCodeSmells, apiObj.lastWeekMetrics.criticalCodeSmells, false);
+    this.sonarUrl = '<a href="' + apiObj.recentMetrics.sonarUrl + '" target="_blank">Sonar</a>';
+
   }
   private getUiString(newValue: number, oldValue: number, greaterIsBetter: boolean = false) {
     newValue = newValue == null ? 0 : newValue;
@@ -42,9 +47,9 @@ class ApplicationMetricsAllUiWrapper {
     } else {
       diff = '=';
     }
-    text = text.concat( '<span style="color:', indicator, '">', indicator, diff, ') </span>');
+    // text = text.concat( '<span style="color:', indicator, '">', diff, ') </span>');
     // text = '<span class="metricDown" style="background-color:' + indicator + '">' + newValue + '(' + diff + ') ' + '</span>';
-    // text = text.concat(  diff, ')');
+    text = text.concat(  diff, ')');
     return text;
   }
 }
@@ -114,20 +119,21 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
       buildFailures: {
         title: 'Build Failures',
         filter: false,
-        type : 'html',
       },
       codeSmells: {
         title: 'Critical Code smells',
         filter: false,
-        type : 'html',
       },
       unitTestCoverage: {
         title: 'UT coverage',
         filter: false,
-        type : 'html',
       },
       unitTests: {
         title: 'Unit Tests',
+        filter: false,
+      },
+      sonarUrl: {
+        title: 'Sonar',
         filter: false,
         type : 'html',
       },
