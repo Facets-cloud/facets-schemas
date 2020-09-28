@@ -353,12 +353,12 @@ public class ApplicationFacade {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
                     BuildStrategy.PROD,
                     ReleaseType.RELEASE,
                     "deployer"));
             if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
-                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
                         BuildStrategy.PROD,
                         ReleaseType.HOTFIX,
                         "deployer"));
@@ -463,7 +463,7 @@ public class ApplicationFacade {
             }
             buildRepository.save(build);
             // change to webhook
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), build.getId(),
                     build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
                     build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ? ReleaseType.HOTFIX : ReleaseType.RELEASE,
                     "deployer"));

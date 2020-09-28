@@ -4,6 +4,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.bo.AbstractCluster;
+import com.capillary.ops.cp.bo.DeploymentContext;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
@@ -82,10 +83,11 @@ public class AwsCodeBuildService implements TFBuildService {
      *
      * @param cluster     Cluster Information
      * @param deploymentRequest Additional params
+     * @param deploymentContext
      * @return
      */
     @Override
-    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest)
+    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext)
     {
         ReleaseType releaseType = deploymentRequest.getReleaseType();
         List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv();
@@ -210,6 +212,7 @@ public class AwsCodeBuildService implements TFBuildService {
             log.setDescription(deploymentRequest.getTag());
             log.setReleaseType(deploymentRequest.getReleaseType());
             log.setCreatedOn(new Date());
+            log.setDeploymentContext(deploymentContext);
             return deploymentLogRepository.save(log);
 
         } catch (ResourceNotFoundException ex) {

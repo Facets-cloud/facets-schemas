@@ -54,7 +54,7 @@ public class BuildFacade {
         }
         if (build.isPresent()) {
             Build result = build.get();
-            artifactFacade.registerArtifact(new Artifact(applicationId, result.getImage(), strategy, releaseType, "deployer"));
+            artifactFacade.registerArtifact(new Artifact(applicationId, result.getImage(), result.getId(), strategy, releaseType, "deployer"));
             return result;
         }
         throw new NotFoundException("No Build Found");

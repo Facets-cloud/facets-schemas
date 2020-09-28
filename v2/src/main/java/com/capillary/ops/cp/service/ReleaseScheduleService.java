@@ -45,6 +45,9 @@ public class ReleaseScheduleService {
 
     private Map<String, ScheduleInfo> schedules = new HashMap<>();
 
+    @Autowired
+    private DeploymentFacade deploymentFacade;
+
     /**
      * Given a cluster update/insert all its schedules
      *
@@ -87,8 +90,7 @@ public class ReleaseScheduleService {
             logger.info("Initiating Release of type {} for cluster {} ({})", releaseType, c.getId(), c.getName());
             DeploymentRequest deploymentRequest = new DeploymentRequest();
             deploymentRequest.setReleaseType(releaseType);
-            AbstractCluster cluster = cpClusterRepository.findById(c.getId()).get();
-            tfBuildService.deployLatest(cluster, deploymentRequest);
+            deploymentFacade.createDeployment(c.getId(), deploymentRequest);
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
     }
