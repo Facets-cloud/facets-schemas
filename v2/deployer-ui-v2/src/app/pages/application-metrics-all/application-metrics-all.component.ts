@@ -13,7 +13,7 @@ class ApplicationMetricsAllUiWrapper {
   sonarUrl ?: string;
   constructor(private apiObj: ApplicationMetricsWrapper) {
     let appUrl;
-    appUrl = 'pages/applications/' + apiObj.application.applicationFamily + '/' + apiObj.application.applicationFamily;
+    appUrl = 'pages/applications/' + apiObj.application.applicationFamily + '/' + apiObj.application.id;
     this.name = '<a href="' + appUrl + '" target="_blank">' + apiObj.application.name + '</a>';
     this.id = apiObj.application.id;
     this.buildFailures = this.getUiString(apiObj.recentMetrics.buildFailures, apiObj.lastWeekMetrics.buildFailures, false);
