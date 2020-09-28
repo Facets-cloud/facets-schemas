@@ -28,6 +28,9 @@ public class ApplicationMetrics implements Serializable {
     private Integer outages;
     private Integer issuesReported;
 
+    // meta data
+    private String sonarUrl;
+
 
     public ApplicationMetrics(String applicationId, Date date) {
         this.applicationId = applicationId;
@@ -144,6 +147,14 @@ public class ApplicationMetrics implements Serializable {
 
     public void setIssuesReported(Integer issuesReported) {
         this.issuesReported = issuesReported;
+    }
+
+    public String getSonarUrl() {
+        return sonarUrl;
+    }
+
+    public void setSonarUrl(String sonarUrl) {
+        this.sonarUrl = sonarUrl;
     }
 
     public ApplicationMetrics() {

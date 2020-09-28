@@ -11,7 +11,7 @@ class ApplicationMetricsAllUiWrapper {
   unitTestCoverage ?: string;
   codeSmells ?: string;
   constructor(private apiObj: ApplicationMetricsWrapper) {
-    this.name = apiObj.application.name;
+    this.name = '<a href="' + apiObj.recentMetrics.sonarUrl + '">' + apiObj.application.name + '</a>';
     this.id = apiObj.application.id;
     this.buildFailures = this.getUiString(apiObj.recentMetrics.buildFailures, apiObj.lastWeekMetrics.buildFailures, false);
     this.unitTests = this.getUiString(apiObj.recentMetrics.unitTests, apiObj.lastWeekMetrics.unitTests, true);
@@ -42,8 +42,9 @@ class ApplicationMetricsAllUiWrapper {
     } else {
       diff = '=';
     }
-    //text = text.concat( '<span style="color:', indicator, '">', diff, ') </span>');
-    text = text.concat(  diff, ')');
+    text = text.concat( '<span style="color:', indicator, '">', indicator, diff, ') </span>');
+    // text = '<span class="metricDown" style="background-color:' + indicator + '">' + newValue + '(' + diff + ') ' + '</span>';
+    // text = text.concat(  diff, ')');
     return text;
   }
 }
@@ -108,22 +109,27 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
       name: {
         title: 'Application',
         filter: true,
+        type : 'html',
       },
       buildFailures: {
         title: 'Build Failures',
         filter: false,
+        type : 'html',
       },
       codeSmells: {
         title: 'Critical Code smells',
         filter: false,
+        type : 'html',
       },
       unitTestCoverage: {
         title: 'UT coverage',
         filter: false,
+        type : 'html',
       },
       unitTests: {
         title: 'Unit Tests',
         filter: false,
+        type : 'html',
       },
     },
     noDataMessage: 'No projects to show',
