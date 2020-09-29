@@ -450,15 +450,12 @@ public class DeploymentFacade {
     public List<DeploymentLog> getAllDeployments(String clusterId) {
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
         return deployments.stream()
-                .map(x -> x.getStatus() == null || x.getStatus() == StatusType.IN_PROGRESS ?
-                        tfBuildService.updateDeploymentStatus(x) : x).collect(Collectors.toList());
+                .map(x -> tfBuildService.loadDeploymentStatus(x, false)).collect(Collectors.toList());
     }
 
     public DeploymentLog getDeployment(String deploymentId) {
         DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
-        deployment.setStatus(tfBuildService.getDeploymentStatus(deployment.getCodebuildId()));
-        deployment.setBuildSummary(tfBuildService.getDeploymentReport(deployment.getCodebuildId()));
-        return deployment;
+        return tfBuildService.loadDeploymentStatus(deployment, true);
     }
 
     public DeploymentContext getDeploymentContext(String clusterId, DeploymentRequest deploymentRequest) {
