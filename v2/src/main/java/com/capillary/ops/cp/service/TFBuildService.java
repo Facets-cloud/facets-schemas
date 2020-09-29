@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentContext;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.List;
@@ -15,7 +16,9 @@ public interface TFBuildService {
 
     StatusType getDeploymentStatus(String runId);
 
-    Map<String, StatusType> getDeploymentStatuses(List<String> runIds);
+    Map<String, Build> getDeploymentStatuses(List<String> runIds);
 
     Map<String, Object> getDeploymentReport(String runId);
+
+    DeploymentLog updateDeploymentStatus(String runId);
 }

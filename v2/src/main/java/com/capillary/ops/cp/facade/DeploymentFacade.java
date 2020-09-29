@@ -35,10 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
-import software.amazon.awssdk.services.codebuild.model.ProjectSource;
-import software.amazon.awssdk.services.codebuild.model.StatusType;
+import software.amazon.awssdk.services.codebuild.model.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -451,10 +448,11 @@ public class DeploymentFacade {
     }
 
     public List<DeploymentLog> getAllDeployments(String clusterId) {
-        List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
-        Map<String, StatusType> deploymentStatuses = tfBuildService.getDeploymentStatuses(
+        List<DeploymentLog> deployments =
+                deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        Map<String, Build> deploymentStatuses = tfBuildService.getDeploymentStatuses(
                 deployments.stream().map(x -> x.getCodebuildId()).collect(Collectors.toList()));
-        deployments.stream().forEach(x -> x.setStatus(deploymentStatuses.get(x.getCodebuildId())));
+        deployments.stream().forEach(x -> x.setStatus(deploymentStatuses.get(x.getCodebuildId()).buildStatus()));
         return deployments;
     }
 

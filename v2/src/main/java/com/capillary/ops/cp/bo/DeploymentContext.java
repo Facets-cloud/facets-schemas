@@ -1,5 +1,7 @@
 package com.capillary.ops.cp.bo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,7 @@ public class DeploymentContext {
         this.snapshots = snapshots;
     }
 
+    @JsonIgnore
     private AbstractCluster cluster;
     private Map<String, Map<String, Artifact>> artifacts;
     private List<OverrideObject> overrides;

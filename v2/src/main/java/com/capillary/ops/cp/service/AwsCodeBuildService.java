@@ -3,9 +3,7 @@ package com.capillary.ops.cp.service;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.DeploymentContext;
-import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -24,12 +22,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsRequest;
+import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsResponse;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -230,9 +233,9 @@ public class AwsCodeBuildService implements TFBuildService {
     }
 
     @Override
-    public Map<String, StatusType> getDeploymentStatuses(List<String> runIds) {
+    public Map<String, Build> getDeploymentStatuses(List<String> runIds) {
         return codeBuildService.getBuilds(BUILD_REGION, runIds)
-                .stream().collect(Collectors.toMap(x->x.id(), x->x.buildStatus()));
+                .stream().collect(Collectors.toMap(x->x.id(), x->x));
     }
 
     @Override
@@ -247,9 +250,60 @@ public class AwsCodeBuildService implements TFBuildService {
         }
     }
 
+    @Override
+    public DeploymentLog updateDeploymentStatus(String runId) {
+        Optional<DeploymentLog> deploymentLogOptional = deploymentLogRepository.findOneByCodebuildId(runId);
+        if(! deploymentLogOptional.isPresent()) {
+            return null;
+        }
+        CodeBuildClient codeBuildClient = getCodeBuildClient();
+        CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
+        BatchGetBuildsResponse batchGetBuildsResponse = codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder().ids("capillary-cloud-tf-apply:ebe3addb-47bf-4f89-bb88-34af91bd6c38").build());
+        Build build = batchGetBuildsResponse.builds().get(0);
+        String groupName = build.logs().groupName();
+        String streamName = build.logs().streamName();
+        FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder().limit(10000).logGroupName(groupName).logStreamNames(streamName).filterPattern(" complete after ").build());
+        List<TerraformChange> terraformChanges = logEvents.events().stream()
+                .map(x -> parseLogs(x.message()))
+                .filter(x -> x != null).collect(Collectors.toList());
+        DeploymentLog deploymentLog = deploymentLogOptional.get();
+        deploymentLog.setStatus(build.buildStatus());
+        deploymentLog.setChangesApplied(terraformChanges);
+        deploymentLogRepository.save(deploymentLog);
+        return deploymentLog;
+    }
+
+    private TerraformChange parseLogs(String message) {
+        try {
+            Pattern p = Pattern.compile("^(.*): (.*) complete (.*)");
+            Matcher matcher = p.matcher(message);
+            if(matcher.find()) {
+                String resourcePath = matcher.group(1);
+                TerraformChange.TerraformChangeType changeType = TerraformChange.TerraformChangeType.valueOf(matcher.group(2));
+                String resourceKey = null;
+                Pattern p2 = Pattern.compile("^(.*)\\[\"(.*)\"\\]");
+                Matcher m2 = p2.matcher(resourcePath);
+                if(m2.find()) {
+                    resourcePath = m2.group(1);
+                    resourceKey = m2.group(2);
+                }
+                return new TerraformChange(resourcePath, resourceKey, changeType);
+            } else {
+                return null;
+            }
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
     private CodeBuildClient getCodeBuildClient() {
         return CodeBuildClient.builder().region(BUILD_REGION).credentialsProvider(DefaultCredentialsProvider.create())
             .build();
+    }
+
+    private CloudWatchLogsClient getCloudWatchLogsClient() {
+        return CloudWatchLogsClient.builder().region(BUILD_REGION).credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
     }
 
 }
