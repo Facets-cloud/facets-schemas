@@ -32,6 +32,7 @@ public class ArtifactFacade {
         if(artifactOptional.isPresent()) {
             Artifact existing = artifactOptional.get();
             existing.setArtifactUri(artifact.getArtifactUri());
+            existing.setBuildId(artifact.getBuildId());
             artifactRepository.save(existing);
         } else {
             artifactRepository.save(artifact);

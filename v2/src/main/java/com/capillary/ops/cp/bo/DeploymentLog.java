@@ -36,6 +36,7 @@ public class DeploymentLog {
     @Transient
     private Map<String, Object> buildSummary;
 
+    @JsonIgnore
     private DeploymentContext deploymentContext;
 
     public String getId() {
