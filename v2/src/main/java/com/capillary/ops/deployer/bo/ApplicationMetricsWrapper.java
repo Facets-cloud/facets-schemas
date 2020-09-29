@@ -10,7 +10,8 @@ public class ApplicationMetricsWrapper {
         this.application = application;
     }
 
-    public ApplicationMetricsWrapper(Application application, ApplicationMetrics recentMetrics, ApplicationMetrics lastWeekMetrics) {
+    public ApplicationMetricsWrapper(Application application, ApplicationMetrics recentMetrics,
+                                     ApplicationMetrics lastWeekMetrics) {
         this.application = application;
         this.recentMetrics = recentMetrics;
         this.lastWeekMetrics = lastWeekMetrics;

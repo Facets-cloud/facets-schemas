@@ -1168,8 +1168,10 @@ public class ApplicationFacade {
                 .findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(
                         applicationId, periodEndDate.getTime());
 
-        if(buildDetails!= null)
-            updateMetricObject( buildDetails.getTestStatusRules(), metrics);
+        if(buildDetails!= null) {
+            metrics.setSonarUrl( buildDetails.getSonarUrl());
+            updateMetricObject(buildDetails.getTestStatusRules(), metrics);
+        }
 
         // test build data
         Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
@@ -1230,7 +1232,8 @@ public class ApplicationFacade {
         List<Application> applications = applicationRepository.findByApplicationFamilyAndApplicationType(applicationFamily,
                 Application.ApplicationType.SERVICE);
 
-        applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList()).parallelStream().forEach(application -> {
+        applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList())
+                .parallelStream().forEach(application -> {
             try {
                 Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
                 ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));
