@@ -20,5 +20,5 @@ public interface TFBuildService {
 
     Map<String, Object> getDeploymentReport(String runId);
 
-    DeploymentLog updateDeploymentStatus(String runId);
+    DeploymentLog updateDeploymentStatus(DeploymentLog deploymentLog);
 }

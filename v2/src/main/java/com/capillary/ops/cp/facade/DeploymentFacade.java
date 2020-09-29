@@ -448,12 +448,10 @@ public class DeploymentFacade {
     }
 
     public List<DeploymentLog> getAllDeployments(String clusterId) {
-        List<DeploymentLog> deployments =
-                deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
-        Map<String, Build> deploymentStatuses = tfBuildService.getDeploymentStatuses(
-                deployments.stream().map(x -> x.getCodebuildId()).collect(Collectors.toList()));
-        deployments.stream().forEach(x -> x.setStatus(deploymentStatuses.get(x.getCodebuildId()).buildStatus()));
-        return deployments;
+        List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        return deployments.stream()
+                .map(x -> x.getStatus() == null || x.getStatus() == StatusType.IN_PROGRESS ?
+                        tfBuildService.updateDeploymentStatus(x) : x).collect(Collectors.toList());
     }
 
     public DeploymentLog getDeployment(String deploymentId) {

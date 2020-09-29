@@ -251,22 +251,23 @@ public class AwsCodeBuildService implements TFBuildService {
     }
 
     @Override
-    public DeploymentLog updateDeploymentStatus(String runId) {
-        Optional<DeploymentLog> deploymentLogOptional = deploymentLogRepository.findOneByCodebuildId(runId);
-        if(! deploymentLogOptional.isPresent()) {
-            return null;
-        }
+    public DeploymentLog updateDeploymentStatus(DeploymentLog deploymentLog) {
         CodeBuildClient codeBuildClient = getCodeBuildClient();
         CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
-        BatchGetBuildsResponse batchGetBuildsResponse = codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder().ids("capillary-cloud-tf-apply:ebe3addb-47bf-4f89-bb88-34af91bd6c38").build());
+        BatchGetBuildsResponse batchGetBuildsResponse =
+                codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder()
+                        .ids(deploymentLog.getCodebuildId()).build());
         Build build = batchGetBuildsResponse.builds().get(0);
+        if(build.buildStatus() == StatusType.IN_PROGRESS) {
+            deploymentLog.setStatus(build.buildStatus());
+            return deploymentLog;
+        }
         String groupName = build.logs().groupName();
         String streamName = build.logs().streamName();
         FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder().limit(10000).logGroupName(groupName).logStreamNames(streamName).filterPattern(" complete after ").build());
         List<TerraformChange> terraformChanges = logEvents.events().stream()
                 .map(x -> parseLogs(x.message()))
                 .filter(x -> x != null).collect(Collectors.toList());
-        DeploymentLog deploymentLog = deploymentLogOptional.get();
         deploymentLog.setStatus(build.buildStatus());
         deploymentLog.setChangesApplied(terraformChanges);
         deploymentLogRepository.save(deploymentLog);
