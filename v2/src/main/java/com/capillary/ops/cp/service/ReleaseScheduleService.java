@@ -40,9 +40,6 @@ public class ReleaseScheduleService {
     @Value("${deployer.scheduler.enabled}")
     private boolean enabled;
 
-    @Autowired
-    private TFBuildService tfBuildService;
-
     private Map<String, ScheduleInfo> schedules = new HashMap<>();
 
     @Autowired

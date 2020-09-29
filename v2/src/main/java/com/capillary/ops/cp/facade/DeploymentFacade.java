@@ -65,8 +65,8 @@ public class DeploymentFacade {
     @Autowired
     private QASuiteResultRepository qaSuiteResultRepository;
 
-    @Autowired
-    private BuildService buildService;
+//    @Autowired
+//    private BuildService buildService;
 
     @Autowired
     private DeployerHttpClient httpClient;
