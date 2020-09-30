@@ -42,6 +42,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
   static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
+  static readonly refreshBuildDetailsUsingPUTPath = '/api/codebuild/builds/{codeBuildId}/refresh';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -247,6 +248,42 @@ class ApplicationControllerService extends __BaseService {
   getCCEnvironmentMetaDataUsingGET(applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'): __Observable<Array<EnvironmentMetaData>> {
     return this.getCCEnvironmentMetaDataUsingGETResponse(applicationFamily).pipe(
       __map(_r => _r.body as Array<EnvironmentMetaData>)
+    );
+  }
+
+  /**
+   * @param codeBuildId codeBuildId
+   * @return OK
+   */
+  refreshBuildDetailsUsingPUTResponse(codeBuildId: string): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/api/codebuild/builds/${codeBuildId}/refresh`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param codeBuildId codeBuildId
+   * @return OK
+   */
+  refreshBuildDetailsUsingPUT(codeBuildId: string): __Observable<boolean> {
+    return this.refreshBuildDetailsUsingPUTResponse(codeBuildId).pipe(
+      __map(_r => _r.body as boolean)
     );
   }
 

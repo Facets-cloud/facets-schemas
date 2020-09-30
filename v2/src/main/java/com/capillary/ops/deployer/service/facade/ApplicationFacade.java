@@ -353,12 +353,14 @@ public class ApplicationFacade {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
+                    build.getDescription(),
                     BuildStrategy.PROD,
                     ReleaseType.RELEASE,
                     "deployer"));
             if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
-                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
+                        build.getDescription(),
                         BuildStrategy.PROD,
                         ReleaseType.HOTFIX,
                         "deployer"));
@@ -463,9 +465,11 @@ public class ApplicationFacade {
             }
             buildRepository.save(build);
             // change to webhook
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(),
+            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), build.getId(),
+                    build.getDescription(),
                     build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
-                    build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ? ReleaseType.HOTFIX : ReleaseType.RELEASE,
+                    build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ?
+                            ReleaseType.HOTFIX : ReleaseType.RELEASE,
                     "deployer"));
         }
     }
@@ -1168,8 +1172,10 @@ public class ApplicationFacade {
                 .findFirstByApplicationIdAndTimestampLessThanOrderByTimestampDesc(
                         applicationId, periodEndDate.getTime());
 
-        if(buildDetails!= null)
-            updateMetricObject( buildDetails.getTestStatusRules(), metrics);
+        if(buildDetails!= null) {
+            metrics.setSonarUrl( buildDetails.getSonarUrl());
+            updateMetricObject(buildDetails.getTestStatusRules(), metrics);
+        }
 
         // test build data
         Integer failedBuilds= buildRepository.countBuildByApplicationIdAndTimestampBetween(
@@ -1230,7 +1236,8 @@ public class ApplicationFacade {
         List<Application> applications = applicationRepository.findByApplicationFamilyAndApplicationType(applicationFamily,
                 Application.ApplicationType.SERVICE);
 
-        applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList()).parallelStream().forEach(application -> {
+        applications.parallelStream().filter(t -> t.isCiEnabled()).collect(Collectors.toList())
+                .parallelStream().forEach(application -> {
             try {
                 Map<String, ApplicationMetrics> metrics = getApplicationMetricSummary(applicationFamily, application.getId());
                 ret.add(new ApplicationMetricsWrapper(application, metrics.get("new"), metrics.get("old")));

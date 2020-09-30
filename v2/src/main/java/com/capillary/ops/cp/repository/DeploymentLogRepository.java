@@ -5,9 +5,12 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DeploymentLogRepository extends MongoRepository<DeploymentLog, String> {
 
     List<DeploymentLog> findFirst50ByClusterIdOrderByCreatedOnDesc(String clusterId);
+
+    Optional<DeploymentLog> findOneByCodebuildId(String runId);
 }

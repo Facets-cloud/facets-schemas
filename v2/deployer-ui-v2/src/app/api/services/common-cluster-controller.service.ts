@@ -8,6 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { K8sCredentials } from '../models/k8s-credentials';
+import { SnapshotInfo } from '../models/snapshot-info';
 import { OverrideObject } from '../models/override-object';
 import { OverrideRequest } from '../models/override-request';
 
@@ -19,6 +20,9 @@ import { OverrideRequest } from '../models/override-request';
 })
 class CommonClusterControllerService extends __BaseService {
   static readonly addClusterK8sCredentialsUsingPOSTPath = '/cc/v1/clusters/{clusterId}/credentials';
+  static readonly listSnapshotsUsingGETPath = '/cc/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}';
+  static readonly getPinnedSnapshotUsingGETPath = '/cc/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
+  static readonly pinSnapshotUsingPOSTPath = '/cc/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly getOverridesUsingGETPath = '/cc/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOSTPath = '/cc/v1/clusters/{clusterId}/overrides';
 
@@ -73,6 +77,167 @@ class CommonClusterControllerService extends __BaseService {
   addClusterK8sCredentialsUsingPOST(params: CommonClusterControllerService.AddClusterK8sCredentialsUsingPOSTParams): __Observable<boolean> {
     return this.addClusterK8sCredentialsUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * @param params The `CommonClusterControllerService.ListSnapshotsUsingGETParams` containing the following parameters:
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `instanceName`: instanceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  listSnapshotsUsingGETResponse(params: CommonClusterControllerService.ListSnapshotsUsingGETParams): __Observable<__StrictHttpResponse<Array<SnapshotInfo>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/dr/${params.resourceType}/snapshots/${params.instanceName}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<SnapshotInfo>>;
+      })
+    );
+  }
+  /**
+   * @param params The `CommonClusterControllerService.ListSnapshotsUsingGETParams` containing the following parameters:
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `instanceName`: instanceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  listSnapshotsUsingGET(params: CommonClusterControllerService.ListSnapshotsUsingGETParams): __Observable<Array<SnapshotInfo>> {
+    return this.listSnapshotsUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<SnapshotInfo>)
+    );
+  }
+
+  /**
+   * @param params The `CommonClusterControllerService.GetPinnedSnapshotUsingGETParams` containing the following parameters:
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `instanceName`: instanceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  getPinnedSnapshotUsingGETResponse(params: CommonClusterControllerService.GetPinnedSnapshotUsingGETParams): __Observable<__StrictHttpResponse<SnapshotInfo>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/dr/${params.resourceType}/snapshots/${params.instanceName}/pinnedSnapshot`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<SnapshotInfo>;
+      })
+    );
+  }
+  /**
+   * @param params The `CommonClusterControllerService.GetPinnedSnapshotUsingGETParams` containing the following parameters:
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `instanceName`: instanceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  getPinnedSnapshotUsingGET(params: CommonClusterControllerService.GetPinnedSnapshotUsingGETParams): __Observable<SnapshotInfo> {
+    return this.getPinnedSnapshotUsingGETResponse(params).pipe(
+      __map(_r => _r.body as SnapshotInfo)
+    );
+  }
+
+  /**
+   * @param params The `CommonClusterControllerService.PinSnapshotUsingPOSTParams` containing the following parameters:
+   *
+   * - `snapshotInfo`: snapshotInfo
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `instanceName`: instanceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  pinSnapshotUsingPOSTResponse(params: CommonClusterControllerService.PinSnapshotUsingPOSTParams): __Observable<__StrictHttpResponse<SnapshotInfo>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.snapshotInfo;
+
+
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/dr/${params.resourceType}/snapshots/${params.instanceName}/pinnedSnapshot`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<SnapshotInfo>;
+      })
+    );
+  }
+  /**
+   * @param params The `CommonClusterControllerService.PinSnapshotUsingPOSTParams` containing the following parameters:
+   *
+   * - `snapshotInfo`: snapshotInfo
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `instanceName`: instanceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  pinSnapshotUsingPOST(params: CommonClusterControllerService.PinSnapshotUsingPOSTParams): __Observable<SnapshotInfo> {
+    return this.pinSnapshotUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as SnapshotInfo)
     );
   }
 
@@ -171,6 +336,74 @@ module CommonClusterControllerService {
      * request
      */
     request: K8sCredentials;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for listSnapshotsUsingGET
+   */
+  export interface ListSnapshotsUsingGETParams {
+
+    /**
+     * resourceType
+     */
+    resourceType: string;
+
+    /**
+     * instanceName
+     */
+    instanceName: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for getPinnedSnapshotUsingGET
+   */
+  export interface GetPinnedSnapshotUsingGETParams {
+
+    /**
+     * resourceType
+     */
+    resourceType: string;
+
+    /**
+     * instanceName
+     */
+    instanceName: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for pinSnapshotUsingPOST
+   */
+  export interface PinSnapshotUsingPOSTParams {
+
+    /**
+     * snapshotInfo
+     */
+    snapshotInfo: SnapshotInfo;
+
+    /**
+     * resourceType
+     */
+    resourceType: string;
+
+    /**
+     * instanceName
+     */
+    instanceName: string;
 
     /**
      * clusterId

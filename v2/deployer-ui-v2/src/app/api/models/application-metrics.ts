@@ -12,6 +12,7 @@ export interface ApplicationMetrics {
   regressionCoverage?: number;
   regressionFailures?: number;
   responseTime?: number;
+  sonarUrl?: string;
   unitTestCoverage?: number;
   unitTests?: number;
 }

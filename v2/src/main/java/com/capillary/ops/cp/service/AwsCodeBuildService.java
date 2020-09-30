@@ -3,8 +3,7 @@ package com.capillary.ops.cp.service;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -15,6 +14,7 @@ import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
+import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsRequest;
+import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsResponse;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +53,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
     public static final String STACK_NAME = "STACK_NAME";
+    private static final String CLUSTER_NAME = "CLUSTER_NAME";
 
     @Value("${internalApiAuthToken}")
     private String authToken;
@@ -72,15 +78,19 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Autowired
     private DeploymentLogRepository deploymentLogRepository;
+
+    @Autowired
+    private GitService gitService;
     /**
      * Deploy the latest build in the specified clusterId
      *
      * @param cluster     Cluster Information
      * @param deploymentRequest Additional params
+     * @param deploymentContext
      * @return
      */
     @Override
-    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest)
+    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext)
     {
         ReleaseType releaseType = deploymentRequest.getReleaseType();
         List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv();
@@ -98,6 +108,8 @@ public class AwsCodeBuildService implements TFBuildService {
                 .build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
             .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
+                .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
@@ -128,8 +140,16 @@ public class AwsCodeBuildService implements TFBuildService {
 
         String primarySourceVersion = "master";
 
+        String masterHead = "";
+
+        try {
+            masterHead = gitService.getBranchHead(stack.getVcsUrl(), stack.getUser(), stack.getAppPassword(), "master");
+        } catch (GitAPIException e) {
+            throw new RuntimeException(e);
+        }
+
         ProjectSourceVersion secondarySourceVersion =
-                ProjectSourceVersion.builder().sourceIdentifier("STACK").sourceVersion("master").build();
+                ProjectSourceVersion.builder().sourceIdentifier("STACK").sourceVersion(masterHead).build();
 
 
         if (cluster.getCdPipelineParent() != null) {
@@ -139,7 +159,7 @@ public class AwsCodeBuildService implements TFBuildService {
             for (DeploymentLog d: pipelineParentDeployments) {
                 Build build = getBuild(d.getCodebuildId());
                 if (StatusType.SUCCEEDED.equals(build.buildStatus())) {
-                    primarySourceVersion = build.sourceVersion();
+                    primarySourceVersion = build.resolvedSourceVersion();
                     String stackSourceVersion = build.secondarySourceVersions().stream()
                             .filter(x -> "STACK".equalsIgnoreCase(x.sourceIdentifier()))
                             .findFirst().get().sourceVersion();
@@ -195,6 +215,7 @@ public class AwsCodeBuildService implements TFBuildService {
             log.setDescription(deploymentRequest.getTag());
             log.setReleaseType(deploymentRequest.getReleaseType());
             log.setCreatedOn(new Date());
+            log.setDeploymentContext(deploymentContext);
             return deploymentLogRepository.save(log);
 
         } catch (ResourceNotFoundException ex) {
@@ -202,23 +223,23 @@ public class AwsCodeBuildService implements TFBuildService {
         }
     }
 
-    @Override
-    public StatusType getDeploymentStatus(String runId) {
-        return getBuild(runId).buildStatus();
-    }
+//    @Override
+//    public StatusType getDeploymentStatus(String runId) {
+//        return getBuild(runId).buildStatus();
+//    }
 
     private Build getBuild(String runId) {
         return codeBuildService.getBuild(BUILD_REGION, runId);
     }
 
-    @Override
-    public Map<String, StatusType> getDeploymentStatuses(List<String> runIds) {
-        return codeBuildService.getBuilds(BUILD_REGION, runIds)
-                .stream().collect(Collectors.toMap(x->x.id(), x->x.buildStatus()));
-    }
-
-    @Override
-    public Map<String, Object> getDeploymentReport(String runId) {
+//    @Override
+//    public Map<String, Build> getDeploymentStatuses(List<String> runIds) {
+//        return codeBuildService.getBuilds(BUILD_REGION, runIds)
+//                .stream().collect(Collectors.toMap(x->x.id(), x->x));
+//    }
+//
+//    @Override
+    private Map<String, Object> getDeploymentReport(String runId) {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
         try {
             String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/report.json", runId.split(":")[1]);
@@ -229,9 +250,77 @@ public class AwsCodeBuildService implements TFBuildService {
         }
     }
 
+    @Override
+    public DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails) {
+        // status is present in db, return as is
+        if(deploymentLog.getStatus() != null && deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
+            if(! loadBuildDetails) {
+                // reduce payload
+                deploymentLog.setBuildSummary(null);
+                deploymentLog.setChangesApplied(null);
+            }
+        }
+        // if not
+        else {
+            CodeBuildClient codeBuildClient = getCodeBuildClient();
+            BatchGetBuildsResponse batchGetBuildsResponse =
+                    codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder()
+                            .ids(deploymentLog.getCodebuildId()).build());
+            Build build = batchGetBuildsResponse.builds().get(0);
+            deploymentLog.setStatus(build.buildStatus());
+
+            if (loadBuildDetails) {
+                String groupName = build.logs().groupName();
+                String streamName = build.logs().streamName();
+                CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
+                FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
+                        .limit(10000).logGroupName(groupName)
+                        .logStreamNames(streamName).filterPattern(" complete after ").build());
+                List<TerraformChange> terraformChanges = logEvents.events().stream()
+                        .filter(x -> !x.message().contains("module.overrides"))
+                        .map(x -> parseLogs(x.message()))
+                        .filter(x -> x != null).collect(Collectors.toList());
+                deploymentLog.setStatus(build.buildStatus());
+                deploymentLog.setChangesApplied(terraformChanges);
+                deploymentLog.setBuildSummary(getDeploymentReport(build.id()));
+                deploymentLogRepository.save(deploymentLog);
+            }
+        }
+
+        return deploymentLog;
+    }
+
+    private TerraformChange parseLogs(String message) {
+        try {
+            Pattern p = Pattern.compile("^(.*): (.*) complete (.*)");
+            Matcher matcher = p.matcher(message);
+            if(matcher.find()) {
+                String resourcePath = matcher.group(1);
+                TerraformChange.TerraformChangeType changeType = TerraformChange.TerraformChangeType.valueOf(matcher.group(2));
+                String resourceKey = null;
+                Pattern p2 = Pattern.compile("^(.*)\\[\"(.*)\"\\]");
+                Matcher m2 = p2.matcher(resourcePath);
+                if(m2.find()) {
+                    resourcePath = m2.group(1);
+                    resourceKey = m2.group(2);
+                }
+                return new TerraformChange(resourcePath, resourceKey, changeType);
+            } else {
+                return null;
+            }
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
     private CodeBuildClient getCodeBuildClient() {
         return CodeBuildClient.builder().region(BUILD_REGION).credentialsProvider(DefaultCredentialsProvider.create())
             .build();
+    }
+
+    private CloudWatchLogsClient getCloudWatchLogsClient() {
+        return CloudWatchLogsClient.builder().region(BUILD_REGION).credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
     }
 
 }

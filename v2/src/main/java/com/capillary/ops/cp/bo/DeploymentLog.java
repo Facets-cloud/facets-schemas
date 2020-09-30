@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.deployer.bo.Deployment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Document
@@ -21,6 +23,7 @@ public class DeploymentLog {
     @Indexed(name = "cluster_id_index", unique = false)
     private String clusterId;
 
+    @Indexed(unique = true, name = "codebuildId_idx")
     private String codebuildId;
 
     private String description;
@@ -29,11 +32,14 @@ public class DeploymentLog {
 
     private ReleaseType releaseType;
 
-    @Transient
     private StatusType status;
 
     @Transient
     private Map<String, Object> buildSummary;
+
+    private DeploymentContext deploymentContext;
+
+    List<TerraformChange> changesApplied;
 
     public String getId() {
         return id;
@@ -97,5 +103,21 @@ public class DeploymentLog {
 
     public void setBuildSummary(Map<String, Object> buildSummary) {
         this.buildSummary = buildSummary;
+    }
+
+    public DeploymentContext getDeploymentContext() {
+        return deploymentContext;
+    }
+
+    public void setDeploymentContext(DeploymentContext deploymentContext) {
+        this.deploymentContext = deploymentContext;
+    }
+
+    public List<TerraformChange> getChangesApplied() {
+        return changesApplied;
+    }
+
+    public void setChangesApplied(List<TerraformChange> changesApplied) {
+        this.changesApplied = changesApplied;
     }
 }

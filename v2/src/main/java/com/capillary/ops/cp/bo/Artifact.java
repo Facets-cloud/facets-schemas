@@ -12,22 +12,26 @@ public class Artifact {
     public Artifact() {
     }
 
-    public Artifact(String applicationName, String artifactUri,
+    public Artifact(String applicationName, String artifactUri, String buildId, String buildDescription,
                     BuildStrategy releaseStream, ReleaseType releaseType, String artifactory) {
         this.applicationName = applicationName;
         this.artifactUri = artifactUri;
         this.releaseStream = releaseStream;
         this.releaseType = releaseType;
         this.artifactory = artifactory;
+        this.buildId = buildId;
+        this.buildDescription = buildDescription;
     }
 
     @Id
     private String id;
+    private String buildId;
     private String applicationName;
     private String artifactUri;
     private BuildStrategy releaseStream;
     private ReleaseType releaseType;
     private String artifactory;
+    private String buildDescription;
 
     public String getId() {
         return id;
@@ -75,5 +79,21 @@ public class Artifact {
 
     public void setArtifactory(String artifactory) {
         this.artifactory = artifactory;
+    }
+
+    public String getBuildId() {
+        return buildId;
+    }
+
+    public void setBuildId(String buildId) {
+        this.buildId = buildId;
+    }
+
+    public String getBuildDescription() {
+        return buildDescription;
+    }
+
+    public void setBuildDescription(String buildDescription) {
+        this.buildDescription = buildDescription;
     }
 }

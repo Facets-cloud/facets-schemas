@@ -11,15 +11,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ArtifactFacade {
     @Autowired
     private ArtifactRepository artifactRepository;
 
-    public Map<String, String> getAllArtifacts(String artifactory, BuildStrategy releaseStream, ReleaseType releaseType) {
-        List<Artifact> artifacts = artifactRepository.findByArtifactoryAndReleaseStreamAndReleaseType(artifactory, releaseStream, releaseType);
-        return artifacts.stream().collect(Collectors.toMap(x->x.getApplicationName(), x -> x.getArtifactUri()));
+    public Map<String, Map<String, Artifact>> getAllArtifacts(BuildStrategy releaseStream, ReleaseType releaseType) {
+        List<Artifact> artifacts = artifactRepository.findByReleaseStreamAndReleaseType(releaseStream, releaseType);
+        return artifacts.stream().collect(Collectors.groupingBy(x -> x.getArtifactory())).entrySet().stream()
+                .collect(Collectors.toMap(x -> x.getKey(),
+                        x -> x.getValue().stream().collect(
+                                Collectors.toMap((Artifact y) -> y.getApplicationName(), (Artifact y) -> y))));
     }
 
     public void registerArtifact(Artifact artifact) {
@@ -28,6 +32,7 @@ public class ArtifactFacade {
         if(artifactOptional.isPresent()) {
             Artifact existing = artifactOptional.get();
             existing.setArtifactUri(artifact.getArtifactUri());
+            existing.setBuildId(artifact.getBuildId());
             artifactRepository.save(existing);
         } else {
             artifactRepository.save(artifact);

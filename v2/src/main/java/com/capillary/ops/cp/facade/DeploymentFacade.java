@@ -11,11 +11,13 @@ import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.QASuiteRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
+import com.capillary.ops.cp.service.BaseDRService;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -33,10 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
-import software.amazon.awssdk.services.codebuild.model.ProjectSource;
-import software.amazon.awssdk.services.codebuild.model.StatusType;
+import software.amazon.awssdk.services.codebuild.model.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -66,8 +65,8 @@ public class DeploymentFacade {
     @Autowired
     private QASuiteResultRepository qaSuiteResultRepository;
 
-    @Autowired
-    private BuildService buildService;
+//    @Autowired
+//    private BuildService buildService;
 
     @Autowired
     private DeployerHttpClient httpClient;
@@ -80,6 +79,12 @@ public class DeploymentFacade {
 
     @Autowired
     private StackFacade stackFacade;
+
+    @Autowired
+    private ArtifactFacade artifactFacade;
+
+    @Autowired
+    private BaseDRService baseDRService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -95,8 +100,9 @@ public class DeploymentFacade {
      */
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        DeploymentContext deploymentContext = getDeploymentContext(clusterId, deploymentRequest);
         //TODO: Save Deployment requests for audit purpose
-        return tfBuildService.deployLatest(cluster, deploymentRequest);
+        return tfBuildService.deployLatest(cluster, deploymentRequest, deploymentContext);
     }
 
     /**
@@ -443,16 +449,24 @@ public class DeploymentFacade {
 
     public List<DeploymentLog> getAllDeployments(String clusterId) {
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
-        Map<String, StatusType> deploymentStatuses = tfBuildService.getDeploymentStatuses(
-                deployments.stream().map(x -> x.getCodebuildId()).collect(Collectors.toList()));
-        deployments.stream().forEach(x -> x.setStatus(deploymentStatuses.get(x.getCodebuildId())));
-        return deployments;
+        return deployments.stream()
+                .map(x -> tfBuildService.loadDeploymentStatus(x, false)).collect(Collectors.toList());
     }
 
     public DeploymentLog getDeployment(String deploymentId) {
         DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
-        deployment.setStatus(tfBuildService.getDeploymentStatus(deployment.getCodebuildId()));
-        deployment.setBuildSummary(tfBuildService.getDeploymentReport(deployment.getCodebuildId()));
-        return deployment;
+        return tfBuildService.loadDeploymentStatus(deployment, true);
+    }
+
+    public DeploymentContext getDeploymentContext(String clusterId, DeploymentRequest deploymentRequest) {
+        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        Map<String, Map<String, Artifact>> allArtifacts = artifactFacade.getAllArtifacts(cluster.getReleaseStream(), deploymentRequest.getReleaseType());
+        Map<String, Map<String, SnapshotInfo>> pinnedSnapshots = baseDRService.getAllPinnedSnapshots(cluster.getId())
+                .stream().collect(Collectors.groupingBy(x -> x.getResourceType())).entrySet().stream()
+                .collect(Collectors.toMap(x -> x.getKey(),
+                        x -> x.getValue().stream().collect(
+                                Collectors.toMap((SnapshotInfo y) -> y.getInstanceName(), (SnapshotInfo y) -> y))));
+        List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(cluster.getId());
+        return new DeploymentContext(cluster, allArtifacts, overrides, pinnedSnapshots);
     }
 }
