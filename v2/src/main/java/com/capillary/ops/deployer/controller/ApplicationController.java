@@ -491,7 +491,7 @@ public class ApplicationController {
     }
 
     @PutMapping(value = "/codebuild/builds/{codeBuildId}/refresh", produces = "application/json")
-    public Boolean updateApplication(@PathVariable("codeBuildId") String codeBuildId) {
+    public Boolean refreshBuildDetails(@PathVariable("codeBuildId") String codeBuildId) {
         applicationFacade.refreshBuildDetails(codeBuildId);
         return true;
     }

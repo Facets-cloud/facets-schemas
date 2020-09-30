@@ -42,7 +42,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
   static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
-  static readonly updateApplicationUsingPUTPath = '/api/codebuild/builds/{codeBuildId}/refresh';
+  static readonly refreshBuildDetailsUsingPUTPath = '/api/codebuild/builds/{codeBuildId}/refresh';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -50,7 +50,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly updateUserUsingPUTPath = '/api/users/{userId}';
   static readonly getApplicationsUsingGETPath = '/api/{applicationFamily}/applications';
   static readonly createApplicationUsingPOSTPath = '/api/{applicationFamily}/applications';
-  static readonly updateApplicationUsingPUT1Path = '/api/{applicationFamily}/applications';
+  static readonly updateApplicationUsingPUTPath = '/api/{applicationFamily}/applications';
   static readonly getApplicationUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}';
   static readonly deleteApplicationUsingDELETEPath = '/api/{applicationFamily}/applications/{applicationId}';
   static readonly getApplicationBranchesUsingGETPath = '/api/{applicationFamily}/applications/{applicationId}/branches';
@@ -255,7 +255,7 @@ class ApplicationControllerService extends __BaseService {
    * @param codeBuildId codeBuildId
    * @return OK
    */
-  updateApplicationUsingPUTResponse(codeBuildId: string): __Observable<__StrictHttpResponse<boolean>> {
+  refreshBuildDetailsUsingPUTResponse(codeBuildId: string): __Observable<__StrictHttpResponse<boolean>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -281,8 +281,8 @@ class ApplicationControllerService extends __BaseService {
    * @param codeBuildId codeBuildId
    * @return OK
    */
-  updateApplicationUsingPUT(codeBuildId: string): __Observable<boolean> {
-    return this.updateApplicationUsingPUTResponse(codeBuildId).pipe(
+  refreshBuildDetailsUsingPUT(codeBuildId: string): __Observable<boolean> {
+    return this.refreshBuildDetailsUsingPUTResponse(codeBuildId).pipe(
       __map(_r => _r.body as boolean)
     );
   }
@@ -553,7 +553,7 @@ class ApplicationControllerService extends __BaseService {
   }
 
   /**
-   * @param params The `ApplicationControllerService.UpdateApplicationUsingPUT1Params` containing the following parameters:
+   * @param params The `ApplicationControllerService.UpdateApplicationUsingPUTParams` containing the following parameters:
    *
    * - `applicationFamily`: applicationFamily
    *
@@ -561,7 +561,7 @@ class ApplicationControllerService extends __BaseService {
    *
    * @return OK
    */
-  updateApplicationUsingPUT1Response(params: ApplicationControllerService.UpdateApplicationUsingPUT1Params): __Observable<__StrictHttpResponse<Application>> {
+  updateApplicationUsingPUTResponse(params: ApplicationControllerService.UpdateApplicationUsingPUTParams): __Observable<__StrictHttpResponse<Application>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -585,7 +585,7 @@ class ApplicationControllerService extends __BaseService {
     );
   }
   /**
-   * @param params The `ApplicationControllerService.UpdateApplicationUsingPUT1Params` containing the following parameters:
+   * @param params The `ApplicationControllerService.UpdateApplicationUsingPUTParams` containing the following parameters:
    *
    * - `applicationFamily`: applicationFamily
    *
@@ -593,8 +593,8 @@ class ApplicationControllerService extends __BaseService {
    *
    * @return OK
    */
-  updateApplicationUsingPUT1(params: ApplicationControllerService.UpdateApplicationUsingPUT1Params): __Observable<Application> {
-    return this.updateApplicationUsingPUT1Response(params).pipe(
+  updateApplicationUsingPUT(params: ApplicationControllerService.UpdateApplicationUsingPUTParams): __Observable<Application> {
+    return this.updateApplicationUsingPUTResponse(params).pipe(
       __map(_r => _r.body as Application)
     );
   }
@@ -2844,9 +2844,9 @@ module ApplicationControllerService {
   }
 
   /**
-   * Parameters for updateApplicationUsingPUT1
+   * Parameters for updateApplicationUsingPUT
    */
-  export interface UpdateApplicationUsingPUT1Params {
+  export interface UpdateApplicationUsingPUTParams {
 
     /**
      * applicationFamily
