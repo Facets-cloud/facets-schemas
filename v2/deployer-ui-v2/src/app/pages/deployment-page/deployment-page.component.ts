@@ -236,12 +236,12 @@ export class DeploymentPageComponent implements OnInit {
       return;
     }
 
-//    if (this.deployment.configurations.map(x => x.name).includes(data['name'])) {
-//      event.confirm.reject();
-//      this.nbToastrService.danger('Duplicate keys not allowed', 'Error');
-//    } else {
-//      event.confirm.resolve(event.newData);
-//    }
+    if (this.deployment.configurations.map(x => x.name).includes(data['name'])) {
+      event.confirm.reject();
+      this.nbToastrService.danger('Duplicate keys not allowed', 'Error');
+    } else {
+      event.confirm.resolve(event.newData);
+    }
 
     if (this.isZKPublishTrue(data['name'], data['value'])) {
       this.showWarningToastforPublish(10000);
@@ -278,11 +278,11 @@ export class DeploymentPageComponent implements OnInit {
   }
 
   onDeleteConfirm(event) {
-//    for (let i = 0; i < this.deployment.configurations.length; i++) {
-//      if (this.deployment.configurations[i].name === event.data['name']) {
-//        this.deployment.configurations.splice(i, 1);
-//      }
-//    }
+    for (let i = 0; i < this.deployment.configurations.length; i++) {
+      if (this.deployment.configurations[i].name === event.data['name']) {
+        this.deployment.configurations.splice(i, 1);
+      }
+    }
     event.confirm.resolve(event.data);
   }
 }
