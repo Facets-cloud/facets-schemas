@@ -354,11 +354,13 @@ public class ApplicationFacade {
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
             artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
+                    build.getDescription(),
                     BuildStrategy.PROD,
                     ReleaseType.RELEASE,
                     "deployer"));
             if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
                 artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
+                        build.getDescription(),
                         BuildStrategy.PROD,
                         ReleaseType.HOTFIX,
                         "deployer"));
@@ -464,8 +466,10 @@ public class ApplicationFacade {
             buildRepository.save(build);
             // change to webhook
             artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), build.getId(),
+                    build.getDescription(),
                     build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
-                    build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ? ReleaseType.HOTFIX : ReleaseType.RELEASE,
+                    build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ?
+                            ReleaseType.HOTFIX : ReleaseType.RELEASE,
                     "deployer"));
         }
     }
