@@ -236,7 +236,7 @@ export class DeploymentPageComponent implements OnInit {
       return;
     }
 
-    if (this.deployment.configurations.map(x => x.name).includes(data['name'])) {
+    if (this.deployment.configurations.map(x => x['name']).includes(data['name'])) {
       event.confirm.reject();
       this.nbToastrService.danger('Duplicate keys not allowed', 'Error');
     } else {
@@ -279,7 +279,7 @@ export class DeploymentPageComponent implements OnInit {
 
   onDeleteConfirm(event) {
     for (let i = 0; i < this.deployment.configurations.length; i++) {
-      if (this.deployment.configurations[i].name === event.data['name']) {
+      if (this.deployment.configurations[i]['name'] === event.data['name']) {
         this.deployment.configurations.splice(i, 1);
       }
     }
