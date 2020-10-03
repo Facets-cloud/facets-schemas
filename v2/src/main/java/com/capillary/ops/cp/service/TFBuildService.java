@@ -3,6 +3,7 @@ package com.capillary.ops.cp.service;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentContext;
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.TerraformChange;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
@@ -15,4 +16,6 @@ public interface TFBuildService {
     DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext);
 
     DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails);
+
+    List<TerraformChange> getTerraformChanges(String codeBuildId);
 }

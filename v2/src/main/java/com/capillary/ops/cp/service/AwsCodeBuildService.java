@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 @Loggable
 public class AwsCodeBuildService implements TFBuildService {
 
+    public static final String LOG_GROUP_NAME = "codebuild-test";
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
@@ -256,7 +257,6 @@ public class AwsCodeBuildService implements TFBuildService {
         if(deploymentLog.getStatus() != null && deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
             if(! loadBuildDetails) {
                 // reduce payload
-                deploymentLog.setBuildSummary(null);
                 deploymentLog.setChangesApplied(null);
             }
         }
@@ -272,22 +272,26 @@ public class AwsCodeBuildService implements TFBuildService {
             if (loadBuildDetails) {
                 String groupName = build.logs().groupName();
                 String streamName = build.logs().streamName();
-                CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
-                FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
-                        .limit(10000).logGroupName(groupName)
-                        .logStreamNames(streamName).filterPattern(" complete after ").build());
-                List<TerraformChange> terraformChanges = logEvents.events().stream()
-                        .filter(x -> !x.message().contains("module.overrides"))
-                        .map(x -> parseLogs(x.message()))
-                        .filter(x -> x != null).collect(Collectors.toList());
+                List<TerraformChange> terraformChanges = getTerraformChanges(groupName, streamName);
                 deploymentLog.setStatus(build.buildStatus());
                 deploymentLog.setChangesApplied(terraformChanges);
-                deploymentLog.setBuildSummary(getDeploymentReport(build.id()));
                 deploymentLogRepository.save(deploymentLog);
             }
         }
 
         return deploymentLog;
+    }
+
+    @Override
+    public List<TerraformChange> getTerraformChanges(String codeBuildId) {
+        CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
+        FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
+                .limit(10000).logGroupName(LOG_GROUP_NAME)
+                .logStreamNames(codeBuildId).filterPattern(" complete after ").build());
+        return logEvents.events().stream()
+                .filter(x -> !x.message().contains("module.overrides"))
+                .map(x -> parseLogs(x.message()))
+                .filter(x -> x != null).collect(Collectors.toList());
     }
 
     private TerraformChange parseLogs(String message) {

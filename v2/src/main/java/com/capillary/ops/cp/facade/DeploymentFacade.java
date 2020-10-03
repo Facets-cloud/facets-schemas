@@ -469,4 +469,19 @@ public class DeploymentFacade {
         List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(cluster.getId());
         return new DeploymentContext(cluster, allArtifacts, overrides, pinnedSnapshots);
     }
+
+    public void handleCodeBuildCallback(CodeBuildStatusCallback callback) {
+        Optional<DeploymentLog> deploymentLogOptional =
+                deploymentLogRepository.findOneByCodebuildId(callback.getCodebuidId());
+        if(!deploymentLogOptional.isPresent()) {
+            return;
+        }
+
+        DeploymentLog deploymentLog = deploymentLogOptional.get();
+        deploymentLog.setStatus(callback.getStatus());
+
+        List<TerraformChange> terraformChanges = tfBuildService.getTerraformChanges(callback.getCodebuidId());
+        deploymentLog.setChangesApplied(terraformChanges);
+        deploymentLogRepository.save(deploymentLog);
+    }
 }

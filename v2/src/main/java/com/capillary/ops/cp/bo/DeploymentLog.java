@@ -34,9 +34,6 @@ public class DeploymentLog {
 
     private StatusType status;
 
-    @Transient
-    private Map<String, Object> buildSummary;
-
     private DeploymentContext deploymentContext;
 
     List<TerraformChange> changesApplied;
@@ -95,14 +92,6 @@ public class DeploymentLog {
 
     public void setStatus(StatusType status) {
         this.status = status;
-    }
-
-    public Map<String, Object> getBuildSummary() {
-        return buildSummary;
-    }
-
-    public void setBuildSummary(Map<String, Object> buildSummary) {
-        this.buildSummary = buildSummary;
     }
 
     public DeploymentContext getDeploymentContext() {
