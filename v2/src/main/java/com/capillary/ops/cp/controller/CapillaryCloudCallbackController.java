@@ -5,8 +5,9 @@ import com.capillary.ops.cp.facade.DeploymentFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("cc/v1/callbacks")
-public class CallbackController {
+@RestController
+@RequestMapping("cc/v1/callbacks")
+public class CapillaryCloudCallbackController {
 
     @Autowired
     private DeploymentFacade deploymentFacade;
