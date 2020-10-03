@@ -286,7 +286,7 @@ public class AwsCodeBuildService implements TFBuildService {
         CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
         FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
                 .limit(10000).logGroupName(LOG_GROUP_NAME)
-                .logStreamNames(codeBuildId).filterPattern(" complete after ").build());
+                .logStreamNames(codeBuildId.replace(":", "/")).filterPattern(" complete after ").build());
         return logEvents.events().stream()
                 .filter(x -> !x.message().contains("module.overrides"))
                 .map(x -> parseLogs(x.message()))
