@@ -270,9 +270,8 @@ public class AwsCodeBuildService implements TFBuildService {
             deploymentLog.setStatus(build.buildStatus());
 
             if (loadBuildDetails) {
-                String groupName = build.logs().groupName();
                 String streamName = build.logs().streamName();
-                List<TerraformChange> terraformChanges = getTerraformChanges(groupName, streamName);
+                List<TerraformChange> terraformChanges = getTerraformChanges(streamName);
                 deploymentLog.setStatus(build.buildStatus());
                 deploymentLog.setChangesApplied(terraformChanges);
                 deploymentLogRepository.save(deploymentLog);
