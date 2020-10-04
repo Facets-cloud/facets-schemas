@@ -253,15 +253,8 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Override
     public DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails) {
-        // status is present in db, return as is
-        if(deploymentLog.getStatus() != null && deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
-            if(! loadBuildDetails) {
-                // reduce payload
-                deploymentLog.setChangesApplied(null);
-            }
-        }
-        // if not
-        else {
+        // status is not present in db
+        if(deploymentLog.getStatus() == null || deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
             CodeBuildClient codeBuildClient = getCodeBuildClient();
             BatchGetBuildsResponse batchGetBuildsResponse =
                     codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder()
@@ -276,6 +269,12 @@ public class AwsCodeBuildService implements TFBuildService {
                 deploymentLog.setChangesApplied(terraformChanges);
                 deploymentLogRepository.save(deploymentLog);
             }
+        }
+
+        if(! loadBuildDetails) {
+            // reduce payload
+            deploymentLog.setChangesApplied(null);
+            deploymentLog.setDeploymentContext(null);
         }
 
         return deploymentLog;
