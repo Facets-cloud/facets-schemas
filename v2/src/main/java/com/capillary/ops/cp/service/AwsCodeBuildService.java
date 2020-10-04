@@ -273,7 +273,7 @@ public class AwsCodeBuildService implements TFBuildService {
     @Override
     public DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails) {
         // status is not present in db
-        if(deploymentLog.getStatus() == null || deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
+        if(deploymentLog.getStatus() == null || deploymentLog.getStatus() == StatusType.IN_PROGRESS) {
             CodeBuildClient codeBuildClient = getCodeBuildClient();
             BatchGetBuildsResponse batchGetBuildsResponse =
                     codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder()
