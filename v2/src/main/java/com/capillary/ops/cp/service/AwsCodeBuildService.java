@@ -293,7 +293,7 @@ public class AwsCodeBuildService implements TFBuildService {
         if(! loadBuildDetails) {
             // reduce payload
             deploymentLog.setChangesApplied(null);
-            deploymentLog.setDeploymentContext(null);
+            //deploymentLog.setDeploymentContext(null);
         }
 
         return deploymentLog;
@@ -305,6 +305,7 @@ public class AwsCodeBuildService implements TFBuildService {
         FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
                 .limit(10000).logGroupName(LOG_GROUP_NAME)
                 .logStreamNames(codeBuildId.replace(":", "/")).filterPattern(" complete after ").build());
+
         return logEvents.events().stream()
                 .filter(x -> !x.message().contains("module.overrides"))
                 .map(x -> parseLogs(x.message()))

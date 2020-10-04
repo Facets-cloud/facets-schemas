@@ -34,8 +34,6 @@ public class DeploymentLog {
 
     private StatusType status;
 
-    private DeploymentContext deploymentContext;
-
     List<TerraformChange> changesApplied;
 
     public String getId() {
@@ -92,14 +90,6 @@ public class DeploymentLog {
 
     public void setStatus(StatusType status) {
         this.status = status;
-    }
-
-    public DeploymentContext getDeploymentContext() {
-        return deploymentContext;
-    }
-
-    public void setDeploymentContext(DeploymentContext deploymentContext) {
-        this.deploymentContext = deploymentContext;
     }
 
     public List<TerraformChange> getChangesApplied() {
