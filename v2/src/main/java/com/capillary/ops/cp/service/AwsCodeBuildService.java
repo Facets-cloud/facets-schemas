@@ -3,14 +3,20 @@ package com.capillary.ops.cp.service;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
 import de.flapdoodle.embed.process.io.file.Files;
@@ -21,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
@@ -33,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -196,6 +204,7 @@ public class AwsCodeBuildService implements TFBuildService {
                             )
                     .secondarySourcesVersionOverride(secondarySourceVersion)
                     .sourceVersion(primarySourceVersion)
+                    .buildspecOverride(getBuildSpec(deploymentRequest))
                     .build();
 
         ListBuildsForProjectRequest listBuildsForProjectRequest =
@@ -356,6 +365,29 @@ public class AwsCodeBuildService implements TFBuildService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private String getBuildSpec(DeploymentRequest deploymentRequest) {
+        try {
+            String buildSpecYaml =
+                CharStreams.toString(
+                    new InputStreamReader(
+                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                            Charsets.UTF_8));
+            if(deploymentRequest.getOverrideBuildSteps() == null ||
+                    deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                return buildSpecYaml;
+            }
+            Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
+            (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
+                    .put("commands", deploymentRequest.getOverrideBuildSteps());
+            YAMLMapper yamlMapper = new YAMLMapper();
+            yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
+            yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
+            return yamlMapper.writeValueAsString(buildSpec);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

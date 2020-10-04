@@ -17,6 +17,8 @@ public class DeploymentRequest {
 
     private List<EnvironmentVariable> extraEnv = new ArrayList<>();
 
+    private List<String> overrideBuildSteps = new ArrayList<>();
+
     public String getId() {
         return id;
     }
@@ -47,5 +49,13 @@ public class DeploymentRequest {
 
     public void setExtraEnv(List<EnvironmentVariable> extraEnv) {
         this.extraEnv = extraEnv;
+    }
+
+    public List<String> getOverrideBuildSteps() {
+        return overrideBuildSteps;
+    }
+
+    public void setOverrideBuildSteps(List<String> overrideBuildSteps) {
+        this.overrideBuildSteps = overrideBuildSteps;
     }
 }
