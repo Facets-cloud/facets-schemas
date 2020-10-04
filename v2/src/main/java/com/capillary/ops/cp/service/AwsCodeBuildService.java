@@ -3,16 +3,23 @@ package com.capillary.ops.cp.service;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
+import de.flapdoodle.embed.process.io.file.Files;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
@@ -20,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
@@ -29,11 +37,17 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * CodeBuild service to trigger TF Builds.
@@ -42,6 +56,8 @@ import java.util.stream.Collectors;
 @Loggable
 public class AwsCodeBuildService implements TFBuildService {
 
+    public static final String LOG_GROUP_NAME = "codebuild-test";
+    public static final String CC_STACK_SOURCE = "cc-stack-source";
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
@@ -178,13 +194,17 @@ public class AwsCodeBuildService implements TFBuildService {
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
-                    .secondarySourcesOverride(ProjectSource.builder()
+                    .secondarySourcesOverride(
+                            ProjectSource.builder()
                             .type(SourceType.valueOf(stack.getVcs().name()))
                             .location(stack.getVcsUrl())
                             .sourceIdentifier("STACK")
-                            .build())
+                            .build(),
+                            getDeploymentContextSource(deploymentContext)
+                            )
                     .secondarySourcesVersionOverride(secondarySourceVersion)
                     .sourceVersion(primarySourceVersion)
+                    .buildspecOverride(getBuildSpec(deploymentRequest))
                     .build();
 
         ListBuildsForProjectRequest listBuildsForProjectRequest =
@@ -252,16 +272,8 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Override
     public DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails) {
-        // status is present in db, return as is
-        if(deploymentLog.getStatus() != null && deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
-            if(! loadBuildDetails) {
-                // reduce payload
-                deploymentLog.setBuildSummary(null);
-                deploymentLog.setChangesApplied(null);
-            }
-        }
-        // if not
-        else {
+        // status is not present in db
+        if(deploymentLog.getStatus() == null || deploymentLog.getStatus() != StatusType.IN_PROGRESS) {
             CodeBuildClient codeBuildClient = getCodeBuildClient();
             BatchGetBuildsResponse batchGetBuildsResponse =
                     codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder()
@@ -270,24 +282,33 @@ public class AwsCodeBuildService implements TFBuildService {
             deploymentLog.setStatus(build.buildStatus());
 
             if (loadBuildDetails) {
-                String groupName = build.logs().groupName();
                 String streamName = build.logs().streamName();
-                CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
-                FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
-                        .limit(10000).logGroupName(groupName)
-                        .logStreamNames(streamName).filterPattern(" complete after ").build());
-                List<TerraformChange> terraformChanges = logEvents.events().stream()
-                        .filter(x -> !x.message().contains("module.overrides"))
-                        .map(x -> parseLogs(x.message()))
-                        .filter(x -> x != null).collect(Collectors.toList());
+                List<TerraformChange> terraformChanges = getTerraformChanges(streamName);
                 deploymentLog.setStatus(build.buildStatus());
                 deploymentLog.setChangesApplied(terraformChanges);
-                deploymentLog.setBuildSummary(getDeploymentReport(build.id()));
                 deploymentLogRepository.save(deploymentLog);
             }
         }
 
+        if(! loadBuildDetails) {
+            // reduce payload
+            deploymentLog.setChangesApplied(null);
+            deploymentLog.setDeploymentContext(null);
+        }
+
         return deploymentLog;
+    }
+
+    @Override
+    public List<TerraformChange> getTerraformChanges(String codeBuildId) {
+        CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
+        FilterLogEventsResponse logEvents = cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
+                .limit(10000).logGroupName(LOG_GROUP_NAME)
+                .logStreamNames(codeBuildId.replace(":", "/")).filterPattern(" complete after ").build());
+        return logEvents.events().stream()
+                .filter(x -> !x.message().contains("module.overrides"))
+                .map(x -> parseLogs(x.message()))
+                .filter(x -> x != null).collect(Collectors.toList());
     }
 
     private TerraformChange parseLogs(String message) {
@@ -321,6 +342,52 @@ public class AwsCodeBuildService implements TFBuildService {
     private CloudWatchLogsClient getCloudWatchLogsClient() {
         return CloudWatchLogsClient.builder().region(BUILD_REGION).credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
+    }
+
+    private ProjectSource getDeploymentContextSource(DeploymentContext deploymentContext) {
+        String deploymentContextJson = new Gson().toJson(deploymentContext);
+        try {
+            File tempFile = Files.createTempFile(UUID.randomUUID().toString() + ".zip");
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempFile));
+            ZipEntry e = new ZipEntry("deploymentcontext.json");
+            out.putNextEntry(e);
+            byte[] data = deploymentContextJson.getBytes();
+            out.write(data, 0, data.length);
+            out.closeEntry();
+            out.close();
+            AmazonS3 amazonS3 =
+                    AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+            amazonS3.putObject(CC_STACK_SOURCE, tempFile.getName(), tempFile);
+            return ProjectSource.builder().type(SourceType.S3)
+                    .location(CC_STACK_SOURCE + "/" + tempFile.getName())
+                    .sourceIdentifier("DEPLOYMENT_CONTEXT").build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private String getBuildSpec(DeploymentRequest deploymentRequest) {
+        try {
+            String buildSpecYaml =
+                CharStreams.toString(
+                    new InputStreamReader(
+                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                            Charsets.UTF_8));
+            if(deploymentRequest.getOverrideBuildSteps() == null ||
+                    deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                return buildSpecYaml;
+            }
+            Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
+            (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
+                    .put("commands", deploymentRequest.getOverrideBuildSteps());
+            YAMLMapper yamlMapper = new YAMLMapper();
+            yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
+            yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
+            return yamlMapper.writeValueAsString(buildSpec);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
