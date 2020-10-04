@@ -340,7 +340,7 @@ public class AwsCodeBuildService implements TFBuildService {
         try {
             File tempFile = Files.createTempFile(UUID.randomUUID().toString() + ".zip");
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempFile));
-            ZipEntry e = new ZipEntry("mytext.txt");
+            ZipEntry e = new ZipEntry("deploymentcontext.json");
             out.putNextEntry(e);
             byte[] data = deploymentContextJson.getBytes();
             out.write(data, 0, data.length);
