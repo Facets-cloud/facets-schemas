@@ -13,6 +13,7 @@ import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
+import de.flapdoodle.embed.process.io.file.Files;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
@@ -29,11 +30,16 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * CodeBuild service to trigger TF Builds.
@@ -43,6 +49,7 @@ import java.util.stream.Collectors;
 public class AwsCodeBuildService implements TFBuildService {
 
     public static final String LOG_GROUP_NAME = "codebuild-test";
+    public static final String CC_STACK_SOURCE = "cc-stack-source";
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
@@ -179,11 +186,14 @@ public class AwsCodeBuildService implements TFBuildService {
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
-                    .secondarySourcesOverride(ProjectSource.builder()
+                    .secondarySourcesOverride(
+                            ProjectSource.builder()
                             .type(SourceType.valueOf(stack.getVcs().name()))
                             .location(stack.getVcsUrl())
                             .sourceIdentifier("STACK")
-                            .build())
+                            .build(),
+                            getDeploymentContextSource(deploymentContext)
+                            )
                     .secondarySourcesVersionOverride(secondarySourceVersion)
                     .sourceVersion(primarySourceVersion)
                     .build();
@@ -323,6 +333,29 @@ public class AwsCodeBuildService implements TFBuildService {
     private CloudWatchLogsClient getCloudWatchLogsClient() {
         return CloudWatchLogsClient.builder().region(BUILD_REGION).credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
+    }
+
+    private ProjectSource getDeploymentContextSource(DeploymentContext deploymentContext) {
+        String deploymentContextJson = new Gson().toJson(deploymentContext);
+        try {
+            File tempFile = Files.createTempFile(UUID.randomUUID().toString() + ".zip");
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempFile));
+            ZipEntry e = new ZipEntry("mytext.txt");
+            out.putNextEntry(e);
+            byte[] data = deploymentContextJson.getBytes();
+            out.write(data, 0, data.length);
+            out.closeEntry();
+            out.close();
+            AmazonS3 amazonS3 =
+                    AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+            amazonS3.putObject(CC_STACK_SOURCE, tempFile.getName(), tempFile);
+            return ProjectSource.builder().type(SourceType.S3)
+                    .location(CC_STACK_SOURCE + "/" + tempFile.getName())
+                    .sourceIdentifier("DEPLOYMENT_CONTEXT").build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }
