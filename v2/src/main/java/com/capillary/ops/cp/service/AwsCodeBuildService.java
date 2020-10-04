@@ -235,7 +235,7 @@ public class AwsCodeBuildService implements TFBuildService {
             log.setDescription(deploymentRequest.getTag());
             log.setReleaseType(deploymentRequest.getReleaseType());
             log.setCreatedOn(new Date());
-            log.setDeploymentContext(deploymentContext);
+            //log.setDeploymentContext(deploymentContext);
             return deploymentLogRepository.save(log);
 
         } catch (ResourceNotFoundException ex) {
