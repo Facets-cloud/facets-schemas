@@ -465,12 +465,16 @@ public class ApplicationFacade {
             }
             buildRepository.save(build);
             // change to webhook
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), build.getId(),
-                    build.getDescription(),
-                    build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
-                    build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ?
-                            ReleaseType.HOTFIX : ReleaseType.RELEASE,
-                    "deployer"));
+            if(StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) &&
+                    ! build.isTestBuild() &&
+                    !StringUtils.isEmpty(build.getImage())) {
+                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), build.getId(),
+                        build.getDescription(),
+                        build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
+                        build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ?
+                                ReleaseType.HOTFIX : ReleaseType.RELEASE,
+                        "deployer"));
+            }
         }
     }
 
