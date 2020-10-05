@@ -288,7 +288,7 @@ public class AwsCodeBuildService implements TFBuildService {
                 deploymentLog.setChangesApplied(terraformChanges);
                 Map<String, Artifact> artifactMap = getDeploymentReport(build.id());
                 List<AppDeployment> appDeployments = terraformChanges.stream()
-                        .filter(x -> x.getResourcePath().equalsIgnoreCase("module.application.helm_release"))
+                        .filter(x -> x.getResourcePath().contains("module.application.helm_release"))
                         .map(x -> new AppDeployment(x.getResourceKey(), artifactMap.get(x.getResourceKey())))
                         .collect(Collectors.toList());
                 deploymentLog.setAppDeployments(appDeployments);
