@@ -36,6 +36,8 @@ public class DeploymentLog {
 
     List<TerraformChange> changesApplied;
 
+    List<AppDeployment> appDeployments;
+
     public String getId() {
         return id;
     }
@@ -98,5 +100,13 @@ public class DeploymentLog {
 
     public void setChangesApplied(List<TerraformChange> changesApplied) {
         this.changesApplied = changesApplied;
+    }
+
+    public List<AppDeployment> getAppDeployments() {
+        return appDeployments;
+    }
+
+    public void setAppDeployments(List<AppDeployment> appDeployments) {
+        this.appDeployments = appDeployments;
     }
 }

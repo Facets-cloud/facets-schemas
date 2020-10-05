@@ -476,12 +476,6 @@ public class DeploymentFacade {
         if(!deploymentLogOptional.isPresent()) {
             return;
         }
-
-        DeploymentLog deploymentLog = deploymentLogOptional.get();
-        deploymentLog.setStatus(callback.getStatus());
-
-        List<TerraformChange> terraformChanges = tfBuildService.getTerraformChanges(callback.getCodebuidId());
-        deploymentLog.setChangesApplied(terraformChanges);
-        deploymentLogRepository.save(deploymentLog);
+        tfBuildService.loadDeploymentStatus(deploymentLogOptional.get(), true);
     }
 }

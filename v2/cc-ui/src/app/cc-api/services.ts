@@ -6,6 +6,7 @@ export { UiCommonClusterControllerService } from './services/ui-common-cluster-c
 export { UiStackControllerService } from './services/ui-stack-controller.service';
 export { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 export { BuildControllerService } from './services/build-controller.service';
+export { CapillaryCloudCallbackControllerService } from './services/capillary-cloud-callback-controller.service';
 export { CommonClusterControllerService } from './services/common-cluster-controller.service';
 export { DeploymentControllerService } from './services/deployment-controller.service';
 export { StackControllerService } from './services/stack-controller.service';

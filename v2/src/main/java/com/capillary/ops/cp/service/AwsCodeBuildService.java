@@ -259,10 +259,10 @@ public class AwsCodeBuildService implements TFBuildService {
 //    }
 //
 //    @Override
-    private Map<String, Object> getDeploymentReport(String runId) {
+    private Map<String, Artifact> getDeploymentReport(String runId) {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
         try {
-            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/report.json", runId.split(":")[1]);
+            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/artifacts.json", runId.split(":")[1]);
             String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
             return new Gson().fromJson(report, HashMap.class);
         } catch (Throwable e) {
@@ -281,11 +281,17 @@ public class AwsCodeBuildService implements TFBuildService {
             Build build = batchGetBuildsResponse.builds().get(0);
             deploymentLog.setStatus(build.buildStatus());
 
-            if (loadBuildDetails) {
+            if (loadBuildDetails && !build.buildStatus().equals(StatusType.IN_PROGRESS)) {
                 String streamName = build.logs().streamName();
                 List<TerraformChange> terraformChanges = getTerraformChanges(streamName);
                 deploymentLog.setStatus(build.buildStatus());
                 deploymentLog.setChangesApplied(terraformChanges);
+                Map<String, Artifact> artifactMap = getDeploymentReport(build.id());
+                List<AppDeployment> appDeployments = terraformChanges.stream()
+                        .filter(x -> x.getResourcePath().equalsIgnoreCase("module.application.helm_release"))
+                        .map(x -> new AppDeployment(x.getResourceKey(), artifactMap.get(x.getResourceKey())))
+                        .collect(Collectors.toList());
+                deploymentLog.setAppDeployments(appDeployments);
                 deploymentLogRepository.save(deploymentLog);
             }
         }
@@ -293,6 +299,7 @@ public class AwsCodeBuildService implements TFBuildService {
         if(! loadBuildDetails) {
             // reduce payload
             deploymentLog.setChangesApplied(null);
+            deploymentLog.setAppDeployments(null);
             //deploymentLog.setDeploymentContext(null);
         }
 
@@ -306,10 +313,14 @@ public class AwsCodeBuildService implements TFBuildService {
                 .limit(10000).logGroupName(LOG_GROUP_NAME)
                 .logStreamNames(codeBuildId.replace(":", "/")).filterPattern(" complete after ").build());
 
-        return logEvents.events().stream()
+        List<TerraformChange> changes = logEvents.events().stream()
                 .filter(x -> !x.message().contains("module.overrides"))
+                .filter(x -> !x.message().contains("module.application.null_resource.modified_applications"))
+                .filter(x -> !x.message().contains("module.infra.module.ingress.kubernetes_secret.ingress-auth"))
+                .filter(x -> !x.message().contains("module.application.null_resource.qa_deployment"))
                 .map(x -> parseLogs(x.message()))
                 .filter(x -> x != null).collect(Collectors.toList());
+        return changes;
     }
 
     private TerraformChange parseLogs(String message) {

@@ -11,6 +11,7 @@ import { UiCommonClusterControllerService } from './services/ui-common-cluster-c
 import { UiStackControllerService } from './services/ui-stack-controller.service';
 import { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 import { BuildControllerService } from './services/build-controller.service';
+import { CapillaryCloudCallbackControllerService } from './services/capillary-cloud-callback-controller.service';
 import { CommonClusterControllerService } from './services/common-cluster-controller.service';
 import { DeploymentControllerService } from './services/deployment-controller.service';
 import { StackControllerService } from './services/stack-controller.service';
@@ -37,6 +38,7 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     UiStackControllerService,
     AwsClusterControllerService,
     BuildControllerService,
+    CapillaryCloudCallbackControllerService,
     CommonClusterControllerService,
     DeploymentControllerService,
     StackControllerService,
