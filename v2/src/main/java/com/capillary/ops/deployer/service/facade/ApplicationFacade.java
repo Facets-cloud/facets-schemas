@@ -353,14 +353,14 @@ public class ApplicationFacade {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
-                    build.getDescription(),
+            artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
+                    existingBuild.getDescription(),
                     BuildStrategy.PROD,
                     ReleaseType.RELEASE,
                     "deployer"));
             if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
-                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
-                        build.getDescription(),
+                artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
+                        existingBuild.getDescription(),
                         BuildStrategy.PROD,
                         ReleaseType.HOTFIX,
                         "deployer"));
