@@ -2,7 +2,9 @@ package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
+import com.capillary.ops.cp.facade.SubscriptionFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ import java.util.List;
 @RequestMapping("cc-ui/v1/stacks/")
 @Loggable()
 public class UiStackController {
+
+    @Autowired
+    private SubscriptionFacade subscriptionFacade;
 
     @Autowired
     StackController stackController;
@@ -61,4 +66,18 @@ public class UiStackController {
     public Stack getStack(@PathVariable String stackName) {
         return stackController.getStack(stackName);
     }
+
+    @GetMapping("{stackName}/notification/subscriptions")
+    //@PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
+    public List<Subscription> getAllSubscriptions(@PathVariable String stackName) {
+        return subscriptionFacade.getAllSubscriptions(stackName);
+    }
+
+    @PostMapping("{stackName}/notification/subscriptions")
+    //@PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
+    public Subscription createSubscription(@PathVariable String stackName, @RequestBody Subscription subscription) {
+        subscription.setStackName(stackName);
+        return subscriptionFacade.createSubscription(subscription);
+    }
+
 }
