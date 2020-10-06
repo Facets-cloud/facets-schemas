@@ -18,6 +18,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jcabi.aspects.Loggable;
 import de.flapdoodle.embed.process.io.file.Files;
 import org.apache.commons.io.IOUtils;
@@ -264,7 +265,7 @@ public class AwsCodeBuildService implements TFBuildService {
         try {
             String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/artifacts.json", runId.split(":")[1]);
             String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
-            return new Gson().fromJson(report, HashMap.class);
+            return new Gson().fromJson(report, new TypeToken<Map<String, Artifact>>(){}.getType());
         } catch (Throwable e) {
             return new HashMap<>();
         }
