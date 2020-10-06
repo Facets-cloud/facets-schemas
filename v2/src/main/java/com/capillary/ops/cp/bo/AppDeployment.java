@@ -1,5 +1,7 @@
 package com.capillary.ops.cp.bo;
 
+import java.util.Objects;
+
 public class AppDeployment {
     private String appName;
 
@@ -27,5 +29,19 @@ public class AppDeployment {
 
     public void setArtifact(Artifact artifact) {
         this.artifact = artifact;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AppDeployment that = (AppDeployment) o;
+        return appName.equals(that.appName) &&
+                artifact.equals(that.artifact);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(appName, artifact);
     }
 }
