@@ -187,11 +187,17 @@ public class KubernetesService implements IKubernetesService {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         ByteArrayOutputStream os = new ByteArrayOutputStream(1024);
         logger.info("executing command: {} on pod: {}", command, podName);
+        Pod pod = kubernetesClient
+                .pods()
+                .inNamespace(NAMESPACE)
+                .withName(podName).get();
+        String appLabel = pod.getMetadata().getLabels().get("app");
         try (ExecWatch watch =
                      kubernetesClient
                              .pods()
                              .inNamespace(NAMESPACE)
                              .withName(podName)
+                             .inContainer(appLabel)
                              .readingInput(System.in)
                              .writingOutput(os)
                              .writingError(System.err)
@@ -228,7 +234,8 @@ public class KubernetesService implements IKubernetesService {
     }
 
     @Override
-    public void haltApplication(String deploymentName, Environment environment) {
+    public void
+    haltApplication(String deploymentName, Environment environment) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         Deployment deployment = kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).get();
         if(deployment.getSpec().getReplicas() > 0) {

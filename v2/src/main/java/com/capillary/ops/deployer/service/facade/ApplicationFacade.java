@@ -985,7 +985,7 @@ public class ApplicationFacade {
 
     public boolean shutdownApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        Environment environment = getEnvironmentWithCCFallback(applicationFamily, environmentName);
         String releaseName = helmService.getReleaseName(application, environment);
         kubernetesService.haltApplication(releaseName, environment);
         return true;
@@ -993,7 +993,7 @@ public class ApplicationFacade {
 
     public boolean resumeApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        Environment environment = getEnvironmentWithCCFallback(applicationFamily, environmentName);
         String releaseName = helmService.getReleaseName(application, environment);
         kubernetesService.resumeApplication(releaseName, environment);
         return true;
