@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Objects;
+
 @Document
 @CompoundIndex(def = "{'applicationName':1, 'artifactory': 1, 'releaseStream':1, 'releaseType':1}", name = "per_app_one_build")
 public class Artifact {
@@ -95,5 +97,18 @@ public class Artifact {
 
     public void setBuildDescription(String buildDescription) {
         this.buildDescription = buildDescription;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Artifact artifact = (Artifact) o;
+        return artifactUri.equals(artifact.artifactUri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(artifactUri);
     }
 }

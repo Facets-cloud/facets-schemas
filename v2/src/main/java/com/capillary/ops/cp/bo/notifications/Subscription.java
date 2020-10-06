@@ -1,6 +1,8 @@
 package com.capillary.ops.cp.bo.notifications;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -11,6 +13,8 @@ public class Subscription {
   @Id
   private String id;
 
+  private String stackName;
+
   // Eg. FLOCK, EMAIL
   private ChannelType channelType;
 
@@ -18,11 +22,11 @@ public class Subscription {
   private String channelAddress;
 
   // Eg BUILD, DEPLOYMENT, BUILD_PROMOTION
-  private EventType eventType;
+  private NotificationType notificationType;
 
-  private Map<String, String> eventScopes;
+  private String notificationSubject;
 
-  private String eventPrincipal;
+  private Map<NotificationTag, List<String>> filters;
 
   public String getId() {
     return id;
@@ -48,27 +52,35 @@ public class Subscription {
     this.channelAddress = channelAddress;
   }
 
-  public EventType getEventType() {
-    return eventType;
+  public NotificationType getNotificationType() {
+    return notificationType;
   }
 
-  public void setEventType(EventType eventType) {
-    this.eventType = eventType;
+  public void setNotificationType(NotificationType notificationType) {
+    this.notificationType = notificationType;
   }
 
-  public Map<String, String> getEventScopes() {
-    return eventScopes;
+  public String getStackName() {
+    return stackName;
   }
 
-  public void setEventScopes(Map<String, String> eventScopes) {
-    this.eventScopes = eventScopes;
+  public void setStackName(String stackName) {
+    this.stackName = stackName;
   }
 
-  public String getEventPrincipal() {
-    return eventPrincipal;
+  public String getNotificationSubject() {
+    return notificationSubject;
   }
 
-  public void setEventPrincipal(String eventPrincipal) {
-    this.eventPrincipal = eventPrincipal;
+  public void setNotificationSubject(String notificationSubject) {
+    this.notificationSubject = notificationSubject;
+  }
+
+  public Map<NotificationTag, List<String>> getFilters() {
+    return filters;
+  }
+
+  public void setFilters(Map<NotificationTag, List<String>> filters) {
+    this.filters = filters;
   }
 }

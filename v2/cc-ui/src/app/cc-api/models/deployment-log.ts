@@ -1,6 +1,9 @@
 /* tslint:disable */
+import { AppDeployment } from './app-deployment';
+import { TerraformChange } from './terraform-change';
 export interface DeploymentLog {
-  buildSummary?: {};
+  appDeployments?: Array<AppDeployment>;
+  changesApplied?: Array<TerraformChange>;
   codebuildId?: string;
   createdOn?: string;
   description?: string;

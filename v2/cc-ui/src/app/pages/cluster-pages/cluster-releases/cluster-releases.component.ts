@@ -36,12 +36,8 @@ export class ClusterReleasesComponent implements OnInit {
   showDetails(dialog, deploymentId) {
     this.deploymentController.getDeploymentUsingGET({deploymentId: deploymentId, clusterId: this.clusterId}).subscribe(
       d => this.dialogService.open(dialog, { context: {
-        statefulset_builds: d.buildSummary["builds"]["statefulset"]["success"],
-        application_builds: d.buildSummary["builds"]["application"]["success"],
-        cronjob_builds: d.buildSummary["builds"]["cronjob"]["success"],
-        bootstrap_job_builds: d.buildSummary["builds"]["bootstrap_job"]["success"],
-        serverless_builds: d.buildSummary["builds"]["serverless"]["success"],
-        qasuite_builds: d.buildSummary["builds"]["qasuites"]["success"],
+        changes: d.changesApplied,
+        appDeployments: d.appDeployments
       } }),
     );
   }

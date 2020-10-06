@@ -353,14 +353,14 @@ public class ApplicationFacade {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
-            artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
-                    build.getDescription(),
+            artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
+                    existingBuild.getDescription(),
                     BuildStrategy.PROD,
                     ReleaseType.RELEASE,
                     "deployer"));
             if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
-                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), buildId,
-                        build.getDescription(),
+                artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
+                        existingBuild.getDescription(),
                         BuildStrategy.PROD,
                         ReleaseType.HOTFIX,
                         "deployer"));
@@ -985,7 +985,7 @@ public class ApplicationFacade {
 
     public boolean shutdownApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        Environment environment = getEnvironmentWithCCFallback(applicationFamily, environmentName);
         String releaseName = helmService.getReleaseName(application, environment);
         kubernetesService.haltApplication(releaseName, environment);
         return true;
@@ -993,7 +993,7 @@ public class ApplicationFacade {
 
     public boolean resumeApplication(ApplicationFamily applicationFamily, String applicationId, String environmentName) {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
-        Environment environment = environmentRepository.findOneByEnvironmentMetaDataApplicationFamilyAndEnvironmentMetaDataName(applicationFamily, environmentName).get();
+        Environment environment = getEnvironmentWithCCFallback(applicationFamily, environmentName);
         String releaseName = helmService.getReleaseName(application, environment);
         kubernetesService.resumeApplication(releaseName, environment);
         return true;

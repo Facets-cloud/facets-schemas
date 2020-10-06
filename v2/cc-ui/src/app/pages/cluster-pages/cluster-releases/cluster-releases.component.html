@@ -37,24 +37,41 @@
     <nb-card-header>Release Details</nb-card-header>
     <nb-card-body>
       <nb-tabset>
-        <nb-tab tabTitle="Applications">
+        <nb-tab tabTitle="Applications Deployed">
           <div style="text-align: center;" class="table-responsive">
             <table class="table table-bordered">
               <tr>
                 <th class="vert-center" scope="col">Name</th>
+                <th class="vert-center" scope="col">Artifact</th>
                 <th class="vert-center" scope="col">Build Id</th>
-                <th class="vert-center" scope="col">Build Description</th>
               </tr>
-              <tr *ngFor="let item of data.application_builds | keyvalue">
-                <td class="vert-center" scope="col">{{item.key}}</td>
-                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
-                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
+              <tr *ngFor="let item of data.appDeployments">
+                <td class="vert-center" scope="col">{{item.appName}}</td>
+                <td class="vert-center" scope="col">{{item.artifact.artifactUri}}</td>
+                <td class="vert-center" scope="col">{{item.artifact.buildId}}</td>
               </tr>
             </table>
           </div>
         </nb-tab>
 
-        <nb-tab tabTitle="Statefulsets">
+        <nb-tab tabTitle="All Changes">
+          <div style="text-align: center;" class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th class="vert-center" scope="col">Resource Path</th>
+                <th class="vert-center" scope="col">Resource Key</th>
+                <th class="vert-center" scope="col">Change Type</th>
+              </tr>
+              <tr *ngFor="let item of data.changes">
+                <td class="vert-center" scope="col">{{item.resourcePath}}</td>
+                <td class="vert-center" scope="col">{{item.resourceKey}}</td>
+                <td class="vert-center" scope="col">{{item.type}}</td>
+              </tr>
+            </table>
+          </div>
+        </nb-tab>
+
+        <!-- <nb-tab tabTitle="Statefulsets">
           <div style="text-align: center;" class="table-responsive">
             <table class="table table-bordered">
               <tr>
@@ -137,7 +154,7 @@
               </tr>
             </table>
           </div>
-        </nb-tab>
+        </nb-tab> -->
       </nb-tabset>
     </nb-card-body>
   </nb-card>

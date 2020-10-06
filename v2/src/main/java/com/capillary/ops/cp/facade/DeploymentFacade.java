@@ -3,6 +3,7 @@ package com.capillary.ops.cp.facade;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.requests.*;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
@@ -15,6 +16,7 @@ import com.capillary.ops.cp.service.BaseDRService;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
+import com.capillary.ops.cp.service.notification.NotificationService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
@@ -85,6 +87,9 @@ public class DeploymentFacade {
 
     @Autowired
     private BaseDRService baseDRService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -476,12 +481,10 @@ public class DeploymentFacade {
         if(!deploymentLogOptional.isPresent()) {
             return;
         }
-
         DeploymentLog deploymentLog = deploymentLogOptional.get();
-        deploymentLog.setStatus(callback.getStatus());
-
-        List<TerraformChange> terraformChanges = tfBuildService.getTerraformChanges(callback.getCodebuidId());
-        deploymentLog.setChangesApplied(terraformChanges);
-        deploymentLogRepository.save(deploymentLog);
+        AbstractCluster cluster = clusterFacade.getCluster(deploymentLog.getClusterId());
+        deploymentLog = tfBuildService.loadDeploymentStatus(deploymentLog, true);
+        deploymentLog.getAppDeployments().stream().forEach(
+                x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
     }
 }
