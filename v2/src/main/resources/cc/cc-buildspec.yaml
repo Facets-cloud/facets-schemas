@@ -17,8 +17,8 @@ phases:
       - terraform apply -target module.overrides -auto-approve -no-color -parallelism=30
   build:
     commands:
-      - terraform apply -target module.infra -auto-approve -no-color -parallelism=10
-      - terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=10
+      - terraform apply -target module.infra -auto-approve -no-color -parallelism=20
+      - terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20
   post_build:
     commands:
       - python3 scripts/report.py
