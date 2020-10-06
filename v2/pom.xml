@@ -269,6 +269,7 @@
                     <pushReleases>false</pushReleases>
                     <enableFeatureVersions>true</enableFeatureVersions>
                     <noReleaseBuild>true</noReleaseBuild>
+                    <noHotfixBuild>true</noHotfixBuild>
                     <flowInitContext>
                         <masterBranchName>production</masterBranchName>
                         <developBranchName>master</developBranchName>
