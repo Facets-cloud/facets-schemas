@@ -310,6 +310,7 @@ public class AwsCodeBuildService implements TFBuildService {
                         .distinct()
                         .collect(Collectors.toList());
                 deploymentLog.setAppDeployments(appDeployments);
+                deploymentLog.setTfVersion(build.resolvedSourceVersion());
                 deploymentLogRepository.save(deploymentLog);
             }
         }

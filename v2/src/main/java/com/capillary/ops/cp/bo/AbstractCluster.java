@@ -157,6 +157,9 @@ public abstract class AbstractCluster {
     }
 
     public Boolean getRequireSignOff() {
+        if(requireSignOff == null) {
+            return false;
+        }
         return requireSignOff;
     }
 
