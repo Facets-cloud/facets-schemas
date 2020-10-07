@@ -487,4 +487,14 @@ public class DeploymentFacade {
         deploymentLog.getAppDeployments().stream().forEach(
                 x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
     }
+
+    public DeploymentLog signOff(String clusterId, String deploymentId) {
+        DeploymentLog deploymentLog = deploymentLogRepository.findById(deploymentId).get();
+        if(deploymentLog.getStatus().equals(StatusType.SUCCEEDED)) {
+            deploymentLog.setSignedOff(true);
+            return deploymentLogRepository.save(deploymentLog);
+        } else {
+            throw new RuntimeException("Cannot signoff failed deployment");
+        }
+    }
 }

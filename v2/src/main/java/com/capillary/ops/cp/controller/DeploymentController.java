@@ -103,4 +103,9 @@ public class DeploymentController {
             @Valid @RequestBody QASuiteResult qaSuiteResult) throws Exception {
         deploymentFacade.validateSanityResult(clusterId, qaSuiteResult);
     }
+
+    @PutMapping("/{deploymentId}/signoff")
+    DeploymentLog signOffDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
+        return deploymentFacade.signOff(clusterId, deploymentId);
+    }
 }

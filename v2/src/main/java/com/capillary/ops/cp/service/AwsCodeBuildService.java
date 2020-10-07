@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -170,24 +171,29 @@ public class AwsCodeBuildService implements TFBuildService {
 
 
         if (cluster.getCdPipelineParent() != null) {
-            Boolean fetchedSourceVersions = false;
-            List<DeploymentLog> pipelineParentDeployments =
-                    deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(cluster.getCdPipelineParent());
-            for (DeploymentLog d: pipelineParentDeployments) {
-                Build build = getBuild(d.getCodebuildId());
-                if (StatusType.SUCCEEDED.equals(build.buildStatus())) {
-                    primarySourceVersion = build.resolvedSourceVersion();
-                    String stackSourceVersion = build.secondarySourceVersions().stream()
-                            .filter(x -> "STACK".equalsIgnoreCase(x.sourceIdentifier()))
-                            .findFirst().get().sourceVersion();
-                    secondarySourceVersion =
-                            ProjectSourceVersion.builder().sourceIdentifier("STACK")
-                                    .sourceVersion(stackSourceVersion).build();
-                    fetchedSourceVersions= true;
-                    break;
-                }
+            Optional<DeploymentLog> pipelineParentDeploymentOptional = Optional.empty();
+            if(cluster.getRequireSignOff()) {
+                pipelineParentDeploymentOptional =
+                        deploymentLogRepository.findOneByClusterIdAndStatusAndDeploymentTypeAndSignedOff(cluster.getCdPipelineParent(),
+                                StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
+            } else {
+                pipelineParentDeploymentOptional =
+                        deploymentLogRepository.findOneByClusterIdAndStatusAndDeploymentType(cluster.getCdPipelineParent(),
+                                StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
             }
-            if(!fetchedSourceVersions) {
+
+            if (pipelineParentDeploymentOptional.isPresent()) {
+                DeploymentLog pipelineParentDeployment = pipelineParentDeploymentOptional.get();
+                primarySourceVersion = pipelineParentDeployment.getTfVersion();
+                String stackSourceVersion = pipelineParentDeployment.getStackVersion();
+
+                if(StringUtils.isEmpty(stackSourceVersion) || StringUtils.isEmpty(primarySourceVersion)) {
+                    throw new RuntimeException("No reference build found");
+                }
+                secondarySourceVersion =
+                        ProjectSourceVersion.builder().sourceIdentifier("STACK")
+                                .sourceVersion(stackSourceVersion).build();
+            } else {
                 throw new RuntimeException("No reference build found");
             }
         }
@@ -231,11 +237,21 @@ public class AwsCodeBuildService implements TFBuildService {
         try {
             String buildId = getCodeBuildClient().startBuild(startBuildRequest).build().id();
             DeploymentLog log = new DeploymentLog();
+            if(deploymentRequest.getOverrideBuildSteps() != null
+                    && !deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                log.setDeploymentType(DeploymentLog.DeploymentType.CUSTOM);
+            } else if (deploymentRequest.getExtraEnv().contains("REDEPLOYMENT_BUILD_ID")) {
+                log.setDeploymentType(DeploymentLog.DeploymentType.ROLLBACK);
+            }
+            else {
+                log.setDeploymentType(DeploymentLog.DeploymentType.REGULAR);
+            }
             log.setCodebuildId(buildId);
             log.setClusterId(cluster.getId());
             log.setDescription(deploymentRequest.getTag());
             log.setReleaseType(deploymentRequest.getReleaseType());
             log.setCreatedOn(new Date());
+            log.setStackVersion(secondarySourceVersion.sourceVersion());
             //log.setDeploymentContext(deploymentContext);
             return deploymentLogRepository.save(log);
 
