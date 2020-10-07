@@ -23,6 +23,7 @@ class UiDeploymentControllerService extends __BaseService {
   static readonly triggerAutomationSuiteUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
   static readonly abortAutomationSuiteUsingDELETE1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
   static readonly getDeploymentUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}';
+  static readonly signOffDeploymentUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/signoff';
 
   constructor(
     config: __Configuration,
@@ -260,6 +261,55 @@ class UiDeploymentControllerService extends __BaseService {
       __map(_r => _r.body as DeploymentLog)
     );
   }
+
+  /**
+   * signOffDeployment
+   * @param params The `UiDeploymentControllerService.SignOffDeploymentUsingPUTParams` containing the following parameters:
+   *
+   * - `deploymentId`: deploymentId
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  signOffDeploymentUsingPUTResponse(params: UiDeploymentControllerService.SignOffDeploymentUsingPUTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/${encodeURIComponent(params.deploymentId)}/signoff`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * signOffDeployment
+   * @param params The `UiDeploymentControllerService.SignOffDeploymentUsingPUTParams` containing the following parameters:
+   *
+   * - `deploymentId`: deploymentId
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  signOffDeploymentUsingPUT(params: UiDeploymentControllerService.SignOffDeploymentUsingPUTParams): __Observable<DeploymentLog> {
+    return this.signOffDeploymentUsingPUTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
 }
 
 module UiDeploymentControllerService {
@@ -316,6 +366,22 @@ module UiDeploymentControllerService {
    * Parameters for getDeploymentUsingGET
    */
   export interface GetDeploymentUsingGETParams {
+
+    /**
+     * deploymentId
+     */
+    deploymentId: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for signOffDeploymentUsingPUT
+   */
+  export interface SignOffDeploymentUsingPUTParams {
 
     /**
      * deploymentId

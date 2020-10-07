@@ -6,8 +6,12 @@ export interface DeploymentLog {
   changesApplied?: Array<TerraformChange>;
   codebuildId?: string;
   createdOn?: string;
+  deploymentType?: 'REGULAR' | 'CUSTOM' | 'ROLLBACK';
   description?: string;
   id?: string;
   releaseType?: 'HOTFIX' | 'RELEASE';
+  signedOff?: boolean;
+  stackVersion?: string;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
+  tfVersion?: string;
 }

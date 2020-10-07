@@ -66,6 +66,7 @@ export { SSLConfigs } from './models/sslconfigs';
 export { SimpleOauth2User } from './models/simple-oauth-2user';
 export { SnapshotInfo } from './models/snapshot-info';
 export { Stack } from './models/stack';
+export { Subscription } from './models/subscription';
 export { TerraformChange } from './models/terraform-change';
 export { TestBuildDetails } from './models/test-build-details';
 export { TimeZone } from './models/time-zone';
