@@ -76,4 +76,9 @@ public class UiDeploymentController {
     DeploymentLog getDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.getDeployment(deploymentId);
     }
+
+    @PutMapping("/{deploymentId}/signoff")
+    DeploymentLog signOffDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
+        return deploymentFacade.signOff(clusterId, deploymentId);
+    }
 }
