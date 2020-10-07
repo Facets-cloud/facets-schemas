@@ -77,6 +77,7 @@ public class UiDeploymentController {
         return deploymentFacade.getDeployment(deploymentId);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{deploymentId}/signoff")
     DeploymentLog signOffDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.signOff(clusterId, deploymentId);
