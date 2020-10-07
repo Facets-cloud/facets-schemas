@@ -15,11 +15,11 @@ public interface DeploymentLogRepository extends MongoRepository<DeploymentLog, 
 
     Optional<DeploymentLog> findOneByCodebuildId(String runId);
 
-    Optional<DeploymentLog> findOneByClusterIdAndStatusAndDeploymentType(String clusterId,
+    Optional<DeploymentLog> findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(String clusterId,
                                                                          StatusType statusType,
                                                                          DeploymentLog.DeploymentType deploymentType);
 
-    Optional<DeploymentLog> findOneByClusterIdAndStatusAndDeploymentTypeAndSignedOff(String clusterId,
+    Optional<DeploymentLog> findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(String clusterId,
                                                                                      StatusType statusType,
                                                                                      DeploymentLog.DeploymentType deploymentType,
                                                                                      boolean b);

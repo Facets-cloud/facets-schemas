@@ -174,11 +174,11 @@ public class AwsCodeBuildService implements TFBuildService {
             Optional<DeploymentLog> pipelineParentDeploymentOptional = Optional.empty();
             if(cluster.getRequireSignOff()) {
                 pipelineParentDeploymentOptional =
-                        deploymentLogRepository.findOneByClusterIdAndStatusAndDeploymentTypeAndSignedOff(cluster.getCdPipelineParent(),
+                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(cluster.getCdPipelineParent(),
                                 StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
             } else {
                 pipelineParentDeploymentOptional =
-                        deploymentLogRepository.findOneByClusterIdAndStatusAndDeploymentType(cluster.getCdPipelineParent(),
+                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(cluster.getCdPipelineParent(),
                                 StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
             }
 
