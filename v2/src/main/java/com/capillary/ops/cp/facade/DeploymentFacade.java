@@ -484,8 +484,11 @@ public class DeploymentFacade {
         DeploymentLog deploymentLog = deploymentLogOptional.get();
         AbstractCluster cluster = clusterFacade.getCluster(deploymentLog.getClusterId());
         deploymentLog = tfBuildService.loadDeploymentStatus(deploymentLog, true);
-        deploymentLog.getAppDeployments().stream().forEach(
-                x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
+
+        if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty()) {
+            deploymentLog.getAppDeployments().stream().forEach(
+                    x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
+        }
     }
 
     public DeploymentLog signOff(String clusterId, String deploymentId) {
