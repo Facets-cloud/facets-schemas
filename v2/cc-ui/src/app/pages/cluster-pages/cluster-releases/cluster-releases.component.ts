@@ -29,13 +29,14 @@ export class ClusterReleasesComponent implements OnInit {
         this.clusterId = p.clusterId;
         this.deploymentController.getDeploymentsUsingGET1(this.clusterId).subscribe(
           t => {
-            var signedOffDeployment = t.filter(x => x.signedOff)[0];
+            const signedOffDeployment = t.filter(x => x.signedOff)[0];
+
             t.forEach(deployment =>
               deployment['allowSignoff'] = deployment.status === 'SUCCEEDED' &&
               deployment.stackVersion?.length > 0 &&
               deployment.tfVersion?.length > 0 &&
               !deployment.signedOff &&
-              deployment.createdOn > signedOffDeployment.createdOn);
+              (signedOffDeployment !== null && deployment.createdOn > signedOffDeployment.createdOn));
 
             this.deployments = t;
           },
