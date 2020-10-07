@@ -70,6 +70,7 @@ export class ClusterReleasesComponent implements OnInit {
           .subscribe(
             x => {
               d.signedOff = x.signedOff;
+              this.ngOnInit();
             },
           );
       },
