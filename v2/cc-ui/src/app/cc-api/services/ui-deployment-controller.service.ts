@@ -7,6 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
+import { ListDeploymentsWrapper } from '../models/list-deployments-wrapper';
 import { DeploymentLog } from '../models/deployment-log';
 import { DeploymentRequest } from '../models/deployment-request';
 import { QASuite } from '../models/qasuite';
@@ -37,7 +38,7 @@ class UiDeploymentControllerService extends __BaseService {
    * @param clusterId clusterId
    * @return OK
    */
-  getDeploymentsUsingGET1Response(clusterId: string): __Observable<__StrictHttpResponse<Array<DeploymentLog>>> {
+  getDeploymentsUsingGET1Response(clusterId: string): __Observable<__StrictHttpResponse<ListDeploymentsWrapper>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -55,7 +56,7 @@ class UiDeploymentControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<DeploymentLog>>;
+        return _r as __StrictHttpResponse<ListDeploymentsWrapper>;
       })
     );
   }
@@ -64,9 +65,9 @@ class UiDeploymentControllerService extends __BaseService {
    * @param clusterId clusterId
    * @return OK
    */
-  getDeploymentsUsingGET1(clusterId: string): __Observable<Array<DeploymentLog>> {
+  getDeploymentsUsingGET1(clusterId: string): __Observable<ListDeploymentsWrapper> {
     return this.getDeploymentsUsingGET1Response(clusterId).pipe(
-      __map(_r => _r.body as Array<DeploymentLog>)
+      __map(_r => _r.body as ListDeploymentsWrapper)
     );
   }
 

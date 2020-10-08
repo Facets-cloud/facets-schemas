@@ -75,7 +75,7 @@ public class DeploymentController {
 
     @GetMapping()
     List<DeploymentLog> getDeployments(@PathVariable String clusterId) {
-        return deploymentFacade.getAllDeployments(clusterId);
+        return deploymentFacade.getAllDeployments(clusterId).getDeployments();
     }
 
     /**

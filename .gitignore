@@ -49,3 +49,4 @@ capillary-cloud-tf/schema
 capillary-cloud-tf/seed_data
 key.pem
 deploymentcontext.json
+artifacts.json

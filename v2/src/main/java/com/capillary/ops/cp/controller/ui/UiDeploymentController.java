@@ -3,6 +3,7 @@ package com.capillary.ops.cp.controller.ui;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
+import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
@@ -67,7 +68,7 @@ public class UiDeploymentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
     @GetMapping()
-    List<DeploymentLog> getDeployments(@PathVariable String clusterId) {
+    ListDeploymentsWrapper getDeployments(@PathVariable String clusterId) {
         return deploymentFacade.getAllDeployments(clusterId);
     }
 

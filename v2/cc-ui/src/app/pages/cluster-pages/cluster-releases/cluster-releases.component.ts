@@ -15,6 +15,7 @@ export class ClusterReleasesComponent implements OnInit {
   deployments: DeploymentLog[];
   loading = true;
   downStreamClusters = [];
+  currentSignedOffDeployment: DeploymentLog;
 
   constructor(private deploymentController: UiDeploymentControllerService,
     private u: UiStackControllerService,
@@ -29,24 +30,32 @@ export class ClusterReleasesComponent implements OnInit {
         this.clusterId = p.clusterId;
         this.deploymentController.getDeploymentsUsingGET1(this.clusterId).subscribe(
           t => {
-            const signedOffDeployment = t.filter(x => x.signedOff)[0];
-
-            t.forEach(deployment =>
+            this.currentSignedOffDeployment = t.currentSignedOffDeployment;
+            t.deployments.forEach(deployment =>
               deployment['allowSignoff'] = deployment.status === 'SUCCEEDED' &&
               deployment.stackVersion?.length > 0 &&
               deployment.tfVersion?.length > 0 &&
               !deployment.signedOff &&
-              (signedOffDeployment !== null && deployment.createdOn > signedOffDeployment.createdOn));
-
-            this.deployments = t;
+              deployment.createdOn > this.currentSignedOffDeployment?.createdOn);
+            t.deployments.forEach(
+              x => {
+                if (x['allowSignoff']) {
+                  if (t.stack.vcs === 'GITHUB') {
+                    x['compareUrl'] = t.stack.vcsUrl.replace('.git', '') + '/compare/'
+                    + t.currentSignedOffDeployment?.stackVersion + '...' + x.stackVersion;
+                  } else if (t.stack.vcs === 'BITBUCKET') {
+                    x['compareUrl'] = t.stack.vcsUrl.replace('.git', '') + '/compare/' +
+                    x.stackVersion + '%0' + t.currentSignedOffDeployment?.stackVersion;
+                  }
+                } else {
+                  x['compareUrl'] = null;
+                }
+              }
+            );
+            this.deployments = t.deployments;
+            this.downStreamClusters = t.downStreamClusterNames;
           },
-          () => this.loading = false,
-          () => this.u.getClustersUsingGET1(p.stackName).subscribe(clusters => {
-            this.downStreamClusters =
-              clusters.filter(x => x.cdPipelineParent === this.clusterId)
-                .filter(x => x.requireSignOff)
-                .map(x => x.name);
-          })
+          () => this.loading = false
         );
       }
     });

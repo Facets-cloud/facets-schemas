@@ -25,7 +25,8 @@
               <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
               <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
               <td class="vert-center" scope="col">{{deployment.status}}</td>
-              <td class="vert-center" scope="col">{{deployment.stackVersion | slice:0:7}}</td>
+              <td *ngIf="deployment?.allowSignoff" class="vert-center" scope="col"><a target="_blank" href={{deployment.compareUrl}}>{{deployment.stackVersion | slice:0:7}}</a></td>
+              <td *ngIf="!deployment?.allowSignoff" class="vert-center" scope="col">{{deployment.stackVersion | slice:0:7}}</td>
               <td class="vert-center" scope="col">{{deployment.tfVersion | slice:0:7}}</td>
               <td class="vert-center" scope="col">{{deployment.deploymentType}}</td>
               <td scope="col"><button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"><nb-icon icon="info"></nb-icon></button>
