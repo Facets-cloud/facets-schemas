@@ -87,4 +87,8 @@ export class ClusterReleasesComponent implements OnInit {
     );
   }
 
+  openTab(compareUrl) {
+    window.open(compareUrl, "_blank");
+  }
+
 }

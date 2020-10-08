@@ -25,8 +25,10 @@
               <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
               <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
               <td class="vert-center" scope="col">{{deployment.status}}</td>
-              <td *ngIf="deployment?.allowSignoff" class="vert-center" scope="col"><a target="_blank" href={{deployment.compareUrl}}>{{deployment.stackVersion | slice:0:7}}</a></td>
-              <td *ngIf="!deployment?.allowSignoff" class="vert-center" scope="col">{{deployment.stackVersion | slice:0:7}}</td>
+              <td class="vert-center" scope="col">
+                {{deployment.stackVersion | slice:0:7}}
+                <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton nbTooltip="Compare with signed-off version" ghost status="primary"><nb-icon icon="code-outline"></nb-icon></button>
+              </td>
               <td class="vert-center" scope="col">{{deployment.tfVersion | slice:0:7}}</td>
               <td class="vert-center" scope="col">{{deployment.deploymentType}}</td>
               <td scope="col"><button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"><nb-icon icon="info"></nb-icon></button>
@@ -55,6 +57,7 @@
     </nb-card-body>
     <nb-card-footer>
       <button nbButton status=success (click)="ref.close(data)">Confirm</button>
+      <button style='margin-left: 0.5rem;' nbButton status=danger (click)="ref.close()">Cancel</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClusterReleasesComponent } from './cluster-releases.component';
-import {NbCardModule, NbLayoutModule, NbSidebarModule, NbSidebarService, NbIconComponent, NbIconModule, NbButtonModule, NbSpinnerModule, NbDialogModule, NbDialogService, NbTabsetModule} from '@nebular/theme';
+import {NbCardModule, NbLayoutModule, NbSidebarModule, NbSidebarService, NbIconComponent, NbIconModule, NbButtonModule, NbSpinnerModule, NbDialogModule, NbDialogService, NbTabsetModule, NbTooltipModule} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 
@@ -22,6 +22,7 @@ import {ComponentsModule} from '../../../components/components.module';
     NbSpinnerModule,
     NbDialogModule.forRoot(),
     NbTabsetModule,
+    NbTooltipModule,
   ],
   providers: [NbSidebarService, NbDialogService]
 })
