@@ -235,6 +235,13 @@ sub _diff_fields {
             debug(3,"table1 had field '$field'");
             my $f1 = $fields1->{$field};
             my $f2 = $fields2->{$field};
+	    
+	    # skipping the charset set for columns - cj
+	    $f1 =~  s/ COLLATE [\w_]+//gi;
+            $f2 =~  s/ COLLATE [\w_]+//gi;
+            $f1 =~  s/ CHARACTER SET [\w_]+//gi;
+            $f2 =~  s/ CHARACTER SET [\w_]+//gi;
+
             if ($fields2 && $f2) {
                 if ($self->{opts}{tolerant}) {
                     for ($f1, $f2) {
