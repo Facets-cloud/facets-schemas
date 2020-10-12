@@ -322,6 +322,7 @@ public class AwsCodeBuildService implements TFBuildService {
             // reduce payload
             deploymentLog.setChangesApplied(null);
             deploymentLog.setAppDeployments(null);
+            deploymentLog.setErrorLogs(null);
             //deploymentLog.setDeploymentContext(null);
         }
 
