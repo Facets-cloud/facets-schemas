@@ -8,6 +8,7 @@ export interface DeploymentLog {
   createdOn?: string;
   deploymentType?: 'REGULAR' | 'CUSTOM' | 'ROLLBACK';
   description?: string;
+  errorLogs?: Array<string>;
   id?: string;
   releaseType?: 'HOTFIX' | 'RELEASE';
   signedOff?: boolean;

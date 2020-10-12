@@ -66,7 +66,8 @@ export class ClusterReleasesComponent implements OnInit {
       d => this.dialogService.open(dialog, {
         context: {
           changes: d.changesApplied,
-          appDeployments: d.appDeployments
+          appDeployments: d.appDeployments,
+          errors: d.errorLogs
         }
       }),
     );

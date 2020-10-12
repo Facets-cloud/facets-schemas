@@ -100,7 +100,13 @@
             </table>
           </div>
         </nb-tab>
-
+        <nb-tab tabTitle="Errors">
+          <nb-list nbInfiniteList [threshold]="500">
+            <nb-list-item *ngFor="let log of data.errors">
+              {{ log }}
+            </nb-list-item>
+          </nb-list>
+        </nb-tab>
         <!-- <nb-tab tabTitle="Statefulsets">
           <div style="text-align: center;" class="table-responsive">
             <table class="table table-bordered">
