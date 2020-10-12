@@ -40,9 +40,11 @@ public class DeploymentLog {
 
     private StatusType status;
 
-    List<TerraformChange> changesApplied;
+    private List<TerraformChange> changesApplied;
 
-    List<AppDeployment> appDeployments;
+    private List<AppDeployment> appDeployments;
+
+    private List<String> errorLogs;
 
     private DeploymentType deploymentType = DeploymentType.REGULAR;
 
@@ -157,5 +159,13 @@ public class DeploymentLog {
 
     public void setSignedOff(Boolean signedOff) {
         this.signedOff = signedOff;
+    }
+
+    public List<String> getErrorLogs() {
+        return errorLogs;
+    }
+
+    public void setErrorLogs(List<String> errorLogs) {
+        this.errorLogs = errorLogs;
     }
 }

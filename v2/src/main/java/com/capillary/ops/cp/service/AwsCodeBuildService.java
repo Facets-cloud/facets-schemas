@@ -33,10 +33,10 @@ import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
-import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsRequest;
-import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsResponse;
+import software.amazon.awssdk.services.cloudwatchlogs.model.*;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
+import software.amazon.awssdk.services.codebuild.model.ResourceNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -311,6 +311,9 @@ public class AwsCodeBuildService implements TFBuildService {
                         .collect(Collectors.toList());
                 deploymentLog.setAppDeployments(appDeployments);
                 deploymentLog.setTfVersion(build.resolvedSourceVersion());
+                if (build.buildStatus().equals(StatusType.FAILED)) {
+                    deploymentLog.setErrorLogs(getErrorLogs(streamName));
+                }
                 deploymentLogRepository.save(deploymentLog);
             }
         }
@@ -325,6 +328,23 @@ public class AwsCodeBuildService implements TFBuildService {
         return deploymentLog;
     }
 
+    private List<String> getErrorLogs(String streamName) {
+        CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
+        FilterLogEventsResponse logEvents =
+                cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
+                        .limit(10000).logGroupName(LOG_GROUP_NAME).logStreamNames(streamName)
+                        .filterPattern("Error").build());
+        Optional<FilteredLogEvent> earliestError = logEvents.events().stream().filter(x -> x.message().startsWith("Error: "))
+                .min(Comparator.comparingLong(x -> x.timestamp()));
+
+        if(earliestError.isPresent()) {
+            return cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder().logGroupName(LOG_GROUP_NAME)
+                    .logStreamName(streamName).startTime(earliestError.get().timestamp()).build())
+                    .events().stream().map(x -> x.message()).collect(Collectors.toList());
+        }
+
+        return new ArrayList<>();
+    }
     @Override
     public List<TerraformChange> getTerraformChanges(String codeBuildId) {
         CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
