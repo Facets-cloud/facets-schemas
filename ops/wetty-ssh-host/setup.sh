@@ -3,9 +3,9 @@
 apt-get update 
 apt-get install -y --no-install-recommends less jq python2.7 curl python-dateutil gnupg2
 
-echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.lis
+echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.0.list
 apt-get update
-apt-get install -y mongodb-org-shell
+apt-get install -y mongodb-org-shell mysql-client redis-tools telnet
 
 mkdir /usr/share/s3cmd
 curl -O -L https://github.com/s3tools/s3cmd/releases/download/v2.0.2/s3cmd-2.0.2.tar.gz
