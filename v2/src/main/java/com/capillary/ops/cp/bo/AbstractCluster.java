@@ -41,6 +41,8 @@ public abstract class AbstractCluster {
 
     private String cdPipelineParent;
 
+    private Boolean requireSignOff;
+
     @Transient
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();
 
@@ -152,5 +154,16 @@ public abstract class AbstractCluster {
 
     public void setCdPipelineParent(String cdPipelineParent) {
         this.cdPipelineParent = cdPipelineParent;
+    }
+
+    public Boolean getRequireSignOff() {
+        if(requireSignOff == null) {
+            return false;
+        }
+        return requireSignOff;
+    }
+
+    public void setRequireSignOff(Boolean requireSignOff) {
+        this.requireSignOff = requireSignOff;
     }
 }

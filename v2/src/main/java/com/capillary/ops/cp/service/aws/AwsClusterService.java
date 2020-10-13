@@ -41,6 +41,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setVpcCIDR(request.getVpcCIDR());
         cluster.setStackName(request.getStackName());
         cluster.setCdPipelineParent(request.getCdPipelineParent());
+        cluster.setRequireSignOff(request.getRequireSignOff());
         return cluster;
     }
 
@@ -63,6 +64,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         }
         if (checkChanged(existing.getCdPipelineParent(), request.getCdPipelineParent())) {
             existing.setCdPipelineParent(request.getCdPipelineParent());
+        }
+        if (checkChanged(existing.getRequireSignOff(), request.getRequireSignOff())) {
+            existing.setRequireSignOff(request.getRequireSignOff());
         }
         return existing;
     }

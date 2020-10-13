@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.requests.*;
+import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -452,10 +453,23 @@ public class DeploymentFacade {
         return failedAutomationSuites;
     }
 
-    public List<DeploymentLog> getAllDeployments(String clusterId) {
+    public ListDeploymentsWrapper getAllDeployments(String clusterId) {
+        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        Stack stack = stackFacade.getStackByName(cluster.getStackName());
+        stack.setAppPassword(null);
+        List<AbstractCluster> allClusters = clusterFacade.getClustersByStackName(cluster.getStackName());
+        List<String> downStreamClusters = allClusters.stream()
+                .filter(x -> cluster.getId().equalsIgnoreCase(x.getCdPipelineParent()) && x.getRequireSignOff() == true)
+                .map(x -> x.getName())
+                .collect(Collectors.toList());
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
-        return deployments.stream()
+        deployments = deployments.stream()
                 .map(x -> tfBuildService.loadDeploymentStatus(x, false)).collect(Collectors.toList());
+        Optional<DeploymentLog> signedOffDeploymentOptional =
+                deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
+                        cluster.getId(), StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
+        return new ListDeploymentsWrapper(stack, clusterId, deployments, downStreamClusters,
+                signedOffDeploymentOptional.orElse(null));
     }
 
     public DeploymentLog getDeployment(String deploymentId) {
@@ -484,7 +498,20 @@ public class DeploymentFacade {
         DeploymentLog deploymentLog = deploymentLogOptional.get();
         AbstractCluster cluster = clusterFacade.getCluster(deploymentLog.getClusterId());
         deploymentLog = tfBuildService.loadDeploymentStatus(deploymentLog, true);
-        deploymentLog.getAppDeployments().stream().forEach(
-                x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
+
+        if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty()) {
+            deploymentLog.getAppDeployments().stream().forEach(
+                    x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
+        }
+    }
+
+    public DeploymentLog signOff(String clusterId, String deploymentId) {
+        DeploymentLog deploymentLog = deploymentLogRepository.findById(deploymentId).get();
+        if(deploymentLog.getStatus().equals(StatusType.SUCCEEDED)) {
+            deploymentLog.setSignedOff(true);
+            return deploymentLogRepository.save(deploymentLog);
+        } else {
+            throw new RuntimeException("Cannot signoff failed deployment");
+        }
     }
 }

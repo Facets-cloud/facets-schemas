@@ -9,6 +9,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { Stack } from '../models/stack';
 import { AbstractCluster } from '../models/abstract-cluster';
+import { Subscription } from '../models/subscription';
 
 /**
  * Ui Stack Controller
@@ -21,6 +22,8 @@ class UiStackControllerService extends __BaseService {
   static readonly createStackUsingPOST1Path = '/cc-ui/v1/stacks/';
   static readonly getStackUsingGETPath = '/cc-ui/v1/stacks/{stackName}';
   static readonly getClustersUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/clusters';
+  static readonly getAllSubscriptionsUsingGETPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
+  static readonly createSubscriptionUsingPOSTPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
   static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
 
   constructor(
@@ -180,6 +183,93 @@ class UiStackControllerService extends __BaseService {
   }
 
   /**
+   * getAllSubscriptions
+   * @param stackName stackName
+   * @return OK
+   */
+  getAllSubscriptionsUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Array<Subscription>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(stackName)}/notification/subscriptions`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<Subscription>>;
+      })
+    );
+  }
+  /**
+   * getAllSubscriptions
+   * @param stackName stackName
+   * @return OK
+   */
+  getAllSubscriptionsUsingGET(stackName: string): __Observable<Array<Subscription>> {
+    return this.getAllSubscriptionsUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Array<Subscription>)
+    );
+  }
+
+  /**
+   * createSubscription
+   * @param params The `UiStackControllerService.CreateSubscriptionUsingPOSTParams` containing the following parameters:
+   *
+   * - `subscription`: subscription
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  createSubscriptionUsingPOSTResponse(params: UiStackControllerService.CreateSubscriptionUsingPOSTParams): __Observable<__StrictHttpResponse<Subscription>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.subscription;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(params.stackName)}/notification/subscriptions`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Subscription>;
+      })
+    );
+  }
+  /**
+   * createSubscription
+   * @param params The `UiStackControllerService.CreateSubscriptionUsingPOSTParams` containing the following parameters:
+   *
+   * - `subscription`: subscription
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  createSubscriptionUsingPOST(params: UiStackControllerService.CreateSubscriptionUsingPOSTParams): __Observable<Subscription> {
+    return this.createSubscriptionUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as Subscription)
+    );
+  }
+
+  /**
    * reloadStack
    * @param stackName stackName
    * @return OK
@@ -219,6 +309,22 @@ class UiStackControllerService extends __BaseService {
 }
 
 module UiStackControllerService {
+
+  /**
+   * Parameters for createSubscriptionUsingPOST
+   */
+  export interface CreateSubscriptionUsingPOSTParams {
+
+    /**
+     * subscription
+     */
+    subscription: Subscription;
+
+    /**
+     * stackName
+     */
+    stackName: string;
+  }
 }
 
 export { UiStackControllerService }

@@ -28,14 +28,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
-import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsRequest;
-import software.amazon.awssdk.services.cloudwatchlogs.model.FilterLogEventsResponse;
+import software.amazon.awssdk.services.cloudwatchlogs.model.*;
 import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
+import software.amazon.awssdk.services.codebuild.model.ResourceNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -170,24 +171,29 @@ public class AwsCodeBuildService implements TFBuildService {
 
 
         if (cluster.getCdPipelineParent() != null) {
-            Boolean fetchedSourceVersions = false;
-            List<DeploymentLog> pipelineParentDeployments =
-                    deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(cluster.getCdPipelineParent());
-            for (DeploymentLog d: pipelineParentDeployments) {
-                Build build = getBuild(d.getCodebuildId());
-                if (StatusType.SUCCEEDED.equals(build.buildStatus())) {
-                    primarySourceVersion = build.resolvedSourceVersion();
-                    String stackSourceVersion = build.secondarySourceVersions().stream()
-                            .filter(x -> "STACK".equalsIgnoreCase(x.sourceIdentifier()))
-                            .findFirst().get().sourceVersion();
-                    secondarySourceVersion =
-                            ProjectSourceVersion.builder().sourceIdentifier("STACK")
-                                    .sourceVersion(stackSourceVersion).build();
-                    fetchedSourceVersions= true;
-                    break;
-                }
+            Optional<DeploymentLog> pipelineParentDeploymentOptional = Optional.empty();
+            if(cluster.getRequireSignOff()) {
+                pipelineParentDeploymentOptional =
+                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(cluster.getCdPipelineParent(),
+                                StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
+            } else {
+                pipelineParentDeploymentOptional =
+                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(cluster.getCdPipelineParent(),
+                                StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
             }
-            if(!fetchedSourceVersions) {
+
+            if (pipelineParentDeploymentOptional.isPresent()) {
+                DeploymentLog pipelineParentDeployment = pipelineParentDeploymentOptional.get();
+                primarySourceVersion = pipelineParentDeployment.getTfVersion();
+                String stackSourceVersion = pipelineParentDeployment.getStackVersion();
+
+                if(StringUtils.isEmpty(stackSourceVersion) || StringUtils.isEmpty(primarySourceVersion)) {
+                    throw new RuntimeException("No reference build found");
+                }
+                secondarySourceVersion =
+                        ProjectSourceVersion.builder().sourceIdentifier("STACK")
+                                .sourceVersion(stackSourceVersion).build();
+            } else {
                 throw new RuntimeException("No reference build found");
             }
         }
@@ -231,11 +237,21 @@ public class AwsCodeBuildService implements TFBuildService {
         try {
             String buildId = getCodeBuildClient().startBuild(startBuildRequest).build().id();
             DeploymentLog log = new DeploymentLog();
+            if(deploymentRequest.getOverrideBuildSteps() != null
+                    && !deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                log.setDeploymentType(DeploymentLog.DeploymentType.CUSTOM);
+            } else if (deploymentRequest.getExtraEnv().contains("REDEPLOYMENT_BUILD_ID")) {
+                log.setDeploymentType(DeploymentLog.DeploymentType.ROLLBACK);
+            }
+            else {
+                log.setDeploymentType(DeploymentLog.DeploymentType.REGULAR);
+            }
             log.setCodebuildId(buildId);
             log.setClusterId(cluster.getId());
             log.setDescription(deploymentRequest.getTag());
             log.setReleaseType(deploymentRequest.getReleaseType());
             log.setCreatedOn(new Date());
+            log.setStackVersion(secondarySourceVersion.sourceVersion());
             //log.setDeploymentContext(deploymentContext);
             return deploymentLogRepository.save(log);
 
@@ -294,6 +310,10 @@ public class AwsCodeBuildService implements TFBuildService {
                         .distinct()
                         .collect(Collectors.toList());
                 deploymentLog.setAppDeployments(appDeployments);
+                deploymentLog.setTfVersion(build.resolvedSourceVersion());
+                if (build.buildStatus().equals(StatusType.FAILED)) {
+                    deploymentLog.setErrorLogs(getErrorLogs(streamName));
+                }
                 deploymentLogRepository.save(deploymentLog);
             }
         }
@@ -302,12 +322,30 @@ public class AwsCodeBuildService implements TFBuildService {
             // reduce payload
             deploymentLog.setChangesApplied(null);
             deploymentLog.setAppDeployments(null);
+            deploymentLog.setErrorLogs(null);
             //deploymentLog.setDeploymentContext(null);
         }
 
         return deploymentLog;
     }
 
+    private List<String> getErrorLogs(String streamName) {
+        CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();
+        FilterLogEventsResponse logEvents =
+                cloudWatchLogsClient.filterLogEvents(FilterLogEventsRequest.builder()
+                        .limit(10000).logGroupName(LOG_GROUP_NAME).logStreamNames(streamName)
+                        .filterPattern("Error").build());
+        Optional<FilteredLogEvent> earliestError = logEvents.events().stream().filter(x -> x.message().startsWith("Error: "))
+                .min(Comparator.comparingLong(x -> x.timestamp()));
+
+        if(earliestError.isPresent()) {
+            return cloudWatchLogsClient.getLogEvents(GetLogEventsRequest.builder().logGroupName(LOG_GROUP_NAME)
+                    .logStreamName(streamName).startTime(earliestError.get().timestamp()).build())
+                    .events().stream().map(x -> x.message()).collect(Collectors.toList());
+        }
+
+        return new ArrayList<>();
+    }
     @Override
     public List<TerraformChange> getTerraformChanges(String codeBuildId) {
         CloudWatchLogsClient cloudWatchLogsClient = getCloudWatchLogsClient();

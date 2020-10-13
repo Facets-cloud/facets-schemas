@@ -13,6 +13,7 @@ public abstract class ClusterRequest {
     private String clusterName;
     private String stackName;
     private String cdPipelineParent;
+    private Boolean requireSignOff;
 
     @ApiParam(type = "string")
     private TimeZone tz;
@@ -94,5 +95,13 @@ public abstract class ClusterRequest {
 
     public void setCdPipelineParent(String cdPipelineParent) {
         this.cdPipelineParent = cdPipelineParent;
+    }
+
+    public Boolean getRequireSignOff() {
+        return requireSignOff;
+    }
+
+    public void setRequireSignOff(Boolean requireSignOff) {
+        this.requireSignOff = requireSignOff;
     }
 }

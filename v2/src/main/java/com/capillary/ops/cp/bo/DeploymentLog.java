@@ -16,6 +16,12 @@ import java.util.Map;
 @Document
 public class DeploymentLog {
 
+    public static enum DeploymentType {
+        REGULAR,
+        CUSTOM,
+        ROLLBACK
+    }
+
     @Id
     private String id;
 
@@ -34,9 +40,19 @@ public class DeploymentLog {
 
     private StatusType status;
 
-    List<TerraformChange> changesApplied;
+    private List<TerraformChange> changesApplied;
 
-    List<AppDeployment> appDeployments;
+    private List<AppDeployment> appDeployments;
+
+    private List<String> errorLogs;
+
+    private DeploymentType deploymentType = DeploymentType.REGULAR;
+
+    private String stackVersion;
+
+    private String tfVersion;
+
+    private Boolean signedOff = false;
 
     public String getId() {
         return id;
@@ -108,5 +124,48 @@ public class DeploymentLog {
 
     public void setAppDeployments(List<AppDeployment> appDeployments) {
         this.appDeployments = appDeployments;
+    }
+
+    public DeploymentType getDeploymentType() {
+        if(deploymentType == null) {
+            return DeploymentType.REGULAR;
+        }
+        return deploymentType;
+    }
+
+    public void setDeploymentType(DeploymentType deploymentType) {
+        this.deploymentType = deploymentType;
+    }
+
+    public String getStackVersion() {
+        return stackVersion;
+    }
+
+    public void setStackVersion(String stackVersion) {
+        this.stackVersion = stackVersion;
+    }
+
+    public String getTfVersion() {
+        return tfVersion;
+    }
+
+    public void setTfVersion(String tfVersion) {
+        this.tfVersion = tfVersion;
+    }
+
+    public Boolean getSignedOff() {
+        return signedOff;
+    }
+
+    public void setSignedOff(Boolean signedOff) {
+        this.signedOff = signedOff;
+    }
+
+    public List<String> getErrorLogs() {
+        return errorLogs;
+    }
+
+    public void setErrorLogs(List<String> errorLogs) {
+        this.errorLogs = errorLogs;
     }
 }
