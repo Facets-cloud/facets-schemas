@@ -234,20 +234,50 @@ public class KubernetesService implements IKubernetesService {
     }
 
     @Override
-    public void
-    haltApplication(String deploymentName, Environment environment) {
+    public void haltApplication(Application application, String deploymentName, Environment environment) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
+
         Deployment deployment = kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).get();
+        if (deployment == null) {
+            String applicationId = application.getId();
+            logger.debug("halt application - did not find release with name {}, finding name by label deployerid: {}", deploymentName, applicationId);
+            List<Deployment> deployments = kubernetesClient.apps()
+                    .deployments()
+                    .inNamespace("default")
+                    .withLabel("deployerid", applicationId)
+                    .list()
+                    .getItems();
+            deployment = deployments.get(0);
+            deploymentName = deployment.getMetadata().getName();
+            logger.debug("halt application - found deployment by label: {}", deployment);
+        }
+
         if(deployment.getSpec().getReplicas() > 0) {
             deployment.getSpec().setReplicas(0);
         }
+
         kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).patch(deployment);
     }
 
     @Override
-    public void resumeApplication(String deploymentName, Environment environment) {
+    public void resumeApplication(Application application, String deploymentName, Environment environment) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
+
         Deployment deployment = kubernetesClient.apps().deployments().inNamespace("default").withName(deploymentName).get();
+        if (deployment == null) {
+            String applicationId = application.getId();
+            logger.debug("halt application - did not find release with name {}, finding name by label deployerid: {}", deploymentName, applicationId);
+            List<Deployment> deployments = kubernetesClient.apps()
+                    .deployments()
+                    .inNamespace("default")
+                    .withLabel("deployerid", applicationId)
+                    .list()
+                    .getItems();
+            deployment = deployments.get(0);
+            deploymentName = deployment.getMetadata().getName();
+            logger.debug("halt application - found deployment by label: {}", deployment);
+        }
+
         HorizontalPodAutoscaler horizontalPodAutoscaler =
                 kubernetesClient.autoscaling().horizontalPodAutoscalers().inNamespace("default").withName(deploymentName).get();
         Integer minReplicas = horizontalPodAutoscaler.getSpec().getMinReplicas();

@@ -987,7 +987,7 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = getEnvironmentWithCCFallback(applicationFamily, environmentName);
         String releaseName = helmService.getReleaseName(application, environment);
-        kubernetesService.haltApplication(releaseName, environment);
+        kubernetesService.haltApplication(application, releaseName, environment);
         return true;
     }
 
@@ -995,7 +995,7 @@ public class ApplicationFacade {
         Application application = applicationRepository.findOneByApplicationFamilyAndId(applicationFamily, applicationId).get();
         Environment environment = getEnvironmentWithCCFallback(applicationFamily, environmentName);
         String releaseName = helmService.getReleaseName(application, environment);
-        kubernetesService.resumeApplication(releaseName, environment);
+        kubernetesService.resumeApplication(application, releaseName, environment);
         return true;
     }
 

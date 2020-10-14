@@ -29,9 +29,9 @@ public interface IKubernetesService {
 
     ActionExecution executeAction(ApplicationAction applicationAction, Environment environment, String podName);
 
-    void haltApplication(String deploymentName, Environment environment);
+    void haltApplication(Application application, String deploymentName, Environment environment);
 
-    void resumeApplication(String deploymentName, Environment environment);
+    void resumeApplication(Application application, String deploymentName, Environment environment);
 
     void deleteServiceCreatedByKubeCompassIfExists(String appName, Environment environment);
 }
