@@ -374,7 +374,7 @@ public class DeploymentFacade {
                 });
 
                 if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
-                    deployModulesWithRevertedBuilds(clusterId, qaSuiteResult.getDeploymentId());
+//                    deployModulesWithRevertedBuilds(clusterId, qaSuiteResult.getDeploymentId());
                 }
             }
         } catch (Exception e) {

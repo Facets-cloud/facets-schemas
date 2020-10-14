@@ -126,12 +126,12 @@ public class MockKubernetesService implements IKubernetesService {
     }
 
     @Override
-    public void haltApplication(String deploymentName, Environment environment) {
+    public void haltApplication(Application application, String deploymentName, Environment environment) {
 
     }
 
     @Override
-    public void resumeApplication(String deploymentName, Environment environment) {
+    public void resumeApplication(Application application, String deploymentName, Environment environment) {
 
     }
 
