@@ -50,6 +50,7 @@ public class CCAdapterService {
     }
 
     public Deployment getCCDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
+        AbstractCluster cluster = clusterFacade.getCluster(environment);
         io.fabric8.kubernetes.api.model.apps.Deployment ccDeployment =
             clusterFacade.getApplicationData(environment, "deployerid", applicationId);
         if (ccDeployment != null) {
@@ -57,7 +58,7 @@ public class CCAdapterService {
             d.setApplicationFamily(applicationFamily);
             d.setApplicationId(applicationId);
             d.setBuildId(ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage());
-            d.setEnvironment(environment);
+            d.setEnvironment(cluster.getName());
             d.setDeployedBy("Cap Cloud");
             d.setImage(ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage());
 //            d.setHorizontalPodAutoscaler(ccDeployment.);

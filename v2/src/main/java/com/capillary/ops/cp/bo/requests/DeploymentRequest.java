@@ -15,6 +15,8 @@ public class DeploymentRequest {
 
     private ReleaseType releaseType;
 
+    private String overrideCCVersion;
+
     private List<EnvironmentVariable> extraEnv = new ArrayList<>();
 
     private List<String> overrideBuildSteps = new ArrayList<>();
@@ -57,5 +59,13 @@ public class DeploymentRequest {
 
     public void setOverrideBuildSteps(List<String> overrideBuildSteps) {
         this.overrideBuildSteps = overrideBuildSteps;
+    }
+
+    public String getOverrideCCVersion() {
+        return overrideCCVersion;
+    }
+
+    public void setOverrideCCVersion(String overrideCCVersion) {
+        this.overrideCCVersion = overrideCCVersion;
     }
 }

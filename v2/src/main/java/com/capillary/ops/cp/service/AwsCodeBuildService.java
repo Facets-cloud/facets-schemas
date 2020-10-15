@@ -158,6 +158,11 @@ public class AwsCodeBuildService implements TFBuildService {
 
         String primarySourceVersion = "master";
 
+        if (!StringUtils.isEmpty(deploymentRequest.getOverrideCCVersion()) &&
+                cluster.getStackName().equalsIgnoreCase("cc-stack-cctesting")) {
+            primarySourceVersion = deploymentRequest.getOverrideCCVersion();
+        }
+
         String masterHead = "";
 
         try {
