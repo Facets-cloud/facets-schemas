@@ -513,9 +513,10 @@ public class ApplicationFacade {
             return deployment.get();
         }
 
+        logger.info("finding cc environment with name: {}", environment);
         Environment ccEnvironment = getEnvironmentWithCCFallback(applicationFamily, environment);
-        Deployment ccDeployment = ccAdapterService.getCCDeployment(applicationFamily, applicationId, ccEnvironment);
-        return ccDeployment;
+        logger.info("found cc environment: {}", ccEnvironment);
+        return ccAdapterService.getCCDeployment(applicationFamily, applicationId, ccEnvironment);
     }
 
     public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,

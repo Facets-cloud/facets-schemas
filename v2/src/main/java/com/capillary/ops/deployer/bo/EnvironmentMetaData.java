@@ -64,4 +64,15 @@ public class EnvironmentMetaData {
     public void setCapCloud(Boolean capCloud) {
         isCapCloud = capCloud;
     }
+
+    @Override
+    public String toString() {
+        return "EnvironmentMetaData{" +
+                "isCapCloud=" + isCapCloud +
+                ", capillaryCloudClusterName='" + capillaryCloudClusterName + '\'' +
+                ", environmentType=" + environmentType +
+                ", name='" + name + '\'' +
+                ", applicationFamily=" + applicationFamily +
+                '}';
+    }
 }

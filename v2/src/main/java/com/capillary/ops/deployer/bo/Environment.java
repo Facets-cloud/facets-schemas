@@ -48,4 +48,13 @@ public class Environment {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Environment{" +
+                "id='" + id + '\'' +
+                ", environmentMetaData=" + environmentMetaData +
+                ", environmentConfiguration=" + environmentConfiguration +
+                '}';
+    }
 }
