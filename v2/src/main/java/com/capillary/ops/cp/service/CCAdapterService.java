@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class CCAdapterService {
 
     @Autowired
     private ClusterFacade clusterFacade;
+
+    @Autowired
+    private IKubernetesService kubernetesService;
 
     public Optional<EnvironmentMetaData> getCCEnvironmentMeta(ApplicationFamily applicationFamily,
         String environmentName){
@@ -49,35 +53,41 @@ public class CCAdapterService {
         }).collect(Collectors.toList());
     }
 
-    public Deployment getCCDeployment(ApplicationFamily applicationFamily, String applicationId, String environment) {
-        AbstractCluster cluster = clusterFacade.getCluster(environment);
+    public Deployment getCCDeployment(ApplicationFamily applicationFamily, String applicationId, Environment environment) {
+        String environmentName = environment.getEnvironmentMetaData().getName();
+        AbstractCluster cluster = clusterFacade.getCluster(environmentName);
         io.fabric8.kubernetes.api.model.apps.Deployment ccDeployment =
-            clusterFacade.getApplicationData(environment, "deployerid", applicationId);
+            clusterFacade.getApplicationData(environmentName, "deployerid", applicationId);
         if (ccDeployment != null) {
             String image = ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage();
-            Deployment d = new Deployment();
-            d.setApplicationFamily(applicationFamily);
-            d.setApplicationId(applicationId);
-            d.setBuildId(ccDeployment.getSpec().getTemplate().getMetadata().getLabels().getOrDefault("deployerBuildId", image));
-            d.setEnvironment(cluster.getName());
-            d.setDeployedBy("Cap Cloud");
-            d.setImage(image);
-//            d.setHorizontalPodAutoscaler(ccDeployment.);
+            Deployment deployment = new Deployment();
+            deployment.setApplicationFamily(applicationFamily);
+            deployment.setApplicationId(applicationId);
+            deployment.setBuildId(ccDeployment.getSpec().getTemplate().getMetadata().getLabels().getOrDefault("deployerBuildId", image));
+            deployment.setEnvironment(cluster.getName());
+            deployment.setDeployedBy("Cap Cloud");
+            deployment.setImage(image);
+
             List<EnvVar> env = ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
             List<EnvironmentVariable> envs =
                 env.stream().map(e -> new EnvironmentVariable(e.getName(), e.getValue())).collect(Collectors.toList());
-            d.setConfigurations(envs);
-            HPA hpa = new HPA(-1,-1,-1);
-            d.setHorizontalPodAutoscaler(hpa);
+            deployment.setConfigurations(envs);
+
+            HPADetails hpaDetails = kubernetesService.getHPADetails(ccDeployment.getMetadata().getName(), environment);
+            HPA hpa = new HPA(hpaDetails);
+            deployment.setHorizontalPodAutoscaler(hpa);
+
             SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
             try {
                 Date parse = sdfmt.parse(ccDeployment.getMetadata().getCreationTimestamp());
-                d.setTimestamp(parse);
+                deployment.setTimestamp(parse);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            return d;
+
+            return deployment;
         }
+
         return null;
     }
 

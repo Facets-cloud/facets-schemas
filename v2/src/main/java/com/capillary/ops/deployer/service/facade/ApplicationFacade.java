@@ -512,7 +512,9 @@ public class ApplicationFacade {
         if (deployment.isPresent()) {
             return deployment.get();
         }
-        Deployment ccDeployment = ccAdapterService.getCCDeployment(applicationFamily, applicationId, environment);
+
+        Environment ccEnvironment = getEnvironmentWithCCFallback(applicationFamily, environment);
+        Deployment ccDeployment = ccAdapterService.getCCDeployment(applicationFamily, applicationId, ccEnvironment);
         return ccDeployment;
     }
 

@@ -168,6 +168,17 @@ public class KubernetesService implements IKubernetesService {
     }
 
     @Override
+    public HPADetails getHPADetails(String deploymentName, Environment environment) {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        HorizontalPodAutoscaler hpa = kubernetesClient.autoscaling()
+                .horizontalPodAutoscalers()
+                .inNamespace(NAMESPACE)
+                .withName(deploymentName)
+                .get();
+        return getHPADetails(hpa);
+    }
+
+    @Override
     public List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         ImmutableMap<String, String> selectors = ImmutableMap.of("app", deploymentName);

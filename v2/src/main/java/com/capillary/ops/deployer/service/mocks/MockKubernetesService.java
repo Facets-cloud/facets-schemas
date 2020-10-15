@@ -81,6 +81,12 @@ public class MockKubernetesService implements IKubernetesService {
     }
 
     @Override
+    public HPADetails getHPADetails(String deploymentName, Environment environment) {
+        return new HPADetails(1, 2,
+                1, 1, 60, 30);
+    }
+
+    @Override
     public List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName) {
         ApplicationPodDetails podDetails = new ApplicationPodDetails();
         podDetails.setName("testpod");

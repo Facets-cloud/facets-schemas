@@ -5,6 +5,12 @@ public class HPA {
     public HPA() {
     }
 
+    public HPA(HPADetails hpaDetails) {
+        this.threshold = hpaDetails.getTargetCPUAvg();
+        this.minReplicas = hpaDetails.getMinReplicas();
+        this.maxReplicas = hpaDetails.getMaxReplicas();
+    }
+
     public HPA(int threshold, int minReplicas, int maxReplicas) {
         this.threshold = threshold;
         this.minReplicas = minReplicas;
