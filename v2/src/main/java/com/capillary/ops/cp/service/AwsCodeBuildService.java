@@ -189,7 +189,7 @@ public class AwsCodeBuildService implements TFBuildService {
 
             if (pipelineParentDeploymentOptional.isPresent()) {
                 DeploymentLog pipelineParentDeployment = pipelineParentDeploymentOptional.get();
-                primarySourceVersion = pipelineParentDeployment.getTfVersion();
+                //primarySourceVersion = pipelineParentDeployment.getTfVersion();
                 String stackSourceVersion = pipelineParentDeployment.getStackVersion();
 
                 if(StringUtils.isEmpty(stackSourceVersion) || StringUtils.isEmpty(primarySourceVersion)) {
