@@ -1,18 +1,14 @@
 package com.capillary.ops.cp.facade;
 
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
-import com.capillary.ops.cp.bo.requests.*;
-import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
-import com.capillary.ops.cp.repository.*;
+import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
-import com.capillary.ops.cp.repository.DeploymentLogRepository;
-import com.capillary.ops.cp.repository.K8sCredentialsRepository;
-import com.capillary.ops.cp.repository.QASuiteRepository;
-import com.capillary.ops.cp.repository.QASuiteResultRepository;
+import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
+import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
+import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.BaseDRService;
 import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.GitService;
@@ -22,6 +18,8 @@ import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -39,10 +37,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.codebuild.model.*;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
+import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -69,8 +69,8 @@ public class DeploymentFacade {
     @Autowired
     private QASuiteResultRepository qaSuiteResultRepository;
 
-//    @Autowired
-//    private BuildService buildService;
+    @Autowired
+    private BuildService buildService;
 
     @Autowired
     private DeployerHttpClient httpClient;
@@ -93,6 +93,9 @@ public class DeploymentFacade {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
     @Value("${flock.notification.cc.endpoint}")
@@ -106,10 +109,28 @@ public class DeploymentFacade {
      * @return The Deployment Log Object
      */
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
-        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        DeploymentContext deploymentContext = getDeploymentContext(clusterId, deploymentRequest);
-        //TODO: Save Deployment requests for audit purpose
-        return tfBuildService.deployLatest(cluster, deploymentRequest, deploymentContext);
+        try {
+            AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+            DeploymentContext deploymentContext = getDeploymentContext(clusterId, deploymentRequest);
+            //TODO: Save Deployment requests for audit purpose
+            return tfBuildService.deployLatest(cluster, deploymentRequest, deploymentContext);
+        } catch (QACallbackAbsentException e) {
+            sendCCNotification(e.getMessage());
+            throw e;
+        }
+    }
+
+    private void sendCCNotification(String message) {
+        JSONObject messageJson = new JSONObject();
+        messageJson.put("text", message);
+
+        DeployerHttpClient httpClient = new DeployerHttpClient();
+        try {
+            httpClient.makePOSTRequest(flockCCNotificationEndpoint, messageJson.toString(), "", "");
+        } catch (IOException e) {
+            logger.info("could not send capillary cloud notification: {}", messageJson);
+            logger.error("error happened while sending capillary cloud notification", e);
+        }
     }
 
     /**
@@ -353,36 +374,34 @@ public class DeploymentFacade {
      */
     synchronized public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
-        existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
-        Map<String, String> failedBuilds = new HashMap<>();
+        if (shouldValidateSanityResult(qaSuiteResult)) {
+            Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
+            existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
+            validateSanityFailure(cluster, qaSuiteResult);
+        }
+    }
+
+    private boolean shouldValidateSanityResult(QASuiteResult qaSuiteResult) {
+        List<K8sJobStatus> errorStatuses = Lists.newArrayList(K8sJobStatus.FAILURE, K8sJobStatus.ERROR);
+        return errorStatuses.contains(qaSuiteResult.getStatus()) && qaSuiteResult.getDeploymentId() != null;
+    }
+
+    private void validateSanityFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult) throws Exception {
+        Map<String, K8sJobStatus> notFailedJobs = filterNotFailedQASuites(qaSuiteResult.getModuleStatusMap());
+        QASuiteResult copy = qaSuiteResult.withModuleStatusMap(notFailedJobs);
+        List<String> automationFailures = getFailedModules(qaSuiteResult);
+
+        logger.info("builds to unpromote: {}", automationFailures);
+
         try {
-            if (K8sJobStatus.FAILURE.equals(qaSuiteResult.getStatus()) && qaSuiteResult.getDeploymentId() != null) {
-                logger.info("sanity failure for cluster: {}, with result: {}", cluster.getId(), qaSuiteResult);
-
-                Map<String, K8sJobStatus> notFailedJobs = filterNotFailedQASuites(qaSuiteResult.getModuleStatusMap());
-                QASuiteResult copy = qaSuiteResult.withModuleStatusMap(notFailedJobs);
-                List<String> automationFailures = getFailedModules(qaSuiteResult);
-
-                logger.info("builds to unpromote: {}", automationFailures);
-
-                automationFailures.parallelStream().forEach(moduleName -> {
-                    logger.info("automation failure, unpormoting build for module: {}", moduleName);
-                    String unpromoteBuild = unpromoteBuild(clusterId, moduleName);
-                    copy.getModuleStatusMap().put(moduleName, K8sJobStatus.FAILURE);
-                    qaSuiteResultRepository.save(copy);
-                    failedBuilds.put(moduleName, unpromoteBuild);
-                });
-
-                if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
-//                    deployModulesWithRevertedBuilds(clusterId, qaSuiteResult.getDeploymentId());
-                }
+            if (qaSuiteResult.isRedeployment()) {
+                handleRedeploymentFailure(cluster, copy, automationFailures);
+            } else {
+                handleNewDeploymentFailure(cluster, copy, automationFailures);
             }
-        } catch (Exception e) {
-            logger.error("Error validating sanity results", e);
+        } catch (Exception ex) {
+            logger.error("Error validating sanity results", ex);
             throw new Exception("unknown error happened while validating qa suite result");
-        } finally {
-            sendSanityFailureNotification(cluster, failedBuilds);
         }
     }
 
@@ -391,13 +410,72 @@ public class DeploymentFacade {
         deploymentRequest.setTag("test1");
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setExtraEnv(ImmutableMap.of("REDEPLOYMENT_BUILD_ID", deploymentId));
-
         createDeployment(clusterId, deploymentRequest);
     }
 
-    private void sendSanityFailureNotification(AbstractCluster cluster, Map<String, String> failedBuilds) {
+    public void handleNewDeploymentFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult, List<String> automationFailures) {
+        logger.info("handling new deployment failure for cluster: {}, qa suite: {}", cluster.getId(), qaSuiteResult);
+
+        String clusterId = cluster.getId();
+        Map<String, String> failedBuilds = new HashMap<>();
+        automationFailures.parallelStream().forEach(moduleName -> {
+            logger.info("automation failure, unpormoting build for module: {}", moduleName);
+
+            Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
+            String applicationId = application.getMetadata().getLabels().get("deployerid");
+            String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels().get("deployerBuildId");
+//            buildService.unPromoteBuild(applicationId, deployerBuildId);
+
+            Map<String, Object> logParameters = ImmutableMap.of("applicationId", applicationId,
+                    "deployerBuildId", deployerBuildId);
+            AuditLog auditLog = new AuditLog("unpromoted build", Instant.now(), "deployer",
+                    "sanity failure", logParameters);
+            auditLogRepository.save(auditLog);
+
+            qaSuiteResult.getModuleStatusMap().put(moduleName, K8sJobStatus.FAILURE);
+            qaSuiteResultRepository.save(qaSuiteResult);
+            failedBuilds.put(moduleName, deployerBuildId);
+        });
+
+
+        if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
+//            deployModulesWithRevertedBuilds(clusterId, qaSuiteResult.getDeploymentId());
+        }
+
+        publishSanityFailures(cluster, qaSuiteResult, failedBuilds);
+    }
+
+    public void handleRedeploymentFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult, List<String> automationFailures) {
+        logger.info("handling redeployment failure for cluster: {}, qa suite: {}", cluster.getId(), qaSuiteResult);
+
+        String clusterId = cluster.getId();
+        Map<String, String> failedBuilds = new HashMap<>();
+        automationFailures.parallelStream().forEach(moduleName -> {
+            logger.info("automation failure, unpormoting build for module: {}", moduleName);
+
+            Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
+            String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels().get("deployerBuildId");
+
+            qaSuiteResult.getModuleStatusMap().put(moduleName, K8sJobStatus.FAILURE);
+            qaSuiteResultRepository.save(qaSuiteResult);
+            failedBuilds.put(moduleName, deployerBuildId);
+        });
+
+        publishSanityFailures(cluster, qaSuiteResult, failedBuilds);
+    }
+
+    private void publishSanityFailures(AbstractCluster cluster, QASuiteResult qaSuiteResult, Map<String, String> failedBuilds) {
+        failedBuilds.forEach((k, v) -> {
+            QASuiteModuleResult moduleResult = new QASuiteModuleResult(qaSuiteResult.getId(), k,
+                    qaSuiteResult.getDeploymentId(), K8sJobStatus.valueOf(v));
+            QASanityNotification qaSanityNotification = new QASanityNotification(moduleResult, cluster);
+            notificationService.publish(qaSanityNotification);
+        });
+    }
+
+    private String constructSanityFailureNotificationMessage(AbstractCluster cluster, Map<String, String> failedBuilds) {
         if (failedBuilds.size() == 0) {
-            return;
+            return null;
         }
 
         StringJoiner moduleJoiner = new StringJoiner("\n");
@@ -406,20 +484,7 @@ public class DeploymentFacade {
             moduleJoiner.add(String.format("%s: %s", moduleName, buildId));
         });
 
-        if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
-            moduleJoiner.add("Builds have been UNPROMOTED, will be REVERTED in the next release");
-        }
-
-        JSONObject message = new JSONObject();
-        message.put("text", moduleJoiner.toString());
-
-        DeployerHttpClient httpClient = new DeployerHttpClient();
-        try {
-            httpClient.makePOSTRequest(flockCCNotificationEndpoint, message.toString(), "", "");
-        } catch (IOException e) {
-            logger.info("could not send failure notification: {}", message);
-            logger.error("error happened while sending failure notification", e);
-        }
+        return moduleJoiner.toString();
     }
 
     private String unpromoteBuild(String clusterId, String moduleName) {

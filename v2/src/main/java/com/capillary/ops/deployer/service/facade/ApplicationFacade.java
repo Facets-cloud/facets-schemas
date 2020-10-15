@@ -2,7 +2,6 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.Artifact;
 import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -48,7 +47,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;

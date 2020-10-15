@@ -8,7 +8,9 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
+import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -98,6 +100,9 @@ public class AwsCodeBuildService implements TFBuildService {
     private DeploymentLogRepository deploymentLogRepository;
 
     @Autowired
+    private QASuiteResultRepository qaSuiteResultRepository;
+
+    @Autowired
     private GitService gitService;
     /**
      * Deploy the latest build in the specified clusterId
@@ -123,6 +128,26 @@ public class AwsCodeBuildService implements TFBuildService {
             throw new NotFoundException("The Stack for this cluster does not exist NOW");
         }
         Stack stack = stackO.get();
+
+        if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
+            Optional<DeploymentLog> deploymentLog = deploymentLogRepository.findFirstByClusterIdOrderByCreatedOnDesc(cluster.getId());
+            deploymentLog.ifPresent(x -> {
+                StatusType deploymentStatus = getBuild(x.getCodebuildId()).buildStatus();
+//                if (StatusType.IN_PROGRESS.equals(deploymentStatus)) {
+//                    String message = String.format("previous build for cluster %s already in progress, not deploying", cluster.getId());
+//                    logger.error(message);
+//                    throw new RuntimeException(message);
+//                }
+
+                Optional<QASuiteResult> qaSuiteResult = qaSuiteResultRepository.findOneByDeploymentId(x.getCodebuildId());
+                if (StatusType.SUCCEEDED.equals(deploymentStatus) && !qaSuiteResult.isPresent()) {
+                    String message = String.format("WARNING: qa callback for previous deployment not received yet for cluster: %s, such deployments will not be allowed to go through in the future", cluster.getId());
+                    logger.error(message);
+//                    throw new QACallbackAbsentException(message);
+                }
+            });
+        }
+
         //DONE: Check if code build is defined for the said cloud
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
