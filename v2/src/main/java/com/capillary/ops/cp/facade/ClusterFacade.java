@@ -175,13 +175,12 @@ public class ClusterFacade {
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
             new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
                 .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
-        DeploymentList apps = kubernetesClient.inNamespace("").extensions().deployments().withLabel(key, value).list();
+        DeploymentList apps = kubernetesClient.inNamespace("").apps().deployments().withLabel(key, value).list();
         if (apps.getItems().isEmpty()) {
             throw new NotFoundException(
                 "Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
         }
-        Deployment deployment = apps.getItems().get(0);
-        return deployment;
+        return apps.getItems().get(0);
     }
 
     /**
