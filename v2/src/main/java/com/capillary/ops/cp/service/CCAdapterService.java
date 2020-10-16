@@ -54,10 +54,10 @@ public class CCAdapterService {
     }
 
     public Deployment getCCDeployment(ApplicationFamily applicationFamily, String applicationId, Environment environment) {
-        String environmentName = environment.getEnvironmentMetaData().getName();
-        AbstractCluster cluster = clusterFacade.getCluster(environment.getEnvironmentMetaData().getCapillaryCloudClusterName());
+        String clusterId = environment.getEnvironmentMetaData().getCapillaryCloudClusterName();
+        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         io.fabric8.kubernetes.api.model.apps.Deployment ccDeployment =
-            clusterFacade.getApplicationData(environmentName, "deployerid", applicationId);
+            clusterFacade.getApplicationData(clusterId, "deployerid", applicationId);
         if (ccDeployment != null) {
             String image = ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage();
             Deployment deployment = new Deployment();
