@@ -111,7 +111,13 @@ public class AwsCodeBuildService implements TFBuildService {
     public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext)
     {
         ReleaseType releaseType = deploymentRequest.getReleaseType();
-        List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv();
+        List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv().entrySet().stream()
+                .map(x ->
+                        EnvironmentVariable.builder()
+                                .name(x.getKey())
+                                .value(x.getValue())
+                                .type(EnvironmentVariableType.PLAINTEXT).build())
+                .collect(Collectors.toList());
         Optional<Stack> stackO = stackRepository.findById(cluster.getStackName());
         if (!stackO.isPresent()) {
             throw new NotFoundException("The Stack for this cluster does not exist NOW");
@@ -245,7 +251,7 @@ public class AwsCodeBuildService implements TFBuildService {
             if(deploymentRequest.getOverrideBuildSteps() != null
                     && !deploymentRequest.getOverrideBuildSteps().isEmpty()) {
                 log.setDeploymentType(DeploymentLog.DeploymentType.CUSTOM);
-            } else if (deploymentRequest.getExtraEnv().contains("REDEPLOYMENT_BUILD_ID")) {
+            } else if (deploymentRequest.getExtraEnv().containsKey("REDEPLOYMENT_BUILD_ID")) {
                 log.setDeploymentType(DeploymentLog.DeploymentType.ROLLBACK);
             }
             else {

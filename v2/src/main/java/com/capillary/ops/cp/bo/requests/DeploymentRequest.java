@@ -4,7 +4,9 @@ import org.springframework.data.annotation.Id;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DeploymentRequest {
 
@@ -17,7 +19,7 @@ public class DeploymentRequest {
 
     private String overrideCCVersion;
 
-    private List<EnvironmentVariable> extraEnv = new ArrayList<>();
+    private Map<String, String> extraEnv = new HashMap<>();
 
     private List<String> overrideBuildSteps = new ArrayList<>();
 
@@ -45,11 +47,14 @@ public class DeploymentRequest {
         this.releaseType = releaseType;
     }
 
-    public List<EnvironmentVariable> getExtraEnv() {
+    public Map<String, String> getExtraEnv() {
+        if (this.extraEnv == null) {
+            return new HashMap<>();
+        }
         return extraEnv;
     }
 
-    public void setExtraEnv(List<EnvironmentVariable> extraEnv) {
+    public void setExtraEnv(Map<String, String> extraEnv) {
         this.extraEnv = extraEnv;
     }
 

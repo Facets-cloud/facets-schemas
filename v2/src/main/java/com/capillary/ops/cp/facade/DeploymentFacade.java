@@ -486,7 +486,8 @@ public class DeploymentFacade {
                         x -> x.getValue().stream().collect(
                                 Collectors.toMap((SnapshotInfo y) -> y.getInstanceName(), (SnapshotInfo y) -> y))));
         List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(cluster.getId());
-        return new DeploymentContext(cluster, allArtifacts, overrides, pinnedSnapshots);
+        return new DeploymentContext(cluster, allArtifacts, overrides, pinnedSnapshots,
+                deploymentRequest.getExtraEnv());
     }
 
     public void handleCodeBuildCallback(CodeBuildStatusCallback callback) {
