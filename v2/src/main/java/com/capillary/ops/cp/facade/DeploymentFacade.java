@@ -21,6 +21,7 @@ import com.capillary.ops.cp.service.notification.NotificationService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.DeploymentRepository;
+import com.google.common.collect.ImmutableMap;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -389,11 +390,7 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setTag("test1");
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
-        deploymentRequest.setExtraEnv(Collections.singletonList(EnvironmentVariable.builder()
-                .name("REDEPLOYMENT_BUILD_ID")
-                .value(deploymentId)
-                .type(EnvironmentVariableType.PLAINTEXT)
-                .build()));
+        deploymentRequest.setExtraEnv(ImmutableMap.of("REDEPLOYMENT_BUILD_ID", deploymentId));
 
         createDeployment(clusterId, deploymentRequest);
     }
