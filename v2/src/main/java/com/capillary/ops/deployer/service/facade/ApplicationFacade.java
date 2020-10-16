@@ -515,7 +515,7 @@ public class ApplicationFacade {
 
         logger.info("finding cc environment with name: {}", environment);
         Environment ccEnvironment = getEnvironmentWithCCFallback(applicationFamily, environment);
-        logger.info("found cc environment: {}", ccEnvironment);
+        logger.info("found cc environment id: {}, name: {}, ccName: {}", ccEnvironment.getId(), ccEnvironment.getEnvironmentMetaData().getName(), ccEnvironment.getEnvironmentMetaData().getCapillaryCloudClusterName());
         return ccAdapterService.getCCDeployment(applicationFamily, applicationId, ccEnvironment);
     }
 
