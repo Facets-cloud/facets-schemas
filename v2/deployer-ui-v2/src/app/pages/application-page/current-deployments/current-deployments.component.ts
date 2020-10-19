@@ -22,10 +22,61 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
   ccEnvironments: EnvironmentMetaData[];
   deployments: Deployment[] = [];
   ccDeployments: Deployment[] = [];
+  
   settingsDefault = {
     columns: {
       environment: {
         title: 'Cluster',
+      },
+      buildId: {
+        title: 'Build Id',
+      },
+      currentStatus: {
+        title: "Current Status",
+        type: 'custom',
+        renderComponent: CurrentStatusColumn,
+      },
+      deployedBy: {
+        title: 'Deployed By',
+      },
+      podSize: {
+        title: 'Pod Size',
+      },
+      configurations: {
+        type: 'custom',
+        renderComponent: ActionsColumn,
+        title: 'Environment Variables',
+      },
+      minReplicas: {
+        title: 'Min Replicas',
+      },
+      maxReplicas: {
+        title: 'Max Replicas',
+      },
+      cpuThreshold: {
+        title: 'CPU Threshold (%)',
+      },
+      timestamp: {
+        title: 'Deployed At',
+      },
+    },
+    actions: false,
+    hideSubHeader: true,
+  };
+
+  settingsDefaultCC = {
+    columns: {
+      environment: {
+        title: 'Cluster',
+        valuePrepareFunction: function(cluster) {
+          this.ccEnvironments.forEach((element => {
+            if (element.capillaryCloudClusterName == cluster) {
+              return element.name;
+            }
+          }))
+
+          return cluster;
+        }
       },
       buildId: {
         title: 'Build Id',
