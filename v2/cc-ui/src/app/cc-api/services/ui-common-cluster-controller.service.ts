@@ -24,6 +24,7 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly pinSnapshotUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
+  static readonly deleteOverridesUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/overrides/{resourceType}/{resourceName}';
 
   constructor(
     config: __Configuration,
@@ -339,6 +340,60 @@ class UiCommonClusterControllerService extends __BaseService {
       __map(_r => _r.body as Array<OverrideObject>)
     );
   }
+
+  /**
+   * deleteOverrides
+   * @param params The `UiCommonClusterControllerService.DeleteOverridesUsingDELETEParams` containing the following parameters:
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `resourceName`: resourceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  deleteOverridesUsingDELETEResponse(params: UiCommonClusterControllerService.DeleteOverridesUsingDELETEParams): __Observable<__StrictHttpResponse<Array<OverrideObject>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/overrides/${encodeURIComponent(params.resourceType)}/${encodeURIComponent(params.resourceName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<OverrideObject>>;
+      })
+    );
+  }
+  /**
+   * deleteOverrides
+   * @param params The `UiCommonClusterControllerService.DeleteOverridesUsingDELETEParams` containing the following parameters:
+   *
+   * - `resourceType`: resourceType
+   *
+   * - `resourceName`: resourceName
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  deleteOverridesUsingDELETE(params: UiCommonClusterControllerService.DeleteOverridesUsingDELETEParams): __Observable<Array<OverrideObject>> {
+    return this.deleteOverridesUsingDELETEResponse(params).pipe(
+      __map(_r => _r.body as Array<OverrideObject>)
+    );
+  }
 }
 
 module UiCommonClusterControllerService {
@@ -441,6 +496,27 @@ module UiCommonClusterControllerService {
      * request
      */
     request: Array<OverrideRequest>;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for deleteOverridesUsingDELETE
+   */
+  export interface DeleteOverridesUsingDELETEParams {
+
+    /**
+     * resourceType
+     */
+    resourceType: string;
+
+    /**
+     * resourceName
+     */
+    resourceName: string;
 
     /**
      * clusterId

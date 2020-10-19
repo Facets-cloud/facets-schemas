@@ -264,4 +264,13 @@ public class ClusterFacade {
         DRCloudService drService = drCloudFactory.getDRService(resourceType);
         return drService.createSnapshot(cluster, resourceType, instanceName);
     }
+
+    public List<OverrideObject> deleteOverride(String clusterId, String resourceType, String resourceName) {
+        Optional<AbstractCluster> cluster = cpClusterRepository.findById(clusterId);
+        if (!cluster.isPresent()) {
+            throw new NotFoundException("No such Cluster" + clusterId);
+        }
+
+        return overrideService.delete(clusterId, resourceType, resourceName);
+    }
 }

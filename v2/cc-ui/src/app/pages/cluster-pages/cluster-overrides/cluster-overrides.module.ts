@@ -11,10 +11,11 @@ import {NgJsonEditorModule} from 'ang-jsoneditor';
 import { FormsModule } from '@angular/forms';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { PopupAppOverrideComponent } from './popup-app-override/popup-app-override.component';
+import { DeleteOverrideDialogComponent } from './delete-override-dialog/delete-override-dialog.component';
 
 
 @NgModule({
-  declarations: [ClusterOverridesComponent, PopupAppOverrideComponent],
+  declarations: [ClusterOverridesComponent, PopupAppOverrideComponent, DeleteOverrideDialogComponent],
   imports: [
     CommonModule,
     RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
@@ -36,7 +37,8 @@ import { PopupAppOverrideComponent } from './popup-app-override/popup-app-overri
     NbMenuService,
     NbToastrService,
     NbDialogService,
-    PopupAppOverrideComponent
+    PopupAppOverrideComponent,
+    DeleteOverrideDialogComponent
   ]
 })
 export class ClusterOverridesModule {

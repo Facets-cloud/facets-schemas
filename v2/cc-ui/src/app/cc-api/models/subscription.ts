@@ -5,6 +5,6 @@ export interface Subscription {
   filters?: {[key: string]: Array<string>};
   id?: string;
   notificationSubject?: string;
-  notificationType?: 'APP_DEPLOYMENT';
+  notificationType?: 'APP_DEPLOYMENT' | 'QASUITE_SANITY';
   stackName?: string;
 }

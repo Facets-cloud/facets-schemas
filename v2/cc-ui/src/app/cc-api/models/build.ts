@@ -16,4 +16,5 @@ export interface Build {
   testBuild?: boolean;
   timestamp?: number;
   triggeredBy?: string;
+  unpromoted?: boolean;
 }

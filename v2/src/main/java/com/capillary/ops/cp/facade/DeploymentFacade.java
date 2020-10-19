@@ -374,10 +374,12 @@ public class DeploymentFacade {
      */
     synchronized public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
+        existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
         if (shouldValidateSanityResult(qaSuiteResult)) {
-            Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
-            existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
             validateSanityFailure(cluster, qaSuiteResult);
+        } else {
+            qaSuiteResultRepository.save(qaSuiteResult);
         }
     }
 
@@ -467,7 +469,7 @@ public class DeploymentFacade {
     private void publishSanityFailures(AbstractCluster cluster, QASuiteResult qaSuiteResult, Map<String, String> failedBuilds) {
         failedBuilds.forEach((k, v) -> {
             QASuiteModuleResult moduleResult = new QASuiteModuleResult(qaSuiteResult.getId(), k,
-                    qaSuiteResult.getDeploymentId(), K8sJobStatus.valueOf(v));
+                    qaSuiteResult.getDeploymentId(), K8sJobStatus.FAILURE);
             QASanityNotification qaSanityNotification = new QASanityNotification(moduleResult, cluster);
             notificationService.publish(qaSanityNotification);
         });

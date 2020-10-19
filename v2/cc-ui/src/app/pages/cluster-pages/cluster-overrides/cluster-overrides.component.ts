@@ -7,6 +7,7 @@ import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { UiStackControllerService, UiAwsClusterControllerService } from 'src/app/cc-api/services';
 import { AwsClusterRequest, AbstractCluster } from 'src/app/cc-api/models';
 import { PopupAppOverrideComponent } from './popup-app-override/popup-app-override.component';
+import { DeleteOverrideDialogComponent } from './delete-override-dialog/delete-override-dialog.component';
 
 
 @Component({
@@ -168,6 +169,20 @@ export class ClusterOverridesComponent implements OnInit {
 
   addOverride() {
     this.dialogService.open(PopupAppOverrideComponent, { context: { clusterId: this.clusterId, existingOverrides: this.lookupMap } });
+  }
+
+  deleteOverride() {
+    this.dialogService.open(DeleteOverrideDialogComponent).onClose.subscribe(proceed => {
+      if (proceed) {
+        this.clusterService.deleteOverridesUsingDELETE({
+          clusterId: this.clusterId,
+          resourceType: this.currentSelection.resourceType,
+          resourceName: this.currentSelection.resourceName
+        }).subscribe((deletedOverrides) => {
+          location.reload();
+        })
+      }
+    });
   }
 
   submitOverrides() {
