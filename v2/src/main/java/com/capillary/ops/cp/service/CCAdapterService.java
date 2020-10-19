@@ -64,7 +64,7 @@ public class CCAdapterService {
             deployment.setApplicationFamily(applicationFamily);
             deployment.setApplicationId(applicationId);
             deployment.setBuildId(ccDeployment.getSpec().getTemplate().getMetadata().getLabels().getOrDefault("deployerBuildId", image));
-            deployment.setEnvironment(cluster.getName());
+            deployment.setEnvironment(clusterId);
             deployment.setDeployedBy("Cap Cloud");
             deployment.setImage(image);
 
