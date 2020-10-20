@@ -374,6 +374,8 @@ public class DeploymentFacade {
         Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
         existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
         if (shouldValidateSanityResult(qaSuiteResult)) {
+            logger.info("validating sanity failure for: {}, for modules: {}", qaSuiteResult.getDeploymentId(),
+                    qaSuiteResult.getModuleStatusMap());
             validateSanityFailure(cluster, qaSuiteResult);
         } else {
             qaSuiteResultRepository.save(qaSuiteResult);
@@ -464,6 +466,8 @@ public class DeploymentFacade {
     }
 
     private void publishSanityFailures(AbstractCluster cluster, QASuiteResult qaSuiteResult, Map<String, String> failedBuilds) {
+        logger.info("publishing sanity suite results for cluster: {}, deployment: {}, modules: {}", cluster.getName(),
+                qaSuiteResult.getDeploymentId(), failedBuilds );
         failedBuilds.forEach((k, v) -> {
             QASuiteModuleResult moduleResult = new QASuiteModuleResult(qaSuiteResult.getId(), k,
                     qaSuiteResult.getDeploymentId(), K8sJobStatus.FAILURE);
