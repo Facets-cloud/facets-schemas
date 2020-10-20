@@ -565,7 +565,7 @@ public class DeploymentFacade {
         AbstractCluster cluster = clusterFacade.getCluster(deploymentLog.getClusterId());
         deploymentLog = tfBuildService.loadDeploymentStatus(deploymentLog, true);
 
-        if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty()) {
+        if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
             deploymentLog.getAppDeployments().stream().forEach(
                     x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
         }
