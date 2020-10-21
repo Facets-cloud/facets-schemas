@@ -77,6 +77,10 @@
           </div>
         </nb-card-body>
       </nb-card>
+
+
+
+
     </div>
   </div>
 
@@ -157,6 +161,27 @@
             </button>
             <button nbButton fullWidth status="info" *ngIf="enableSubmitForClusterOverrides"
                     (click)="submitClusterOverrides()">Submit new Overrides
+            </button>
+          </div>
+
+        </nb-card-body>
+      </nb-card>
+      <nb-card accent="danger">
+        <nb-card-header>Deployment</nb-card-header>
+        <nb-card-body>
+        <div style="background: rgba(255,255,255,0.8);" class="row">
+          <div class="col-lg-10">
+              <div class="row">
+                <div class="col-sm-5 cc-value">Application Name</div>
+                 <div class="col-sm-7 cc-key">
+                  <input fieldSize="small" type=text  required nbInput fullWidth name="ApplicationName" id="applicationName" placeholder="intouch-api" pattern="[a-z-]+">
+                 </div>
+                </div>
+              </div>
+          </div>
+          <div style="margin: 1rem 0 1rem 0">
+            <button nbButton fullWidth status="info" *ngIf="enableSubmitForClusterOverrides"
+                    (click)="submitClusterOverrides()">TRIGGER APPLY
             </button>
           </div>
 

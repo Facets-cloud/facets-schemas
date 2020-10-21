@@ -128,6 +128,10 @@ export class ClusterOverviewComponent implements OnInit {
     }
   }
 
+  triggerHotfixApply() {
+
+  }
+
   refreshStack() {
     this.addOverrideSpinner = true;
     try {
