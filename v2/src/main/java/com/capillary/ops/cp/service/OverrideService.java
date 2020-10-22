@@ -25,32 +25,22 @@ public class OverrideService {
         if (request == null || request.getOverrides() == null) {
             throw new IllegalArgumentException("Wrong OverrideRequest" + request);
         }
+
         Optional<OverrideObject> existing = overrideObjectRepository
             .findOneByClusterIdAndResourceTypeAndResourceName(clusterId, request.getResourceType(),
                 request.getResourceName());
-        OverrideObject toSave;
-        if (!existing.isPresent()) {
-            toSave = new OverrideObject();
-            toSave.setClusterId(clusterId);
-            toSave.setResourceType(request.getResourceType());
-            toSave.setResourceName(request.getResourceName());
-            toSave.setOverrides(request.getOverrides());
+
+        OverrideObject overrideObject;
+        if (existing.isPresent()) {
+            overrideObject = existing.get();
         } else {
-            toSave = existing.get();
-            Map<String, Object> existingOverrides = toSave.getOverrides();
-            Map<String, Object> newOverrides = request.getOverrides();
-
-            if (existingOverrides != null) {
-                Set<String> keys = newOverrides.keySet();
-                //TODO: change this to deep merge if required
-                keys.stream().forEach(k -> existingOverrides.put(k, newOverrides.get(k)));
-                toSave.setOverrides(existingOverrides);
-            } else {
-                toSave.setOverrides(newOverrides);
-            }
+            overrideObject = new OverrideObject();
+            overrideObject.setClusterId(clusterId);
+            overrideObject.setResourceType(request.getResourceType());
+            overrideObject.setResourceName(request.getResourceName());
         }
-        return overrideObjectRepository.save(toSave);
-
+        overrideObject.setOverrides(request.getOverrides());
+        return overrideObjectRepository.save(overrideObject);
     }
 
     public List<OverrideObject> findAllByClusterId(String clusterId) {
