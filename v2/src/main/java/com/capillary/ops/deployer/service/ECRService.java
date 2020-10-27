@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -70,13 +69,15 @@ public class ECRService implements IECRService {
     }
 
     @Override
-    public String findImageBetweenTimes(Application application, Instant from, Instant to) {
+    public String findImageBetweenTimes(Application application, Instant from, Instant to, String gitVersion) {
+        String shortGitVersion = gitVersion.substring(0,7);
         String repositoryName = getRepositoryName(application);
         Optional<String> imageOptional = ecrClient.describeImages(DescribeImagesRequest.builder()
                 .repositoryName(repositoryName).maxResults(1000).build())
                 .imageDetails().stream()
                 .filter(x -> x.imageTags() != null && !x.imageTags().isEmpty())
                 .filter(x -> x.imagePushedAt().isAfter(from) && x.imagePushedAt().isBefore(to))
+                .filter(x -> x.imageTags().get(0).contains(shortGitVersion))
                 .map(x -> environment.getProperty("ecr.registry") + "/" + repositoryName + ":" + x.imageTags().get(0))
                 .findFirst();
         return imageOptional.orElse(null);

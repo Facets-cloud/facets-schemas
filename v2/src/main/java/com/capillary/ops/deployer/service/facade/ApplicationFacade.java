@@ -281,8 +281,8 @@ public class ApplicationFacade {
     }
 
     @RedisLocked(
-            expression = "#applicationFamily + '_' + #build.getApplicationId() + '_' + #build.getTag()",
-            expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
+            expression = "#applicationFamily + '_' + #build.getApplicationId()",
+            expiration = @Interval(value = "10", unit = TimeUnit.MINUTES)
     )
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String applicationId = build.getApplicationId();
@@ -436,7 +436,8 @@ public class ApplicationFacade {
             build.setStatus(status);
             if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
                 build.setImage(ecrService.findImageBetweenTimes(application,
-                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime(),
+                        codeBuildServiceBuild.resolvedSourceVersion()));
             }
             buildRepository.save(build);
         }
@@ -459,7 +460,8 @@ public class ApplicationFacade {
             build.setStatus(status);
             if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus())) {
                 build.setImage(ecrService.findImageBetweenTimes(applicationOptional.get(),
-                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime(),
+                        codeBuildServiceBuild.resolvedSourceVersion()));
             }
             buildRepository.save(build);
             // change to webhook

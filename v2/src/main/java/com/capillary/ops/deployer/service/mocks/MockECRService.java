@@ -24,7 +24,7 @@ public class MockECRService implements IECRService {
     }
 
     @Override
-    public String findImageBetweenTimes(Application application, Instant from, Instant to) {
+    public String findImageBetweenTimes(Application application, Instant from, Instant to, String gitVersion) {
         return "someimage";
     }
 
