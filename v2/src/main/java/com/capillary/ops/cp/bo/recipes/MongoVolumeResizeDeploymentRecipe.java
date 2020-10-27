@@ -3,10 +3,9 @@ package com.capillary.ops.cp.bo.recipes;
 import com.capillary.ops.cp.bo.AbstractDeploymentRecipe;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("MONGO_VOLUME_RESIZE")
 public class MongoVolumeResizeDeploymentRecipe {
     private String dbInstanceName;
-    private String snapshotId;
+    private Integer size;
 
     public String getDbInstanceName() {
         return dbInstanceName;
@@ -16,11 +15,11 @@ public class MongoVolumeResizeDeploymentRecipe {
         this.dbInstanceName = dbInstanceName;
     }
 
-    public String getSnapshotId() {
-        return snapshotId;
+    public Integer getSize() {
+        return size;
     }
 
-    public void setSnapshotId(String snapshotId) {
-        this.snapshotId = snapshotId;
+    public void setSize(Integer size) {
+        this.size = size;
     }
 }

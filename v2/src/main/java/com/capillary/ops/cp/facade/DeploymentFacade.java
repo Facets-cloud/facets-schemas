@@ -592,6 +592,7 @@ public class DeploymentFacade {
 
         for (SnapshotInfo snapshot: snapshots) {
             if(snapshot.getCloudSpecificId().equalsIgnoreCase(deploymentRecipe.getSnapshotId())) {
+                snapshotToPin = snapshot;
                 break;
             }
         }
@@ -616,6 +617,33 @@ public class DeploymentFacade {
     }
 
     public DeploymentLog runMongoResizeRecipe(String clusterId, MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
-        return null;
+        List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
+        OverrideObject overrieToChange = null;
+        for (OverrideObject override: overrides) {
+            if(override.getResourceType().equalsIgnoreCase("mongo")
+                    &&
+                    override.getResourceName().equalsIgnoreCase(deploymentRecipe.getDbInstanceName()) ) {
+                overrieToChange = override;
+                break;
+            }
+        }
+
+        if (overrieToChange != null) {
+            overrieToChange.getOverrides().put("override_volume_size", deploymentRecipe.getSize());
+        } else {
+            overrieToChange = new OverrideObject();
+            overrieToChange.setClusterId(clusterId);
+            overrieToChange.setResourceType("mongo");
+            overrieToChange.setResourceName(deploymentRecipe.getDbInstanceName());
+            overrieToChange.setOverrides(new HashMap<>());
+            overrieToChange.getOverrides().put("override_volume_size", deploymentRecipe.getSize());
+        }
+        // clusterFacade.override(clusterId, Arrays.asList(overrieToChange));
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(
+                "terraform apply -target module.mongo"
+        ));
+        return createDeployment(clusterId, deploymentRequest);
     }
 }
