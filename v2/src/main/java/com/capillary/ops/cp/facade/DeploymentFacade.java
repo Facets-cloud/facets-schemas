@@ -4,6 +4,9 @@ import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
+import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
@@ -579,5 +582,40 @@ public class DeploymentFacade {
         } else {
             throw new RuntimeException("Cannot signoff failed deployment");
         }
+    }
+
+    public DeploymentLog runAuroraDRRecipe(String clusterId, AuroraDRDeploymentRecipe deploymentRecipe) {
+        List<SnapshotInfo> snapshots =
+                clusterFacade.listSnapshots(clusterId, "aurora", deploymentRecipe.getDbInstanceName());
+
+        SnapshotInfo snapshotToPin = null;
+
+        for (SnapshotInfo snapshot: snapshots) {
+            if(snapshot.getCloudSpecificId().equalsIgnoreCase(deploymentRecipe.getSnapshotId())) {
+                break;
+            }
+        }
+
+        if (snapshotToPin == null) {
+            return null;
+        }
+
+        clusterFacade.pinSnapshot(clusterId, "aurora",
+                deploymentRecipe.getDbInstanceName(), snapshotToPin);
+
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(
+                "terraform apply -target module.aurora"
+        ));
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
+    public DeploymentLog runMongoDRRecipe(String clusterId, MongoDRDeploymentRecipe deploymentRecipe) {
+        return null;
+    }
+
+    public DeploymentLog runMongoResizeRecipe(String clusterId, MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
+        return null;
     }
 }
