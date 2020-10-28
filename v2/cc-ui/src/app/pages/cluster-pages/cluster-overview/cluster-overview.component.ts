@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UiAwsClusterControllerService} from '../../../cc-api/services/ui-aws-cluster-controller.service';
 import flat from 'flat';
-import {NbToastrService} from '@nebular/theme';
+import {NbSelectModule, NbToastrService} from '@nebular/theme';
+import {NbToggleModule} from '@nebular/theme';
 import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
 import {UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
@@ -14,7 +15,11 @@ import {element} from 'protractor';
   templateUrl: './cluster-overview.component.html',
   styleUrls: ['./cluster-overview.component.scss']
 })
+
 export class ClusterOverviewComponent implements OnInit {
+  releaseTypes = ['Release', 'Hotfix'];
+  releaseTypeSelection: any = 'Release';
+
 
   settings = {
     columns: {
