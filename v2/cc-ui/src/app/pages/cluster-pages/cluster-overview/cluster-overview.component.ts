@@ -5,10 +5,11 @@ import flat from 'flat';
 import {NbSelectModule, NbToastrService} from '@nebular/theme';
 import {NbToggleModule} from '@nebular/theme';
 import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
-import {UiStackControllerService} from 'src/app/cc-api/services';
+import {UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
 import {AwsCluster} from "../../../cc-api/models/aws-cluster";
 import {element} from 'protractor';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
 
 @Component({
   selector: 'app-cluster-overview',
@@ -19,7 +20,8 @@ import {element} from 'protractor';
 export class ClusterOverviewComponent implements OnInit {
   releaseTypes = ['Release', 'Hotfix'];
   releaseTypeSelection: any = 'Release';
-
+  applicationName: any = '';
+  payload: any = '{}';
 
   settings = {
     columns: {
@@ -78,7 +80,8 @@ export class ClusterOverviewComponent implements OnInit {
               private route: ActivatedRoute,
               private router: Router,
               private toastrService: NbToastrService,
-              private stackService: UiStackControllerService) {
+              private stackService: UiStackControllerService,
+              private deploymentService: UiDeploymentControllerService) {
   }
 
   ngOnInit(): void {
@@ -134,7 +137,33 @@ export class ClusterOverviewComponent implements OnInit {
   }
 
   triggerHotfixApply() {
-
+    this.addOverrideSpinner = true;
+    console.log('testing');
+    console.log(this.releaseTypeSelection);
+    console.log(this.applicationName);
+    if (this.releaseTypeSelection === 'Hotfix'){
+      this.payload = {
+        releaseType: 'RELEASE',
+        overrideBuildSteps: 'terraform apply -target \'module.application.helm_release.application[\"' + this.applicationName + '\"]\' -auto-approve'
+      };
+    }
+    else
+    {
+      this.payload = {
+        releaseType: 'RELEASE'
+      };
+    }
+    console.log(this.payload);
+    try {
+      this.deploymentService.createDeploymentUsingPOST1({
+        clusterId: this.cluster.id,
+        deploymentRequest: this.payload
+      });
+      this.addOverrideSpinner = false;
+    } catch (err) {
+      console.log(err);
+      this.addOverrideSpinner = false;
+    }
   }
 
   refreshStack() {
