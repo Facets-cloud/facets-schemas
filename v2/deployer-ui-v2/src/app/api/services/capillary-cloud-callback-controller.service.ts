@@ -1,0 +1,68 @@
+/* tslint:disable */
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpRequest, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { BaseService as __BaseService } from '../base-service';
+import { ApiConfiguration as __Configuration } from '../api-configuration';
+import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-response';
+import { Observable as __Observable } from 'rxjs';
+import { map as __map, filter as __filter } from 'rxjs/operators';
+
+import { CodeBuildStatusCallback } from '../models/code-build-status-callback';
+
+/**
+ * Capillary Cloud Callback Controller
+ */
+@Injectable({
+  providedIn: 'root',
+})
+class CapillaryCloudCallbackControllerService extends __BaseService {
+  static readonly codeBuildCallbackUsingPOSTPath = '/cc/v1/callbacks/codebuild';
+
+  constructor(
+    config: __Configuration,
+    http: HttpClient
+  ) {
+    super(config, http);
+  }
+
+  /**
+   * @param callback callback
+   * @return OK
+   */
+  codeBuildCallbackUsingPOSTResponse(callback: CodeBuildStatusCallback): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = callback;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/callbacks/codebuild`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * @param callback callback
+   * @return OK
+   */
+  codeBuildCallbackUsingPOST(callback: CodeBuildStatusCallback): __Observable<boolean> {
+    return this.codeBuildCallbackUsingPOSTResponse(callback).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+}
+
+module CapillaryCloudCallbackControllerService {
+}
+
+export { CapillaryCloudCallbackControllerService }
