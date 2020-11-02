@@ -41,7 +41,7 @@ public class NotificationService {
                 .filter(x -> {
                     for (NotificationTag t: x.getFilters().keySet()) {
                         String v = notification.getNotificationTags().get(t);
-                        if (! x.getFilters().get(t).stream().anyMatch(f -> f.equalsIgnoreCase(v))) {
+                        if (x.getFilters().get(t).stream().noneMatch(f -> f.equalsIgnoreCase(v))) {
                             return false;
                         }
                     }

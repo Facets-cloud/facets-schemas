@@ -14,4 +14,6 @@ public interface OverrideObjectRepository extends MongoRepository<OverrideObject
         String resourceName);
 
     List<OverrideObject> findAllByClusterId(String clusterId);
+
+    List<OverrideObject> deleteByClusterIdAndResourceTypeAndResourceName(String clusterId, String resourceType, String resourceName);
 }

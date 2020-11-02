@@ -23,4 +23,6 @@ public interface DeploymentLogRepository extends MongoRepository<DeploymentLog, 
                                                                                      StatusType statusType,
                                                                                      DeploymentLog.DeploymentType deploymentType,
                                                                                      boolean b);
+
+    Optional<DeploymentLog> findFirstByClusterIdOrderByCreatedOnDesc(String clusterId);
 }

@@ -59,4 +59,14 @@ public class OverrideObject {
     public void setOverrides(Map<String, Object> overrides) {
         this.overrides = overrides;
     }
+
+    @Override
+    public String toString() {
+        return "OverrideObject{" +
+                "clusterId='" + clusterId + '\'' +
+                ", resourceType='" + resourceType + '\'' +
+                ", resourceName='" + resourceName + '\'' +
+                ", overrides=" + overrides +
+                '}';
+    }
 }

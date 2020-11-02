@@ -22,6 +22,7 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
   ccEnvironments: EnvironmentMetaData[];
   deployments: Deployment[] = [];
   ccDeployments: Deployment[] = [];
+  
   settingsDefault = {
     columns: {
       environment: {

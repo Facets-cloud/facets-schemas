@@ -21,4 +21,4 @@ RUN apt-get install libmysql-diff-perl -y
 RUN apt-get install zip git -y
 COPY scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm
 RUN apt-get install -y python3 python3-pip
-RUN pip3 install requests bcrypt
+RUN pip3 install requests bcrypt jsonmerge

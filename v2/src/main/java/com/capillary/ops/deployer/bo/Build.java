@@ -27,6 +27,7 @@ public class Build implements Serializable {
     private String triggeredBy;
     private String description;
     private boolean promoted = false;
+    private boolean unpromoted = true;
     private PromotionIntent promotionIntent = PromotionIntent.NA;
     private boolean promotable = false;
     private String artifactUrl;
@@ -123,6 +124,14 @@ public class Build implements Serializable {
 
     public void setPromoted(boolean promoted) {
         this.promoted = promoted;
+    }
+
+    public boolean isUnpromoted() {
+        return unpromoted;
+    }
+
+    public void setUnpromoted(boolean unpromoted) {
+        this.unpromoted = unpromoted;
     }
 
     public ApplicationFamily getApplicationFamily() {

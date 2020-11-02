@@ -25,6 +25,8 @@ public interface IKubernetesService {
     DeploymentStatusDetails getDeploymentStatus(Application application, Environment environment, String deploymentName,
         boolean isCC);
 
+    HPADetails getHPADetails(String deploymentName, Environment environment);
+
     List<ApplicationPodDetails> getApplicationPodDetails(Application application, Environment environment, String deploymentName);
 
     ActionExecution executeAction(ApplicationAction applicationAction, Environment environment, String podName);

@@ -1,7 +1,11 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.cp.bo.AbstractDeploymentRecipe;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuite;
+import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.facade.DeploymentFacade;
@@ -82,5 +86,26 @@ public class UiDeploymentController {
     @PutMapping("/{deploymentId}/signoff")
     DeploymentLog signOffDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.signOff(clusterId, deploymentId);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/recipes/aurora/dr")
+    DeploymentLog runAuroraDRRecipe(@PathVariable String clusterId,
+                                    @RequestBody AuroraDRDeploymentRecipe deploymentRecipe) {
+        return deploymentFacade.runAuroraDRRecipe(clusterId, deploymentRecipe);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/recipes/mongo/dr")
+    DeploymentLog runMongoDRRecipe(@PathVariable String clusterId,
+                                    @RequestBody MongoDRDeploymentRecipe deploymentRecipe) {
+        return deploymentFacade.runMongoDRRecipe(clusterId, deploymentRecipe);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/recipes/mongo/resize")
+    DeploymentLog runMongoResizeRecipe(@PathVariable String clusterId,
+                                   @RequestBody MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
+        return deploymentFacade.runMongoResizeRecipe(clusterId, deploymentRecipe);
     }
 }

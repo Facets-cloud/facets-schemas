@@ -12,7 +12,8 @@
   </nb-sidebar>
   <nb-layout-column class="container-fluid">
     <nb-card accent="info">
-      <nb-card-header>Overrides for {{currentSelection?.resourceName}}</nb-card-header>
+      <nb-card-header>Overrides for: {{currentSelection?.resourceType.toUpperCase()}} / {{currentSelection?.resourceName.toUpperCase()}} <button nbButton style="margin-bottom: 10px; float: right;" outline size="small" status="danger"
+        (click)="deleteOverride()"><nb-icon icon="trash-2-outline"></nb-icon>DELETE Override</button></nb-card-header>
       <nb-card-body>
         <div>
           <json-editor [options]="editorOptions" [data]="currentSelection?.overrides" (change)="editOverrides()"

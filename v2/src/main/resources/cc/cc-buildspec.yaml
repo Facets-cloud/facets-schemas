@@ -11,10 +11,10 @@ phases:
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/schema capillary-cloud-tf/schema
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/seed_data capillary-cloud-tf/seed_data
       - if [ -d "$CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/database_views" ]; then cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/database_views capillary-cloud-tf/database_views; fi
+      - python3 capillary-cloud-tf/tfaws/scripts/merge_overrides.py
       - cd capillary-cloud-tf/tfaws/
       - terraform init
       - if terraform workspace select $CLUSTER_ID; then echo "workspace exists"; else terraform workspace new $CLUSTER_ID; fi
-      - terraform apply -target module.overrides -auto-approve -no-color -parallelism=30
   build:
     commands:
       - terraform apply -target module.infra -auto-approve -no-color -parallelism=20

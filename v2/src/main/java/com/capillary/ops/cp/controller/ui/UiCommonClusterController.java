@@ -45,6 +45,14 @@ public class UiCommonClusterController {
         return overrides;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @DeleteMapping("{clusterId}/overrides/{resourceType}/{resourceName}")
+    public List<OverrideObject> deleteOverrides(@PathVariable String clusterId,
+                                                @PathVariable String resourceType,
+                                                @PathVariable String resourceName) {
+        return clusterFacade.deleteOverride(clusterId, resourceType, resourceName);
+    }
+
     /**
      * List snapshots for a particular resource inside a given cluster
      *

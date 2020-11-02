@@ -2,7 +2,6 @@ package com.capillary.ops.deployer.service.facade;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.Artifact;
 import com.capillary.ops.cp.bo.BuildStrategy;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -48,7 +47,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -283,8 +281,8 @@ public class ApplicationFacade {
     }
 
     @RedisLocked(
-            expression = "#applicationFamily + '_' + #build.getApplicationId() + '_' + #build.getTag()",
-            expiration = @Interval(value = "1", unit = TimeUnit.MINUTES)
+            expression = "#applicationFamily + '_' + #build.getApplicationId()",
+            expiration = @Interval(value = "10", unit = TimeUnit.MINUTES)
     )
     public Build createBuild(ApplicationFamily applicationFamily, Build build) {
         String applicationId = build.getApplicationId();
@@ -438,7 +436,8 @@ public class ApplicationFacade {
             build.setStatus(status);
             if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) && includeImage) {
                 build.setImage(ecrService.findImageBetweenTimes(application,
-                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime(),
+                        codeBuildServiceBuild.resolvedSourceVersion()));
             }
             buildRepository.save(build);
         }
@@ -461,7 +460,8 @@ public class ApplicationFacade {
             build.setStatus(status);
             if (StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus())) {
                 build.setImage(ecrService.findImageBetweenTimes(applicationOptional.get(),
-                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime()));
+                        codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime(),
+                        codeBuildServiceBuild.resolvedSourceVersion()));
             }
             buildRepository.save(build);
             // change to webhook
@@ -512,8 +512,11 @@ public class ApplicationFacade {
         if (deployment.isPresent()) {
             return deployment.get();
         }
-        Deployment ccDeployment = ccAdapterService.getCCDeployment(applicationFamily, applicationId, environment);
-        return ccDeployment;
+
+        logger.info("finding cc environment with name: {}", environment);
+        Environment ccEnvironment = getEnvironmentWithCCFallback(applicationFamily, environment);
+        logger.info("found cc environment id: {}, name: {}, ccName: {}", ccEnvironment.getId(), ccEnvironment.getEnvironmentMetaData().getName(), ccEnvironment.getEnvironmentMetaData().getCapillaryCloudClusterName());
+        return ccAdapterService.getCCDeployment(applicationFamily, applicationId, ccEnvironment);
     }
 
     public TokenPaginatedResponse<LogEvent> getBuildLogs(ApplicationFamily applicationFamily,

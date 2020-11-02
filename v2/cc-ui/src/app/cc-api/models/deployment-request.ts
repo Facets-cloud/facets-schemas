@@ -1,9 +1,9 @@
 /* tslint:disable */
-import { EnvironmentVariable } from './environment-variable';
 export interface DeploymentRequest {
-  extraEnv?: Array<EnvironmentVariable>;
+  extraEnv?: {[key: string]: string};
   id?: string;
   overrideBuildSteps?: Array<string>;
+  overrideCCVersion?: string;
   releaseType?: 'HOTFIX' | 'RELEASE';
   tag?: string;
 }

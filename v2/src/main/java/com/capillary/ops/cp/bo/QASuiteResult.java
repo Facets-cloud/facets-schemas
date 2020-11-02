@@ -76,4 +76,14 @@ public class QASuiteResult {
         copy.setModuleStatusMap(moduleStatusMap);
         return copy;
     }
+
+    @Override
+    public String toString() {
+        return "QASuiteResult{" +
+                "deploymentId='" + deploymentId + '\'' +
+                ", status=" + status +
+                ", moduleStatusMap=" + moduleStatusMap +
+                ", redeployment=" + redeployment +
+                '}';
+    }
 }

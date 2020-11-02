@@ -131,10 +131,10 @@ public class KubernetesService implements IKubernetesService {
         String deploymentName, boolean isCC) {
 
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
-        if(isCC){
 
+        if(isCC){
             DeploymentList deploymentList =
-                kubernetesClient.extensions().deployments().inNamespace("").withLabel("deployerid", deploymentName)
+                kubernetesClient.apps().deployments().inNamespace("").withLabel("deployerid", deploymentName)
                     .list();
             if(deploymentList.getItems().size()>0){
                 deploymentName = deploymentList.getItems().get(0).getMetadata().getName();
@@ -142,6 +142,7 @@ public class KubernetesService implements IKubernetesService {
                 throw new NotFoundException("No CC Service found for this appid");
             }
         }
+
         ApplicationServiceDetails applicationServiceDetails = null;
         ApplicationDeploymentDetails applicationDeploymentDetails;
         Map<String, String> selectors = new HashMap<>();
@@ -164,6 +165,17 @@ public class KubernetesService implements IKubernetesService {
         List<ApplicationPodDetails> applicationPodDetails = getApplicationPodDetails(
                 deploymentName, selectors, kubernetesClient);
         return new DeploymentStatusDetails(applicationServiceDetails, applicationDeploymentDetails, applicationPodDetails);
+    }
+
+    @Override
+    public HPADetails getHPADetails(String deploymentName, Environment environment) {
+        KubernetesClient kubernetesClient = getKubernetesClient(environment);
+        HorizontalPodAutoscaler hpa = kubernetesClient.autoscaling()
+                .horizontalPodAutoscalers()
+                .inNamespace(NAMESPACE)
+                .withName(deploymentName)
+                .get();
+        return getHPADetails(hpa);
     }
 
     @Override
@@ -336,7 +348,7 @@ public class KubernetesService implements IKubernetesService {
     private ApplicationDeploymentDetails getApplicationDeploymentDetails(String deploymentName,
                                                                          KubernetesClient kubernetesClient) {
         logger.info("getting deployment with name: {}", deploymentName);
-        io.fabric8.kubernetes.api.model.apps.Deployment deployment = kubernetesClient.extensions()
+        io.fabric8.kubernetes.api.model.apps.Deployment deployment = kubernetesClient.apps()
                 .deployments().
                         inNamespace(NAMESPACE)
                 .withName(deploymentName)
