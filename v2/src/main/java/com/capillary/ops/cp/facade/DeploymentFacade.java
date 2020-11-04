@@ -3,6 +3,7 @@ package com.capillary.ops.cp.facade;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
+import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
@@ -13,14 +14,11 @@ import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.BaseDRService;
-import com.capillary.ops.cp.service.BuildService;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.cp.service.notification.NotificationService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.capillary.ops.deployer.repository.DeploymentRepository;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
@@ -40,8 +38,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
@@ -645,5 +641,14 @@ public class DeploymentFacade {
                 "terraform apply -target module.mongo"
         ));
         return createDeployment(clusterId, deploymentRequest);
+    }
+
+    public void handleDRCallback(String clusterId, String moduleType, String instanceName, DRResult callback) {
+        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        logger.info("got dr callback for cluster: {}, result: {}", clusterId, callback);
+        callback.setResourceType(moduleType);
+        callback.setInstanceName(instanceName);
+        DRResultNotification drResultNotification = new DRResultNotification(callback, cluster);
+        notificationService.publish(drResultNotification);
     }
 }
