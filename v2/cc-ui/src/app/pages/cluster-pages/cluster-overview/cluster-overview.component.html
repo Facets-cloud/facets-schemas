@@ -200,8 +200,8 @@
         </nb-card-body>
       </nb-card>
 
-      <nb-card accent="danger">
-        <nb-card-header>Deployment</nb-card-header>
+      <nb-card accent="danger" *ngIf="isUserAdmin">
+        <nb-card-header >Deployment</nb-card-header>
 
         <nb-card-body>
           <div style="background: rgba(255, 255, 255, 0.8)" class="row">
@@ -241,7 +241,7 @@
                     fullWidth
                     name="ApplicationName"
                     id="applicationName"
-                    placeholder="intouch-api"
+                    placeholder="intouch-api,emf..."
                     pattern="[a-z-]+"
                   />
                 </div>
