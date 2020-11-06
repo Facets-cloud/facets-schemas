@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuiteResult;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.QASuite;
+import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
@@ -74,8 +75,8 @@ public class DeploymentController {
     }
 
     @GetMapping()
-    List<DeploymentLog> getDeployments(@PathVariable String clusterId) {
-        return deploymentFacade.getAllDeployments(clusterId).getDeployments();
+    ListDeploymentsWrapper getDeployments(@PathVariable String clusterId) {
+        return deploymentFacade.getAllDeployments(clusterId);
     }
 
     /**
