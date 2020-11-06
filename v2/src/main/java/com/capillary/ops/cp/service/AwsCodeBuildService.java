@@ -139,12 +139,12 @@ public class AwsCodeBuildService implements TFBuildService {
 //                    throw new RuntimeException(message);
 //                }
 
-                Optional<QASuiteResult> qaSuiteResult = qaSuiteResultRepository.findOneByDeploymentId(x.getCodebuildId());
-                if (StatusType.SUCCEEDED.equals(deploymentStatus) && !qaSuiteResult.isPresent()) {
-                    String message = String.format("WARNING: qa callback for previous deployment not received yet for cluster: %s, such deployments will not be allowed to go through in the future", cluster.getId());
-                    logger.error(message);
+//                Optional<QASuiteResult> qaSuiteResult = qaSuiteResultRepository.findOneByDeploymentId(x.getCodebuildId());
+//                if (StatusType.SUCCEEDED.equals(deploymentStatus) && !qaSuiteResult.isPresent()) {
+//                    String message = String.format("WARNING: qa callback for previous deployment not received yet for cluster: %s, such deployments will not be allowed to go through in the future", cluster.getId());
+//                    logger.error(message);
 //                    throw new QACallbackAbsentException(message);
-                }
+//                }
             });
         }
 
