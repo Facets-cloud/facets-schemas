@@ -149,10 +149,8 @@ export class ClusterOverviewComponent implements OnInit {
   }
 
   triggerHotfixApply() {
-    this.addOverrideSpinner = true;
     console.log(this.releaseTypeSelection);
     console.log(this.applicationName);
-    console.log(this.user);
     const applicationNameArray = this.applicationName.split(',');
     let targetsForOverride = '';
     for (let i = 0; i < applicationNameArray.length; i++) {
@@ -176,11 +174,14 @@ export class ClusterOverviewComponent implements OnInit {
       this.deploymentService.createDeploymentUsingPOST1({
         clusterId: this.cluster.id,
         deploymentRequest: this.payload
+      }).subscribe(c => {
+        console.log(c);
+        this.toastrService.success('Triggered terraform apply', 'Success');
       });
-      this.addOverrideSpinner = false;
     } catch (err) {
       console.log(err);
-      this.addOverrideSpinner = false;
+      console.log('Trigger failed');
+      this.toastrService.warning('Trigger Failed', 'Error');
     }
   }
 
@@ -251,7 +252,7 @@ export class ClusterOverviewComponent implements OnInit {
         this.toastrService.success('Updated cluster variables', 'Success');
         location.reload();
       });
-    } catch (err) {
+      } catch (err) {
       console.log(err);
       this.addOverrideSpinner = false;
       this.toastrService.danger('Cannot update stack', 'Error');
