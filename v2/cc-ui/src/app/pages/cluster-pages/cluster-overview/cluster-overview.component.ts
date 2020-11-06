@@ -173,10 +173,10 @@ export class ClusterOverviewComponent implements OnInit {
     }
     console.log(this.payload);
     try {
-      this.deploymentService.createDeploymentUsingPOST1({
-        clusterId: this.cluster.id,
-        deploymentRequest: this.payload
-      });
+      this.deploymentService.createDeploymentUsingPOST1(
+        this.cluster.id,
+        this.payload
+      );
       this.addOverrideSpinner = false;
     } catch (err) {
       console.log(err);
