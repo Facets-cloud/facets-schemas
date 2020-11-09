@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
+import software.amazon.awssdk.services.ecr.EcrClient;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
