@@ -46,6 +46,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestParam;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
+import software.amazon.awssdk.services.ecr.EcrClient;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -59,7 +61,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import java.util.Base64.Decoder;
+import java.util.Base64;
 
 @Service
 @Loggable
@@ -1257,5 +1260,23 @@ public class ApplicationFacade {
         });
 
         return  ret;
+    }
+
+    public EcrTokenMap getEcrTokenMapping() {
+        EcrClient client = EcrClient.builder()
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .build();
+
+        String authTokenObject = client.getAuthorizationToken().authorizationData().get(0).authorizationToken();
+        Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode(authTokenObject);
+        String authTokenObjectDecoded = new String(bytes);
+        String authToken = authTokenObjectDecoded.split(":")[1];
+
+        String awsAccountId = "486456986266";
+
+        EcrTokenMap c = new EcrTokenMap(authToken, awsAccountId);
+
+        return c;
     }
 }

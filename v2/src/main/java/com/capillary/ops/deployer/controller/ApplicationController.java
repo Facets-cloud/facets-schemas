@@ -487,13 +487,19 @@ public class ApplicationController {
         List<ApplicationMetricsWrapper> ret = applicationFacade.getAllApplicationMetrics(applicationFamily);
 
         return ret;
-
     }
 
     @PutMapping(value = "/codebuild/builds/{codeBuildId}/refresh", produces = "application/json")
     public Boolean refreshBuildDetails(@PathVariable("codeBuildId") String codeBuildId) {
         applicationFacade.refreshBuildDetails(codeBuildId);
         return true;
+    }
+    @PreAuthorize("true")
+    @RequestMapping(value = "/getEcrLoginToken",method = RequestMethod.GET, produces = "application/json")
+    public EcrTokenMap getEcrToken() {
+
+        return applicationFacade.getEcrTokenMapping();
+
     }
 
 }

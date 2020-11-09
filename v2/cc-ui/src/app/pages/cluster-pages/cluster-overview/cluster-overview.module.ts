@@ -3,7 +3,8 @@ import {CommonModule} from '@angular/common';
 import {ClusterOverviewComponent} from './cluster-overview.component';
 import {
   NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService,
-  NbInputModule, NbSpinnerModule, NbIconModule, NbListModule, NbUserModule
+  NbInputModule, NbSpinnerModule, NbIconModule, NbListModule, NbUserModule, NbToggleModule,
+  NbSelectModule
 } from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
@@ -39,7 +40,9 @@ import {NbEvaIconsModule} from "@nebular/eva-icons";
     NbIconModule,
     NbEvaIconsModule,
     NbListModule,
-    NbUserModule
+    NbUserModule,
+    NbToggleModule,
+    NbSelectModule
   ]
 })
 export class ClusterOverviewModule {

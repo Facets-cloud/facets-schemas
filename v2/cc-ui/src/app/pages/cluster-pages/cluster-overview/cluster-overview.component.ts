@@ -1,20 +1,30 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UiAwsClusterControllerService} from '../../../cc-api/services/ui-aws-cluster-controller.service';
+import {ApplicationControllerService } from '../../../cc-api/services/application-controller.service';
 import flat from 'flat';
-import {NbToastrService} from '@nebular/theme';
+import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
+import {NbSelectModule, NbToastrService} from '@nebular/theme';
+import {NbToggleModule} from '@nebular/theme';
 import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
-import {UiStackControllerService} from 'src/app/cc-api/services';
+import {UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
-import {AwsCluster} from "../../../cc-api/models/aws-cluster";
+import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import {element} from 'protractor';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
 
 @Component({
   selector: 'app-cluster-overview',
   templateUrl: './cluster-overview.component.html',
   styleUrls: ['./cluster-overview.component.scss']
 })
+
 export class ClusterOverviewComponent implements OnInit {
+  releaseTypes = ['Release', 'Hotfix'];
+  releaseTypeSelection: any = 'Release';
+  applicationName: any = '';
+  payload: any = '{}';
+  user: SimpleOauth2User;
 
   settings = {
     columns: {
@@ -68,12 +78,15 @@ export class ClusterOverviewComponent implements OnInit {
   addOverrideSpinner = false;
   stackName: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION'];
+  isUserAdmin: any;
 
   constructor(private aWSClusterService: UiAwsClusterControllerService,
               private route: ActivatedRoute,
               private router: Router,
               private toastrService: NbToastrService,
-              private stackService: UiStackControllerService) {
+              private stackService: UiStackControllerService,
+              private deploymentService: UiDeploymentControllerService,
+              private applicationController: ApplicationControllerService) {
   }
 
   ngOnInit(): void {
@@ -90,6 +103,13 @@ export class ClusterOverviewComponent implements OnInit {
 
       this.stackName = p.stackName;
     });
+    this.applicationController.meUsingGET().subscribe(
+      (x: SimpleOauth2User) => {
+        this.user = x;
+        this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
+        || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
+      }
+    );
   }
 
   updateTableSourceWithStackVariables(cluster: AbstractCluster) {
@@ -97,7 +117,7 @@ export class ClusterOverviewComponent implements OnInit {
     Object.keys(cluster.commonEnvironmentVariables).forEach(element => {
       if (!this.extraEnvVars.includes(element)) {
         dataSource.push({name: element, value: cluster.commonEnvironmentVariables[element]});
-        let clone = {name: element, value: cluster.commonEnvironmentVariables[element]}
+        const clone = {name: element, value: cluster.commonEnvironmentVariables[element]};
         this.originalClusterVariablesSource.push(clone);
       }
     });
@@ -106,7 +126,7 @@ export class ClusterOverviewComponent implements OnInit {
     dataSource = [];
     Object.keys(cluster.secrets).forEach(element => {
       dataSource.push({name: element, value: cluster.secrets[element]});
-      let clone = {name: element, value: cluster.secrets[element]}
+      const clone = {name: element, value: cluster.secrets[element]};
       this.originalClusterVariablesSource.push(clone);
     });
     this.sensitiveClusterSource.load(dataSource);
@@ -125,6 +145,43 @@ export class ClusterOverviewComponent implements OnInit {
       console.log(err);
       this.addOverrideSpinner = false;
       // this.toastrService.danger('Error updating stack variables', 'Error');
+    }
+  }
+
+  triggerHotfixApply() {
+    console.log(this.releaseTypeSelection);
+    console.log(this.applicationName);
+    const applicationNameArray = this.applicationName.split(',');
+    let targetsForOverride = '';
+    for (let i = 0; i < applicationNameArray.length; i++) {
+      applicationNameArray[i] = applicationNameArray[i].replace(/^\s*/, '').replace(/\s*$/, '');
+      targetsForOverride = targetsForOverride.concat(' -target \'module.application.helm_release.application[\"' + applicationNameArray[i] + '\"]\'');
+    }
+    if (this.releaseTypeSelection === 'Hotfix'){
+      this.payload = {
+        releaseType: 'RELEASE',
+        overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve ']
+      };
+    }
+    else
+    {
+      this.payload = {
+        releaseType: 'RELEASE'
+      };
+    }
+    console.log(this.payload);
+    try {
+      this.deploymentService.createDeploymentUsingPOST1({
+        clusterId: this.cluster.id,
+        deploymentRequest: this.payload
+      }).subscribe(c => {
+        console.log(c);
+        this.toastrService.success('Triggered terraform apply', 'Success');
+      });
+    } catch (err) {
+      console.log(err);
+      console.log('Trigger failed');
+      this.toastrService.warning('Trigger Failed', 'Error');
     }
   }
 
@@ -153,14 +210,14 @@ export class ClusterOverviewComponent implements OnInit {
       if (element.name === variableName) {
         originalValue = element.value;
       }
-    })
+    });
 
     let newValue = null;
     source.forEach(element => {
       if (element.name === variableName) {
         newValue = element.value;
       }
-    })
+    });
 
     if (originalValue && newValue != originalValue) {
       return true;
@@ -176,7 +233,7 @@ export class ClusterOverviewComponent implements OnInit {
   private async updateCluster() {
     this.addOverrideSpinner = true;
 
-    let awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
+    const awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
 
     if (this.isEmptyObject(awsClusterRequest.clusterVars)) {
       this.toastrService.danger('No variables have changed, cannot update', 'Error');
@@ -195,7 +252,7 @@ export class ClusterOverviewComponent implements OnInit {
         this.toastrService.success('Updated cluster variables', 'Success');
         location.reload();
       });
-    } catch (err) {
+      } catch (err) {
       console.log(err);
       this.addOverrideSpinner = false;
       this.toastrService.danger('Cannot update stack', 'Error');
@@ -213,14 +270,14 @@ export class ClusterOverviewComponent implements OnInit {
     awsClusterRequest.stackName = this.cluster.stackName;
     awsClusterRequest.clusterVars = {};
 
-    let nonSensitiveSource = await this.nonSensitiveClusterSource.getAll();
+    const nonSensitiveSource = await this.nonSensitiveClusterSource.getAll();
     nonSensitiveSource.forEach(element => {
       if (this.hasClusterVariableChanged(nonSensitiveSource, element.name)) {
         awsClusterRequest.clusterVars[element.name] = element.value;
       }
     });
 
-    let sensitiveSource = await this.sensitiveClusterSource.getAll();
+    const sensitiveSource = await this.sensitiveClusterSource.getAll();
     sensitiveSource.forEach(element => {
       if (this.hasClusterVariableChanged(sensitiveSource, element.name)) {
         awsClusterRequest.clusterVars[element.name] = element.value;
