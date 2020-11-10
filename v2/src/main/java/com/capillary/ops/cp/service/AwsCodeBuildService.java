@@ -253,7 +253,7 @@ public class AwsCodeBuildService implements TFBuildService {
                 if(secondarySourceVersion.sourceVersion().equalsIgnoreCase(lastDeployment.getStackVersion()) &&
                         deploymentContextVersion.equalsIgnoreCase(lastDeployment.getDeploymentContextVersion()) &&
                         primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion())) {
-                    DeploymentLog deploymentLog = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, null, primarySourceVersion);
+                    DeploymentLog deploymentLog = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, UUID.randomUUID().toString(), primarySourceVersion);
                     deploymentLog.setStatus(StatusType.FAULT);
                     return deploymentLogRepository.save(deploymentLog);
                 }
