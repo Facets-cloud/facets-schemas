@@ -2,13 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { UiDeploymentControllerService, UiCommonClusterControllerService, UiStackControllerService } from 'src/app/cc-api/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeploymentLog } from 'src/app/cc-api/models';
-import { NbDialogService } from '@nebular/theme';
+import { NbDialogService, NbToastrService, NbSelectModule } from '@nebular/theme';
+import {ApplicationControllerService } from '../../../cc-api/services/application-controller.service';
+import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
 
 @Component({
   selector: 'app-cluster-releases',
   templateUrl: './cluster-releases.component.html',
-  styleUrls: ['./cluster-releases.component.scss']
+  styleUrls: ['./cluster-releases.component.scss'],
 })
+
 export class ClusterReleasesComponent implements OnInit {
 
   clusterId = '';
@@ -16,12 +19,21 @@ export class ClusterReleasesComponent implements OnInit {
   loading = true;
   downStreamClusters = [];
   currentSignedOffDeployment: DeploymentLog;
+  payload: any = '{}';
+  user: SimpleOauth2User;
+  releaseTypes = ['Release', 'Hotfix'];
+  releaseTypeSelection: any = 'Release';
+  applicationName: any = '';
+  isUserAdmin: any;
 
   constructor(private deploymentController: UiDeploymentControllerService,
-    private u: UiStackControllerService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private dialogService: NbDialogService) {
+              private u: UiStackControllerService,
+              private route: ActivatedRoute,
+              private router: Router,
+              private toastrService: NbToastrService,
+              private dialogService: NbDialogService,
+              private deploymentService: UiDeploymentControllerService,
+              private applicationController: ApplicationControllerService) {
   }
 
   ngOnInit(): void {
@@ -59,6 +71,13 @@ export class ClusterReleasesComponent implements OnInit {
         );
       }
     });
+    this.applicationController.meUsingGET().subscribe(
+      (x: SimpleOauth2User) => {
+        this.user = x;
+        this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
+        || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
+      }
+    );
   }
 
   showDetails(dialog, deploymentId) {
@@ -90,6 +109,50 @@ export class ClusterReleasesComponent implements OnInit {
 
   openTab(compareUrl) {
     window.open(compareUrl, "_blank");
+  }
+
+  openDeploymentPopup(deploymentUI) {
+    this.dialogService.open(deploymentUI, { context: '' }).onClose.subscribe(
+      d => {
+        this.loading = true;
+        console.log(this.releaseTypeSelection);
+        console.log(this.applicationName);
+        const applicationNameArray = this.applicationName.split(',');
+        let targetsForOverride = '';
+        for (let i = 0; i < applicationNameArray.length; i++) {
+      applicationNameArray[i] = applicationNameArray[i].replace(/^\s*/, '').replace(/\s*$/, '');
+      targetsForOverride = targetsForOverride.concat(' -target \'module.application.helm_release.application[\"' + applicationNameArray[i] + '\"]\'');
+    }
+        if (this.releaseTypeSelection === 'Hotfix'){
+      this.payload = {
+        releaseType: 'RELEASE',
+        overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve ']
+      };
+    }
+    else
+    {
+      this.payload = {
+        releaseType: 'RELEASE'
+      };
+    }
+        console.log(this.payload);
+
+        try {
+      this.deploymentService.createDeploymentUsingPOST1({
+        clusterId: this.clusterId,
+        deploymentRequest: this.payload
+      }).subscribe(c => {
+        console.log(c);
+        this.toastrService.success('Triggered terraform apply', 'Success');
+        this.ngOnInit();
+      });
+    } catch (err) {
+      console.log(err);
+      console.log('Trigger failed');
+      this.toastrService.warning('Trigger Failed', 'Error');
+    }
+      },
+    );
   }
 
 }

@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClusterReleasesComponent } from './cluster-releases.component';
-import {NbCardModule, NbLayoutModule, NbSidebarModule, NbSidebarService, NbIconComponent, NbIconModule, NbButtonModule, NbSpinnerModule, NbDialogModule, NbDialogService, NbTabsetModule, NbTooltipModule, NbListModule} from '@nebular/theme';
+import {NbCardModule, NbLayoutModule, NbSidebarModule, NbSidebarService, NbIconComponent,
+   NbIconModule, NbButtonModule, NbSpinnerModule, NbDialogModule, NbDialogService,
+    NbTabsetModule, NbTooltipModule, NbListModule, NbSelectModule, NbInputModule} from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -24,6 +27,9 @@ import {ComponentsModule} from '../../../components/components.module';
     NbTabsetModule,
     NbTooltipModule,
     NbListModule,
+    NbSelectModule,
+    FormsModule,
+    NbInputModule,
   ],
   providers: [NbSidebarService, NbDialogService]
 })
