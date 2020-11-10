@@ -54,6 +54,8 @@ public class DeploymentLog {
 
     private Boolean signedOff = false;
 
+    private String deploymentContextVersion;
+
     public String getId() {
         return id;
     }
@@ -167,5 +169,13 @@ public class DeploymentLog {
 
     public void setErrorLogs(List<String> errorLogs) {
         this.errorLogs = errorLogs;
+    }
+
+    public String getDeploymentContextVersion() {
+        return deploymentContextVersion;
+    }
+
+    public void setDeploymentContextVersion(String deploymentContextVersion) {
+        this.deploymentContextVersion = deploymentContextVersion;
     }
 }

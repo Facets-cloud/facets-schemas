@@ -8,11 +8,9 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
-import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.repository.StackRepository;
-import com.capillary.ops.deployer.bo.Deployment;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -46,6 +44,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,6 +194,13 @@ public class AwsCodeBuildService implements TFBuildService {
             primarySourceVersion = deploymentRequest.getOverrideCCVersion();
         }
 
+        try {
+            primarySourceVersion = gitService.getBranchHead("https://bitbucket.org/capillarymartjack/deisdeployer.git",
+                    System.getenv("BITBUCKET_USERNAME"), System.getenv("BITBUCKET_PASSWORD"), primarySourceVersion);
+        } catch (GitAPIException e) {
+            // pass
+        }
+
         String masterHead = "";
 
         try {
@@ -234,6 +241,25 @@ public class AwsCodeBuildService implements TFBuildService {
             }
         }
 
+        String deploymentContextVersion = md5sum(deploymentContext);
+
+        // a regular trigger
+        if (deploymentRequest.getOverrideBuildSteps() != null) {
+            Optional<DeploymentLog> lastDeploymentOptional =
+                    deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(cluster.getId(),
+                    StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
+            if (lastDeploymentOptional.isPresent()) {
+                DeploymentLog lastDeployment = lastDeploymentOptional.get();
+                if(secondarySourceVersion.sourceVersion().equalsIgnoreCase(lastDeployment.getStackVersion()) &&
+                        deploymentContextVersion.equalsIgnoreCase(lastDeployment.getDeploymentContextVersion()) &&
+                        primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion())) {
+                    DeploymentLog deploymentLog = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, null, primarySourceVersion);
+                    deploymentLog.setStatus(StatusType.FAULT);
+                    return deploymentLogRepository.save(deploymentLog);
+                }
+            }
+        }
+
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
@@ -250,6 +276,46 @@ public class AwsCodeBuildService implements TFBuildService {
                     .buildspecOverride(getBuildSpec(deploymentRequest))
                     .build();
 
+        List<Build> runningBuilds = getRunningBuilds(cluster, buildName);
+
+        if (runningBuilds.size() > 0) {
+            throw new IllegalStateException("Build is already in Progress: " + runningBuilds.get(0).id());
+        }
+
+        try {
+            String buildId = getCodeBuildClient().startBuild(startBuildRequest).build().id();
+            DeploymentLog log = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, buildId, primarySourceVersion);
+            return deploymentLogRepository.save(log);
+
+        } catch (ResourceNotFoundException ex) {
+            throw new RuntimeException("No Build defined for " + cluster.getCloud(), ex);
+        }
+    }
+
+    private DeploymentLog getDeploymentLog(AbstractCluster cluster, DeploymentRequest deploymentRequest, ProjectSourceVersion secondarySourceVersion, String deploymentContextVersion, String buildId, String tfVersion) {
+        DeploymentLog log = new DeploymentLog();
+        if(deploymentRequest.getOverrideBuildSteps() != null
+                && !deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+            log.setDeploymentType(DeploymentLog.DeploymentType.CUSTOM);
+        } else if (deploymentRequest.getExtraEnv().containsKey("REDEPLOYMENT_BUILD_ID")) {
+            log.setDeploymentType(DeploymentLog.DeploymentType.ROLLBACK);
+        }
+        else {
+            log.setDeploymentType(DeploymentLog.DeploymentType.REGULAR);
+        }
+        log.setCodebuildId(buildId);
+        log.setClusterId(cluster.getId());
+        log.setDescription(deploymentRequest.getTag());
+        log.setReleaseType(deploymentRequest.getReleaseType());
+        log.setCreatedOn(new Date());
+        log.setStackVersion(secondarySourceVersion.sourceVersion());
+        //log.setDeploymentContext(deploymentContext);
+        log.setTfVersion(tfVersion);
+        log.setDeploymentContextVersion(deploymentContextVersion);
+        return log;
+    }
+
+    private List<Build> getRunningBuilds(AbstractCluster cluster, String buildName) {
         ListBuildsForProjectRequest listBuildsForProjectRequest =
             ListBuildsForProjectRequest.builder().projectName(buildName).sortOrder(SortOrderType.DESCENDING).build();
 
@@ -261,39 +327,10 @@ public class AwsCodeBuildService implements TFBuildService {
         BatchGetBuildsRequest batchGetBuildsRequest = BatchGetBuildsRequest.builder().ids(shortListedBuilds).build();
         BatchGetBuildsResponse batchGetBuildsResponse = getCodeBuildClient().batchGetBuilds(batchGetBuildsRequest);
         List<Build> builds = batchGetBuildsResponse.builds();
-        List<Build> runningBuilds = builds.stream().filter(b -> b.buildStatus().equals(StatusType.IN_PROGRESS)).filter(
+        return builds.stream().filter(b -> b.buildStatus().equals(StatusType.IN_PROGRESS)).filter(
             b -> b.environment().environmentVariables().contains(
                 EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
                     .type(EnvironmentVariableType.PLAINTEXT).build())).collect(Collectors.toList());
-
-        if (runningBuilds.size() > 0) {
-            throw new IllegalStateException("Build is already in Progress: " + runningBuilds.get(0).id());
-        }
-
-        try {
-            String buildId = getCodeBuildClient().startBuild(startBuildRequest).build().id();
-            DeploymentLog log = new DeploymentLog();
-            if(deploymentRequest.getOverrideBuildSteps() != null
-                    && !deploymentRequest.getOverrideBuildSteps().isEmpty()) {
-                log.setDeploymentType(DeploymentLog.DeploymentType.CUSTOM);
-            } else if (deploymentRequest.getExtraEnv().containsKey("REDEPLOYMENT_BUILD_ID")) {
-                log.setDeploymentType(DeploymentLog.DeploymentType.ROLLBACK);
-            }
-            else {
-                log.setDeploymentType(DeploymentLog.DeploymentType.REGULAR);
-            }
-            log.setCodebuildId(buildId);
-            log.setClusterId(cluster.getId());
-            log.setDescription(deploymentRequest.getTag());
-            log.setReleaseType(deploymentRequest.getReleaseType());
-            log.setCreatedOn(new Date());
-            log.setStackVersion(secondarySourceVersion.sourceVersion());
-            //log.setDeploymentContext(deploymentContext);
-            return deploymentLogRepository.save(log);
-
-        } catch (ResourceNotFoundException ex) {
-            throw new RuntimeException("No Build defined for " + cluster.getCloud(), ex);
-        }
     }
 
 //    @Override
@@ -432,20 +469,37 @@ public class AwsCodeBuildService implements TFBuildService {
                 .build();
     }
 
+    private static String md5sum(Object input) {
+        String dataJson = new Gson().toJson(input);
+        byte[] data = dataJson.getBytes();
+        try {
+            byte[] md5bytes = MessageDigest.getInstance("MD5").digest(data);
+            StringBuilder sb = new StringBuilder();
+            for (byte b : md5bytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private ProjectSource getDeploymentContextSource(DeploymentContext deploymentContext) {
         String deploymentContextJson = new Gson().toJson(deploymentContext);
+        byte[] data = deploymentContextJson.getBytes();
         try {
-            File tempFile = Files.createTempFile(UUID.randomUUID().toString() + ".zip");
+            String fileName = UUID.randomUUID().toString();
+            File tempFile = Files.createTempFile( fileName + ".zip");
             ZipOutputStream out = new ZipOutputStream(new FileOutputStream(tempFile));
             ZipEntry e = new ZipEntry("deploymentcontext.json");
             out.putNextEntry(e);
-            byte[] data = deploymentContextJson.getBytes();
             out.write(data, 0, data.length);
             out.closeEntry();
             out.close();
             AmazonS3 amazonS3 =
                     AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
             amazonS3.putObject(CC_STACK_SOURCE, tempFile.getName(), tempFile);
+            tempFile.delete();
             return ProjectSource.builder().type(SourceType.S3)
                     .location(CC_STACK_SOURCE + "/" + tempFile.getName())
                     .sourceIdentifier("DEPLOYMENT_CONTEXT").build();
