@@ -603,7 +603,10 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
-                "terraform apply -target module.aurora"
+                "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/aurora/main.tf"
+                "terraform state rm module.application.mysql_user.mysql_user_sibling module.application.mysql_user.mysql_user",
+                "terraform state rm module.application.mysql_grant.mysql_grants_sibling module.application.mysql_grant.mysql_grants",
+                "terraform apply -auto-approve -target 'module.infra.module.aurora.aws_rds_cluster.clusters[\""+deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.aurora.mysql_user.mysql_readonly_user[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.aurora.mysql_grant.mysql_readonly_grants[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.application.mysql_user.mysql_user_sibling' -target 'module.application.mysql_user.mysql_user' -target 'module.application.mysql_grant.mysql_grants_sibling' -target 'module.application.mysql_grant.mysql_grants'"
         ));
         return createDeployment(clusterId, deploymentRequest);
     }
