@@ -631,7 +631,8 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
-                "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/mongo/pvc-primary.tf"
+                "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/mongo/pvc-primary.tf",
+                "terraform taint 'module.infra.module.mongo.aws_ebs_volume.ebs_volume_secondary[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
                 "terraform taint 'module.infra.module.mongo.helm_release.mongo[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
                 "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
                 "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
