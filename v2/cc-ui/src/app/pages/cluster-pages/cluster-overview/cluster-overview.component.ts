@@ -148,42 +148,7 @@ export class ClusterOverviewComponent implements OnInit {
     }
   }
 
-  triggerHotfixApply() {
-    console.log(this.releaseTypeSelection);
-    console.log(this.applicationName);
-    const applicationNameArray = this.applicationName.split(',');
-    let targetsForOverride = '';
-    for (let i = 0; i < applicationNameArray.length; i++) {
-      applicationNameArray[i] = applicationNameArray[i].replace(/^\s*/, '').replace(/\s*$/, '');
-      targetsForOverride = targetsForOverride.concat(' -target \'module.application.helm_release.application[\"' + applicationNameArray[i] + '\"]\'');
-    }
-    if (this.releaseTypeSelection === 'Hotfix'){
-      this.payload = {
-        releaseType: 'RELEASE',
-        overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve ']
-      };
-    }
-    else
-    {
-      this.payload = {
-        releaseType: 'RELEASE'
-      };
-    }
-    console.log(this.payload);
-    try {
-      this.deploymentService.createDeploymentUsingPOST1({
-        clusterId: this.cluster.id,
-        deploymentRequest: this.payload
-      }).subscribe(c => {
-        console.log(c);
-        this.toastrService.success('Triggered terraform apply', 'Success');
-      });
-    } catch (err) {
-      console.log(err);
-      console.log('Trigger failed');
-      this.toastrService.warning('Trigger Failed', 'Error');
-    }
-  }
+
 
   refreshStack() {
     this.addOverrideSpinner = true;

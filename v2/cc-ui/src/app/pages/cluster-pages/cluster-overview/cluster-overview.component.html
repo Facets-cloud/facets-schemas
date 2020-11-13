@@ -199,68 +199,6 @@
           </div>
         </nb-card-body>
       </nb-card>
-
-      <nb-card accent="danger" *ngIf="isUserAdmin">
-        <nb-card-header >Deployment</nb-card-header>
-
-        <nb-card-body>
-          <div style="background: rgba(255, 255, 255, 0.8)" class="row">
-           <div class="col-md-10">
-            <div class="row" style="padding-bottom:12px">
-                <div class="col-sm-6 cc-key" style="padding-top:10px;padding-left:30px" >Release Type</div>
-              <div class="col-sm-6">
-                <nb-select
-                  required
-                  [(ngModel)]="releaseTypeSelection"
-                  #applicationType="ngModel"
-                  name="releaseType"
-                  id="releaseType"
-                  placeholder="Select Type"
-                  fixedWidth
-                  selected="RELEASE"
-                >
-                  <nb-option
-                    #cluster
-                    *ngFor="let releaseType of releaseTypes"
-                    value="{{ releaseType }}"
-                  >
-                    {{ releaseType }}
-                  </nb-option>
-                </nb-select>
-              </div>
-            </div>
-            <div class="row" *ngIf="releaseTypeSelection == 'Hotfix'">
-                <div class="col-sm-6" style="padding-top:10px;padding-left:30px" >Application Name</div>
-                <div class="col-sm-6">
-                  <input
-                    fieldSize="small"
-                    type="text"
-                    [(ngModel)]="applicationName"
-                    required
-                    nbInput
-                    fullWidth
-                    name="ApplicationName"
-                    id="applicationName"
-                    placeholder="intouch-api,emf..."
-                    pattern="[a-z-]+"
-                  />
-                </div>
-
-            </div>
-            </div>
-          </div>
-          <div style="margin: 1rem 0 1rem 0">
-            <button
-              nbButton
-              fullWidth
-              status="info"
-              (click)="triggerHotfixApply()"
-            >
-              TRIGGER APPLY
-            </button>
-          </div>
-        </nb-card-body>
-      </nb-card>
     </div>
   </div>
 </app-layout-one-column>

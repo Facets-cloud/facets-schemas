@@ -603,13 +603,47 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
-                "terraform apply -target module.aurora"
+                "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/aurora/main.tf",
+                "terraform state rm module.application.mysql_user.mysql_user_sibling module.application.mysql_user.mysql_user",
+                "terraform state rm module.application.mysql_grant.mysql_grants_sibling module.application.mysql_grant.mysql_grants",
+                "terraform apply -auto-approve -target 'module.infra.module.aurora.aws_rds_cluster.clusters[\""+deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.aurora.mysql_user.mysql_readonly_user[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.aurora.mysql_grant.mysql_readonly_grants[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.application.mysql_user.mysql_user_sibling' -target 'module.application.mysql_user.mysql_user' -target 'module.application.mysql_grant.mysql_grants_sibling' -target 'module.application.mysql_grant.mysql_grants'"
         ));
         return createDeployment(clusterId, deploymentRequest);
     }
 
     public DeploymentLog runMongoDRRecipe(String clusterId, MongoDRDeploymentRecipe deploymentRecipe) {
-        return null;
+        List<SnapshotInfo> snapshots =
+                clusterFacade.listSnapshots(clusterId, "mongo", deploymentRecipe.getDbInstanceName());
+
+        SnapshotInfo snapshotToPin = null;
+
+        for (SnapshotInfo snapshot: snapshots) {
+            if(snapshot.getCloudSpecificId().equalsIgnoreCase(deploymentRecipe.getSnapshotId())) {
+                snapshotToPin = snapshot;
+                break;
+            }
+        }
+
+        if (snapshotToPin == null) {
+            return null;
+        }
+
+        clusterFacade.pinSnapshot(clusterId, "mongo",
+                deploymentRecipe.getDbInstanceName(), snapshotToPin);
+
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(
+                "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/mongo/pvc-primary.tf",
+                "terraform taint 'module.infra.module.mongo.aws_ebs_volume.ebs_volume_secondary[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.helm_release.mongo[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'"
+                "terraform apply -auto-approve -target 'module.infra.module.mongo.helm_release.mongo[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'"
+        ));
+        return createDeployment(clusterId, deploymentRequest);
     }
 
     public DeploymentLog runMongoResizeRecipe(String clusterId, MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
