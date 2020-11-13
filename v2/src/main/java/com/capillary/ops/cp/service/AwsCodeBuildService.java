@@ -129,24 +129,24 @@ public class AwsCodeBuildService implements TFBuildService {
         }
         Stack stack = stackO.get();
 
-        if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
-            Optional<DeploymentLog> deploymentLog = deploymentLogRepository.findFirstByClusterIdOrderByCreatedOnDesc(cluster.getId());
-            deploymentLog.ifPresent(x -> {
-                StatusType deploymentStatus = getBuild(x.getCodebuildId()).buildStatus();
-//                if (StatusType.IN_PROGRESS.equals(deploymentStatus)) {
-//                    String message = String.format("previous build for cluster %s already in progress, not deploying", cluster.getId());
-//                    logger.error(message);
-//                    throw new RuntimeException(message);
-//                }
-
-//                Optional<QASuiteResult> qaSuiteResult = qaSuiteResultRepository.findOneByDeploymentId(x.getCodebuildId());
-//                if (StatusType.SUCCEEDED.equals(deploymentStatus) && !qaSuiteResult.isPresent()) {
-//                    String message = String.format("WARNING: qa callback for previous deployment not received yet for cluster: %s, such deployments will not be allowed to go through in the future", cluster.getId());
-//                    logger.error(message);
-//                    throw new QACallbackAbsentException(message);
-//                }
-            });
-        }
+//        if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
+//            Optional<DeploymentLog> deploymentLog = deploymentLogRepository.findFirstByClusterIdOrderByCreatedOnDesc(cluster.getId());
+//            deploymentLog.ifPresent(x -> {
+//                StatusType deploymentStatus = getBuild(x.getCodebuildId()).buildStatus();
+////                if (StatusType.IN_PROGRESS.equals(deploymentStatus)) {
+////                    String message = String.format("previous build for cluster %s already in progress, not deploying", cluster.getId());
+////                    logger.error(message);
+////                    throw new RuntimeException(message);
+////                }
+//
+////                Optional<QASuiteResult> qaSuiteResult = qaSuiteResultRepository.findOneByDeploymentId(x.getCodebuildId());
+////                if (StatusType.SUCCEEDED.equals(deploymentStatus) && !qaSuiteResult.isPresent()) {
+////                    String message = String.format("WARNING: qa callback for previous deployment not received yet for cluster: %s, such deployments will not be allowed to go through in the future", cluster.getId());
+////                    logger.error(message);
+////                    throw new QACallbackAbsentException(message);
+////                }
+//            });
+//        }
 
         //DONE: Check if code build is defined for the said cloud
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
