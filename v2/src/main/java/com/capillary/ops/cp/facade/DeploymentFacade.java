@@ -612,7 +612,38 @@ public class DeploymentFacade {
     }
 
     public DeploymentLog runMongoDRRecipe(String clusterId, MongoDRDeploymentRecipe deploymentRecipe) {
-        return null;
+        List<SnapshotInfo> snapshots =
+                clusterFacade.listSnapshots(clusterId, "mongo", deploymentRecipe.getDbInstanceName());
+
+        SnapshotInfo snapshotToPin = null;
+
+        for (SnapshotInfo snapshot: snapshots) {
+            if(snapshot.getCloudSpecificId().equalsIgnoreCase(deploymentRecipe.getSnapshotId())) {
+                snapshotToPin = snapshot;
+                break;
+            }
+        }
+
+        if (snapshotToPin == null) {
+            return null;
+        }
+
+        clusterFacade.pinSnapshot(clusterId, "mongo",
+                deploymentRecipe.getDbInstanceName(), snapshotToPin);
+
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(
+                "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/mongo/pvc-primary.tf",
+                "terraform taint 'module.infra.module.mongo.aws_ebs_volume.ebs_volume_secondary[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.helm_release.mongo[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'"
+                "terraform apply -auto-approve -target 'module.infra.module.mongo.helm_release.mongo[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'"
+        ));
+        return createDeployment(clusterId, deploymentRequest);
     }
 
     public DeploymentLog runMongoResizeRecipe(String clusterId, MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
