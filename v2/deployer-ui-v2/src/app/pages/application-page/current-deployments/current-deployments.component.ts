@@ -64,6 +64,50 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
     hideSubHeader: true,
   };
 
+  settingsCC = {
+    columns: {
+      environmentName: {
+        title: 'Cluster Name'
+      },
+      environment: {
+        title: 'Cluster Id',
+      },
+      buildId: {
+        title: 'Build Id',
+      },
+      currentStatus: {
+        title: "Current Status",
+        type: 'custom',
+        renderComponent: CurrentStatusColumn,
+      },
+      deployedBy: {
+        title: 'Deployed By',
+      },
+      podSize: {
+        title: 'Pod Size',
+      },
+      configurations: {
+        type: 'custom',
+        renderComponent: ActionsColumn,
+        title: 'Environment Variables',
+      },
+      minReplicas: {
+        title: 'Min Replicas',
+      },
+      maxReplicas: {
+        title: 'Max Replicas',
+      },
+      cpuThreshold: {
+        title: 'CPU Threshold (%)',
+      },
+      timestamp: {
+        title: 'Deployed At',
+      },
+    },
+    actions: false,
+    hideSubHeader: true,
+  };
+
   settingsCronjob = {
     columns: {
       environment: {
@@ -180,6 +224,16 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
     this.deployments = deployments;
   }
 
+  private getCCEnvironmentName(clusterId: string) {
+    for (let env in this.ccEnvironments) {
+      if (this.ccEnvironments[env].capillaryCloudClusterName === clusterId) {
+        return this.ccEnvironments[env].name;
+      }
+    }
+
+    return null;
+  }
+
   async loadLatestCCDeployments() {
     const deployments = [];
     for (const environment of this.ccEnvironments) {
@@ -190,9 +244,12 @@ export class CurrentDeploymentsComponent implements OnInit, OnChanges {
           applicationId: this.application.id,
         }).toPromise();
         if (deployment) {
-          deployment['minReplicas'] = deployment.horizontalPodAutoscaler.minReplicas;
-          deployment['maxReplicas'] = deployment.horizontalPodAutoscaler.maxReplicas;
-          deployment['cpuThreshold'] = deployment.horizontalPodAutoscaler.threshold;
+          if (deployment.horizontalPodAutoscaler) {
+            deployment['minReplicas'] = deployment.horizontalPodAutoscaler.minReplicas;
+            deployment['maxReplicas'] = deployment.horizontalPodAutoscaler.maxReplicas;
+            deployment['cpuThreshold'] = deployment.horizontalPodAutoscaler.threshold;
+          }
+          deployment['environmentName'] = this.getCCEnvironmentName(deployment.environment)
           deployments.push(deployment);
         }
       } catch (err) { }

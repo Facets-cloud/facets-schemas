@@ -11,11 +11,18 @@ import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
+import com.capillary.ops.deployer.bo.KubeApplicationDetails;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
+import io.fabric8.kubernetes.api.model.Container;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
+import io.fabric8.kubernetes.api.model.apps.StatefulSet;
+import io.fabric8.kubernetes.api.model.apps.StatefulSetList;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.batch.CronJobList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.slf4j.Logger;
@@ -181,6 +188,41 @@ public class ClusterFacade {
                 "Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
         }
         return apps.getItems().get(0);
+    }
+
+    public KubeApplicationDetails getKubeApplicationDetails(String clusterId, String key, String value) {
+        Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
+        K8sCredentials k8sCredentials = credentialsO.get();
+        DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
+            new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+        DeploymentList apps = kubernetesClient.inNamespace("").apps().deployments().withLabel(key, value).list();
+        if (!apps.getItems().isEmpty()) {
+            Deployment deployment = apps.getItems().get(0);
+            return new KubeApplicationDetails(KubeApplicationDetails.K8sResourceType.DEPLOYMENT,
+                    deployment.getSpec().getTemplate().getSpec().getContainers(), deployment.getMetadata());
+        }
+
+        logger.info("did not find deployment with key: {}, value: {}, in cluster: {}, checking for statefulsets", key, value, clusterId);
+        StatefulSetList statefulSets = kubernetesClient.inNamespace("").apps().statefulSets().withLabel(key, value).list();
+        if (!statefulSets.getItems().isEmpty()) {
+            StatefulSet statefulSet = statefulSets.getItems().get(0);
+            return new KubeApplicationDetails(KubeApplicationDetails.K8sResourceType.STATEFULSET,
+                    statefulSet.getSpec().getTemplate().getSpec().getContainers(), statefulSet.getMetadata());
+        }
+
+        logger.info("did not find statefulset with key: {}, value: {}, in cluster: {}, checking for cronjob", key, value, clusterId);
+        CronJobList cronJobs = kubernetesClient.inNamespace("").batch().cronjobs().withLabel(key, value).list();
+        if (!cronJobs.getItems().isEmpty()) {
+            CronJob cronJob = cronJobs.getItems().get(0);
+            return new KubeApplicationDetails(KubeApplicationDetails.K8sResourceType.CRONJOB,
+                    cronJob.getSpec().getJobTemplate().getSpec().getTemplate().getSpec().getContainers(),
+                    cronJob.getMetadata());
+        }
+
+        logger.error("Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
+
+        return null;
     }
 
     /**
