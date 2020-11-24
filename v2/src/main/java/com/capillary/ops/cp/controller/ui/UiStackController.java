@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.facade.SubscriptionFacade;
 import com.capillary.ops.cp.service.AclService;
+import com.capillary.ops.cp.service.StackAutoCompleteService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
@@ -27,6 +28,9 @@ public class UiStackController {
 
     @Autowired
     StackController stackController;
+
+    @Autowired
+    StackAutoCompleteService stackAutoCompleteService;
 
     @Autowired
     private AclService aclService;
@@ -71,6 +75,16 @@ public class UiStackController {
     //@PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
     public List<Subscription> getAllSubscriptions(@PathVariable String stackName) {
         return subscriptionFacade.getAllSubscriptions(stackName);
+    }
+
+    @GetMapping("{stackName}/suggestions/resourceType")
+    public List<String> getResourceTypes(@PathVariable String stackName) {
+        return stackAutoCompleteService.getResourceTypesSuggestion(stackName);
+    }
+
+    @GetMapping("{stackName}/suggestions/resourceType/{resourceType}")
+    public List<String> getResourcesByTypes(@PathVariable String stackName, @PathVariable String resourceType) {
+        return stackAutoCompleteService.getResourcesSuggestion(stackName, resourceType);
     }
 
     @PostMapping("{stackName}/notification/subscriptions")

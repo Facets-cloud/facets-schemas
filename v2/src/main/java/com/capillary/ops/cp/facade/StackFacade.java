@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
+import com.capillary.ops.cp.service.StackAutoCompleteService;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
@@ -25,6 +26,9 @@ public class StackFacade {
 
     @Autowired
     GitService gitService;
+
+    @Autowired
+    StackAutoCompleteService stackAutoCompleteService;
 
     /**
      * Create a stack given details
@@ -56,6 +60,7 @@ public class StackFacade {
             StackFile file = gson.fromJson(new FileReader(stackFile), StackFile.class);
             stack.setStackVars(file.getStackVariables());
             stack.setClusterVariablesMeta(file.getClusterVariablesMeta());
+            stackAutoCompleteService.parseStack(stack.getName(), location.toString() + "/" + relativePath + "/");
         } catch (Throwable e) {
             throw new IllegalArgumentException(
                 "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);
