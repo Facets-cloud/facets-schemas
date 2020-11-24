@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.*;
+import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.capillary.ops.deployer.service.buildspecs.*;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,7 +26,6 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -194,7 +194,7 @@ public class CodeBuildService implements ICodeBuildService {
             case JAVA8_LIBRARY:
                 return new JavaLibararyMavenBuildSpec(application, testBuild);
             default:
-                throw new NotImplementedException();
+                throw new NotImplementedException("");
         }
     }
 
