@@ -128,7 +128,7 @@ export class ClusterReleasesComponent implements OnInit {
           if (this.releaseTypeSelection === 'Hotfix') {
             this.payload = {
               releaseType: 'RELEASE',
-              overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve ']
+              overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve']
             };
           }
           else if (this.releaseTypeSelection === 'Release') {
