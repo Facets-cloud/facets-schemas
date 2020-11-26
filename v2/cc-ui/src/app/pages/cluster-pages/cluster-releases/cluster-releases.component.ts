@@ -21,8 +21,8 @@ export class ClusterReleasesComponent implements OnInit {
   currentSignedOffDeployment: DeploymentLog;
   payload: any = '{}';
   user: SimpleOauth2User;
-  releaseTypes = ['Release', 'Hotfix'];
-  releaseTypeSelection: any = 'Release';
+  releaseTypes = ['Hotfix'];
+  releaseTypeSelection: any = 'Hotfix';
   applicationName: any = '';
   isUserAdmin: any;
 
