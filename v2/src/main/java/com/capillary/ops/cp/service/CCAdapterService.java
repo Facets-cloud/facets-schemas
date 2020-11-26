@@ -56,30 +56,32 @@ public class CCAdapterService {
     public Deployment getCCDeployment(ApplicationFamily applicationFamily, String applicationId, Environment environment) {
         String clusterId = environment.getEnvironmentMetaData().getCapillaryCloudClusterName();
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        io.fabric8.kubernetes.api.model.apps.Deployment ccDeployment =
-            clusterFacade.getApplicationData(clusterId, "deployerid", applicationId);
-        if (ccDeployment != null) {
-            String image = ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getImage();
+        KubeApplicationDetails kubeApplicationDetails =
+                clusterFacade.getKubeApplicationDetails(clusterId, "deployerid", applicationId);
+        if (kubeApplicationDetails != null) {
+            String image = kubeApplicationDetails.getContainers().get(0).getImage();
             Deployment deployment = new Deployment();
             deployment.setApplicationFamily(applicationFamily);
             deployment.setApplicationId(applicationId);
-            deployment.setBuildId(ccDeployment.getSpec().getTemplate().getMetadata().getLabels().getOrDefault("deployerBuildId", image));
+            deployment.setBuildId(kubeApplicationDetails.getMetadata().getLabels().getOrDefault("deployerBuildId", image));
             deployment.setEnvironment(clusterId);
             deployment.setDeployedBy("Cap Cloud");
             deployment.setImage(image);
 
-            List<EnvVar> env = ccDeployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
+            List<EnvVar> env = kubeApplicationDetails.getContainers().get(0).getEnv();
             List<EnvironmentVariable> envs =
-                env.stream().map(e -> new EnvironmentVariable(e.getName(), e.getValue())).collect(Collectors.toList());
+                    env.stream().map(e -> new EnvironmentVariable(e.getName(), e.getValue())).collect(Collectors.toList());
             deployment.setConfigurations(envs);
 
-            HPADetails hpaDetails = kubernetesService.getHPADetails(ccDeployment.getMetadata().getName(), environment);
-            HPA hpa = new HPA(hpaDetails);
-            deployment.setHorizontalPodAutoscaler(hpa);
+            if (KubeApplicationDetails.K8sResourceType.DEPLOYMENT.equals(kubeApplicationDetails.getResourceType())) {
+                HPADetails hpaDetails = kubernetesService.getHPADetails(kubeApplicationDetails.getMetadata().getName(), environment);
+                HPA hpa = new HPA(hpaDetails);
+                deployment.setHorizontalPodAutoscaler(hpa);
+            }
 
             SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
             try {
-                Date parse = sdfmt.parse(ccDeployment.getMetadata().getCreationTimestamp());
+                Date parse = sdfmt.parse(kubeApplicationDetails.getMetadata().getCreationTimestamp());
                 deployment.setTimestamp(parse);
             } catch (ParseException e) {
                 e.printStackTrace();

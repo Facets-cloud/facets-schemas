@@ -21,8 +21,8 @@ export class ClusterReleasesComponent implements OnInit {
   currentSignedOffDeployment: DeploymentLog;
   payload: any = '{}';
   user: SimpleOauth2User;
-  releaseTypes = ['Release', 'Hotfix'];
-  releaseTypeSelection: any = 'Release';
+  releaseTypes = ['Hotfix'];
+  releaseTypeSelection: any = 'Hotfix';
   applicationName: any = '';
   isUserAdmin: any;
 
@@ -128,7 +128,7 @@ export class ClusterReleasesComponent implements OnInit {
           if (this.releaseTypeSelection === 'Hotfix') {
             this.payload = {
               releaseType: 'RELEASE',
-              overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve ']
+              overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve']
             };
           }
           else if (this.releaseTypeSelection === 'Release') {
