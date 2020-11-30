@@ -11,6 +11,9 @@ import { ListDeploymentsWrapper } from '../models/list-deployments-wrapper';
 import { DeploymentLog } from '../models/deployment-log';
 import { DeploymentRequest } from '../models/deployment-request';
 import { QASuite } from '../models/qasuite';
+import { AuroraDRDeploymentRecipe } from '../models/aurora-drdeployment-recipe';
+import { MongoDRDeploymentRecipe } from '../models/mongo-drdeployment-recipe';
+import { MongoVolumeResizeDeploymentRecipe } from '../models/mongo-volume-resize-deployment-recipe';
 
 /**
  * Ui Deployment Controller
@@ -23,6 +26,9 @@ class UiDeploymentControllerService extends __BaseService {
   static readonly createDeploymentUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/deployments';
   static readonly triggerAutomationSuiteUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
   static readonly abortAutomationSuiteUsingDELETE1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
+  static readonly runAuroraDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/aurora/dr';
+  static readonly runMongoDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/dr';
+  static readonly runMongoResizeRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/resize';
   static readonly getDeploymentUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}';
   static readonly signOffDeploymentUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/signoff';
 
@@ -215,6 +221,153 @@ class UiDeploymentControllerService extends __BaseService {
   }
 
   /**
+   * runAuroraDRRecipe
+   * @param params The `UiDeploymentControllerService.RunAuroraDRRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runAuroraDRRecipeUsingPOSTResponse(params: UiDeploymentControllerService.RunAuroraDRRecipeUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.deploymentRecipe;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/recipes/aurora/dr`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * runAuroraDRRecipe
+   * @param params The `UiDeploymentControllerService.RunAuroraDRRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runAuroraDRRecipeUsingPOST(params: UiDeploymentControllerService.RunAuroraDRRecipeUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.runAuroraDRRecipeUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * runMongoDRRecipe
+   * @param params The `UiDeploymentControllerService.RunMongoDRRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runMongoDRRecipeUsingPOSTResponse(params: UiDeploymentControllerService.RunMongoDRRecipeUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.deploymentRecipe;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/recipes/mongo/dr`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * runMongoDRRecipe
+   * @param params The `UiDeploymentControllerService.RunMongoDRRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runMongoDRRecipeUsingPOST(params: UiDeploymentControllerService.RunMongoDRRecipeUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.runMongoDRRecipeUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * runMongoResizeRecipe
+   * @param params The `UiDeploymentControllerService.RunMongoResizeRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runMongoResizeRecipeUsingPOSTResponse(params: UiDeploymentControllerService.RunMongoResizeRecipeUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.deploymentRecipe;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/recipes/mongo/resize`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * runMongoResizeRecipe
+   * @param params The `UiDeploymentControllerService.RunMongoResizeRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runMongoResizeRecipeUsingPOST(params: UiDeploymentControllerService.RunMongoResizeRecipeUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.runMongoResizeRecipeUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
    * getDeployment
    * @param params The `UiDeploymentControllerService.GetDeploymentUsingGETParams` containing the following parameters:
    *
@@ -356,6 +509,54 @@ module UiDeploymentControllerService {
      * executionId
      */
     executionId: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for runAuroraDRRecipeUsingPOST
+   */
+  export interface RunAuroraDRRecipeUsingPOSTParams {
+
+    /**
+     * deploymentRecipe
+     */
+    deploymentRecipe: AuroraDRDeploymentRecipe;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for runMongoDRRecipeUsingPOST
+   */
+  export interface RunMongoDRRecipeUsingPOSTParams {
+
+    /**
+     * deploymentRecipe
+     */
+    deploymentRecipe: MongoDRDeploymentRecipe;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for runMongoResizeRecipeUsingPOST
+   */
+  export interface RunMongoResizeRecipeUsingPOSTParams {
+
+    /**
+     * deploymentRecipe
+     */
+    deploymentRecipe: MongoVolumeResizeDeploymentRecipe;
 
     /**
      * clusterId

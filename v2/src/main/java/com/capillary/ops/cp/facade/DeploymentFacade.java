@@ -37,7 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
@@ -108,12 +111,27 @@ public class DeploymentFacade {
         try {
             AbstractCluster cluster = clusterFacade.getCluster(clusterId);
             DeploymentContext deploymentContext = getDeploymentContext(clusterId, deploymentRequest);
+            if(StringUtils.isEmpty(deploymentRequest.getTriggeredBy())){
+                deploymentRequest.setTriggeredBy(getUserName());
+            }
             //TODO: Save Deployment requests for audit purpose
             return tfBuildService.deployLatest(cluster, deploymentRequest, deploymentContext);
         } catch (QACallbackAbsentException e) {
             sendCCNotification(e.getMessage());
             throw e;
         }
+    }
+
+    private String getUserName(){
+        String userName = "";
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof OAuth2User){
+            userName = ((OAuth2User) principal).getName();
+        }
+        else{
+            userName = principal.toString();
+        }
+        return userName;
     }
 
     private void sendCCNotification(String message) {

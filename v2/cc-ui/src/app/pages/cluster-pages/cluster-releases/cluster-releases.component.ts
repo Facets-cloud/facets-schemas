@@ -86,7 +86,8 @@ export class ClusterReleasesComponent implements OnInit {
         context: {
           changes: d.changesApplied,
           appDeployments: d.appDeployments,
-          errors: d.errorLogs
+          errors: d.errorLogs,
+          overrideBuildSteps: d.overrideBuildSteps
         }
       }),
     );

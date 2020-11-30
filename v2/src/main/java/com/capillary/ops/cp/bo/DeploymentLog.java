@@ -1,17 +1,15 @@
 package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.ReleaseType;
-import com.capillary.ops.deployer.bo.Deployment;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Document
 public class DeploymentLog {
@@ -55,6 +53,10 @@ public class DeploymentLog {
     private Boolean signedOff = false;
 
     private String deploymentContextVersion;
+
+    private String triggeredBy;
+
+    private List<String> overrideBuildSteps = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -129,7 +131,7 @@ public class DeploymentLog {
     }
 
     public DeploymentType getDeploymentType() {
-        if(deploymentType == null) {
+        if (deploymentType == null) {
             return DeploymentType.REGULAR;
         }
         return deploymentType;
@@ -177,5 +179,21 @@ public class DeploymentLog {
 
     public void setDeploymentContextVersion(String deploymentContextVersion) {
         this.deploymentContextVersion = deploymentContextVersion;
+    }
+
+    public List<String> getOverrideBuildSteps() {
+        return overrideBuildSteps;
+    }
+
+    public void setOverrideBuildSteps(List<String> overrideBuildSteps) {
+        this.overrideBuildSteps = overrideBuildSteps;
+    }
+
+    public String getTriggeredBy() {
+        return triggeredBy;
+    }
+
+    public void setTriggeredBy(String triggeredBy) {
+        this.triggeredBy = triggeredBy;
     }
 }
