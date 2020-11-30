@@ -87,7 +87,7 @@ public class ReleaseScheduleService {
             logger.info("Initiating Release of type {} for cluster {} ({})", releaseType, c.getId(), c.getName());
             DeploymentRequest deploymentRequest = new DeploymentRequest();
             deploymentRequest.setReleaseType(releaseType);
-            deploymentRequest.setTriggeredBy("AutoDeployer");
+            deploymentRequest.setTriggeredBy("Deployer");
             deploymentFacade.createDeployment(c.getId(), deploymentRequest);
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
