@@ -1,3 +1,4 @@
+import { ClusterCreateComponent } from './pages/cluster-pages/cluster-create/cluster-create.component';
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {HomeComponent} from './pages/home/home.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
     path: 'capc/home', component: HomeComponent, canActivate: [AuthGuard]
   },
   {path: 'capc/stack/:stackName', component: StackOverviewComponent, canActivate: [AuthGuard]},
+  {path: 'capc/:stackName/clusterCreate', component: ClusterCreateComponent, canActivate: [AuthGuard]},
   {
     path: 'capc/:stackName/cluster/:clusterId', component: ClusterPagesComponent, canActivate: [AuthGuard],
     children: [

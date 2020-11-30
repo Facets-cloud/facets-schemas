@@ -1,0 +1,250 @@
+<app-layout-one-column>
+  <nb-card accent="info" size="huge">
+    <nb-card-header>Create Cluster</nb-card-header>
+    <nb-card-body>
+      <nb-stepper #stepper linear="true">
+        <nb-step label="Basic Details">
+          <div class="form-group row">
+            <label for="clusterName" class="label col-sm-3">Name</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #clusterName="ngModel"
+                nbInput
+                fullWidth
+                name="clusterName"
+                id="clusterName"
+                [(ngModel)]="awsClusterRequest.clusterName"
+                placeholder="cluster-name"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="label col-sm-3">Cloud</label>
+            <div class="col-sm-5">
+              <nb-select
+                [(ngModel)]="awsClusterRequest.cloud"
+                #cloud="ngModel"
+                name="cloud"
+                id="cloud"
+                selected="AWS"
+                fullWidth
+                size="small"
+              >
+                <nb-option value="AWS">AWS</nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="label col-sm-3">Time Zone</label>
+            <div class="col-sm-5">
+              <nb-select
+                [(ngModel)]="awsClusterRequest.tz"
+                #tz="ngModel"
+                name="tz"
+                id="tz"
+                selected="GMT"
+                fullWidth
+                size="small"
+              >
+                <nb-option value="AWS">GMT</nb-option>
+                <nb-option value="AWS">Asia/Kolkata</nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="label col-sm-3">Release Stream</label>
+            <div class="col-sm-5">
+              <nb-select
+                [(ngModel)]="awsClusterRequest.releaseStream"
+                #releaseStream="ngModel"
+                name="releaseStream"
+                id="releaseStream"
+                selected="QA"
+                fullWidth
+                size="small"
+              >
+                <nb-option value="AWS">QA</nb-option>
+                <nb-option value="AWS">STAGING</nb-option>
+                <nb-option value="AWS">PROD</nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <div style="padding-top: 1rem; float: right">
+            <button nbStepperNext status="primary" nbButton>Next</button>
+          </div>
+        </nb-step>
+
+        <nb-step label="Provider Configs">
+          <div class="form-group row">
+            <label class="label col-sm-3">AWS Region</label>
+            <div class="col-sm-5">
+              <nb-select
+                [(ngModel)]="awsClusterRequest.region"
+                #region="ngModel"
+                name="region"
+                id="region"
+                selected="GovCloud"
+                fullWidth
+                size="small"
+              >
+                <nb-option
+                  #awsRegions
+                  *ngFor="let region of awsRegions"
+                  value="{{ region }}"
+                >
+                  {{ region }}
+                </nb-option>
+              </nb-select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="label col-sm-3">Availability zone</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #azs="ngModel"
+                nbInput
+                fullWidth
+                name="azs"
+                id="azs"
+                [(ngModel)]="awsClusterRequest.azs"
+                placeholder="us-east-1a"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="label col-sm-3">CIDR</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #vpcCIDR="ngModel"
+                nbInput
+                fullWidth
+                name="vpcCIDR"
+                id="vpcCIDR"
+                [(ngModel)]="awsClusterRequest.vpcCIDR"
+                placeholder="0.0.0.0/0"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="label col-sm-3">IAM Role</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #roleARN="ngModel"
+                nbInput
+                fullWidth
+                name="roleARN"
+                id="roleARN"
+                [(ngModel)]="awsClusterRequest.roleARN"
+                placeholder="arn:aws:iam::123:role/capillary-cloud-role"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="label col-sm-3">External ID</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #externalId="ngModel"
+                nbInput
+                fullWidth
+                name="externalId"
+                id="externalId"
+                [(ngModel)]="awsClusterRequest.externalId"
+                placeholder="External Id for IAM role"
+              />
+            </div>
+          </div>
+          <div style="padding-top: 1rem; float: right">
+            <button nbStepperNext status="primary" nbButton>Next</button>
+          </div>
+        </nb-step>
+
+        <nb-step label="Cluster Configs">
+          <div class="form-group row">
+            <label class="label col-sm-3">CD Parent</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #cdPipelineParent="ngModel"
+                nbInput
+                fullWidth
+                name="cdPipelineParent"
+                id="cdPipelineParent"
+                [(ngModel)]="awsClusterRequest.cdPipelineParent"
+                placeholder="CD pipeline parent"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="label col-sm-3">Request Limit Ratio</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #cdPipelineParent="ngModel"
+                nbInput
+                fullWidth
+                name="cdPipelineParent"
+                id="cdPipelineParent"
+                [(ngModel)]="awsClusterRequest.cdPipelineParent"
+                placeholder="0.75"
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="label col-sm-3">Schedule</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #schedules="ngModel"
+                nbInput
+                fullWidth
+                name="schedules"
+                id="schedules"
+                [(ngModel)]="awsClusterRequest.schedules"
+                placeholder="30 5 * * *"
+              />
+            </div>
+          </div>
+
+
+          <div class="form-group row">
+            <label for="requireSignOff" class="label col-sm-3">Require Sign off</label>
+            <div class="col-sm-5">
+              <nb-toggle
+                [(ngModel)]="awsClusterRequest.requireSignOff"
+                name="requireSignOff"
+                #requireSignOff="ngModel"
+                id="requireSignOff"
+                ></nb-toggle
+              >
+            </div>
+          </div>
+
+          <div style="padding-top: 1rem; float: right">
+            <button nbStepperNext status="primary" nbButton>Next</button>
+          </div>
+        </nb-step>
+
+        <nb-step label="Cluster Variables">
+        </nb-step>
+      </nb-stepper>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>

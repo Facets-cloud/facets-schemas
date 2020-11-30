@@ -1,6 +1,18 @@
 <app-layout-one-column>
-  <nb-card>
-    <nb-card-header>Stack Overview</nb-card-header>
+  <nb-card accent="info">
+    <nb-card-header>
+    <div style="float:left;">Stack Overview</div>
+    <div style="float:right;">
+    <button
+              nbButton
+              fullWidth
+              status="info"
+              (click)="createCluster()"
+              >
+              Create Cluster
+            </button>
+    </div>
+    </nb-card-header>
     <nb-card-body>
       This is a <b>{{stack?.name}}</b> stack, its source code is <a href={{stack?.vcsUrl}}>here</a>.
     </nb-card-body>

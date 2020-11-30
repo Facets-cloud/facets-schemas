@@ -77,6 +77,10 @@ export class StackOverviewComponent implements OnInit {
     }
   }
 
+  createCluster(): void {
+    this.router.navigate(['/capc/', this.stack.name , 'clusterCreate']);
+  }
+
   newToggleClick(pauseReleases): void {
     const status: string = pauseReleases ? 'Enabled' : 'Disabled';
     this.dialogService.open(PauseReleaseDialogComponent, {context: {status: pauseReleases ? 'enable': 'disable'}}).onClose.subscribe(proceed => {
