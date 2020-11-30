@@ -24,6 +24,8 @@ import { PauseReleaseDialogComponent } from './pause-release-dialog/pause-releas
     NbDialogModule,
     NbButtonModule,
     FormsModule
+    NbEvaIconsModule,
+    NbButtonModule
   ]
 })
 export class StackOverviewModule {

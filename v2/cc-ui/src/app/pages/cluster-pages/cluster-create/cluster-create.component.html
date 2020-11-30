@@ -1,7 +1,8 @@
 <app-layout-one-column>
-  <nb-card accent="info" size="huge">
+  <nb-card accent="info" >
     <nb-card-header>Create Cluster</nb-card-header>
     <nb-card-body>
+     <div style="margin-left: 3rem; margin-right: 3rem; margin-bottom: 3rem;">
       <nb-stepper #stepper linear="true">
         <nb-step label="Basic Details">
           <div class="form-group row">
@@ -20,6 +21,44 @@
               />
             </div>
           </div>
+
+          <div class="form-group row">
+            <label class="label col-sm-3">Time Zone</label>
+            <div class="col-sm-5">
+              <nb-select
+                [(ngModel)]="awsClusterRequest.tz"
+                #tz="ngModel"
+                name="tz"
+                id="tz"
+                fullWidth
+                size="small"
+                placeholder="TZ"
+              >
+                <nb-option value="GMT">GMT</nb-option>
+                <nb-option value="Asia/Kolkata">Asia/Kolkata</nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="label col-sm-3">Release Stream</label>
+            <div class="col-sm-5">
+              <nb-select
+                [(ngModel)]="awsClusterRequest.releaseStream"
+                #releaseStream="ngModel"
+                name="releaseStream"
+                id="releaseStream"
+                selected="QA"
+                fullWidth
+                size="small"
+                placeholder="QA"
+              >
+                <nb-option value="QA">QA</nb-option>
+                <nb-option value="STAGING">STAGING</nb-option>
+                <nb-option value="PROD">PROD</nb-option>
+              </nb-select>
+            </div>
+          </div>
+
           <div class="form-group row">
             <label class="label col-sm-3">Cloud</label>
             <div class="col-sm-5">
@@ -36,47 +75,30 @@
               </nb-select>
             </div>
           </div>
-          <div class="form-group row">
-            <label class="label col-sm-3">Time Zone</label>
-            <div class="col-sm-5">
-              <nb-select
-                [(ngModel)]="awsClusterRequest.tz"
-                #tz="ngModel"
-                name="tz"
-                id="tz"
-                selected="GMT"
-                fullWidth
-                size="small"
-              >
-                <nb-option value="AWS">GMT</nb-option>
-                <nb-option value="AWS">Asia/Kolkata</nb-option>
-              </nb-select>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="label col-sm-3">Release Stream</label>
-            <div class="col-sm-5">
-              <nb-select
-                [(ngModel)]="awsClusterRequest.releaseStream"
-                #releaseStream="ngModel"
-                name="releaseStream"
-                id="releaseStream"
-                selected="QA"
-                fullWidth
-                size="small"
-              >
-                <nb-option value="AWS">QA</nb-option>
-                <nb-option value="AWS">STAGING</nb-option>
-                <nb-option value="AWS">PROD</nb-option>
-              </nb-select>
-            </div>
-          </div>
+
           <div style="padding-top: 1rem; float: right">
             <button nbStepperNext status="primary" nbButton>Next</button>
           </div>
         </nb-step>
 
         <nb-step label="Provider Configs">
+          <div class="form-group row">
+            <label class="label col-sm-3">CIDR</label>
+            <div class="col-sm-5">
+              <input
+                fieldSize="small"
+                type="text"
+                #vpcCIDR="ngModel"
+                nbInput
+                fullWidth
+                name="vpcCIDR"
+                id="vpcCIDR"
+                [(ngModel)]="awsClusterRequest.vpcCIDR"
+                placeholder="0.0.0.0/0"
+              />
+            </div>
+          </div>
+
           <div class="form-group row">
             <label class="label col-sm-3">AWS Region</label>
             <div class="col-sm-5">
@@ -85,7 +107,6 @@
                 #region="ngModel"
                 name="region"
                 id="region"
-                selected="GovCloud"
                 fullWidth
                 size="small"
               >
@@ -103,34 +124,78 @@
           <div class="form-group row">
             <label class="label col-sm-3">Availability zone</label>
             <div class="col-sm-5">
-              <input
-                fieldSize="small"
-                type="text"
-                #azs="ngModel"
-                nbInput
-                fullWidth
+              <nb-select
+                [(ngModel)]="awsClusterRequest.azs"
+                #region="ngModel"
                 name="azs"
                 id="azs"
-                [(ngModel)]="awsClusterRequest.azs"
-                placeholder="us-east-1a"
-              />
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label class="label col-sm-3">CIDR</label>
-            <div class="col-sm-5">
-              <input
-                fieldSize="small"
-                type="text"
-                #vpcCIDR="ngModel"
-                nbInput
                 fullWidth
-                name="vpcCIDR"
-                id="vpcCIDR"
-                [(ngModel)]="awsClusterRequest.vpcCIDR"
-                placeholder="0.0.0.0/0"
-              />
+                size="small"
+                multiple
+              >
+                <nb-option-group title="us-east-1">
+                  <nb-option value="us-east-1a"> us-east-1a </nb-option>
+                  <nb-option value="us-east-1b"> us-east-1b </nb-option>
+                  <nb-option value="us-east-1c"> us-east-1c </nb-option>
+                  <nb-option value="us-east-1d"> us-east-1d </nb-option>
+                  <nb-option value="us-east-1e"> us-east-1e </nb-option>
+                  <nb-option value="us-east-1f"> us-east-1f </nb-option>
+                </nb-option-group>
+                <nb-option-group title="us-west-2">
+                  <nb-option value="us-west-2a"> us-west-2a </nb-option>
+                  <nb-option value="us-west-2b"> us-west-2b </nb-option>
+                  <nb-option value="us-west-2c"> us-west-2c </nb-option>
+                </nb-option-group>
+                <nb-option-group title="us-west-1">
+                  <nb-option value="us-west-1a"> us-west-1a </nb-option>
+                  <nb-option value="us-west-1b"> us-west-1b </nb-option>
+                </nb-option-group>
+                <nb-option-group title="eu-west-1">
+                  <nb-option value="eu-west-1a"> eu-west-1a </nb-option>
+                  <nb-option value="eu-west-1b"> eu-west-1b </nb-option>
+                  <nb-option value="eu-west-1c"> eu-west-1c </nb-option>
+                </nb-option-group>
+                <nb-option-group title="eu-central-1">
+                  <nb-option value="eu-central-1a"> eu-central-1a </nb-option>
+                  <nb-option value="eu-central-1b"> eu-central-1b </nb-option>
+                </nb-option-group>
+                <nb-option-group title="ap-southeast-1">
+                  <nb-option value="ap-southeast-1a">
+                    ap-southeast-1a
+                  </nb-option>
+                  <nb-option value="ap-southeast-1b">
+                    ap-southeast-1b
+                  </nb-option>
+                </nb-option-group>
+                <nb-option-group title="ap-southeast-2">
+                  <nb-option value="ap-southeast-2a">
+                    ap-southeast-2a
+                  </nb-option>
+                  <nb-option value="ap-southeast-2b">
+                    ap-southeast-2b
+                  </nb-option>
+                  <nb-option value="ap-southeast-2c">
+                    ap-southeast-2c
+                  </nb-option>
+                </nb-option-group>
+                <nb-option-group title="ap-northeast-1">
+                  <nb-option value="ap-northeast-1a">
+                    ap-northeast-1a
+                  </nb-option>
+                  <nb-option value="ap-northeast-1c">
+                    ap-northeast-1c
+                  </nb-option>
+                </nb-option-group>
+                <nb-option-group title="sa-east-1">
+                  <nb-option value="sa-east-1a"> sa-east-1a </nb-option>
+                  <nb-option value="sa-east-1b"> sa-east-1b </nb-option>
+                  <nb-option value="sa-east-1c"> sa-east-1c </nb-option>
+                </nb-option-group>
+                <nb-option-group title="ap-south-1">
+                  <nb-option value="ap-south-1a"> ap-south-1a </nb-option>
+                  <nb-option value="ap-south-1b"> ap-south-1b </nb-option>
+                </nb-option-group>
+              </nb-select>
             </div>
           </div>
 
@@ -173,6 +238,20 @@
         </nb-step>
 
         <nb-step label="Cluster Configs">
+           <div class="form-group row">
+            <label for="requireSignOff" class="label col-sm-3"
+              >Require Sign off</label
+            >
+            <div class="col-sm-5">
+              <nb-toggle
+                [(ngModel)]="awsClusterRequest.requireSignOff"
+                name="requireSignOff"
+                #requireSignOff="ngModel"
+                id="requireSignOff"
+              ></nb-toggle>
+            </div>
+          </div>
+
           <div class="form-group row">
             <label class="label col-sm-3">CD Parent</label>
             <div class="col-sm-5">
@@ -195,13 +274,13 @@
               <input
                 fieldSize="small"
                 type="text"
-                #cdPipelineParent="ngModel"
+                #k8sRequestsToLimitsRatio="ngModel"
                 nbInput
                 fullWidth
-                name="cdPipelineParent"
-                id="cdPipelineParent"
-                [(ngModel)]="awsClusterRequest.cdPipelineParent"
-                placeholder="0.75"
+                name="k8sRequestsToLimitsRatio"
+                id="k8sRequestsToLimitsRatio"
+                [(ngModel)]="awsClusterRequest.k8sRequestsToLimitsRatio"
+                placeholder="0.5"
               />
             </div>
           </div>
@@ -212,28 +291,14 @@
               <input
                 fieldSize="small"
                 type="text"
-                #schedules="ngModel"
+                #cron="ngModel"
                 nbInput
                 fullWidth
-                name="schedules"
-                id="schedules"
-                [(ngModel)]="awsClusterRequest.schedules"
+                name="cron"
+                id="cron"
+                [(ngModel)]="cronSchedule"
                 placeholder="30 5 * * *"
               />
-            </div>
-          </div>
-
-
-          <div class="form-group row">
-            <label for="requireSignOff" class="label col-sm-3">Require Sign off</label>
-            <div class="col-sm-5">
-              <nb-toggle
-                [(ngModel)]="awsClusterRequest.requireSignOff"
-                name="requireSignOff"
-                #requireSignOff="ngModel"
-                id="requireSignOff"
-                ></nb-toggle
-              >
             </div>
           </div>
 
@@ -243,8 +308,15 @@
         </nb-step>
 
         <nb-step label="Cluster Variables">
+          <div class="form-group row"></div>
+          <div style="padding-top: 1rem; float: right">
+            <button nbButton status="success" (click)="createCluster()">
+              Create
+            </button>
+          </div>
         </nb-step>
       </nb-stepper>
+    </div>
     </nb-card-body>
   </nb-card>
 </app-layout-one-column>

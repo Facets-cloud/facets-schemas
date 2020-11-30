@@ -2,6 +2,15 @@
   <nb-card accent="info">
     <nb-card-header>
     <div style="float:left;">Stack Overview</div>
+    </nb-card-header>
+    <nb-card-body>
+      This is a <b>{{stack?.name}}</b> stack, its source code is <a href={{stack?.vcsUrl}}>here</a>.
+    </nb-card-body>
+  </nb-card>
+
+  <nb-card accent="warning">
+    <nb-card-header>
+    <div style="float:left;">Clusters</div>
     <div style="float:right;">
     <button
               nbButton
