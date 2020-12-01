@@ -42,9 +42,12 @@ export class StackOverviewComponent implements OnInit {
       delete: false,
       add: false,
       position: 'right',
-      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>', type: 'html'}]
+      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>&nbsp;&nbsp;&nbsp;', type: 'html'},
+      {name: 'Edit', title: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="eva-edit-outline eva"></i>', type: 'html'}],
+      styles: 'ng2-custom-actions-inline'
     },
     hideSubHeader: true,
+    rowClassFunction: (row) => { return 'ng2-custom-actions-inline' }
   };
 
   constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService, private router: Router, private dialogService: NbDialogService, private toastrService: NbToastrService) {
@@ -74,6 +77,10 @@ export class StackOverviewComponent implements OnInit {
       const clusterId = x.data.id;
       console.log('Navigate to ' + clusterId);
       this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId]);
+    } else if (x.action === 'Edit'){
+      const clusterId = x.data.id;
+      console.log('Navigate to ' + clusterId);
+      this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId, 'edit']);
     }
   }
 

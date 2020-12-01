@@ -40,6 +40,10 @@ const routes: Routes = [
         path: 'disaster-recovery',
         component: ClusterDisasterRecoveryComponent,
       },
+      {
+        path: 'edit',
+        component: ClusterCreateComponent,
+      },
       {path: '', redirectTo: 'overview', pathMatch: 'full'},
       {path: '**', redirectTo: 'overview', pathMatch: 'full'},
     ]

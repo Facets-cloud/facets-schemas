@@ -3,6 +3,7 @@ import { AwsClusterRequest } from './../../../cc-api/models/aws-cluster-request'
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { NbToastrService, NbStepperComponent, NbSelectModule } from '@nebular/theme';
+import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import { request } from 'http';
 
 @Component({
@@ -12,10 +13,14 @@ import { request } from 'http';
 })
 export class ClusterCreateComponent implements OnInit {
   constructor(private clusterController: UiAwsClusterControllerService,
-              private activatedRoute: ActivatedRoute) { }
+              private activatedRoute: ActivatedRoute,
+              private router: Router) { }
 
+  clusterId: any;
   stackName: any;
   cronSchedule: any;
+  cluster: AwsCluster;
+  clusterVariables: any = '{\"key\": \"value\"}';
   awsClusterRequest: AwsClusterRequest = {
     clusterName: '',
     cloud: 'AWS',
@@ -26,20 +31,64 @@ export class ClusterCreateComponent implements OnInit {
 
   ngOnInit() {
 
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.stackName = params.get('stackName');
+    this.activatedRoute.params.subscribe(p => {
+      if (p.clusterId) {
+        this.clusterId = p.clusterId;
+        this.clusterController.getClusterUsingGET1(this.clusterId).subscribe(clusterObj => {
+          this.cluster = clusterObj;
+          this.initializeClusterRequest();
+        });
+      }
+      this.stackName = p.stackName;
     });
+
+  }
+
+  initializeClusterRequest() {
+    this.awsClusterRequest.clusterName = this.cluster.name;
+    this.awsClusterRequest.cloud = this.cluster.cloud;
+    this.awsClusterRequest.tz.displayName = this.cluster.tz;
+    this.awsClusterRequest.releaseStream = this.cluster.releaseStream;
+    this.awsClusterRequest.cdPipelineParent = this.cluster.cdPipelineParent;
+    this.awsClusterRequest.azs = this.cluster.azs;
+    this.awsClusterRequest.vpcCIDR = this.cluster.vpcCIDR;
+    this.awsClusterRequest.externalId = this.cluster.externalId;
+    this.awsClusterRequest.roleARN = this.cluster.roleARN;
+    this.awsClusterRequest.k8sRequestsToLimitsRatio = this.cluster.k8sRequestsToLimitsRatio;
+    this.awsClusterRequest.requireSignOff = this.cluster.requireSignOff;
+    this.awsClusterRequest.schedules = this.cluster.schedules;
   }
 
   createCluster() {
     this.awsClusterRequest.schedules = {RELEASE: this.cronSchedule};
     this.awsClusterRequest.clusterVars = {};
     this.awsClusterRequest.stackName = this.stackName;
+    this.awsClusterRequest.clusterVars = JSON.parse(this.clusterVariables);
     console.log(this.awsClusterRequest);
+
+    try {
     this.clusterController.createClusterUsingPOST1(this.awsClusterRequest)
-    .subscribe(rs => {
-      console.log(rs);
+    .subscribe(cluster => {
+      console.log(cluster.id);
+      this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
     });
+    }catch (err) {
+    console.log(err);
+    }
+  }
+
+  updateCluster(){
+    try {
+      this.clusterController.updateClusterUsingPUT1({
+        request: this.awsClusterRequest,
+        clusterId: this.cluster.id
+      }).subscribe(c => {
+        console.log(c);
+        this.router.navigate(['/capc/', this.stackName, 'cluster', this.cluster.id]);
+      });
+      } catch (err) {
+      console.log(err);
+    }
   }
 
 }
