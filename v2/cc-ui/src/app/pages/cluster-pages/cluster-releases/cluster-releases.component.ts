@@ -1,9 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import { UiDeploymentControllerService, UiCommonClusterControllerService, UiStackControllerService } from 'src/app/cc-api/services';
-import { ActivatedRoute, Router } from '@angular/router';
-import { DeploymentLog } from 'src/app/cc-api/models';
-import { NbDialogService, NbToastrService, NbSelectModule } from '@nebular/theme';
-import {ApplicationControllerService } from '../../../cc-api/services/application-controller.service';
+import {
+  UiDeploymentControllerService,
+  UiCommonClusterControllerService,
+  UiStackControllerService
+} from 'src/app/cc-api/services';
+import {ActivatedRoute, Router} from '@angular/router';
+import {DeploymentLog} from 'src/app/cc-api/models';
+import {NbDialogService, NbToastrService, NbSelectModule} from '@nebular/theme';
+import {ApplicationControllerService} from '../../../cc-api/services/application-controller.service';
 import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
 import {Observable, of} from "rxjs";
 import {map} from "rxjs/operators";
@@ -27,11 +31,9 @@ export class ClusterReleasesComponent implements OnInit {
   releaseTypeSelection: any = 'Hotfix';
   applicationName: any = '';
   isUserAdmin: any;
-  applications:string[];
-  filteredOptions$: Observable<string[]>;
-  @ViewChild('autoInput') input;
 
   appName: any;
+  stackName: any;
 
   constructor(private deploymentController: UiDeploymentControllerService,
               private u: UiStackControllerService,
@@ -52,19 +54,19 @@ export class ClusterReleasesComponent implements OnInit {
             this.currentSignedOffDeployment = t.currentSignedOffDeployment;
             t.deployments.forEach(deployment =>
               deployment['allowSignoff'] = deployment.status === 'SUCCEEDED' &&
-              deployment.stackVersion?.length > 0 &&
-              deployment.tfVersion?.length > 0 &&
-              !deployment.signedOff &&
-              deployment.createdOn > this.currentSignedOffDeployment?.createdOn);
+                deployment.stackVersion?.length > 0 &&
+                deployment.tfVersion?.length > 0 &&
+                !deployment.signedOff &&
+                deployment.createdOn > this.currentSignedOffDeployment?.createdOn);
             t.deployments.forEach(
               x => {
                 if (x['allowSignoff']) {
                   if (t.stack.vcs === 'GITHUB') {
                     x['compareUrl'] = t.stack.vcsUrl.replace('.git', '') + '/compare/'
-                    + t.currentSignedOffDeployment?.stackVersion + '...' + x.stackVersion;
+                      + t.currentSignedOffDeployment?.stackVersion + '...' + x.stackVersion;
                   } else if (t.stack.vcs === 'BITBUCKET') {
                     x['compareUrl'] = t.stack.vcsUrl.replace('.git', '') + '/compare/' +
-                    x.stackVersion + '%0' + t.currentSignedOffDeployment?.stackVersion;
+                      x.stackVersion + '%0' + t.currentSignedOffDeployment?.stackVersion;
                   }
                 } else {
                   x['compareUrl'] = null;
@@ -77,43 +79,21 @@ export class ClusterReleasesComponent implements OnInit {
           () => this.loading = false
         );
       }
-      this.u.getResourcesByTypesUsingGET({stackName: p.stackName, resourceType: "application"}).subscribe(
-        (x: Array<string>) =>{
-          this.applications = x;
-          this.filteredOptions$ = of(this.applications);
-        }
-      )
+      this.stackName = p.stackName;
     });
     this.applicationController.meUsingGET().subscribe(
       (x: SimpleOauth2User) => {
         this.user = x;
         this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
-        || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
+          || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
       }
     );
 
   }
 
-  private filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.applications.filter(optionValue => optionValue.toLowerCase().includes(filterValue));
-  }
-  getFilteredOptions(value: string): Observable<string[]> {
-    return of(value).pipe(
-      map(filterString => this.filter(filterString)),
-    );
-  }
-
-  onChange() {
-    this.filteredOptions$ = this.getFilteredOptions(this.input.nativeElement.value);
-  }
-
-  onSelectionChange($event) {
-    this.filteredOptions$ = this.getFilteredOptions($event);
-  }
 
   showDetails(dialog, deploymentId) {
-    this.deploymentController.getDeploymentUsingGET({ deploymentId: deploymentId, clusterId: this.clusterId }).subscribe(
+    this.deploymentController.getDeploymentUsingGET({deploymentId: deploymentId, clusterId: this.clusterId}).subscribe(
       d => this.dialogService.open(dialog, {
         context: {
           changes: d.changesApplied,
@@ -126,10 +106,10 @@ export class ClusterReleasesComponent implements OnInit {
   }
 
   confirmSignoff(signoff, deployment) {
-    this.dialogService.open(signoff, { context: deployment }).onClose.subscribe(
+    this.dialogService.open(signoff, {context: deployment}).onClose.subscribe(
       d => {
         this.loading = true;
-        this.deploymentController.signOffDeploymentUsingPUT({ deploymentId: d.id, clusterId: this.clusterId })
+        this.deploymentController.signOffDeploymentUsingPUT({deploymentId: d.id, clusterId: this.clusterId})
           .subscribe(
             x => {
               d.signedOff = x.signedOff;
@@ -145,7 +125,7 @@ export class ClusterReleasesComponent implements OnInit {
   }
 
   openDeploymentPopup(deploymentUI) {
-    this.dialogService.open(deploymentUI, { context: 'NA' }).onClose.subscribe(
+    this.dialogService.open(deploymentUI, {context: 'NA'}).onClose.subscribe(
       result => {
         if (result) {
           this.loading = true;
@@ -163,8 +143,7 @@ export class ClusterReleasesComponent implements OnInit {
               releaseType: 'RELEASE',
               overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve']
             };
-          }
-          else if (this.releaseTypeSelection === 'Release') {
+          } else if (this.releaseTypeSelection === 'Release') {
             this.payload = {
               releaseType: 'RELEASE'
             };
@@ -189,4 +168,7 @@ export class ClusterReleasesComponent implements OnInit {
     );
   }
 
+  appSelected($event: string) {
+    this.applicationName = $event;
+  }
 }
