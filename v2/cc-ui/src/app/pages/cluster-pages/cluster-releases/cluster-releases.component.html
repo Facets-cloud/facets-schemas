@@ -1,20 +1,16 @@
-<nb-layout>
-  <nb-layout-header fixed size="small">
-    <app-header></app-header>
-  </nb-layout-header>
-  <nb-layout-column class="container-fluid">
-    <nb-card accent="info">
-      <nb-card-header>
-      <div style="float:left;"> Releases </div>
+<app-layout-one-column>
+  <nb-card accent="info">
+    <nb-card-header>
+      <div style="float:left;"> Releases</div>
       <div style="float:right;" *ngIf="isUserAdmin">
-      <button
-              nbButton
-              fullWidth
-              status="info"
-              (click)="openDeploymentPopup(deploymentUI)"
-              >
-              Trigger Deployment
-            </button>
+        <button
+          nbButton
+          fullWidth
+          status="info"
+          (click)="openDeploymentPopup(deploymentUI)"
+        >
+          Trigger Deployment
+        </button>
       </div>
       </nb-card-header>
       <nb-card-body>
@@ -220,57 +216,61 @@
 </ng-template>
 
 <ng-template #deploymentUI let-data let-ref="dialogRef">
-<nb-card accent="danger">
-        <nb-card-header >Deployment</nb-card-header>
+  <nb-card accent="danger">
+    <nb-card-header>Deployment</nb-card-header>
 
-        <nb-card-body>
-          <div style="background: rgba(255, 255, 255, 0.8);width:470px;" class="row">
-           <div class="col-md-10">
-            <div class="row" style="padding-bottom:12px">
-                <div class="col-sm-6 cc-key" style="padding-top:10px;padding-left:20px" >Release Type</div>
-              <div class="col-sm-6">
-                <nb-select
-                  [(ngModel)]="releaseTypeSelection"
-                  #applicationType="ngModel"
-                  name="releaseType"
-                  id="releaseType"
-                  placeholder="Select Type"
-                  selected="RELEASE"
+    <nb-card-body>
+      <div style="background: rgba(255, 255, 255, 0.8);width:470px;" class="row">
+        <div class="col-md-10">
+          <div class="row" style="padding-bottom:12px">
+            <div class="col-sm-6 cc-key" style="padding-top:10px;padding-left:20px">Release Type</div>
+            <div class="col-sm-6">
+              <nb-select
+                [(ngModel)]="releaseTypeSelection"
+                #applicationType="ngModel"
+                name="releaseType"
+                id="releaseType"
+                placeholder="Select Type"
+                selected="RELEASE"
+              >
+                <nb-option
+                  #releaseTypes
+                  *ngFor="let releaseType of releaseTypes"
+                  value="{{ releaseType }}"
                 >
-                  <nb-option
-                    #releaseTypes
-                    *ngFor="let releaseType of releaseTypes"
-                    value="{{ releaseType }}"
-                  >
-                    {{ releaseType }}
-                  </nb-option>
-                </nb-select>
-              </div>
-            </div>
-            <div class="row" *ngIf="releaseTypeSelection == 'Hotfix'">
-                <div class="col-sm-6" style="padding-top:10px;padding-left:20px" >Application Name</div>
-                <div class="col-sm-6" style="padding-left:16px;">
-                  <input
-                    nbInput
-                    pattern="[a-z-]+"
-                    fieldSize="medium"
-                    type=text
-                    [(ngModel)]="applicationName"
-                    required
-                    fullWidth
-                    name="ApplicationName"
-                    id="applicationName"
-                    placeholder="intouch-api,emf"
-                  />
-                </div>
-
-            </div>
+                  {{ releaseType }}
+                </nb-option>
+              </nb-select>
             </div>
           </div>
-        </nb-card-body>
-        <nb-card-footer>
-          <button nbButton status=success (click)="ref.close(data)" [disabled]="releaseTypeSelection == 'Hotfix' && !applicationName">Confirm</button>
-          <button style='float:right;' nbButton status=danger (click)="ref.close()">Cancel</button>
-        </nb-card-footer>
-      </nb-card>
+          <div class="row" *ngIf="releaseTypeSelection == 'Hotfix'">
+            <div class="col-sm-6" style="padding-top:10px;padding-left:20px">Application Name</div>
+            <div class="col-sm-6">
+              <input #autoInput
+                     nbInput
+                     type="text"
+                     (input)="onChange()"
+                     placeholder="Enter value"
+                     [nbAutocomplete]="auto" />
+
+              <nb-autocomplete #auto (selectedChange)="onSelectionChange($event)">
+
+                <nb-option *ngFor="let option of filteredOptions$ | async" [value]="option">
+                  {{ option }}
+                </nb-option>
+
+              </nb-autocomplete>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton status=success (click)="ref.close(data)"
+              [disabled]="releaseTypeSelection == 'Hotfix' && !applicationName">Confirm
+      </button>
+      <button style='float:right;' nbButton status=danger (click)="ref.close()">Cancel</button>
+    </nb-card-footer>
+  </nb-card>
 </ng-template>
