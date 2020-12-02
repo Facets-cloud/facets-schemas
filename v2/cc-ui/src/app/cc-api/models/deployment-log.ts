@@ -6,6 +6,7 @@ export interface DeploymentLog {
   changesApplied?: Array<TerraformChange>;
   codebuildId?: string;
   createdOn?: string;
+  deploymentContextVersion?: string;
   deploymentType?: 'REGULAR' | 'CUSTOM' | 'ROLLBACK';
   description?: string;
   errorLogs?: Array<string>;
