@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { UiDeploymentControllerService, UiCommonClusterControllerService, UiStackControllerService } from 'src/app/cc-api/services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DeploymentLog } from 'src/app/cc-api/models';
 import { NbDialogService, NbToastrService, NbSelectModule } from '@nebular/theme';
 import {ApplicationControllerService } from '../../../cc-api/services/application-controller.service';
 import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
+import {Observable, of} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-cluster-releases',
@@ -25,6 +27,11 @@ export class ClusterReleasesComponent implements OnInit {
   releaseTypeSelection: any = 'Release';
   applicationName: any = '';
   isUserAdmin: any;
+  applications:string[];
+  filteredOptions$: Observable<string[]>;
+  @ViewChild('autoInput') input;
+
+  appName: any;
 
   constructor(private deploymentController: UiDeploymentControllerService,
               private u: UiStackControllerService,
@@ -70,6 +77,12 @@ export class ClusterReleasesComponent implements OnInit {
           () => this.loading = false
         );
       }
+      this.u.getResourcesByTypesUsingGET({stackName: p.stackName, resourceType: "application"}).subscribe(
+        (x: Array<string>) =>{
+          this.applications = x;
+          this.filteredOptions$ = of(this.applications);
+        }
+      )
     });
     this.applicationController.meUsingGET().subscribe(
       (x: SimpleOauth2User) => {
@@ -78,6 +91,25 @@ export class ClusterReleasesComponent implements OnInit {
         || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
       }
     );
+
+  }
+
+  private filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.applications.filter(optionValue => optionValue.toLowerCase().includes(filterValue));
+  }
+  getFilteredOptions(value: string): Observable<string[]> {
+    return of(value).pipe(
+      map(filterString => this.filter(filterString)),
+    );
+  }
+
+  onChange() {
+    this.filteredOptions$ = this.getFilteredOptions(this.input.nativeElement.value);
+  }
+
+  onSelectionChange($event) {
+    this.filteredOptions$ = this.getFilteredOptions($event);
   }
 
   showDetails(dialog, deploymentId) {
