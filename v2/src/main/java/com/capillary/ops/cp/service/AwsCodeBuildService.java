@@ -262,9 +262,13 @@ public class AwsCodeBuildService implements TFBuildService {
             }
         }
 
+        ComputeType computeType = cluster.getReleaseStream().equals(BuildStrategy.PROD) ?
+                ComputeType.BUILD_GENERAL1_2_XLARGE : ComputeType.BUILD_GENERAL1_LARGE;
+
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
+                    .computeTypeOverride(computeType)
                     .secondarySourcesOverride(
                             ProjectSource.builder()
                             .type(SourceType.valueOf(stack.getVcs().name()))
