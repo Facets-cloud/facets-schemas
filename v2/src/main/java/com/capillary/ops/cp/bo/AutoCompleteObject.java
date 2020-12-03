@@ -4,8 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Document
 @CompoundIndex(def = "{'stackName':1, 'resourceType': 1}", name = "per_stack_one_resourceType")
@@ -20,7 +19,7 @@ public class AutoCompleteObject {
     private String id;
     private String stackName;
     private String resourceType;
-    private List<String> resourceNames = new ArrayList<>();
+    private Set<String> resourceNames = new HashSet<>();
 
     public String getStackName() {
         return stackName;
@@ -38,11 +37,11 @@ public class AutoCompleteObject {
         this.resourceType = resourceType;
     }
 
-    public List<String> getResourceNames() {
+    public Set<String> getResourceNames() {
         return resourceNames;
     }
 
-    public void setResourceNames(List<String> resourceNames) {
+    public void setResourceNames(Set<String> resourceNames) {
         this.resourceNames = resourceNames;
     }
 

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -58,9 +59,9 @@ public class StackAutoCompleteService {
      * @param resourceType
      * @return
      */
-    public List<String> getResourcesSuggestion(String stackName, String resourceType) {
-        AutoCompleteObject allByStackNameAndResourceType = autoCompleteObjectRepository.findAllByStackNameAndResourceType(stackName, resourceType);
-        return allByStackNameAndResourceType.getResourceNames();
+    public Set<String> getResourcesSuggestion(String stackName, String resourceType) {
+        List<AutoCompleteObject> allByStackNameAndResourceType = autoCompleteObjectRepository.findAllByStackNameAndResourceType(stackName, resourceType);
+        return allByStackNameAndResourceType.get(0).getResourceNames();
     }
 
     /**
@@ -69,9 +70,9 @@ public class StackAutoCompleteService {
      * @param stackName
      * @return
      */
-    public List<String> getResourceTypesSuggestion(String stackName) {
+    public Set<String> getResourceTypesSuggestion(String stackName) {
         List<AutoCompleteObject> allByStackName = autoCompleteObjectRepository.findAllByStackName(stackName);
-        List<String> resourceTypes = allByStackName.stream().map(AutoCompleteObject::getResourceType).collect(Collectors.toList());
+        Set<String> resourceTypes = allByStackName.stream().map(AutoCompleteObject::getResourceType).collect(Collectors.toSet());
         return resourceTypes;
     }
 

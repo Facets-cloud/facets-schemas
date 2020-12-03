@@ -70,6 +70,7 @@ export class ClusterOverridesComponent implements OnInit {
   @ViewChild('editor', { static: false }) editor: JsonEditorComponent;
 
   private clusterId: any;
+  private stackName: any;
 
   constructor(
     private clusterService: UiCommonClusterControllerService,
@@ -87,6 +88,7 @@ export class ClusterOverridesComponent implements OnInit {
       }
 
       this.clusterId = p.clusterId;
+      this.stackName = p.stackName;
 
       this.clusterService.getOverridesUsingGET1(p.clusterId).subscribe(
         res => {
@@ -168,7 +170,7 @@ export class ClusterOverridesComponent implements OnInit {
   }
 
   addOverride() {
-    this.dialogService.open(PopupAppOverrideComponent, { context: { clusterId: this.clusterId, existingOverrides: this.lookupMap } });
+    this.dialogService.open(PopupAppOverrideComponent, { context: { clusterId: this.clusterId, existingOverrides: this.lookupMap, stackName: this.stackName } });
   }
 
   deleteOverride() {

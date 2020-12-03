@@ -38,11 +38,11 @@ public class MockCCDataBootstrap {
 
         Stack stack = new Stack();
         stack.setName("crm");
-        stack.setUser("user");
-        stack.setAppPassword("pwd");
+        stack.setUser("ambar-cap");
+        stack.setAppPassword("935d4d4ee673a9531a7d2241f1e9d1ddbbbf0ee1");
         stack.setRelativePath("/");
         stack.setVcs(VCS.BITBUCKET);
-        stack.setVcsUrl("tmp");
+        stack.setVcsUrl("https://github.com/Capillary/cc-stack-crm.git");
         stackRepository.save(stack);
 
         AwsCluster cluster = new AwsCluster("cluster1");

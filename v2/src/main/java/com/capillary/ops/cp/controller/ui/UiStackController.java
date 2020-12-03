@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * All calls which can be made by the "Stack Managers"
@@ -78,12 +79,12 @@ public class UiStackController {
     }
 
     @GetMapping("{stackName}/suggestions/resourceType")
-    public List<String> getResourceTypes(@PathVariable String stackName) {
+    public Set<String> getResourceTypes(@PathVariable String stackName) {
         return stackAutoCompleteService.getResourceTypesSuggestion(stackName);
     }
 
     @GetMapping("{stackName}/suggestions/resourceType/{resourceType}")
-    public List<String> getResourcesByTypes(@PathVariable String stackName, @PathVariable String resourceType) {
+    public Set<String> getResourcesByTypes(@PathVariable String stackName, @PathVariable String resourceType) {
         return stackAutoCompleteService.getResourcesSuggestion(stackName, resourceType);
     }
 

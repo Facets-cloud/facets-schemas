@@ -121,11 +121,10 @@
             >
             </ng2-smart-table>
           </div>
-          <div style="margin: 1rem 0 1rem 0; text-align: center;">
+          <div style="margin: 1rem 0 1rem 0; ">
 
             <button
               nbButton
-              size="small"
               disabled="disabled"
               *ngIf="!enableSubmitForClusterOverrides"
             >
@@ -133,7 +132,6 @@
             </button>
             <button
               nbButton
-              size="small"
               status="primary"
               *ngIf="enableSubmitForClusterOverrides"
               (click)="submitClusterOverrides()"
@@ -157,11 +155,10 @@
             >
             </ng2-smart-table>
           </div>
-          <div style="margin: 1rem 0 1rem 0; text-align: center;">
+          <div style="margin: 1rem 0 1rem 0;">
             <button
               nbButton
               disabled="disabled"
-              size="small"
               *ngIf="!enableSubmitForClusterOverrides"
             >
               Invalid Content
@@ -169,7 +166,6 @@
             <button
               nbButton
               status="primary"
-              size="small"
               *ngIf="enableSubmitForClusterOverrides"
               (click)="submitClusterOverrides()"
             >
