@@ -12,50 +12,62 @@
           Trigger Deployment
         </button>
       </div>
-      </nb-card-header>
-      <nb-card-body>
-        <div style="text-align: center;" class="table-responsive">
-          <table class="table table-bordered">
-            <thead>
-            <tr scope=row>
-              <th class="vert-center" scope="col">Id</th>
-              <th class="vert-center" scope="col">Start Time</th>
-              <th class="vert-center" scope="col">Release Type</th>
-              <th class="vert-center" scope="col">Status</th>
-              <th class="vert-center" scope="col">Stack Version</th>
-              <th class="vert-center" scope="col">CC Version</th>
-              <th class="vert-center" scope="col">Deployment Mode</th>
-              <th class="vert-center" scope="col">Triggered By </th>
-              <th class="vert-center" scope="col">Details</th>
-              <th *ngIf="downStreamClusters.length !== 0" class="vert-center" scope="col">Sign Off</th>
-            </tr>
-            <tr scope=row *ngFor="let deployment of deployments">
-              <td class="vert-center" scope="col">{{deployment.id}}</td>
-              <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
-              <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
-              <td class="vert-center" scope="col">{{deployment.status}}</td>
-              <td class="vert-center" scope="col">
-                {{deployment.stackVersion | slice:0:7}}
-                <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton nbTooltip="Compare with signed-off version" ghost status="primary"><nb-icon icon="code-outline"></nb-icon></button>
-              </td>
-              <td class="vert-center" scope="col">{{deployment.tfVersion | slice:0:7}}</td>
-              <td class="vert-center" scope="col">{{deployment.deploymentType}}</td>
-              <td class="vert-center" scope="col">{{deployment.triggeredBy}}</td>
-              <td scope="col"><button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"><nb-icon icon="info"></nb-icon></button>
-              <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff}}<button *ngIf="deployment.allowSignoff" (click)="confirmSignoff(signoff, deployment)" nbButton ghost status="primary"><nb-icon icon="edit"></nb-icon></button></td>
-            </tr>
-            </thead>
-          </table>
-        </div>
-      </nb-card-body>
-    </nb-card>
-  </app-layout-one-column>
+    </nb-card-header>
+    <nb-card-body>
+      <div style="text-align: center;" class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+          <tr scope=row>
+            <th class="vert-center" scope="col">Id</th>
+            <th class="vert-center" scope="col">Start Time</th>
+            <th class="vert-center" scope="col">Release Type</th>
+            <th class="vert-center" scope="col">Status</th>
+            <th class="vert-center" scope="col">Stack Version</th>
+            <th class="vert-center" scope="col">CC Version</th>
+            <th class="vert-center" scope="col">Deployment Mode</th>
+            <th class="vert-center" scope="col">Triggered By</th>
+            <th class="vert-center" scope="col">Details</th>
+            <th *ngIf="downStreamClusters.length !== 0" class="vert-center" scope="col">Sign Off</th>
+          </tr>
+          <tr scope=row *ngFor="let deployment of deployments">
+            <td class="vert-center" scope="col">{{deployment.id}}</td>
+            <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
+            <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
+            <td class="vert-center" scope="col">{{deployment.status}}</td>
+            <td class="vert-center" scope="col">
+              {{deployment.stackVersion | slice:0:7}}
+              <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
+                      nbTooltip="Compare with signed-off version" ghost status="primary">
+                <nb-icon icon="code-outline"></nb-icon>
+              </button>
+            </td>
+            <td class="vert-center" scope="col">{{deployment.tfVersion | slice:0:7}}</td>
+            <td class="vert-center" scope="col">{{deployment.deploymentType}}</td>
+            <td class="vert-center" scope="col">{{deployment.triggeredBy}}</td>
+            <td scope="col">
+              <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary">
+                <nb-icon icon="info"></nb-icon>
+              </button>
+            <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff}}
+              <button *ngIf="deployment.allowSignoff" (click)="confirmSignoff(signoff, deployment)" nbButton ghost
+                      status="primary">
+                <nb-icon icon="edit"></nb-icon>
+              </button>
+            </td>
+          </tr>
+          </thead>
+        </table>
+      </div>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>
 
 <ng-template #signoff let-data let-ref="dialogRef">
   <nb-card size=tiny>
     <nb-card-header>Confirm Sign-off</nb-card-header>
     <nb-card-body>
-      Sign-off stack version {{data.stackVersion | slice:0:7}}? This stack version will be deployed to the following clusters in the next release cycle:
+      Sign-off stack version {{data.stackVersion | slice:0:7}}? This stack version will be deployed to the following
+      clusters in the next release cycle:
       <div>
         <ul>
           <li *ngFor="let item of downStreamClusters">
@@ -220,51 +232,33 @@
 
     <nb-card-body>
       <div style="background: rgba(255, 255, 255, 0.8);width:470px;" class="row">
-        <div class="col-md-10">
-          <div class="row" style="padding-bottom:12px">
-            <div class="col-sm-6 cc-key" style="padding-top:10px;padding-left:20px">Release Type</div>
-            <div class="col-sm-6">
-              <nb-select
-                [(ngModel)]="releaseTypeSelection"
-                #applicationType="ngModel"
-                name="releaseType"
-                id="releaseType"
-                placeholder="Select Type"
-                selected="RELEASE"
+          <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">Release Type</div>
+          <div class="col-sm-6">
+            <nb-select
+              [(ngModel)]="releaseTypeSelection"
+              #applicationType="ngModel"
+              name="releaseType"
+              id="releaseType"
+              placeholder="Select Type"
+              selected="RELEASE"
+            >
+              <nb-option
+                #releaseTypes
+                *ngFor="let releaseType of releaseTypes"
+                value="{{ releaseType }}"
               >
-                <nb-option
-                  #releaseTypes
-                  *ngFor="let releaseType of releaseTypes"
-                  value="{{ releaseType }}"
-                >
-                  {{ releaseType }}
-                </nb-option>
-              </nb-select>
-            </div>
-          </div>
-          <div class="row" *ngIf="releaseTypeSelection == 'Hotfix'">
-            <div class="col-sm-6" style="padding-top:10px;padding-left:20px">Application Name</div>
-            <div class="col-sm-6">
-              <input #autoInput
-                     [(ngModel)]="applicationName"
-                     nbInput
-                     type="text"
-                     (input)="onChange()"
-                     placeholder="Enter value"
-                     [nbAutocomplete]="auto" />
-
-              <nb-autocomplete #auto (selectedChange)="onSelectionChange($event)">
-
-                <nb-option *ngFor="let option of filteredOptions$ | async" [value]="option">
-                  {{ option }}
-                </nb-option>
-
-              </nb-autocomplete>
-            </div>
-
+                {{ releaseType }}
+              </nb-option>
+            </nb-select>
           </div>
         </div>
-      </div>
+      <br/>
+        <div class="row" *ngIf="releaseTypeSelection == 'Hotfix'">
+          <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">Application Name</div>
+          <div class="col-sm-6">
+            <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="application" (onResourceSelect)="appSelected($event)"></app-resource-selector>
+          </div>
+        </div>
     </nb-card-body>
     <nb-card-footer>
       <button nbButton status=success (click)="ref.close(data)"
