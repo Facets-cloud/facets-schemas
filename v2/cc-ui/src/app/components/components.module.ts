@@ -16,11 +16,12 @@ import {HeaderComponent} from './header/header.component';
 import {RouterModule} from '@angular/router';
 import { ResourceSelectorComponent } from './resource-selector/resource-selector.component';
 import {FormsModule} from "@angular/forms";
+import { ResourceTypeSelectorComponent } from './resource-type-selector/resource-type-selector.component';
 
 
 
 @NgModule({
-  declarations: [HeaderComponent, ResourceSelectorComponent],
+  declarations: [HeaderComponent, ResourceSelectorComponent, ResourceTypeSelectorComponent],
   imports: [
     CommonModule,
     NbLayoutModule,
@@ -38,6 +39,7 @@ import {FormsModule} from "@angular/forms";
   exports: [
     HeaderComponent,
     ResourceSelectorComponent,
+    ResourceTypeSelectorComponent,
   ]
 })
 export class ComponentsModule { }

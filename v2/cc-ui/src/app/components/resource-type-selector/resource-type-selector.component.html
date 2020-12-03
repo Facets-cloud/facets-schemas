@@ -1,0 +1,17 @@
+<div>
+  <input #resourceTypeInput
+         [(ngModel)]="resourceType"
+         nbInput
+         type="text"
+         (input)="onChangeRT()"
+         placeholder="Select Resource Type"
+         [nbAutocomplete]="autoRT"/>
+
+  <nb-autocomplete #autoRT (selectedChange)="onSelectionChangeRT($event)">
+
+    <nb-option *ngFor="let option of filteredOptionsRT$ | async" [value]="option">
+      {{ option }}
+    </nb-option>
+
+  </nb-autocomplete>
+</div>
