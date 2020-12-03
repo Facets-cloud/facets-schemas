@@ -9,6 +9,11 @@
   <nb-card>
     <nb-card-header>Clusters</nb-card-header>
     <nb-card-body>
+      <nb-toggle [(ngModel)]="pauseReleases" labelPosition="end" (click)="newToggleClick(pauseReleases)">
+        Pause Production Releases
+      </nb-toggle>
+    </nb-card-body>
+    <nb-card-body>
       <ng2-smart-table class="cc-no-standard" [settings]="clusterSettings" [source]="tableData" (custom)="gotoPage($event)"></ng2-smart-table>
     </nb-card-body>
   </nb-card>

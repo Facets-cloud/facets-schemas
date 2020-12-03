@@ -2,6 +2,7 @@ package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.StackFacade;
 import com.jcabi.aspects.Loggable;
@@ -53,4 +54,10 @@ public class StackController {
     public Stack getStack(String stackName) {
         return stackFacade.getStackByName(stackName);
     }
+
+    @PostMapping("{stackName}/toggleRelease")
+    public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
+        return stackFacade.toggleRelease(toggleRelease);
+    }
+
 }

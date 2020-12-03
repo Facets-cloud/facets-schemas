@@ -154,10 +154,14 @@ export class ClusterReleasesComponent implements OnInit {
               clusterId: this.clusterId,
               deploymentRequest: this.payload
             }).subscribe(c => {
-              console.log(c);
-              this.toastrService.success('Triggered terraform apply', 'Success');
-              this.ngOnInit();
-            });
+                console.log(c);
+                this.toastrService.success('Triggered terraform apply', 'Success');
+                this.ngOnInit();
+              },
+              err => {
+                this.toastrService.warning(err.error.message, 'Error');
+              }
+            );
           } catch (err) {
             console.log(err);
             console.log('Trigger failed');

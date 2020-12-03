@@ -1,19 +1,29 @@
 package com.capillary.ops.cp.facade;
 
+import com.capillary.ops.cp.bo.AuditLog;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
+import com.capillary.ops.cp.bo.ToggleRelease;
+import com.capillary.ops.cp.repository.AuditLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.StackAutoCompleteService;
+import com.capillary.ops.cp.service.notification.FlockNotifier;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.utils.DeployerUtil;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +40,16 @@ public class StackFacade {
     @Autowired
     StackAutoCompleteService stackAutoCompleteService;
 
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
+    @Autowired
+    private FlockNotifier flockNotifier;
+
+    @Value("${flock.notification.pauseReleases.endpoint}")
+    private String pauseReleaseNotifier;
+
+    private static final Logger logger = LoggerFactory.getLogger(StackFacade.class);
     /**
      * Create a stack given details
      *
@@ -84,4 +104,37 @@ public class StackFacade {
     public Stack getStackByName(String stackName) {
         return stackRepository.findById(stackName).get();
     }
+
+    public ToggleRelease toggleRelease(ToggleRelease toggleRelease){
+        Optional<Stack> stack =  stackRepository.findById(toggleRelease.getStackName());
+        if(!stack.isPresent()){
+            throw new NotFoundException("Stack with name " + toggleRelease.getStackName() + " not found");
+        }
+
+        Stack existingStack = stack.get();
+        existingStack.setPauseReleases(toggleRelease.isPauseReleases());
+
+        String action = existingStack.isPauseReleases() ? "paused release" : "enabled release";
+        ImmutableMap<String, Object> map = ImmutableMap.of("stackName", toggleRelease.getStackName(), "pauseRelease", existingStack.isPauseReleases());
+        String authUserName = DeployerUtil.getAuthUserName();
+        AuditLog auditLog = new AuditLog(action, Instant.now(), authUserName, "changing the prod release", map);
+        auditLogRepository.save(auditLog);
+
+        String notificationMsg = String.format("pause releases value set to %s by user %s for the stack %s",existingStack.isPauseReleases(), authUserName, existingStack.getName());
+        logger.info(notificationMsg);
+        stackRepository.save(existingStack);
+        sendPauseNotification(notificationMsg);
+        return toggleRelease;
+    }
+
+    private void sendPauseNotification(String message){
+        try{
+            flockNotifier.notify(pauseReleaseNotifier, message);
+        } catch (Exception e){
+            logger.info("sending flock notification for pause release failed");
+            logger.info("exception occured while sending is ", e);
+        }
+    }
+
+
 }
