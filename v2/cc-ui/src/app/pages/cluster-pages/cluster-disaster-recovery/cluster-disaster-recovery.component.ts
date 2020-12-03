@@ -50,18 +50,17 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
   };
 
   clusterId = '';
-  
+
   resourceType = '';
   instanceName = '';
-  
-  createSnapshotResourceType = '';
-  createSnapshotInstanceName = '';
+
 
   drData: Array<SnapshotInfo> = [];
 
   fetchSnapshotsSpinner = false;
   pinSnapshotSpinner = false;
   createSnapshotSpinner = false;
+  stackName: any;
 
   constructor(
     private uiCommonClusterController: UiCommonClusterControllerService,
@@ -74,6 +73,7 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
     this.route.params.subscribe(p => {
       if (p.clusterId) {
         this.clusterId = p.clusterId;
+        this.stackName = p.stackName;
       }
     });
   }
@@ -85,7 +85,7 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
         this.toastrService.danger('Already Pinned', 'Error');
         return;
       }
-      
+
       this.dialogService.open(PinSnapshotDialogComponent).onClose.subscribe(proceed => {
         if (proceed) {
           this.pinSnapshotSpinner = true;
@@ -98,7 +98,7 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
             console.log('pinned snapshot');
             this.fetchSnapshots();
             this.pinSnapshotSpinner = false;
-          });  
+          });
         }
       });
     }
@@ -175,11 +175,11 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
     console.log("creating snapshots");
     this.dialogService.open(CreateSnapshotDialogComponent).onClose.subscribe(proceed => {
       if (proceed) {
-        this.createSnapshotSpinner = true;
+        this.fetchSnapshotsSpinner = true;
         try {
           this.uiCommonClusterController.createSnapshotUsingPOST({
-            resourceType: this.createSnapshotResourceType,
-            instanceName: this.createSnapshotInstanceName,
+            resourceType: this.resourceType,
+            instanceName: this.instanceName,
             clusterId: this.clusterId
           }).subscribe(result => {
             if (!result) {
@@ -188,14 +188,22 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
               this.toastrService.success('Snapshot creation triggered', 'Success');
             }
             this.fetchSnapshots();
-            this.createSnapshotSpinner = false;
-          });  
+            this.fetchSnapshotsSpinner = false;
+          });
         } catch (err) {
           console.log(err);
           this.toastrService.danger('Error: Could not create snapshot', 'Error');
         }
       }
     });
+  }
+
+  onResourceTypeSelect($event: string) {
+    this.resourceType = $event;
+  }
+
+  onResourceSelect($event: string) {
+    this.instanceName = $event;
   }
 
 }
