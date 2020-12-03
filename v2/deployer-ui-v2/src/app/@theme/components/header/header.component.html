@@ -6,7 +6,11 @@
 
 <div class="header-container">
   <nb-actions size="small">
-    <nb-action class="user-action" *nbIsGranted="['view', 'user']" >
+    <nb-action badgeText="new" badgeStatus="danger" badgePosition="top right">
+      <div style="line-height: 3.5rem; margin-right: 1rem;">
+        <a href="/capc" style="color: #80c242;font-family: fantasy; font-size: 0.9rem">Capillary Cloud</a></div>
+    </nb-action>
+    <nb-action class="user-action" *nbIsGranted="['view', 'user']">
       <nb-user [nbContextMenu]="userMenu"
                [onlyPicture]="userPictureOnly"
                [name]="user?.name"
