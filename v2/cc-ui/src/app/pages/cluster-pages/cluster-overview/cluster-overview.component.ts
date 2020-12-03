@@ -31,13 +31,13 @@ export class ClusterOverviewComponent implements OnInit {
       name: {
         title: 'Variable Name',
         filter: false,
-        width: '50%',
+        width: '30%',
         editable: false,
       },
       value: {
         title: 'Variable Value',
         filter: false,
-        width: '50%',
+        width: '70%',
         editable: true,
         editor: {type: 'text'},
       }
@@ -45,7 +45,7 @@ export class ClusterOverviewComponent implements OnInit {
     noDataMessage: '',
     pager: {
       display: true,
-      perPage: 5,
+      perPage: 10,
     },
     actions: {
       add: false,

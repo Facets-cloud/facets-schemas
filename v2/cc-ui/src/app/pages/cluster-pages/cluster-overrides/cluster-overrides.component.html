@@ -11,8 +11,8 @@
     <nb-menu [items]="menuItems" tag="overrides-menu"></nb-menu>
   </nb-sidebar>
   <nb-layout-column class="container-fluid">
-    <nb-card accent="info">
-      <nb-card-header>Overrides for: {{currentSelection?.resourceType.toUpperCase()}} / {{currentSelection?.resourceName.toUpperCase()}} <button nbButton style="margin-bottom: 10px; float: right;" outline size="small" status="danger"
+    <nb-card>
+      <nb-card-header>Overrides for {{currentSelection?.resourceType}} / {{currentSelection?.resourceName}} <button nbButton style="margin-bottom: 10px; float: right;" outline size="small" status="danger"
         (click)="deleteOverride()"><nb-icon icon="trash-2-outline"></nb-icon>DELETE Override</button></nb-card-header>
       <nb-card-body>
         <div>
