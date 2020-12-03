@@ -1,3 +1,4 @@
+import { TimeZone } from './../../../cc-api/models/time-zone';
 import { UiAwsClusterControllerService } from 'src/app/cc-api/services';
 import { AwsClusterRequest } from './../../../cc-api/models/aws-cluster-request';
 import { Component, OnInit } from '@angular/core';
@@ -5,6 +6,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { NbToastrService, NbStepperComponent, NbSelectModule } from '@nebular/theme';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import { request } from 'http';
+import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
+import {ApplicationControllerService } from '../../../cc-api/services/application-controller.service';
 
 @Component({
   selector: 'app-cluster-create',
@@ -14,13 +17,17 @@ import { request } from 'http';
 export class ClusterCreateComponent implements OnInit {
   constructor(private clusterController: UiAwsClusterControllerService,
               private activatedRoute: ActivatedRoute,
-              private router: Router) { }
+              private router: Router,
+              private applicationController: ApplicationControllerService) { }
 
+  tzObj: TimeZone;
   clusterId: any;
+  user: SimpleOauth2User;
   stackName: any;
   cronSchedule: any;
   cluster: AwsCluster;
   clusterVariables: any = '{\"key\": \"value\"}';
+  isUserAdmin: any;
   awsClusterRequest: AwsClusterRequest = {
     clusterName: '',
     cloud: 'AWS',
@@ -42,12 +49,21 @@ export class ClusterCreateComponent implements OnInit {
       this.stackName = p.stackName;
     });
 
+    this.applicationController.meUsingGET().subscribe(
+      (x: SimpleOauth2User) => {
+        this.user = x;
+        this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
+        || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
+      }
+    );
+
   }
 
   initializeClusterRequest() {
     this.awsClusterRequest.clusterName = this.cluster.name;
     this.awsClusterRequest.cloud = this.cluster.cloud;
-    this.awsClusterRequest.tz.displayName = this.cluster.tz;
+    this.tzObj.displayName = this.cluster.tz;
+    this.awsClusterRequest.tz = this.tzObj;
     this.awsClusterRequest.releaseStream = this.cluster.releaseStream;
     this.awsClusterRequest.cdPipelineParent = this.cluster.cdPipelineParent;
     this.awsClusterRequest.azs = this.cluster.azs;
@@ -57,6 +73,7 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.k8sRequestsToLimitsRatio = this.cluster.k8sRequestsToLimitsRatio;
     this.awsClusterRequest.requireSignOff = this.cluster.requireSignOff;
     this.awsClusterRequest.schedules = this.cluster.schedules;
+    console.log(this.awsClusterRequest);
   }
 
   createCluster() {
