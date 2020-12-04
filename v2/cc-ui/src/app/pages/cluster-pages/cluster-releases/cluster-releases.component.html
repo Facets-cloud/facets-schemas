@@ -1,12 +1,12 @@
 <app-layout-one-column>
-  <nb-card accent="info">
+  <nb-card>
     <nb-card-header>
       <div style="float:left;"> Releases</div>
       <div style="float:right;" *ngIf="isUserAdmin">
         <button
           nbButton
           fullWidth
-          status="info"
+          status="primary"
           (click)="openDeploymentPopup(deploymentUI)"
         >
           Trigger Deployment
@@ -227,7 +227,7 @@
 </ng-template>
 
 <ng-template #deploymentUI let-data let-ref="dialogRef">
-  <nb-card accent="danger">
+  <nb-card>
     <nb-card-header>Deployment</nb-card-header>
 
     <nb-card-body>
@@ -261,10 +261,10 @@
         </div>
     </nb-card-body>
     <nb-card-footer>
-      <button nbButton status=success (click)="ref.close(data)"
-              [disabled]="releaseTypeSelection == 'Hotfix' && !applicationName">Confirm
+      <button nbButton status=primary (click)="ref.close(data)"
+              [disabled]="releaseTypeSelection == 'Hotfix' && !applicationName" class="cc-margin-right">Confirm
       </button>
-      <button style='float:right;' nbButton status=danger (click)="ref.close()">Cancel</button>
+      <button  nbButton status=basic (click)="ref.close()" class="cc-margin-right">Cancel</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>

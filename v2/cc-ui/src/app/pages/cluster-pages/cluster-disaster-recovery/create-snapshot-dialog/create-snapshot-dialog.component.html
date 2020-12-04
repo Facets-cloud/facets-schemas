@@ -1,9 +1,13 @@
-<nb-card class="card-create-snapshot">
-    <nb-card-body>
-        <div style="margin-bottom: 10px;">
-            <div><strong>Are you sure you want to create new snapshot?</strong> </div>
-        </div>
-        <button class="btn-card-create-snapshot" nbButton status="danger" (click)="proceed()">Proceed</button>
-        <button class="btn-card-create-snapshot" style="float: right;" nbButton (click)="dismiss()">Cancel</button>
-    </nb-card-body>
+<nb-card>
+  <nb-card-header>Confirm</nb-card-header>
+  <nb-card-body>
+
+    <div class="cc-margin-bottom"> Are you sure you want to create new snapshot?</div>
+
+  </nb-card-body>
+  <nb-card-footer>
+    <button class=" cc-margin-right" nbButton status="primary" (click)="proceed()">Proceed
+    </button>
+    <button class=" cc-margin-right" status="basic" nbButton (click)="dismiss()">Cancel</button>
+  </nb-card-footer>
 </nb-card>
