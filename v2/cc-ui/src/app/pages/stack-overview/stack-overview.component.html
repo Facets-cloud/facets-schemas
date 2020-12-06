@@ -11,14 +11,16 @@
   <nb-card accent="warning">
     <nb-card-header>
     <div style="float:left;">Clusters</div>
-    <div style="float:right;">
+    <div style="float:right;" *ngIf="isUserAdmin">
     <button
               nbButton
               fullWidth
               status="info"
               (click)="createCluster()"
+              appearance="hero"
               >
-              Create Cluster
+              <nb-icon icon="plus-outline"></nb-icon>
+              Create
             </button>
     </div>
     </nb-card-header>

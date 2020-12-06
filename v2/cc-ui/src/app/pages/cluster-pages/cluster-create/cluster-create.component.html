@@ -1,7 +1,7 @@
 <app-layout-one-column>
   <nb-card accent="info">
-    <nb-card-header *ngIf="!clusterId">Create Cluster</nb-card-header>
-    <nb-card-header *ngIf="clusterId">
+    <nb-card-header *ngIf="!cluster?.id">Create Cluster</nb-card-header>
+    <nb-card-header *ngIf="cluster?.id">
       Update Cluster ({{ awsClusterRequest?.clusterName }})
     </nb-card-header>
     <nb-card-body>
@@ -12,7 +12,7 @@
               <label for="clusterName" class="label col-sm-3">Name</label>
               <div class="col-sm-5">
                 <input
-                  [disabled]="clusterId"
+                  [disabled]="cluster?.id"
                   fieldSize="small"
                   type="text"
                   #clusterName="ngModel"
@@ -22,6 +22,7 @@
                   id="clusterName"
                   [(ngModel)]="awsClusterRequest.clusterName"
                   placeholder="cluster-name"
+                  pattern="[a-z-]+"
                 />
               </div>
             </div>
@@ -30,13 +31,14 @@
               <label class="label col-sm-3">Time Zone</label>
               <div class="col-sm-5">
                 <nb-select
-                  [(ngModel)]="awsClusterRequest.tz.displayName"
+                  [(ngModel)]="timeZoneModelBound"
                   #tz="ngModel"
                   name="tz"
                   id="tz"
                   fullWidth
                   size="small"
                   placeholder="TZ"
+                  [disabled]="cluster?.id"
                 >
                   <nb-option value="GMT">GMT</nb-option>
                   <nb-option value="Asia/Kolkata">Asia/Kolkata</nb-option>
@@ -63,12 +65,21 @@
               </div>
             </div>
 
-            <div class="form-group row">
+
+
+            <div style="padding-top: 1rem; float: right">
+              <button nbStepperNext status="info" nbButton>Next</button>
+            </div>
+          </nb-step>
+
+          <nb-step label="Provider Configs">
+
+           <div class="form-group row">
               <label class="label col-sm-3">Cloud</label>
               <div class="col-sm-5">
                 <nb-select
                   [(ngModel)]="awsClusterRequest.cloud"
-                  [disabled]="clusterId"
+                  [disabled]="cluster?.id"
                   #cloud="ngModel"
                   name="cloud"
                   id="cloud"
@@ -81,16 +92,11 @@
               </div>
             </div>
 
-            <div style="padding-top: 1rem; float: right">
-              <button nbStepperNext status="info" nbButton>Next</button>
-            </div>
-          </nb-step>
-
-          <nb-step label="Provider Configs">
             <div class="form-group row">
               <label class="label col-sm-3">CIDR</label>
               <div class="col-sm-5">
                 <input
+                  [disabled]="cluster?.id"
                   fieldSize="small"
                   type="text"
                   #vpcCIDR="ngModel"
@@ -100,6 +106,7 @@
                   id="vpcCIDR"
                   [(ngModel)]="awsClusterRequest.vpcCIDR"
                   placeholder="0.0.0.0/0"
+                  pattern="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/(3[0-1]|2[0-9]|1[0-9]|[4-9]))?(?!\/)\b"
                 />
               </div>
             </div>
@@ -108,12 +115,14 @@
               <label class="label col-sm-3">AWS Region</label>
               <div class="col-sm-5">
                 <nb-select
-                  [(ngModel)]="regionTemp"
+                  [disabled]="cluster?.id"
+                  [(ngModel)]="regionModelBound"
                   #reg="ngModel"
                   name="reg"
                   id="reg"
                   fullWidth
                   size="small"
+                  placeholder="Please select"
                 >
                   <nb-option
                     #awsRegions
@@ -137,6 +146,7 @@
                   fullWidth
                   size="small"
                   multiple
+                  placeholder="Please select"
                 >
                   <nb-option-group title="us-east-1">
                     <nb-option value="us-east-1a"> us-east-1a </nb-option>
@@ -261,17 +271,23 @@
             <div class="form-group row">
               <label class="label col-sm-3">CD Parent</label>
               <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
+                <nb-select
+                  [(ngModel)]="awsClusterRequest.cdPipelineParent"
                   #cdPipelineParent="ngModel"
-                  nbInput
-                  fullWidth
                   name="cdPipelineParent"
                   id="cdPipelineParent"
-                  [(ngModel)]="awsClusterRequest.cdPipelineParent"
-                  placeholder="CD pipeline parent"
-                />
+                  fullWidth
+                  size="small"
+                  placeholder="Please select"
+                >
+                  <nb-option
+                    #clusterObj
+                    *ngFor="let clusterObj of clusterList"
+                    value="{{ clusterObj.id }}"
+                  >
+                    {{ clusterObj.name }}
+                  </nb-option>
+                </nb-select>
               </div>
             </div>
             <div class="form-group row">
@@ -302,7 +318,7 @@
                   fullWidth
                   name="cron"
                   id="cron"
-                  [(ngModel)]="cronSchedule"
+                  [(ngModel)]="cronScheduleModelBound"
                   placeholder="30 5 * * *"
                 />
               </div>
@@ -366,7 +382,7 @@
             <div style="padding-top: 1rem; float: right">
               <button
                 nbButton
-                *ngIf="!clusterId"
+                *ngIf="!cluster?.id"
                 status="primary"
                 (click)="createCluster()"
               >
@@ -374,7 +390,7 @@
               </button>
               <button
                 nbButton
-                *ngIf="clusterId"
+                *ngIf="cluster?.id"
                 status="primary"
                 (click)="updateCluster()"
               >

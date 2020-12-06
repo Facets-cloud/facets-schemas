@@ -25,7 +25,11 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 @Loggable
@@ -102,7 +106,12 @@ public class StackFacade {
     }
 
     public Stack getStackByName(String stackName) {
-        return stackRepository.findById(stackName).get();
+        Stack stackObj = stackRepository.findById(stackName).get();
+        Map<String, StackFile.VariableDetails> clusterVariablesFiltered = stackObj.getClusterVariablesMeta()
+                .entrySet().stream().filter(x -> x.getValue().isSecret()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                .keySet().stream().collect(Collectors.toMap(Function.identity(), x -> new StackFile.VariableDetails(true,"****")));
+        stackObj.getClusterVariablesMeta().putAll(clusterVariablesFiltered);
+        return stackObj;
     }
 
     public ToggleRelease toggleRelease(ToggleRelease toggleRelease){

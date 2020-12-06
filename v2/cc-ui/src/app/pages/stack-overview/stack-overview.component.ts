@@ -1,8 +1,11 @@
+import { Application } from './../../cc-api/models/application';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UiStackControllerService} from '../../cc-api/services/ui-stack-controller.service';
 import {Stack} from '../../cc-api/models/stack';
 import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
+import {ApplicationControllerService } from '../../cc-api/services/application-controller.service';
+import {SimpleOauth2User} from '../../cc-api/models/simple-oauth-2user';
 import {NbDialogService, NbToastrService} from '@nebular/theme';
 import {PauseReleaseDialogComponent} from '../stack-overview/pause-release-dialog/pause-release-dialog.component';
 
@@ -15,6 +18,7 @@ export class StackOverviewComponent implements OnInit {
   stack: Stack;
   tableData: any[];
   pauseReleases: boolean;
+
 
   clusterSettings = {
     columns: {
@@ -51,7 +55,13 @@ export class StackOverviewComponent implements OnInit {
   };
 
   constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService, private router: Router, private dialogService: NbDialogService, private toastrService: NbToastrService) {
+  constructor(private route: ActivatedRoute,
+              private uiStackControllerService: UiStackControllerService,
+              private router: Router,
+              private applicationController: ApplicationControllerService) {
   }
+  user: SimpleOauth2User;
+  isUserAdmin: any;
 
   ngOnInit(): void {
     this.route.params.subscribe(p => {
@@ -70,6 +80,13 @@ export class StackOverviewComponent implements OnInit {
         }
       );
     });
+    this.applicationController.meUsingGET().subscribe(
+      (x: SimpleOauth2User) => {
+        this.user = x;
+        this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
+        || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
+      }
+    );
   }
 
   gotoPage(x): void {
@@ -78,9 +95,11 @@ export class StackOverviewComponent implements OnInit {
       console.log('Navigate to ' + clusterId);
       this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId]);
     } else if (x.action === 'Edit'){
+      if (this.isUserAdmin){
       const clusterId = x.data.id;
       console.log('Navigate to ' + clusterId);
       this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId, 'edit']);
+      }
     }
   }
 
