@@ -2,8 +2,8 @@
   <nb-card accent="info">
     <nb-card-header *ngIf="!clusterId">Create Cluster</nb-card-header>
     <nb-card-header *ngIf="clusterId">
-     Update Cluster ({{awsClusterRequest?.clusterName}})
-     </nb-card-header>
+      Update Cluster ({{ awsClusterRequest?.clusterName }})
+    </nb-card-header>
     <nb-card-body>
       <div style="margin-left: 3rem; margin-right: 3rem; margin-bottom: 3rem">
         <nb-stepper #stepper linear="true">
@@ -12,7 +12,7 @@
               <label for="clusterName" class="label col-sm-3">Name</label>
               <div class="col-sm-5">
                 <input
-                [disabled]="clusterId"
+                  [disabled]="clusterId"
                   fieldSize="small"
                   type="text"
                   #clusterName="ngModel"
@@ -30,7 +30,7 @@
               <label class="label col-sm-3">Time Zone</label>
               <div class="col-sm-5">
                 <nb-select
-                  [(ngModel)]="awsClusterRequest.tz"
+                  [(ngModel)]="awsClusterRequest.tz.displayName"
                   #tz="ngModel"
                   name="tz"
                   id="tz"
@@ -108,10 +108,10 @@
               <label class="label col-sm-3">AWS Region</label>
               <div class="col-sm-5">
                 <nb-select
-                  [(ngModel)]="awsClusterRequest.region"
-                  #region="ngModel"
-                  name="region"
-                  id="region"
+                  [(ngModel)]="regionTemp"
+                  #reg="ngModel"
+                  name="reg"
+                  id="reg"
                   fullWidth
                   size="small"
                 >
@@ -328,17 +328,56 @@
           </nb-step>
 
           <nb-step label="Cluster Variables">
-            <div class="form-group row">
-            <label for="requireSignOff" class="label col-sm-3">Cluster Variables</label>
-            <div class="col-sm-8">
-            <textarea nbInput fullWidth [(ngModel)]="clusterVariables" ></textarea>
-            </div>
+            <div style="margin-left:125px">
+              <div class="form-group row">
+                <label for="requireSignOff" class="label col-sm-3"
+                  >Common Variables</label
+                >
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-9">
+                  <ng2-smart-table
+                    (createConfirm)="validateValue($event)"
+                    (editConfirm)="validateValue($event)"
+                    [settings]="settings"
+                    [source]="commonVariablesTable"
+                  >
+                  </ng2-smart-table>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="requireSignOff" class="label col-sm-3"
+                  >Secrets</label
+                >
+              </div>
+
+              <div class="form-group row">
+                <div class="col-sm-9">
+                  <ng2-smart-table
+                    (createConfirm)="validateValue($event)"
+                    (editConfirm)="validateValue($event)"
+                    [settings]="settings"
+                    [source]="secretsTable"
+                  >
+                  </ng2-smart-table>
+                </div>
+              </div>
             </div>
             <div style="padding-top: 1rem; float: right">
-              <button nbButton *ngIf="!clusterId" status="primary" (click)="createCluster()">
+              <button
+                nbButton
+                *ngIf="!clusterId"
+                status="primary"
+                (click)="createCluster()"
+              >
                 Create
               </button>
-              <button nbButton *ngIf="clusterId" status="primary" (click)="updateCluster()">
+              <button
+                nbButton
+                *ngIf="clusterId"
+                status="primary"
+                (click)="updateCluster()"
+              >
                 Update
               </button>
             </div>

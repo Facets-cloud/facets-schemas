@@ -27,10 +27,8 @@ public class Stack {
 
     private boolean pauseReleases = false;
 
-    @JsonIgnore
     private Map<String, String> stackVars = new HashMap<>();
 
-    @JsonIgnore
     private Map<String, StackFile.VariableDetails> clusterVariablesMeta = new HashMap<>();
 
     public String getName() {

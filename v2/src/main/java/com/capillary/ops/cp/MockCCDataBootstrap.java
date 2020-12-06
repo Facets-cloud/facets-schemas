@@ -42,6 +42,19 @@ public class MockCCDataBootstrap {
         stack.setAppPassword("935d4d4ee673a9531a7d2241f1e9d1ddbbbf0ee1");
         stack.setRelativePath("/");
         stack.setVcs(VCS.BITBUCKET);
+        stack.setVcsUrl("tmp");
+        StackFile.VariableDetails v1 = new StackFile.VariableDetails(false,"test1");
+        StackFile.VariableDetails v2 = new StackFile.VariableDetails(true,"test2");
+        StackFile.VariableDetails v3 = new StackFile.VariableDetails(true,"test2");
+        HashMap<String, StackFile.VariableDetails> vars = new HashMap<>();
+        vars.put("cv1",v1);
+        vars.put("cv2",v2);
+        vars.put("cv3",v3);
+        stack.setClusterVariablesMeta(vars);
+        HashMap<String,String> stackVars = new HashMap<>();
+        stackVars.put("sv4","v4");
+        stackVars.put("sv5","v5");
+        stack.setStackVars(stackVars);
         stack.setVcsUrl("https://github.com/Capillary/cc-stack-crm.git");
         stackRepository.save(stack);
 
