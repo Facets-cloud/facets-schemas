@@ -3,6 +3,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {UiStackControllerService} from '../../cc-api/services/ui-stack-controller.service';
 import {Stack} from '../../cc-api/models/stack';
 import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
+import {NbDialogService, NbToastrService} from '@nebular/theme';
+import {PauseReleaseDialogComponent} from '../stack-overview/pause-release-dialog/pause-release-dialog.component';
 
 @Component({
   selector: 'app-stack-overview',
@@ -12,7 +14,7 @@ import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
 export class StackOverviewComponent implements OnInit {
   stack: Stack;
   tableData: any[];
-
+  pauseReleases: boolean;
 
   clusterSettings = {
     columns: {
@@ -45,7 +47,7 @@ export class StackOverviewComponent implements OnInit {
     hideSubHeader: true,
   };
 
-  constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService, private router: Router) {
+  constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService, private router: Router, private dialogService: NbDialogService, private toastrService: NbToastrService) {
   }
 
   ngOnInit(): void {
@@ -56,6 +58,7 @@ export class StackOverviewComponent implements OnInit {
       this.uiStackControllerService.getStackUsingGET(p.stackName).subscribe(
         s => {
           this.stack = s;
+          this.pauseReleases = s.pauseReleases;
         }
       );
       this.uiStackControllerService.getClustersUsingGET1(p.stackName).subscribe(
@@ -72,5 +75,22 @@ export class StackOverviewComponent implements OnInit {
       console.log('Navigate to ' + clusterId);
       this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId]);
     }
+  }
+
+  newToggleClick(pauseReleases): void {
+    const status: string = pauseReleases ? 'Enabled' : 'Disabled';
+    this.dialogService.open(PauseReleaseDialogComponent, {context: {status: pauseReleases ? 'enable': 'disable'}}).onClose.subscribe(proceed => {
+      console.log("received value from pause dialog " + proceed);
+      if(proceed){
+        this.uiStackControllerService.toggleReleaseUsingPOST1({toggleRelease: {stackName: this.stack.name, pauseReleases: !pauseReleases}, stackName: this.stack.name}).subscribe(
+          s => {
+            console.log("Prod Release %s for the stack %s", status, this.stack.name);
+            this.toastrService.success(status.concat(' Prod Release'), 'Success');
+          }
+        );
+      } else{
+        this.pauseReleases = pauseReleases;
+      }
+    });
   }
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Service
 public class FlockNotifier implements Notifier {
@@ -48,5 +49,14 @@ public class FlockNotifier implements Notifier {
     @Override
     public ChannelType getChannelType() {
         return ChannelType.FLOCK;
+    }
+
+    public void notify(String webHookUrl, String message) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        Message payload = new Message(message);
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        HttpEntity<Message> httpEntity = new HttpEntity<>(payload, httpHeaders);
+        restTemplate.postForEntity(webHookUrl, httpEntity, Object.class);
     }
 }

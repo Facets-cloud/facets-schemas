@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @ControllerAdvice
@@ -63,4 +65,9 @@ public class ErrorController {
             new HashMap<>(), HttpStatus.OK);
   }
 
+  @ExceptionHandler(ProdReleaseDisabled.class)
+  public ResponseEntity<ErrorDetails> prodReleaseDisabledException(ProdReleaseDisabled ex, WebRequest request) {
+    String message = Optional.ofNullable(ex.getMessage()).orElse("Prod Release is Disabled for the given stack");
+    return new ResponseEntity<>(new ErrorDetails(message, "403"), HttpStatus.FORBIDDEN);
+  }
 }

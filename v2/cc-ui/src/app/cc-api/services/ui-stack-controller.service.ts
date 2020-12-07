@@ -10,6 +10,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 import { Stack } from '../models/stack';
 import { AbstractCluster } from '../models/abstract-cluster';
 import { Subscription } from '../models/subscription';
+import { ToggleRelease } from '../models/toggle-release';
 
 /**
  * Ui Stack Controller
@@ -27,6 +28,7 @@ class UiStackControllerService extends __BaseService {
   static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
   static readonly getResourceTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType';
   static readonly getResourcesByTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType/{resourceType}';
+  static readonly toggleReleaseUsingPOST1Path = '/cc-ui/v1/stacks/{stackName}/toggleRelease';
 
   constructor(
     config: __Configuration,
@@ -395,6 +397,55 @@ class UiStackControllerService extends __BaseService {
       __map(_r => _r.body as Array<string>)
     );
   }
+
+  /**
+   * toggleRelease
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
+   *
+   * - `toggleRelease`: toggleRelease
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  toggleReleaseUsingPOST1Response(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<__StrictHttpResponse<ToggleRelease>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.toggleRelease;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(params.stackName)}/toggleRelease`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ToggleRelease>;
+      })
+    );
+  }
+  /**
+   * toggleRelease
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
+   *
+   * - `toggleRelease`: toggleRelease
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  toggleReleaseUsingPOST1(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<ToggleRelease> {
+    return this.toggleReleaseUsingPOST1Response(params).pipe(
+      __map(_r => _r.body as ToggleRelease)
+    );
+  }
 }
 
 module UiStackControllerService {
@@ -429,6 +480,22 @@ module UiStackControllerService {
      * resourceType
      */
     resourceType: string;
+  }
+
+  /**
+   * Parameters for toggleReleaseUsingPOST1
+   */
+  export interface ToggleReleaseUsingPOST1Params {
+
+    /**
+     * toggleRelease
+     */
+    toggleRelease: ToggleRelease;
+
+    /**
+     * stackName
+     */
+    stackName: string;
   }
 }
 

@@ -76,6 +76,7 @@ export { Subscription } from './models/subscription';
 export { TerraformChange } from './models/terraform-change';
 export { TestBuildDetails } from './models/test-build-details';
 export { TimeZone } from './models/time-zone';
+export { ToggleRelease } from './models/toggle-release';
 export { TokenPaginatedResponseLogEvent } from './models/token-paginated-response-log-event';
 export { URI } from './models/uri';
 export { URL } from './models/url';

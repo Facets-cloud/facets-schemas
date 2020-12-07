@@ -2,6 +2,7 @@ package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.facade.SubscriptionFacade;
@@ -93,6 +94,12 @@ public class UiStackController {
     public Subscription createSubscription(@PathVariable String stackName, @RequestBody Subscription subscription) {
         subscription.setStackName(stackName);
         return subscriptionFacade.createSubscription(subscription);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("{stackName}/toggleRelease")
+    public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
+        return stackController.toggleRelease(stackName, toggleRelease);
     }
 
 }
