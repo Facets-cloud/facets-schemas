@@ -101,6 +101,13 @@ public class UiDeploymentController {
                                     @RequestBody MongoDRDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runMongoDRRecipe(clusterId, deploymentRecipe);
     }
+    
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/recipes/es/dr")
+    DeploymentLog runESDRRecipe(@PathVariable String clusterId,
+                                   @RequestBody ESDRDeploymentRecipe deploymentRecipe) {
+        return deploymentFacade.runESDRRecipe(clusterId, deploymentRecipe);
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/recipes/mongo/resize")

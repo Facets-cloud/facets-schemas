@@ -658,6 +658,16 @@ public class DeploymentFacade {
         return createDeployment(clusterId, deploymentRequest);
     }
 
+    public DeploymentLog runESDRRecipe(String clusterId, ESDRDeploymentRecipe deploymentRecipe) {
+        
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(
+                "/bin/bash scripts/es_restore.sh -r <cluster region> -c <clustername> -i \"all\" -e" + deploymentRecipe.getEsInstanceName()+ "-s"+ deploymentRecipe.getSnapshotName()+"
+        ));
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
     public DeploymentLog runMongoResizeRecipe(String clusterId, MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
         List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
         OverrideObject overrieToChange = null;
