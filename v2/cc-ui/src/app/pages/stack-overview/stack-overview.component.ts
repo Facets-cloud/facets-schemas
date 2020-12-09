@@ -54,11 +54,12 @@ export class StackOverviewComponent implements OnInit {
     rowClassFunction: (row) => { return 'ng2-custom-actions-inline' }
   };
 
-  constructor(private route: ActivatedRoute, private uiStackControllerService: UiStackControllerService, private router: Router, private dialogService: NbDialogService, private toastrService: NbToastrService) {
   constructor(private route: ActivatedRoute,
               private uiStackControllerService: UiStackControllerService,
               private router: Router,
-              private applicationController: ApplicationControllerService) {
+              private applicationController: ApplicationControllerService,
+              private dialogService: NbDialogService,
+              private toastrService: NbToastrService) {
   }
   user: SimpleOauth2User;
   isUserAdmin: any;

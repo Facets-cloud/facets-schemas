@@ -53,7 +53,6 @@ export { K8sLoggingConfiguration } from './models/k8s-logging-configuration';
 export { Kube2IamConfiguration } from './models/kube-2iam-configuration';
 export { ListDeploymentsWrapper } from './models/list-deployments-wrapper';
 export { LogEvent } from './models/log-event';
-export { ModelAndView } from './models/model-and-view';
 export { MongoDRDeploymentRecipe } from './models/mongo-drdeployment-recipe';
 export { MongoVolumeResizeDeploymentRecipe } from './models/mongo-volume-resize-deployment-recipe';
 export { Monitoring } from './models/monitoring';
@@ -81,4 +80,4 @@ export { TokenPaginatedResponseLogEvent } from './models/token-paginated-respons
 export { URI } from './models/uri';
 export { URL } from './models/url';
 export { User } from './models/user';
-export { View } from './models/view';
+export { VariableDetails } from './models/variable-details';

@@ -23,8 +23,7 @@ import { PauseReleaseDialogComponent } from './pause-release-dialog/pause-releas
     NbToggleModule,
     NbDialogModule,
     NbButtonModule,
-    FormsModule
-    NbEvaIconsModule,
+    FormsModule,
     NbButtonModule
   ]
 })
