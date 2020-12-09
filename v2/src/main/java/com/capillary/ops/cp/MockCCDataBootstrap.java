@@ -5,6 +5,8 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.*;
+import com.capillary.ops.deployer.bo.User;
+import com.capillary.ops.deployer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+import java.util.ArrayList;
+import java.util.List;
 
 @Profile("dev")
 @Component
@@ -32,6 +36,9 @@ public class MockCCDataBootstrap {
 
     @Autowired
     DeploymentLogRepository deploymentLogRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @PostConstruct
     private void init() {
@@ -119,6 +126,17 @@ public class MockCCDataBootstrap {
         deploymentLog2.setDescription("Release for Sprint X");
         deploymentLogRepository.save(deploymentLog2);
 
+        User user = new User();
+        user.setUserName("rama.chandra@capillarytech.com");
+        List<String> roles = new ArrayList<>();
+//        roles.add("CC-ADMIN");
+//        roles.add("CRM_WRITE");
+//        roles.add("CRM_MAINTAINER");
+        roles.add("CRM_cluster1_WRITE");
+//        roles.add("CRM_cluster2_WRITE");
+//        roles.add("CRM_cluster2_MAINTAINER");
+        user.setRoles(roles);
+        userRepository.save(user);
     }
 
 }

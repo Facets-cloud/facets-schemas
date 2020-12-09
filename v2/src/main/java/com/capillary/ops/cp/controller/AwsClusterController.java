@@ -31,7 +31,7 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
      * @return Created Cluster Object
      */
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping()
     public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
         return (AwsCluster) clusterFacade.createCluster(request);
@@ -39,7 +39,7 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
 
 
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PutMapping("{clusterId}")
     public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
         return (AwsCluster) clusterFacade.updateCluster(request, clusterId);

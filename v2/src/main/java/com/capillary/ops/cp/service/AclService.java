@@ -20,9 +20,9 @@ public class AclService {
     @Autowired
     private CpClusterRepository clusterRepository;
 
-    private static final List<String> validStackGetSuffixes = Lists.newArrayList("READ", "WRITE", "ADMIN");
-    private static final List<String> validStackUpdateSuffixes = Lists.newArrayList("WRITE", "ADMIN");
-    private static final String ADMIN_ROLE = "ADMIN";
+    private static final List<String> validStackGetSuffixes = Lists.newArrayList("READ", "WRITE");
+    private static final List<String> validStackUpdateSuffixes = Lists.newArrayList("WRITE");
+    private static final List<String> validStackMaintainerSuffixes = Lists.newArrayList("WRITE", "MAINTAINER");
 
     private Set<String> getRolesForAuthority(Authentication authentication) {
         return authentication.getAuthorities().stream()
@@ -33,14 +33,11 @@ public class AclService {
 
     public boolean hasStackAccess(Authentication authentication, String stackName, List<String> validRoleSuffixes) {
         Set<String> roles = getRolesForAuthority(authentication);
-        if (roles.contains(ADMIN_ROLE)) {
-            return true;
-        }
 
         stackName = stackName.toUpperCase();
-        for (String role: roles) {
+        for (String role : roles) {
             String[] roleParts = role.split("_");
-            if (roleParts[0].startsWith(stackName) && validRoleSuffixes.contains(roleParts[roleParts.length-1])) {
+            if (roleParts[0].startsWith(stackName) && validRoleSuffixes.contains(roleParts[roleParts.length - 1])) {
                 return true;
             }
         }
@@ -61,9 +58,6 @@ public class AclService {
         final String stack = stackName.toUpperCase();
 
         Set<String> roles = getRolesForAuthority(authentication);
-        if (roles.contains(ADMIN_ROLE)) {
-            return true;
-        }
 
         Set<String> stackLevelRoles = new HashSet<>();
         validRoleSuffixes.forEach(capability -> stackLevelRoles.add(stack + "_" + capability));
@@ -99,4 +93,12 @@ public class AclService {
 
         return hasClusterWriteAccess(authentication, stackName, clusterId);
     }
+
+    public boolean hasClusterMaintainerAccess(Authentication authentication, String clusterId) {
+        AbstractCluster cluster = clusterRepository.findById(clusterId).get();
+        String stackName = cluster.getStackName();
+
+        return hasClusterAccess(authentication, stackName, clusterId, validStackMaintainerSuffixes);
+    }
+
 }

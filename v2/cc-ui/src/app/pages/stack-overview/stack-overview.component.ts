@@ -108,6 +108,10 @@ export class StackOverviewComponent implements OnInit {
     this.router.navigate(['/capc/', this.stack.name , 'clusterCreate']);
   }
 
+  errorHandler(error) {
+    this.toastrService.warning(error.error.message, 'Error');
+  }
+
   newToggleClick(pauseReleases): void {
     const status: string = pauseReleases ? 'Enabled' : 'Disabled';
     this.dialogService.open(PauseReleaseDialogComponent, {context: {status: pauseReleases ? 'enable': 'disable'}}).onClose.subscribe(proceed => {
@@ -117,6 +121,10 @@ export class StackOverviewComponent implements OnInit {
           s => {
             console.log("Prod Release %s for the stack %s", status, this.stack.name);
             this.toastrService.success(status.concat(' Prod Release'), 'Success');
+          },
+          error => {
+            this.pauseReleases = pauseReleases;
+            this.errorHandler(error);
           }
         );
       } else{

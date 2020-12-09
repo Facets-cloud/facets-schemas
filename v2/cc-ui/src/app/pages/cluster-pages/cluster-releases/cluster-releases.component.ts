@@ -124,6 +124,10 @@ export class ClusterReleasesComponent implements OnInit {
     window.open(compareUrl, "_blank");
   }
 
+  errorHandler(error) {
+    this.toastrService.warning(error.error.message, 'Error');
+  }
+
   openDeploymentPopup(deploymentUI) {
     this.dialogService.open(deploymentUI, {context: 'NA'}).onClose.subscribe(
       result => {
@@ -159,7 +163,7 @@ export class ClusterReleasesComponent implements OnInit {
                 this.ngOnInit();
               },
               err => {
-                this.toastrService.warning(err.error.message, 'Error');
+                this.errorHandler(err);
               }
             );
           } catch (err) {

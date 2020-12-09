@@ -148,14 +148,21 @@ export class ClusterOverviewComponent implements OnInit {
     }
   }
 
+  errorHandler(error){
+    this.addOverrideSpinner = false;
+    this.toastrService.warning(error.error.message, 'Error');
+  }
 
-
+  
   refreshStack() {
     this.addOverrideSpinner = true;
     try {
       this.stackService.reloadStackUsingGET1(this.cluster.stackName).subscribe(stack => {
         this.addOverrideSpinner = false;
         location.reload();
+      },
+      err => {
+        this.errorHandler(err);
       });
     } catch (err) {
       console.log(err);
