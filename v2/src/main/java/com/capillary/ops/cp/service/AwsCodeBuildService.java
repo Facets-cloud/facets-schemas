@@ -532,7 +532,7 @@ public class AwsCodeBuildService implements TFBuildService {
             out.closeEntry();
             out.close();
             AmazonS3 amazonS3 =
-                    AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(BUILD_REGION.toString())).build();
+                    AmazonS3ClientBuilder.standard().withRegion(Regions.fromName(BUILD_REGION.toString())).build();
             amazonS3.putObject(CC_STACK_SOURCE, tempFile.getName(), tempFile);
             tempFile.delete();
             return ProjectSource.builder().type(SourceType.S3)
