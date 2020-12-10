@@ -65,13 +65,16 @@ import java.util.zip.ZipOutputStream;
 public class AwsCodeBuildService implements TFBuildService {
 
     public static final String LOG_GROUP_NAME = "codebuild-test";
-    public static final String CC_STACK_SOURCE = "cc-stack-source";
+    @Value("${cc.deployment.bucket}")
+    public String CC_STACK_SOURCE;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
 
-    private static final Region BUILD_REGION = Region.US_WEST_1;
-    public static final String BUILD_NAME = "capillary-cloud-tf-apply";
+    @Value("${cc.aws.region}")
+    private Region BUILD_REGION;
+    @Value("${cc.codebuild.name}")
+    public String BUILD_NAME;
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
