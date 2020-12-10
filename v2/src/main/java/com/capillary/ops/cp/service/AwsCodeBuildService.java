@@ -41,6 +41,7 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 import software.amazon.awssdk.services.codebuild.model.ResourceNotFoundException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,19 +66,30 @@ import java.util.zip.ZipOutputStream;
 public class AwsCodeBuildService implements TFBuildService {
 
     public static final String LOG_GROUP_NAME = "codebuild-test";
-    @Value("${cc.deployment.bucket}")
+    @Value("${cc_deployment_bucket}")
     public String CC_STACK_SOURCE;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
 
-    @Value("${cc.aws.region}")
-    private Region BUILD_REGION;
-    @Value("${cc.codebuild.name}")
+    @Value("${cc_aws_region}")
+    public Region BUILD_REGION;
+    @Value("${cc_codebuild_name}")
     public String BUILD_NAME;
+    @Value("${cc_vpc_id}")
+    public String CC_VPC_ID;
+    @Value("${cc_route_table_id}")
+    public String CC_ROUTE_TABLE_ID;
+    @Value("${cc_vpc_cidr}")
+    public String CC_VPC_CIDR;
+
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
+    public static final String CC_VPC_ID_LABEL = "TF_VAR_cc_vpc_id";
+    public static final String CC_ROUTE_TABLE_ID_LABEL = "TF_VAR_route_table_id";
+    public static final String CC_VPC_CIDR_LABEL = "TF_VAR_cc_vpc_cidr";
+    public static final String CC_REGION_LABEL = "TF_VAR_cc_region";
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
     public static final String SUBSTACK_SUBDIRECTORY_PREFIX = "SUBSTACK_SUBDIRECTORY_";
     public static final String STACK_NAME = "STACK_NAME";
@@ -119,6 +131,10 @@ public class AwsCodeBuildService implements TFBuildService {
     @Autowired
     private StackService stackService;
 
+    @PostConstruct
+    public void test(){
+        System.out.println("test");
+    }
     /**
      * Deploy the latest build in the specified clusterId
      *
@@ -155,6 +171,14 @@ public class AwsCodeBuildService implements TFBuildService {
                 .build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
             .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_REGION_LABEL).value(BUILD_REGION.toString())
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_ROUTE_TABLE_ID_LABEL).value(CC_ROUTE_TABLE_ID)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_VPC_ID_LABEL).value(CC_VPC_ID)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_VPC_CIDR_LABEL).value(CC_VPC_CIDR)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
