@@ -110,7 +110,7 @@ public class AwsCodeBuildService implements TFBuildService {
     @Autowired
     private ICodeBuildService codeBuildService;
 
-    @Value("${aws.s3bucket.testOutputBucket.name}")
+    @Value("${cc_artifact_s3bucket}")
     private String artifactS3Bucket;
 
     @Value("${aws.s3bucket.testOutputBucket.region}")
@@ -532,7 +532,7 @@ public class AwsCodeBuildService implements TFBuildService {
             out.closeEntry();
             out.close();
             AmazonS3 amazonS3 =
-                    AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+                    AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(BUILD_REGION.toString())).build();
             amazonS3.putObject(CC_STACK_SOURCE, tempFile.getName(), tempFile);
             tempFile.delete();
             return ProjectSource.builder().type(SourceType.S3)
