@@ -66,6 +66,7 @@ import java.util.zip.ZipOutputStream;
 public class AwsCodeBuildService implements TFBuildService {
 
     public static final String LOG_GROUP_NAME = "codebuild-test";
+
     @Value("${cc_deployment_bucket}")
     public String CC_STACK_SOURCE;
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -82,6 +83,12 @@ public class AwsCodeBuildService implements TFBuildService {
     public String CC_ROUTE_TABLE_ID;
     @Value("${cc_vpc_cidr}")
     public String CC_VPC_CIDR;
+    @Value("${cc_tf_state_bucket}")
+    public String CC_TF_STATE_BUCKET;
+    @Value("${cc_tf_dynamo_table}")
+    private String CC_TF_DYNAMO_TABLE;
+    @Value("${cc_tf_state_region}")
+    private String CC_TF_STATE_REGION;
 
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
@@ -90,10 +97,15 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String CC_ROUTE_TABLE_ID_LABEL = "TF_VAR_route_table_id";
     public static final String CC_VPC_CIDR_LABEL = "TF_VAR_cc_vpc_cidr";
     public static final String CC_REGION_LABEL = "TF_VAR_cc_region";
+    public static final String CC_TF_STATE_BUCKET_LABEL = "TF_VAR_cc_tf_state_bucket";
+    private static final String CC_TF_STATE_REGION_LABEL = "TF_VAR_cc_tf_state_region";
+
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
     public static final String SUBSTACK_SUBDIRECTORY_PREFIX = "SUBSTACK_SUBDIRECTORY_";
     public static final String STACK_NAME = "STACK_NAME";
     private static final String CLUSTER_NAME = "CLUSTER_NAME";
+    private static final String CC_TF_DYNAMO_TABLE_LABEL = "TF_VAR_cc_tf_dynamo_table";
+
 
     @Value("${internalApiAuthToken}")
     private String authToken;
@@ -178,6 +190,12 @@ public class AwsCodeBuildService implements TFBuildService {
         environmentVariables.add(EnvironmentVariable.builder().name(CC_VPC_ID_LABEL).value(CC_VPC_ID)
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CC_VPC_CIDR_LABEL).value(CC_VPC_CIDR)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_STATE_BUCKET_LABEL).value(CC_TF_STATE_BUCKET)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_DYNAMO_TABLE_LABEL).value(CC_TF_DYNAMO_TABLE)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_STATE_REGION_LABEL).value(CC_TF_STATE_REGION)
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
