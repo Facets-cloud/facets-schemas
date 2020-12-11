@@ -13,6 +13,9 @@ phases:
       - if [ -d "$CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/database_views" ]; then cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/database_views capillary-cloud-tf/database_views; fi
       - python3 capillary-cloud-tf/tfaws/scripts/merge_overrides.py
       - cd capillary-cloud-tf/tfaws/
+      - sed -i s/STATE_BUCKET/$TF_VAR_cc_tf_state_bucket/g backend.tf
+      - sed -i s/STATE_REGION/$TF_VAR_cc_tf_state_region/g backend.tf
+      - sed -i s/STATE_DYNAMO_TABLE/$TF_VAR_cc_tf_dynamo_table/g backend.tf
       - terraform init
       - if terraform workspace select $CLUSTER_ID; then echo "workspace exists"; else terraform workspace new $CLUSTER_ID; fi
   build:
