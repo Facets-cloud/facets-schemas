@@ -20,6 +20,6 @@ public class ESDRDeploymentRecipe {
     }
 
     public void setSnapshotName(String snapshotName) {
-        this.snapshotName = snapshotN;
+        this.snapshotName = snapshotName;
     }
 }

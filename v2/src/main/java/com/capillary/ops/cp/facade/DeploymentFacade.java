@@ -7,6 +7,7 @@ import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -663,7 +664,7 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
-                "/bin/bash scripts/es_restore.sh -i \"all\" -e " + deploymentRecipe.getEsInstanceName() + "-s "+ deploymentRecipe.getSnapshotName()"
+                "/bin/bash scripts/es_restore.sh -e " + deploymentRecipe.getEsInstanceName() + "-s "+ deploymentRecipe.getSnapshotName()+ "-i \"all\""
         ));
         return createDeployment(clusterId, deploymentRequest);
     }

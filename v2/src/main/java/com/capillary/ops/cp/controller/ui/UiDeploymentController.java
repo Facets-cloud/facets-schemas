@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;

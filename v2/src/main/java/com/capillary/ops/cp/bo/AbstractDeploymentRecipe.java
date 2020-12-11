@@ -2,6 +2,7 @@ package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = AuroraDRDeploymentRecipe.class, name = "AURORA_DR"),
         @JsonSubTypes.Type(value = MongoDRDeploymentRecipe.class, name = "MONGO_DR"),
+        @JsonSubTypes.Type(value = ESDRDeploymentRecipe.class, name = "ES_DR"),
         @JsonSubTypes.Type(value = MongoVolumeResizeDeploymentRecipe.class, name = "MONGO_VOLUME_RESIZE")
 })
 public abstract class AbstractDeploymentRecipe {
