@@ -663,7 +663,7 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
-                "/bin/bash scripts/es_restore.sh -r <cluster region> -c <clustername> -i \"all\" -e" + deploymentRecipe.getEsInstanceName()+ "-s"+ deploymentRecipe.getSnapshotName()+"
+                "/bin/bash scripts/es_restore.sh -i \"all\" -e " + deploymentRecipe.getEsInstanceName() + "-s "+ deploymentRecipe.getSnapshotName()"
         ));
         return createDeployment(clusterId, deploymentRequest);
     }
