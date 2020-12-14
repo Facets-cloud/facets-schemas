@@ -5,6 +5,8 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.*;
+import com.capillary.ops.deployer.bo.User;
+import com.capillary.ops.deployer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
+import java.util.ArrayList;
+import java.util.List;
 
 @Profile("dev")
 @Component
@@ -33,16 +37,32 @@ public class MockCCDataBootstrap {
     @Autowired
     DeploymentLogRepository deploymentLogRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     @PostConstruct
     private void init() {
 
         Stack stack = new Stack();
         stack.setName("crm");
-        stack.setUser("user");
-        stack.setAppPassword("pwd");
+        stack.setUser("ambar-cap");
+        stack.setAppPassword("935d4d4ee673a9531a7d2241f1e9d1ddbbbf0ee1");
         stack.setRelativePath("/");
         stack.setVcs(VCS.BITBUCKET);
         stack.setVcsUrl("tmp");
+        StackFile.VariableDetails v1 = new StackFile.VariableDetails(false,"test1");
+        StackFile.VariableDetails v2 = new StackFile.VariableDetails(true,"test2");
+        StackFile.VariableDetails v3 = new StackFile.VariableDetails(true,"test2");
+        HashMap<String, StackFile.VariableDetails> vars = new HashMap<>();
+        vars.put("cv1",v1);
+        vars.put("cv2",v2);
+        vars.put("cv3",v3);
+        stack.setClusterVariablesMeta(vars);
+        HashMap<String,String> stackVars = new HashMap<>();
+        stackVars.put("sv4","v4");
+        stackVars.put("sv5","v5");
+        stack.setStackVars(stackVars);
+        stack.setVcsUrl("https://github.com/Capillary/cc-stack-crm.git");
         stackRepository.save(stack);
 
         AwsCluster cluster = new AwsCluster("cluster1");
@@ -106,6 +126,17 @@ public class MockCCDataBootstrap {
         deploymentLog2.setDescription("Release for Sprint X");
         deploymentLogRepository.save(deploymentLog2);
 
+        User user = new User();
+        user.setUserName("rama.chandra@capillarytech.com");
+        List<String> roles = new ArrayList<>();
+//        roles.add("CC-ADMIN");
+//        roles.add("CRM_WRITE");
+//        roles.add("CRM_MAINTAINER");
+        roles.add("CRM_cluster1_WRITE");
+//        roles.add("CRM_cluster2_WRITE");
+//        roles.add("CRM_cluster2_MAINTAINER");
+        user.setRoles(roles);
+        userRepository.save(user);
     }
 
 }

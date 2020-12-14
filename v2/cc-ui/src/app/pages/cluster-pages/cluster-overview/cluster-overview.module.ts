@@ -4,7 +4,7 @@ import {ClusterOverviewComponent} from './cluster-overview.component';
 import {
   NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService,
   NbInputModule, NbSpinnerModule, NbIconModule, NbListModule, NbUserModule, NbToggleModule,
-  NbSelectModule
+  NbSelectModule, NbActionsModule
 } from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
@@ -42,7 +42,8 @@ import {NbEvaIconsModule} from "@nebular/eva-icons";
     NbListModule,
     NbUserModule,
     NbToggleModule,
-    NbSelectModule
+    NbSelectModule,
+    NbActionsModule
   ]
 })
 export class ClusterOverviewModule {

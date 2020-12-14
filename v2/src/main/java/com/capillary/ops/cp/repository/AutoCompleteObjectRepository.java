@@ -16,5 +16,5 @@ public interface AutoCompleteObjectRepository extends MongoRepository<AutoComple
 
     List<AutoCompleteObject> findAllByStackName(String stackName);
 
-    AutoCompleteObject findAllByStackNameAndResourceType(String stackName, String resourceType);
+    List<AutoCompleteObject> findAllByStackNameAndResourceType(String stackName, String resourceType);
 }

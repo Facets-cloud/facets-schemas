@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
@@ -58,6 +59,7 @@ import java.util.zip.ZipOutputStream;
  */
 @Component
 @Loggable
+@Profile("!dev")
 public class AwsCodeBuildService implements TFBuildService {
 
     public static final String LOG_GROUP_NAME = "codebuild-test";
@@ -260,9 +262,13 @@ public class AwsCodeBuildService implements TFBuildService {
             }
         }
 
+        ComputeType computeType = cluster.getReleaseStream().equals(BuildStrategy.PROD) ?
+                ComputeType.BUILD_GENERAL1_2_XLARGE : ComputeType.BUILD_GENERAL1_LARGE;
+
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
+                    .computeTypeOverride(computeType)
                     .secondarySourcesOverride(
                             ProjectSource.builder()
                             .type(SourceType.valueOf(stack.getVcs().name()))
@@ -312,6 +318,8 @@ public class AwsCodeBuildService implements TFBuildService {
         //log.setDeploymentContext(deploymentContext);
         log.setTfVersion(tfVersion);
         log.setDeploymentContextVersion(deploymentContextVersion);
+        log.setTriggeredBy(deploymentRequest.getTriggeredBy());
+        log.setOverrideBuildSteps(deploymentRequest.getOverrideBuildSteps());
         return log;
     }
 

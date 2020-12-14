@@ -8,30 +8,32 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule } from '@angular/forms';
 import { PinSnapshotDialogComponent } from './pin-snapshot-dialog/pin-snapshot-dialog.component';
 import { CreateSnapshotDialogComponent } from './create-snapshot-dialog/create-snapshot-dialog.component';
+import {LayoutsModule} from "../../../layouts/layouts.module";
 
 
 
 @NgModule({
   declarations: [ClusterDisasterRecoveryComponent, PinSnapshotDialogComponent, CreateSnapshotDialogComponent],
-  imports: [
-    CommonModule,
-    RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
-    NbLayoutModule,
-    NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
-    NbCardModule,
-    ComponentsModule,
-    NbSidebarModule,
-    NbIconModule,
-    NbInputModule,
-    NbButtonModule,
-    NbSpinnerModule,
-    Ng2SmartTableModule,
-    NbDialogModule.forRoot(),
-    NbTabsetModule,
-    FormsModule,
-    RouterModule,
-    NbAccordionModule
-  ],
+    imports: [
+        CommonModule,
+        RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
+        NbLayoutModule,
+        NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
+        NbCardModule,
+        ComponentsModule,
+        NbSidebarModule,
+        NbIconModule,
+        NbInputModule,
+        NbButtonModule,
+        NbSpinnerModule,
+        Ng2SmartTableModule,
+        NbDialogModule.forRoot(),
+        NbTabsetModule,
+        FormsModule,
+        RouterModule,
+        NbAccordionModule,
+        LayoutsModule
+    ],
   providers: [NbSidebarService, NbDialogService, NbToastrService]
 })
 export class ClusterDisasterRecoveryModule { }

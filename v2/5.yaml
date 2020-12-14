@@ -1,0 +1,332 @@
+USER-SUPPLIED VALUES:
+build:
+  ci: deployer
+  dev_mode_default: 486456986266.dkr.ecr.us-west-1.amazonaws.com/crm/test-intouch-api:3777e61
+  id: 5d53ebca040b300008063f3a
+cloudflare:
+  CloudflareAccessEnabled: false
+clusterName: incrm
+configurations:
+  API_ES_INDEX: na
+  AWS_ENDPOINT: amazonaws.com
+  AWS_REGION: us-east-1
+  BASE_DOMAIN: cc.capillarytech.com
+  CCSS_VALUE: 1g
+  CLUSTER: incrm
+  ClickEventActionsDynamoTable: click-event-actions-meta-in
+  ClickEventAdaptorsMetaDynamoTable: click-event-adapters-meta-in
+  ClickEventAuditLogsDynamoTable: click-events-audit-logs-in
+  ClickEventDraftDataDynamoTable: click-events-draft-data-in
+  ClickEventEmfStatusLogDynamoTable: click-events-emf-status-log-in
+  ClickEventFieldsMetaDynamoTable: click-event-fields-meta-in
+  DD_APM_NON_LOCAL_TRAFFIC: "false"
+  EVENT_INGESTION_KINESIS_STREAM: incrm-event-ingestion
+  EXTRA_OPTIONS: -javaagent:newrelic/newrelic.jar -XX:MaxPermSize=256m -XX:+UseCompressedOops
+    -XX:-UseCompressedClassPointers -Dnewrelic.config.app_name=incrm-intouch-api
+  ElasticSearchHost: http://internal-ae0e2b48710104bd7b9d7ee7f4f4eb2c-308822404.us-east-1.elb.amazonaws.com:9200
+  FILE_SERVICE_PATH: http://file-service.default
+  HYDRA_API_GATEWAY_ENDPOINT: https://x3eq2zkhyd.execute-api.us-east-1.amazonaws.com/incrm/webhooks
+  INTOUCH_ENDPOINT: incrm.cc.capillarytech.com
+  MORNING_FILE_BUCKET: indiamorningfiles
+  MORNING_FILES_REDIS_HOST: data-cache.default
+  NEW_RELIC_LICENSE_KEY: 9cbbd77dd0c1514bd4e5c32fc5a949e52133dd44
+  NEWRELIC_KEY: 9cbbd77dd0c1514bd4e5c32fc5a949e52133dd44
+  NEWRELIC_LICENSE_KEY: 9cbbd77dd0c1514bd4e5c32fc5a949e52133dd44
+  NGINX_ES_HOST: na
+  NGINX_ES_INDEX: na
+  NGINX_ES_PORT: "9200"
+  NGINX_ES_PROTOCOL: http
+  ORG_ID_OFFSET: "0"
+  OrgClickEventHitTableDynamoTable: org-click-event-hit-table-in
+  OrgClickEventMetaTransformerMappingsDynamoTable: org-click-events-meta-transformer-mappings-in
+  OrgClickEventWebhooksDynamoTable: org-click-event-webhooks-in
+  OrgClickEventsDynamoTable: org-click-events-in
+  REDIS_HOST: data-cache.default
+  REDIS_PORT: "6379"
+  SD_K8S_MODE: "true"
+  SEARCH_ES_HOST: segments-es.default
+  SEARCH_ES_PORT: "9200"
+  StandardClickEventsMetaDynamoTable: standard-click-events-meta-in
+  TZ: Asia/Kolkata
+  XMS_VALUE: 6144m
+  XMX_VALUE: 6144m
+  XSS_VALUE: 1m
+  ZK_CLUSTER: localcluster
+  ZK_ENSEMBLE_IP: zk-service-discovery-zookeeper.default:2181
+  baseInternalHost: internal-intouch-api.default
+  baseIntouchUrl: https://na
+  isMongoBackUpEnabled: "false"
+  jettyQueueSize: "10"
+  jettyThreads: "100"
+  k8sEnabled: "true"
+  kafka_bootstrap_servers: events-kafka-new:9092
+  localCacheEnabled: "true"
+  metrics.post-to.newrelic.enabled: "true"
+  metrics.post-to.statsd.enabled: "false"
+  migration_mode: "false"
+  minPoolSize: "40"
+  poolSize: "40"
+  userManagementDbPoolSize: "40"
+credentialFiles: []
+credentialRequests:
+  cloud:
+  - permission: READ_ONLY
+    resourceName: morningfiles
+    resourceType: s3
+  - permission: PRODUCER
+    resourceName: event-ingestion
+    resourceType: kinesis
+  - permission: READ_WRITE
+    resourceName: all
+    resourceType: dynamodb
+  - permission: PRODUCER
+    resourceName: customermerge
+    resourceType: sqs
+  - permission: PRODUCER
+    resourceName: user_unsubscribe
+    resourceType: sqs
+  dbs:
+    mongo:
+    - environmentVariables:
+      - password: INTOUCH_DB_MONGO_MASTER_PASSWORD
+        userName: INTOUCH_DB_MONGO_MASTER_USERNAME
+      - password: INTOUCH_DB_MONGO_EVENT_FEED_PASSWORD
+        userName: INTOUCH_DB_MONGO_EVENT_FEED_USERNAME
+      permission: READ_WRITE
+      resourceName: intouch
+      resourceType: mongo
+    mysql:
+    - environmentVariables:
+      - password: INTOUCH_META_DB_MYSQL_MASTER_PASSWORD
+        userName: INTOUCH_META_DB_MYSQL_MASTER_USERNAME
+      - password: INTOUCH_META_DB_MYSQL_SLAVE_PASSWORD
+        userName: INTOUCH_META_DB_MYSQL_SLAVE_USERNAME
+      permission: READ_WRITE
+      resourceName: metadb
+      resourceType: mysql
+    - environmentVariables:
+      - password: INTOUCH_DB_MYSQL_PRODUCT_PASSWORD
+        userName: INTOUCH_DB_MYSQL_PRODUCT_USERNAME
+      - password: INTOUCH_DB_MYSQL_BILLDUMP_PASSWORD
+        userName: INTOUCH_DB_MYSQL_BILLDUMP_USERNAME
+      - password: INTOUCH_DB_MYSQL_PERFORMANCE_LOGS_PASSWORD
+        userName: INTOUCH_DB_MYSQL_PERFORMANCE_LOGS_USERNAME
+      permission: READ_WRITE
+      resourceName: billdump
+      resourceType: mysql
+    - environmentVariables:
+      - password: INTOUCH_DB_MYSQL_MASTER_PASSWORD
+        userName: INTOUCH_DB_MYSQL_MASTER_USERNAME
+      - password: INTOUCH_DB_MYSQL_SLAVE_PASSWORD
+        userName: INTOUCH_DB_MYSQL_SLAVE_USERNAME
+      permission: READ_WRITE_DELETE
+      resourceName: dbmaster
+      resourceType: mysql
+  queues:
+    rabbitmq:
+    - environmentVariables:
+      - password: INTOUCH_MQ_RABBITMQ_PASSWORD
+        userName: INTOUCH_MQ_RABBITMQ_USERNAME
+      permission: READ_WRITE
+      resourceName: intouch
+      resourceType: rabbitmq
+credentials:
+  INTOUCH_DB_MONGO_EVENT_FEED_PASSWORD: 0C!I4ig0ucyb
+  INTOUCH_DB_MONGO_EVENT_FEED_USERNAME: root
+  INTOUCH_DB_MONGO_MASTER_PASSWORD: 0C!I4ig0ucyb
+  INTOUCH_DB_MONGO_MASTER_USERNAME: root
+  INTOUCH_DB_MYSQL_BILLDUMP_PASSWORD: i!IDpfWkn3S8
+  INTOUCH_DB_MYSQL_BILLDUMP_USERNAME: intouch-api-M5OI
+  INTOUCH_DB_MYSQL_MASTER_PASSWORD: EqZiUO8B2u3$
+  INTOUCH_DB_MYSQL_MASTER_USERNAME: intouch-api-xG5H
+  INTOUCH_DB_MYSQL_PERFORMANCE_LOGS_PASSWORD: i!IDpfWkn3S8
+  INTOUCH_DB_MYSQL_PERFORMANCE_LOGS_USERNAME: intouch-api-M5OI
+  INTOUCH_DB_MYSQL_PRODUCT_PASSWORD: i!IDpfWkn3S8
+  INTOUCH_DB_MYSQL_PRODUCT_USERNAME: intouch-api-M5OI
+  INTOUCH_DB_MYSQL_SLAVE_PASSWORD: EqZiUO8B2u3$
+  INTOUCH_DB_MYSQL_SLAVE_USERNAME: intouch-api-xG5H
+  INTOUCH_META_DB_MYSQL_MASTER_PASSWORD: GZmV9ZpmrAfF
+  INTOUCH_META_DB_MYSQL_MASTER_USERNAME: intouch-api-u57d
+  INTOUCH_META_DB_MYSQL_SLAVE_PASSWORD: GZmV9ZpmrAfF
+  INTOUCH_META_DB_MYSQL_SLAVE_USERNAME: intouch-api-u57d
+  INTOUCH_MQ_RABBITMQ_PASSWORD: TmsfpfIyyFW0
+  INTOUCH_MQ_RABBITMQ_USERNAME: root
+deployerBuildId: 5fbb72005c974000071f17a0
+deploymentStrategy: RollingUpdate
+elbIdleTimeoutSeconds: 300
+environmentVariables:
+  dynamic:
+    ClickEventActionsDynamoTable:
+      attribute: table_name
+      resourceName: click-event-actions-meta
+      resourceType: dynamodb
+    ClickEventAdaptorsMetaDynamoTable:
+      attribute: table_name
+      resourceName: click-event-adapters-meta
+      resourceType: dynamodb
+    ClickEventAuditLogsDynamoTable:
+      attribute: table_name
+      resourceName: click-events-audit-logs
+      resourceType: dynamodb
+    ClickEventDraftDataDynamoTable:
+      attribute: table_name
+      resourceName: click-events-draft-data
+      resourceType: dynamodb
+    ClickEventEmfStatusLogDynamoTable:
+      attribute: table_name
+      resourceName: click-events-emf-status-log
+      resourceType: dynamodb
+    ClickEventFieldsMetaDynamoTable:
+      attribute: table_name
+      resourceName: click-event-fields-meta
+      resourceType: dynamodb
+    EVENT_INGESTION_KINESIS_STREAM:
+      attribute: stream_name
+      resourceName: event-ingestion
+      resourceType: kinesis
+    ElasticSearchHost:
+      attribute: http_endpoint
+      resourceName: hydra-es
+      resourceType: elasticsearch
+    INTOUCH_ENDPOINT:
+      attribute: domain
+      resourceName: intouch
+      resourceType: ingress
+    MORNING_FILE_BUCKET:
+      attribute: bucket_name
+      resourceName: morningfiles
+      resourceType: s3
+    OrgClickEventHitTableDynamoTable:
+      attribute: table_name
+      resourceName: org-click-event-hit-table
+      resourceType: dynamodb
+    OrgClickEventMetaTransformerMappingsDynamoTable:
+      attribute: table_name
+      resourceName: org-click-events-meta-transformer-mappings
+      resourceType: dynamodb
+    OrgClickEventWebhooksDynamoTable:
+      attribute: table_name
+      resourceName: org-click-event-webhooks
+      resourceType: dynamodb
+    OrgClickEventsDynamoTable:
+      attribute: table_name
+      resourceName: org-click-events
+      resourceType: dynamodb
+    StandardClickEventsMetaDynamoTable:
+      attribute: table_name
+      resourceName: standard-click-events-meta
+      resourceType: dynamodb
+  static:
+    API_ES_INDEX: na
+    AWS_ENDPOINT: amazonaws.com
+    CCSS_VALUE: 1g
+    DD_APM_NON_LOCAL_TRAFFIC: "false"
+    EXTRA_OPTIONS: -javaagent:newrelic/newrelic.jar -XX:MaxPermSize=256m -XX:+UseCompressedOops
+      -XX:-UseCompressedClassPointers -Dnewrelic.config.app_name=incrm-intouch-api
+    FILE_SERVICE_PATH: http://file-service.default
+    HYDRA_API_GATEWAY_ENDPOINT: https://x3eq2zkhyd.execute-api.us-east-1.amazonaws.com/incrm/webhooks
+    MORNING_FILES_REDIS_HOST: data-cache.default
+    NGINX_ES_HOST: na
+    NGINX_ES_INDEX: na
+    NGINX_ES_PORT: "9200"
+    NGINX_ES_PROTOCOL: http
+    REDIS_HOST: data-cache.default
+    REDIS_PORT: "6379"
+    SEARCH_ES_HOST: segments-es.default
+    SEARCH_ES_PORT: "9200"
+    XMS_VALUE: 6144m
+    XMX_VALUE: 6144m
+    XSS_VALUE: 1m
+    baseInternalHost: internal-intouch-api.default
+    baseIntouchUrl: https://na
+    isMongoBackUpEnabled: "false"
+    jettyQueueSize: "10"
+    jettyThreads: "100"
+    kafka_bootstrap_servers: events-kafka-new:9092
+    localCacheEnabled: "true"
+    metrics.post-to.newrelic.enabled: "true"
+    metrics.post-to.statsd.enabled: "false"
+    minPoolSize: "40"
+    poolSize: "40"
+    userManagementDbPoolSize: "40"
+hpa:
+  hpaEnabled: true
+  hpaMaxReplicas: 6
+  hpaMetricThreshold: 60
+  hpaMinReplicas: 2
+image: 486456986266.dkr.ecr.us-west-1.amazonaws.com/crm/test-intouch-api:68fdbc8-1480
+ingress_rules:
+- domainPrefix: ""
+  ingress: intouch
+  path: /v2
+  targetPort: 1900
+- domainPrefix: ""
+  ingress: intouch
+  path: /ping
+  targetPort: 1900
+- domainPrefix: api.
+  ingress: intouch
+  path: /ping
+  targetPort: 1900
+- domainPrefix: ""
+  ingress: intouch
+  path: /api/loyalty
+  targetPort: 1900
+- domainPrefix: intouch-api.
+  ingress: tools
+  path: /hystrix.stream
+  targetPort: 1900
+- domainPrefix: newapi.
+  ingress: intouch
+  path: /
+  targetPort: 1900
+k8s_service_names: []
+k8sServiceType: ClusterIP
+lbType: internal
+liveness:
+  enableLivenessHTTP: true
+  livenessFailureThreshold: 10
+  livenessHTTPEndpoint: /thrift/isHealthy
+  livenessInitialDelay: 300
+  livenessPeriod: 30
+  livenessPort: 1900
+  livenessSuccessThreshold: 1
+  livenessTimeout: 3
+podCPULimit: 3.5
+podCPURequest: 3.5
+podMemoryLimit: 10
+podMemoryRequest: 10
+podSize: XXLARGE
+ports:
+- containerPort: 1900
+  lbPort: 1900
+  name: http
+- containerPort: 1901
+  lbPort: 1901
+  name: management
+protocolGroup: tcp
+readiness:
+  enableReadinessHTTP: true
+  readinessFailureThreshold: 10
+  readinessHTTPEndpoint: /thrift/isHealthy
+  readinessInitialDelay: 300
+  readinessPeriod: 30
+  readinessPort: 1900
+  readinessSuccessThreshold: 1
+  readinessTimeout: 3
+require_lb: false
+resourceAllocationStrategy: GENERAL_PURPOSE
+roleName: arn:aws:iam::502812779267:role/incrm-intouch-api-application-role
+scaling:
+  hpaEnabled: true
+  hpaMaxReplicas: 6
+  hpaMetricThreshold: 60
+  hpaMinReplicas: 2
+secretFileMounts: []
+sidecarContainers: []
+sidecars: []
+size: XXLARGE
+sizing:
+  podCPULimit: 3.5
+  podMemoryLimit: 10
+trigger: "2"

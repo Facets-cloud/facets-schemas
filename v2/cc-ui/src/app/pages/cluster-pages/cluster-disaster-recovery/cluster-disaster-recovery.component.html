@@ -1,52 +1,45 @@
-<nb-layout>
-  <nb-layout-header fixed size="small">
-    <app-header></app-header>
-  </nb-layout-header>
-  <nb-layout-column class="container-fluid">
-    <nb-card accent="info" [nbSpinner]="fetchSnapshotsSpinner" nbSpinnerStatus="info" nbSpinnerSize="large"
-      nbSpinnerMessage="Loading...">
-      <nb-card-header>List Backups</nb-card-header>
-      <nb-card-body>
-        <nb-card>
-          <nb-card-body>
-            <div class="dr-form-input-element">
+<app-layout-one-column>
+  <div class="row">
+    <div class="col-sm-6">
+      <nb-card [nbSpinner]="fetchSnapshotsSpinner" nbSpinnerStatus="info" nbSpinnerSize="large"
+               nbSpinnerMessage="Loading...">
+        <nb-card-header>List Backups</nb-card-header>
+        <nb-card-body>
+          <div class="row cc-margin-bottom">
+            <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">
               Resource Type
-              <input fullWidth status="info" [(ngModel)]='resourceType' type="text" nbInput>
             </div>
-            <div class="dr-form-input-element">
-              Instance Name
-              <input fullWidth status="info" [(ngModel)]='instanceName' type="text" nbInput>
+            <div class="col-sm-6">
+              <app-resource-type-selector stackName="{{stackName}}"
+                                          (onResourceTypeSelect)="onResourceTypeSelect($event)"
+                                          [resourceSelectorComponent]="rc"></app-resource-type-selector>
             </div>
-            <button nbButton status="info" fullWidth (click)="fetchSnapshots()">List Snapshots</button>
-          </nb-card-body>
-        </nb-card>
-        <nb-card *ngIf="drData.length > 0" [nbSpinner]="pinSnapshotSpinner" nbSpinnerStatus="danger"
-          nbSpinnerSize="large">
-          <nb-card-header>Backups</nb-card-header>
-          <nb-card-body>
-            <ng2-smart-table class="cc-no-standard" [settings]="settings" [source]="drData"
-              (custom)="pinSnapshot($event)">
-            </ng2-smart-table>
-          </nb-card-body>
-        </nb-card>
-      </nb-card-body>
-    </nb-card>
-  </nb-layout-column>
-  <nb-layout-column class="container-fluid">
-    <nb-card accent="danger" [nbSpinner]="createSnapshotSpinner" nbSpinnerStatus="info" nbSpinnerSize="large"
-      nbSpinnerMessage="Loading...">
-      <nb-card-header>Create Backup</nb-card-header>
-      <nb-card-body>
-        <div class="dr-form-input-element">
-          Resource Type
-          <input fullWidth status="info" [(ngModel)]='createSnapshotResourceType' type="text" nbInput>
-        </div>
-        <div class="dr-form-input-element">
-          Instance Name
-          <input fullWidth status="info" [(ngModel)]='createSnapshotInstanceName' type="text" nbInput>
-        </div>
-        <button nbButton status="info" fullWidth (click)="createSnapshots()">Create Snapshots</button>
-      </nb-card-body>
-    </nb-card>
-  </nb-layout-column>
-</nb-layout>
+          </div>
+          <div class="row cc-margin-bottom">
+            <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">
+              Resource Name
+            </div>
+            <div class="col-sm-6">
+              <app-resource-selector #rc stackName="{{stackName}}" [resourceTypeSelected]="resourceType"
+                                     (onResourceSelect)="onResourceSelect($event)"></app-resource-selector>
+            </div>
+          </div>
+          <button nbButton status="primary" (click)="fetchSnapshots()" class="cc-margin">List Snapshots</button>
+          <button nbButton status="basic" (click)="createSnapshots()" class="cc-margin">Create Snapshots</button>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <div class="col-sm-6">
+      <nb-card *ngIf="drData.length > 0" [nbSpinner]="pinSnapshotSpinner" nbSpinnerStatus="danger"
+               nbSpinnerSize="large">
+        <nb-card-header>Backups</nb-card-header>
+        <nb-card-body>
+          <ng2-smart-table class="cc-no-standard" [settings]="settings" [source]="drData"
+                           (custom)="pinSnapshot($event)">
+          </ng2-smart-table>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+</app-layout-one-column>
+

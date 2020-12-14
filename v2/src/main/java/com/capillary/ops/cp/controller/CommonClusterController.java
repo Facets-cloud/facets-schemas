@@ -21,6 +21,7 @@ public class CommonClusterController {
     @Autowired
     ClusterFacade clusterFacade;
 
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("{clusterId}/credentials")
     public Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId) {
         request.setClusterId(clusterId);
@@ -68,7 +69,7 @@ public class CommonClusterController {
      * @param snapshotInfo Information about snapshot to be pinned
      * @return SnapshotInfo
      */
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot")
     public SnapshotInfo pinSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
                                     @PathVariable String instanceName, @RequestBody SnapshotInfo snapshotInfo) {

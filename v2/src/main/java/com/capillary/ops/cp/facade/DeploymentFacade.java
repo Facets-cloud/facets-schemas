@@ -11,6 +11,7 @@ import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
+import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.BaseDRService;
@@ -19,6 +20,7 @@ import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.cp.service.notification.NotificationService;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.utils.DeployerUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
@@ -107,7 +110,16 @@ public class DeploymentFacade {
     public DeploymentLog createDeployment(String clusterId, DeploymentRequest deploymentRequest) {
         try {
             AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+            Stack stack = stackFacade.getStackByName(cluster.getStackName());
+            if(BuildStrategy.PROD.equals(cluster.getReleaseStream()) && stack.isPauseReleases()){
+                String logMsg = "Prod Release is disabled for the stack " + cluster.getStackName();
+                logger.info(logMsg);
+                throw new ProdReleaseDisabled(logMsg);
+            }
             DeploymentContext deploymentContext = getDeploymentContext(clusterId, deploymentRequest);
+            if(StringUtils.isEmpty(deploymentRequest.getTriggeredBy())){
+                deploymentRequest.setTriggeredBy(DeployerUtil.getAuthUserName());
+            }
             //TODO: Save Deployment requests for audit purpose
             return tfBuildService.deployLatest(cluster, deploymentRequest, deploymentContext);
         } catch (QACallbackAbsentException e) {

@@ -25,10 +25,10 @@ public class Stack {
 //    @Transient
     private String appPassword;
 
-    @JsonIgnore
+    private boolean pauseReleases = false;
+
     private Map<String, String> stackVars = new HashMap<>();
 
-    @JsonIgnore
     private Map<String, StackFile.VariableDetails> clusterVariablesMeta = new HashMap<>();
 
     public String getName() {
@@ -93,5 +93,13 @@ public class Stack {
 
     public Map<String, StackFile.VariableDetails> getClusterVariablesMeta() {
         return clusterVariablesMeta;
+    }
+
+    public boolean isPauseReleases() {
+        return pauseReleases;
+    }
+
+    public void setPauseReleases(boolean pauseReleases) {
+        this.pauseReleases = pauseReleases;
     }
 }

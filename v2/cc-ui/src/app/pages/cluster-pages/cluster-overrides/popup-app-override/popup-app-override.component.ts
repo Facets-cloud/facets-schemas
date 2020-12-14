@@ -21,6 +21,7 @@ export class PopupAppOverrideComponent implements OnInit {
 
   @Input() clusterId: string;
   @Input() existingOverrides: {};
+  @Input() stackName: string;
 
   constructor(
     private toastrService: NbToastrService,
@@ -114,4 +115,11 @@ export class PopupAppOverrideComponent implements OnInit {
     }
   }
 
+  appSelected($event: string) {
+    this.newOverrideInstanceName = $event;
+  }
+
+  rtSelected($event: string) {
+    this.newOverrideModuleType = $event;
+  }
 }

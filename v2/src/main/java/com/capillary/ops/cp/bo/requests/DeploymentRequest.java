@@ -23,6 +23,8 @@ public class DeploymentRequest {
 
     private List<String> overrideBuildSteps = new ArrayList<>();
 
+    private String triggeredBy;
+
     public String getId() {
         return id;
     }
@@ -72,5 +74,13 @@ public class DeploymentRequest {
 
     public void setOverrideCCVersion(String overrideCCVersion) {
         this.overrideCCVersion = overrideCCVersion;
+    }
+
+    public String getTriggeredBy(){
+        return triggeredBy;
+    }
+
+    public void setTriggeredBy(String triggeredBy){
+        this.triggeredBy = triggeredBy;
     }
 }

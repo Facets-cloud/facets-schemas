@@ -7,7 +7,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.EnableM
 
 import java.time.Duration;
 
-@EnableMongoHttpSession
+@EnableMongoHttpSession(maxInactiveIntervalInSeconds = 43200)
 @Configuration
 public class HttpSessionConfig {
 

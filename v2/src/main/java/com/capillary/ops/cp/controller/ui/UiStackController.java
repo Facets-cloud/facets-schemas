@@ -2,6 +2,8 @@ package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.StackFile;
+import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.facade.SubscriptionFacade;
@@ -14,6 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * All calls which can be made by the "Stack Managers"
@@ -36,7 +42,6 @@ public class UiStackController {
     private AclService aclService;
 
     @GetMapping("{stackName}/clusters")
-    @PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
     public List<AbstractCluster> getClusters(@PathVariable String stackName) {
         return stackController.getClusters(stackName);
     }
@@ -48,50 +53,57 @@ public class UiStackController {
      * @return
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     public Stack createStack(@RequestBody Stack stack) {
         return stackController.createStack(stack);
     }
 
     @GetMapping("{stackName}/reload")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasStackWriteAccess(authentication, #stackName)")
     public Stack reloadStack(@PathVariable String stackName) {
         return stackController.reloadStack(stackName);
     }
 
     @GetMapping()
-    @PostFilter("hasAnyRole('ADMIN') or @aclService.hasStackReadAccess(authentication, filterObject.name)")
     public List<Stack> getStacks() {
         return stackController.getStacks();
     }
 
     @GetMapping("{stackName}")
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasStackReadAccess(authentication, #stackName)")
     public Stack getStack(@PathVariable String stackName) {
-        return stackController.getStack(stackName);
+        Stack stackObj = stackController.getStack(stackName);
+        Map<String, StackFile.VariableDetails> clusterVariablesFiltered = stackObj.getClusterVariablesMeta()
+                .entrySet().stream().filter(x -> x.getValue().isSecret()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                .keySet().stream().collect(Collectors.toMap(Function.identity(), x -> new StackFile.VariableDetails(true,"****")));
+        stackObj.getClusterVariablesMeta().putAll(clusterVariablesFiltered);
+        return stackObj;
     }
 
     @GetMapping("{stackName}/notification/subscriptions")
-    //@PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
     public List<Subscription> getAllSubscriptions(@PathVariable String stackName) {
         return subscriptionFacade.getAllSubscriptions(stackName);
     }
 
     @GetMapping("{stackName}/suggestions/resourceType")
-    public List<String> getResourceTypes(@PathVariable String stackName) {
+    public Set<String> getResourceTypes(@PathVariable String stackName) {
         return stackAutoCompleteService.getResourceTypesSuggestion(stackName);
     }
 
     @GetMapping("{stackName}/suggestions/resourceType/{resourceType}")
-    public List<String> getResourcesByTypes(@PathVariable String stackName, @PathVariable String resourceType) {
+    public Set<String> getResourcesByTypes(@PathVariable String stackName, @PathVariable String resourceType) {
         return stackAutoCompleteService.getResourcesSuggestion(stackName, resourceType);
     }
 
     @PostMapping("{stackName}/notification/subscriptions")
-    //@PostFilter("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #stackName, filterObject.id)")
     public Subscription createSubscription(@PathVariable String stackName, @RequestBody Subscription subscription) {
         subscription.setStackName(stackName);
         return subscriptionFacade.createSubscription(subscription);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN')")
+    @PostMapping("{stackName}/toggleRelease")
+    public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
+        return stackController.toggleRelease(stackName, toggleRelease);
     }
 
 }

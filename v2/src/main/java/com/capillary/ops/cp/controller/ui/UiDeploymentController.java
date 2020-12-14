@@ -38,7 +38,7 @@ public class UiDeploymentController {
      * @return The Deployment Log Object
      */
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
@@ -70,39 +70,37 @@ public class UiDeploymentController {
         deploymentFacade.abortAutomationSuite(clusterId, executionId);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
     @GetMapping()
     ListDeploymentsWrapper getDeployments(@PathVariable String clusterId) {
         return deploymentFacade.getAllDeployments(clusterId);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS')")
     @GetMapping("/{deploymentId}")
     DeploymentLog getDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.getDeployment(deploymentId);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
     @PutMapping("/{deploymentId}/signoff")
     DeploymentLog signOffDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.signOff(clusterId, deploymentId);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("/recipes/aurora/dr")
     DeploymentLog runAuroraDRRecipe(@PathVariable String clusterId,
                                     @RequestBody AuroraDRDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runAuroraDRRecipe(clusterId, deploymentRecipe);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("/recipes/mongo/dr")
     DeploymentLog runMongoDRRecipe(@PathVariable String clusterId,
                                     @RequestBody MongoDRDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runMongoDRRecipe(clusterId, deploymentRecipe);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("/recipes/mongo/resize")
     DeploymentLog runMongoResizeRecipe(@PathVariable String clusterId,
                                    @RequestBody MongoVolumeResizeDeploymentRecipe deploymentRecipe) {

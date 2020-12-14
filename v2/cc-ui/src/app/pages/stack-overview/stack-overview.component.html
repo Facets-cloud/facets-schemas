@@ -1,13 +1,34 @@
 <app-layout-one-column>
-  <nb-card accent="info">
-    <nb-card-header>Stack Overview</nb-card-header>
+  <nb-card>
+    <nb-card-header>
+    <div style="float:left;">Stack Overview</div>
+    </nb-card-header>
     <nb-card-body>
       This is a <b>{{stack?.name}}</b> stack, its source code is <a href={{stack?.vcsUrl}}>here</a>.
     </nb-card-body>
   </nb-card>
 
-  <nb-card accent="warning">
-    <nb-card-header>Clusters</nb-card-header>
+  <nb-card>
+    <nb-card-header>
+    <div style="float:left;">Clusters</div>
+    <div style="float:right;">
+    <button
+              nbButton
+              fullWidth
+              status="info"
+              (click)="createCluster()"
+              appearance="hero"
+              >
+              <nb-icon icon="plus-outline"></nb-icon>
+              Create
+            </button>
+    </div>
+    </nb-card-header>
+    <nb-card-body>
+      <nb-toggle [(ngModel)]="pauseReleases" labelPosition="end" (click)="newToggleClick(pauseReleases)">
+        Pause Production Releases
+      </nb-toggle>
+    </nb-card-body>
     <nb-card-body>
       <ng2-smart-table class="cc-no-standard" [settings]="clusterSettings" [source]="tableData" (custom)="gotoPage($event)"></ng2-smart-table>
     </nb-card-body>

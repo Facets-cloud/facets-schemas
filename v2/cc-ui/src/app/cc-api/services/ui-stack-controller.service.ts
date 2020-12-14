@@ -10,6 +10,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 import { Stack } from '../models/stack';
 import { AbstractCluster } from '../models/abstract-cluster';
 import { Subscription } from '../models/subscription';
+import { ToggleRelease } from '../models/toggle-release';
 
 /**
  * Ui Stack Controller
@@ -25,6 +26,9 @@ class UiStackControllerService extends __BaseService {
   static readonly getAllSubscriptionsUsingGETPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
   static readonly createSubscriptionUsingPOSTPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
   static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
+  static readonly getResourceTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType';
+  static readonly getResourcesByTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType/{resourceType}';
+  static readonly toggleReleaseUsingPOST1Path = '/cc-ui/v1/stacks/{stackName}/toggleRelease';
 
   constructor(
     config: __Configuration,
@@ -306,6 +310,142 @@ class UiStackControllerService extends __BaseService {
       __map(_r => _r.body as Stack)
     );
   }
+
+  /**
+   * getResourceTypes
+   * @param stackName stackName
+   * @return OK
+   */
+  getResourceTypesUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Array<string>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(stackName)}/suggestions/resourceType`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<string>>;
+      })
+    );
+  }
+  /**
+   * getResourceTypes
+   * @param stackName stackName
+   * @return OK
+   */
+  getResourceTypesUsingGET(stackName: string): __Observable<Array<string>> {
+    return this.getResourceTypesUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Array<string>)
+    );
+  }
+
+  /**
+   * getResourcesByTypes
+   * @param params The `UiStackControllerService.GetResourcesByTypesUsingGETParams` containing the following parameters:
+   *
+   * - `stackName`: stackName
+   *
+   * - `resourceType`: resourceType
+   *
+   * @return OK
+   */
+  getResourcesByTypesUsingGETResponse(params: UiStackControllerService.GetResourcesByTypesUsingGETParams): __Observable<__StrictHttpResponse<Array<string>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(params.stackName)}/suggestions/resourceType/${encodeURIComponent(params.resourceType)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<string>>;
+      })
+    );
+  }
+  /**
+   * getResourcesByTypes
+   * @param params The `UiStackControllerService.GetResourcesByTypesUsingGETParams` containing the following parameters:
+   *
+   * - `stackName`: stackName
+   *
+   * - `resourceType`: resourceType
+   *
+   * @return OK
+   */
+  getResourcesByTypesUsingGET(params: UiStackControllerService.GetResourcesByTypesUsingGETParams): __Observable<Array<string>> {
+    return this.getResourcesByTypesUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Array<string>)
+    );
+  }
+
+  /**
+   * toggleRelease
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
+   *
+   * - `toggleRelease`: toggleRelease
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  toggleReleaseUsingPOST1Response(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<__StrictHttpResponse<ToggleRelease>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.toggleRelease;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(params.stackName)}/toggleRelease`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ToggleRelease>;
+      })
+    );
+  }
+  /**
+   * toggleRelease
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
+   *
+   * - `toggleRelease`: toggleRelease
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  toggleReleaseUsingPOST1(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<ToggleRelease> {
+    return this.toggleReleaseUsingPOST1Response(params).pipe(
+      __map(_r => _r.body as ToggleRelease)
+    );
+  }
 }
 
 module UiStackControllerService {
@@ -319,6 +459,38 @@ module UiStackControllerService {
      * subscription
      */
     subscription: Subscription;
+
+    /**
+     * stackName
+     */
+    stackName: string;
+  }
+
+  /**
+   * Parameters for getResourcesByTypesUsingGET
+   */
+  export interface GetResourcesByTypesUsingGETParams {
+
+    /**
+     * stackName
+     */
+    stackName: string;
+
+    /**
+     * resourceType
+     */
+    resourceType: string;
+  }
+
+  /**
+   * Parameters for toggleReleaseUsingPOST1
+   */
+  export interface ToggleReleaseUsingPOST1Params {
+
+    /**
+     * toggleRelease
+     */
+    toggleRelease: ToggleRelease;
 
     /**
      * stackName

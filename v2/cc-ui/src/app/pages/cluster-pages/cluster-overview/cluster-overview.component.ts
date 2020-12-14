@@ -31,13 +31,13 @@ export class ClusterOverviewComponent implements OnInit {
       name: {
         title: 'Variable Name',
         filter: false,
-        width: '50%',
+        width: '30%',
         editable: false,
       },
       value: {
         title: 'Variable Value',
         filter: false,
-        width: '50%',
+        width: '70%',
         editable: true,
         editor: {type: 'text'},
       }
@@ -45,7 +45,7 @@ export class ClusterOverviewComponent implements OnInit {
     noDataMessage: '',
     pager: {
       display: true,
-      perPage: 5,
+      perPage: 10,
     },
     actions: {
       add: false,
@@ -148,14 +148,21 @@ export class ClusterOverviewComponent implements OnInit {
     }
   }
 
+  errorHandler(error){
+    this.addOverrideSpinner = false;
+    this.toastrService.warning(error.error.message, 'Error');
+  }
 
-
+  
   refreshStack() {
     this.addOverrideSpinner = true;
     try {
       this.stackService.reloadStackUsingGET1(this.cluster.stackName).subscribe(stack => {
         this.addOverrideSpinner = false;
         location.reload();
+      },
+      err => {
+        this.errorHandler(err);
       });
     } catch (err) {
       console.log(err);

@@ -6,4 +6,5 @@ export interface DeploymentRequest {
   overrideCCVersion?: string;
   releaseType?: 'HOTFIX' | 'RELEASE';
   tag?: string;
+  triggeredBy?: string;
 }

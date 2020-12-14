@@ -9,6 +9,7 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { ApplicationAction } from '../models/application-action';
 import { EnvironmentMetaData } from '../models/environment-meta-data';
+import { EcrTokenMap } from '../models/ecr-token-map';
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
@@ -43,6 +44,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
   static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
   static readonly refreshBuildDetailsUsingPUTPath = '/api/codebuild/builds/{codeBuildId}/refresh';
+  static readonly getEcrTokenUsingGETPath = '/api/getEcrLoginToken';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -294,6 +296,41 @@ class ApplicationControllerService extends __BaseService {
   refreshBuildDetailsUsingPUT(codeBuildId: string): __Observable<boolean> {
     return this.refreshBuildDetailsUsingPUTResponse(codeBuildId).pipe(
       __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * getEcrToken
+   * @return OK
+   */
+  getEcrTokenUsingGETResponse(): __Observable<__StrictHttpResponse<EcrTokenMap>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/getEcrLoginToken`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<EcrTokenMap>;
+      })
+    );
+  }
+  /**
+   * getEcrToken
+   * @return OK
+   */
+  getEcrTokenUsingGET(): __Observable<EcrTokenMap> {
+    return this.getEcrTokenUsingGETResponse().pipe(
+      __map(_r => _r.body as EcrTokenMap)
     );
   }
 

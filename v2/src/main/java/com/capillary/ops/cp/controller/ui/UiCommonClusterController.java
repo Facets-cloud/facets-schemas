@@ -30,7 +30,7 @@ public class UiCommonClusterController {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
         @RequestBody List<OverrideRequest> request) {
@@ -38,14 +38,13 @@ public class UiCommonClusterController {
         return clusterFacade.override(clusterId, request);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterReadAccess(authentication, #clusterId)")
     @GetMapping("{clusterId}/overrides")
     public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
         List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
         return overrides;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
     @DeleteMapping("{clusterId}/overrides/{resourceType}/{resourceName}")
     public List<OverrideObject> deleteOverrides(@PathVariable String clusterId,
                                                 @PathVariable String resourceType,
@@ -75,7 +74,7 @@ public class UiCommonClusterController {
      * @param snapshotInfo Information about snapshot to be pinned
      * @return SnapshotInfo
      */
-    @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot")
     public SnapshotInfo pinSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
                                           @PathVariable String instanceName, @RequestBody SnapshotInfo snapshotInfo) {
@@ -102,6 +101,7 @@ public class UiCommonClusterController {
      * @param instanceName Instance name -> e.g. billdump
      * @return true/false
      */
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}")
     public boolean createSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
                                           @PathVariable String instanceName) {

@@ -16,6 +16,7 @@ import {AuthGuard} from './auth-guard.service';
 import {ClusterPagesModule} from './pages/cluster-pages/cluster-pages.module';
 import {ClusterOverridesModule} from './pages/cluster-pages/cluster-overrides/cluster-overrides.module';
 import {ClusterReleasesModule} from './pages/cluster-pages/cluster-releases/cluster-releases.module';
+import {ClusterCreateModule} from './pages/cluster-pages/cluster-create/cluster-create.module';
 import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/cluster-overview.module';
 import { ClusterDisasterRecoveryModule } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.module';
 
@@ -45,6 +46,7 @@ import { ClusterDisasterRecoveryModule } from './pages/cluster-pages/cluster-dis
     ClusterOverridesModule,
     ClusterDisasterRecoveryModule,
     ClusterPagesModule,
+    ClusterCreateModule,
     HttpClientModule,
     StackOverviewModule,
     NbMenuModule.forRoot(),
