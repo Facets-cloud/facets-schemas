@@ -2,6 +2,7 @@ package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
@@ -15,7 +16,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * All calls which can be made by the "Stack Managers"
@@ -70,7 +74,12 @@ public class UiStackController {
     @GetMapping("{stackName}")
     @PreAuthorize("hasAnyRole('ADMIN') or @aclService.hasStackReadAccess(authentication, #stackName)")
     public Stack getStack(@PathVariable String stackName) {
-        return stackController.getStack(stackName);
+        Stack stackObj = stackController.getStack(stackName);
+        Map<String, StackFile.VariableDetails> clusterVariablesFiltered = stackObj.getClusterVariablesMeta()
+                .entrySet().stream().filter(x -> x.getValue().isSecret()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                .keySet().stream().collect(Collectors.toMap(Function.identity(), x -> new StackFile.VariableDetails(true,"****")));
+        stackObj.getClusterVariablesMeta().putAll(clusterVariablesFiltered);
+        return stackObj;
     }
 
     @GetMapping("{stackName}/notification/subscriptions")
