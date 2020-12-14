@@ -106,12 +106,7 @@ public class StackFacade {
     }
 
     public Stack getStackByName(String stackName) {
-        Stack stackObj = stackRepository.findById(stackName).get();
-        Map<String, StackFile.VariableDetails> clusterVariablesFiltered = stackObj.getClusterVariablesMeta()
-                .entrySet().stream().filter(x -> x.getValue().isSecret()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                .keySet().stream().collect(Collectors.toMap(Function.identity(), x -> new StackFile.VariableDetails(true,"****")));
-        stackObj.getClusterVariablesMeta().putAll(clusterVariablesFiltered);
-        return stackObj;
+        return stackRepository.findById(stackName).get();
     }
 
     public ToggleRelease toggleRelease(ToggleRelease toggleRelease){
