@@ -59,7 +59,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         String username = (String) oAuth2User.getAttributes().get("email");
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         if(System.getenv("ADMIN_USER").equalsIgnoreCase(username)) {
-            grantedAuthorities.addAll(roles(Arrays.asList("ADMIN")));
+            grantedAuthorities.addAll(roles(Arrays.asList("CC-ADMIN","ADMIN")));
         }
         try {
             com.capillary.ops.deployer.bo.User user = userRepository.findOneByUserName(username).get();

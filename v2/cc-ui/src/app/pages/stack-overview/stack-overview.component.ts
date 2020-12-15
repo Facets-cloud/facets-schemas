@@ -1,3 +1,4 @@
+import { CustomActionsComponent } from './../../components/custom-actions/custom-actions.component';
 import { Application } from './../../cc-api/models/application';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -39,19 +40,16 @@ export class StackOverviewComponent implements OnInit {
       },
       tz: {
         title: 'Time Zone',
+      },
+      custom: {
+        type: 'custom',
+        renderComponent: CustomActionsComponent,
+        title: 'Actions',
+        width: '12%'
       }
     },
-    actions: {
-      edit: false,
-      delete: false,
-      add: false,
-      position: 'right',
-      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>&nbsp;&nbsp;&nbsp;', type: 'html'},
-      {name: 'Edit', title: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="eva-edit-outline eva"></i>', type: 'html'}],
-      styles: 'ng2-custom-actions-inline'
-    },
-    hideSubHeader: true,
-    rowClassFunction: (row) => { return 'ng2-custom-actions-inline' }
+    actions: false,
+    hideSubHeader: true
   };
 
   constructor(private route: ActivatedRoute,
@@ -90,7 +88,8 @@ export class StackOverviewComponent implements OnInit {
     );
   }
 
-  gotoPage(x): void {
+  gotoPage(x) {
+    console.log(x);
     if (x.action === 'View') {
       const clusterId = x.data.id;
       console.log('Navigate to ' + clusterId);
