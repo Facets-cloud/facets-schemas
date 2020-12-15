@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.StackFacade;
+import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +26,9 @@ public class StackController {
 
     @Autowired
     ClusterFacade clusterFacade;
+
+    @Autowired
+    private AclService aclService;
 
     @GetMapping("{stackName}/clusters")
     public List<AbstractCluster> getClusters(@PathVariable String stackName) {
@@ -54,12 +58,6 @@ public class StackController {
 
     public Stack getStack(String stackName) {
         return stackFacade.getStackByName(stackName);
-    }
-
-    @PreAuthorize("hasRole('CC-ADMIN')")
-    @PostMapping("{stackName}/toggleRelease")
-    public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
-        return stackFacade.toggleRelease(toggleRelease);
     }
 
 }
