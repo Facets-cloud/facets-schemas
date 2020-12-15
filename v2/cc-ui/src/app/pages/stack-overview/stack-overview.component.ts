@@ -83,7 +83,7 @@ export class StackOverviewComponent implements OnInit {
       (x: SimpleOauth2User) => {
         this.user = x;
         this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
-        || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
+        || this.user.authorities.map(x => x.authority).includes('ROLE_CC-ADMIN');
       }
     );
   }
@@ -104,7 +104,9 @@ export class StackOverviewComponent implements OnInit {
   }
 
   createCluster(): void {
+    if (this.isUserAdmin){
     this.router.navigate(['/capc/', this.stack.name , 'clusterCreate']);
+    }
   }
 
   errorHandler(error) {
