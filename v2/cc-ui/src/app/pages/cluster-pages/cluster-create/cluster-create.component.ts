@@ -197,8 +197,8 @@ export class ClusterCreateComponent implements OnInit {
       this.toastrService.danger('Cluster creation failed ' + error.statusText, 'Error', {duration: 8000});
     });
     }catch (err) {
-      this.toastrService.danger('Cluster creation failed', 'Error', {duration: 5000});
       console.log(err);
+      this.toastrService.danger('Cluster creation failed', 'Error', {duration: 5000});
     }
   }
 
@@ -256,6 +256,7 @@ export class ClusterCreateComponent implements OnInit {
       });
       } catch (err) {
       console.log(err);
+      this.toastrService.danger('Cluster update failed ' + err.statusText, 'Error', {duration: 8000});
     }
   }
 
