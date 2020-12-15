@@ -8,6 +8,8 @@ import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,4 +109,11 @@ public class UiCommonClusterController {
                                           @PathVariable String instanceName) {
         return clusterFacade.createSnapshot(clusterId, resourceType, instanceName);
     }
+
+    @GetMapping(value = "{clusterId}/kubeconfig")
+    public ResponseEntity<String> getKubeConfig(@PathVariable String clusterId) {
+        String kubeConfig = clusterFacade.createUserServiceAccount(clusterId);
+        return new ResponseEntity<>(kubeConfig, HttpStatus.OK);
+    }
+
 }

@@ -15,4 +15,12 @@ public class DeployerUtil {
         }
         return userName;
     }
+
+    public static OAuth2User getUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof OAuth2User) {
+            return ((OAuth2User) principal);
+        }
+        return null;
+    }
 }
