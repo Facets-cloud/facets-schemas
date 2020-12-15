@@ -127,14 +127,10 @@ public class MockCCDataBootstrap {
         deploymentLogRepository.save(deploymentLog2);
 
         User user = new User();
-        user.setUserName("rama.chandra@capillarytech.com");
+        String adminUser = System.getenv("ADMIN_USER");
+        user.setUserName(adminUser);
         List<String> roles = new ArrayList<>();
-//        roles.add("CC-ADMIN");
-//        roles.add("CRM_WRITE");
-//        roles.add("CRM_MAINTAINER");
-        roles.add("CRM_cluster1_WRITE");
-//        roles.add("CRM_cluster2_WRITE");
-//        roles.add("CRM_cluster2_MAINTAINER");
+        roles.add("CRM_WRITE");
         user.setRoles(roles);
         userRepository.save(user);
     }
