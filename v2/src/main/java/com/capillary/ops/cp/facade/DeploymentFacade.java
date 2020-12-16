@@ -7,6 +7,7 @@ import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -654,6 +655,16 @@ public class DeploymentFacade {
                 "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]'",
                 "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\""+ deploymentRecipe.getDbInstanceName() +"\"]'",
                 "terraform apply -auto-approve -target 'module.infra.module.mongo.helm_release.mongo[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\""+ deploymentRecipe.getDbInstanceName()+"\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\""+ deploymentRecipe.getDbInstanceName() +"\"]'"
+        ));
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
+    public DeploymentLog runESDRRecipe(String clusterId, ESDRDeploymentRecipe deploymentRecipe) {
+        
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(
+                "/bin/bash scripts/es_restore.sh -e " + deploymentRecipe.getEsInstanceName() + "-s "+ deploymentRecipe.getSnapshotName()+ "-i \"all\""
         ));
         return createDeployment(clusterId, deploymentRequest);
     }

@@ -11,17 +11,20 @@ import {
   NbSidebarService,
   NbUserModule,
   NbInputModule,
+  NbIconModule
 } from '@nebular/theme';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {HeaderComponent} from './header/header.component';
 import {RouterModule} from '@angular/router';
 import { ResourceSelectorComponent } from './resource-selector/resource-selector.component';
 import {FormsModule} from "@angular/forms";
 import { ResourceTypeSelectorComponent } from './resource-type-selector/resource-type-selector.component';
+import { CustomActionsComponent } from './custom-actions/custom-actions.component';
 
 
 
 @NgModule({
-  declarations: [HeaderComponent, ResourceSelectorComponent, ResourceTypeSelectorComponent],
+  declarations: [HeaderComponent, ResourceSelectorComponent, ResourceTypeSelectorComponent, CustomActionsComponent],
   imports: [
     CommonModule,
     NbLayoutModule,
@@ -33,13 +36,16 @@ import { ResourceTypeSelectorComponent } from './resource-type-selector/resource
     RouterModule,
     NbAutocompleteModule,
     FormsModule,
-    NbInputModule
+    NbInputModule,
+    NbIconModule,
+    NbEvaIconsModule
   ],
   providers: [],
   exports: [
     HeaderComponent,
     ResourceSelectorComponent,
     ResourceTypeSelectorComponent,
+    CustomActionsComponent,
   ]
 })
 export class ComponentsModule { }

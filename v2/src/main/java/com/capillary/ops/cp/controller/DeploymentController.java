@@ -24,18 +24,6 @@ public class DeploymentController {
     DeploymentFacade deploymentFacade;
 
     /**
-     * Create a new Deployment for latest definition of this cluster
-     *
-     * @param clusterId         Cluster Id
-     * @param deploymentRequest Request Params for deployments
-     * @return The Deployment Log Object
-     */
-    @PostMapping
-    DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
-        return deploymentFacade.createDeployment(clusterId, deploymentRequest);
-    }
-
-    /**
      * Get log for the deployment
      *
      * @param id Deployment Id

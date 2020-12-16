@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
+import com.capillary.ops.cp.facade.StackFacade;
 import com.capillary.ops.cp.facade.SubscriptionFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.capillary.ops.cp.service.StackAutoCompleteService;
@@ -40,6 +41,9 @@ public class UiStackController {
 
     @Autowired
     private AclService aclService;
+
+    @Autowired
+    private StackFacade stackFacade;
 
     @GetMapping("{stackName}/clusters")
     public List<AbstractCluster> getClusters(@PathVariable String stackName) {
@@ -100,10 +104,10 @@ public class UiStackController {
         return subscriptionFacade.createSubscription(subscription);
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #stackName, null)")
     @PostMapping("{stackName}/toggleRelease")
     public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
-        return stackController.toggleRelease(stackName, toggleRelease);
+        return stackFacade.toggleRelease(toggleRelease);
     }
 
 }

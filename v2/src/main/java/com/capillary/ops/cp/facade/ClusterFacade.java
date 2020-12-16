@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.facade;
 
+import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
@@ -11,12 +12,20 @@ import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
+import com.capillary.ops.deployer.bo.Environment;
 import com.capillary.ops.deployer.bo.KubeApplicationDetails;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.utils.DeployerUtil;
+import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.CharStreams;
 import com.jcabi.aspects.Loggable;
+import com.samskivert.mustache.Mustache;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.ObjectReference;
+import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
@@ -25,11 +34,14 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.CronJobList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -176,6 +188,46 @@ public class ClusterFacade {
         return true;
     }
 
+    public String createUserServiceAccount(String clusterId) {
+        K8sCredentials credentials = k8sCredentialsRepository.findOneByClusterId(clusterId).get();
+        KubernetesClient kubernetesClient = getKubernetesClient(credentials);
+        String saName = DeployerUtil.getUser().getName().split("@")[0];
+
+        ServiceAccount serviceAccount = kubernetesClient.serviceAccounts().inNamespace("default").withName(saName).get();
+
+        if (serviceAccount == null) {
+            kubernetesClient.serviceAccounts()
+                    .createOrReplaceWithNew()
+                    .withNewMetadata()
+                    .withNamespace("default")
+                    .withName(saName)
+                    .withLabels(ImmutableMap.of("ccowned", "true"))
+                    .endMetadata().done();
+            serviceAccount = kubernetesClient.serviceAccounts().inNamespace("default").withName(saName).get();
+        }
+
+        String tokenSecretName = serviceAccount.getSecrets().get(0).getName();
+        Map<String, String> secretData = kubernetesClient.secrets().inNamespace("default")
+                .withName(tokenSecretName).get().getData();
+        String cacert = secretData.get("ca.crt");
+        String token = new String(Base64.getDecoder().decode(secretData.get("token").getBytes()));
+        String kubeconfig = Mustache.compiler().escapeHTML(false).compile(getKubeconfigTemplate()).execute(ImmutableMap.of("CACERT", cacert,
+                "SERVER", credentials.getKubernetesApiEndpoint(),
+                "TOKEN", token
+        ));
+        return kubeconfig;
+    }
+
+    private KubernetesClient getKubernetesClient(K8sCredentials credentials) {
+        return new DefaultKubernetesClient(
+                new ConfigBuilder()
+                        .withMasterUrl(credentials.getKubernetesApiEndpoint())
+                        .withOauthToken(credentials.getKubernetesToken())
+                        .withTrustCerts(true)
+                        .build());
+    }
+
+
     public Deployment getApplicationData(String clusterId, String key, String value) {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
@@ -314,5 +366,18 @@ public class ClusterFacade {
         }
 
         return overrideService.delete(clusterId, resourceType, resourceName);
+    }
+
+    private String getKubeconfigTemplate() {
+        try {
+            String template =
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    App.class.getClassLoader().getResourceAsStream("cc/kubeconfig.template"),
+                                    Charsets.UTF_8));
+            return template;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

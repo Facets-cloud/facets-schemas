@@ -3,8 +3,11 @@ package com.capillary.ops.deployer.controller;
 import com.capillary.ops.deployer.bo.ErrorDetails;
 import com.capillary.ops.deployer.exceptions.NoSuchInfrastructureResourceException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.github.alturkovic.lock.exception.LockNotAvailableException;
 import com.mongodb.MongoWriteException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,8 @@ import java.util.Optional;
 @RestController
 @ControllerAdvice
 public class ErrorController {
+
+  private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
   @ExceptionHandler(NoSuchElementException.class)
   public ResponseEntity<ErrorDetails> applicationAlreadyExists(
@@ -48,6 +53,7 @@ public class ErrorController {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorDetails> applicationAlreadyExists(
           Exception ex, WebRequest request) throws Exception {
+    logger.error("Internal Server Error", ex);
     return new ResponseEntity<>(
             new ErrorDetails(ex.getMessage(), "500"), HttpStatus.INTERNAL_SERVER_ERROR);
   }
