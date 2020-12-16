@@ -11,8 +11,8 @@ phases:
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/schema capillary-cloud-tf/schema
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/seed_data capillary-cloud-tf/seed_data
       - if [ -d "$CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/database_views" ]; then cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/database_views capillary-cloud-tf/database_views; fi
-      - python3 capillary-cloud-tf/tfaws/scripts/merge_overrides.py
-      - cd capillary-cloud-tf/tfaws/
+      - python3 capillary-cloud-tf/$CLOUD_TF_PROVIDER/scripts/merge_overrides.py
+      - cd capillary-cloud-tf/$CLOUD_TF_PROVIDER/
       - sed -i s/STATE_BUCKET/$TF_VAR_cc_tf_state_bucket/g backend.tf
       - sed -i s/STATE_REGION/$TF_VAR_cc_tf_state_region/g backend.tf
       - sed -i s/STATE_DYNAMO_TABLE/$TF_VAR_cc_tf_dynamo_table/g backend.tf
@@ -27,5 +27,8 @@ phases:
       - python3 scripts/report.py
 artifacts:
   files:
-    - capillary-cloud-tf/tfaws/fetched_builds/**/*
-    - capillary-cloud-tf/tfaws/*.json
+    - capillary-cloud-tf/$CLOUD_TF_PROVIDER/fetched_builds/**/*
+    - capillary-cloud-tf/$CLOUD_TF_PROVIDER/*.json
+cache:
+  paths:
+    - capillary-cloud-tf/$CLOUD_TF_PROVIDER/.terraform/**/*

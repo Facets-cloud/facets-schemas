@@ -36,6 +36,7 @@ import { ExcecutePodActionDialogComponent } from './deployment-status/excecute-p
 import { ExecutedActionsComponent, DialogActionInfoComponent, ButtonActionInfoComponent } from './application-page/executed-actions/executed-actions.component';
 import { AlertingComponent, AlertingEnableButtonComponent, NewRelicAlertLinkViewComponent } from './application-page/alerting/alerting.component';
 import { TestBuildDetailsComponent } from './application-page/test-build-details/test-build-details.component';
+import { SigninComponent } from './signin/signin.component';
 @NgModule({
   imports: [
     PagesRoutingModule,
@@ -107,6 +108,7 @@ import { TestBuildDetailsComponent } from './application-page/test-build-details
     TestBuildDetailsComponent,
     ApplicationMetricsComponent,
     ApplicationMetricsAllComponent,
+    SigninComponent,
   ],
   entryComponents: [BuildDialogComponent, ButtonDownloadComponent, PodActionsColumnComponent,
     ExcecutePodActionDialogComponent, DialogActionInfoComponent, ButtonActionInfoComponent],

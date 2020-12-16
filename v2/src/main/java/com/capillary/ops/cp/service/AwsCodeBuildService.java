@@ -104,6 +104,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String SUBSTACK_SUBDIRECTORY_PREFIX = "SUBSTACK_SUBDIRECTORY_";
     public static final String STACK_NAME = "STACK_NAME";
     private static final String CLUSTER_NAME = "CLUSTER_NAME";
+    private static final String CLOUD_TF_PROVIDER = "CLOUD_TF_PROVIDER";
     private static final String CC_TF_DYNAMO_TABLE_LABEL = "TF_VAR_cc_tf_dynamo_table";
 
 
@@ -142,6 +143,9 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Autowired
     private StackService stackService;
+
+    @Autowired
+    private CloudTFImplementationSelector tfImplementationSelector;
 
     @PostConstruct
     public void test(){
@@ -199,6 +203,8 @@ public class AwsCodeBuildService implements TFBuildService {
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CLOUD_TF_PROVIDER).value(tfImplementationSelector.selectTFProvider(cluster))
+                .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
@@ -228,7 +234,7 @@ public class AwsCodeBuildService implements TFBuildService {
                 break;
         }
 
-        String primarySourceVersion = "external-tool";
+        String primarySourceVersion = "external-tool-cn";
 
         if (!StringUtils.isEmpty(deploymentRequest.getOverrideCCVersion()) &&
                 cluster.getStackName().equalsIgnoreCase("cc-stack-cctesting")) {
@@ -402,10 +408,10 @@ public class AwsCodeBuildService implements TFBuildService {
 //    }
 //
 //    @Override
-    private Map<String, Artifact> getDeploymentReport(String runId) {
+    private Map<String, Artifact> getDeploymentReport(String tfProvider, String runId) {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
         try {
-            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/artifacts.json", runId.split(":")[1]);
+            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/%s/artifacts.json", runId.split(":")[1], tfProvider);
             String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
             return new Gson().fromJson(report, new TypeToken<Map<String, Artifact>>(){}.getType());
         } catch (Throwable e) {
@@ -429,7 +435,10 @@ public class AwsCodeBuildService implements TFBuildService {
                 List<TerraformChange> terraformChanges = getTerraformChanges(streamName);
                 deploymentLog.setStatus(build.buildStatus());
                 deploymentLog.setChangesApplied(terraformChanges);
-                Map<String, Artifact> artifactMap = getDeploymentReport(build.id());
+                Map<String, String> envVars
+                  = build.environment().environmentVariables().stream().collect(Collectors.toMap(x -> x.name(), x -> x.value()));
+                String tfProvider = envVars.getOrDefault("CLOUD_TF_PROVIDER", "tfaws");
+                Map<String, Artifact> artifactMap = getDeploymentReport(tfProvider, build.id());
                 List<AppDeployment> appDeployments = terraformChanges.stream()
                         .filter(x -> x.getResourcePath().contains("module.application.helm_release"))
                         .map(x -> new AppDeployment(x.getResourceKey(), artifactMap.get(x.getResourceKey())))
@@ -573,10 +582,14 @@ public class AwsCodeBuildService implements TFBuildService {
     private String getBuildSpec(DeploymentRequest deploymentRequest) {
         try {
             String buildSpecYaml =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
-                                    Charsets.UTF_8));
+                CharStreams.toString(
+                    new InputStreamReader(
+                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                            Charsets.UTF_8));
+            if(deploymentRequest.getOverrideBuildSteps() == null ||
+                    deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                return buildSpecYaml;
+            }
             Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
             YAMLMapper yamlMapper = new YAMLMapper();
             yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
