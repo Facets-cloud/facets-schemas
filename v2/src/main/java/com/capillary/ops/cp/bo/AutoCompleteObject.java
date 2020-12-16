@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.*;
 
 @Document
-@CompoundIndex(def = "{'stackName':1, 'resourceType': 1}", name = "per_stack_one_resourceType")
+@CompoundIndex(def = "{'stackName':1, 'resourceType': 1}", name = "per_stack_one_resourceType", unique = true)
 public class AutoCompleteObject {
 
     public AutoCompleteObject(String stackName, String resourceType) {
