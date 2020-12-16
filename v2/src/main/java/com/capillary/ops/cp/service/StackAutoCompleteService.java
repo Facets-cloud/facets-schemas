@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,9 @@ public class StackAutoCompleteService {
                 continue;
             }
             AutoCompleteObject autoCompleteObject = new AutoCompleteObject(stackName, resourceType);
+            Optional<AutoCompleteObject> existingObject = autoCompleteObjectRepository.findOneByStackNameAndResourceType(
+                    stackName, resourceType);
+            existingObject.ifPresent(x -> autoCompleteObject.setId(x.getId()));
             String resourceTypePath = location + "/" + resourceType + "/instances/";
             String[] instances = getDirectoriesOrFiles(resourceTypePath, false);
             if (instances != null) {
