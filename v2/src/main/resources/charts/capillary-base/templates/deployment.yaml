@@ -117,6 +117,8 @@ spec:
                 name: "{{ $releaseName }}-credentials"
                 key: {{ $k }}
 {{- end }}
+          - name: BUILD_ID
+            value: {{ .Values.buildId }}
 {{- if .Values.enableLivenessTCP}}
 {{- template "livenessTCP" . }}
 {{- end }}
