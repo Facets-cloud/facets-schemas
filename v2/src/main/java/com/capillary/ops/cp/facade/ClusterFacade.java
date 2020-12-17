@@ -12,7 +12,6 @@ import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
-import com.capillary.ops.deployer.bo.Environment;
 import com.capillary.ops.deployer.bo.KubeApplicationDetails;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -22,9 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.io.CharStreams;
 import com.jcabi.aspects.Loggable;
 import com.samskivert.mustache.Mustache;
-import io.fabric8.kubernetes.api.model.Container;
-import io.fabric8.kubernetes.api.model.ObjectMeta;
-import io.fabric8.kubernetes.api.model.ObjectReference;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
@@ -78,6 +74,9 @@ public class ClusterFacade {
 
     @Autowired
     private SnapshotInfoRepository snapshotInfoRepository;
+
+    @Autowired
+    private AutoSignoffScheduleService autoSignoffScheduleService;
 
     private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
 
@@ -149,8 +148,11 @@ public class ClusterFacade {
         Map<String, String> secrets = clusterHelper.validateClusterVars(request.getClusterVars(), stack.get());
         cluster.setUserInputVars(secrets);
         cluster.setSchedules(request.getSchedules());
+        cluster.setEnableAutoSignOff(request.getEnableAutoSignOff());
+        cluster.setAutoSignOffSchedule(request.getAutoSignOffSchedule());
         AbstractCluster save = cpClusterRepository.save(cluster);
         releaseScheduleService.upsertSchedule(save);
+        autoSignoffScheduleService.updateSchedule(save);
         return this.getCluster(save.getId());
     }
 

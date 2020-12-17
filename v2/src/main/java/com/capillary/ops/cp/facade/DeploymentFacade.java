@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
+import com.capillary.ops.cp.bo.notifications.SignOffNotification;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
@@ -584,9 +585,11 @@ public class DeploymentFacade {
     }
 
     public DeploymentLog signOff(String clusterId, String deploymentId) {
+        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         DeploymentLog deploymentLog = deploymentLogRepository.findById(deploymentId).get();
         if(deploymentLog.getStatus().equals(StatusType.SUCCEEDED)) {
             deploymentLog.setSignedOff(true);
+            notificationService.publish(new SignOffNotification(cluster.getStackName(), cluster.getName(), deploymentLog));
             return deploymentLogRepository.save(deploymentLog);
         } else {
             throw new RuntimeException("Cannot signoff failed deployment");

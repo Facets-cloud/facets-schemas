@@ -43,6 +43,10 @@ public abstract class AbstractCluster {
 
     private Boolean requireSignOff;
 
+    private String autoSignOffSchedule;
+
+    private Boolean enableAutoSignOff = false;
+
     @Transient
     private Map<String, String> commonEnvironmentVariables = new HashMap<>();
 
@@ -165,5 +169,28 @@ public abstract class AbstractCluster {
 
     public void setRequireSignOff(Boolean requireSignOff) {
         this.requireSignOff = requireSignOff;
+    }
+
+    public String getAutoSignOffSchedule() {
+        if(! enableAutoSignOff) {
+            return null;
+        }
+        return autoSignOffSchedule;
+    }
+
+    public void setAutoSignOffSchedule(String autoSignOffSchedule) {
+        if(autoSignOffSchedule != null) {
+            this.autoSignOffSchedule = autoSignOffSchedule;
+        }
+    }
+
+    public Boolean getEnableAutoSignOff() {
+        return enableAutoSignOff;
+    }
+
+    public void setEnableAutoSignOff(Boolean enableAutoSignOff) {
+        if (enableAutoSignOff != null) {
+            this.enableAutoSignOff = enableAutoSignOff;
+        }
     }
 }
