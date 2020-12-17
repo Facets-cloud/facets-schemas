@@ -55,6 +55,7 @@ public class AutoSignoffScheduleService {
      * @param c           The cluster object
      */
     public void updateSchedule(AbstractCluster c) {
+
         if (! c.getEnableAutoSignOff() && schedules.containsKey(c.getId())) {
             schedules.get(c.getId()).scheduledFuture.cancel(false);
         }
