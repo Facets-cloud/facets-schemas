@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Profile("!dev")
-@Service
+//@Service
 public class ScheduledSystemChartSyncService {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduledSystemChartSyncService.class);

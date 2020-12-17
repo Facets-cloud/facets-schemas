@@ -22,6 +22,8 @@ public abstract class ClusterRequest {
     private Map<String, String> clusterVars = new HashMap<>();
     private double k8sRequestsToLimitsRatio = 1;
     private Map<ReleaseType, String> schedules;
+    private String autoSignOffSchedule;
+    private Boolean enableAutoSignOff;
 
     public ClusterRequest() {
     }
@@ -103,5 +105,21 @@ public abstract class ClusterRequest {
 
     public void setRequireSignOff(Boolean requireSignOff) {
         this.requireSignOff = requireSignOff;
+    }
+
+    public String getAutoSignOffSchedule() {
+        return autoSignOffSchedule;
+    }
+
+    public void setAutoSignOffSchedule(String autoSignOffSchedule) {
+        this.autoSignOffSchedule = autoSignOffSchedule;
+    }
+
+    public Boolean getEnableAutoSignOff() {
+        return enableAutoSignOff;
+    }
+
+    public void setEnableAutoSignOff(Boolean enableAutoSignOff) {
+        this.enableAutoSignOff = enableAutoSignOff;
     }
 }
