@@ -586,10 +586,22 @@ public class DeploymentFacade {
 
     public DeploymentLog signOff(String clusterId, String deploymentId) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        Stack stack = stackFacade.getStackByName(cluster.getStackName());
         DeploymentLog deploymentLog = deploymentLogRepository.findById(deploymentId).get();
         if(deploymentLog.getStatus().equals(StatusType.SUCCEEDED)) {
+            Optional<DeploymentLog> currentSignedOffDeploymentOptional =
+                    deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
+                            cluster.getId(), StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
+            DeploymentLog currentSignedOffDeployment = null;
+            if (currentSignedOffDeploymentOptional.isPresent()) {
+                currentSignedOffDeployment = currentSignedOffDeploymentOptional.get();
+                if (deploymentLog.getCreatedOn().getTime() < currentSignedOffDeployment.getCreatedOn().getTime() ||
+                        deploymentLog.getStackVersion().equalsIgnoreCase(currentSignedOffDeployment.getStackVersion())) {
+                    throw new RuntimeException("Cannot signoff older deployment");
+                }
+            }
             deploymentLog.setSignedOff(true);
-            notificationService.publish(new SignOffNotification(cluster.getStackName(), cluster.getName(), deploymentLog));
+            notificationService.publish(new SignOffNotification(stack, cluster, deploymentLog, currentSignedOffDeployment));
             return deploymentLogRepository.save(deploymentLog);
         } else {
             throw new RuntimeException("Cannot signoff failed deployment");
