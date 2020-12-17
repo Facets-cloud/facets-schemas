@@ -55,9 +55,9 @@ public class AutoSignoffScheduleService {
      * @param c           The cluster object
      */
     public void updateSchedule(AbstractCluster c) {
-        if(!enabled || !c.getEnableAutoSignOff()) {
-            return;
-        }
+//        if(!enabled || !c.getEnableAutoSignOff()) {
+//            return;
+//        }
 
         String key = c.getId();
         String cron = c.getAutoSignOffSchedule();

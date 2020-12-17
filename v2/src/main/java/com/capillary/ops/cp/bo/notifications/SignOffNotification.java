@@ -1,22 +1,27 @@
 package com.capillary.ops.cp.bo.notifications;
 
+import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.VCS;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignOffNotification implements Notification {
     private DeploymentLog deploymentLog;
-    private String stackName;
-    private String clusterName;
+    private AbstractCluster cluster;
+    private DeploymentLog lastSignedOff;
+    private Stack stack;
 
     public SignOffNotification() {
     }
 
-    public SignOffNotification(String stackName, String clusterName, DeploymentLog deploymentLog) {
+    public SignOffNotification(Stack stack, AbstractCluster cluster, DeploymentLog deploymentLog, DeploymentLog lastSignedOff) {
         this.deploymentLog = deploymentLog;
-        this.stackName = stackName;
-        this.clusterName = clusterName;
+        this.cluster = cluster;
+        this.lastSignedOff = lastSignedOff;
+        this.stack = stack;
     }
 
     @Override
@@ -27,7 +32,8 @@ public class SignOffNotification implements Notification {
     @Override
     public String getNotificationMessage() {
         return "Version " + deploymentLog.getStackVersion().substring(0, 7) + " of stack "
-                + this.stackName + " has been signed-off" + " from " + this.clusterName;
+                + this.cluster.getStackName() + " has been signed-off" + " from " + this.cluster.getName()
+                + ". Diff: " + getDiffUrl();
     }
 
     @Override
@@ -42,6 +48,22 @@ public class SignOffNotification implements Notification {
 
     @Override
     public String getStackName() {
-        return stackName;
+        return this.cluster.getStackName();
     }
+
+    private String getDiffUrl() {
+        if (this.lastSignedOff == null) {
+            return "NA";
+        }
+        if (this.stack.getVcs() == VCS.GITHUB) {
+            return this.stack.getVcsUrl().replace(".git", "") + "/compare/"
+                    + this.lastSignedOff.getStackVersion() + "..." + deploymentLog.getStackVersion();
+        } else if (this.stack.getVcs() == VCS.BITBUCKET) {
+            return this.stack.getVcsUrl().replace(".git", "") + "/compare/" +
+                    deploymentLog.getStackVersion() + "%0" + this.lastSignedOff.getStackVersion();
+        }
+
+        return "NA";
+    }
+
 }
