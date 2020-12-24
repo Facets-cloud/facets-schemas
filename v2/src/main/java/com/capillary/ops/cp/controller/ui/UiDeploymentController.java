@@ -130,7 +130,7 @@ public class UiDeploymentController {
     }
 
     @PreAuthorize("hasRole('CC-ADMIN')")
-    @PostMapping("/recipes/mongo/resize")
+    @PostMapping("/recipes/deployment/hotfix")
     DeploymentLog runHotfixDeploymentRecipe(@PathVariable String clusterId,
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runHotfixDeploymentRecipe(clusterId, deploymentRecipe);

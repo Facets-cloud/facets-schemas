@@ -258,6 +258,12 @@
           <div class="col-sm-6">
             <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="application" (onResourceSelect)="appSelected($event)"></app-resource-selector>
           </div>
+                    <div class="col-sm-6">
+            <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="cronjob" (onResourceSelect)="appSelected($event)"></app-resource-selector>
+          </div>
+                    <div class="col-sm-6">
+            <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="statefulsets" (onResourceSelect)="appSelected($event)"></app-resource-selector>
+          </div>
         </div>
     </nb-card-body>
     <nb-card-footer>

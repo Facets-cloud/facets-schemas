@@ -47,6 +47,7 @@ export { GrantedAuthority } from './models/granted-authority';
 export { HPA } from './models/hpa';
 export { HPADetails } from './models/hpadetails';
 export { HealthCheck } from './models/health-check';
+export { HotfixDeploymentRecipe } from './models/hotfix-deployment-recipe';
 export { InputStream } from './models/input-stream';
 export { InputStreamResource } from './models/input-stream-resource';
 export { K8sCredentials } from './models/k8s-credentials';
