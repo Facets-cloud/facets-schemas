@@ -10,6 +10,7 @@ import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
+import com.capillary.ops.cp.bo.recipes.HotfixDeploymentRecipe;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
@@ -741,5 +742,30 @@ public class DeploymentFacade {
 
     public Map<String, String> getClusterResourceDetails(String clusterId) {
         return clusterResourceRefreshService.getClusterResourceDetails(clusterId);
+    }
+
+    public DeploymentLog runHotfixDeploymentRecipe(String clusterId, HotfixDeploymentRecipe hotfixDeploymentRecipe){
+        List<String> overrideBuildSteps = hotfixDeploymentRecipe.getResourceTypeToResourceNameMap()
+                .entrySet().stream().map(x -> getTFCommand(x)).collect(Collectors.toList());
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(overrideBuildSteps);
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
+    private String getTFCommand(Map.Entry<String, String> resource) {
+        StringBuilder command = new StringBuilder();
+        Map<String, String> tfModulePath = new HashMap<>();
+        tfModulePath.put("application","module.application.helm_release.application");
+        tfModulePath.put("cronjob","module.application.helm_release.cronjob");
+        tfModulePath.put("statefulsets","module.application.helm_release.statefulset");
+
+        command.append("terraform apply -target '");
+        command.append(tfModulePath.get(resource.getKey()));
+        command.append("[\\\"");
+        command.append(resource.getValue());
+        command.append("\\\"]'");
+        command.append(" -auto-approve");
+        return command.toString();
     }
 }
