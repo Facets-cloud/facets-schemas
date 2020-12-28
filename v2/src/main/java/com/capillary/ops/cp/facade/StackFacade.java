@@ -1,9 +1,7 @@
 package com.capillary.ops.cp.facade;
 
-import com.capillary.ops.cp.bo.AuditLog;
-import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.bo.StackFile;
-import com.capillary.ops.cp.bo.ToggleRelease;
+import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.AuditLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.GitService;
@@ -49,6 +47,9 @@ public class StackFacade {
 
     @Autowired
     private FlockNotifier flockNotifier;
+
+    @Autowired
+    private ArtifactFacade artifactFacade;
 
     @Value("${flock.notification.pauseReleases.endpoint}")
     private String pauseReleaseNotifier;
@@ -141,4 +142,10 @@ public class StackFacade {
     }
 
 
+    public DeploymentContext getLocalDeploymentContext(String stackName) {
+        Map<String, Map<String, Artifact>> allArtifacts = artifactFacade.getAllArtifacts(BuildStrategy.QA, ReleaseType.RELEASE);
+        DeploymentContext deploymentContext = new DeploymentContext();
+        deploymentContext.setArtifacts(allArtifacts);
+        return deploymentContext;
+    }
 }
