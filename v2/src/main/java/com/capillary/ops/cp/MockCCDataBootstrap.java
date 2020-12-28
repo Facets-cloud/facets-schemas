@@ -1,8 +1,8 @@
 package com.capillary.ops.cp;
 
 import com.amazonaws.regions.Regions;
+import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
-import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.deployer.bo.User;
@@ -12,11 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TimeZone;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Profile("dev")
 @Component
@@ -42,13 +38,12 @@ public class MockCCDataBootstrap {
 
     @PostConstruct
     private void init() {
-
         Stack stack = new Stack();
         stack.setName("crm");
         stack.setUser("ambar-cap");
         stack.setAppPassword("935d4d4ee673a9531a7d2241f1e9d1ddbbbf0ee1");
         stack.setRelativePath("/");
-        stack.setVcs(VCS.BITBUCKET);
+        stack.setVcs(VCS.GITHUB);
         stack.setVcsUrl("tmp");
         StackFile.VariableDetails v1 = new StackFile.VariableDetails(false,"test1");
         StackFile.VariableDetails v2 = new StackFile.VariableDetails(true,"test2");
@@ -131,6 +126,7 @@ public class MockCCDataBootstrap {
         user.setUserName(adminUser);
         List<String> roles = new ArrayList<>();
         roles.add("CRM_WRITE");
+        roles.add("CC-ADMIN");
         user.setRoles(roles);
         userRepository.save(user);
     }

@@ -2,6 +2,7 @@ package com.capillary.ops.cp.service;
 
 import com.capillary.ops.cp.bo.AutoCompleteObject;
 import com.capillary.ops.cp.repository.AutoCompleteObjectRepository;
+import com.capillary.ops.cp.repository.StackRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,6 +25,12 @@ public class StackAutoCompleteService {
 
     @Autowired
     AutoCompleteObjectRepository autoCompleteObjectRepository;
+
+    @Autowired
+    StackRepository stackRepository;
+
+    @Autowired
+    StackService stackService;
 
     /**
      * This function will parse the checked out folder and populate the autocomplete collection
@@ -64,8 +72,13 @@ public class StackAutoCompleteService {
      * @return
      */
     public Set<String> getResourcesSuggestion(String stackName, String resourceType) {
-        List<AutoCompleteObject> allByStackNameAndResourceType = autoCompleteObjectRepository.findAllByStackNameAndResourceType(stackName, resourceType);
-        return allByStackNameAndResourceType.get(0).getResourceNames();
+        List<String> stacks = stackService.getSubstackNames(stackName);
+        stacks.add(stackName);
+        List<AutoCompleteObject> allByStackNameAndResourceType = autoCompleteObjectRepository
+                .findAllByStackNameInAndResourceType(stacks, resourceType);
+        Set<String> resourceNames = new HashSet<>();
+        allByStackNameAndResourceType.forEach(autoCompleteObject -> resourceNames.addAll(autoCompleteObject.getResourceNames()));
+        return resourceNames;
     }
 
     /**
@@ -75,9 +88,10 @@ public class StackAutoCompleteService {
      * @return
      */
     public Set<String> getResourceTypesSuggestion(String stackName) {
-        List<AutoCompleteObject> allByStackName = autoCompleteObjectRepository.findAllByStackName(stackName);
-        Set<String> resourceTypes = allByStackName.stream().map(AutoCompleteObject::getResourceType).collect(Collectors.toSet());
-        return resourceTypes;
+        List<String> stacks = stackService.getSubstackNames(stackName);
+        stacks.add(stackName);
+        List<AutoCompleteObject> allByStackName = autoCompleteObjectRepository.findAllByStackNameIn(stacks);
+        return allByStackName.stream().map(AutoCompleteObject::getResourceType).collect(Collectors.toSet());
     }
 
     /**
