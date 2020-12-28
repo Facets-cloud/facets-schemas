@@ -30,6 +30,7 @@ export { Deployment } from './models/deployment';
 export { DeploymentLog } from './models/deployment-log';
 export { DeploymentRequest } from './models/deployment-request';
 export { DeploymentStatusDetails } from './models/deployment-status-details';
+export { ESDRDeploymentRecipe } from './models/esdrdeployment-recipe';
 export { EcrTokenMap } from './models/ecr-token-map';
 export { Endpoint } from './models/endpoint';
 export { Environment } from './models/environment';

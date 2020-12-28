@@ -154,7 +154,7 @@ export class ClusterReleasesComponent implements OnInit {
           }
           console.log(this.payload);
           try {
-            this.deploymentService.createDeploymentUsingPOST1({
+            this.deploymentService.createDeploymentUsingPOST({
               clusterId: this.clusterId,
               deploymentRequest: this.payload
             }).subscribe(c => {

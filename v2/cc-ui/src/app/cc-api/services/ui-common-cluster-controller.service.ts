@@ -22,6 +22,7 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly createSnapshotUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}';
   static readonly getPinnedSnapshotUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly pinSnapshotUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
+  static readonly getKubeConfigUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/kubeconfig';
   static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly deleteOverridesUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/overrides/{resourceType}/{resourceName}';
@@ -251,6 +252,44 @@ class UiCommonClusterControllerService extends __BaseService {
   pinSnapshotUsingPOST1(params: UiCommonClusterControllerService.PinSnapshotUsingPOST1Params): __Observable<SnapshotInfo> {
     return this.pinSnapshotUsingPOST1Response(params).pipe(
       __map(_r => _r.body as SnapshotInfo)
+    );
+  }
+
+  /**
+   * getKubeConfig
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getKubeConfigUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/kubeconfig`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * getKubeConfig
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getKubeConfigUsingGET(clusterId: string): __Observable<string> {
+    return this.getKubeConfigUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as string)
     );
   }
 
