@@ -71,6 +71,9 @@ public class MockCCDataBootstrap {
         cluster.setAwsRegion(Regions.US_EAST_1.getName());
         cluster.setReleaseStream(BuildStrategy.QA);
         cluster.setStackName(stack.getName());
+        cluster.getClusterMetadata().put(ClusterMeta.PROM_URL, "prometheus.crm-nightly-new.cctools.capillarytech.com");
+        cluster.getClusterMetadata().put(ClusterMeta.AM_URL, "alertmanager.crm-nightly-new.cctools.capillarytech.com");
+        cluster.getClusterMetadata().put(ClusterMeta.PROM_PASS, "dG9vbHN1c2VyOlBGM2pEYXdUWU0=");
         cpClusterRepository.save(cluster);
 
         K8sCredentials x = new K8sCredentials();

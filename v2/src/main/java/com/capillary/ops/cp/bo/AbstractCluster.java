@@ -60,6 +60,8 @@ public abstract class AbstractCluster {
 
     private double k8sRequestsToLimitsRatio = 1;
 
+    private Map<ClusterMeta, String> clusterMetadata = new HashMap<>();
+
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
         this.cloud = cloud;
@@ -192,5 +194,13 @@ public abstract class AbstractCluster {
         if (enableAutoSignOff != null) {
             this.enableAutoSignOff = enableAutoSignOff;
         }
+    }
+
+    public Map<ClusterMeta, String> getClusterMetadata() {
+        return clusterMetadata;
+    }
+
+    public void setClusterMetadata(Map<ClusterMeta, String> clusterMetadata) {
+        this.clusterMetadata = clusterMetadata;
     }
 }
