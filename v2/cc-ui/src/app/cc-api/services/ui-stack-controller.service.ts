@@ -8,7 +8,9 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { Stack } from '../models/stack';
+import { Substack } from '../models/substack';
 import { AbstractCluster } from '../models/abstract-cluster';
+import { DeploymentContext } from '../models/deployment-context';
 import { Subscription } from '../models/subscription';
 import { ToggleRelease } from '../models/toggle-release';
 
@@ -21,14 +23,16 @@ import { ToggleRelease } from '../models/toggle-release';
 class UiStackControllerService extends __BaseService {
   static readonly getStacksUsingGET1Path = '/cc-ui/v1/stacks/';
   static readonly createStackUsingPOST1Path = '/cc-ui/v1/stacks/';
+  static readonly createSubStackUsingPOSTPath = '/cc-ui/v1/stacks/substack/{substackName}';
   static readonly getStackUsingGETPath = '/cc-ui/v1/stacks/{stackName}';
   static readonly getClustersUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/clusters';
+  static readonly getLocalDeploymentContextUsingGETPath = '/cc-ui/v1/stacks/{stackName}/localDeploymentContext';
   static readonly getAllSubscriptionsUsingGETPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
   static readonly createSubscriptionUsingPOSTPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
   static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
   static readonly getResourceTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType';
   static readonly getResourcesByTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType/{resourceType}';
-  static readonly toggleReleaseUsingPOSTPath = '/cc-ui/v1/stacks/{stackName}/toggleRelease';
+  static readonly toggleReleaseUsingPOST1Path = '/cc-ui/v1/stacks/{stackName}/toggleRelease';
 
   constructor(
     config: __Configuration,
@@ -111,6 +115,44 @@ class UiStackControllerService extends __BaseService {
   }
 
   /**
+   * createSubStack
+   * @param subStack subStack
+   * @return OK
+   */
+  createSubStackUsingPOSTResponse(subStack: Substack): __Observable<__StrictHttpResponse<Substack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = subStack;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/stacks/substack/${encodeURIComponent(substackName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Substack>;
+      })
+    );
+  }
+  /**
+   * createSubStack
+   * @param subStack subStack
+   * @return OK
+   */
+  createSubStackUsingPOST(subStack: Substack): __Observable<Substack> {
+    return this.createSubStackUsingPOSTResponse(subStack).pipe(
+      __map(_r => _r.body as Substack)
+    );
+  }
+
+  /**
    * getStack
    * @param stackName stackName
    * @return OK
@@ -183,6 +225,44 @@ class UiStackControllerService extends __BaseService {
   getClustersUsingGET1(stackName: string): __Observable<Array<AbstractCluster>> {
     return this.getClustersUsingGET1Response(stackName).pipe(
       __map(_r => _r.body as Array<AbstractCluster>)
+    );
+  }
+
+  /**
+   * getLocalDeploymentContext
+   * @param stackName stackName
+   * @return OK
+   */
+  getLocalDeploymentContextUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<DeploymentContext>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(stackName)}/localDeploymentContext`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentContext>;
+      })
+    );
+  }
+  /**
+   * getLocalDeploymentContext
+   * @param stackName stackName
+   * @return OK
+   */
+  getLocalDeploymentContextUsingGET(stackName: string): __Observable<DeploymentContext> {
+    return this.getLocalDeploymentContextUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as DeploymentContext)
     );
   }
 
@@ -400,7 +480,7 @@ class UiStackControllerService extends __BaseService {
 
   /**
    * toggleRelease
-   * @param params The `UiStackControllerService.ToggleReleaseUsingPOSTParams` containing the following parameters:
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
    *
    * - `toggleRelease`: toggleRelease
    *
@@ -408,7 +488,7 @@ class UiStackControllerService extends __BaseService {
    *
    * @return OK
    */
-  toggleReleaseUsingPOSTResponse(params: UiStackControllerService.ToggleReleaseUsingPOSTParams): __Observable<__StrictHttpResponse<ToggleRelease>> {
+  toggleReleaseUsingPOST1Response(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<__StrictHttpResponse<ToggleRelease>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -433,7 +513,7 @@ class UiStackControllerService extends __BaseService {
   }
   /**
    * toggleRelease
-   * @param params The `UiStackControllerService.ToggleReleaseUsingPOSTParams` containing the following parameters:
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
    *
    * - `toggleRelease`: toggleRelease
    *
@@ -441,8 +521,8 @@ class UiStackControllerService extends __BaseService {
    *
    * @return OK
    */
-  toggleReleaseUsingPOST(params: UiStackControllerService.ToggleReleaseUsingPOSTParams): __Observable<ToggleRelease> {
-    return this.toggleReleaseUsingPOSTResponse(params).pipe(
+  toggleReleaseUsingPOST1(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<ToggleRelease> {
+    return this.toggleReleaseUsingPOST1Response(params).pipe(
       __map(_r => _r.body as ToggleRelease)
     );
   }
@@ -483,9 +563,9 @@ module UiStackControllerService {
   }
 
   /**
-   * Parameters for toggleReleaseUsingPOST
+   * Parameters for toggleReleaseUsingPOST1
    */
-  export interface ToggleReleaseUsingPOSTParams {
+  export interface ToggleReleaseUsingPOST1Params {
 
     /**
      * toggleRelease
