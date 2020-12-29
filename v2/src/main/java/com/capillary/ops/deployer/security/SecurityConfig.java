@@ -46,7 +46,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .access("@bitbucketIpAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
-            .antMatchers("/api/**", "/capillarycloud/api/**")
+            .antMatchers("/api/**", "/capillarycloud/api/**", "/cc-ui/**")
             .authenticated()
             .and()
             .oauth2Login()
