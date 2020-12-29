@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("cc-ui/v1/clusters/{clusterId}/deployments")
@@ -113,5 +114,17 @@ public class UiDeploymentController {
     DeploymentLog runMongoResizeRecipe(@PathVariable String clusterId,
                                    @RequestBody MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runMongoResizeRecipe(clusterId, deploymentRecipe);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("/refreshResource")
+    DeploymentLog refreshResource(@PathVariable String clusterId){
+        return deploymentFacade.createClusterResourceDetails(clusterId);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @GetMapping("/getResourceDetails")
+    Map<String, String> getResourceDetails(@PathVariable String clusterId){
+        return deploymentFacade.getClusterResourceDetails(clusterId);
     }
 }

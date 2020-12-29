@@ -28,7 +28,7 @@ class UiStackControllerService extends __BaseService {
   static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
   static readonly getResourceTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType';
   static readonly getResourcesByTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType/{resourceType}';
-  static readonly toggleReleaseUsingPOST1Path = '/cc-ui/v1/stacks/{stackName}/toggleRelease';
+  static readonly toggleReleaseUsingPOSTPath = '/cc-ui/v1/stacks/{stackName}/toggleRelease';
 
   constructor(
     config: __Configuration,
@@ -400,7 +400,7 @@ class UiStackControllerService extends __BaseService {
 
   /**
    * toggleRelease
-   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOSTParams` containing the following parameters:
    *
    * - `toggleRelease`: toggleRelease
    *
@@ -408,7 +408,7 @@ class UiStackControllerService extends __BaseService {
    *
    * @return OK
    */
-  toggleReleaseUsingPOST1Response(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<__StrictHttpResponse<ToggleRelease>> {
+  toggleReleaseUsingPOSTResponse(params: UiStackControllerService.ToggleReleaseUsingPOSTParams): __Observable<__StrictHttpResponse<ToggleRelease>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -433,7 +433,7 @@ class UiStackControllerService extends __BaseService {
   }
   /**
    * toggleRelease
-   * @param params The `UiStackControllerService.ToggleReleaseUsingPOST1Params` containing the following parameters:
+   * @param params The `UiStackControllerService.ToggleReleaseUsingPOSTParams` containing the following parameters:
    *
    * - `toggleRelease`: toggleRelease
    *
@@ -441,8 +441,8 @@ class UiStackControllerService extends __BaseService {
    *
    * @return OK
    */
-  toggleReleaseUsingPOST1(params: UiStackControllerService.ToggleReleaseUsingPOST1Params): __Observable<ToggleRelease> {
-    return this.toggleReleaseUsingPOST1Response(params).pipe(
+  toggleReleaseUsingPOST(params: UiStackControllerService.ToggleReleaseUsingPOSTParams): __Observable<ToggleRelease> {
+    return this.toggleReleaseUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as ToggleRelease)
     );
   }
@@ -483,9 +483,9 @@ module UiStackControllerService {
   }
 
   /**
-   * Parameters for toggleReleaseUsingPOST1
+   * Parameters for toggleReleaseUsingPOST
    */
-  export interface ToggleReleaseUsingPOST1Params {
+  export interface ToggleReleaseUsingPOSTParams {
 
     /**
      * toggleRelease

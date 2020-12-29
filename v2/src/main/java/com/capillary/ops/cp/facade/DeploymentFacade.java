@@ -17,6 +17,7 @@ import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.BaseDRService;
+import com.capillary.ops.cp.service.ClusterResourceRefreshService;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.TFBuildService;
 import com.capillary.ops.cp.service.notification.NotificationService;
@@ -96,6 +97,9 @@ public class DeploymentFacade {
 
     @Autowired
     private AuditLogRepository auditLogRepository;
+
+    @Autowired
+    private ClusterResourceRefreshService clusterResourceRefreshService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -578,6 +582,8 @@ public class DeploymentFacade {
         AbstractCluster cluster = clusterFacade.getCluster(deploymentLog.getClusterId());
         deploymentLog = tfBuildService.loadDeploymentStatus(deploymentLog, true);
 
+        clusterResourceRefreshService.saveClusterResourceDetails(callback.getCodebuidId(), deploymentLog.getStatus());
+
         if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
             deploymentLog.getAppDeployments().stream().forEach(
                     x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
@@ -722,5 +728,18 @@ public class DeploymentFacade {
         callback.setInstanceName(instanceName);
         DRResultNotification drResultNotification = new DRResultNotification(callback, cluster);
         notificationService.publish(drResultNotification);
+    }
+
+    public DeploymentLog createClusterResourceDetails(final String clusterId){
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(Collections.singletonList("python3 scripts/parse_resource.py"));
+        DeploymentLog deploymentLog = createDeployment(clusterId, deploymentRequest);
+        clusterResourceRefreshService.refreshResourceCodeBuildSave(deploymentLog);
+        return deploymentLog;
+    }
+
+    public Map<String, String> getClusterResourceDetails(String clusterId) {
+        return clusterResourceRefreshService.getClusterResourceDetails(clusterId);
     }
 }
