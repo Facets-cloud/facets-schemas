@@ -1,6 +1,7 @@
 export { ApplicationControllerService } from './services/application-controller.service';
 export { CallbackControllerService } from './services/callback-controller.service';
 export { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
+export { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 export { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 export { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 export { UiStackControllerService } from './services/ui-stack-controller.service';

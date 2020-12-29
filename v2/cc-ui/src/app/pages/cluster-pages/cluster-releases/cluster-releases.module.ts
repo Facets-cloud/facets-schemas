@@ -10,6 +10,7 @@ import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
 import { FormsModule } from '@angular/forms';
 import {LayoutsModule} from '../../../layouts/layouts.module';
+import {Ng2SmartTableModule} from 'ng2-smart-table';
 
 
 
@@ -36,6 +37,7 @@ import {LayoutsModule} from '../../../layouts/layouts.module';
     NbSelectModule,
     FormsModule,
     NbInputModule,
+    Ng2SmartTableModule
   ],
   providers: [NbSidebarService, NbDialogService]
 })
