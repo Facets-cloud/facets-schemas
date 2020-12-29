@@ -118,21 +118,7 @@ public class ClusterFacade {
         String url = existing.get().getClusterMetadata().get(ClusterMeta.AM_URL);
         String pass = existing.get().getClusterMetadata().get(ClusterMeta.PROM_PASS);
         JsonObject allAlerts = prometheusService.getOpenAlerts(url, pass);
-        if(allAlerts.get("status").getAsString().equals("success")){
-            JsonArray data = allAlerts.getAsJsonArray("data");
-            data.forEach(x ->
-            {
-                JsonObject obj = x.getAsJsonObject();
-                String state = obj.getAsJsonObject("status").get("state").getAsString();
-                if(state.equals("suppressed")){
-                    String silencedId = obj.getAsJsonObject("status").getAsJsonArray("silencedBy").get(0).getAsString();
-                    JsonObject silenceInfo = prometheusService.getSilenceById(url, pass, silencedId);
-                    if(silenceInfo.get("status").getAsString().equals("success")) {
-                        obj.add("silenceInfo", silenceInfo.getAsJsonObject("data"));
-                    }
-                }
-            });
-        }
+
         return (new Gson()).fromJson(allAlerts, HashMap.class);
     }
 

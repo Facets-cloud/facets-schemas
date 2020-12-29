@@ -27,25 +27,25 @@ public class PrometheusServiceTest {
     private RestTemplate restTemplate = new RestTemplate();
 
     @Test
-    public void simplePayloadShouldWork(){
+    public void simplePayloadShouldWork() {
         SilenceAlarmRequest slr = new SilenceAlarmRequest();
         slr.setComment("Test");
         slr.setSnoozeInHours(3);
-        slr.setLabels(new HashMap<String, String>(){{
+        slr.setLabels(new HashMap<String, String>() {{
             put("label1", "value1");
             put("label2", "value2");
         }});
-        prometheusService.silenceAlert("baseUrl","auth",slr,"AnshulTestCase");
+        prometheusService.silenceAlert("baseUrl", "auth", slr, "AnshulTestCase");
 
         new Verifications() {
 
             {
                 HttpEntity<HashMap> obj;
                 restTemplate
-                        .exchange(anyString, HttpMethod.POST,  obj= withCapture(), String.class);
+                        .exchange(anyString, HttpMethod.POST, obj = withCapture(), String.class);
                 times = 1;
-                assert ((ArrayList)obj.getBody().get("matchers")).size() == 2;
-                assert ((String)obj.getBody().get("comment")).equals("Test");
+                assert ((ArrayList) obj.getBody().get("matchers")).size() == 2;
+                assert ((String) obj.getBody().get("comment")).equals("Test");
             }
         };
     }
@@ -54,7 +54,7 @@ public class PrometheusServiceTest {
     public void emptyURlPassShouldbeHandled() {
         String res = "{\nstatus: \"success\",\ndata: {\nalerts: [\n{\nlabels: {},\nannotations: {\nmessage: \"Kubernetes Volume disk space < 20% available\"\n},\nstate: \"firing\",\nactiveAt: \"2020-12-24T01:17:29.80254035Z\",\nvalue: \"1.1700860481279792e-04\"\n},\n{\nlabels: {\nalertname: \"PVCDiskSpaceAvailableWarning\",\ncluster: \"crm-nightly-new\",\nendpoint: \"https-metrics\",\nentity: \"redis-data-redisk8s-data-cache-master-0\",\ninstance: \"10.250.44.235:10250\",\njob: \"kubelet\",\nmetrics_path: \"/metrics\",\nnamespace: \"default\",\nnode: \"ip-10-250-44-235.ec2.internal\",\npersistentvolumeclaim: \"redis-data-redisk8s-data-cache-master-0\",\nservice: \"prometheus-operator-kubelet\",\nseverity: \"warning\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"[Warning] Kubernetes Volume disk space < 30% available \"\n},\nstate: \"firing\",\nactiveAt: \"2020-12-23T16:24:59.80254035Z\",\nvalue: \"1.1700860481279792e-04\"\n},\n{\nlabels: {\nalertname: \"DeploymentNonReadyPods\",\ncluster: \"crm-nightly-new\",\ndeployment: \"internal-intouch-api\",\nendpoint: \"http\",\nentity: \"internal-intouch-api\",\ninstance: \"10.250.45.131:8080\",\njob: \"kube-state-metrics\",\nnamespace: \"default\",\npod: \"prometheus-operator-kube-state-metrics-59dd6cc4f8-gg6rq\",\nservice: \"prometheus-operator-kube-state-metrics\",\nseverity: \"critical\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Deployment has non-ready pods for longer than a 10m\"\n},\nstate: \"firing\",\nactiveAt: \"2020-12-24T23:42:29.80254035Z\",\nvalue: \"1e+00\"\n},\n{\nlabels: {\nalertname: \"DeploymentNonReadyPods\",\ncluster: \"crm-nightly-new\",\ndeployment: \"intouch-api\",\nendpoint: \"http\",\nentity: \"intouch-api\",\ninstance: \"10.250.45.131:8080\",\njob: \"kube-state-metrics\",\nnamespace: \"default\",\npod: \"prometheus-operator-kube-state-metrics-59dd6cc4f8-gg6rq\",\nservice: \"prometheus-operator-kube-state-metrics\",\nseverity: \"critical\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Deployment has non-ready pods for longer than a 10m\"\n},\nstate: \"firing\",\nactiveAt: \"2020-12-24T23:34:29.80254035Z\",\nvalue: \"3e+00\"\n},\n{\nlabels: {\nalertname: \"DeploymentNonReadyPods\",\ncluster: \"crm-nightly-new\",\ndeployment: \"emf\",\nendpoint: \"http\",\nentity: \"emf\",\ninstance: \"10.250.45.131:8080\",\njob: \"kube-state-metrics\",\nnamespace: \"default\",\npod: \"prometheus-operator-kube-state-metrics-59dd6cc4f8-gg6rq\",\nservice: \"prometheus-operator-kube-state-metrics\",\nseverity: \"critical\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Deployment has non-ready pods for longer than a 10m\"\n},\nstate: \"firing\",\nactiveAt: \"2020-12-25T22:22:59.80254035Z\",\nvalue: \"2e+00\"\n},\n{\nlabels: {\nalertname: \"StatefulSetNonReadyPods\",\ncluster: \"crm-nightly-new\",\nendpoint: \"http\",\nentity: \"redisk8s-data-cache-master\",\ninstance: \"10.250.45.131:8080\",\njob: \"kube-state-metrics\",\nnamespace: \"default\",\npod: \"prometheus-operator-kube-state-metrics-59dd6cc4f8-gg6rq\",\nservice: \"prometheus-operator-kube-state-metrics\",\nseverity: \"critical\",\nstatefulset: \"redisk8s-data-cache-master\",\nteam: \"stack_owner\"\n},\nannotations: {\nmessage: \"StatefuleSet has non-ready pods for longer than a 10m\"\n},\nstate: \"firing\",\nactiveAt: \"2020-12-24T23:32:29.80254035Z\",\nvalue: \"0e+00\"\n},\n{\nlabels: {\nalertname: \"RedisDown\",\napp: \"redis\",\nchart: \"redis-10.6.13\",\ncluster: \"crm-nightly-new\",\ncontroller_revision_hash: \"redisk8s-data-cache-master-b9f8776d6\",\nentity: \"10.250.45.128:9121\",\ninstance: \"10.250.45.128:9121\",\njob: \"opendistro-es-1-1604859196-discovery\",\nnamespace: \"default\",\npod: \"redisk8s-data-cache-master-0\",\npod_name: \"redisk8s-data-cache-master-0\",\nrelease: \"redisk8s-data-cache\",\nrole: \"master\",\nservice: \"opendistro-es-1-1604859196-discovery\",\nseverity: \"critical\",\nstatefulset_kubernetes_io_pod_name: \"redisk8s-data-cache-master-0\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Redis down\"\n},\nstate: \"pending\",\nactiveAt: \"2020-12-27T09:25:29.80254035Z\",\nvalue: \"0e+00\"\n},\n{\nlabels: {\nalertname: \"RedisDown\",\napp: \"redis\",\nchart: \"redis-10.6.13\",\ncluster: \"crm-nightly-new\",\ncontroller_revision_hash: \"redisk8s-data-cache-master-b9f8776d6\",\nentity: \"10.250.45.128:9121\",\ninstance: \"10.250.45.128:9121\",\njob: \"redisk8s-data-cache-metrics\",\nnamespace: \"default\",\npod: \"redisk8s-data-cache-master-0\",\npod_name: \"redisk8s-data-cache-master-0\",\nrelease: \"redisk8s-data-cache\",\nrole: \"master\",\nservice: \"redisk8s-data-cache-metrics\",\nseverity: \"critical\",\nstatefulset_kubernetes_io_pod_name: \"redisk8s-data-cache-master-0\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Redis down\"\n},\nstate: \"pending\",\nactiveAt: \"2020-12-27T09:25:29.80254035Z\",\nvalue: \"0e+00\"\n},\n{\nlabels: {\nalertname: \"RedisDown\",\ncluster: \"crm-nightly-new\",\nendpoint: \"metrics\",\nentity: \"10.250.45.128:9121\",\ninstance: \"10.250.45.128:9121\",\njob: \"redisk8s-data-cache-metrics\",\nnamespace: \"default\",\npod: \"redisk8s-data-cache-master-0\",\nservice: \"redisk8s-data-cache-metrics\",\nseverity: \"critical\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Redis down\"\n},\nstate: \"pending\",\nactiveAt: \"2020-12-27T09:25:29.80254035Z\",\nvalue: \"0e+00\"\n},\n{\nlabels: {\nalertname: \"RedisDown\",\napp: \"redis\",\nchart: \"redis-10.6.13\",\ncluster: \"crm-nightly-new\",\ncontroller_revision_hash: \"redisk8s-data-cache-master-b9f8776d6\",\nentity: \"10.250.45.128:9121\",\ninstance: \"10.250.45.128:9121\",\njob: \"redisk8s-data-cache-master\",\nnamespace: \"default\",\npod: \"redisk8s-data-cache-master-0\",\npod_name: \"redisk8s-data-cache-master-0\",\nrelease: \"redisk8s-data-cache\",\nrole: \"master\",\nservice: \"redisk8s-data-cache-master\",\nseverity: \"critical\",\nstatefulset_kubernetes_io_pod_name: \"redisk8s-data-cache-master-0\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Redis down\"\n},\nstate: \"pending\",\nactiveAt: \"2020-12-27T09:25:29.80254035Z\",\nvalue: \"0e+00\"\n},\n{\nlabels: {\nalertname: \"RedisDown\",\napp: \"redis\",\nchart: \"redis-10.6.13\",\ncluster: \"crm-nightly-new\",\ncontroller_revision_hash: \"redisk8s-data-cache-master-b9f8776d6\",\nentity: \"10.250.45.128:9121\",\ninstance: \"10.250.45.128:9121\",\njob: \"redisk8s-data-cache-headless\",\nnamespace: \"default\",\npod: \"redisk8s-data-cache-master-0\",\npod_name: \"redisk8s-data-cache-master-0\",\nrelease: \"redisk8s-data-cache\",\nrole: \"master\",\nservice: \"redisk8s-data-cache-headless\",\nseverity: \"critical\",\nstatefulset_kubernetes_io_pod_name: \"redisk8s-data-cache-master-0\",\nteam: \"infra\"\n},\nannotations: {\nmessage: \"Redis down\"\n},\nstate: \"pending\",\nactiveAt: \"2020-12-27T09:24:59.80254035Z\",\nvalue: \"0e+00\"\n}\n]\n}\n}";
         JsonObject allAlerts = prometheusService.callAPI("",
-                null,"");
+                null, "");
         System.out.println(allAlerts.toString());
         assert allAlerts.get("status").getAsString().equals("fail");
 
@@ -82,7 +82,7 @@ public class PrometheusServiceTest {
 
         };
         JsonObject allAlerts = prometheusService.callAPI("baseUrl",
-                "password=","https://baseUrl/api/v1/rules?type=alert");
+                "password=", "https://baseUrl/api/v1/rules?type=alert");
         System.out.println(allAlerts.toString());
         assert allAlerts.get("status").getAsString().equals("fail");
     }
@@ -100,7 +100,7 @@ public class PrometheusServiceTest {
 
         };
         JsonObject allAlerts = prometheusService.callAPI("baseUrl",
-                "password=","");
+                "password=", "");
         System.out.println(allAlerts.toString());
         assert allAlerts.get("status").getAsString().equals("fail");
     }
@@ -118,7 +118,7 @@ public class PrometheusServiceTest {
 
         };
         JsonObject allAlerts = prometheusService.callAPI("baseUrl",
-                "password=","");
+                "password=", "");
         assert allAlerts.get("status").getAsString().equals("success");
         assert allAlerts.getAsJsonObject("data").getAsJsonArray("alerts").size() > 0;
     }
@@ -136,7 +136,7 @@ public class PrometheusServiceTest {
 
         };
         JsonObject allAlerts = prometheusService.callAPI("baseUrl",
-                "password=","https://baseUrl/api/v1/rules?type=alert");
+                "password=", "https://baseUrl/api/v1/rules?type=alert");
         System.out.println(allAlerts.toString());
         assert allAlerts.get("status").getAsString().equals("success");
         assert allAlerts.getAsJsonObject("data").getAsJsonArray("alerts").size() == 0;
@@ -155,9 +155,78 @@ public class PrometheusServiceTest {
 
         };
         JsonObject allAlerts = prometheusService.callAPI("baseUrl",
-                "password=","https://baseUrl/api/v1/rules?type=alert");
+                "password=", "https://baseUrl/api/v1/rules?type=alert");
         System.out.println(allAlerts.toString());
         assert allAlerts.get("status").getAsString().equals("fail");
     }
 
+    @Test
+    public void testGetOpenAlerts() {
+        String res = "{\"status\":\"success\",\"data\":[{\"status\":{\"state\":\"suppressed\",\"silencedBy\":[\"abcd\",\"xyz\"]}}]}";
+        String abcdSilence = "{\"status\":\"success\",\"data\":{\"id\":\"abcd\",\"detail\":\"populated\"}}";
+        String xyzSilence = "{\"status\":\"success\",\"data\":{\"id\":\"xyz\",\"detail\":\"populated\"}}";
+        new Expectations() {
+
+            {
+                restTemplate
+                        .exchange("https://baseUrl/api/v1/alerts", HttpMethod.GET, (HttpEntity<String>) any, String.class);
+                result = new ResponseEntity<>(res, HttpStatus.OK);
+            }
+
+            {
+                restTemplate
+                        .exchange("https://baseUrl/api/v1/silence/abcd", HttpMethod.GET, (HttpEntity<String>) any, String.class);
+                result = new ResponseEntity<>(abcdSilence, HttpStatus.OK);
+            }
+
+            {
+                restTemplate
+                        .exchange("https://baseUrl/api/v1/silence/xyz", HttpMethod.GET, (HttpEntity<String>) any, String.class);
+                result = new ResponseEntity<>(xyzSilence, HttpStatus.OK);
+            }
+
+        };
+        JsonObject openAlerts = prometheusService.getOpenAlerts("baseUrl",
+                "password=");
+
+        System.out.println(openAlerts);
+
+        assert openAlerts.getAsJsonArray("data").size() == 1;
+        assert openAlerts.getAsJsonArray("data").get(0).getAsJsonObject().getAsJsonArray("silenceDetails").size() == 2;
+    }
+
+    @Test
+    public void testGetOpenAlertsFailedDetails() {
+        String res = "{\"status\":\"success\",\"data\":[{\"status\":{\"state\":\"suppressed\",\"silencedBy\":[\"abcd\",\"xyz\"]}}]}";
+        String abcdSilence = "{\"status\":\"fail\",\"data\":{\"id\":\"abcd\",\"detail\":\"populated\"}}";
+        String xyzSilence = "{\"status\":\"fail\",\"data\":{\"id\":\"xyz\",\"detail\":\"populated\"}}";
+        new Expectations() {
+
+            {
+                restTemplate
+                        .exchange("https://baseUrl/api/v1/alerts", HttpMethod.GET, (HttpEntity<String>) any, String.class);
+                result = new ResponseEntity<>(res, HttpStatus.OK);
+            }
+
+            {
+                restTemplate
+                        .exchange("https://baseUrl/api/v1/silence/abcd", HttpMethod.GET, (HttpEntity<String>) any, String.class);
+                result = new ResponseEntity<>(abcdSilence, HttpStatus.OK);
+            }
+
+            {
+                restTemplate
+                        .exchange("https://baseUrl/api/v1/silence/xyz", HttpMethod.GET, (HttpEntity<String>) any, String.class);
+                result = new ResponseEntity<>(xyzSilence, HttpStatus.OK);
+            }
+
+        };
+        JsonObject openAlerts = prometheusService.getOpenAlerts("baseUrl",
+                "password=");
+
+        System.out.println(openAlerts);
+
+        assert openAlerts.getAsJsonArray("data").size() == 1;
+        assert openAlerts.getAsJsonArray("data").get(0).getAsJsonObject().getAsJsonArray("silenceDetails").size() == 0;
+    }
 }

@@ -39,7 +39,28 @@ public class PrometheusService {
 
     public JsonObject getOpenAlerts(String baseUrl, String auth) {
         String url = "https://" + baseUrl + "/api/v1/alerts";
-        return this.callAPI(baseUrl, auth, url);
+        JsonObject allAlerts = this.callAPI(baseUrl, auth, url);
+        if(allAlerts.get("status").getAsString().equals("success")){
+            JsonArray data = allAlerts.getAsJsonArray("data");
+            data.forEach(x ->
+            {
+                JsonObject obj = x.getAsJsonObject();
+                String state = obj.getAsJsonObject("status").get("state").getAsString();
+                if(state.equals("suppressed")){
+                    JsonArray silencedIds = obj.getAsJsonObject("status").getAsJsonArray("silencedBy");
+                    JsonArray silenceArr = new JsonArray();
+                    silencedIds.forEach(sj -> {
+                        String silencedId = sj.getAsString();
+                        JsonObject silenceInfo = this.getSilenceById(baseUrl, auth, silencedId);
+                        if(silenceInfo.get("status").getAsString().equals("success")) {
+                            silenceArr.add(silenceInfo.getAsJsonObject("data"));
+                        }
+                    });
+                    obj.add("silenceDetails", silenceArr);
+                }
+            });
+        }
+        return allAlerts;
     }
 
     public JsonObject getSilenceById(String baseUrl, String auth, String silenceId) {
