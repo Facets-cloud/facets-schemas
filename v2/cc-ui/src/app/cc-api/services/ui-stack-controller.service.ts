@@ -116,17 +116,23 @@ class UiStackControllerService extends __BaseService {
 
   /**
    * createSubStack
-   * @param subStack subStack
+   * @param params The `UiStackControllerService.CreateSubStackUsingPOSTParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `subStack`: subStack
+   *
    * @return OK
    */
-  createSubStackUsingPOSTResponse(subStack: Substack): __Observable<__StrictHttpResponse<Substack>> {
+  createSubStackUsingPOSTResponse(params: UiStackControllerService.CreateSubStackUsingPOSTParams): __Observable<__StrictHttpResponse<Substack>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    __body = subStack;
+
+    __body = params.subStack;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc-ui/v1/stacks/substack/${encodeURIComponent(substackName)}`,
+      this.rootUrl + `/cc-ui/v1/stacks/substack/${encodeURIComponent(params.substackName)}`,
       __body,
       {
         headers: __headers,
@@ -143,11 +149,16 @@ class UiStackControllerService extends __BaseService {
   }
   /**
    * createSubStack
-   * @param subStack subStack
+   * @param params The `UiStackControllerService.CreateSubStackUsingPOSTParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `subStack`: subStack
+   *
    * @return OK
    */
-  createSubStackUsingPOST(subStack: Substack): __Observable<Substack> {
-    return this.createSubStackUsingPOSTResponse(subStack).pipe(
+  createSubStackUsingPOST(params: UiStackControllerService.CreateSubStackUsingPOSTParams): __Observable<Substack> {
+    return this.createSubStackUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as Substack)
     );
   }
@@ -529,6 +540,22 @@ class UiStackControllerService extends __BaseService {
 }
 
 module UiStackControllerService {
+
+  /**
+   * Parameters for createSubStackUsingPOST
+   */
+  export interface CreateSubStackUsingPOSTParams {
+
+    /**
+     * substackName
+     */
+    substackName: string;
+
+    /**
+     * subStack
+     */
+    subStack: Substack;
+  }
 
   /**
    * Parameters for createSubscriptionUsingPOST
