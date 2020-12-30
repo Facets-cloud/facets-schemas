@@ -104,8 +104,14 @@ public class ClusterHelper {
     }
 
     public String getToolsPws(AbstractCluster cluster) {
-        Map<String, String> clusterResourceDetails = clusterResourceRefreshService.getClusterResourceDetails(cluster.getId());
-        String pwd = clusterResourceDetails.getOrDefault(TOOLS_PASS_KEY_IN_RESOURCES, "no pass");
+        Map<String, String> clusterResourceDetails;
+        String pwd = "";
+        try {
+            clusterResourceDetails = clusterResourceRefreshService.getClusterResourceDetails(cluster.getId());
+            pwd = clusterResourceDetails.getOrDefault(TOOLS_PASS_KEY_IN_RESOURCES, "no pass");
+        } catch (Throwable t) {
+            return pwd;
+        }
         String userName = TOOLS_USER;
         String auth = " ";
         try {

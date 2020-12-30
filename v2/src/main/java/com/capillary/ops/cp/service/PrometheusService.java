@@ -38,6 +38,9 @@ public class PrometheusService {
         String url = HTTPS_PROMETHEUS + baseUrl + "/api/v1/rules?type=alert";
         JsonObject allAlerts = this.callAPI(baseUrl, auth, url);
         JsonObject openAlerts = this.getOpenAlerts(baseUrl, auth);
+        if(!allAlerts.get("status").getAsString().equals("success") || !openAlerts.get("status").getAsString().equals("success")){
+            return  allAlerts;
+        }
         allAlerts.getAsJsonObject("data").getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("rules").forEach(
                 r->{
                    r.getAsJsonObject().add("alerts",new JsonArray());
@@ -124,7 +127,7 @@ public class PrometheusService {
             if (baseUrl == null || auth == null || baseUrl.equals("") || auth.equals("")) {
                 JsonObject json = new JsonObject();
                 json.addProperty("status", "fail");
-                json.addProperty("reason", "Prometheus location is not configured for this cluster");
+                json.addProperty("reason", "Unable to Fetch tools password from the resources.");
                 return json;
             }
             //RestTemplate restTemplate= new RestTemplate();
