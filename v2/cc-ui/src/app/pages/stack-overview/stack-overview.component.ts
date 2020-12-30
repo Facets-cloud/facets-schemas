@@ -118,7 +118,7 @@ export class StackOverviewComponent implements OnInit {
     this.dialogService.open(PauseReleaseDialogComponent, {context: {status: pauseReleases ? 'enable': 'disable'}}).onClose.subscribe(proceed => {
       console.log("received value from pause dialog " + proceed);
       if(proceed){
-        this.uiStackControllerService.toggleReleaseUsingPOST1({toggleRelease: {stackName: this.stack.name, pauseReleases: !pauseReleases}, stackName: this.stack.name}).subscribe(
+        this.uiStackControllerService.toggleReleaseUsingPOST({toggleRelease: {stackName: this.stack.name, pauseReleases: !pauseReleases}, stackName: this.stack.name}).subscribe(
           s => {
             console.log("Prod Release %s for the stack %s", status, this.stack.name);
             this.toastrService.success(status.concat(' Prod Release'), 'Success');

@@ -67,13 +67,39 @@ export class ClusterOverviewComponent implements OnInit {
     },
   };
 
+  passwordSettings = {
+    columns: {
+      name: {
+        title: 'Variable Name',
+        filter: false,
+        width: '50%',
+        editable: false,
+      },
+      value: {
+        title: 'Variable Value',
+        filter: false,
+        width: '50%',
+        editable: true,
+        editor: {type: 'text'},
+      }
+    },
+    actions: {
+      add: false,
+      edit: false,
+      delete: false,
+      position: 'right',
+    },
+  };
+
   clusterInfo;
 
   cluster: AwsCluster;
+  tfDetails: {[key: string]: string} = null;
 
   enableSubmitForClusterOverrides = true;
   nonSensitiveClusterSource: LocalDataSource = new LocalDataSource();
   sensitiveClusterSource: LocalDataSource = new LocalDataSource();
+  sensitiveClusterDetailsSource: LocalDataSource = new LocalDataSource();
   originalClusterVariablesSource = [];
   addOverrideSpinner = false;
   stackName: string;
@@ -99,6 +125,13 @@ export class ClusterOverviewComponent implements OnInit {
           this.cluster = t;
           this.clusterInfo = flat.flatten(t);
         });
+        this.deploymentService.getResourceDetailsUsingGET(clusterId).subscribe(t => {
+          this.tfDetails = t;
+          this.updateTableSourceWithResourceDetails();
+        },
+        error => {
+          this.tfDetails = null;
+        })
       }
 
       this.stackName = p.stackName;
@@ -257,5 +290,13 @@ export class ClusterOverviewComponent implements OnInit {
     });
 
     return awsClusterRequest;
+  }
+
+  updateTableSourceWithResourceDetails() {
+    let dataSource = [];
+    Object.keys(this.tfDetails).forEach(element => {
+      dataSource.push({name: element, value: this.tfDetails[element]});
+    })
+    this.sensitiveClusterDetailsSource.load(dataSource);
   }
 }

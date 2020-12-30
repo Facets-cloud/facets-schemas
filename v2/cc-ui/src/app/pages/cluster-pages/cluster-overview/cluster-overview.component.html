@@ -175,5 +175,19 @@
         </nb-card-body>
       </nb-card>
     </div>
+    <div class="col-md-6">
+      <nb-card *ngIf="tfDetails != null">
+        <nb-card-header>Cluster Password Details</nb-card-header>
+        <nb-card-body>
+          <div>
+            <ng2-smart-table
+            [settings]="passwordSettings"
+            [source]="sensitiveClusterDetailsSource"
+            >
+            </ng2-smart-table>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
   </div>
 </app-layout-one-column>

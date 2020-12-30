@@ -1,5 +1,7 @@
 package com.capillary.ops.cp.bo;
 
+import com.capillary.ops.cp.bo.stack.Composition;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +10,8 @@ public class StackFile {
     private Map<String, String> stackVariables = new HashMap<>();
 
     private Map<String, VariableDetails> clusterVariablesMeta = new HashMap<>();
+
+    private Composition composition;
 
     public Map<String, String> getStackVariables() {
         return stackVariables;
@@ -23,6 +27,14 @@ public class StackFile {
 
     public void setClusterVariablesMeta(Map<String, VariableDetails> clusterVariablesMeta) {
         this.clusterVariablesMeta = clusterVariablesMeta;
+    }
+
+    public Composition getComposition() {
+        return composition;
+    }
+
+    public void setComposition(Composition composition) {
+        this.composition = composition;
     }
 
     public static class VariableDetails {

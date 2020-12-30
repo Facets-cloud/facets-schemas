@@ -12,6 +12,8 @@ import { DeploymentLog } from '../models/deployment-log';
 import { DeploymentRequest } from '../models/deployment-request';
 import { QASuite } from '../models/qasuite';
 import { AuroraDRDeploymentRecipe } from '../models/aurora-drdeployment-recipe';
+import { HotfixDeploymentRecipe } from '../models/hotfix-deployment-recipe';
+import { ESDRDeploymentRecipe } from '../models/esdrdeployment-recipe';
 import { MongoDRDeploymentRecipe } from '../models/mongo-drdeployment-recipe';
 import { MongoVolumeResizeDeploymentRecipe } from '../models/mongo-volume-resize-deployment-recipe';
 
@@ -23,12 +25,16 @@ import { MongoVolumeResizeDeploymentRecipe } from '../models/mongo-volume-resize
 })
 class UiDeploymentControllerService extends __BaseService {
   static readonly getDeploymentsUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/deployments';
-  static readonly createDeploymentUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/deployments';
+  static readonly createDeploymentUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments';
+  static readonly getResourceDetailsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/getResourceDetails';
   static readonly triggerAutomationSuiteUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
   static readonly abortAutomationSuiteUsingDELETE1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
   static readonly runAuroraDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/aurora/dr';
+  static readonly runHotfixDeploymentRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/deployment/hotfix';
+  static readonly runESDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/es/dr';
   static readonly runMongoDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/dr';
   static readonly runMongoResizeRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/resize';
+  static readonly refreshResourceUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/refreshResource';
   static readonly getDeploymentUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}';
   static readonly signOffDeploymentUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/signoff';
 
@@ -79,7 +85,7 @@ class UiDeploymentControllerService extends __BaseService {
 
   /**
    * createDeployment
-   * @param params The `UiDeploymentControllerService.CreateDeploymentUsingPOST1Params` containing the following parameters:
+   * @param params The `UiDeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
    *
    * - `deploymentRequest`: deploymentRequest
    *
@@ -87,7 +93,7 @@ class UiDeploymentControllerService extends __BaseService {
    *
    * @return OK
    */
-  createDeploymentUsingPOST1Response(params: UiDeploymentControllerService.CreateDeploymentUsingPOST1Params): __Observable<__StrictHttpResponse<DeploymentLog>> {
+  createDeploymentUsingPOSTResponse(params: UiDeploymentControllerService.CreateDeploymentUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -112,7 +118,7 @@ class UiDeploymentControllerService extends __BaseService {
   }
   /**
    * createDeployment
-   * @param params The `UiDeploymentControllerService.CreateDeploymentUsingPOST1Params` containing the following parameters:
+   * @param params The `UiDeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
    *
    * - `deploymentRequest`: deploymentRequest
    *
@@ -120,9 +126,47 @@ class UiDeploymentControllerService extends __BaseService {
    *
    * @return OK
    */
-  createDeploymentUsingPOST1(params: UiDeploymentControllerService.CreateDeploymentUsingPOST1Params): __Observable<DeploymentLog> {
-    return this.createDeploymentUsingPOST1Response(params).pipe(
+  createDeploymentUsingPOST(params: UiDeploymentControllerService.CreateDeploymentUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.createDeploymentUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * getResourceDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getResourceDetailsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<{[key: string]: string}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/deployments/getResourceDetails`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{[key: string]: string}>;
+      })
+    );
+  }
+  /**
+   * getResourceDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getResourceDetailsUsingGET(clusterId: string): __Observable<{[key: string]: string}> {
+    return this.getResourceDetailsUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as {[key: string]: string})
     );
   }
 
@@ -270,6 +314,104 @@ class UiDeploymentControllerService extends __BaseService {
   }
 
   /**
+   * runHotfixDeploymentRecipe
+   * @param params The `UiDeploymentControllerService.RunHotfixDeploymentRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runHotfixDeploymentRecipeUsingPOSTResponse(params: UiDeploymentControllerService.RunHotfixDeploymentRecipeUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.deploymentRecipe;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/recipes/deployment/hotfix`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * runHotfixDeploymentRecipe
+   * @param params The `UiDeploymentControllerService.RunHotfixDeploymentRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runHotfixDeploymentRecipeUsingPOST(params: UiDeploymentControllerService.RunHotfixDeploymentRecipeUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.runHotfixDeploymentRecipeUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * runESDRRecipe
+   * @param params The `UiDeploymentControllerService.RunESDRRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runESDRRecipeUsingPOSTResponse(params: UiDeploymentControllerService.RunESDRRecipeUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.deploymentRecipe;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/recipes/es/dr`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * runESDRRecipe
+   * @param params The `UiDeploymentControllerService.RunESDRRecipeUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRecipe`: deploymentRecipe
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  runESDRRecipeUsingPOST(params: UiDeploymentControllerService.RunESDRRecipeUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.runESDRRecipeUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
    * runMongoDRRecipe
    * @param params The `UiDeploymentControllerService.RunMongoDRRecipeUsingPOSTParams` containing the following parameters:
    *
@@ -363,6 +505,44 @@ class UiDeploymentControllerService extends __BaseService {
    */
   runMongoResizeRecipeUsingPOST(params: UiDeploymentControllerService.RunMongoResizeRecipeUsingPOSTParams): __Observable<DeploymentLog> {
     return this.runMongoResizeRecipeUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * refreshResource
+   * @param clusterId clusterId
+   * @return OK
+   */
+  refreshResourceUsingPOSTResponse(clusterId: string): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/deployments/refreshResource`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * refreshResource
+   * @param clusterId clusterId
+   * @return OK
+   */
+  refreshResourceUsingPOST(clusterId: string): __Observable<DeploymentLog> {
+    return this.refreshResourceUsingPOSTResponse(clusterId).pipe(
       __map(_r => _r.body as DeploymentLog)
     );
   }
@@ -469,9 +649,9 @@ class UiDeploymentControllerService extends __BaseService {
 module UiDeploymentControllerService {
 
   /**
-   * Parameters for createDeploymentUsingPOST1
+   * Parameters for createDeploymentUsingPOST
    */
-  export interface CreateDeploymentUsingPOST1Params {
+  export interface CreateDeploymentUsingPOSTParams {
 
     /**
      * deploymentRequest
@@ -525,6 +705,38 @@ module UiDeploymentControllerService {
      * deploymentRecipe
      */
     deploymentRecipe: AuroraDRDeploymentRecipe;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for runHotfixDeploymentRecipeUsingPOST
+   */
+  export interface RunHotfixDeploymentRecipeUsingPOSTParams {
+
+    /**
+     * deploymentRecipe
+     */
+    deploymentRecipe: HotfixDeploymentRecipe;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for runESDRRecipeUsingPOST
+   */
+  export interface RunESDRRecipeUsingPOSTParams {
+
+    /**
+     * deploymentRecipe
+     */
+    deploymentRecipe: ESDRDeploymentRecipe;
 
     /**
      * clusterId

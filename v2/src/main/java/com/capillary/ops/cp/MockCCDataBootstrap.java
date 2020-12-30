@@ -1,6 +1,7 @@
 package com.capillary.ops.cp;
 
 import com.amazonaws.regions.Regions;
+import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -10,13 +11,10 @@ import com.capillary.ops.deployer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import com.capillary.ops.cp.bo.AutoCompleteObject;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.TimeZone;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Profile("dev")
 @Component
@@ -40,15 +38,17 @@ public class MockCCDataBootstrap {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    AutoCompleteObjectRepository autoCompleteObjectRepository;
+
     @PostConstruct
     private void init() {
-
         Stack stack = new Stack();
         stack.setName("crm");
         stack.setUser("ambar-cap");
         stack.setAppPassword("935d4d4ee673a9531a7d2241f1e9d1ddbbbf0ee1");
         stack.setRelativePath("/");
-        stack.setVcs(VCS.BITBUCKET);
+        stack.setVcs(VCS.GITHUB);
         stack.setVcsUrl("tmp");
         StackFile.VariableDetails v1 = new StackFile.VariableDetails(false,"test1");
         StackFile.VariableDetails v2 = new StackFile.VariableDetails(true,"test2");
@@ -64,6 +64,18 @@ public class MockCCDataBootstrap {
         stack.setStackVars(stackVars);
         stack.setVcsUrl("https://github.com/Capillary/cc-stack-crm.git");
         stackRepository.save(stack);
+
+        AutoCompleteObject apps = new AutoCompleteObject("crm","application");
+        AutoCompleteObject crons = new AutoCompleteObject("crm","cronjob");
+        AutoCompleteObject statefulsets = new AutoCompleteObject("crm","statefulsets");
+        apps.setResourceNames(new HashSet<>(Arrays.asList("intouch-api", "emf")));
+        crons.setResourceNames(new HashSet<>(Arrays.asList("crondemo-one", "crondemo-two")));
+        statefulsets.setResourceNames(new HashSet<>(Arrays.asList("sts-demo", "sts-demo-two")));
+        List<AutoCompleteObject> autoCompleteObjects = new ArrayList<>();
+        autoCompleteObjects.add(apps);
+        autoCompleteObjects.add(crons);
+        autoCompleteObjects.add(statefulsets);
+        autoCompleteObjectRepository.saveAll(autoCompleteObjects);
 
         AwsCluster cluster = new AwsCluster("cluster1");
         cluster.setId("cluster1");
@@ -133,6 +145,7 @@ public class MockCCDataBootstrap {
         user.setUserName(adminUser);
         List<String> roles = new ArrayList<>();
         roles.add("CRM_WRITE");
+        roles.add("CC-ADMIN");
         user.setRoles(roles);
         userRepository.save(user);
     }

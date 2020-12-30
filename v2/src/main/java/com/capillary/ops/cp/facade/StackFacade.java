@@ -4,30 +4,30 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.AuditLogRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.repository.SubstackRepository;
 import com.capillary.ops.cp.service.GitService;
 import com.capillary.ops.cp.service.StackAutoCompleteService;
+import com.capillary.ops.cp.service.StackService;
 import com.capillary.ops.cp.service.notification.FlockNotifier;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.utils.DeployerUtil;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Service
 @Loggable
@@ -35,6 +35,9 @@ public class StackFacade {
 
     @Autowired
     StackRepository stackRepository;
+
+    @Autowired
+    SubstackRepository substackRepository;
 
     @Autowired
     GitService gitService;
@@ -49,50 +52,42 @@ public class StackFacade {
     private FlockNotifier flockNotifier;
 
     @Autowired
+    private StackService stackService;
+
+    @Autowired
     private ArtifactFacade artifactFacade;
 
     @Value("${flock.notification.pauseReleases.endpoint}")
     private String pauseReleaseNotifier;
 
     private static final Logger logger = LoggerFactory.getLogger(StackFacade.class);
+
     /**
      * Create a stack given details
      *
      * @param stack
      * @return
      */
+    @CacheEvict(value = { "substacks", "substackNames" }, key = "#stack.name")
     public Stack createStack(Stack stack) {
-        stackRepository.findById(stack.getName());
-//        if (stackRepository.findById(stack.getName()).isPresent()) {
-//            throw new IllegalStateException("Stack already exists and cannot be created again");
-//        }
+        Path location = checkoutRepository(stack);
+        String relativePath = (StringUtils.isEmpty(stack.getRelativePath())) ? "" : stack.getRelativePath();
+        Stack updatedSack = stackService.syncWithStackFile(stack, location);
+        stackAutoCompleteService.parseStack(stack.getName(), location.toString() + "/" + relativePath + "/");
+        return stackRepository.save(updatedSack);
+    }
+
+    private Path checkoutRepository(Stack stack) {
         Path location;
         try {
             location = gitService.checkout(stack.getVcsUrl(), stack.getUser(), stack.getAppPassword());
         } catch (Throwable e) {
             throw new IllegalArgumentException("Unable to checkout the URL", e);
         }
-        String relativePath =
-            (stack.getRelativePath() == null || stack.getRelativePath().isEmpty()) ? "" : stack.getRelativePath();
-        // Verify stack.json and persist it
-        File stackFile = new File(location.toString() + "/" + relativePath + "/stack.json");
-        if (!stackFile.isFile()) {
-            throw new IllegalArgumentException(
-                "No Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath());
-        }
-        try {
-            Gson gson = new Gson();
-            StackFile file = gson.fromJson(new FileReader(stackFile), StackFile.class);
-            stack.setStackVars(file.getStackVariables());
-            stack.setClusterVariablesMeta(file.getClusterVariablesMeta());
-            stackAutoCompleteService.parseStack(stack.getName(), location.toString() + "/" + relativePath + "/");
-        } catch (Throwable e) {
-            throw new IllegalArgumentException(
-                "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);
-        }
-        return stackRepository.save(stack);
+        return location;
     }
 
+    @CacheEvict(value = { "substacks", "substackNames" })
     public Stack reloadStack(String stackName) {
         Optional<Stack> optionalStack = stackRepository.findById(stackName);
         if (!optionalStack.isPresent()) {
@@ -108,6 +103,16 @@ public class StackFacade {
 
     public Stack getStackByName(String stackName) {
         return stackRepository.findById(stackName).get();
+    }
+
+    public Substack createSubstack(Substack substack) throws IOException {
+        Path location = checkoutRepository(substack);
+        Substack updatedSubstack = (Substack) stackService.syncWithStackFile(substack, location);
+        String s3Path = stackService.uploadSubstack(updatedSubstack, location);
+        updatedSubstack.setArtifactPath(s3Path);
+        String relativePath = (StringUtils.isEmpty(substack.getRelativePath())) ? "" : substack.getRelativePath();
+        stackAutoCompleteService.parseStack(substack.getName(), location.toString() + "/" + relativePath + "/");
+        return substackRepository.save(updatedSubstack);
     }
 
     public ToggleRelease toggleRelease(ToggleRelease toggleRelease){
@@ -142,6 +147,13 @@ public class StackFacade {
     }
 
 
+    public List<Substack> getSubstacks(String stackName) {
+        return stackService.getSubstacks(stackName);
+    }
+
+    public Substack getSubstacks(String stackName, String substackName) {
+        return stackService.getSubstack(substackName);
+    }
     public DeploymentContext getLocalDeploymentContext(String stackName) {
         Map<String, Map<String, Artifact>> allArtifacts = artifactFacade.getAllArtifacts(BuildStrategy.QA, ReleaseType.RELEASE);
         DeploymentContext deploymentContext = new DeploymentContext();

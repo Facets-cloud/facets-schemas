@@ -1,3 +1,4 @@
+import { HotfixDeploymentRecipe } from './../../../cc-api/models/hotfix-deployment-recipe';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {
   UiDeploymentControllerService,
@@ -11,6 +12,9 @@ import {ApplicationControllerService} from '../../../cc-api/services/application
 import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
 import {Observable, of} from "rxjs";
 import {map} from "rxjs/operators";
+import { ResourceSelectorComponent } from './../../../components/resource-selector/resource-selector.component';
+import { ResourceTypeSelectorComponent } from './../../../components/resource-type-selector/resource-type-selector.component';
+import { htmlAstToRender3Ast } from '@angular/compiler/src/render3/r3_template_transform';
 
 @Component({
   selector: 'app-cluster-releases',
@@ -25,13 +29,11 @@ export class ClusterReleasesComponent implements OnInit {
   loading = true;
   downStreamClusters = [];
   currentSignedOffDeployment: DeploymentLog;
-  payload: any = '{}';
   user: SimpleOauth2User;
-  releaseTypes = ['Hotfix'];
-  releaseTypeSelection: any = 'Hotfix';
   applicationName: any = '';
+  cronjobName: any = '';
+  statefulSetName: any = '';
   isUserAdmin: any;
-
   appName: any;
   stackName: any;
 
@@ -44,6 +46,36 @@ export class ClusterReleasesComponent implements OnInit {
               private deploymentService: UiDeploymentControllerService,
               private applicationController: ApplicationControllerService) {
   }
+
+  settings = {
+    columns: {
+      resourceType: {
+        type: 'custom',
+        renderComponent: ResourceTypeSelectorComponent,
+        title: 'Resource Type',
+        width: '30%'
+      },
+      resourceName: {
+        type: 'custom',
+        renderComponent: ResourceSelectorComponent,
+        title: 'Resource Name',
+        width: '30%'
+      }
+    },
+    actions: {
+      add: false,
+      edit: true,
+      delete: false,
+      position: 'right',
+    },
+    edit: {
+      inputClass: '',
+      editButtonContent: '<i class="eva-edit-outline eva"></i>',
+      saveButtonContent: '<i class="eva-checkmark-outline eva"></i>',
+      cancelButtonContent: '<i class="eva-close-outline eva"></i>',
+      confirmSave: false,
+    },
+  };
 
   ngOnInit(): void {
     this.route.params.subscribe(p => {
@@ -133,30 +165,23 @@ export class ClusterReleasesComponent implements OnInit {
       result => {
         if (result) {
           this.loading = true;
-          console.log(this.releaseTypeSelection);
-          console.log(this.applicationName);
-          const applicationNameArray = this.applicationName.split(',');
-          let targetsForOverride = '';
-          for (let i = 0; i < applicationNameArray.length; i++) {
-            applicationNameArray[i] = applicationNameArray[i].replace(/^\s*/, '').replace(/\s*$/, '');
-            targetsForOverride = targetsForOverride
-              .concat(' -target \'module.application.helm_release.application[\"' + applicationNameArray[i] + '\"]\'');
+          let hotfixMap: HotfixDeploymentRecipe = {
+            resourceTypeToResourceNameMap: {}
+          };
+          if(this.applicationName){
+            hotfixMap.resourceTypeToResourceNameMap.application = this.applicationName
           }
-          if (this.releaseTypeSelection === 'Hotfix') {
-            this.payload = {
-              releaseType: 'RELEASE',
-              overrideBuildSteps: ['terraform apply ' + targetsForOverride + ' -auto-approve']
-            };
-          } else if (this.releaseTypeSelection === 'Release') {
-            this.payload = {
-              releaseType: 'RELEASE'
-            };
+          if(this.cronjobName){
+            hotfixMap.resourceTypeToResourceNameMap.cronjob =  this.cronjobName
           }
-          console.log(this.payload);
+          if(this.statefulSetName){
+            hotfixMap.resourceTypeToResourceNameMap.statefulsets = this.statefulSetName
+          }
+          console.log(hotfixMap)
           try {
-            this.deploymentService.createDeploymentUsingPOST1({
+            this.deploymentService.runHotfixDeploymentRecipeUsingPOST({
               clusterId: this.clusterId,
-              deploymentRequest: this.payload
+              deploymentRecipe: hotfixMap
             }).subscribe(c => {
                 console.log(c);
                 this.toastrService.success('Triggered terraform apply', 'Success');
@@ -178,5 +203,13 @@ export class ClusterReleasesComponent implements OnInit {
 
   appSelected($event: string) {
     this.applicationName = $event;
+  }
+
+  cronSelected($event: string) {
+    this.cronjobName = $event;
+  }
+
+  stsSelected($event: string) {
+    this.statefulSetName = $event;
   }
 }

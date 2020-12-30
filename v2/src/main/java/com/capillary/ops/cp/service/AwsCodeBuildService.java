@@ -11,6 +11,7 @@ import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.repository.SubstackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -74,6 +75,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
+    public static final String SUBSTACK_SUBDIRECTORY_PREFIX = "SUBSTACK_SUBDIRECTORY_";
     public static final String STACK_NAME = "STACK_NAME";
     private static final String CLUSTER_NAME = "CLUSTER_NAME";
 
@@ -98,6 +100,9 @@ public class AwsCodeBuildService implements TFBuildService {
     @Value("${aws.s3bucket.testOutputBucket.region}")
     private String artifactS3BucketRegion;
 
+    @Value("${aws.s3bucket.ccSubstackBucket.name}")
+    private String substackS3Bucket;
+
     @Autowired
     private DeploymentLogRepository deploymentLogRepository;
 
@@ -106,6 +111,10 @@ public class AwsCodeBuildService implements TFBuildService {
 
     @Autowired
     private GitService gitService;
+
+    @Autowired
+    private StackService stackService;
+
     /**
      * Deploy the latest build in the specified clusterId
      *
@@ -131,24 +140,7 @@ public class AwsCodeBuildService implements TFBuildService {
         }
         Stack stack = stackO.get();
 
-//        if (BuildStrategy.PROD.equals(cluster.getReleaseStream())) {
-//            Optional<DeploymentLog> deploymentLog = deploymentLogRepository.findFirstByClusterIdOrderByCreatedOnDesc(cluster.getId());
-//            deploymentLog.ifPresent(x -> {
-//                StatusType deploymentStatus = getBuild(x.getCodebuildId()).buildStatus();
-////                if (StatusType.IN_PROGRESS.equals(deploymentStatus)) {
-////                    String message = String.format("previous build for cluster %s already in progress, not deploying", cluster.getId());
-////                    logger.error(message);
-////                    throw new RuntimeException(message);
-////                }
-//
-////                Optional<QASuiteResult> qaSuiteResult = qaSuiteResultRepository.findOneByDeploymentId(x.getCodebuildId());
-////                if (StatusType.SUCCEEDED.equals(deploymentStatus) && !qaSuiteResult.isPresent()) {
-////                    String message = String.format("WARNING: qa callback for previous deployment not received yet for cluster: %s, such deployments will not be allowed to go through in the future", cluster.getId());
-////                    logger.error(message);
-////                    throw new QACallbackAbsentException(message);
-////                }
-//            });
-//        }
+        List<Substack> substacks = stackService.getSubstacks(stack.getName());
 
         //DONE: Check if code build is defined for the said cloud
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
@@ -164,6 +156,7 @@ public class AwsCodeBuildService implements TFBuildService {
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
+
         try {
             environmentVariables.add(EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
@@ -265,18 +258,22 @@ public class AwsCodeBuildService implements TFBuildService {
         ComputeType computeType = cluster.getReleaseStream().equals(BuildStrategy.PROD) ?
                 ComputeType.BUILD_GENERAL1_2_XLARGE : ComputeType.BUILD_GENERAL1_LARGE;
 
+        List<ProjectSource> secondarySources = new ArrayList<>();
+        secondarySources.add(ProjectSource.builder()
+                .type(SourceType.valueOf(stack.getVcs().name()))
+                .location(stack.getVcsUrl())
+                .sourceIdentifier("STACK")
+                .build());
+        secondarySources.add(getDeploymentContextSource(deploymentContext));
+        secondarySources.addAll(substacks.stream()
+                .map(this::getSubstackSource)
+                .collect(Collectors.toList()));
+
         StartBuildRequest startBuildRequest =
             StartBuildRequest.builder().projectName(buildName)
                     .environmentVariablesOverride(environmentVariables)
                     .computeTypeOverride(computeType)
-                    .secondarySourcesOverride(
-                            ProjectSource.builder()
-                            .type(SourceType.valueOf(stack.getVcs().name()))
-                            .location(stack.getVcsUrl())
-                            .sourceIdentifier("STACK")
-                            .build(),
-                            getDeploymentContextSource(deploymentContext)
-                            )
+                    .secondarySourcesOverride(secondarySources)
                     .secondarySourcesVersionOverride(secondarySourceVersion)
                     .sourceVersion(primarySourceVersion)
                     .buildspecOverride(getBuildSpec(deploymentRequest))
@@ -515,6 +512,14 @@ public class AwsCodeBuildService implements TFBuildService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private ProjectSource getSubstackSource(Substack substack) {
+        return ProjectSource.builder()
+                .type(SourceType.S3)
+                .location(substackS3Bucket + "/" + substack.getArtifactPath())
+                .sourceIdentifier("SUBSTACK_" + substack.getName())
+                .build();
     }
 
     private String getBuildSpec(DeploymentRequest deploymentRequest) {
