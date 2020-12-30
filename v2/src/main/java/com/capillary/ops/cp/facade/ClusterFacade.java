@@ -21,7 +21,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jcabi.aspects.Loggable;
 import com.samskivert.mustache.Mustache;
@@ -98,8 +97,8 @@ public class ClusterFacade {
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
         }
-        String url = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_URL);
-        String pass = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_PASS);
+        String url = clusterHelper.getToolsURL(existing.get());
+        String pass = clusterHelper.getToolsPws(existing.get());
         JsonObject allAlerts = prometheusService.getAllAlerts(url, pass);
         return (new Gson()).fromJson(allAlerts,HashMap.class);
     }
@@ -115,8 +114,8 @@ public class ClusterFacade {
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
         }
-        String url = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_URL);
-        String pass = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_PASS);
+        String url = clusterHelper.getToolsURL(existing.get());
+        String pass = clusterHelper.getToolsPws(existing.get());
         JsonObject allAlerts = prometheusService.getOpenAlerts(url, pass);
 
         return (new Gson()).fromJson(allAlerts, HashMap.class);
@@ -133,8 +132,8 @@ public class ClusterFacade {
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
         }
-        String url = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_URL);
-        String pass = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_PASS);
+        String url = clusterHelper.getToolsURL(existing.get());
+        String pass = clusterHelper.getToolsPws(existing.get());
         String authUserName = DeployerUtil.getAuthUserName();
 
         JsonObject response = prometheusService.silenceAlert(url, pass, request, authUserName);
