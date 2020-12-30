@@ -197,17 +197,23 @@ class StackControllerService extends __BaseService {
 
   /**
    * createSubstack
-   * @param subStack subStack
+   * @param params The `StackControllerService.CreateSubstackUsingPOSTParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `subStack`: subStack
+   *
    * @return OK
    */
-  createSubstackUsingPOSTResponse(subStack: Substack): __Observable<__StrictHttpResponse<Substack>> {
+  createSubstackUsingPOSTResponse(params: StackControllerService.CreateSubstackUsingPOSTParams): __Observable<__StrictHttpResponse<Substack>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
-    __body = subStack;
+
+    __body = params.subStack;
     let req = new HttpRequest<any>(
       'POST',
-      this.rootUrl + `/cc/v1/stacks/substack/${encodeURIComponent(substackName)}`,
+      this.rootUrl + `/cc/v1/stacks/substack/${encodeURIComponent(params.substackName)}`,
       __body,
       {
         headers: __headers,
@@ -224,11 +230,16 @@ class StackControllerService extends __BaseService {
   }
   /**
    * createSubstack
-   * @param subStack subStack
+   * @param params The `StackControllerService.CreateSubstackUsingPOSTParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `subStack`: subStack
+   *
    * @return OK
    */
-  createSubstackUsingPOST(subStack: Substack): __Observable<Substack> {
-    return this.createSubstackUsingPOSTResponse(subStack).pipe(
+  createSubstackUsingPOST(params: StackControllerService.CreateSubstackUsingPOSTParams): __Observable<Substack> {
+    return this.createSubstackUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as Substack)
     );
   }
@@ -375,6 +386,22 @@ module StackControllerService {
      * stackName
      */
     stackName: string;
+  }
+
+  /**
+   * Parameters for createSubstackUsingPOST
+   */
+  export interface CreateSubstackUsingPOSTParams {
+
+    /**
+     * substackName
+     */
+    substackName: string;
+
+    /**
+     * subStack
+     */
+    subStack: Substack;
   }
 
   /**

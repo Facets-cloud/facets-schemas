@@ -70,7 +70,7 @@ public class StackController {
 
 
     @PostMapping("substack/{substackName}")
-    public Substack createSubstack(@RequestBody Substack subStack) throws IOException {
+    public Substack createSubstack(@RequestBody Substack subStack, @PathVariable String substackName) throws IOException {
         return stackFacade.createSubstack(subStack);
     }
 

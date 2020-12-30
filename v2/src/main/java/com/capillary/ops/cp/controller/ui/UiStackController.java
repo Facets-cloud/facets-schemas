@@ -115,8 +115,8 @@ public class UiStackController {
     }
 
     @PostMapping("substack/{substackName}")
-    public Substack createSubStack(@RequestBody Substack subStack) throws IOException {
-        return stackController.createSubstack(subStack);
+    public Substack createSubStack(@RequestBody Substack subStack, @PathVariable String substackName) throws IOException {
+        return stackController.createSubstack(subStack, substackName);
     }
 
     @GetMapping("{stackName}/localDeploymentContext")
