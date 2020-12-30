@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -247,7 +248,9 @@ public class AwsCodeBuildService implements TFBuildService {
                 DeploymentLog lastDeployment = lastDeploymentOptional.get();
                 if(secondarySourceVersion.sourceVersion().equalsIgnoreCase(lastDeployment.getStackVersion()) &&
                         deploymentContextVersion.equalsIgnoreCase(lastDeployment.getDeploymentContextVersion()) &&
-                        primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion())) {
+                        primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion()) &&
+                        CollectionUtils.isEmpty(deploymentRequest.getOverrideBuildSteps())
+                ) {
                     DeploymentLog deploymentLog = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, UUID.randomUUID().toString(), primarySourceVersion);
                     deploymentLog.setStatus(StatusType.FAULT);
                     return deploymentLogRepository.save(deploymentLog);
