@@ -29,16 +29,39 @@ import java.util.TimeZone;
 @Loggable
 public class PrometheusService {
 
+    public static final String HTTPS_PROMETHEUS = "https://prometheus.";
+    public static final String HTTPS_ALERTMANAGER = "https://alertmanager.";
     @Autowired
     private RestTemplate restTemplate;
 
     public JsonObject getAllAlerts(String baseUrl, String auth) {
-        String url = "https://" + baseUrl + "/api/v1/rules?type=alert";
-        return this.callAPI(baseUrl, auth, url);
+        String url = HTTPS_PROMETHEUS + baseUrl + "/api/v1/rules?type=alert";
+        JsonObject allAlerts = this.callAPI(baseUrl, auth, url);
+        JsonObject openAlerts = this.getOpenAlerts(baseUrl, auth);
+        allAlerts.getAsJsonObject("data").getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("rules").forEach(
+                r->{
+                   r.getAsJsonObject().add("alerts",new JsonArray());
+                }
+        );
+
+        openAlerts.getAsJsonArray("data").forEach(x->
+        {
+            String alertName = x.getAsJsonObject().get("labels").getAsJsonObject().get("alertname").getAsString();
+            allAlerts.getAsJsonObject("data").getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("rules").forEach(
+                    r->{
+                        if(r.getAsJsonObject().get("name").getAsString().equals(alertName)){
+                            r.getAsJsonObject().getAsJsonArray("alerts").add(x);
+                        }
+                    }
+            );
+        });
+        return allAlerts;
     }
 
     public JsonObject getOpenAlerts(String baseUrl, String auth) {
-        String url = "https://" + baseUrl + "/api/v1/alerts";
+        String url2 = HTTPS_ALERTMANAGER + baseUrl + "/api/v2/alerts";
+        JsonObject dummy = this.callAPI(baseUrl, auth, url2);
+        String url = HTTPS_ALERTMANAGER + baseUrl + "/api/v1/alerts";
         JsonObject allAlerts = this.callAPI(baseUrl, auth, url);
         if(allAlerts.get("status").getAsString().equals("success")){
             JsonArray data = allAlerts.getAsJsonArray("data");
@@ -64,12 +87,12 @@ public class PrometheusService {
     }
 
     public JsonObject getSilenceById(String baseUrl, String auth, String silenceId) {
-        String url = "https://" + baseUrl + "/api/v1/silence/" + silenceId;
+        String url = "https://alertmanager." + baseUrl + "/api/v1/silence/" + silenceId;
         return this.callAPI(baseUrl, auth, url);
     }
 
     public JsonObject silenceAlert(String baseUrl, String auth, SilenceAlarmRequest request, String userName) {
-        String url = "https://" + baseUrl + "/api/v1/silences";
+        String url = "https://alertmanager." + baseUrl + "/api/v1/silences";
         String startTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());

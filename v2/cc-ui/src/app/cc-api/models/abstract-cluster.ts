@@ -1,8 +1,11 @@
 /* tslint:disable */
 export interface AbstractCluster {
+  autoSignOffSchedule?: string;
   cdPipelineParent?: string;
   cloud?: 'AWS';
+  clusterMetadata?: {[key: string]: string};
   commonEnvironmentVariables?: {[key: string]: string};
+  enableAutoSignOff?: boolean;
   id?: string;
   k8sRequestsToLimitsRatio?: number;
   name?: string;

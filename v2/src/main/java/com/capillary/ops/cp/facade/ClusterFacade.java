@@ -98,8 +98,8 @@ public class ClusterFacade {
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
         }
-        String url = existing.get().getClusterMetadata().get(ClusterMeta.PROM_URL);
-        String pass = existing.get().getClusterMetadata().get(ClusterMeta.PROM_PASS);
+        String url = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_URL);
+        String pass = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_PASS);
         JsonObject allAlerts = prometheusService.getAllAlerts(url, pass);
         return (new Gson()).fromJson(allAlerts,HashMap.class);
     }
@@ -115,8 +115,8 @@ public class ClusterFacade {
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
         }
-        String url = existing.get().getClusterMetadata().get(ClusterMeta.AM_URL);
-        String pass = existing.get().getClusterMetadata().get(ClusterMeta.PROM_PASS);
+        String url = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_URL);
+        String pass = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_PASS);
         JsonObject allAlerts = prometheusService.getOpenAlerts(url, pass);
 
         return (new Gson()).fromJson(allAlerts, HashMap.class);
@@ -133,8 +133,8 @@ public class ClusterFacade {
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
         }
-        String url = existing.get().getClusterMetadata().get(ClusterMeta.AM_URL);
-        String pass = existing.get().getClusterMetadata().get(ClusterMeta.PROM_PASS);
+        String url = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_URL);
+        String pass = existing.get().getClusterMetadata().get(ClusterMeta.TOOLS_PASS);
         String authUserName = DeployerUtil.getAuthUserName();
 
         JsonObject response = prometheusService.silenceAlert(url, pass, request, authUserName);

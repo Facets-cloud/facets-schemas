@@ -1,10 +1,13 @@
 /* tslint:disable */
 export interface AwsCluster {
+  autoSignOffSchedule?: string;
   awsRegion?: string;
   azs?: Array<string>;
   cdPipelineParent?: string;
   cloud?: 'AWS';
+  clusterMetadata?: {[key: string]: string};
   commonEnvironmentVariables?: {[key: string]: string};
+  enableAutoSignOff?: boolean;
   externalId?: string;
   id?: string;
   k8sRequestsToLimitsRatio?: number;

@@ -1,0 +1,204 @@
+<app-layout-one-column>
+  <nb-card *ngIf="!isReachable" [nbSpinner]="loading"
+           nbSpinnerStatus="danger"
+           nbSpinnerSize="large">
+    <nb-card-header *ngIf="!loading">
+      Error Fetching Alerts
+    </nb-card-header>
+    <nb-card-body>
+      {{reason}}
+    </nb-card-body>
+  </nb-card>
+
+  <nb-card *ngIf="isReachable">
+    <nb-card-header>
+      Firing Alerts
+    </nb-card-header>
+    <nb-card-body>
+      <nb-accordion>
+        <nb-accordion-item *ngFor="let rule of rules">
+          <nb-accordion-item-header *ngIf="rule['state'] != 'inactive'">
+            <nb-icon icon="bell-outline" status="danger" size="small" style="margin-right: 0.5rem"> </nb-icon>
+             {{rule["annotations"]["message"]}}
+            <nb-badge text='{{rule["alerts"].length}}' status="danger" position="top left"></nb-badge>
+          </nb-accordion-item-header>
+          <nb-accordion-item-body *ngIf="rule['state'] != 'inactive'">
+            <table class="table table-bordered">
+              <tr>
+                <th>Query</th>
+                <td>{{rule["query"]}}</td>
+              </tr>
+              <tr>
+                <th>Team</th>
+                <td>{{rule["labels"]["team"]}}</td>
+              </tr>
+            </table>
+
+            <table class="table table-bordered">
+              <tr>
+                <th>Tags</th>
+                <th>State</th>
+                <th>Active Since</th>
+                <th>Silence</th>
+              </tr>
+              <tr *ngFor="let alert of rule['alerts']">
+                <td>
+                  <div class="local-tag">
+                    <b>Entity:</b> {{alert["labels"]["entity"] ? alert["labels"]["entity"] : "No entity"}}</div>
+                  <div class="local-tag">
+                    <b>Deployment:</b> {{alert["labels"]["deployment"] ? alert["labels"]["deployment"] : "No Deployment"}}
+                  </div>
+                  <div class="local-tag">
+                    <b>Instance:</b> {{alert["labels"]["instance"] ? alert["labels"]["instance"] : "No Instance"}}</div>
+
+                </td>
+                <td>{{alert["status"]["state"]}}</td>
+                <td>
+                  {{alert["startsAt"] | date:"medium"}}
+                </td>
+                <td>
+                  <button *ngIf="alert['status']['state']!='suppressed'" nbButton status="danger"
+                          (click)="silenceAlert(silenceInput, alert)">Silence
+                  </button>
+                  <button *ngIf="alert['status']['state']=='suppressed'" nbButton status="basic"
+                          (click)="showDetails(silenceDetails, alert)">Details
+                  </button>
+                </td>
+              </tr>
+            </table>
+
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+      </nb-accordion>
+    </nb-card-body>
+  </nb-card>
+  <nb-card *ngIf="isReachable">
+    <nb-card-header>
+      Inactive Alerts
+    </nb-card-header>
+    <nb-card-body>
+      <nb-accordion>
+        <nb-accordion-item *ngFor="let rule of rules">
+          <nb-accordion-item-header *ngIf="rule['state'] == 'inactive'">
+            <nb-icon icon="bell-outline" status="basic" size="small" style="margin-right: 0.5rem"> </nb-icon> {{rule["annotations"]["message"]}}
+          </nb-accordion-item-header>
+
+          <nb-accordion-item-body *ngIf="rule['state'] == 'inactive'">
+            <table class="table table-bordered">
+              <tr>
+                <td>Query</td>
+                <td>{{rule["query"]}}</td>
+              </tr>
+              <tr>
+                <td>Team</td>
+                <td>{{rule["labels"]["team"]}}</td>
+              </tr>
+            </table>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+      </nb-accordion>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>
+
+<ng-template #silenceInput let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>
+      Silence Alert
+    </nb-card-header>
+    <nb-card-body>
+      <table class="table table-bordered">
+        <tr>
+          <td>
+            {{data["annotations"]["message"]}}
+          </td>
+          <td>
+            <div class="local-tag">
+              <b>Entity:</b> {{data["labels"]["entity"] ? data["labels"]["entity"] : "No entity"}}</div>
+            <div class="local-tag">
+              <b>Deployment:</b> {{data["labels"]["deployment"] ? data["labels"]["deployment"] : "No Deployment"}}
+            </div>
+            <div class="local-tag">
+              <b>Instance:</b> {{data["labels"]["instance"] ? data["labels"]["instance"] : "No Instance"}}</div>
+          </td>
+          <td>{{data["status"]["state"]}}</td>
+          <td>
+            {{data["startsAt"] | date:"medium"}}
+          </td>
+        </tr>
+      </table>
+      <div>
+        <div class="row cc-margin-bottom">
+          <div class="col-sm-2 cc-key" style="display: flex;align-items: center;">
+            Comments
+          </div>
+          <div class="col-sm-3">
+            <input type="text" nbInput fullWidth fieldSize="small" placeholder="Comments">
+          </div>
+          <div class="col-sm-2 cc-key" style="display: flex;align-items: center;">
+            Hours to Snooze
+          </div>
+          <div class="col-sm-3">
+            <input type="number" nbInput fullWidth fieldSize="small" placeholder="Hours">
+
+          </div>
+
+        </div>
+      </div>
+
+    </nb-card-body>
+    <nb-card-footer>
+      <button class=" cc-margin-right" nbButton status="primary" (click)="silenceAlertPost(data, ref)">Proceed
+      </button>
+      <button class=" cc-margin-right" status="basic" nbButton (click)="ref.close()">Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #silenceDetails let-data>
+  <nb-card>
+    <nb-card-header>
+      Silence Details
+    </nb-card-header>
+    <nb-card-body>
+      <table class="table table-bordered">
+        <tr>
+          <th>
+            Id
+          </th>
+          <th>
+            Silenced By
+          </th>
+          <th>
+            Comment
+          </th>
+          <th>
+            Silenced Till
+          </th>
+          <th>
+            Expire
+          </th>
+        </tr>
+        <tr *ngFor="let silence of data['silenceDetails']">
+          <td>
+            {{silence["id"]}}
+          </td>
+          <td>
+            {{silence["createdBy"]}}
+          </td>
+          <td>
+            {{silence["comment"]}}
+          </td>
+          <td>
+            {{silence["endsAt"]| date:"medium"}}
+          </td>
+          <td>
+            <button nbButton status="danger" disabled>Remove</button>
+          </td>
+        </tr>
+      </table>
+
+    </nb-card-body>
+  </nb-card>
+</ng-template>
+
