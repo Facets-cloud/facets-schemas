@@ -32,7 +32,7 @@ public class Stack {
 
     private Map<String, StackFile.VariableDetails> clusterVariablesMeta = new HashMap<>();
 
-    @JsonIgnore
+    // @JsonIgnore
     private List<String> childStacks = new ArrayList<>();
 
     public String getName() {

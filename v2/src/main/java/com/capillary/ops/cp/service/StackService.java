@@ -50,7 +50,7 @@ public class StackService {
     @Value("${aws.s3bucket.ccSubstackBucket.region}")
     private String substackS3BucketRegion;
 
-    @Cacheable(value = "substacks", unless="#result == null")
+    //@Cacheable(value = "substacks", unless="#result == null")
     public List<Substack> getSubstacks(String stackName) {
         Optional<Stack> optionalStack = stackRepository.findById(stackName);
         if (!optionalStack.isPresent()) {
@@ -63,7 +63,7 @@ public class StackService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "substackNames", unless="#result == null")
+    //@Cacheable(value = "substackNames", unless="#result == null")
     public List<String> getSubstackNames(String stackName) {
         List<Substack> substacks = getSubstacks(stackName);
         return substacks.stream().map(Stack::getName).collect(Collectors.toList());
