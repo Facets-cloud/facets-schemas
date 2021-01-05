@@ -133,16 +133,26 @@
             Comments
           </div>
           <div class="col-sm-3">
-            <input type="text" nbInput fullWidth fieldSize="small" placeholder="Comments">
+            <input *ngIf="!commentsEmpty" type="text" nbInput fullWidth fieldSize="small" placeholder="Comments" [(ngModel)]="comments" (ngModelChange)="changed()">
+            <input *ngIf="commentsEmpty" type="text" nbInput fullWidth fieldSize="small" placeholder="Comments" [(ngModel)]="comments" status="danger" (ngModelChange)="changed()">
+
           </div>
           <div class="col-sm-2 cc-key" style="display: flex;align-items: center;">
             Hours to Snooze
           </div>
           <div class="col-sm-3">
-            <input type="number" nbInput fullWidth fieldSize="small" placeholder="Hours">
-
+            <input *ngIf="!hoursEmpty" type="number" nbInput fullWidth fieldSize="small" placeholder="Hours" [(ngModel)]="hours" (ngModelChange)="changed()">
+            <input *ngIf="hoursEmpty" type="number" nbInput fullWidth fieldSize="small" placeholder="Hours" [(ngModel)]="hours" status="danger" (ngModelChange)="changed()">
           </div>
 
+        </div>
+        <div class="row" >
+          <div class="col-sm-12" *ngIf="commentsEmpty" style="color: red">
+              "Comments" cannot be empty
+          </div>
+          <div class="col-sm-12" *ngIf="hoursEmpty" style="color: red">
+            "Hours to Snooze" cannot be empty
+          </div>
         </div>
       </div>
 

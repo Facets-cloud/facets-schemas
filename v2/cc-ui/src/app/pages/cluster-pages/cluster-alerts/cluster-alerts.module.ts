@@ -10,9 +10,10 @@ import {
   NbListModule,
   NbSpinnerModule,
   NbUserModule,
-  NbInputModule
+  NbInputModule, NbFormFieldModule
 } from "@nebular/theme";
 import {RouterModule} from "@angular/router";
+import {FormsModule} from "@angular/forms";
 
 
 
@@ -30,7 +31,8 @@ import {RouterModule} from "@angular/router";
     NbUserModule,
     NbButtonModule,
     NbSpinnerModule,
-    NbInputModule
+    NbInputModule,
+    FormsModule
   ]
 })
 export class ClusterAlertsModule { }

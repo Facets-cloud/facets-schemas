@@ -3,6 +3,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {UiCommonClusterControllerService} from "../../../cc-api/services/ui-common-cluster-controller.service";
 import {NbDialogService} from "@nebular/theme";
 import {SilenceAlarmRequest} from "../../../cc-api/models";
+import { FormControl } from '@angular/forms';
+
 
 @Component({
   selector: 'app-cluster-alerts',
@@ -16,6 +18,11 @@ export class ClusterAlertsComponent implements OnInit {
   reason: any;
   loading: boolean = true;
   private clusterId: any;
+  comments: string = "";
+  hours: number;
+  hoursEmpty: boolean = false;
+  commentsEmpty: boolean = false;
+
 
   constructor(private aWSClusterService: UiCommonClusterControllerService,
               private route: ActivatedRoute,
@@ -47,10 +54,24 @@ export class ClusterAlertsComponent implements OnInit {
   }
 
   silenceAlert(silenceInput: any, alert: any) {
+    this.commentsEmpty = false;
+    this.hoursEmpty= false;
     this.dialogService.open(silenceInput, {context: alert});
   }
 
   silenceAlertPost(data: any, ref: any) {
+    if(!this.comments){
+      this.commentsEmpty= true;
+      return;
+    }else{
+      this.commentsEmpty = false;
+    }
+    if(!this.hours || this.hours == 0 ){
+      this.hoursEmpty= true;
+      return;
+    }else{
+      this.hoursEmpty= false;
+    }
     let request: SilenceAlarmRequest = {
       comment: "Hardcoded",
       snoozeInHours: 2,
@@ -68,4 +89,8 @@ export class ClusterAlertsComponent implements OnInit {
     });
   }
 
+  changed() {
+    this.commentsEmpty = !this.comments;
+    this.hoursEmpty = !this.hours || this.hours == 0;
+  }
 }

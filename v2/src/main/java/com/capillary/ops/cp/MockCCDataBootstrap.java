@@ -82,7 +82,7 @@ public class MockCCDataBootstrap {
         autoCompleteObjectRepository.saveAll(autoCompleteObjects);
 
         ClusterResourceDetails cd = new ClusterResourceDetails();
-        cd.setClusterId("clusster1");
+        cd.setClusterId("cluster1");
         cd.setStatus(StatusType.SUCCEEDED);
         cd.setResourceDetails(new HashMap<String,String>(){{
             put(ClusterHelper.TOOLS_PASS_KEY_IN_RESOURCES,"NfWaKLiPZt");
