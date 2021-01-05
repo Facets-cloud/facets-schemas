@@ -1,23 +1,25 @@
 package com.capillary.ops.cp.service;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.AwsCluster;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.bo.StackFile;
 import com.google.common.collect.Maps;
 import com.jcabi.aspects.Loggable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 @Loggable
 public class ClusterHelper {
+
+    public static final String TOOLS_PASS_KEY_IN_RESOURCES = "ingress_pass_tools";
+    public static final String TOOLS_USER = "toolsuser";
+    @Autowired
+    private ClusterResourceRefreshService clusterResourceRefreshService;
 
     /**
      * Get all common variables from stack and cluster definitions
@@ -35,7 +37,7 @@ public class ClusterHelper {
         }
         Map<String, String> userVars = clusterObj.getUserInputVars();
         Predicate<Map.Entry<String, StackFile.VariableDetails>> isNotSecret =
-            e -> !e.getValue().isSecret();
+                e -> !e.getValue().isSecret();
         Map<String, String> requestBasedVars = transformVars(userVars, stackObj.getClusterVariablesMeta(), isNotSecret);
         stackVars.putAll(requestBasedVars);
         return stackVars;
@@ -51,7 +53,7 @@ public class ClusterHelper {
     public Map<String, String> getSecrets(AbstractCluster clusterObj, Stack stackObj) {
         Map<String, String> clusterVars = clusterObj.getUserInputVars();
         Predicate<Map.Entry<String, StackFile.VariableDetails>> isCommonEnv =
-            e -> e.getValue().isSecret();
+                e -> e.getValue().isSecret();
         Map<String, String> secrets = transformVars(clusterVars, stackObj.getClusterVariablesMeta(), isCommonEnv);
         return secrets;
     }
@@ -66,8 +68,8 @@ public class ClusterHelper {
         Map<String, StackFile.VariableDetails> stackClusterVariables = stackObj.getClusterVariablesMeta();
 
         List<String> requiredKeys =
-            stackClusterVariables.entrySet().stream().filter(e -> e.getValue().isRequired())
-                .map(Map.Entry::getKey).collect(Collectors.toList());
+                stackClusterVariables.entrySet().stream().filter(e -> e.getValue().isRequired())
+                        .map(Map.Entry::getKey).collect(Collectors.toList());
 
         List<String> allValidKeys =
                 new ArrayList<>(stackClusterVariables.keySet());
@@ -84,8 +86,8 @@ public class ClusterHelper {
     }
 
     private Map<String, String> transformVars(Map<String, String> clusterVars,
-        Map<String, StackFile.VariableDetails> stackDefinition,
-        Predicate<Map.Entry<String, StackFile.VariableDetails>> predicate) {
+                                              Map<String, StackFile.VariableDetails> stackDefinition,
+                                              Predicate<Map.Entry<String, StackFile.VariableDetails>> predicate) {
         Map<String, StackFile.VariableDetails> filteredVars = stackDefinition.entrySet().stream().filter(predicate).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         HashMap<String, String> clusterVarValues = Maps.newHashMapWithExpectedSize(filteredVars.size());
         filteredVars.forEach((k, v) -> {
@@ -95,5 +97,27 @@ public class ClusterHelper {
         });
 
         return clusterVarValues;
+    }
+
+    public String getToolsURL(AbstractCluster cluster) {
+        return cluster.getName() + ".cctools.capillarytech.com";
+    }
+
+    public String getToolsPws(AbstractCluster cluster) {
+        Map<String, String> clusterResourceDetails;
+        String pwd = "";
+        try {
+            clusterResourceDetails = clusterResourceRefreshService.getClusterResourceDetails(cluster.getId());
+            pwd = clusterResourceDetails.getOrDefault(TOOLS_PASS_KEY_IN_RESOURCES, "no pass");
+        } catch (Throwable t) {
+            return pwd;
+        }
+        String userName = TOOLS_USER;
+        String auth = " ";
+        try {
+            auth = Base64.getEncoder().encodeToString((userName + ":" + pwd).getBytes("utf-8"));
+        } catch (UnsupportedEncodingException e) {
+        }
+        return auth;
     }
 }

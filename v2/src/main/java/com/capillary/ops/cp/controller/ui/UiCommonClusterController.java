@@ -3,6 +3,7 @@ package com.capillary.ops.cp.controller.ui;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
+import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -30,6 +32,22 @@ public class UiCommonClusterController {
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
         @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
+    }
+
+    @GetMapping("{clusterId}/alerts")
+    public HashMap<String, Object> getAlerts(@PathVariable String clusterId){
+        return clusterFacade.getAllClusterAlerts(clusterId);
+    }
+
+    @GetMapping("{clusterId}/open-alerts")
+    public HashMap<String, Object> getOpenAlerts(@PathVariable String clusterId){
+        return clusterFacade.getOpenClusterAlerts(clusterId);
+    }
+
+    @PostMapping("{clusterId}/silence-alerts")
+    public HashMap<String, Object> silenceAlerts(@PathVariable String clusterId,
+                                                 @RequestBody SilenceAlarmRequest request){
+        return clusterFacade.silenceAlert(clusterId, request);
     }
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")

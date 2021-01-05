@@ -4,7 +4,13 @@
     <div style="float:left;">Stack Overview</div>
     </nb-card-header>
     <nb-card-body>
-      This is a <b>{{stack?.name}}</b> stack, its source code is <a href={{stack?.vcsUrl}}>here</a>.
+      This is a manifestation of the blueprint definition for the stack <b>{{stack?.name}}</b>, its blueprint can be found
+      <a href={{stack?.vcsUrl}} target="_blank">
+        here
+        <nb-icon icon="external-link-outline" style="height: 0.8em">
+
+        </nb-icon>
+      </a>
     </nb-card-body>
   </nb-card>
 

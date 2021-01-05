@@ -3,15 +3,16 @@ package com.capillary.ops.cp;
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
-import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.*;
+import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.deployer.bo.User;
 import com.capillary.ops.deployer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.capillary.ops.cp.bo.AutoCompleteObject;
+import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -40,6 +41,9 @@ public class MockCCDataBootstrap {
 
     @Autowired
     AutoCompleteObjectRepository autoCompleteObjectRepository;
+
+    @Autowired
+    ClusterResourceDetailsRepository clusterResourceDetailsRepository;
 
     @PostConstruct
     private void init() {
@@ -77,7 +81,16 @@ public class MockCCDataBootstrap {
         autoCompleteObjects.add(statefulsets);
         autoCompleteObjectRepository.saveAll(autoCompleteObjects);
 
-        AwsCluster cluster = new AwsCluster("cluster1");
+        ClusterResourceDetails cd = new ClusterResourceDetails();
+        cd.setClusterId("cluster1");
+        cd.setStatus(StatusType.SUCCEEDED);
+        cd.setResourceDetails(new HashMap<String,String>(){{
+            put(ClusterHelper.TOOLS_PASS_KEY_IN_RESOURCES,"NfWaKLiPZt");
+        }});
+
+        clusterResourceDetailsRepository.save(cd);
+
+        AwsCluster cluster = new AwsCluster("crm-staging-new");
         cluster.setId("cluster1");
         cluster.setTz(TimeZone.getDefault());
         cluster.setAwsRegion(Regions.US_EAST_1.getName());

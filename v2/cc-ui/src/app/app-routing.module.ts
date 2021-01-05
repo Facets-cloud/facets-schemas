@@ -13,6 +13,7 @@ import {ClusterOverridesComponent} from './pages/cluster-pages/cluster-overrides
 import {AppComponent} from './app.component';
 import {ClusterPagesComponent} from './pages/cluster-pages/cluster-pages.component';
 import { ClusterDisasterRecoveryComponent } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.component';
+import {ClusterAlertsComponent} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.component";
 
 
 const routes: Routes = [
@@ -43,6 +44,10 @@ const routes: Routes = [
       {
         path: 'edit',
         component: ClusterCreateComponent,
+      },
+      {
+        path: 'alerts',
+        component: ClusterAlertsComponent,
       },
       {path: '', redirectTo: 'overview', pathMatch: 'full'},
       {path: '**', redirectTo: 'overview', pathMatch: 'full'},
