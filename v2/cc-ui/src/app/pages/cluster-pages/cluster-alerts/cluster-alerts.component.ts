@@ -31,6 +31,10 @@ export class ClusterAlertsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.hoursEmpty = false;
+    this.commentsEmpty = false;
+    this.loading = true;
+    this.isReachable = false;
     this.route.params.subscribe(p => {
       if (p.clusterId) {
         this.clusterId = p.clusterId;
@@ -82,8 +86,6 @@ export class ClusterAlertsComponent implements OnInit {
       clusterId: this.clusterId
     }).subscribe(result => {
       console.log('Silenced Alert');
-      this.loading=true;
-      this.isReachable=false;
       this.ngOnInit();
       ref.close();
     });
