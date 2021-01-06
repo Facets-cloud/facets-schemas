@@ -45,6 +45,9 @@ public class ReleaseScheduleService {
     @Autowired
     private DeploymentFacade deploymentFacade;
 
+    @Autowired
+    private CCKubernetesService ccKubernetesService;
+
     /**
      * Given a cluster update/insert all its schedules
      *
@@ -89,6 +92,13 @@ public class ReleaseScheduleService {
             deploymentRequest.setReleaseType(releaseType);
             deploymentRequest.setTriggeredBy("Deployer");
             deploymentFacade.createDeployment(c.getId(), deploymentRequest);
+            logger.info("Detaching user roles for cluster {} ({})", c.getId(), c.getName());
+            try {
+                ccKubernetesService.detachExpiredRoles(c.getId());
+                ccKubernetesService.detachExpiredClusterRoles(c.getId());
+            } catch (Throwable t) {
+                // pass
+            }
         }, cronTrigger);
         schedules.put(key, new ScheduleInfo(cron, schedule));
     }

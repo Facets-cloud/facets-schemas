@@ -3,9 +3,12 @@ package com.capillary.ops.cp.controller.ui;
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
+import com.capillary.ops.cp.bo.Substack;
 import com.capillary.ops.cp.bo.ToggleRelease;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.controller.StackController;
+import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.facade.StackFacade;
 import com.capillary.ops.cp.facade.SubscriptionFacade;
 import com.capillary.ops.cp.service.AclService;
@@ -16,6 +19,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -108,6 +112,16 @@ public class UiStackController {
     @PostMapping("{stackName}/toggleRelease")
     public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
         return stackFacade.toggleRelease(toggleRelease);
+    }
+
+    @PostMapping("substack/{substackName}")
+    public Substack createSubStack(@RequestBody Substack subStack, @PathVariable String substackName) throws IOException {
+        return stackController.createSubstack(subStack, substackName);
+    }
+
+    @GetMapping("{stackName}/localDeploymentContext")
+    public DeploymentContext getLocalDeploymentContext(@PathVariable String stackName) {
+        return stackFacade.getLocalDeploymentContext(stackName);
     }
 
 }

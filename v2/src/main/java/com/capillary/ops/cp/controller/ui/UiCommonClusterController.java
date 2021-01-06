@@ -3,16 +3,20 @@ package com.capillary.ops.cp.controller.ui;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
+import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -30,6 +34,22 @@ public class UiCommonClusterController {
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
         @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
+    }
+
+    @GetMapping("{clusterId}/alerts")
+    public HashMap<String, Object> getAlerts(@PathVariable String clusterId){
+        return clusterFacade.getAllClusterAlerts(clusterId);
+    }
+
+    @GetMapping("{clusterId}/open-alerts")
+    public HashMap<String, Object> getOpenAlerts(@PathVariable String clusterId){
+        return clusterFacade.getOpenClusterAlerts(clusterId);
+    }
+
+    @PostMapping("{clusterId}/silence-alerts")
+    public HashMap<String, Object> silenceAlerts(@PathVariable String clusterId,
+                                                 @RequestBody SilenceAlarmRequest request){
+        return clusterFacade.silenceAlert(clusterId, request);
     }
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
@@ -110,10 +130,21 @@ public class UiCommonClusterController {
         return clusterFacade.createSnapshot(clusterId, resourceType, instanceName);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
     @GetMapping(value = "{clusterId}/kubeconfig")
     public ResponseEntity<String> getKubeConfig(@PathVariable String clusterId) {
-        String kubeConfig = clusterFacade.createUserServiceAccount(clusterId);
-        return new ResponseEntity<>(kubeConfig, HttpStatus.OK);
+        String kubeConfig = clusterFacade.getKubeConfig(clusterId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>(kubeConfig, headers, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
+    @GetMapping(value = "{clusterId}/kubeconfig/refresh")
+    public ResponseEntity<Boolean> refreshKubeConfig(@PathVariable String clusterId) {
+        Boolean result = clusterFacade.refreshKubernetesSARoles(clusterId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 
 }

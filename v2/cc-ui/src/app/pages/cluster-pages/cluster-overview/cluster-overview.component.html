@@ -175,5 +175,27 @@
         </nb-card-body>
       </nb-card>
     </div>
+    <div class="col-md-6">
+      <nb-card *ngIf="tfDetails != null">
+        <nb-card-header>Cluster Password Details</nb-card-header>
+        <nb-card-body>
+          <div>
+            <ng2-smart-table
+            [settings]="passwordSettings"
+            [source]="sensitiveClusterDetailsSource"
+            >
+            </ng2-smart-table>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <div class="col-md-6">
+      <nb-card [nbSpinner]="downloadingKubeConfig">
+        <nb-card-header>Kubernetes Credentials</nb-card-header>
+        <nb-card-body>
+          Click <a style="cursor: pointer; color: blue;" (click)="downloadKubeConfig()">here</a> to download your personal kubeconfig file. Your permissions expire in 24 hours. Permissions may be renewed by clicking <a style="cursor: pointer; color: blue;" (click)="refreshKubeconfig()">here</a>.
+        </nb-card-body>
+      </nb-card>
+    </div>
   </div>
 </app-layout-one-column>

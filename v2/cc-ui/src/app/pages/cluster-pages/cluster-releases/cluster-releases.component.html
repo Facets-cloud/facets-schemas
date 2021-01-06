@@ -231,38 +231,68 @@
     <nb-card-header>Deployment</nb-card-header>
 
     <nb-card-body>
-      <div style="background: rgba(255, 255, 255, 0.8);width:470px;" class="row">
-          <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">Release Type</div>
-          <div class="col-sm-6">
+      <div style="background: rgba(255, 255, 255, 0.8);min-width:420px;padding:inherit;" class="row">
+        <div class="row" style="padding-bottom:inherit;" >
+          <div class="col-sm-6 cc-key" style="display:flex;align-items: center;width:140px;">Resource</div>
+          <div class="col-sm-6" style="display:flex;align-items: center;width:140px;" >
             <nb-select
-              [(ngModel)]="releaseTypeSelection"
-              #applicationType="ngModel"
-              name="releaseType"
-              id="releaseType"
-              placeholder="Select Type"
-              selected="RELEASE"
-            >
-              <nb-option
-                #releaseTypes
-                *ngFor="let releaseType of releaseTypes"
-                value="{{ releaseType }}"
-              >
-                {{ releaseType }}
-              </nb-option>
+               [(ngModel)]="resourceMap"
+                  name="resourceMap"
+                  id="resourceMap"
+                  size="small"
+                  fullWidth
+                  multiple
+                  placeholder="Please select"
+                >
+                  <nb-option-group title="Applications" value="Applications">
+                  <nb-option
+                    #applicationNames
+                    *ngFor="let apps of applicationNameList"
+                    value="application:{{ apps }}"
+                  >
+                    {{ apps }}
+                  </nb-option>
+                  </nb-option-group>
+
+                  <nb-option-group title="Cronjobs" value="Cronjobs">
+                  <nb-option
+                    #applicationNames
+                    *ngFor="let crons of cronjobNameList"
+                    value="cronjob:{{ crons }}"
+                  >
+                    {{ crons }}
+                  </nb-option>
+                  </nb-option-group>
+
+                  <nb-option-group title="Statefulsets" value="Statefulsets">
+                  <nb-option
+                    #applicationNames
+                    *ngFor="let sts of statefulSetNameList"
+                    value="statefulsets:{{ sts }}"
+                  >
+                    {{ sts }}
+                  </nb-option>
+                  </nb-option-group>
             </nb-select>
           </div>
-        </div>
-      <br/>
-        <div class="row" *ngIf="releaseTypeSelection == 'Hotfix'">
-          <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">Application Name</div>
+         </div>
+        <!--<div class="row" style="padding-bottom:inherit;" >
+          <div class="col-sm-6 cc-key" style="display: flex;align-items: center;width:180px;">Cronjob  </div>
           <div class="col-sm-6">
-            <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="application" (onResourceSelect)="appSelected($event)"></app-resource-selector>
+            <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="cronjob" (onResourceSelect)="cronSelected($event)"></app-resource-selector>
           </div>
+        </div>
+        <div class="row" style="padding-bottom:inherit;" >
+          <div class="col-sm-6 cc-key" style="display: flex;align-items: center;width:180px;">Statefulset</div>
+          <div class="col-sm-6">
+            <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="statefulsets" isClosed=true (onResourceSelect)="stsSelected($event)"></app-resource-selector>
+          </div>
+        </div> -->
         </div>
     </nb-card-body>
     <nb-card-footer>
       <button nbButton status=primary (click)="ref.close(data)"
-              [disabled]="releaseTypeSelection == 'Hotfix' && !applicationName" class="cc-margin-right">Confirm
+               [disabled]="!resourceMap || resourceMap.length == 0" class="cc-margin-right">Confirm
       </button>
       <button  nbButton status=basic (click)="ref.close()" class="cc-margin-right">Cancel</button>
     </nb-card-footer>

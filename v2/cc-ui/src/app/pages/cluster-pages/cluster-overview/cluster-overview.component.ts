@@ -7,7 +7,7 @@ import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
 import {NbSelectModule, NbToastrService} from '@nebular/theme';
 import {NbToggleModule} from '@nebular/theme';
 import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
-import {UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
+import {UiCommonClusterControllerService, UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import {element} from 'protractor';
@@ -20,6 +20,7 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 })
 
 export class ClusterOverviewComponent implements OnInit {
+  downloadingKubeConfig = false;
   releaseTypes = ['Release', 'Hotfix'];
   releaseTypeSelection: any = 'Release';
   applicationName: any = '';
@@ -67,13 +68,39 @@ export class ClusterOverviewComponent implements OnInit {
     },
   };
 
+  passwordSettings = {
+    columns: {
+      name: {
+        title: 'Variable Name',
+        filter: false,
+        width: '50%',
+        editable: false,
+      },
+      value: {
+        title: 'Variable Value',
+        filter: false,
+        width: '50%',
+        editable: true,
+        editor: {type: 'text'},
+      }
+    },
+    actions: {
+      add: false,
+      edit: false,
+      delete: false,
+      position: 'right',
+    },
+  };
+
   clusterInfo;
 
   cluster: AwsCluster;
+  tfDetails: {[key: string]: string} = null;
 
   enableSubmitForClusterOverrides = true;
   nonSensitiveClusterSource: LocalDataSource = new LocalDataSource();
   sensitiveClusterSource: LocalDataSource = new LocalDataSource();
+  sensitiveClusterDetailsSource: LocalDataSource = new LocalDataSource();
   originalClusterVariablesSource = [];
   addOverrideSpinner = false;
   stackName: string;
@@ -81,6 +108,7 @@ export class ClusterOverviewComponent implements OnInit {
   isUserAdmin: any;
 
   constructor(private aWSClusterService: UiAwsClusterControllerService,
+              private uiCommonClusterControllerService: UiCommonClusterControllerService,
               private route: ActivatedRoute,
               private router: Router,
               private toastrService: NbToastrService,
@@ -99,6 +127,13 @@ export class ClusterOverviewComponent implements OnInit {
           this.cluster = t;
           this.clusterInfo = flat.flatten(t);
         });
+        this.deploymentService.getResourceDetailsUsingGET(clusterId).subscribe(t => {
+          this.tfDetails = t;
+          this.updateTableSourceWithResourceDetails();
+        },
+        error => {
+          this.tfDetails = null;
+        })
       }
 
       this.stackName = p.stackName;
@@ -153,7 +188,7 @@ export class ClusterOverviewComponent implements OnInit {
     this.toastrService.warning(error.error.message, 'Error');
   }
 
-  
+
   refreshStack() {
     this.addOverrideSpinner = true;
     try {
@@ -257,5 +292,38 @@ export class ClusterOverviewComponent implements OnInit {
     });
 
     return awsClusterRequest;
+  }
+
+  updateTableSourceWithResourceDetails() {
+    let dataSource = [];
+    Object.keys(this.tfDetails).forEach(element => {
+      dataSource.push({name: element, value: this.tfDetails[element]});
+    })
+    this.sensitiveClusterDetailsSource.load(dataSource);
+  }
+
+  downloadKubeConfig() {
+    this.downloadingKubeConfig = true;
+    this.uiCommonClusterControllerService.getKubeConfigUsingGET(this.cluster.id).subscribe(
+      x => {
+        const blob = new Blob([x], { type: 'plain/text' });
+        const url = window.URL.createObjectURL(blob);
+        var anchor = document.createElement("a");
+        anchor.download = this.cluster.name + "-kubeconfig";
+        anchor.href = url;
+        anchor.click();
+        this.downloadingKubeConfig = false;
+      }
+    );
+  }
+
+  refreshKubeconfig() {
+    this.downloadingKubeConfig = true;
+    this.uiCommonClusterControllerService.refreshKubeConfigUsingGET(this.cluster.id).subscribe(
+      x => {
+        this.downloadingKubeConfig = false;
+        this.toastrService.success("Permissions renewed for 24h", "Success");
+      }
+    )
   }
 }

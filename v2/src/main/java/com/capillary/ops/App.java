@@ -31,6 +31,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -59,7 +60,10 @@ public class App {
     SpringApplication.run(App.class, args);
   }
 
-
+  @Bean
+  public RestTemplate getRestTemplate() {
+    return new RestTemplate();
+  }
 
   @Configuration
   @Profile("dev")

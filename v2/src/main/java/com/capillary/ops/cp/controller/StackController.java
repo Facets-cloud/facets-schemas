@@ -2,6 +2,7 @@ package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.bo.Substack;
 import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.StackFacade;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -60,4 +62,25 @@ public class StackController {
         return stackFacade.getStackByName(stackName);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN')")
+    @PostMapping("{stackName}/toggleRelease")
+    public ToggleRelease toggleRelease(@PathVariable String stackName, @RequestBody ToggleRelease toggleRelease){
+        return stackFacade.toggleRelease(toggleRelease);
+    }
+
+
+    @PostMapping("substack/{substackName}")
+    public Substack createSubstack(@RequestBody Substack subStack, @PathVariable String substackName) throws IOException {
+        return stackFacade.createSubstack(subStack);
+    }
+
+    @GetMapping("substack")
+    public List<Substack> getSubstacks(@PathVariable String stackName) {
+        return stackFacade.getSubstacks(stackName);
+    }
+
+    @GetMapping("substack/{substackName}")
+    public Substack getSubstack(@PathVariable String stackName, @PathVariable String substackName) {
+        return stackFacade.getSubstacks(stackName, substackName);
+    }
 }

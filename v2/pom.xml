@@ -4,7 +4,7 @@
 
     <groupId>com.capillary.ops</groupId>
     <artifactId>deployer</artifactId>
-    <version>1.17.1</version>
+    <version>1.18</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -255,6 +255,12 @@
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
             <version>5.6.1.202002131546-r</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-zip</artifactId>
+            <version>1.14</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <build>

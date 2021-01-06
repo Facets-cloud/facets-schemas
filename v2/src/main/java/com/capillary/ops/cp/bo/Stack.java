@@ -2,10 +2,11 @@ package com.capillary.ops.cp.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Document
@@ -30,6 +31,9 @@ public class Stack {
     private Map<String, String> stackVars = new HashMap<>();
 
     private Map<String, StackFile.VariableDetails> clusterVariablesMeta = new HashMap<>();
+
+    // @JsonIgnore
+    private List<String> childStacks = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -101,5 +105,13 @@ public class Stack {
 
     public void setPauseReleases(boolean pauseReleases) {
         this.pauseReleases = pauseReleases;
+    }
+
+    public List<String> getChildStacks() {
+        return childStacks;
+    }
+
+    public void setChildStacks(List<String> childStacks) {
+        this.childStacks = childStacks;
     }
 }

@@ -8,6 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { Stack } from '../models/stack';
+import { Substack } from '../models/substack';
 import { AbstractCluster } from '../models/abstract-cluster';
 import { ToggleRelease } from '../models/toggle-release';
 
@@ -20,6 +21,9 @@ import { ToggleRelease } from '../models/toggle-release';
 class StackControllerService extends __BaseService {
   static readonly getStacksUsingGETPath = '/cc/v1/stacks/';
   static readonly createStackUsingPOSTPath = '/cc/v1/stacks/';
+  static readonly getSubstacksUsingGETPath = '/cc/v1/stacks/substack';
+  static readonly getSubstackUsingGETPath = '/cc/v1/stacks/substack/{substackName}';
+  static readonly createSubstackUsingPOSTPath = '/cc/v1/stacks/substack/{substackName}';
   static readonly getClustersUsingGETPath = '/cc/v1/stacks/{stackName}/clusters';
   static readonly reloadStackUsingGETPath = '/cc/v1/stacks/{stackName}/reload';
   static readonly toggleReleaseUsingPOSTPath = '/cc/v1/stacks/{stackName}/toggleRelease';
@@ -101,6 +105,142 @@ class StackControllerService extends __BaseService {
   createStackUsingPOST(stack: Stack): __Observable<Stack> {
     return this.createStackUsingPOSTResponse(stack).pipe(
       __map(_r => _r.body as Stack)
+    );
+  }
+
+  /**
+   * getSubstacks
+   * @param stackName stackName
+   * @return OK
+   */
+  getSubstacksUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Array<Substack>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/stacks/substack`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<Substack>>;
+      })
+    );
+  }
+  /**
+   * getSubstacks
+   * @param stackName stackName
+   * @return OK
+   */
+  getSubstacksUsingGET(stackName: string): __Observable<Array<Substack>> {
+    return this.getSubstacksUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Array<Substack>)
+    );
+  }
+
+  /**
+   * getSubstack
+   * @param params The `StackControllerService.GetSubstackUsingGETParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  getSubstackUsingGETResponse(params: StackControllerService.GetSubstackUsingGETParams): __Observable<__StrictHttpResponse<Substack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc/v1/stacks/substack/${encodeURIComponent(params.substackName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Substack>;
+      })
+    );
+  }
+  /**
+   * getSubstack
+   * @param params The `StackControllerService.GetSubstackUsingGETParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `stackName`: stackName
+   *
+   * @return OK
+   */
+  getSubstackUsingGET(params: StackControllerService.GetSubstackUsingGETParams): __Observable<Substack> {
+    return this.getSubstackUsingGETResponse(params).pipe(
+      __map(_r => _r.body as Substack)
+    );
+  }
+
+  /**
+   * createSubstack
+   * @param params The `StackControllerService.CreateSubstackUsingPOSTParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `subStack`: subStack
+   *
+   * @return OK
+   */
+  createSubstackUsingPOSTResponse(params: StackControllerService.CreateSubstackUsingPOSTParams): __Observable<__StrictHttpResponse<Substack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.subStack;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/stacks/substack/${encodeURIComponent(params.substackName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Substack>;
+      })
+    );
+  }
+  /**
+   * createSubstack
+   * @param params The `StackControllerService.CreateSubstackUsingPOSTParams` containing the following parameters:
+   *
+   * - `substackName`: substackName
+   *
+   * - `subStack`: subStack
+   *
+   * @return OK
+   */
+  createSubstackUsingPOST(params: StackControllerService.CreateSubstackUsingPOSTParams): __Observable<Substack> {
+    return this.createSubstackUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as Substack)
     );
   }
 
@@ -231,6 +371,38 @@ class StackControllerService extends __BaseService {
 }
 
 module StackControllerService {
+
+  /**
+   * Parameters for getSubstackUsingGET
+   */
+  export interface GetSubstackUsingGETParams {
+
+    /**
+     * substackName
+     */
+    substackName: string;
+
+    /**
+     * stackName
+     */
+    stackName: string;
+  }
+
+  /**
+   * Parameters for createSubstackUsingPOST
+   */
+  export interface CreateSubstackUsingPOSTParams {
+
+    /**
+     * substackName
+     */
+    substackName: string;
+
+    /**
+     * subStack
+     */
+    subStack: Substack;
+  }
 
   /**
    * Parameters for toggleReleaseUsingPOST

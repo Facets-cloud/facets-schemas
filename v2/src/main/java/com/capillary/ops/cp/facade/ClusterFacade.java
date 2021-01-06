@@ -1,10 +1,10 @@
 package com.capillary.ops.cp.facade;
 
-import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
+import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.repository.CpClusterRepository;
 import com.capillary.ops.cp.repository.K8sCredentialsRepository;
 import com.capillary.ops.cp.repository.SnapshotInfoRepository;
@@ -16,12 +16,9 @@ import com.capillary.ops.deployer.bo.KubeApplicationDetails;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.utils.DeployerUtil;
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.CharStreams;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.jcabi.aspects.Loggable;
-import com.samskivert.mustache.Mustache;
-import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
@@ -30,14 +27,11 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.CronJobList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,7 +72,67 @@ public class ClusterFacade {
     @Autowired
     private AutoSignoffScheduleService autoSignoffScheduleService;
 
+    @Autowired
+    PrometheusService prometheusService;
+
+    @Autowired
+    private CCKubernetesService ccKubernetesService;
+
     private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
+
+    /**
+     * Given a cluster find alerts
+     *
+     * @param clusterId
+     * @return
+     */
+    public HashMap getAllClusterAlerts(String clusterId) {
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException("No such cluster with id: " + clusterId);
+        }
+        String url = clusterHelper.getToolsURL(existing.get());
+        String pass = clusterHelper.getToolsPws(existing.get());
+        JsonObject allAlerts = prometheusService.getAllAlerts(url, pass);
+        return (new Gson()).fromJson(allAlerts,HashMap.class);
+    }
+
+    /**
+     * Given a cluster find open alerts
+     *
+     * @param clusterId
+     * @return
+     */
+    public HashMap getOpenClusterAlerts(String clusterId) {
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException("No such cluster with id: " + clusterId);
+        }
+        String url = clusterHelper.getToolsURL(existing.get());
+        String pass = clusterHelper.getToolsPws(existing.get());
+        JsonObject allAlerts = prometheusService.getOpenAlerts(url, pass);
+
+        return (new Gson()).fromJson(allAlerts, HashMap.class);
+    }
+
+    /**
+     *
+     * @param clusterId
+     * @param request
+     * @return
+     */
+    public HashMap silenceAlert(String clusterId, SilenceAlarmRequest request){
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException("No such cluster with id: " + clusterId);
+        }
+        String url = clusterHelper.getToolsURL(existing.get());
+        String pass = clusterHelper.getToolsPws(existing.get());
+        String authUserName = DeployerUtil.getAuthUserName();
+
+        JsonObject response = prometheusService.silenceAlert(url, pass, request, authUserName);
+        return (new Gson()).fromJson(response, HashMap.class);
+    }
 
     /**
      * Cluster agnostic request to create a new cluster
@@ -93,16 +147,16 @@ public class ClusterFacade {
             throw new RuntimeException("Invalid Stack Specified");
         }
 
-        if (request.getCdPipelineParent() != null && ! cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
+        if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
             throw new RuntimeException("Invalid CD parent cluster");
         }
 
         Optional<AbstractCluster> existing =
-            cpClusterRepository.findByNameAndStackName(request.getClusterName(), request.getStackName());
+                cpClusterRepository.findByNameAndStackName(request.getClusterName(), request.getStackName());
         if (existing.isPresent()) {
             throw new InvalidActionException(
-                "Existing cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
-                    .getStackName());
+                    "Existing cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
+                            .getStackName());
         }
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.createCluster(request);
@@ -126,11 +180,11 @@ public class ClusterFacade {
         Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
         if (!existing.isPresent()) {
             throw new InvalidActionException(
-                "No such cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
-                    .getStackName());
+                    "No such cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
+                            .getStackName());
         }
 
-        if (request.getCdPipelineParent() != null && ! cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
+        if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
             throw new RuntimeException("Invalid CD parent cluster");
         }
 
@@ -144,7 +198,7 @@ public class ClusterFacade {
     }
 
     private AbstractCluster upsertCommonTasks(ClusterRequest request, Optional<Stack> stack,
-        AbstractCluster cluster) {
+                                              AbstractCluster cluster) {
         Map<String, String> secrets = clusterHelper.validateClusterVars(request.getClusterVars(), stack.get());
         cluster.setUserInputVars(secrets);
         cluster.setSchedules(request.getSchedules());
@@ -190,56 +244,16 @@ public class ClusterFacade {
         return true;
     }
 
-    public String createUserServiceAccount(String clusterId) {
-        K8sCredentials credentials = k8sCredentialsRepository.findOneByClusterId(clusterId).get();
-        KubernetesClient kubernetesClient = getKubernetesClient(credentials);
-        String saName = DeployerUtil.getUser().getName().split("@")[0];
-
-        ServiceAccount serviceAccount = kubernetesClient.serviceAccounts().inNamespace("default").withName(saName).get();
-
-        if (serviceAccount == null) {
-            kubernetesClient.serviceAccounts()
-                    .createOrReplaceWithNew()
-                    .withNewMetadata()
-                    .withNamespace("default")
-                    .withName(saName)
-                    .withLabels(ImmutableMap.of("ccowned", "true"))
-                    .endMetadata().done();
-            serviceAccount = kubernetesClient.serviceAccounts().inNamespace("default").withName(saName).get();
-        }
-
-        String tokenSecretName = serviceAccount.getSecrets().get(0).getName();
-        Map<String, String> secretData = kubernetesClient.secrets().inNamespace("default")
-                .withName(tokenSecretName).get().getData();
-        String cacert = secretData.get("ca.crt");
-        String token = new String(Base64.getDecoder().decode(secretData.get("token").getBytes()));
-        String kubeconfig = Mustache.compiler().escapeHTML(false).compile(getKubeconfigTemplate()).execute(ImmutableMap.of("CACERT", cacert,
-                "SERVER", credentials.getKubernetesApiEndpoint(),
-                "TOKEN", token
-        ));
-        return kubeconfig;
-    }
-
-    private KubernetesClient getKubernetesClient(K8sCredentials credentials) {
-        return new DefaultKubernetesClient(
-                new ConfigBuilder()
-                        .withMasterUrl(credentials.getKubernetesApiEndpoint())
-                        .withOauthToken(credentials.getKubernetesToken())
-                        .withTrustCerts(true)
-                        .build());
-    }
-
-
     public Deployment getApplicationData(String clusterId, String key, String value) {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
-            new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
-                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+                new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+                        .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
         DeploymentList apps = kubernetesClient.inNamespace("").apps().deployments().withLabel(key, value).list();
         if (apps.getItems().isEmpty()) {
             throw new NotFoundException(
-                "Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
+                    "Application not found in cluster. Cluster,value : " + clusterId + ", " + value);
         }
         return apps.getItems().get(0);
     }
@@ -248,8 +262,8 @@ public class ClusterFacade {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
         DefaultKubernetesClient kubernetesClient = new DefaultKubernetesClient(
-            new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
-                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+                new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+                        .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
         DeploymentList apps = kubernetesClient.inNamespace("").apps().deployments().withLabel(key, value).list();
         if (!apps.getItems().isEmpty()) {
             Deployment deployment = apps.getItems().get(0);
@@ -293,7 +307,7 @@ public class ClusterFacade {
     public List<OverrideObject> override(String clusterId, List<OverrideRequest> request) {
 
         List<OverrideObject> saved =
-            request.stream().map(req -> overrideService.save(clusterId, req)).collect(Collectors.toList());
+                request.stream().map(req -> overrideService.save(clusterId, req)).collect(Collectors.toList());
 
         return saved;
     }
@@ -322,7 +336,7 @@ public class ClusterFacade {
     }
 
     public SnapshotInfo pinSnapshot(String clusterId, String resourceType, String instanceName,
-                                          SnapshotInfo snapshotInfo) {
+                                    SnapshotInfo snapshotInfo) {
         Optional<AbstractCluster> existingCluster = cpClusterRepository.findById(clusterId);
         if (!existingCluster.isPresent()) {
             throw new NotFoundException("No such cluster: " + clusterId);
@@ -370,16 +384,14 @@ public class ClusterFacade {
         return overrideService.delete(clusterId, resourceType, resourceName);
     }
 
-    private String getKubeconfigTemplate() {
-        try {
-            String template =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    App.class.getClassLoader().getResourceAsStream("cc/kubeconfig.template"),
-                                    Charsets.UTF_8));
-            return template;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public String getKubeConfig(String clusterId) {
+        return ccKubernetesService.createUserServiceAccount(clusterId);
+    }
+
+    public boolean refreshKubernetesSARoles(String clusterId) {
+        ccKubernetesService.detachExpiredClusterRoles(clusterId);
+        ccKubernetesService.detachExpiredRoles(clusterId);
+        ccKubernetesService.attachRoles(clusterId);
+        return true;
     }
 }

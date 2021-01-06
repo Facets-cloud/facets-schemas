@@ -174,13 +174,13 @@ public class ApplicationController {
         return applicationFacade.createDeployment(applicationFamily, environment, applicationId, deployment);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
+    @PreAuthorize("hasRole('USER_ADMIN')")
     @PostMapping(value = "/users", produces = "application/json")
     public User createUser(@RequestBody  User user) {
         return userFacade.createUser(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
+    @PreAuthorize("hasRole('USER_ADMIN')")
     @PutMapping(value = "/users/{userId}", produces = "application/json")
     public User updateUser(@RequestBody User user, @PathVariable("userId") String userId) {
         user.setId(userId);
