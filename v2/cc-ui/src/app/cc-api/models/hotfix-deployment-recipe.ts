@@ -1,4 +1,5 @@
 /* tslint:disable */
+import { Resource } from './resource';
 export interface HotfixDeploymentRecipe {
-  resourceTypeToResourceNameMap?: {[key: string]: string};
+  resourceList?: Array<Resource>;
 }

@@ -745,15 +745,15 @@ public class DeploymentFacade {
     }
 
     public DeploymentLog runHotfixDeploymentRecipe(String clusterId, HotfixDeploymentRecipe hotfixDeploymentRecipe){
-        List<String> overrideBuildSteps = hotfixDeploymentRecipe.getResourceTypeToResourceNameMap()
-                .entrySet().stream().map(x -> getTFCommand(x)).collect(Collectors.toList());
+        List<String> overrideBuildSteps = hotfixDeploymentRecipe.getResourceList()
+                .stream().map(x -> getTFCommand(x)).collect(Collectors.toList());
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(overrideBuildSteps);
         return createDeployment(clusterId, deploymentRequest);
     }
 
-    private String getTFCommand(Map.Entry<String, String> resource) {
+    private String getTFCommand(HotfixDeploymentRecipe.Resource resource) {
         StringBuilder command = new StringBuilder();
         Map<String, String> tfModulePath = new HashMap<>();
         tfModulePath.put("application","module.application.helm_release.application");
@@ -761,9 +761,9 @@ public class DeploymentFacade {
         tfModulePath.put("statefulsets","module.application.helm_release.statefulset");
 
         command.append("terraform apply -target '");
-        command.append(tfModulePath.get(resource.getKey()));
+        command.append(tfModulePath.get(resource.getResourceType()));
         command.append("[\\\"");
-        command.append(resource.getValue());
+        command.append(resource.getResourceName());
         command.append("\\\"]'");
         command.append(" -auto-approve");
         return command.toString();
