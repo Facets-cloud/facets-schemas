@@ -54,7 +54,6 @@ export { InputStreamResource } from './models/input-stream-resource';
 export { K8sCredentials } from './models/k8s-credentials';
 export { K8sLoggingConfiguration } from './models/k8s-logging-configuration';
 export { Kube2IamConfiguration } from './models/kube-2iam-configuration';
-export { Link } from './models/link';
 export { ListDeploymentsWrapper } from './models/list-deployments-wrapper';
 export { LogEvent } from './models/log-event';
 export { MongoDRDeploymentRecipe } from './models/mongo-drdeployment-recipe';

@@ -25,6 +25,8 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly getPinnedSnapshotUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly pinSnapshotUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly getKubeConfigUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/kubeconfig';
+  static readonly refreshKubeConfigUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/kubeconfig/refresh';
+  static readonly getOpenAlertsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/open-alerts';
   static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly deleteOverridesUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/overrides/{resourceType}/{resourceName}';
@@ -331,6 +333,82 @@ class UiCommonClusterControllerService extends __BaseService {
   getKubeConfigUsingGET(clusterId: string): __Observable<string> {
     return this.getKubeConfigUsingGETResponse(clusterId).pipe(
       __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * refreshKubeConfig
+   * @param clusterId clusterId
+   * @return OK
+   */
+  refreshKubeConfigUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/kubeconfig/refresh`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * refreshKubeConfig
+   * @param clusterId clusterId
+   * @return OK
+   */
+  refreshKubeConfigUsingGET(clusterId: string): __Observable<boolean> {
+    return this.refreshKubeConfigUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * getOpenAlerts
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getOpenAlertsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<{[key: string]: {}}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/open-alerts`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{[key: string]: {}}>;
+      })
+    );
+  }
+  /**
+   * getOpenAlerts
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getOpenAlertsUsingGET(clusterId: string): __Observable<{[key: string]: {}}> {
+    return this.getOpenAlertsUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as {[key: string]: {}})
     );
   }
 

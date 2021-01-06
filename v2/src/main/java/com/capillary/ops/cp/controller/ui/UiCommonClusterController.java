@@ -9,7 +9,9 @@ import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -128,10 +130,21 @@ public class UiCommonClusterController {
         return clusterFacade.createSnapshot(clusterId, resourceType, instanceName);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
     @GetMapping(value = "{clusterId}/kubeconfig")
     public ResponseEntity<String> getKubeConfig(@PathVariable String clusterId) {
-        String kubeConfig = clusterFacade.createUserServiceAccount(clusterId);
-        return new ResponseEntity<>(kubeConfig, HttpStatus.OK);
+        String kubeConfig = clusterFacade.getKubeConfig(clusterId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>(kubeConfig, headers, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
+    @GetMapping(value = "{clusterId}/kubeconfig/refresh")
+    public ResponseEntity<Boolean> refreshKubeConfig(@PathVariable String clusterId) {
+        Boolean result = clusterFacade.refreshKubernetesSARoles(clusterId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 
 }

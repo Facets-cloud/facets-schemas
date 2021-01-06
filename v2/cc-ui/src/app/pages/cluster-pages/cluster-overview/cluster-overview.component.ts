@@ -7,7 +7,7 @@ import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
 import {NbSelectModule, NbToastrService} from '@nebular/theme';
 import {NbToggleModule} from '@nebular/theme';
 import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
-import {UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
+import {UiCommonClusterControllerService, UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import {element} from 'protractor';
@@ -20,6 +20,7 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 })
 
 export class ClusterOverviewComponent implements OnInit {
+  downloadingKubeConfig = false;
   releaseTypes = ['Release', 'Hotfix'];
   releaseTypeSelection: any = 'Release';
   applicationName: any = '';
@@ -107,6 +108,7 @@ export class ClusterOverviewComponent implements OnInit {
   isUserAdmin: any;
 
   constructor(private aWSClusterService: UiAwsClusterControllerService,
+              private uiCommonClusterControllerService: UiCommonClusterControllerService,
               private route: ActivatedRoute,
               private router: Router,
               private toastrService: NbToastrService,
@@ -186,7 +188,7 @@ export class ClusterOverviewComponent implements OnInit {
     this.toastrService.warning(error.error.message, 'Error');
   }
 
-  
+
   refreshStack() {
     this.addOverrideSpinner = true;
     try {
@@ -298,5 +300,30 @@ export class ClusterOverviewComponent implements OnInit {
       dataSource.push({name: element, value: this.tfDetails[element]});
     })
     this.sensitiveClusterDetailsSource.load(dataSource);
+  }
+
+  downloadKubeConfig() {
+    this.downloadingKubeConfig = true;
+    this.uiCommonClusterControllerService.getKubeConfigUsingGET(this.cluster.id).subscribe(
+      x => {
+        const blob = new Blob([x], { type: 'plain/text' });
+        const url = window.URL.createObjectURL(blob);
+        var anchor = document.createElement("a");
+        anchor.download = this.cluster.name + "-kubeconfig";
+        anchor.href = url;
+        anchor.click();
+        this.downloadingKubeConfig = false;
+      }
+    );
+  }
+
+  refreshKubeconfig() {
+    this.downloadingKubeConfig = true;
+    this.uiCommonClusterControllerService.refreshKubeConfigUsingGET(this.cluster.id).subscribe(
+      x => {
+        this.downloadingKubeConfig = false;
+        this.toastrService.success("Permissions renewed for 24h", "Success");
+      }
+    )
   }
 }
