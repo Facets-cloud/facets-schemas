@@ -34,7 +34,7 @@ export class ClusterReleasesComponent implements OnInit {
   isUserAdmin: any;
   appName: any;
   stackName: any;
-  resourceMap: [string] = null;
+  resourceMap;
   applicationNameList: any;
   cronjobNameList: any = '';
   statefulSetNameList: any = '';
@@ -191,8 +191,9 @@ export class ClusterReleasesComponent implements OnInit {
           let objList: Array<Resource> = [];
           let res: Resource = {};
           this.resourceMap.forEach(x => {
-            res.resourceName = x.split(':')[0].toString();
-            res.resourceType = x.split(':')[1].toString();
+            res = {};
+            res.resourceType = x.split(':')[0].toString();
+            res.resourceName = x.split(':')[1].toString();
             objList.push(res);
           });
           recipe.resourceList = objList;

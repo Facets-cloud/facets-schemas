@@ -753,7 +753,7 @@ public class DeploymentFacade {
         return createDeployment(clusterId, deploymentRequest);
     }
 
-    private String getTFCommand(HotfixDeploymentRecipe.Resource resource) {
+    private String getTFCommand(Resource resource) {
         StringBuilder command = new StringBuilder();
         Map<String, String> tfModulePath = new HashMap<>();
         tfModulePath.put("application","module.application.helm_release.application");
