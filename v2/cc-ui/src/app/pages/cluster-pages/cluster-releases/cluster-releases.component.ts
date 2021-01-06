@@ -188,10 +188,14 @@ export class ClusterReleasesComponent implements OnInit {
         if (result) {
           this.loading = true;
           let recipe: HotfixDeploymentRecipe = {};
-          let objList: Array<Resource>;
+          let objList: Array<Resource> = [];
+          let res: Resource = {};
           this.resourceMap.forEach(x => {
-            objList.push( new Resource({ resourceName: x.split(':')[0], resourceType: x.split(':')[1]}));
+            res.resourceName = x.split(':')[0].toString();
+            res.resourceType = x.split(':')[1].toString();
+            objList.push(res);
           });
+          recipe.resourceList = objList;
           try {
             this.deploymentService.runHotfixDeploymentRecipeUsingPOST({
               clusterId: this.clusterId,
