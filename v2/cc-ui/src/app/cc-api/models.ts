@@ -71,6 +71,7 @@ export { QASuite } from './models/qasuite';
 export { QASuiteResult } from './models/qasuite-result';
 export { QualityGate } from './models/quality-gate';
 export { Resource } from './models/resource';
+export { ResourceDetails } from './models/resource-details';
 export { S3DumpAwsConfig } from './models/s3dump-aws-config';
 export { SSLConfigs } from './models/sslconfigs';
 export { SilenceAlarmRequest } from './models/silence-alarm-request';

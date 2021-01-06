@@ -118,18 +118,6 @@ public class UiDeploymentController {
     }
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
-    @PostMapping("/refreshResource")
-    DeploymentLog refreshResource(@PathVariable String clusterId){
-        return deploymentFacade.createClusterResourceDetails(clusterId);
-    }
-
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
-    @GetMapping("/getResourceDetails")
-    Map<String, String> getResourceDetails(@PathVariable String clusterId){
-        return deploymentFacade.getClusterResourceDetails(clusterId);
-    }
-
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("/recipes/deployment/hotfix")
     DeploymentLog runHotfixDeploymentRecipe(@PathVariable String clusterId,
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {

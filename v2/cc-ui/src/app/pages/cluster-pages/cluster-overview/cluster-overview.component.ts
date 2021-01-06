@@ -7,7 +7,7 @@ import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
 import {NbSelectModule, NbToastrService} from '@nebular/theme';
 import {NbToggleModule} from '@nebular/theme';
 import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
-import {UiCommonClusterControllerService, UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
+import {UiCommonClusterControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import {element} from 'protractor';
@@ -68,39 +68,13 @@ export class ClusterOverviewComponent implements OnInit {
     },
   };
 
-  passwordSettings = {
-    columns: {
-      name: {
-        title: 'Variable Name',
-        filter: false,
-        width: '50%',
-        editable: false,
-      },
-      value: {
-        title: 'Variable Value',
-        filter: false,
-        width: '50%',
-        editable: true,
-        editor: {type: 'text'},
-      }
-    },
-    actions: {
-      add: false,
-      edit: false,
-      delete: false,
-      position: 'right',
-    },
-  };
-
   clusterInfo;
 
   cluster: AwsCluster;
-  tfDetails: {[key: string]: string} = null;
 
   enableSubmitForClusterOverrides = true;
   nonSensitiveClusterSource: LocalDataSource = new LocalDataSource();
   sensitiveClusterSource: LocalDataSource = new LocalDataSource();
-  sensitiveClusterDetailsSource: LocalDataSource = new LocalDataSource();
   originalClusterVariablesSource = [];
   addOverrideSpinner = false;
   stackName: string;
@@ -113,7 +87,6 @@ export class ClusterOverviewComponent implements OnInit {
               private router: Router,
               private toastrService: NbToastrService,
               private stackService: UiStackControllerService,
-              private deploymentService: UiDeploymentControllerService,
               private applicationController: ApplicationControllerService) {
   }
 
@@ -127,13 +100,6 @@ export class ClusterOverviewComponent implements OnInit {
           this.cluster = t;
           this.clusterInfo = flat.flatten(t);
         });
-        this.deploymentService.getResourceDetailsUsingGET(clusterId).subscribe(t => {
-          this.tfDetails = t;
-          this.updateTableSourceWithResourceDetails();
-        },
-        error => {
-          this.tfDetails = null;
-        })
       }
 
       this.stackName = p.stackName;
@@ -292,14 +258,6 @@ export class ClusterOverviewComponent implements OnInit {
     });
 
     return awsClusterRequest;
-  }
-
-  updateTableSourceWithResourceDetails() {
-    let dataSource = [];
-    Object.keys(this.tfDetails).forEach(element => {
-      dataSource.push({name: element, value: this.tfDetails[element]});
-    })
-    this.sensitiveClusterDetailsSource.load(dataSource);
   }
 
   downloadKubeConfig() {

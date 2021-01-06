@@ -20,6 +20,7 @@ import {ClusterCreateModule} from './pages/cluster-pages/cluster-create/cluster-
 import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/cluster-overview.module';
 import { ClusterDisasterRecoveryModule } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.module';
 import {ClusterAlertsModule} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.module";
+import { ClusterResourceDetailsModule } from './pages/cluster-pages/cluster-resource-details/cluster-resource-details.module';
 
 
 @NgModule({
@@ -49,6 +50,7 @@ import {ClusterAlertsModule} from "./pages/cluster-pages/cluster-alerts/cluster-
     ClusterPagesModule,
     ClusterCreateModule,
     ClusterAlertsModule,
+    ClusterResourceDetailsModule,
     HttpClientModule,
     StackOverviewModule,
     NbMenuModule.forRoot(),

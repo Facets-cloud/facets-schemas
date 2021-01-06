@@ -1,10 +1,13 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.OverrideObject;
+import com.capillary.ops.cp.bo.ResourceDetails;
 import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
+import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("cc-ui/v1/clusters")
@@ -26,6 +30,9 @@ public class UiCommonClusterController {
 
     @Autowired
     ClusterFacade clusterFacade;
+
+    @Autowired
+    DeploymentFacade deploymentFacade;
 
     @Autowired
     private AclService aclService;
@@ -146,5 +153,15 @@ public class UiCommonClusterController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("{clusterId}/refreshResource")
+    DeploymentLog refreshResource(@PathVariable String clusterId){
+        return deploymentFacade.createClusterResourceDetails(clusterId);
+    }
+
+    @GetMapping("{clusterId}/resourceDetails")
+    List<ResourceDetails> resourceDetails(@PathVariable String clusterId){
+        return deploymentFacade.getClusterResourceDetails(clusterId);
+    }
 
 }

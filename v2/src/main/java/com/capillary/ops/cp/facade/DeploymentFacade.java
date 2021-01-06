@@ -740,7 +740,7 @@ public class DeploymentFacade {
         return deploymentLog;
     }
 
-    public Map<String, String> getClusterResourceDetails(String clusterId) {
+    public List<ResourceDetails> getClusterResourceDetails(String clusterId) {
         return clusterResourceRefreshService.getClusterResourceDetails(clusterId);
     }
 

@@ -10,6 +10,8 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 import { SnapshotInfo } from '../models/snapshot-info';
 import { OverrideObject } from '../models/override-object';
 import { OverrideRequest } from '../models/override-request';
+import { DeploymentLog } from '../models/deployment-log';
+import { ResourceDetails } from '../models/resource-details';
 import { SilenceAlarmRequest } from '../models/silence-alarm-request';
 
 /**
@@ -30,6 +32,8 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly deleteOverridesUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/overrides/{resourceType}/{resourceName}';
+  static readonly refreshResourceUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/refreshResource';
+  static readonly resourceDetailsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/resourceDetails';
   static readonly silenceAlertsUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/silence-alerts';
 
   constructor(
@@ -550,6 +554,82 @@ class UiCommonClusterControllerService extends __BaseService {
   deleteOverridesUsingDELETE(params: UiCommonClusterControllerService.DeleteOverridesUsingDELETEParams): __Observable<Array<OverrideObject>> {
     return this.deleteOverridesUsingDELETEResponse(params).pipe(
       __map(_r => _r.body as Array<OverrideObject>)
+    );
+  }
+
+  /**
+   * refreshResource
+   * @param clusterId clusterId
+   * @return OK
+   */
+  refreshResourceUsingPOSTResponse(clusterId: string): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/refreshResource`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * refreshResource
+   * @param clusterId clusterId
+   * @return OK
+   */
+  refreshResourceUsingPOST(clusterId: string): __Observable<DeploymentLog> {
+    return this.refreshResourceUsingPOSTResponse(clusterId).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
+   * resourceDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  resourceDetailsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<Array<ResourceDetails>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/resourceDetails`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ResourceDetails>>;
+      })
+    );
+  }
+  /**
+   * resourceDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  resourceDetailsUsingGET(clusterId: string): __Observable<Array<ResourceDetails>> {
+    return this.resourceDetailsUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as Array<ResourceDetails>)
     );
   }
 
