@@ -1,16 +1,19 @@
 package com.capillary.ops.cp.bo.recipes;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.capillary.ops.cp.bo.Resource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HotfixDeploymentRecipe {
-    private Map<String, String> resourceTypeToResourceNameMap = new HashMap();
 
-    public Map<String, String> getResourceTypeToResourceNameMap() {
-        return resourceTypeToResourceNameMap;
+    private List<Resource> resourceList = new ArrayList<>();
+
+    public List<Resource> getResourceList() {
+        return resourceList;
     }
 
-    public void setResourceTypeToResourceNameMap(Map<String, String> resourceTypeToResourceNameMap) {
-        this.resourceTypeToResourceNameMap = resourceTypeToResourceNameMap;
+    public void setResourceList(List<Resource> resourceList) {
+        this.resourceList = resourceList;
     }
 }

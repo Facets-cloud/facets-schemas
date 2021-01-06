@@ -1,3 +1,4 @@
+import { Resource } from './../../../cc-api/models/resource';
 import { HotfixDeploymentRecipe } from './../../../cc-api/models/hotfix-deployment-recipe';
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {
@@ -30,12 +31,14 @@ export class ClusterReleasesComponent implements OnInit {
   downStreamClusters = [];
   currentSignedOffDeployment: DeploymentLog;
   user: SimpleOauth2User;
-  applicationName: any = '';
-  cronjobName: any = '';
-  statefulSetName: any = '';
   isUserAdmin: any;
   appName: any;
   stackName: any;
+  resourceMap;
+  applicationNameList: any;
+  cronjobNameList: any = '';
+  statefulSetNameList: any = '';
+
 
   constructor(private deploymentController: UiDeploymentControllerService,
               private u: UiStackControllerService,
@@ -121,7 +124,26 @@ export class ClusterReleasesComponent implements OnInit {
       }
     );
 
+
+    this.u.getResourcesByTypesUsingGET({stackName: this.stackName, resourceType: 'application'}).subscribe(
+      (x: Array<string>) => {
+        this.applicationNameList = x;
+      }
+    )
+
+    this.u.getResourcesByTypesUsingGET({stackName: this.stackName, resourceType: 'cronjob'}).subscribe(
+      (x: Array<string>) => {
+        this.cronjobNameList = x;
+      }
+    )
+
+    this.u.getResourcesByTypesUsingGET({stackName: this.stackName, resourceType: 'statefulsets'}).subscribe(
+      (x: Array<string>) => {
+        this.statefulSetNameList = x;
+      }
+    )
   }
+
 
 
   showDetails(dialog, deploymentId) {
@@ -165,23 +187,20 @@ export class ClusterReleasesComponent implements OnInit {
       result => {
         if (result) {
           this.loading = true;
-          let hotfixMap: HotfixDeploymentRecipe = {
-            resourceTypeToResourceNameMap: {}
-          };
-          if(this.applicationName){
-            hotfixMap.resourceTypeToResourceNameMap.application = this.applicationName
-          }
-          if(this.cronjobName){
-            hotfixMap.resourceTypeToResourceNameMap.cronjob =  this.cronjobName
-          }
-          if(this.statefulSetName){
-            hotfixMap.resourceTypeToResourceNameMap.statefulsets = this.statefulSetName
-          }
-          console.log(hotfixMap)
+          let recipe: HotfixDeploymentRecipe = {};
+          let objList: Array<Resource> = [];
+          let res: Resource = {};
+          this.resourceMap.forEach(x => {
+            res = {};
+            res.resourceType = x.split(':')[0].toString();
+            res.resourceName = x.split(':')[1].toString();
+            objList.push(res);
+          });
+          recipe.resourceList = objList;
           try {
             this.deploymentService.runHotfixDeploymentRecipeUsingPOST({
               clusterId: this.clusterId,
-              deploymentRecipe: hotfixMap
+              deploymentRecipe: recipe
             }).subscribe(c => {
                 console.log(c);
                 this.toastrService.success('Triggered terraform apply', 'Success');
@@ -201,15 +220,4 @@ export class ClusterReleasesComponent implements OnInit {
     );
   }
 
-  appSelected($event: string) {
-    this.applicationName = $event;
-  }
-
-  cronSelected($event: string) {
-    this.cronjobName = $event;
-  }
-
-  stsSelected($event: string) {
-    this.statefulSetName = $event;
-  }
 }
