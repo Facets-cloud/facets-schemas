@@ -129,7 +129,7 @@ public class UiDeploymentController {
         return deploymentFacade.getClusterResourceDetails(clusterId);
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN')")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("/recipes/deployment/hotfix")
     DeploymentLog runHotfixDeploymentRecipe(@PathVariable String clusterId,
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {
