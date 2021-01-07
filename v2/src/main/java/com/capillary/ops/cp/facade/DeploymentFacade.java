@@ -745,27 +745,26 @@ public class DeploymentFacade {
     }
 
     public DeploymentLog runHotfixDeploymentRecipe(String clusterId, HotfixDeploymentRecipe hotfixDeploymentRecipe){
-        List<String> overrideBuildSteps = hotfixDeploymentRecipe.getResourceList()
-                .stream().map(x -> getTFCommand(x)).collect(Collectors.toList());
+        String targetExpression =
+                hotfixDeploymentRecipe.getResourceList()
+                        .stream().map(x -> getTFTargetExpression(x))
+                        .collect(Collectors.joining(" "));
+        String command = String.format("terraform apply %s -auto-approve", targetExpression);
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
-        deploymentRequest.setOverrideBuildSteps(overrideBuildSteps);
+        deploymentRequest.setOverrideBuildSteps(Arrays.asList(command));
         return createDeployment(clusterId, deploymentRequest);
     }
 
-    private String getTFCommand(Resource resource) {
-        StringBuilder command = new StringBuilder();
+    private String getTFTargetExpression(Resource resource) {
         Map<String, String> tfModulePath = new HashMap<>();
         tfModulePath.put("application","module.application.helm_release.application");
         tfModulePath.put("cronjob","module.application.helm_release.cronjob");
         tfModulePath.put("statefulsets","module.application.helm_release.statefulset");
-
-        command.append("terraform apply -target '");
-        command.append(tfModulePath.get(resource.getResourceType()));
-        command.append("[\"");
-        command.append(resource.getResourceName());
-        command.append("\"]'");
-        command.append(" -auto-approve");
-        return command.toString();
+        String expression =
+                String.format("-target '%s[\"%s\"]'",
+                        tfModulePath.get(resource.getResourceType()),
+                        resource.getResourceName());
+        return expression;
     }
 }
