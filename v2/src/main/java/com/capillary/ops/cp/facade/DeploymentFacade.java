@@ -762,9 +762,9 @@ public class DeploymentFacade {
 
         command.append("terraform apply -target '");
         command.append(tfModulePath.get(resource.getResourceType()));
-        command.append("[\\\"");
+        command.append("[\"");
         command.append(resource.getResourceName());
-        command.append("\\\"]'");
+        command.append("\"]'");
         command.append(" -auto-approve");
         return command.toString();
     }
