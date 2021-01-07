@@ -77,8 +77,8 @@ export class ClusterAlertsComponent implements OnInit {
       this.hoursEmpty= false;
     }
     let request: SilenceAlarmRequest = {
-      comment: "Hardcoded",
-      snoozeInHours: 2,
+      comment: this.comments,
+      snoozeInHours: this.hours,
       labels: data["labels"]
     };
     this.aWSClusterService.silenceAlertsUsingPOST({
