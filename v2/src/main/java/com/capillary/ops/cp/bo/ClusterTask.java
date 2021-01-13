@@ -27,7 +27,7 @@ public class ClusterTask {
 
     List<String> tasks;
 
-    TaskStatus taskStatus;
+    TaskStatus taskStatus = TaskStatus.QUEUED;
 
     public String getId() {
         return id;

@@ -812,7 +812,7 @@ public class DeploymentFacade {
     }
 
     public ClusterTask getClusterTasksByStackAndCluster(String stackName, String clusterId) {
-        return clusterTaskRepository.findOneByStackNameAndClusterId(stackName, clusterId);
+        return clusterTaskRepository.findOneByStackNameAndClusterIdAndTaskStatus(stackName, clusterId,TaskStatus.QUEUED);
     }
 
     public ClusterTask getClusterTask(String taskId) {

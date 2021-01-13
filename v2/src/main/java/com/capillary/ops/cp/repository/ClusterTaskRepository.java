@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.repository;
 
 import com.capillary.ops.cp.bo.ClusterTask;
+import com.capillary.ops.cp.bo.TaskStatus;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +14,7 @@ public interface ClusterTaskRepository extends MongoRepository<ClusterTask, Stri
 
     ClusterTask findOneById(String Id);
 
-    ClusterTask findOneByStackNameAndClusterId(String stackName, String ClusterId);
+    ClusterTask findOneByStackNameAndClusterIdAndTaskStatus(String stackName, String ClusterId, TaskStatus taskStatus);
 
     void deleteById(String Id);
 
