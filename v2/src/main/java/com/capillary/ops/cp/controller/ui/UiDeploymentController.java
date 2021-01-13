@@ -1,7 +1,8 @@
 package com.capillary.ops.cp.controller.ui;
 
-import com.capillary.ops.cp.bo.AbstractDeploymentRecipe;
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
@@ -12,7 +13,6 @@ import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.service.AclService;
-import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -122,5 +122,15 @@ public class UiDeploymentController {
     DeploymentLog runHotfixDeploymentRecipe(@PathVariable String clusterId,
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runHotfixDeploymentRecipe(clusterId, deploymentRecipe);
+    }
+
+    @PostMapping("/clusterTask")
+    List<ClusterTask> createClusterTask(@RequestBody ClusterTaskRequest taskRequest){
+        return deploymentFacade.createClusterTask(taskRequest);
+    }
+
+    @PostMapping("/clusterTask/{stack}")
+    List<ClusterTask> getAllClusterTasks(@PathVariable String stackName){
+        return deploymentFacade.getClusterTasks(stackName);
     }
 }

@@ -23,6 +23,8 @@ public class DeploymentRequest {
 
     private List<String> overrideBuildSteps = new ArrayList<>();
 
+    private List<String> appendPreBuildSteps = new ArrayList<>();
+
     private String triggeredBy;
 
     public String getId() {
@@ -82,5 +84,13 @@ public class DeploymentRequest {
 
     public void setTriggeredBy(String triggeredBy){
         this.triggeredBy = triggeredBy;
+    }
+
+    public List<String> getAppendPreBuildSteps() {
+        return appendPreBuildSteps;
+    }
+
+    public void setAppendPreBuildSteps(List<String> appendPreBuildSteps) {
+        this.appendPreBuildSteps = appendPreBuildSteps;
     }
 }

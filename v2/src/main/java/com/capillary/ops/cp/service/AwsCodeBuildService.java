@@ -532,11 +532,16 @@ public class AwsCodeBuildService implements TFBuildService {
                     new InputStreamReader(
                         App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
                             Charsets.UTF_8));
+            Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
+            if(deploymentRequest.getAppendPreBuildSteps() != null && !deploymentRequest.getAppendPreBuildSteps().isEmpty()){
+                (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build")))
+                        .put("commands", deploymentRequest.getAppendPreBuildSteps());
+                System.out.println(buildSpec);
+            }
             if(deploymentRequest.getOverrideBuildSteps() == null ||
                     deploymentRequest.getOverrideBuildSteps().isEmpty()) {
                 return buildSpecYaml;
             }
-            Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
             (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
                     .put("commands", deploymentRequest.getOverrideBuildSteps());
             YAMLMapper yamlMapper = new YAMLMapper();

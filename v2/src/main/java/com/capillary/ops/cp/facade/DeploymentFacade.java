@@ -11,9 +11,11 @@ import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.HotfixDeploymentRecipe;
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
+import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
@@ -102,6 +104,12 @@ public class DeploymentFacade {
     @Autowired
     private ClusterResourceRefreshService clusterResourceRefreshService;
 
+    @Autowired
+    private ClusterTaskRepository clusterTaskRepository;
+
+    @Autowired
+    private StackController stackController;
+
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
     @Value("${flock.notification.cc.endpoint}")
@@ -118,6 +126,12 @@ public class DeploymentFacade {
         try {
             AbstractCluster cluster = clusterFacade.getCluster(clusterId);
             Stack stack = stackFacade.getStackByName(cluster.getStackName());
+            ClusterTask clusterTask = getClusterTasksByStackAndCluster(stack.getName(),clusterId);
+            if(clusterTask.getTasks() != null && !clusterTask.getTasks().isEmpty()){
+                deploymentRequest.setAppendPreBuildSteps(clusterTask.getTasks());
+                clusterTask.setTaskStatus(TaskStatus.EXECUTED);
+                clusterTaskRepository.save(clusterTask);
+            }
             if(BuildStrategy.PROD.equals(cluster.getReleaseStream()) && stack.isPauseReleases()){
                 String logMsg = "Prod Release is disabled for the stack " + cluster.getStackName();
                 logger.info(logMsg);
@@ -766,5 +780,48 @@ public class DeploymentFacade {
                         tfModulePath.get(resource.getResourceType()),
                         resource.getResourceName());
         return expression;
+    }
+
+    public List<ClusterTask> createClusterTask(ClusterTaskRequest taskRequest) {
+        List<ClusterTask> clusterTasks = new ArrayList<>();
+        if (taskRequest.getStackName() == null) {
+            List<Stack> stackList = stackController.getStacks();
+            for(Stack s: stackList){
+                List<AbstractCluster> clusterList = stackController.getClusters(s.getName());
+                for(AbstractCluster c: clusterList){
+                    ClusterTask task = new ClusterTask(s.getName(),c.getName(),taskRequest.getTasks());
+                    clusterTasks.add(task);
+                }
+            }
+        }else{
+            if(taskRequest.getClusterId() == null){
+                List<AbstractCluster> clusterList = stackController.getClusters(taskRequest.getStackName());
+                for(AbstractCluster c: clusterList){
+                    ClusterTask task = new ClusterTask(taskRequest.getStackName(),c.getName(),taskRequest.getTasks());
+                    clusterTasks.add(task);
+                }
+            }
+            ClusterTask task = new ClusterTask(taskRequest.getStackName(),taskRequest.getClusterId(),taskRequest.getTasks());
+            clusterTasks.add(task);
+        }
+        return clusterTaskRepository.saveAll(clusterTasks);
+    }
+
+    public List<ClusterTask> getClusterTasks(String stackName) {
+        return clusterTaskRepository.findAllByStackName(stackName);
+    }
+
+    public ClusterTask getClusterTasksByStackAndCluster(String stackName, String clusterId) {
+        return clusterTaskRepository.findOneByStackNameAndClusterId(stackName, clusterId);
+    }
+
+    public ClusterTask getClusterTask(String taskId) {
+        return clusterTaskRepository.findOneById(taskId);
+    }
+
+    public ClusterTask updateClusterTask(ClusterTaskRequest taskRequest, String taskId){
+        ClusterTask task = getClusterTask(taskId);
+        task.setTasks(taskRequest.getTasks());
+        return clusterTaskRepository.save(task);
     }
 }

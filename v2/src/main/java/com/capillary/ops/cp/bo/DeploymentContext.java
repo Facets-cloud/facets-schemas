@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.Map;
 
-public class DeploymentContext {
+public class  DeploymentContext {
 
     public DeploymentContext() {
     }
