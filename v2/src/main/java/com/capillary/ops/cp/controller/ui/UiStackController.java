@@ -125,6 +125,7 @@ public class UiStackController {
         return stackFacade.getLocalDeploymentContext(stackName);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("clusterTask")
     public List<ClusterTask> createClusterTasks(@RequestBody ClusterTaskRequest taskRequest) throws Exception {
         return stackController.createClusterTasks(taskRequest);
