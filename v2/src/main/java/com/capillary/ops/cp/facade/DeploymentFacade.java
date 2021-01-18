@@ -107,9 +107,6 @@ public class DeploymentFacade {
     @Autowired
     private ClusterTaskRepository clusterTaskRepository;
 
-    @Autowired
-    private StackController stackController;
-
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
     @Value("${flock.notification.cc.endpoint}")
@@ -126,7 +123,7 @@ public class DeploymentFacade {
         try {
             AbstractCluster cluster = clusterFacade.getCluster(clusterId);
             Stack stack = stackFacade.getStackByName(cluster.getStackName());
-            ClusterTask clusterTask = getClusterTasksByStackAndCluster(stack.getName(),clusterId);
+            ClusterTask clusterTask = clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
             if(clusterTask.getTasks() != null && !clusterTask.getTasks().isEmpty()){
                 deploymentRequest.setAppendPreBuildSteps(clusterTask.getTasks());
                 clusterTask.setTaskStatus(TaskStatus.EXECUTED);
@@ -780,48 +777,5 @@ public class DeploymentFacade {
                         tfModulePath.get(resource.getResourceType()),
                         resource.getResourceName());
         return expression;
-    }
-
-    public List<ClusterTask> createClusterTask(ClusterTaskRequest taskRequest) {
-        List<ClusterTask> clusterTasks = new ArrayList<>();
-        if (taskRequest.getStackName() == null) {
-            List<Stack> stackList = stackController.getStacks();
-            for(Stack s: stackList){
-                List<AbstractCluster> clusterList = stackController.getClusters(s.getName());
-                for(AbstractCluster c: clusterList){
-                    ClusterTask task = new ClusterTask(s.getName(),c.getName(),taskRequest.getTasks());
-                    clusterTasks.add(task);
-                }
-            }
-        }else{
-            if(taskRequest.getClusterId() == null){
-                List<AbstractCluster> clusterList = stackController.getClusters(taskRequest.getStackName());
-                for(AbstractCluster c: clusterList){
-                    ClusterTask task = new ClusterTask(taskRequest.getStackName(),c.getName(),taskRequest.getTasks());
-                    clusterTasks.add(task);
-                }
-            }
-            ClusterTask task = new ClusterTask(taskRequest.getStackName(),taskRequest.getClusterId(),taskRequest.getTasks());
-            clusterTasks.add(task);
-        }
-        return clusterTaskRepository.saveAll(clusterTasks);
-    }
-
-    public List<ClusterTask> getClusterTasks(String stackName) {
-        return clusterTaskRepository.findAllByStackName(stackName);
-    }
-
-    public ClusterTask getClusterTasksByStackAndCluster(String stackName, String clusterId) {
-        return clusterTaskRepository.findOneByStackNameAndClusterIdAndTaskStatus(stackName, clusterId,TaskStatus.QUEUED);
-    }
-
-    public ClusterTask getClusterTask(String taskId) {
-        return clusterTaskRepository.findOneById(taskId);
-    }
-
-    public ClusterTask updateClusterTask(ClusterTaskRequest taskRequest, String taskId){
-        ClusterTask task = getClusterTask(taskId);
-        task.setTasks(taskRequest.getTasks());
-        return clusterTaskRepository.save(task);
     }
 }

@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.ResourceDetails;
@@ -164,4 +165,8 @@ public class UiCommonClusterController {
         return deploymentFacade.getClusterResourceDetails(clusterId);
     }
 
+    @GetMapping("{clusterId}/clusterTask")
+    public ClusterTask getClusterTask(String clusterId){
+        return clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
+    }
 }

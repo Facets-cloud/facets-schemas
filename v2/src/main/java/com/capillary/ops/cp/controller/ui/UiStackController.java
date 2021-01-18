@@ -7,6 +7,7 @@ import com.capillary.ops.cp.bo.Substack;
 import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.Subscription;
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.facade.StackFacade;
@@ -124,4 +125,13 @@ public class UiStackController {
         return stackFacade.getLocalDeploymentContext(stackName);
     }
 
+    @PostMapping("clusterTask")
+    public List<ClusterTask> createClusterTasks(@RequestBody ClusterTaskRequest taskRequest) throws Exception {
+        return stackController.createClusterTasks(taskRequest);
+    }
+
+    @GetMapping("clusterTask/{stackName}")
+    public List<ClusterTask> getAllClusterTasks(@PathVariable String stackName){
+        return stackController.getClusterTasks(stackName);
+    }
 }

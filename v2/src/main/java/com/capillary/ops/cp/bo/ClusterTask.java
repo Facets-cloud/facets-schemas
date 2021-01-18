@@ -18,7 +18,6 @@ public class ClusterTask {
     }
 
     @Id
-    @JsonIgnore
     String id;
 
     String stackName;

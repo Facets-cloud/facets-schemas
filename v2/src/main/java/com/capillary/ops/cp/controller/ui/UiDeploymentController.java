@@ -123,14 +123,4 @@ public class UiDeploymentController {
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runHotfixDeploymentRecipe(clusterId, deploymentRecipe);
     }
-
-    @PostMapping("/clusterTask")
-    List<ClusterTask> createClusterTask(@RequestBody ClusterTaskRequest taskRequest){
-        return deploymentFacade.createClusterTask(taskRequest);
-    }
-
-    @PostMapping("/clusterTask/{stack}")
-    List<ClusterTask> getAllClusterTasks(@PathVariable String stackName){
-        return deploymentFacade.getClusterTasks(stackName);
-    }
 }

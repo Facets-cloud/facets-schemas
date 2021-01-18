@@ -10,15 +10,11 @@ import java.util.List;
 @Repository
 public interface ClusterTaskRepository extends MongoRepository<ClusterTask, String> {
 
-    List<ClusterTask> findAllByStackName(String stackName);
+    List<ClusterTask> findFirst30ByStackNameAndTaskStatus(String stackName,TaskStatus taskStatus);
 
-    ClusterTask findOneById(String Id);
+    List<ClusterTask> findFirst15ByClusterIdAndTaskStatus(String clusterId, TaskStatus taskStatus);
 
-    ClusterTask findOneByStackNameAndClusterIdAndTaskStatus(String stackName, String ClusterId, TaskStatus taskStatus);
+    List<ClusterTask> findFirst15ByTaskStatus(TaskStatus taskStatus);
 
-    void deleteById(String Id);
-
-    void deleteByClusterId(String clusterId);
-
-    void deleteByStack(String stackName);
+    List<ClusterTask> findFirst30ByStackName(String stackName);
 }

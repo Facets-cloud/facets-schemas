@@ -5,10 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
-import com.capillary.ops.cp.repository.CpClusterRepository;
-import com.capillary.ops.cp.repository.K8sCredentialsRepository;
-import com.capillary.ops.cp.repository.SnapshotInfoRepository;
-import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
@@ -71,6 +68,9 @@ public class ClusterFacade {
 
     @Autowired
     private AutoSignoffScheduleService autoSignoffScheduleService;
+
+    @Autowired
+    private ClusterTaskRepository clusterTaskRepository;
 
     @Autowired
     PrometheusService prometheusService;
@@ -393,5 +393,9 @@ public class ClusterFacade {
         ccKubernetesService.detachExpiredRoles(clusterId);
         ccKubernetesService.attachRoles(clusterId);
         return true;
+    }
+
+    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
+        return clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId,TaskStatus.QUEUED).get(0);
     }
 }
