@@ -125,7 +125,7 @@ public class DeploymentFacade {
             Stack stack = stackFacade.getStackByName(cluster.getStackName());
             ClusterTask clusterTask = clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
             if(clusterTask.getTasks() != null && !clusterTask.getTasks().isEmpty()){
-                deploymentRequest.setAppendPreBuildSteps(clusterTask.getTasks());
+                deploymentRequest.setPreBuildSteps(clusterTask.getTasks());
                 clusterTask.setTaskStatus(TaskStatus.EXECUTED);
                 clusterTaskRepository.save(clusterTask);
             }

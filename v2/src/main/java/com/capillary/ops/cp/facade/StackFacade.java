@@ -193,9 +193,10 @@ public class StackFacade {
                     ClusterTask task = new ClusterTask(taskRequest.getStackName(),c.getName(),taskRequest.getTasks());
                     clusterTasks.add(task);
                 }
+            }else {
+                ClusterTask task = new ClusterTask(taskRequest.getStackName(), taskRequest.getClusterId(), taskRequest.getTasks());
+                clusterTasks.add(task);
             }
-            ClusterTask task = new ClusterTask(taskRequest.getStackName(),taskRequest.getClusterId(),taskRequest.getTasks());
-            clusterTasks.add(task);
         }
         return clusterTaskRepository.saveAll(clusterTasks);
     }

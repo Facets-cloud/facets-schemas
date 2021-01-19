@@ -25,7 +25,7 @@ public class DeploymentRequest {
     private List<String> overrideBuildSteps = new ArrayList<>();
 
     @JsonIgnore
-    private List<String> appendPreBuildSteps = new ArrayList<>();
+    private List<String> preBuildSteps = new ArrayList<>();
 
     private String triggeredBy;
 
@@ -88,11 +88,11 @@ public class DeploymentRequest {
         this.triggeredBy = triggeredBy;
     }
 
-    public List<String> getAppendPreBuildSteps() {
-        return appendPreBuildSteps;
+    public List<String> getPreBuildSteps() {
+        return preBuildSteps;
     }
 
-    public void setAppendPreBuildSteps(List<String> appendPreBuildSteps) {
-        this.appendPreBuildSteps = appendPreBuildSteps;
+    public void setPreBuildSteps(List<String> preBuildSteps) {
+        this.preBuildSteps = preBuildSteps;
     }
 }

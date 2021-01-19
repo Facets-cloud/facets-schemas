@@ -147,6 +147,11 @@ public class UiCommonClusterController {
         return new ResponseEntity<>(kubeConfig, headers, HttpStatus.OK);
     }
 
+    @GetMapping("{clusterId}/clusterTask")
+    public ClusterTask getClusterTask(String clusterId){
+        return clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
+    }
+
     @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
     @GetMapping(value = "{clusterId}/kubeconfig/refresh")
     public ResponseEntity<Boolean> refreshKubeConfig(@PathVariable String clusterId) {
@@ -163,10 +168,5 @@ public class UiCommonClusterController {
     @GetMapping("{clusterId}/resourceDetails")
     List<ResourceDetails> resourceDetails(@PathVariable String clusterId){
         return deploymentFacade.getClusterResourceDetails(clusterId);
-    }
-
-    @GetMapping("{clusterId}/clusterTask")
-    public ClusterTask getClusterTask(String clusterId){
-        return clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
     }
 }
