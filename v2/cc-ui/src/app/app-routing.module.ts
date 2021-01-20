@@ -56,7 +56,7 @@ const routes: Routes = [
         component: ClusterResourceDetailsComponent,
       },
       {
-        path: 'tunnel',
+        path: 'tools',
         component: ClusterTunnelComponent,
       },
       {path: '', redirectTo: 'overview', pathMatch: 'full'},
