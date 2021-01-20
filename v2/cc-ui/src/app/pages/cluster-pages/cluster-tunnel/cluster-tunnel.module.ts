@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClusterTunnelComponent } from './cluster-tunnel.component';
-import {NbLayoutModule, NbTabsetModule} from "@nebular/theme";
+import {NbCardModule, NbLayoutModule, NbTabsetModule} from "@nebular/theme";
 import {ComponentsModule} from "../../../components/components.module";
 import {LayoutsModule} from "../../../layouts/layouts.module";
 
@@ -15,6 +15,7 @@ import {LayoutsModule} from "../../../layouts/layouts.module";
     ComponentsModule,
     NbTabsetModule,
     LayoutsModule,
+    NbCardModule,
   ]
 })
 export class ClusterTunnelModule { }

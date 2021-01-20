@@ -1,11 +1,23 @@
 <app-layout-one-column>
 
-  <nb-tabset style="height: inherit">
+    <nb-tabset style="
+    position: fixed;
+    top: 4.7rem;
+    left: 0;
+    right: 0;
+    bottom: 0;">
 
-    <nb-tab tabTitle="Grafana">
-      <iframe [src]="this.grafanaTunnelSafe" frameborder="0" width="100%" style="height: 800px;"></iframe>
-    </nb-tab>
-  </nb-tabset>
+      <nb-tab tabTitle="Grafana">
+        <div  style="
+    position: fixed;
+    top: 8rem;
+    left: 0;
+    right: 0;
+    bottom: 0;">
+        <iframe [src]="this.grafanaTunnelSafe" frameborder="0" width="100%" height="100%"></iframe>
+        </div>
+      </nb-tab>
+    </nb-tabset>
 </app-layout-one-column>
 
 
