@@ -27,7 +27,10 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   private InternalRequestAccessController internalRequestAccessController;
 
   protected void configure(HttpSecurity http) throws Exception {
-
+    http
+            .headers()
+            .frameOptions()
+            .sameOrigin();
     http
             .authorizeRequests()
             .antMatchers("/cc/**")
