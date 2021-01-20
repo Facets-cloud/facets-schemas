@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -396,6 +397,37 @@ public class ClusterFacade {
     }
 
     public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
-        return clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId,TaskStatus.QUEUED).get(0);
+        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId,TaskStatus.QUEUED);
+        return tasks.map(clusterTasks -> clusterTasks.get(0)).orElse(null);
+    }
+
+    public ClusterTask disableClusterTask(String taskId) throws Exception {
+        Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
+        ClusterTask modifiedTask = null;
+        if(!task.isPresent()){
+            throw new Exception("Task does not exist");
+        }
+        if(!task.get().getTaskStatus().equals(TaskStatus.QUEUED)){
+            throw new Exception("Task not in QUEUED state");
+        }
+        modifiedTask = task.get();
+        modifiedTask.setTaskStatus(TaskStatus.DISABLED);
+        clusterTaskRepository.save(modifiedTask);
+        return modifiedTask;
+    }
+
+    public ClusterTask enableClusterTask(String taskId) throws Exception {
+        Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
+        ClusterTask modifiedTask = null;
+        if(!task.isPresent()){
+            throw new Exception("Task does not exist");
+        }
+        if(!task.get().getTaskStatus().equals(TaskStatus.DISABLED)){
+            throw new Exception("Task not in DISABLED state");
+        }
+        modifiedTask = task.get();
+        modifiedTask.setTaskStatus(TaskStatus.QUEUED);
+        clusterTaskRepository.save(modifiedTask);
+        return modifiedTask;
     }
 }

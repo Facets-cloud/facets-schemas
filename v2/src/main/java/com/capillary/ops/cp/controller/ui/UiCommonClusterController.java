@@ -152,6 +152,18 @@ public class UiCommonClusterController {
         return clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("clusterTask/disable")
+    public ClusterTask disableClusterTask(String taskId) throws Exception {
+        return clusterFacade.disableClusterTask(taskId);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("clusterTask/enable")
+    public ClusterTask enableClusterTask(String taskId) throws Exception {
+        return clusterFacade.enableClusterTask(taskId);
+    }
+
     @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
     @GetMapping(value = "{clusterId}/kubeconfig/refresh")
     public ResponseEntity<Boolean> refreshKubeConfig(@PathVariable String clusterId) {

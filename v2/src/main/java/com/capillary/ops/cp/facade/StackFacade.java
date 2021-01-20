@@ -172,7 +172,7 @@ public class StackFacade {
 
     public List<ClusterTask> createClusterTasks(ClusterTaskRequest taskRequest) throws Exception {
         List<ClusterTask> pendingClusterTasks = getPendingClusterTasks();
-        if(pendingClusterTasks.size()>0){
+        if(pendingClusterTasks != null && pendingClusterTasks.size()>0){
             logger.error("Pending cluster tasks exist. Please execute them first");
             throw new Exception("Pending cluster tasks exist");
         }
@@ -201,15 +201,13 @@ public class StackFacade {
         return clusterTaskRepository.saveAll(clusterTasks);
     }
 
-    public List<ClusterTask> getClusterTasks(String stackName,TaskStatus taskStatus) {
-        return clusterTaskRepository.findFirst30ByStackNameAndTaskStatus(stackName, taskStatus);
-    }
 
     public List<ClusterTask> getClusterTasks(String stackName) {
         return clusterTaskRepository.findFirst30ByStackName(stackName);
     }
 
     public List<ClusterTask> getPendingClusterTasks(){
-        return clusterTaskRepository.findFirst15ByTaskStatus(TaskStatus.QUEUED);
+        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByTaskStatus(TaskStatus.QUEUED);
+        return tasks.orElse(null);
     }
 }
