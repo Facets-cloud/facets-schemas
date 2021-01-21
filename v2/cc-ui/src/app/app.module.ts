@@ -21,6 +21,7 @@ import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/clus
 import { ClusterDisasterRecoveryModule } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.module';
 import {ClusterAlertsModule} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.module";
 import { ClusterResourceDetailsModule } from './pages/cluster-pages/cluster-resource-details/cluster-resource-details.module';
+import {ClusterTunnelModule} from "./pages/cluster-pages/cluster-tunnel/cluster-tunnel.module";
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { ClusterResourceDetailsModule } from './pages/cluster-pages/cluster-reso
     ClusterPagesModule,
     ClusterCreateModule,
     ClusterAlertsModule,
+    ClusterTunnelModule,
     ClusterResourceDetailsModule,
     HttpClientModule,
     StackOverviewModule,
