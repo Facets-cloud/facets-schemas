@@ -77,7 +77,7 @@ public class ClusterParamZuulPrefilter extends ZuulFilter {
             ctx.addZuulRequestHeader("Authorization", "Basic " + auth);
             ctx.put("routeHost", new URL(routeHost));
         } catch (MalformedURLException e) {
-            log.warn("Unable to route to {} as it is invalid", routeHost);
+            //log.warn("Unable to route to {} as it is invalid", routeHost);
         }
         return null;
     }
