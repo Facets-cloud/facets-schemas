@@ -398,7 +398,10 @@ public class ClusterFacade {
 
     public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
         Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId,TaskStatus.QUEUED);
-        return tasks.map(clusterTasks -> clusterTasks.get(0)).orElse(null);
+        if(tasks.isPresent() && !tasks.get().isEmpty()){
+            return tasks.get().get(0);
+        }
+        return null;
     }
 
     public ClusterTask disableClusterTask(String taskId) throws Exception {

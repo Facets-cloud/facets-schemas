@@ -208,6 +208,9 @@ public class StackFacade {
 
     public List<ClusterTask> getPendingClusterTasks(){
         Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByTaskStatus(TaskStatus.QUEUED);
-        return tasks.orElse(null);
+        if(tasks.isPresent() && !tasks.get().isEmpty()){
+            return tasks.get();
+        }
+        return null;
     }
 }

@@ -528,22 +528,24 @@ public class AwsCodeBuildService implements TFBuildService {
     private String getBuildSpec(DeploymentRequest deploymentRequest) {
         try {
             String buildSpecYaml =
-                CharStreams.toString(
-                    new InputStreamReader(
-                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
-                            Charsets.UTF_8));
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                                    Charsets.UTF_8));
             Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
+            YAMLMapper yamlMapper = new YAMLMapper();
+            yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
+            yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
             if(deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps().isEmpty()) {
                 if(deploymentRequest.getPreBuildSteps() != null && !deploymentRequest.getPreBuildSteps().isEmpty()){
-                    (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).put("commands", deploymentRequest.getPreBuildSteps());
+                    ((List<String>)(((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).get("commands"))
+                            .addAll(deploymentRequest.getPreBuildSteps());
+                    return yamlMapper.writeValueAsString(buildSpec);
                 }
                 return buildSpecYaml;
             }
             (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
                     .put("commands", deploymentRequest.getOverrideBuildSteps());
-            YAMLMapper yamlMapper = new YAMLMapper();
-            yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
-            yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
             return yamlMapper.writeValueAsString(buildSpec);
         } catch (IOException e) {
             throw new RuntimeException(e);

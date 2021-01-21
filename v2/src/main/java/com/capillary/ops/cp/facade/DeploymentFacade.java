@@ -124,10 +124,12 @@ public class DeploymentFacade {
             AbstractCluster cluster = clusterFacade.getCluster(clusterId);
             Stack stack = stackFacade.getStackByName(cluster.getStackName());
             ClusterTask clusterTask = clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
-            if(clusterTask != null && clusterTask.getTasks() != null && !clusterTask.getTasks().isEmpty()){
-                deploymentRequest.setPreBuildSteps(clusterTask.getTasks());
-                clusterTask.setTaskStatus(TaskStatus.EXECUTED);
-                clusterTaskRepository.save(clusterTask);
+            if(deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                if (clusterTask != null && clusterTask.getTasks() != null && !clusterTask.getTasks().isEmpty()) {
+                    deploymentRequest.setPreBuildSteps(clusterTask.getTasks());
+                    clusterTask.setTaskStatus(TaskStatus.EXECUTED);
+                    clusterTaskRepository.save(clusterTask);
+                }
             }
             if(BuildStrategy.PROD.equals(cluster.getReleaseStream()) && stack.isPauseReleases()){
                 String logMsg = "Prod Release is disabled for the stack " + cluster.getStackName();
