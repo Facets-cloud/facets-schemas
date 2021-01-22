@@ -5,10 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
-import com.capillary.ops.cp.repository.CpClusterRepository;
-import com.capillary.ops.cp.repository.K8sCredentialsRepository;
-import com.capillary.ops.cp.repository.SnapshotInfoRepository;
-import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
@@ -33,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -71,6 +69,9 @@ public class ClusterFacade {
 
     @Autowired
     private AutoSignoffScheduleService autoSignoffScheduleService;
+
+    @Autowired
+    private ClusterTaskRepository clusterTaskRepository;
 
     @Autowired
     PrometheusService prometheusService;
@@ -393,5 +394,43 @@ public class ClusterFacade {
         ccKubernetesService.detachExpiredRoles(clusterId);
         ccKubernetesService.attachRoles(clusterId);
         return true;
+    }
+
+    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
+        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId,TaskStatus.QUEUED);
+        if(tasks.isPresent() && !tasks.get().isEmpty()){
+            return tasks.get().get(0);
+        }
+        return null;
+    }
+
+    public ClusterTask disableClusterTask(String taskId) throws Exception {
+        Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
+        ClusterTask modifiedTask = null;
+        if(!task.isPresent()){
+            throw new Exception("Task does not exist");
+        }
+        if(!task.get().getTaskStatus().equals(TaskStatus.QUEUED)){
+            throw new Exception("Task not in QUEUED state");
+        }
+        modifiedTask = task.get();
+        modifiedTask.setTaskStatus(TaskStatus.DISABLED);
+        clusterTaskRepository.save(modifiedTask);
+        return modifiedTask;
+    }
+
+    public ClusterTask enableClusterTask(String taskId) throws Exception {
+        Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
+        ClusterTask modifiedTask = null;
+        if(!task.isPresent()){
+            throw new Exception("Task does not exist");
+        }
+        if(!task.get().getTaskStatus().equals(TaskStatus.DISABLED)){
+            throw new Exception("Task not in DISABLED state");
+        }
+        modifiedTask = task.get();
+        modifiedTask.setTaskStatus(TaskStatus.QUEUED);
+        clusterTaskRepository.save(modifiedTask);
+        return modifiedTask;
     }
 }

@@ -1,9 +1,7 @@
 package com.capillary.ops.cp.controller;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.bo.Substack;
-import com.capillary.ops.cp.bo.ToggleRelease;
+import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.StackFacade;
 import com.capillary.ops.cp.service.AclService;
@@ -82,5 +80,15 @@ public class StackController {
     @GetMapping("substack/{substackName}")
     public Substack getSubstack(@PathVariable String stackName, @PathVariable String substackName) {
         return stackFacade.getSubstacks(stackName, substackName);
+    }
+
+    @PostMapping("clusterTask")
+    public List<ClusterTask> createClusterTasks(@RequestBody ClusterTaskRequest taskRequest) throws Exception{
+        return stackFacade.createClusterTasks(taskRequest);
+    }
+
+    @GetMapping("clusterTask/{stackName}")
+    public List<ClusterTask> getClusterTasks(@PathVariable String stackName){
+        return stackFacade.getClusterTasks(stackName);
     }
 }

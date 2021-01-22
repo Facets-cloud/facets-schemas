@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.bo.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 
@@ -22,6 +23,9 @@ public class DeploymentRequest {
     private Map<String, String> extraEnv = new HashMap<>();
 
     private List<String> overrideBuildSteps = new ArrayList<>();
+
+    @JsonIgnore
+    private List<String> preBuildSteps = new ArrayList<>();
 
     private String triggeredBy;
 
@@ -82,5 +86,13 @@ public class DeploymentRequest {
 
     public void setTriggeredBy(String triggeredBy){
         this.triggeredBy = triggeredBy;
+    }
+
+    public List<String> getPreBuildSteps() {
+        return preBuildSteps;
+    }
+
+    public void setPreBuildSteps(List<String> preBuildSteps) {
+        this.preBuildSteps = preBuildSteps;
     }
 }

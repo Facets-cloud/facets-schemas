@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.ResourceDetails;
@@ -146,6 +147,23 @@ public class UiCommonClusterController {
         return new ResponseEntity<>(kubeConfig, headers, HttpStatus.OK);
     }
 
+    @GetMapping("{clusterId}/clusterTask")
+    public ClusterTask getClusterTask(String clusterId){
+        return clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("clusterTask/disable")
+    public ClusterTask disableClusterTask(String taskId) throws Exception {
+        return clusterFacade.disableClusterTask(taskId);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("clusterTask/enable")
+    public ClusterTask enableClusterTask(String taskId) throws Exception {
+        return clusterFacade.enableClusterTask(taskId);
+    }
+
     @PreAuthorize("hasRole('CC-ADMIN') or hasRole('K8S_READER') or hasRole('K8S_DEBUGGER')")
     @GetMapping(value = "{clusterId}/kubeconfig/refresh")
     public ResponseEntity<Boolean> refreshKubeConfig(@PathVariable String clusterId) {
@@ -163,5 +181,4 @@ public class UiCommonClusterController {
     List<ResourceDetails> resourceDetails(@PathVariable String clusterId){
         return deploymentFacade.getClusterResourceDetails(clusterId);
     }
-
 }
