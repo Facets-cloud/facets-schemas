@@ -40,6 +40,12 @@
                   {{ cluster?.releaseStream }}
                 </div>
               </div>
+              <div class="row" *ngIf="spotInstanceTypes != null">
+                <div class="col-sm-6 cc-key">SpotTypes</div>
+                <div class="col-sm-6 cc-value">
+                  {{ spotInstanceTypes }}
+                </div>
+              </div>
             </div>
             <div class="col-md-6">
               <div class="row">

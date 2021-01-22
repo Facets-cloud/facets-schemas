@@ -6,7 +6,9 @@ import com.capillary.ops.cp.service.ClusterService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.ec2.model.InstanceType;
 
+import java.util.ArrayList;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -29,6 +31,11 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         }
         //DONE: Variable Assignment
         AwsCluster cluster = new AwsCluster(request.getClusterName());
+
+        if (request.getInstanceTypes() != null && request.getInstanceTypes().size() > 0){
+            cluster.setInstanceTypes(request.getInstanceTypes());
+        }
+
         cluster.setRoleARN(request.getRoleARN());
         cluster.setTz(request.getTz());
         cluster.setExternalId(request.getExternalId());
@@ -50,6 +57,19 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         if (request.getTz() == null || request.getTz().getID() == null){
             request.setTz(new SimpleTimeZone(0, existing.getTz()));
         }
+
+        if (request.getInstanceTypes() == null || request.getInstanceTypes().size() == 0){
+            request.setInstanceTypes(new ArrayList<String>(){
+                {add(InstanceType.M5_2_XLARGE.toString());}
+                {add(InstanceType.M4_2_XLARGE.toString());}
+                {add(InstanceType.R4_2_XLARGE.toString());}
+            });
+        }
+
+        if (checkChanged(existing.getInstanceTypes(), request.getInstanceTypes())){
+            existing.setInstanceTypes(request.getInstanceTypes());
+        }
+
         if (checkChanged(existing.getTz(), request.getTz().getID())) {
             existing.setTz(request.getTz());
         }
