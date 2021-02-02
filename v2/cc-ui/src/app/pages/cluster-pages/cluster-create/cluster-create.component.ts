@@ -41,8 +41,10 @@ export class ClusterCreateComponent implements OnInit {
     azs: [],
     clusterVars: {},
     tz: {},
-    region: null
+    region: null,
+    instanceTypes: null
   };
+  spotInstanceTypes: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION', 'sv4', 'sv5'];
   awsRegions = ['US_EAST_1' , 'US_EAST_2' , 'US_WEST_1' , 'US_WEST_2' ,
    'EU_WEST_1' , 'EU_WEST_2' , 'EU_WEST_3' , 'EU_CENTRAL_1' , 'EU_NORTH_1' ,
@@ -166,7 +168,9 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.k8sRequestsToLimitsRatio = this.cluster.k8sRequestsToLimitsRatio;
     this.awsClusterRequest.requireSignOff = this.cluster.requireSignOff;
     this.awsClusterRequest.schedules = this.cluster.schedules;
+    this.awsClusterRequest.instanceTypes = this.cluster.instanceTypes;
     this.regionModelBound = this.cluster.awsRegion.toUpperCase().replace('-', '_').replace('-', '_');
+    this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
     this.cronScheduleModelBound = this.cluster.schedules.RELEASE;
     console.log(this.cluster);
     console.log(this.awsClusterRequest);
@@ -177,6 +181,7 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.schedules = {RELEASE: this.cronScheduleModelBound};
     this.awsClusterRequest.region = this.regionModelBound;
     this.awsClusterRequest.tz = this.timeZoneModelBound;
+    this.awsClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
 
     const commmonVarsDataSource = await this.commonVariablesTable.getAll();
     commmonVarsDataSource.forEach(element => {
@@ -229,6 +234,7 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.schedules = {RELEASE: this.cronScheduleModelBound};
     this.awsClusterRequest.region = this.regionModelBound;
     this.awsClusterRequest.tz = this.timeZoneModelBound;
+    this.awsClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
 
     const commmonVarsDataSource = await this.commonVariablesTable.getAll();
     commmonVarsDataSource.forEach(element => {

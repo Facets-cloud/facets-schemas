@@ -71,6 +71,7 @@ export class ClusterOverviewComponent implements OnInit {
   clusterInfo;
 
   cluster: AwsCluster;
+  spotInstanceTypes: string = null;
 
   enableSubmitForClusterOverrides = true;
   nonSensitiveClusterSource: LocalDataSource = new LocalDataSource();
@@ -98,6 +99,10 @@ export class ClusterOverviewComponent implements OnInit {
         this.aWSClusterService.getClusterUsingGET1(clusterId).subscribe(t => {
           this.updateTableSourceWithStackVariables(t);
           this.cluster = t;
+          this.spotInstanceTypes = null;
+          if(this.cluster.instanceTypes != null){
+            this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
+          }
           this.clusterInfo = flat.flatten(t);
         });
       }

@@ -2,8 +2,11 @@ package com.capillary.ops.cp.bo;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.requests.Cloud;
+import com.capillary.ops.cp.exceptions.BadRequestException;
 import org.springframework.data.mongodb.core.mapping.Document;
+import software.amazon.awssdk.services.ec2.model.InstanceType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +33,12 @@ public class AwsCluster extends AbstractCluster {
     private String externalId;
 
     private String roleARN;
+
+    private List<String> instanceTypes = new ArrayList<String>(){
+        {add(InstanceType.M5_2_XLARGE.toString());}
+        {add(InstanceType.M4_2_XLARGE.toString());}
+        {add(InstanceType.R4_2_XLARGE.toString());}
+    };
 
     public AwsCluster(String name) {
         super(name, Cloud.AWS);
@@ -73,5 +82,19 @@ public class AwsCluster extends AbstractCluster {
 
     public void setVpcCIDR(String vpcCIDR) {
         this.vpcCIDR = vpcCIDR;
+    }
+
+    public List<String> getInstanceTypes() {
+        return instanceTypes;
+    }
+
+    public void setInstanceTypes(List<String> instanceTypes){
+        for (String s : instanceTypes) {
+            InstanceType instanceType = InstanceType.fromValue(s);
+            if (instanceType.equals(InstanceType.UNKNOWN_TO_SDK_VERSION)){
+                throw new BadRequestException("invalid instance type " + s);
+            }
+        }
+        this.instanceTypes = instanceTypes;
     }
 }

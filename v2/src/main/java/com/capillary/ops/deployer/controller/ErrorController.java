@@ -1,5 +1,6 @@
 package com.capillary.ops.deployer.controller;
 
+import com.capillary.ops.cp.exceptions.BadRequestException;
 import com.capillary.ops.deployer.bo.ErrorDetails;
 import com.capillary.ops.deployer.exceptions.NoSuchInfrastructureResourceException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -75,5 +76,11 @@ public class ErrorController {
   public ResponseEntity<ErrorDetails> prodReleaseDisabledException(ProdReleaseDisabled ex, WebRequest request) {
     String message = Optional.ofNullable(ex.getMessage()).orElse("Prod Release is Disabled for the given stack");
     return new ResponseEntity<>(new ErrorDetails(message, "403"), HttpStatus.FORBIDDEN);
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  public ResponseEntity<ErrorDetails> badRequestException(BadRequestException ex, WebRequest request) {
+    return new ResponseEntity<>(new ErrorDetails(ex.getMessage(), "400"),
+            HttpStatus.BAD_REQUEST);
   }
 }
