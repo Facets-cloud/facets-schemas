@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
@@ -18,19 +19,15 @@ public class DotnetBuildSpec extends BuildSpec {
         super(application);
     }
 
-    public DotnetBuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public DotnetBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     private static final String TEST_COMMAND = "dotnet build && dotnet dotcover test --dcReportType=HTML --dcoutput=./UnitTestCoverageReport/UnitTestCoverageReport.HTML";
 
     @Override
     protected List<String> getPostBuildCommands() {
-        List<String> postBuildCommands = new ArrayList<>();
-        if (!this.isTestBuild()) {
-            postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
-        }
-        return postBuildCommands;
+        return new ArrayList<>();
     }
 
     @Override
@@ -43,8 +40,6 @@ public class DotnetBuildSpec extends BuildSpec {
         List<String> buildCommands = new ArrayList<>();
         buildCommands.add("dotnet clean");
         buildCommands.add("dotnet publish");
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
         return buildCommands;
     }
 
@@ -57,10 +52,8 @@ public class DotnetBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommands() {
-        String ECR_REPO = "486456986266.dkr.ecr.us-west-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
-        preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
         return preBuildCommands;
     }

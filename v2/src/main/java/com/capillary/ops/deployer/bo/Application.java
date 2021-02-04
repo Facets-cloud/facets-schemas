@@ -54,6 +54,25 @@ public class Application {
         this.commonConfigs = commonConfigs;
     }
 
+    public Application(ApplicationType applicationType, String name, @NotNull VCSProvider vcsProvider, @NotNull String repositoryUrl, @NotBlank String applicationRootDirectory, @NotNull List<Port> ports, @NotNull LoadBalancerType loadBalancerType, List<PVC> pvcList, @NotNull BuildType buildType, @NotNull ApplicationFamily applicationFamily, String dnsPrefix, HealthCheck healthCheck, DnsType dnsType, Map<String, String> commonConfigs, List<String> tagBuildRepositoryIds, List<String> branchBuildRepositoryIds){
+        this.applicationType = applicationType;
+        this.name = name;
+        this.vcsProvider = vcsProvider;
+        this.repositoryUrl = repositoryUrl;
+        this.applicationRootDirectory = applicationRootDirectory;
+        this.ports = ports;
+        this.loadBalancerType = loadBalancerType;
+        this.pvcList = pvcList;
+        this.buildType = buildType;
+        this.applicationFamily = applicationFamily;
+        this.dnsPrefix = dnsPrefix;
+        this.healthCheck = healthCheck;
+        this.dnsType = dnsType;
+        this.commonConfigs = commonConfigs;
+        this.tagBuildRepositoryIds = tagBuildRepositoryIds;
+        this.branchBuildRepositoryIds = branchBuildRepositoryIds;
+    }
+
     public Application() {
     }
 
@@ -107,6 +126,10 @@ public class Application {
     private String statusCallbackUrl;
 
     private String newRelicAlertRecipients;
+
+    private List<String> tagBuildRepositoryIds;
+
+    private List<String> branchBuildRepositoryIds;
 
     private ResourceAllocationStrategy resourceAllocationStrategy = ResourceAllocationStrategy.GENERAL_PURPOSE;
 
@@ -297,5 +320,21 @@ public class Application {
 
     public void setResourceAllocationStrategy(ResourceAllocationStrategy resourceAllocationStrategy) {
         this.resourceAllocationStrategy = resourceAllocationStrategy;
+    }
+
+    public List<String> getTagBuildRepositoryIds() {
+        return tagBuildRepositoryIds;
+    }
+
+    public void setTagBuildRepositoryIds(List<String> tagBuildRepositoryIds) {
+        this.tagBuildRepositoryIds = tagBuildRepositoryIds;
+    }
+
+    public List<String> getBranchBuildRepositoryIds() {
+        return branchBuildRepositoryIds;
+    }
+
+    public void setBranchBuildRepositoryIds(List<String> branchBuildRepositoryIds) {
+        this.branchBuildRepositoryIds = branchBuildRepositoryIds;
     }
 }

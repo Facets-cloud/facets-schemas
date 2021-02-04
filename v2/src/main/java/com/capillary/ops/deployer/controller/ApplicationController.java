@@ -3,10 +3,12 @@ package com.capillary.ops.deployer.controller;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.bo.actions.ActionExecution;
 import com.capillary.ops.deployer.bo.actions.ApplicationAction;
+import com.capillary.ops.deployer.bo.ECRRegistry;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
+import com.capillary.ops.deployer.service.facade.RegistryFacade;
 import com.capillary.ops.deployer.service.facade.UserFacade;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.annotations.ApiParam;
@@ -41,6 +43,9 @@ public class ApplicationController {
 
     @Autowired
     private UserFacade userFacade;
+
+    @Autowired
+    private RegistryFacade registryFacade;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
@@ -500,6 +505,18 @@ public class ApplicationController {
 
         return applicationFacade.getEcrTokenMapping();
 
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/ecrRegistry")
+    public ECRRegistry createECRRegistry(@RequestBody ECRRegistry ecrRegistry){
+        return registryFacade.createECRRegistry(ecrRegistry);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/getRegistries")
+    public List<Registry> getAllRegistries(){
+        return registryFacade.getAllRegistries();
     }
 
 }

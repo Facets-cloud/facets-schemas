@@ -4,7 +4,9 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
+import com.capillary.ops.deployer.service.RegistryService;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ import java.util.stream.Collectors;
 @Service
 public class MockCodeBuildService implements ICodeBuildService {
 
+    @Autowired
+    private RegistryService registryService;
+    
     private static final Map<String, List<LogEvent>> logsStorage =
             Collections.synchronizedMap(new LinkedHashMap<>(10, 0.75f, true));
 
@@ -31,6 +36,7 @@ public class MockCodeBuildService implements ICodeBuildService {
 
     @Override
     public String triggerBuild(Application application, Build build, boolean testBuild) {
+        registryService.getApplicationRegistries(application, testBuild, build.isPromotable(), true);
         return UUID.randomUUID().toString();
     }
 

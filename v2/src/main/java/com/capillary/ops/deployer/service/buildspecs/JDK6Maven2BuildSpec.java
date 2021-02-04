@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +13,8 @@ public class JDK6Maven2BuildSpec extends MavenBuildSpec {
         super(application);
     }
 
-    public JDK6Maven2BuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public JDK6Maven2BuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     @Override
