@@ -9,6 +9,7 @@ export interface AwsCluster {
   enableAutoSignOff?: boolean;
   externalId?: string;
   id?: string;
+  instanceTypes?: Array<string>;
   k8sRequestsToLimitsRatio?: number;
   name?: string;
   releaseStream?: 'QA' | 'STAGING' | 'PROD';

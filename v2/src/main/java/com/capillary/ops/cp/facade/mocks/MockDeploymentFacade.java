@@ -3,10 +3,15 @@ package com.capillary.ops.cp.facade.mocks;
 import com.capillary.ops.cp.bo.CodeBuildStatusCallback;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.ClusterResourceDetails;
+import com.capillary.ops.cp.bo.ResourceDetails;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.ClusterResourceDetailsRepository;
 import com.capillary.ops.cp.service.TFBuildService;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.jcabi.aspects.Loggable;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +19,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -48,13 +57,31 @@ public class MockDeploymentFacade {
         refreshResourceJob.ifPresent(resourceJob -> {
             resourceJob.setStatus(refreshResourceStatus);
             if (StatusType.SUCCEEDED.equals(resourceJob.getStatus())){
-                Map<String, String> map = new HashMap<>();
-                map.put("key1", "value1");
-                map.put("key2", "value2");
-                resourceJob.setResourceDetails(map);
+                List<ResourceDetails> details = null;
+                try {
+                    details = getLocalResourceDetails();
+                    resourceJob.setResourceDetails(details);
+                    clusterResourceDetailsRepository.save(resourceJob);
+                    logger.info("resource details saved successfully");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error("error occured while trying to read the path ", e);
+                } catch (JsonSyntaxException e){
+                    logger.error("error while parsing the json in s3 path ", e);
+                }
             }
-            clusterResourceDetailsRepository.save(resourceJob);
-            logger.info("resource details saved successfully");
         });
+    }
+
+
+    private List<ResourceDetails> getLocalResourceDetails() throws IOException, JsonSyntaxException {
+        ResourceDetails resourceDetails = new ResourceDetails();
+        resourceDetails.setName("mock_name");
+        resourceDetails.setResourceName("mock_resource_name");
+        resourceDetails.setResourceType("mock_resource_type");
+        resourceDetails.setKey("mock_key");
+        resourceDetails.setValue("mock_value");
+
+        return new ArrayList<ResourceDetails>(){{add(resourceDetails);}};
     }
 }

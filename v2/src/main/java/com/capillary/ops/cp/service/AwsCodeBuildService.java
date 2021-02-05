@@ -528,20 +528,24 @@ public class AwsCodeBuildService implements TFBuildService {
     private String getBuildSpec(DeploymentRequest deploymentRequest) {
         try {
             String buildSpecYaml =
-                CharStreams.toString(
-                    new InputStreamReader(
-                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
-                            Charsets.UTF_8));
-            if(deploymentRequest.getOverrideBuildSteps() == null ||
-                    deploymentRequest.getOverrideBuildSteps().isEmpty()) {
-                return buildSpecYaml;
-            }
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                                    Charsets.UTF_8));
             Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
-            (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
-                    .put("commands", deploymentRequest.getOverrideBuildSteps());
             YAMLMapper yamlMapper = new YAMLMapper();
             yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
             yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
+            if(deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                if(deploymentRequest.getPreBuildSteps() != null && !deploymentRequest.getPreBuildSteps().isEmpty()){
+                    ((List<String>)(((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).get("commands"))
+                            .addAll(deploymentRequest.getPreBuildSteps());
+                    return yamlMapper.writeValueAsString(buildSpec);
+                }
+                return buildSpecYaml;
+            }
+            (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
+                    .put("commands", deploymentRequest.getOverrideBuildSteps());
             return yamlMapper.writeValueAsString(buildSpec);
         } catch (IOException e) {
             throw new RuntimeException(e);

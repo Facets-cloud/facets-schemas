@@ -27,7 +27,10 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   private InternalRequestAccessController internalRequestAccessController;
 
   protected void configure(HttpSecurity http) throws Exception {
-
+    http
+            .headers()
+            .frameOptions()
+            .sameOrigin();
     http
             .authorizeRequests()
             .antMatchers("/cc/**")
@@ -46,7 +49,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .access("@bitbucketIpAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
-            .antMatchers("/api/**", "/capillarycloud/api/**", "/cc-ui/**")
+            .antMatchers("/api/**", "/capillarycloud/api/**", "/cc-ui/**", "/tunnel/**")
             .authenticated()
             .and()
             .oauth2Login()

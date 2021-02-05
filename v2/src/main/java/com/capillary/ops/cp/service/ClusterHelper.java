@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 @Loggable
 public class ClusterHelper {
 
-    public static final String TOOLS_PASS_KEY_IN_RESOURCES = "ingress_pass_tools";
+    public static final String TOOLS_NAME_IN_RESOURCES = "Basic Authentication Password";
+    public static final String TOOLS_PASS_KEY_IN_RESOURCES = "tools";
     public static final String TOOLS_USER = "toolsuser";
     @Autowired
     private ClusterResourceRefreshService clusterResourceRefreshService;
@@ -104,11 +105,16 @@ public class ClusterHelper {
     }
 
     public String getToolsPws(AbstractCluster cluster) {
-        Map<String, String> clusterResourceDetails;
+        List<ResourceDetails> clusterResourceDetails;
         String pwd = "";
         try {
             clusterResourceDetails = clusterResourceRefreshService.getClusterResourceDetails(cluster.getId());
-            pwd = clusterResourceDetails.getOrDefault(TOOLS_PASS_KEY_IN_RESOURCES, "no pass");
+            Optional<ResourceDetails> resourceDetails = clusterResourceDetails.stream().filter((x) -> x.getName().equals(TOOLS_NAME_IN_RESOURCES) && x.getKey().equals(TOOLS_PASS_KEY_IN_RESOURCES)).findAny();
+            pwd = resourceDetails.orElseGet(() -> {
+                ResourceDetails details = new ResourceDetails();
+                details.setValue("no pass");
+                return details;
+            }).getValue();
         } catch (Throwable t) {
             return pwd;
         }

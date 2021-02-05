@@ -262,6 +262,23 @@
                 />
               </div>
             </div>
+
+            <div class="form-group row">
+              <label class="label col-sm-3">Spot Instance Types</label>
+              <div class="col-sm-5">
+                <input
+                  fieldSize="small"
+                  type="text"
+                  [(ngModel)]="spotInstanceTypes"
+                  #types="ngModel"
+                  nbInput
+                  fullWidth
+                  name="types"
+                  id="types"
+                  placeholder="Comma separated spot instance types"
+                />
+              </div>
+            </div>
             <div style="padding-top: 1rem; float: right">
               <button nbStepperNext status="info" nbButton>Next</button>
             </div>

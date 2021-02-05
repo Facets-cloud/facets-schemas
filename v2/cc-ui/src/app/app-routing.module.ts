@@ -1,4 +1,4 @@
-import { ClusterCreateComponent } from './pages/cluster-pages/cluster-create/cluster-create.component';
+import {ClusterCreateComponent} from './pages/cluster-pages/cluster-create/cluster-create.component';
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {HomeComponent} from './pages/home/home.component';
@@ -12,8 +12,10 @@ import {AuthGuard} from './auth-guard.service';
 import {ClusterOverridesComponent} from './pages/cluster-pages/cluster-overrides/cluster-overrides.component';
 import {AppComponent} from './app.component';
 import {ClusterPagesComponent} from './pages/cluster-pages/cluster-pages.component';
-import { ClusterDisasterRecoveryComponent } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.component';
+import {ClusterDisasterRecoveryComponent} from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.component';
 import {ClusterAlertsComponent} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.component";
+import {ClusterResourceDetailsComponent} from './pages/cluster-pages/cluster-resource-details/cluster-resource-details.component';
+import {ClusterTunnelComponent} from "./pages/cluster-pages/cluster-tunnel/cluster-tunnel.component";
 
 
 const routes: Routes = [
@@ -48,6 +50,14 @@ const routes: Routes = [
       {
         path: 'alerts',
         component: ClusterAlertsComponent,
+      },
+      {
+        path: 'resource-details',
+        component: ClusterResourceDetailsComponent,
+      },
+      {
+        path: 'tools',
+        component: ClusterTunnelComponent,
       },
       {path: '', redirectTo: 'overview', pathMatch: 'full'},
       {path: '**', redirectTo: 'overview', pathMatch: 'full'},

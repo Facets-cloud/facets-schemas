@@ -84,9 +84,13 @@ public class MockCCDataBootstrap {
         ClusterResourceDetails cd = new ClusterResourceDetails();
         cd.setClusterId("cluster1");
         cd.setStatus(StatusType.SUCCEEDED);
-        cd.setResourceDetails(new HashMap<String,String>(){{
-            put(ClusterHelper.TOOLS_PASS_KEY_IN_RESOURCES,"NfWaKLiPZt");
-        }});
+        ResourceDetails rd = new ResourceDetails();
+        rd.setName(ClusterHelper.TOOLS_NAME_IN_RESOURCES);
+        rd.setResourceType("ingress");
+        rd.setResourceName(ClusterHelper.TOOLS_PASS_KEY_IN_RESOURCES);
+        rd.setKey(ClusterHelper.TOOLS_PASS_KEY_IN_RESOURCES);
+        rd.setValue("NfWaKLiPZt");
+        cd.setResourceDetails(Collections.singletonList(rd));
 
         clusterResourceDetailsRepository.save(cd);
 

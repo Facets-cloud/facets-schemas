@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import java.util.Map;
+import java.util.List;
 
 @Document
 public class ClusterResourceDetails {
@@ -24,7 +24,7 @@ public class ClusterResourceDetails {
 
     private StatusType status;
 
-    private Map<String, String> resourceDetails;
+    private List<ResourceDetails> resourceDetails;
 
     public String getId() {
         return id;
@@ -58,11 +58,11 @@ public class ClusterResourceDetails {
         this.status = status;
     }
 
-    public Map<String, String> getResourceDetails() {
+    public List<ResourceDetails> getResourceDetails() {
         return resourceDetails;
     }
 
-    public void setResourceDetails(Map<String, String> resourceDetails) {
+    public void setResourceDetails(List<ResourceDetails> resourceDetails) {
         this.resourceDetails = resourceDetails;
     }
 }

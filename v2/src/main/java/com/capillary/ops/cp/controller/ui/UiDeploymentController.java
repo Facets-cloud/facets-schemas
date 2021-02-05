@@ -1,7 +1,8 @@
 package com.capillary.ops.cp.controller.ui;
 
-import com.capillary.ops.cp.bo.AbstractDeploymentRecipe;
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
@@ -12,7 +13,6 @@ import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.service.AclService;
-import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -115,18 +115,6 @@ public class UiDeploymentController {
     DeploymentLog runMongoResizeRecipe(@PathVariable String clusterId,
                                    @RequestBody MongoVolumeResizeDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runMongoResizeRecipe(clusterId, deploymentRecipe);
-    }
-
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
-    @PostMapping("/refreshResource")
-    DeploymentLog refreshResource(@PathVariable String clusterId){
-        return deploymentFacade.createClusterResourceDetails(clusterId);
-    }
-
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
-    @GetMapping("/getResourceDetails")
-    Map<String, String> getResourceDetails(@PathVariable String clusterId){
-        return deploymentFacade.getClusterResourceDetails(clusterId);
     }
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")

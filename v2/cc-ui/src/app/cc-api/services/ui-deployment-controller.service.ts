@@ -26,7 +26,6 @@ import { MongoVolumeResizeDeploymentRecipe } from '../models/mongo-volume-resize
 class UiDeploymentControllerService extends __BaseService {
   static readonly getDeploymentsUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/deployments';
   static readonly createDeploymentUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments';
-  static readonly getResourceDetailsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/getResourceDetails';
   static readonly triggerAutomationSuiteUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
   static readonly abortAutomationSuiteUsingDELETE1Path = '/cc-ui/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
   static readonly runAuroraDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/aurora/dr';
@@ -34,7 +33,6 @@ class UiDeploymentControllerService extends __BaseService {
   static readonly runESDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/es/dr';
   static readonly runMongoDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/dr';
   static readonly runMongoResizeRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/resize';
-  static readonly refreshResourceUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/refreshResource';
   static readonly getDeploymentUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}';
   static readonly signOffDeploymentUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/signoff';
 
@@ -129,44 +127,6 @@ class UiDeploymentControllerService extends __BaseService {
   createDeploymentUsingPOST(params: UiDeploymentControllerService.CreateDeploymentUsingPOSTParams): __Observable<DeploymentLog> {
     return this.createDeploymentUsingPOSTResponse(params).pipe(
       __map(_r => _r.body as DeploymentLog)
-    );
-  }
-
-  /**
-   * getResourceDetails
-   * @param clusterId clusterId
-   * @return OK
-   */
-  getResourceDetailsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<{[key: string]: string}>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/deployments/getResourceDetails`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<{[key: string]: string}>;
-      })
-    );
-  }
-  /**
-   * getResourceDetails
-   * @param clusterId clusterId
-   * @return OK
-   */
-  getResourceDetailsUsingGET(clusterId: string): __Observable<{[key: string]: string}> {
-    return this.getResourceDetailsUsingGETResponse(clusterId).pipe(
-      __map(_r => _r.body as {[key: string]: string})
     );
   }
 
@@ -505,44 +465,6 @@ class UiDeploymentControllerService extends __BaseService {
    */
   runMongoResizeRecipeUsingPOST(params: UiDeploymentControllerService.RunMongoResizeRecipeUsingPOSTParams): __Observable<DeploymentLog> {
     return this.runMongoResizeRecipeUsingPOSTResponse(params).pipe(
-      __map(_r => _r.body as DeploymentLog)
-    );
-  }
-
-  /**
-   * refreshResource
-   * @param clusterId clusterId
-   * @return OK
-   */
-  refreshResourceUsingPOSTResponse(clusterId: string): __Observable<__StrictHttpResponse<DeploymentLog>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-    let req = new HttpRequest<any>(
-      'POST',
-      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/deployments/refreshResource`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<DeploymentLog>;
-      })
-    );
-  }
-  /**
-   * refreshResource
-   * @param clusterId clusterId
-   * @return OK
-   */
-  refreshResourceUsingPOST(clusterId: string): __Observable<DeploymentLog> {
-    return this.refreshResourceUsingPOSTResponse(clusterId).pipe(
       __map(_r => _r.body as DeploymentLog)
     );
   }

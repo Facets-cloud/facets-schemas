@@ -1,0 +1,33 @@
+<app-layout-one-column>
+  <div class="row">
+    <div class="col-sm-12">
+        <nb-card>
+            <nb-card-body>
+                <div class="col-sm-6 resource-details-head">
+                    Cluster Resource Details
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <nb-card *ngIf="resourceTypes.size > 0">
+        <nb-card-body>
+          <nb-tabset>
+            <nb-tab *ngFor="let tab of resourceTypes" [tabTitle]="tab">
+              <div>
+                <ng2-smart-table
+                [settings]="resourceDetailsSettings"
+                [source]="clusterDetailsMap.get(tab)"
+                >
+                </ng2-smart-table>
+              </div>
+            </nb-tab>
+          </nb-tabset>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    </div>
+</app-layout-one-column>

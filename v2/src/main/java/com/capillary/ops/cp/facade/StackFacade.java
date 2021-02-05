@@ -1,8 +1,10 @@
 package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.AuditLogRepository;
+import com.capillary.ops.cp.repository.ClusterTaskRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.repository.SubstackRepository;
 import com.capillary.ops.cp.service.GitService;
@@ -25,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,8 +60,14 @@ public class StackFacade {
     @Autowired
     private ArtifactFacade artifactFacade;
 
+    @Autowired
+    private ClusterFacade clusterFacade;
+
     @Value("${flock.notification.pauseReleases.endpoint}")
     private String pauseReleaseNotifier;
+
+    @Autowired
+    private ClusterTaskRepository clusterTaskRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(StackFacade.class);
 
@@ -159,5 +168,49 @@ public class StackFacade {
         DeploymentContext deploymentContext = new DeploymentContext();
         deploymentContext.setArtifacts(allArtifacts);
         return deploymentContext;
+    }
+
+    public List<ClusterTask> createClusterTasks(ClusterTaskRequest taskRequest) throws Exception {
+        List<ClusterTask> pendingClusterTasks = getPendingClusterTasks();
+        if(pendingClusterTasks != null && pendingClusterTasks.size()>0){
+            logger.error("Pending cluster tasks exist. Please execute them first");
+            throw new Exception("Pending cluster tasks exist");
+        }
+        List<ClusterTask> clusterTasks = new ArrayList<>();
+        if (taskRequest.getStackName() == null) {
+            List<Stack> stackList = getAllStacks();
+            for(Stack s: stackList){
+                List<AbstractCluster> clusterList = clusterFacade.getClustersByStackName(s.getName());
+                for(AbstractCluster c: clusterList){
+                    ClusterTask task = new ClusterTask(s.getName(),c.getName(),taskRequest.getTasks());
+                    clusterTasks.add(task);
+                }
+            }
+        }else{
+            if(taskRequest.getClusterId() == null){
+                List<AbstractCluster> clusterList = clusterFacade.getClustersByStackName(taskRequest.getStackName());
+                for(AbstractCluster c: clusterList){
+                    ClusterTask task = new ClusterTask(taskRequest.getStackName(),c.getName(),taskRequest.getTasks());
+                    clusterTasks.add(task);
+                }
+            }else {
+                ClusterTask task = new ClusterTask(taskRequest.getStackName(), taskRequest.getClusterId(), taskRequest.getTasks());
+                clusterTasks.add(task);
+            }
+        }
+        return clusterTaskRepository.saveAll(clusterTasks);
+    }
+
+
+    public List<ClusterTask> getClusterTasks(String stackName) {
+        return clusterTaskRepository.findFirst30ByStackName(stackName);
+    }
+
+    public List<ClusterTask> getPendingClusterTasks(){
+        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByTaskStatus(TaskStatus.QUEUED);
+        if(tasks.isPresent() && !tasks.get().isEmpty()){
+            return tasks.get();
+        }
+        return null;
     }
 }
