@@ -3,7 +3,8 @@
 
     <nb-actions size="small">
       <nb-action>
-        <div class="brand-font green large-font" routerLink="/capc/home">Capillary Cloud</div>
+        <div class="brand-font green large-font" routerLink="/capc/home" *ngIf="!isDemo">Capillary Cloud</div>
+        <div class="brand-font green large-font" routerLink="/capc/home" *ngIf="isDemo">Awesomeness Inc.</div>
       </nb-action>
       <nb-action *ngIf="isClusterContext">
         <nb-select size="small" placeholder="Navigation" [(selected)]="currentNav" (selectedChange)="navToPage()">
