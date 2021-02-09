@@ -1,0 +1,202 @@
+<app-layout-one-column>
+  <nb-card accent="info">
+    <nb-card-header>Create Stack</nb-card-header>
+    <nb-card-body>
+      <div style="margin-left: 3rem; margin-right: 3rem; margin-bottom: 3rem">
+        <nb-stepper #stepper linear="true">
+          <nb-step label="Basic Details">
+
+
+            <div class="form-group row">
+              <label for="stackName" class="label col-sm-3">Name</label>
+              <div class="col-sm-5">
+                <input
+                  fieldSize="small"
+                  type="text"
+                  #clusterName="ngModel"
+                  nbInput
+                  fullWidth
+                  name="stackName"
+                  id="stackName"
+                  [(ngModel)]="stack.name"
+                  placeholder="stack-name"
+                  pattern="[a-z-]+"
+                />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="label col-sm-3">VCS</label>
+              <div class="col-sm-5">
+                <nb-select
+                  [(ngModel)]="stack.vcs"
+                  #vcs="ngModel"
+                  name="vcs"
+                  id="vcs"
+                  fullWidth
+                  size="small"
+                  placeholder="Please select"
+                >
+                  <nb-option value="BITBUCKET">BITBUCKET</nb-option>
+                  <nb-option value="GITHUB">GITHUB</nb-option>
+                </nb-select>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="vcsUrl" class="label col-sm-3">VCS URL</label>
+              <div class="col-sm-5">
+                <input
+                  fieldSize="small"
+                  type="text"
+                  #vcsUrl="ngModel"
+                  nbInput
+                  fullWidth
+                  name="vcsUrl"
+                  id="vcsUrl"
+                  [(ngModel)]="stack.vcsUrl"
+                  placeholder="https://github.com/example.git"
+                  pattern="[a-z-]+"
+                />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="relativePath" class="label col-sm-3"
+                >Relative path</label
+              >
+              <div class="col-sm-5">
+                <input
+                  fieldSize="small"
+                  type="text"
+                  #relativePath="ngModel"
+                  nbInput
+                  fullWidth
+                  name="relativePath"
+                  id="relativePath"
+                  [(ngModel)]="stack.relativePath"
+                  placeholder="directory-name"
+                  pattern="[a-z-]+"
+                />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="user" class="label col-sm-3">User</label>
+              <div class="col-sm-5">
+                <input
+                  fieldSize="small"
+                  type="text"
+                  #user="ngModel"
+                  nbInput
+                  fullWidth
+                  name="user"
+                  id="user"
+                  [(ngModel)]="stack.user"
+                  placeholder="stack-user"
+                  pattern="[a-z-]+"
+                />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="appPassword" class="label col-sm-3">Password</label>
+              <div class="col-sm-5">
+                <input
+                  fieldSize="small"
+                  type="text"
+                  #appPassword="ngModel"
+                  nbInput
+                  fullWidth
+                  name="appPassword"
+                  id="appPassword"
+                  [(ngModel)]="stack.appPassword"
+                  pattern="[a-z-]+"
+                />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="pauseReleases" class="label col-sm-3"
+                >Pause Releases</label
+              >
+              <div class="col-sm-5">
+                <nb-toggle
+                  [(ngModel)]="stack.pauseReleases"
+                  name="pauseReleases"
+                  #pauseReleases="ngModel"
+                  id="pauseReleases"
+                ></nb-toggle>
+              </div>
+            </div>
+
+            <div style="padding-top: 1rem; float: right">
+              <button nbStepperNext status="info" nbButton>Next</button>
+            </div>
+          </nb-step>
+
+          <nb-step label="Stack Variables">
+
+
+            <div class="form-group row">
+                <label for="stackVars" class="label col-sm-3"
+                  >Stack Variables</label
+                >
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-9">
+                  <ng2-smart-table
+                    (createConfirm)="validateValue($event)"
+                    (editConfirm)="validateValue($event)"
+                    [settings]="settings"
+                    [source]="stackVarsTable"
+                  >
+                  </ng2-smart-table>
+                </div>
+              </div>
+
+
+            <div style="padding-top: 1rem; float: right">
+              <button nbStepperNext status="info" nbButton>Next</button>
+            </div>
+
+          </nb-step>
+
+
+          <nb-step label="Cluster Variables">
+
+          <div class="form-group row">
+                <label for="stackVars" class="label col-sm-3"
+                  >Cluster Variable Details</label
+                >
+              </div>
+              <div class="form-group row">
+                <div class="col-sm-9">
+                  <ng2-smart-table
+                    (createConfirm)="validateValue($event)"
+                    (editConfirm)="validateValue($event)"
+                    [settings]="settingsClusterVars"
+                    [source]="clusterVarsTable"
+                  >
+                  </ng2-smart-table>
+                </div>
+              </div>
+
+              <div style="padding-top: 1rem; float: right">
+              <button
+                nbButton
+                status="primary"
+                (click)="createCluster()"
+              >
+                Create
+              </button>
+              </div>
+
+           </nb-step>
+
+
+        </nb-stepper>
+      </div>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>

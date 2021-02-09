@@ -1,3 +1,4 @@
+import {StackCreateComponent } from './pages/cluster-pages/stack-create/stack-create.component';
 import {ClusterCreateComponent} from './pages/cluster-pages/cluster-create/cluster-create.component';
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
@@ -24,6 +25,7 @@ const routes: Routes = [
   {
     path: 'capc/home', component: HomeComponent, canActivate: [AuthGuard]
   },
+  {path: 'capc/createStack', component: StackCreateComponent, canActivate: [AuthGuard]},
   {
     path: 'capc/teams', component: TeamsOverviewComponent, canActivate: [AuthGuard]
   },

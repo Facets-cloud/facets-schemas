@@ -8,6 +8,7 @@ import {NbToggleModule} from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { ClusterCreateComponent } from './cluster-create/cluster-create.component';
+import { StackCreateComponent } from './stack-create/stack-create.component';
 
 @NgModule({
   declarations: [ClusterPagesComponent],
