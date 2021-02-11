@@ -847,6 +847,7 @@ public class ApplicationFacade {
         application.setName(existingApplication.getName());
         application.setBuildType(existingApplication.getBuildType());
         codeBuildService.updateProject(application);
+        ecrService.createRepository(application);
         return applicationRepository.save(application);
     }
 

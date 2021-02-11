@@ -178,7 +178,7 @@ public class CodeBuildService implements ICodeBuildService {
     }
 
     private BuildSpec getBuildSpec(Application application, boolean testBuild, boolean tagBuild, boolean addAdditionalRegistries) {
-        List<Registry> registries = registryService.getApplicationRegistries(application, testBuild, tagBuild, addAdditionalRegistries);
+        List<Registry> registries = registryService.getBuildRegistries(application, testBuild, tagBuild, addAdditionalRegistries);
 
         switch (application.getBuildType()) {
             case MVN:
