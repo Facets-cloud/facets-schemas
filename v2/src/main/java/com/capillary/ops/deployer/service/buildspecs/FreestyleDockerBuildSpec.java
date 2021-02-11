@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,15 +17,13 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
         super(application);
     }
 
-    public FreestyleDockerBuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public FreestyleDockerBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     @Override
     protected List<String> getPostBuildCommands() {
-        List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
-        return postBuildCommands;
+        return new ArrayList<>();
     }
 
     @Override
@@ -35,10 +34,7 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getBuildCommands() {
-        List<String> buildCommands = new ArrayList<>();
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
-        return buildCommands;
+        return new ArrayList<>();
     }
 
     @Override
@@ -49,11 +45,9 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommands() {
-        String ECR_REPO = "486456986266.dkr.ecr.us-west-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
         preBuildCommands.add("TAG=$TAG-$CODEBUILD_BUILD_NUMBER");
-        preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
         return preBuildCommands;
     }

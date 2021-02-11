@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,8 @@ public class MJNugetBuildSpec extends BuildSpec {
         super(application);
     }
 
-    public MJNugetBuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public MJNugetBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     @Override

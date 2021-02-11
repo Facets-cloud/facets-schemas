@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 
 import java.util.*;
 
@@ -10,8 +11,8 @@ public class MavenIonicBuildSpec extends MavenBuildSpec {
         super(application);
     }
 
-    public MavenIonicBuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public MavenIonicBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     @Override
