@@ -18,6 +18,7 @@ import com.capillary.ops.deployer.bo.webhook.sonar.Condition;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.*;
 import com.capillary.ops.deployer.repository.*;
+import com.capillary.ops.deployer.service.CCArtifactCallbackService;
 import com.capillary.ops.deployer.service.IVcsServiceSelector;
 import com.capillary.ops.deployer.service.S3DumpService;
 import com.capillary.ops.deployer.service.SecretService;
@@ -108,6 +109,9 @@ public class ApplicationFacade {
 
     @Autowired
     private IActionsService actionsService;
+
+    @Autowired
+    private CCArtifactCallbackService ccArtifactCallbackService;
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
@@ -354,18 +358,7 @@ public class ApplicationFacade {
                 throw new IllegalArgumentException("PromotionIntent is Mandatory while promoting the build");
             }
             existingBuild.setPromotionIntent(build.getPromotionIntent());
-            artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
-                    existingBuild.getDescription(),
-                    BuildStrategy.PROD,
-                    ReleaseType.RELEASE,
-                    "deployer"));
-            if (build.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
-                artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
-                        existingBuild.getDescription(),
-                        BuildStrategy.PROD,
-                        ReleaseType.HOTFIX,
-                        "deployer"));
-            }
+            ccArtifactCallbackService.registerProdArtifact(existingBuild, buildId);
         }
         buildRepository.save(existingBuild);
         return getBuildDetails(application, existingBuild);
@@ -466,18 +459,10 @@ public class ApplicationFacade {
                         codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime(),
                         codeBuildServiceBuild.resolvedSourceVersion()));
             }
-            buildRepository.save(build);
+
             // change to webhook
-            if(StatusType.SUCCEEDED.equals(codeBuildServiceBuild.buildStatus()) &&
-                    ! build.isTestBuild() &&
-                    !StringUtils.isEmpty(build.getImage())) {
-                artifactFacade.registerArtifact(new Artifact(build.getApplicationId(), build.getImage(), build.getId(),
-                        build.getDescription(),
-                        build.isPromotable() ? BuildStrategy.STAGING : BuildStrategy.QA,
-                        build.getPromotionIntent().equals(PromotionIntent.HOTFIX) ?
-                                ReleaseType.HOTFIX : ReleaseType.RELEASE,
-                        "deployer"));
-            }
+            ccArtifactCallbackService.registerArtifact(codeBuildServiceBuild, build, applicationOptional.get());
+            buildRepository.save(build);
         }
     }
 
