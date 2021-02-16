@@ -459,9 +459,10 @@ public class ApplicationFacade {
                         codeBuildServiceBuild.startTime(), codeBuildServiceBuild.endTime(),
                         codeBuildServiceBuild.resolvedSourceVersion()));
             }
-            buildRepository.save(build);
+
             // change to webhook
             ccArtifactCallbackService.registerArtifact(codeBuildServiceBuild, build, applicationOptional.get());
+            buildRepository.save(build);
         }
     }
 
