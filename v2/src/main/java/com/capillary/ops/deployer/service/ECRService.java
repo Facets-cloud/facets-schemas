@@ -2,6 +2,8 @@ package com.capillary.ops.deployer.service;
 
 import com.capillary.ops.App;
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.ECRRegistry;
+import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.service.interfaces.IECRService;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -17,6 +19,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ecr.EcrClient;
 import software.amazon.awssdk.services.ecr.model.*;
 
@@ -43,15 +49,43 @@ public class ECRService implements IECRService {
     @Autowired
     private ExecutorService executorServicePool;
 
+    @Autowired
+    private RegistryService registryService;
+
     private static final Logger logger = LoggerFactory.getLogger(ECRService.class);
 
     @Override
     public void createRepository(Application application) {
+        createRepository(ecrClient, application, "default", true);
+        createAdditionalRepositories(application);
+    }
+
+    private void createAdditionalRepositories(Application application){
+        List<Registry> additionalRegistries = registryService.getAdditionalRegistries(application);
+
+        additionalRegistries.forEach(registry -> {
+            ECRRegistry ecrRegistry = (ECRRegistry) registry;
+            createRepository(getEcrClient(ecrRegistry), application, ecrRegistry.getAwsAccountId(), false);
+        });
+    }
+
+    private void createRepository(EcrClient ecrClient, Application application, String awsAccountId, boolean setPolicy){
         String repositoryName = getRepositoryName(application);
         CreateRepositoryRequest createRepositoryRequest =
                 CreateRepositoryRequest.builder().repositoryName(repositoryName).build();
-        ecrClient.createRepository(createRepositoryRequest);
-        setEcrPolicy(application);
+        try {
+            ecrClient.createRepository(createRepositoryRequest);
+            if (setPolicy){
+                setEcrPolicy(ecrClient, application);
+            }
+        } catch (RepositoryAlreadyExistsException e){
+            logger.info("repository {} already exists in the account {}", repositoryName, awsAccountId);
+        }
+    }
+
+    private EcrClient getEcrClient(ECRRegistry ecrRegistry){
+        AwsCredentialsProvider provider = StaticCredentialsProvider.create(AwsBasicCredentials.create(ecrRegistry.getAwsKey(), ecrRegistry.getAwsSecret()));
+        return EcrClient.builder().credentialsProvider(provider).region(Region.of(ecrRegistry.getAwsRegion())).build();
     }
 
     @Override
@@ -121,7 +155,7 @@ public class ECRService implements IECRService {
         return application.getApplicationFamily().name().toLowerCase() + "/" + application.getName();
     }
 
-    private void setEcrPolicy(Application application) {
+    private void setEcrPolicy(EcrClient ecrClient, Application application) {
         SetRepositoryPolicyRequest policyRequest =
                 SetRepositoryPolicyRequest.builder()
                         .repositoryName(getRepositoryName(application))

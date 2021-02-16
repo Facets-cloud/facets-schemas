@@ -36,7 +36,7 @@ public class MockCodeBuildService implements ICodeBuildService {
 
     @Override
     public String triggerBuild(Application application, Build build, boolean testBuild) {
-        registryService.getApplicationRegistries(application, testBuild, build.isPromotable(), true);
+        registryService.getBuildRegistries(application, testBuild, build.isPromotable(), true);
         return UUID.randomUUID().toString();
     }
 

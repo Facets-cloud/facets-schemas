@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Loggable
@@ -37,7 +39,7 @@ public class RegistryService {
         return registryRepository.findAll();
     }
 
-    public List<Registry> getApplicationRegistries(Application application, boolean testBuild, boolean tagBuild, boolean addAdditionalRegistries) {
+    public List<Registry> getBuildRegistries(Application application, boolean testBuild, boolean tagBuild, boolean addAdditionalRegistries) {
         List<Registry> registries = new ArrayList<Registry>(){{
             ECRRegistry registry = new ECRRegistry();
             registry.setAwsRegion("us-west-1");
@@ -48,16 +50,40 @@ public class RegistryService {
         }};
         if(!testBuild && addAdditionalRegistries){
             if (tagBuild){
-                // with an assumption that tagBuildRepositoryIds are all valid id's
-                if (application.getTagBuildRepositoryIds() != null && !application.getTagBuildRepositoryIds().isEmpty()){
-                    registryRepository.findAllById(application.getTagBuildRepositoryIds()).forEach(registries::add);
-                }
+                registries.addAll(getTagBuildRegistries(application));
             }else {
-                // with an assumption that branchBuildRepositoryIds are vall valid id's
-                if (application.getBranchBuildRepositoryIds() != null && !application.getBranchBuildRepositoryIds().isEmpty()){
-                    registryRepository.findAllById(application.getBranchBuildRepositoryIds()).forEach(registries::add);
-                }
+                registries.addAll(getBranchBuildRegistries(application));
             }
+        }
+        return registries;
+    }
+
+    public List<Registry> getAdditionalRegistries(Application application){
+        List<Registry> registries = new ArrayList<>();
+
+        Set<String> additionalRegistryIds = new HashSet<>();
+        if (application.getTagBuildRepositoryIds() != null && !application.getTagBuildRepositoryIds().isEmpty()){
+            additionalRegistryIds.addAll(application.getTagBuildRepositoryIds());
+        }
+        if (application.getBranchBuildRepositoryIds() != null && !application.getBranchBuildRepositoryIds().isEmpty()){
+            additionalRegistryIds.addAll(application.getBranchBuildRepositoryIds());
+        }
+        registryRepository.findAllById(additionalRegistryIds).forEach(registries::add);
+        return registries;
+    }
+
+    private List<Registry> getTagBuildRegistries(Application application){
+        List<Registry> registries = new ArrayList<>();
+        if (application.getTagBuildRepositoryIds() != null && !application.getTagBuildRepositoryIds().isEmpty()){
+            registryRepository.findAllById(application.getTagBuildRepositoryIds()).forEach(registries::add);
+        }
+        return registries;
+    }
+
+    private List<Registry> getBranchBuildRegistries(Application application){
+        List<Registry> registries = new ArrayList<>();
+        if (application.getBranchBuildRepositoryIds() != null && !application.getBranchBuildRepositoryIds().isEmpty()){
+            registryRepository.findAllById(application.getBranchBuildRepositoryIds()).forEach(registries::add);
         }
         return registries;
     }
