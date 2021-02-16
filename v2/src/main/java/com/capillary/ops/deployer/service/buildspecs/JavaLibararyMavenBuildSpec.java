@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 
 import java.util.ArrayList;
@@ -13,8 +14,8 @@ public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
         super(application);
     }
 
-    public JavaLibararyMavenBuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public JavaLibararyMavenBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     @Override

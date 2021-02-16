@@ -1,13 +1,22 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.ECRRegistry;
+import com.capillary.ops.deployer.bo.Registry;
+import com.capillary.ops.deployer.exceptions.NotImplementedException;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentType;
+import software.amazon.awssdk.services.ecr.EcrClient;
+import software.amazon.awssdk.services.ecr.model.GetAuthorizationTokenRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Base64;
 
 public abstract class BuildSpec {
 
@@ -15,13 +24,16 @@ public abstract class BuildSpec {
 
     protected boolean testBuild = false;
 
+    protected List<Registry> registries;
+
     public BuildSpec(Application application) {
         this.application = application;
     }
 
-    public BuildSpec(Application application, boolean testBuild) {
+    public BuildSpec(Application application, boolean testBuild, List<Registry> registries) {
         this.application = application;
         this.testBuild = testBuild;
+        this.registries = registries;
     }
 
     public String getVersion() {
@@ -56,6 +68,12 @@ public abstract class BuildSpec {
 
     private Map<String, Object> getPostBuildPhase() {
         List<String> postBuildCommands = getPostBuildCommands();
+        if(configureDockerBuildSteps()) {
+            this.registries.forEach(x -> {
+                postBuildCommands.add(String.format("docker tag $APP_NAME:$TAG %s/$APP_NAME:$TAG", x.getUri()));
+                postBuildCommands.add(String.format("docker push %s/$APP_NAME:$TAG", x.getUri()));
+            });
+        }
         Map<String, Object> postBuildPhase = new HashMap<>();
         postBuildPhase.put("commands", postBuildCommands);
         return postBuildPhase;
@@ -75,11 +93,9 @@ public abstract class BuildSpec {
     private Map<String, Object> getBuildPhase() {
         List<String> buildCommands = new ArrayList<>();
         Map<String, Object> buildPhase = new HashMap<>();
-        if(configureDockerBuildSteps()) {
-            buildCommands.add("$(aws ecr get-login --region us-west-1 --no-include-email)");
-        }
         buildCommands.add(String.format("cd %s", application.getApplicationRootDirectory()));
         buildCommands.addAll(getBuildCommands());
+        if (configureDockerBuildSteps()) buildCommands.add("docker build -t $APP_NAME:$TAG .");
         buildPhase.put("commands", buildCommands);
         return buildPhase;
     }
@@ -100,6 +116,9 @@ public abstract class BuildSpec {
     private Map<String, Object> getPreBuildPhase() {
         List<String> preBuildCommands;
         preBuildCommands = getPreBuildCommands();
+        if(configureDockerBuildSteps()) {
+            this.registries.forEach(registry -> preBuildCommands.add(getLoginCommand(registry)));
+        }
         Map<String, Object> preBuildPhase = new HashMap<>();
         preBuildPhase.put("commands", preBuildCommands);
         return preBuildPhase;
@@ -146,6 +165,34 @@ public abstract class BuildSpec {
         return installPhase;
     }
 
+    private String getLoginCommand(Registry registry){
+        if (registry instanceof ECRRegistry){
+            ECRRegistry ecrRegistry = (ECRRegistry) registry;
+            if (ecrRegistry.getAwsKey() == null || ecrRegistry.getAwsSecret() == null){
+                return "$(aws ecr get-login --region us-west-1 --no-include-email)";
+            }
+            else {
+                String authToken = getEcrToken(ecrRegistry);
+                String user = authToken.split(":")[0];
+                String password = authToken.split(":")[1];
+                return String.format("docker login -u %s -p %s https://%s", user, password, ecrRegistry.getUri());
+            }
+        } else {
+            throw new NotImplementedException("registry not supported");
+        }
+    }
+
+    private String getEcrToken(ECRRegistry ecrRegistry){
+        AwsCredentialsProvider provider = StaticCredentialsProvider.create(AwsBasicCredentials.create(ecrRegistry.getAwsKey(), ecrRegistry.getAwsSecret()));
+        EcrClient ecrClient = EcrClient.builder().credentialsProvider(provider).region(Region.of(ecrRegistry.getAwsRegion())).build();
+        GetAuthorizationTokenRequest request = GetAuthorizationTokenRequest.builder().registryIds(ecrRegistry.getAwsAccountId()).build();
+        String authTokenObject = ecrClient.getAuthorizationToken(request).authorizationData().get(0).authorizationToken();
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode(authTokenObject);
+
+        return new String(bytes);
+    }
+
     protected Map<String, Object> getInstallPhaseTest() {
         return new HashMap<>();
     }
@@ -178,10 +225,7 @@ public abstract class BuildSpec {
     }
 
     public boolean configureDockerBuildSteps() {
-        if (Application.ApplicationType.SERVERLESS.equals(application.getApplicationType())) {
-            return false;
-        }
-        return true;
+        return !Application.ApplicationType.SERVERLESS.equals(application.getApplicationType()) && !isTestBuild();
     }
 
     protected boolean isTestBuild() {

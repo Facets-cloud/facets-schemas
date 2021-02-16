@@ -4,6 +4,7 @@ import {SimpleOauth2User} from '../../cc-api/models/simple-oauth-2user';
 import {ApplicationControllerService} from '../../cc-api/services/application-controller.service';
 import {UiStackControllerService} from '../../cc-api/services/ui-stack-controller.service';
 import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
+import {CookieService} from "ngx-cookie-service";
 
 @Component({
   selector: 'app-header',
@@ -19,12 +20,15 @@ export class HeaderComponent implements OnInit {
   ];
   clusters: AbstractCluster[];
   currentCluster = '';
+  isDemo: string = '';
 
   constructor(private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
-              private router: Router, private uiStackControllerService: UiStackControllerService) {
+              private router: Router, private uiStackControllerService: UiStackControllerService,
+              private cookieService: CookieService) {
   }
 
   ngOnInit(): void {
+    this.isDemo = this.cookieService.get("isDemo");
     this.route.url.subscribe(
       s => this.currentNav = s[0].path
     );

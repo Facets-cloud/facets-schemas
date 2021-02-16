@@ -1,6 +1,7 @@
 package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
+import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 import com.google.common.collect.Lists;
 
@@ -14,15 +15,13 @@ public class SbtBuildSpec extends BuildSpec {
         super(application);
     }
 
-    public SbtBuildSpec(Application application, boolean testBuild) {
-        super(application, testBuild);
+    public SbtBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+        super(application, testBuild, registries);
     }
 
     @Override
     protected List<String> getPostBuildCommands() {
-        List<String> postBuildCommands = new ArrayList<>();
-        postBuildCommands.add("docker push $REPO/$APP_NAME:$TAG");
-        return postBuildCommands;
+        return new ArrayList<>();
     }
 
     @Override
@@ -34,8 +33,6 @@ public class SbtBuildSpec extends BuildSpec {
     protected List<String> getBuildCommands() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("sbt 'set test in assembly := {}' clean assembly");
-        buildCommands.add("docker build -t $APP_NAME:$TAG .");
-        buildCommands.add("docker tag $APP_NAME:$TAG $REPO/$APP_NAME:$TAG");
         return buildCommands;
     }
 
@@ -57,11 +54,9 @@ public class SbtBuildSpec extends BuildSpec {
 
     @Override
     protected List<String> getPreBuildCommands() {
-        String ECR_REPO = "486456986266.dkr.ecr.us-west-1.amazonaws.com";
         List<String> preBuildCommands = new ArrayList<>();
         preBuildCommands.add("TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 7)");
         preBuildCommands.add("TAG=$TAG-$CODEBUILD_BUILD_NUMBER");
-        preBuildCommands.add("REPO=" + ECR_REPO);
         preBuildCommands.add("APP_NAME=" + application.getApplicationFamily().name().toLowerCase() + "/" + application.getName());
         return preBuildCommands;
     }

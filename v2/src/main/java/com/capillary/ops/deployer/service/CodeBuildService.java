@@ -45,6 +45,9 @@ public class CodeBuildService implements ICodeBuildService {
     @Qualifier("codebuildExecutorService")
     private ExecutorService codebuildExecutor;
 
+    @Autowired
+    private RegistryService registryService;
+
     private static final Logger logger = LoggerFactory.getLogger(CodeBuildService.class);
 
     private static final int BUILD_TIMEOUT_MINUTES = 60;
@@ -150,8 +153,11 @@ public class CodeBuildService implements ICodeBuildService {
                 vpcConfig, projectArtifacts);
     }
 
-    private String createBuildSpec(Application application, boolean testSpec) {
-        BuildSpec buildSpec = getBuildSpec(application, testSpec);
+    private String createBuildSpec(Application application, boolean testSpec){
+        return createBuildSpec(application, testSpec, false, false);
+    }
+    private String createBuildSpec(Application application, boolean testSpec, boolean tagBuild, boolean addAdditionalRegistries) {
+        BuildSpec buildSpec = getBuildSpec(application, testSpec, tagBuild, addAdditionalRegistries);
         YAMLMapper yamlMapper = new YAMLMapper();
         yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
         yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
@@ -167,32 +173,38 @@ public class CodeBuildService implements ICodeBuildService {
         return getBuildSpec(application, false);
     }
 
-    private BuildSpec getBuildSpec(Application application, boolean testBuild) {
+    private BuildSpec getBuildSpec(Application application, boolean testBuild){
+        return getBuildSpec(application, testBuild, false, false);
+    }
+
+    private BuildSpec getBuildSpec(Application application, boolean testBuild, boolean tagBuild, boolean addAdditionalRegistries) {
+        List<Registry> registries = registryService.getBuildRegistries(application, testBuild, tagBuild, addAdditionalRegistries);
+
         switch (application.getBuildType()) {
             case MVN:
-                return new MavenBuildSpec(application, testBuild);
+                return new MavenBuildSpec(application, testBuild, registries);
             case FREESTYLE_DOCKER:
-                return new FreestyleDockerBuildSpec(application, testBuild);
+                return new FreestyleDockerBuildSpec(application, testBuild, registries);
             case DOTNET_CORE:
-                return new DotnetBuildSpec(application, testBuild);
+                return new DotnetBuildSpec(application, testBuild, registries);
             case MVN_IONIC:
-                return new MavenIonicBuildSpec(application, testBuild);
+                return new MavenIonicBuildSpec(application, testBuild, registries);
             case JDK6_MAVEN2:
-                return new JDK6Maven2BuildSpec(application, testBuild);
+                return new JDK6Maven2BuildSpec(application, testBuild, registries);
             case MJ_NUGET:
-                return new MJNugetBuildSpec(application, testBuild);
+                return new MJNugetBuildSpec(application, testBuild, registries);
             case DOTNET_CORE3:
-                return new Dotnet3BuildSpec(application, testBuild);
+                return new Dotnet3BuildSpec(application, testBuild, registries);
             case DOTNET_CORE22:
-                return new Dotnet22BuildSpec(application, testBuild);
+                return new Dotnet22BuildSpec(application, testBuild, registries);
             case SBT:
-                return new SbtBuildSpec(application, testBuild);
+                return new SbtBuildSpec(application, testBuild, registries);
             case NPM:
-                return new NPMBuildSpec(application, testBuild);
+                return new NPMBuildSpec(application, testBuild, registries);
             case NPM_UI:
-                return new NPMUIBuildSpec(application, testBuild);
+                return new NPMUIBuildSpec(application, testBuild, registries);
             case JAVA8_LIBRARY:
-                return new JavaLibararyMavenBuildSpec(application, testBuild);
+                return new JavaLibararyMavenBuildSpec(application, testBuild, registries);
             default:
                 throw new NotImplementedException("");
         }
@@ -218,7 +230,7 @@ public class CodeBuildService implements ICodeBuildService {
                         .projectName(application.getName())
                         .sourceVersion(build.getTag())
                         .environmentVariablesOverride(environmentVariables)
-                        .buildspecOverride(createBuildSpec(application, testBuild))
+                        .buildspecOverride(createBuildSpec(application, testBuild, build.isPromotable(), true))
                         .build();
         return getCodeBuildClient(buildSpec.getAwsRegion()).startBuild(startBuildRequest).build().id();
     }
@@ -334,5 +346,4 @@ public class CodeBuildService implements ICodeBuildService {
                 .credentialsProvider(DefaultCredentialsProvider.create())
                 .build();
     }
-
 }

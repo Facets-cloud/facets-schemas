@@ -32,6 +32,7 @@ public class Build implements Serializable {
     private boolean promotable = false;
     private String artifactUrl;
     private boolean testBuild = false;
+    private List<String> additionalRepositoryImages;
 
     private static final long serialVersionUID = 3595193021269728012L;
 
@@ -194,5 +195,13 @@ public class Build implements Serializable {
 
     public void setArtifactUrl(String artifactUrl) {
         this.artifactUrl = artifactUrl;
+    }
+
+    public List<String> getAdditionalRepositoryImages() {
+        return additionalRepositoryImages;
+    }
+
+    public void setAdditionalRepositoryImages(List<String> additionalRepositoryImages) {
+        this.additionalRepositoryImages = additionalRepositoryImages;
     }
 }
