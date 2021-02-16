@@ -81,11 +81,13 @@ public class CCArtifactCallbackService {
 
         // if there are additional different ecr registry repository images associated with the current build
         // we create the artifactory of them in those registry account's cc mongo.
-        existingBuild.getAdditionalRepositoryImages().forEach(image -> {
-            logger.info("additional images found in the build {}. registering the artifact", image);
-            Artifact artifact = new Artifact(existingBuild.getApplicationId(), image, buildId, existingBuild.getDescription(), BuildStrategy.PROD, ReleaseType.RELEASE, "deployer");
-            registerArtifactCCCall(artifact);
-        });
+        if (existingBuild.getAdditionalRepositoryImages() != null && !existingBuild.getAdditionalRepositoryImages().isEmpty()){
+            existingBuild.getAdditionalRepositoryImages().forEach(image -> {
+                logger.info("additional images found in the build {}. registering the artifact", image);
+                Artifact artifact = new Artifact(existingBuild.getApplicationId(), image, buildId, existingBuild.getDescription(), BuildStrategy.PROD, ReleaseType.RELEASE, "deployer");
+                registerArtifactCCCall(artifact);
+            });
+        }
 
         if (existingBuild.getPromotionIntent().equals(PromotionIntent.HOTFIX)) {
             artifactFacade.registerArtifact(new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId,
@@ -95,11 +97,13 @@ public class CCArtifactCallbackService {
                     "deployer"));
 
             // the above release logic is applicable even for hotfix builds.
-            existingBuild.getAdditionalRepositoryImages().forEach(image -> {
-                logger.info("additional images found in the build {}. registering the artifact", image);
-                Artifact artifact = new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId, existingBuild.getDescription(), BuildStrategy.PROD, ReleaseType.HOTFIX, "deployer");
-                registerArtifactCCCall(artifact);
-            });
+            if (existingBuild.getAdditionalRepositoryImages() != null && !existingBuild.getAdditionalRepositoryImages().isEmpty()){
+                existingBuild.getAdditionalRepositoryImages().forEach(image -> {
+                    logger.info("additional images found in the build {}. registering the artifact", image);
+                    Artifact artifact = new Artifact(existingBuild.getApplicationId(), existingBuild.getImage(), buildId, existingBuild.getDescription(), BuildStrategy.PROD, ReleaseType.HOTFIX, "deployer");
+                    registerArtifactCCCall(artifact);
+                });
+            }
         }
     }
 
