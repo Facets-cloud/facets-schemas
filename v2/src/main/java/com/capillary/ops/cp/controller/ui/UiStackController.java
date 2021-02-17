@@ -137,4 +137,10 @@ public class UiStackController {
     public List<ClusterTask> getAllClusterTasks(@PathVariable String stackName){
         return stackController.getClusterTasks(stackName);
     }
+
+    @PutMapping("{stackName}")
+    @PreAuthorize("hasRole('CC-ADMIN')")
+    public Stack updateStack(@RequestBody Stack stack, @PathVariable String stackName){
+        return stackController.updateStack(stack, stackName);
+    }
 }

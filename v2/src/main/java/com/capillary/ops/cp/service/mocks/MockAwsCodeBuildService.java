@@ -9,6 +9,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import com.google.gson.Gson;
 import com.jcabi.aspects.Loggable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -59,6 +62,7 @@ public class MockAwsCodeBuildService implements TFBuildService {
         log.setOverrideBuildSteps(deploymentRequest.getOverrideBuildSteps());
 
         String buildSpec = getBuildSpec(deploymentRequest);
+        saveDeploymentContext(deploymentContext);
         System.out.println(buildSpec);
 
         return deploymentLogRepository.save(log);
@@ -114,6 +118,18 @@ public class MockAwsCodeBuildService implements TFBuildService {
             return yamlMapper.writeValueAsString(buildSpec);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void saveDeploymentContext(DeploymentContext deploymentContext){
+        String deploymentContextJson = new Gson().toJson(deploymentContext);
+        byte[] data = deploymentContextJson.getBytes();
+        try{
+            FileOutputStream outputStream = new FileOutputStream("deploymentcontext.json");
+            outputStream.write(data);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
