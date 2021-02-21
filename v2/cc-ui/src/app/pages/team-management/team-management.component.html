@@ -11,6 +11,11 @@
           <ng2-smart-table  class="cc-no-standard" [settings]="resourcesTableSettings" [source]="team?.resources" (createConfirm)="onCreateConfirm($event)"></ng2-smart-table>
         </div>
       </nb-tab>
+      <nb-tab tabTitle="Notification Channels">
+        <div style="padding-top: 0.5rem;">
+          <ng2-smart-table  class="cc-no-standard" [settings]="channelTableSettings" [source]="notificationChannels" (createConfirm)="addChannel($event)"></ng2-smart-table>
+        </div>
+      </nb-tab>
      </nb-tabset>
 </nb-card>
 </app-layout-one-column>

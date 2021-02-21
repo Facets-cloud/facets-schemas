@@ -12,6 +12,7 @@ import { UiStackControllerService, UiTeamControllerService } from 'src/app/cc-ap
 export class TeamManagementComponent implements OnInit {
 
   team: Team;
+  notificationChannels = []
   members: Array<TeamMembership>;
   stackNames: Array<string>;
   selectedStackName: string;
@@ -40,6 +41,49 @@ export class TeamManagementComponent implements OnInit {
     actions: {
       position: 'right',
       delete: false,
+    },
+  };
+
+  channelTableSettings = {
+    columns: {
+      channelType: {
+        title: 'Channel Type',
+        filter: false,
+        width: '49%',
+        editor: {
+          type: 'list',
+          config: {
+            list: [{ value: 'FLOCK', title: 'FLOCK' }]
+          }
+        }
+      },
+      channelAddress: {
+        title: 'Channel Address',
+        filter: false,
+        width: '49%',
+      }
+    },
+    noDataMessage: '',
+    add: {
+      addButtonContent: '<i class="eva-plus-outline eva"></i>',
+      createButtonContent: '<i class="eva-checkmark-outline eva"></i>',
+      cancelButtonContent: '<i class="eva-close-outline eva"></i>',
+      confirmCreate: true,
+    },
+    edit: {
+      editButtonContent: '<i class="eva-plus-outline eva"></i>',
+      saveButtonContent: '<i class="eva-checkmark-outline eva"></i>',
+      cancelButtonContent: '<i class="eva-close-outline eva"></i>',
+      confirmSave: true,
+    },
+    pager: {
+      display: false,
+      perPage: 15,
+    },
+    actions: {
+      position: 'right',
+      delete: false,
+      edit: true,
     },
   };
 
@@ -80,7 +124,15 @@ export class TeamManagementComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(
       x => this.teamsController.getTeamUsingGET(x.get('teamId')).subscribe(
-        t => this.team = t));
+        t => {
+          this.team = t;
+          this.notificationChannels = Object.keys(this.team.notificationChannels).map(x => {
+            return {
+            channelType: x,
+            channelAddress: this.team.notificationChannels[x]
+          }});
+          console.log(this.notificationChannels);
+        }));
     this.activatedRoute.paramMap.subscribe(
       x => this.teamsController.getTeamMembersUsingGET(x.get('teamId')).subscribe(
         t => this.members = t));
@@ -137,5 +189,13 @@ export class TeamManagementComponent implements OnInit {
     this.selectedStackName = e;
     rt.stackName = this.selectedStackName;
     rt.ngOnInit();
+  }
+
+  addChannel(e) {
+    console.log(e);
+    this.team.notificationChannels[e.newData.channelType] = e.newData.channelAddress;
+    this.teamsController.upsertTeamUsingPOST(this.team).subscribe(
+      _ => {this.ngOnInit();}
+    );
   }
 }
