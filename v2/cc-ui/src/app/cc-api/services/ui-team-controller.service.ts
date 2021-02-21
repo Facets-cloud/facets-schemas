@@ -19,6 +19,7 @@ import { TeamMembership } from '../models/team-membership';
 class UiTeamControllerService extends __BaseService {
   static readonly getTeamsUsingGETPath = '/cc-ui/v1/teams/';
   static readonly upsertTeamUsingPOSTPath = '/cc-ui/v1/teams/';
+  static readonly getTeamUsingGETPath = '/cc-ui/v1/teams/{teamId}';
   static readonly getTeamMembersUsingGETPath = '/cc-ui/v1/teams/{teamId}/members';
   static readonly addTeamMembersUsingPOSTPath = '/cc-ui/v1/teams/{teamId}/members';
 
@@ -98,6 +99,44 @@ class UiTeamControllerService extends __BaseService {
    */
   upsertTeamUsingPOST(team: Team): __Observable<Team> {
     return this.upsertTeamUsingPOSTResponse(team).pipe(
+      __map(_r => _r.body as Team)
+    );
+  }
+
+  /**
+   * getTeam
+   * @param teamId teamId
+   * @return OK
+   */
+  getTeamUsingGETResponse(teamId: string): __Observable<__StrictHttpResponse<Team>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/teams/${encodeURIComponent(teamId)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Team>;
+      })
+    );
+  }
+  /**
+   * getTeam
+   * @param teamId teamId
+   * @return OK
+   */
+  getTeamUsingGET(teamId: string): __Observable<Team> {
+    return this.getTeamUsingGETResponse(teamId).pipe(
       __map(_r => _r.body as Team)
     );
   }

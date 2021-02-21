@@ -1,0 +1,54 @@
+<app-layout-one-column>
+  <nb-card size='large'>
+    <nb-card-header><b>{{team?.name | titlecase}}</b></nb-card-header>
+    <nb-tabset>
+      <nb-tab tabTitle="Team Members">
+        <ng2-smart-table  class="cc-no-standard" [settings]="tableSettings" [source]="members" (createConfirm)="onCreateConfirm($event)"></ng2-smart-table>
+      </nb-tab>
+      <nb-tab tabTitle="Mapped Resources">
+        <button nbButton status=info (click)="showDialog(resourceSelector)">Add Resource</button>
+        <div style="padding-top: 0.5rem;">
+          <ng2-smart-table  class="cc-no-standard" [settings]="resourcesTableSettings" [source]="team?.resources" (createConfirm)="onCreateConfirm($event)"></ng2-smart-table>
+        </div>
+      </nb-tab>
+     </nb-tabset>
+</nb-card>
+</app-layout-one-column>
+
+<ng-template #resourceSelector let-data let-ref="dialogRef">
+  <nb-card style="width: 55rem;">
+    <nb-card-header>Add Resource</nb-card-header>
+    <nb-card-body>
+      <div class="row cc-margin-bottom">
+        <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">
+          Stack
+        </div>
+        <div class="col-sm-6" style="padding-bottom: 0.5rem;">
+          <nb-select [(ngModel)]="selectedStackName" (selectedChange)="stackSelected($event, rt)">
+            <nb-option selected="stackNames[0]" *ngFor="let stackName of stackNames" value={{stackName}}>{{stackName}}</nb-option>
+          </nb-select>
+        </div>
+        <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">
+          Resource Type
+        </div>
+        <div class="col-sm-6">
+          <app-resource-type-selector #rt [(stackName)]="selectedStackName"
+                                 (onResourceTypeSelect)="rtSelected($event)" [resourceSelectorComponent]="rc"></app-resource-type-selector>
+        </div>
+      </div>
+      <div class="row cc-margin-bottom">
+        <div class="col-sm-6 cc-key" style="display: flex;align-items: center;">
+          Resource Name
+        </div>
+        <div class="col-sm-6">
+          <app-resource-selector #rc [(stackName)]="selectedStackName" [resourceTypeSelected]="selectedResourceType"
+                                 (onResourceSelect)="appSelected($event)"></app-resource-selector>
+        </div>
+      </div>
+        <div style="margin: 1rem 0 1rem 0">
+            <button nbButton  status="info" (click)="ref.close()">Save Changes</button>
+        </div>
+    </nb-card-body>
+  </nb-card>
+
+</ng-template>
