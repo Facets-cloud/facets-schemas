@@ -1,5 +1,4 @@
 export { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.service';
-export { OperationHandlerService } from './services/operation-handler.service';
 export { ApplicationControllerService } from './services/application-controller.service';
 export { CallbackControllerService } from './services/callback-controller.service';
 export { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
