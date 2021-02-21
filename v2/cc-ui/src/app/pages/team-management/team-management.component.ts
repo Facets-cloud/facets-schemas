@@ -114,7 +114,6 @@ export class TeamManagementComponent implements OnInit {
   showDialog(dialog) {
     this.dialogService.open(dialog, {}).onClose.subscribe(
       _ => {
-        alert("here");
         if (! this.team.resources) {
           this.team.resources = []
         }
@@ -123,7 +122,6 @@ export class TeamManagementComponent implements OnInit {
         resourceName: this.selectedResourceName,
         stackName: this.selectedStackName
       });
-      alert("here");
       this.teamsController.upsertTeamUsingPOST(this.team).subscribe(
         x => this.ngOnInit(),
       )
