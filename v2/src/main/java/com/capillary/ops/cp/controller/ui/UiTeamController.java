@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,11 @@ public class UiTeamController {
     @GetMapping
     public List<Team> getTeams() {
       return teamFacade.getTeams();
+    }
+
+    @GetMapping("{teamId}")
+    public Team getTeam(@PathVariable String teamId) {
+      return teamFacade.getTeam(teamId);
     }
 
     @GetMapping("{teamId}/members")

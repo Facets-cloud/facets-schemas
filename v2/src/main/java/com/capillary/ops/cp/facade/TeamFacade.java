@@ -43,4 +43,8 @@ public class TeamFacade {
       Team team = teamRepository.findById(teamId).get();
       return teamMembershipRepository.findByTeamId(teamId);
     }
+
+  public Team getTeam(String teamId) {
+    return teamRepository.findById(teamId).get();
+  }
 }
