@@ -37,13 +37,13 @@ public class FlockNotifier implements Notifier {
     }
 
     @Override
-    public void notify(Subscription subscription, Notification notification) {
+    public void notify(String channelAddress, Notification notification) {
         RestTemplate restTemplate = new RestTemplate();
         Message message = new Message(notification.getNotificationMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<Message> httpEntity = new HttpEntity<>(message, headers);
-        restTemplate.postForEntity(subscription.getChannelAddress(), httpEntity, Object.class);
+        restTemplate.postForEntity(channelAddress, httpEntity, Object.class);
     }
 
     @Override

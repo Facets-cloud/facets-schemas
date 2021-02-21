@@ -1,7 +1,7 @@
 package com.capillary.ops.cp.controller.ui;
 
-import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.Team;
+import com.capillary.ops.cp.bo.TeamMembership;
 import com.capillary.ops.cp.facade.TeamFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,13 +18,23 @@ public class UiTeamController {
 
     @PostMapping
     @PreAuthorize("hasRole('CC-ADMIN')")
-    public Team createTeam(@RequestBody Team team) {
+    public Team upsertTeam(@RequestBody Team team) {
         return teamFacade.createTeam(team);
+    }
+
+    @GetMapping
+    public List<Team> getTeams() {
+      return teamFacade.getTeams();
+    }
+
+    @GetMapping("{teamId}/members")
+    public List<TeamMembership> getTeamMembers(@PathVariable String teamId) {
+      return teamFacade.getTeamMembers(teamId);
     }
 
     @PostMapping("{teamId}/members")
     @PreAuthorize("hasRole('CC-ADMIN')")
-    public Team addTeamMembers(@RequestBody List<String> userNames, @PathVariable String teamId) {
+    public List<TeamMembership> addTeamMembers(@RequestBody List<String> userNames, @PathVariable String teamId) {
         return teamFacade.addTeamMembers(teamId, userNames);
     }
 }

@@ -2,6 +2,7 @@ package com.capillary.ops.cp.bo.notifications;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AppDeployment;
+import com.capillary.ops.cp.bo.TeamResource;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -48,5 +49,10 @@ public class ApplicationDeploymentNotification implements Notification {
     @Override
     public String getStackName() {
         return cluster.getStackName();
+    }
+
+    @Override
+    public TeamResource getTeamResource() {
+      return new TeamResource(getStackName(), "application", getNotificationSubject());
     }
 }
