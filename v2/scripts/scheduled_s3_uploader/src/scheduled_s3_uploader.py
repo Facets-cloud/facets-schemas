@@ -19,6 +19,7 @@ logger.addHandler(logHandler)
 
 BASE_DUMP_DIR = os.environ.get("DUMP_DIR", "/var/log/dumps")
 S3_BUCKET = os.environ.get("S3_BUCKET", "k8s-file-dumps")
+S3_REGION = os.environ.get("S3_REGION", "ap-southeast-1")
 DEFAULT_FREQUENCY_MIN = 5
 
 CLUSTER = os.environ.get("CLUSTER")
@@ -26,7 +27,7 @@ if CLUSTER is None:
     logger.error("cluster cannot be absent")
     sys.exit(1)
 
-s3_client = boto3.client('s3')
+s3_client = boto3.client('s3', region_name=S3_REGION)
 
 
 def get_current_hour_folder():
