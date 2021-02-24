@@ -1,5 +1,6 @@
 /* tslint:disable */
 export interface Build {
+  additionalRepositoryImages?: Array<string>;
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationId?: string;
   artifactUrl?: string;
@@ -16,4 +17,5 @@ export interface Build {
   testBuild?: boolean;
   timestamp?: number;
   triggeredBy?: string;
+  unpromoted?: boolean;
 }

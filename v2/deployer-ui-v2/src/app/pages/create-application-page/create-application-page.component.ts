@@ -1,12 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Application } from '../../api/models';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Application, ECRRegistry, Registry } from '../../api/models';
 import { ApplicationControllerService } from '../../api/services';
 import { NumberComponentDynamicComponent } from './number-component-dynamic/number-component-dynamic.component';
-import { NbToastrService, NbStepperComponent, NbSelectModule } from '@nebular/theme';
+import { NbToastrService, NbStepperComponent, NbSelectModule, NbSelectComponent } from '@nebular/theme';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApplicationsMenuComponent } from '../applications-menu/applications-menu.component';
 import { MessageBus } from '../../@core/message-bus';
 import { CtrDropdown } from 'ng2-completer';
+import { type } from 'os';
 
 @Component({
   selector: 'create-application-page',
@@ -14,7 +15,6 @@ import { CtrDropdown } from 'ng2-completer';
   styleUrls: ['./create-application-page.component.scss'],
 })
 export class CreateApplicationPageComponent implements OnInit {
-
   application: Application = {
     ports: [],
     healthCheck: {
@@ -23,7 +23,9 @@ export class CreateApplicationPageComponent implements OnInit {
     },
     pvcList: [],
   };
-
+  registries: Array<Registry> = [];
+  tagBuildFlags = {};
+  branchBuildFlags = {};
   appFamilies = [];
 
   applicationTypes = [];
@@ -170,6 +172,20 @@ export class CreateApplicationPageComponent implements OnInit {
               };
             }
             this.application = app;
+            this.applicationControllerService.getAllRegistriesUsingGET().subscribe(
+              allRegistries => {
+                this.registries = allRegistries;
+                allRegistries.forEach(x => {
+                  this.tagBuildFlags[x.id] = this.application.tagBuildRepositoryIds.includes(x.id);
+                });
+                allRegistries.forEach(x => {
+                  this.branchBuildFlags[x.id] = this.application.branchBuildRepositoryIds.includes(x.id);
+                })
+              },
+              err => {
+                console.log(err);
+              }
+            )
           });
         }
       },
@@ -194,6 +210,7 @@ export class CreateApplicationPageComponent implements OnInit {
       },
     );
   }
+
 
   appFamilySelected(stepper: any) {
 
@@ -303,13 +320,17 @@ export class CreateApplicationPageComponent implements OnInit {
     stepper.next();
   }
 
+  skipRegistries(stepper: NbStepperComponent) {
+    stepper.next();
+  }
+
   createOrUpdateApplication() {
     this.application.dnsType = this.application.loadBalancerType === 'EXTERNAL' ? 'PUBLIC' : 'PRIVATE';
 
     // Set default thresholds as 1 is the only allowed value by kubernetes
     this.application.healthCheck.livenessProbe.successThreshold = 1;
     this.application.healthCheck.readinessProbe.successThreshold = 1;
-
+    this.setRegistryChanges();
     if (this.application.id) {
       this.updateApplication();
     } else {
@@ -338,5 +359,22 @@ export class CreateApplicationPageComponent implements OnInit {
     }).subscribe(app => {
       this.navigateToApplication(app);
     });
+  }
+
+  setRegistryChanges(){
+    let trueTagRegs = [];
+    this.registries.forEach(x => {
+      if(this.tagBuildFlags[x.id]){
+        trueTagRegs.push(x.id);
+      }
+    });
+    this.application.tagBuildRepositoryIds = trueTagRegs;
+    let trueBranchRegs = [];
+    this.registries.forEach(x => {
+      if(this.branchBuildFlags[x.id]){
+        trueBranchRegs.push(x.id);
+      }
+    });
+    this.application.branchBuildRepositoryIds = trueBranchRegs;
   }
 }
