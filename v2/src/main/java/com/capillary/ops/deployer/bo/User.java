@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
+import java.util.Set;
 
 public class User {
 
@@ -14,6 +15,8 @@ public class User {
     private String userName;
 
     private List<String> roles;
+
+    private Set<String> teams;
 
     public String getId() {
         return id;
@@ -37,5 +40,13 @@ public class User {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public Set<String> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<String> teams) {
+        this.teams = teams;
     }
 }

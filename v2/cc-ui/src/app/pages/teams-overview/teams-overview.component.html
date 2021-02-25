@@ -1,0 +1,8 @@
+<app-layout-one-column>
+  <nb-card>
+    <nb-card-header>Teams</nb-card-header>
+    <nb-card-body>
+      <ng2-smart-table  class="cc-no-standard" [settings]="tableSettings" [source]="teams" (custom)="gotoPage($event)" (createConfirm)="onCreateConfirm($event)"></ng2-smart-table>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>

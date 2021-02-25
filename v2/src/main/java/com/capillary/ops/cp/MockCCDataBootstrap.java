@@ -3,11 +3,13 @@ package com.capillary.ops.cp;
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.notifications.ChannelType;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.deployer.bo.User;
 import com.capillary.ops.deployer.repository.UserRepository;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -44,6 +46,12 @@ public class MockCCDataBootstrap {
 
     @Autowired
     ClusterResourceDetailsRepository clusterResourceDetailsRepository;
+
+    @Autowired
+    TeamRepository teamRepository;
+
+    @Autowired
+    TeamMembershipRepository teamMembershipRepository;
 
     @PostConstruct
     private void init() {
@@ -163,6 +171,13 @@ public class MockCCDataBootstrap {
         roles.add("CC-ADMIN");
         user.setRoles(roles);
         userRepository.save(user);
+
+        Team team = new Team();
+        team.setName("foundation");
+        team.setResources(new HashSet(Arrays.asList(new TeamResource("crm", "application", "emf"))));
+        team.setNotificationChannels(ImmutableMap.of(ChannelType.FLOCK, "https://dummy"));
+        teamRepository.save(team);
+        teamMembershipRepository.save(new TeamMembership(team.getId(), adminUser));
     }
 
 }

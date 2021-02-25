@@ -16,6 +16,7 @@ import com.capillary.ops.cp.service.AclService;
 import com.capillary.ops.cp.service.StackAutoCompleteService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -99,6 +100,7 @@ public class UiStackController {
     }
 
     @GetMapping("{stackName}/suggestions/resourceType/{resourceType}")
+    @PostFilter("hasPermission(new com.capillary.ops.cp.bo.TeamResource(#stackName, #resourceType, filterObject), 'RESOURCE_NAME_READ')")
     public Set<String> getResourcesByTypes(@PathVariable String stackName, @PathVariable String resourceType) {
         return stackAutoCompleteService.getResourcesSuggestion(stackName, resourceType);
     }

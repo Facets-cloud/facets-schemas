@@ -37,9 +37,6 @@ public class SubscriptionFacade {
                 return BuildStrategy.QA;
             }
         };
-        notificationService.publish(new ApplicationDeploymentNotification(
-                new AppDeployment("testapp", artifact), cluster
-        ));
         return ret;
     }
 }

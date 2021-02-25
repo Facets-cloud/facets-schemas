@@ -3,6 +3,8 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
+import { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.service';
+import { OperationHandlerService } from './services/operation-handler.service';
 import { ApplicationControllerService } from './services/application-controller.service';
 import { CallbackControllerService } from './services/callback-controller.service';
 import { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
@@ -10,6 +12,8 @@ import { MockCallBackControllerService } from './services/mock-call-back-control
 import { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 import { UiStackControllerService } from './services/ui-stack-controller.service';
+import { UiTeamControllerService } from './services/ui-team-controller.service';
+import { ArtifactControllerService } from './services/artifact-controller.service';
 import { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 import { BuildControllerService } from './services/build-controller.service';
 import { CapillaryCloudCallbackControllerService } from './services/capillary-cloud-callback-controller.service';
@@ -31,6 +35,8 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
   declarations: [],
   providers: [
     ApiConfiguration,
+    WebMvcLinksHandlerService,
+    OperationHandlerService,
     ApplicationControllerService,
     CallbackControllerService,
     UiAwsClusterControllerService,
@@ -38,6 +44,8 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     UiCommonClusterControllerService,
     UiDeploymentControllerService,
     UiStackControllerService,
+    UiTeamControllerService,
+    ArtifactControllerService,
     AwsClusterControllerService,
     BuildControllerService,
     CapillaryCloudCallbackControllerService,
