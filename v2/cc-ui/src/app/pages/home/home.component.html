@@ -1,6 +1,20 @@
 <app-layout-one-column>
     <nb-card>
-      <nb-card-header>Stacks</nb-card-header>
+    <nb-card-header>
+    <div style="float:left;">Stacks</div>
+    <div style="float:right;">
+    <button
+              nbButton
+              fullWidth
+              status="info"
+              (click)="createStack()"
+              appearance="hero"
+              >
+              <nb-icon icon="plus-outline"></nb-icon>
+              Create
+    </button>
+    </div>
+    </nb-card-header>
       <nb-card-body>
         <ng2-smart-table  class="cc-no-standard" [settings]="tableSettings" [source]="stacks" (custom)="gotoPage($event)"></ng2-smart-table>
       </nb-card-body>

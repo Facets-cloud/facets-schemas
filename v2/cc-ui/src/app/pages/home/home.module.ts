@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 import {RouterModule} from '@angular/router';
 import {
-  NbActionsModule, NbButtonModule, NbCardModule, NbLayoutModule, NbSelectModule, NbSidebarModule, NbSidebarService,
+  NbActionsModule, NbButtonModule, NbCardModule,NbIconModule, NbLayoutModule, NbSelectModule, NbSidebarModule, NbSidebarService,
   NbUserModule
 } from '@nebular/theme';
+import {NbEvaIconsModule} from "@nebular/eva-icons";
 import {ComponentsModule} from '../../components/components.module';
 import {LayoutsModule} from '../../layouts/layouts.module';
 import {Ng2SmartTableModule} from 'ng2-smart-table';
@@ -18,8 +19,11 @@ import {Ng2SmartTableModule} from 'ng2-smart-table';
     CommonModule,
     RouterModule,
     NbCardModule,
+    NbEvaIconsModule,
+    NbIconModule,
     LayoutsModule,
-    Ng2SmartTableModule
+    Ng2SmartTableModule,
+    NbButtonModule
   ]
 })
 export class HomeModule { }

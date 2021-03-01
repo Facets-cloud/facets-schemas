@@ -17,6 +17,7 @@ import {ClusterPagesModule} from './pages/cluster-pages/cluster-pages.module';
 import {ClusterOverridesModule} from './pages/cluster-pages/cluster-overrides/cluster-overrides.module';
 import {ClusterReleasesModule} from './pages/cluster-pages/cluster-releases/cluster-releases.module';
 import {ClusterCreateModule} from './pages/cluster-pages/cluster-create/cluster-create.module';
+import {StackCreateModule} from './pages/cluster-pages/stack-create/stack-create.module';
 import {ClusterOverviewModule} from './pages/cluster-pages/cluster-overview/cluster-overview.module';
 import { ClusterDisasterRecoveryModule } from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.module';
 import {ClusterAlertsModule} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.module";
@@ -55,6 +56,7 @@ import { TeamManagementModule } from './pages/team-management/team-management.mo
     ClusterAlertsModule,
     ClusterTunnelModule,
     ClusterResourceDetailsModule,
+    StackCreateModule,
     HttpClientModule,
     StackOverviewModule,
     TeamsOverviewModule,
