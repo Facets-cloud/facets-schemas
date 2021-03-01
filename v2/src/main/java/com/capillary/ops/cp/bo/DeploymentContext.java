@@ -12,11 +12,13 @@ public class DeploymentContext {
 
     public DeploymentContext(AbstractCluster cluster,
                              Map<String, Map<String, Artifact>> artifacts,
+                             List<Artifactory> artifactoryDetails,
                              List<OverrideObject> overrides,
                              Map<String, Map<String, SnapshotInfo>> snapshots,
                              Map<String, String> extraEnv) {
         this.cluster = cluster;
         this.artifacts = artifacts;
+        this.artifactoryDetails = artifactoryDetails;
         this.overrides = overrides;
         this.snapshots = snapshots;
         this.extraEnv = extraEnv;
@@ -25,6 +27,7 @@ public class DeploymentContext {
     @JsonIgnore
     private AbstractCluster cluster;
     private Map<String, Map<String, Artifact>> artifacts;
+    private List<Artifactory> artifactoryDetails;
     private List<OverrideObject> overrides;
     private Map<String, Map<String, SnapshotInfo>> snapshots;
     private Map<String, String> extraEnv;
@@ -43,6 +46,14 @@ public class DeploymentContext {
 
     public void setArtifacts(Map<String, Map<String, Artifact>> artifacts) {
         this.artifacts = artifacts;
+    }
+
+    public List<Artifactory> getArtifactoryDetails() {
+        return artifactoryDetails;
+    }
+
+    public void setArtifactoryDetails(List<Artifactory> artifactoryDetails) {
+        this.artifactoryDetails = artifactoryDetails;
     }
 
     public List<OverrideObject> getOverrides() {

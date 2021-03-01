@@ -575,14 +575,17 @@ public class DeploymentFacade {
 
     public DeploymentContext getDeploymentContext(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        Map<String, Map<String, Artifact>> allArtifacts = artifactFacade.getAllArtifacts(cluster.getReleaseStream(), deploymentRequest.getReleaseType());
+        List<String> artifactories = stackFacade.getStackByName(cluster.getStackName()).getArtifactories();
+
+        Map<String, Map<String, Artifact>> allArtifacts = artifactFacade.getAllArtifacts(artifactories, cluster.getReleaseStream(), deploymentRequest.getReleaseType());
+        List<Artifactory> artifactoryList = artifactFacade.getArtifactoriesByName(artifactories);
         Map<String, Map<String, SnapshotInfo>> pinnedSnapshots = baseDRService.getAllPinnedSnapshots(cluster.getId())
                 .stream().collect(Collectors.groupingBy(x -> x.getResourceType())).entrySet().stream()
                 .collect(Collectors.toMap(x -> x.getKey(),
                         x -> x.getValue().stream().collect(
                                 Collectors.toMap((SnapshotInfo y) -> y.getInstanceName(), (SnapshotInfo y) -> y))));
         List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(cluster.getId());
-        return new DeploymentContext(cluster, allArtifacts, overrides, pinnedSnapshots,
+        return new DeploymentContext(cluster, allArtifacts, artifactoryList, overrides, pinnedSnapshots,
                 deploymentRequest.getExtraEnv());
     }
 
