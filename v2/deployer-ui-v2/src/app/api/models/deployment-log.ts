@@ -1,14 +1,21 @@
 /* tslint:disable */
+import { AppDeployment } from './app-deployment';
 import { TerraformChange } from './terraform-change';
-import { DeploymentContext } from './deployment-context';
 export interface DeploymentLog {
-  buildSummary?: {};
+  appDeployments?: Array<AppDeployment>;
   changesApplied?: Array<TerraformChange>;
   codebuildId?: string;
   createdOn?: string;
-  deploymentContext?: DeploymentContext;
+  deploymentContextVersion?: string;
+  deploymentType?: 'REGULAR' | 'CUSTOM' | 'ROLLBACK';
   description?: string;
+  errorLogs?: Array<string>;
   id?: string;
+  overrideBuildSteps?: Array<string>;
   releaseType?: 'HOTFIX' | 'RELEASE';
+  signedOff?: boolean;
+  stackVersion?: string;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
+  tfVersion?: string;
+  triggeredBy?: string;
 }

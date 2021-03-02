@@ -7,8 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
-import { DeploymentLog } from '../models/deployment-log';
-import { DeploymentRequest } from '../models/deployment-request';
+import { ListDeploymentsWrapper } from '../models/list-deployments-wrapper';
 import { QASuite } from '../models/qasuite';
 import { QASuiteResult } from '../models/qasuite-result';
 
@@ -20,7 +19,6 @@ import { QASuiteResult } from '../models/qasuite-result';
 })
 class DeploymentControllerService extends __BaseService {
   static readonly getDeploymentsUsingGETPath = '/cc/v1/clusters/{clusterId}/deployments';
-  static readonly createDeploymentUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments';
   static readonly triggerAutomationSuiteUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/qa/triggerSuite';
   static readonly validateSanityResultUsingPOSTPath = '/cc/v1/clusters/{clusterId}/deployments/qa/validateSanityResult';
   static readonly abortAutomationSuiteUsingDELETEPath = '/cc/v1/clusters/{clusterId}/deployments/qa/{executionId}/abortSuite';
@@ -38,7 +36,7 @@ class DeploymentControllerService extends __BaseService {
    * @param clusterId clusterId
    * @return OK
    */
-  getDeploymentsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<Array<DeploymentLog>>> {
+  getDeploymentsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<ListDeploymentsWrapper>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -56,7 +54,7 @@ class DeploymentControllerService extends __BaseService {
     return this.http.request<any>(req).pipe(
       __filter(_r => _r instanceof HttpResponse),
       __map((_r) => {
-        return _r as __StrictHttpResponse<Array<DeploymentLog>>;
+        return _r as __StrictHttpResponse<ListDeploymentsWrapper>;
       })
     );
   }
@@ -64,56 +62,9 @@ class DeploymentControllerService extends __BaseService {
    * @param clusterId clusterId
    * @return OK
    */
-  getDeploymentsUsingGET(clusterId: string): __Observable<Array<DeploymentLog>> {
+  getDeploymentsUsingGET(clusterId: string): __Observable<ListDeploymentsWrapper> {
     return this.getDeploymentsUsingGETResponse(clusterId).pipe(
-      __map(_r => _r.body as Array<DeploymentLog>)
-    );
-  }
-
-  /**
-   * @param params The `DeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
-   *
-   * - `deploymentRequest`: deploymentRequest
-   *
-   * - `clusterId`: clusterId
-   *
-   * @return OK
-   */
-  createDeploymentUsingPOSTResponse(params: DeploymentControllerService.CreateDeploymentUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-    __body = params.deploymentRequest;
-
-    let req = new HttpRequest<any>(
-      'POST',
-      this.rootUrl + `/cc/v1/clusters/${params.clusterId}/deployments`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<DeploymentLog>;
-      })
-    );
-  }
-  /**
-   * @param params The `DeploymentControllerService.CreateDeploymentUsingPOSTParams` containing the following parameters:
-   *
-   * - `deploymentRequest`: deploymentRequest
-   *
-   * - `clusterId`: clusterId
-   *
-   * @return OK
-   */
-  createDeploymentUsingPOST(params: DeploymentControllerService.CreateDeploymentUsingPOSTParams): __Observable<DeploymentLog> {
-    return this.createDeploymentUsingPOSTResponse(params).pipe(
-      __map(_r => _r.body as DeploymentLog)
+      __map(_r => _r.body as ListDeploymentsWrapper)
     );
   }
 
@@ -346,22 +297,6 @@ class DeploymentControllerService extends __BaseService {
 }
 
 module DeploymentControllerService {
-
-  /**
-   * Parameters for createDeploymentUsingPOST
-   */
-  export interface CreateDeploymentUsingPOSTParams {
-
-    /**
-     * deploymentRequest
-     */
-    deploymentRequest: DeploymentRequest;
-
-    /**
-     * clusterId
-     */
-    clusterId: string;
-  }
 
   /**
    * Parameters for triggerAutomationSuiteUsingPOST

@@ -3,14 +3,21 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
+import { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.service';
 import { ApplicationControllerService } from './services/application-controller.service';
 import { CallbackControllerService } from './services/callback-controller.service';
+import { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
 import { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
-import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
+import { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 import { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
+import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 import { UiStackControllerService } from './services/ui-stack-controller.service';
+import { UiTeamControllerService } from './services/ui-team-controller.service';
+import { ArtifactoryControllerService } from './services/artifactory-controller.service';
+import { ArtifactControllerService } from './services/artifact-controller.service';
 import { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 import { BuildControllerService } from './services/build-controller.service';
+import { CapillaryCloudCallbackControllerService } from './services/capillary-cloud-callback-controller.service';
 import { CommonClusterControllerService } from './services/common-cluster-controller.service';
 import { DeploymentControllerService } from './services/deployment-controller.service';
 import { StackControllerService } from './services/stack-controller.service';
@@ -29,14 +36,21 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
   declarations: [],
   providers: [
     ApiConfiguration,
+    WebMvcLinksHandlerService,
     ApplicationControllerService,
     CallbackControllerService,
+    UiArtifactoryControllerService,
     UiAwsClusterControllerService,
-    UiDeploymentControllerService,
+    MockCallBackControllerService,
     UiCommonClusterControllerService,
+    UiDeploymentControllerService,
     UiStackControllerService,
+    UiTeamControllerService,
+    ArtifactoryControllerService,
+    ArtifactControllerService,
     AwsClusterControllerService,
     BuildControllerService,
+    CapillaryCloudCallbackControllerService,
     CommonClusterControllerService,
     DeploymentControllerService,
     StackControllerService,

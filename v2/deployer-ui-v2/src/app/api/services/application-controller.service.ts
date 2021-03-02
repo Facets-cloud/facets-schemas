@@ -9,6 +9,9 @@ import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { ApplicationAction } from '../models/application-action';
 import { EnvironmentMetaData } from '../models/environment-meta-data';
+import { ECRRegistry } from '../models/ecrregistry';
+import { EcrTokenMap } from '../models/ecr-token-map';
+import { Registry } from '../models/registry';
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
@@ -43,6 +46,9 @@ class ApplicationControllerService extends __BaseService {
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
   static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
   static readonly refreshBuildDetailsUsingPUTPath = '/api/codebuild/builds/{codeBuildId}/refresh';
+  static readonly createECRRegistryUsingPOSTPath = '/api/ecrRegistry';
+  static readonly getEcrTokenUsingGETPath = '/api/getEcrLoginToken';
+  static readonly getAllRegistriesUsingGETPath = '/api/getRegistries';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -284,6 +290,108 @@ class ApplicationControllerService extends __BaseService {
   refreshBuildDetailsUsingPUT(codeBuildId: string): __Observable<boolean> {
     return this.refreshBuildDetailsUsingPUTResponse(codeBuildId).pipe(
       __map(_r => _r.body as boolean)
+    );
+  }
+
+  /**
+   * @param ecrRegistry ecrRegistry
+   * @return OK
+   */
+  createECRRegistryUsingPOSTResponse(ecrRegistry: ECRRegistry): __Observable<__StrictHttpResponse<ECRRegistry>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = ecrRegistry;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/ecrRegistry`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ECRRegistry>;
+      })
+    );
+  }
+  /**
+   * @param ecrRegistry ecrRegistry
+   * @return OK
+   */
+  createECRRegistryUsingPOST(ecrRegistry: ECRRegistry): __Observable<ECRRegistry> {
+    return this.createECRRegistryUsingPOSTResponse(ecrRegistry).pipe(
+      __map(_r => _r.body as ECRRegistry)
+    );
+  }
+
+  /**
+   * @return OK
+   */
+  getEcrTokenUsingGETResponse(): __Observable<__StrictHttpResponse<EcrTokenMap>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/getEcrLoginToken`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<EcrTokenMap>;
+      })
+    );
+  }
+  /**
+   * @return OK
+   */
+  getEcrTokenUsingGET(): __Observable<EcrTokenMap> {
+    return this.getEcrTokenUsingGETResponse().pipe(
+      __map(_r => _r.body as EcrTokenMap)
+    );
+  }
+
+  /**
+   * @return OK
+   */
+  getAllRegistriesUsingGETResponse(): __Observable<__StrictHttpResponse<Array<Registry>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/getRegistries`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<Registry>>;
+      })
+    );
+  }
+  /**
+   * @return OK
+   */
+  getAllRegistriesUsingGET(): __Observable<Array<Registry>> {
+    return this.getAllRegistriesUsingGETResponse().pipe(
+      __map(_r => _r.body as Array<Registry>)
     );
   }
 

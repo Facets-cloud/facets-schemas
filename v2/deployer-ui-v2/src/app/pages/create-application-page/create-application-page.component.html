@@ -184,6 +184,36 @@
             </div>
           </form>
         </nb-step>
+        <nb-step *ngIf="(application?.applicationType !== 'SCHEDULED_JOB') && (registries.length > 0)" [stepControl]="additionalRegistries" label="AdditionalRegistries">
+          <form #additionalRegistries="ngForm">
+            <div style="margin: auto; width: 70%; min-width: 300px;">
+              <div class="form-group row">
+                <label class="label col-sm-4">Push TagBuilds Into</label>
+                <div class="col-sm-8">
+                  <nb-checkbox *ngFor="let registry of registries" [(checked)]="tagBuildFlags[registry.id]">
+                    <div>
+                      {{  registry.name }}
+                    </div>
+                  </nb-checkbox>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="label col-sm-4">Push BranchBuilds Into</label>
+                <div class="col-sm-8">
+                  <nb-checkbox *ngFor="let registry of registries" [(checked)]="branchBuildFlags[registry.id]">
+                    <div>
+                      {{  registry.name }}
+                    </div>
+                  </nb-checkbox>
+                </div>
+              </div>
+            </div>
+            <div style="padding-top: 1rem; float: right;">
+              <button style="margin-right: 1rem" (click)="skipRegistries(stepper)" nbButton>Skip</button>
+              <button nbButton nbStepperNext>Next</button>
+            </div>
+          </form>
+        </nb-step>
         <nb-step  label="Configure Storage" *ngIf="application?.applicationType == 'STATEFUL_SET'" >
           <ng2-smart-table   (createConfirm)="validatePVC($event)" (editConfirm)="validateEditPVC($event)"  (deleteConfirm)="onDeletePVC($event)" [settings]="persistantVolumeLayout" [source]="application.pvcList">
           </ng2-smart-table>
