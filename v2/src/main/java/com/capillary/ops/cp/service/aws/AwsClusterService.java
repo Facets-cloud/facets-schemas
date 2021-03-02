@@ -6,6 +6,7 @@ import com.capillary.ops.cp.service.ClusterService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import software.amazon.awssdk.services.ec2.model.InstanceType;
 
 import java.util.ArrayList;
@@ -58,12 +59,8 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
             request.setTz(new SimpleTimeZone(0, existing.getTz()));
         }
 
-        if (request.getInstanceTypes() == null || request.getInstanceTypes().size() == 0){
-            request.setInstanceTypes(new ArrayList<String>(){
-                {add(InstanceType.M5_2_XLARGE.toString());}
-                {add(InstanceType.M4_2_XLARGE.toString());}
-                {add(InstanceType.R4_2_XLARGE.toString());}
-            });
+        if (StringUtils.isEmpty(request.getInstanceTypes())){
+            request.setInstanceTypes(existing.getInstanceTypes());
         }
 
         if (checkChanged(existing.getInstanceTypes(), request.getInstanceTypes())){
