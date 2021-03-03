@@ -20,7 +20,7 @@ public class AzureClusterService implements ClusterService<AzureCluster, AzureCl
     cluster.setClientId(request.getClientId());
 
     cluster.setTz(request.getTz());
-    cluster.setRegion(request.getRegion());
+    //cluster.setRegion(request.getRegion());
     cluster.setReleaseStream(request.getReleaseStream());
     cluster.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
     //TODO: Variable Generations

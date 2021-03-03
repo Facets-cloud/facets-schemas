@@ -1,7 +1,7 @@
 package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.Cloud;
-import com.microsoft.azure.management.resources.fluentcore.arm.Region;
+//import com.microsoft.azure.management.resources.fluentcore.arm.Region;
 
 public class AzureCluster extends AbstractCluster {
   public AzureCluster(String name) {
@@ -12,7 +12,7 @@ public class AzureCluster extends AbstractCluster {
   private String subscriptionId;
   private String clientId;
   private String clientSecret;
-  private Region region;
+  //private Region region;
 
   public String getTenantId() {
     return tenantId;
@@ -46,11 +46,11 @@ public class AzureCluster extends AbstractCluster {
     this.clientSecret = clientSecret;
   }
 
-  public Region getRegion() {
-    return region;
-  }
-
-  public void setRegion(Region region) {
-    this.region = region;
-  }
+//  public Region getRegion() {
+//    return region;
+//  }
+//
+//  public void setRegion(Region region) {
+//    this.region = region;
+//  }
 }

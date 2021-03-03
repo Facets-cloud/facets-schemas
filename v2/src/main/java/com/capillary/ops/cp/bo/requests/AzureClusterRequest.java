@@ -1,13 +1,13 @@
 package com.capillary.ops.cp.bo.requests;
 
-import com.microsoft.azure.management.resources.fluentcore.arm.Region;
+// import com.microsoft.azure.management.resources.fluentcore.arm.Region;
 
 public class AzureClusterRequest extends ClusterRequest {
     private String tenantId;
     private String subscriptionId;
     private String clientId;
     private String clientSecret;
-    private Region region;
+    //private Region region;
 
   public String getTenantId() {
     return tenantId;
@@ -41,11 +41,11 @@ public class AzureClusterRequest extends ClusterRequest {
     this.clientSecret = clientSecret;
   }
 
-  public Region getRegion() {
-    return region;
-  }
-
-  public void setRegion(Region region) {
-    this.region = region;
-  }
+//  public Region getRegion() {
+//    return region;
+//  }
+//
+//  public void setRegion(Region region) {
+//    this.region = region;
+//  }
 }
