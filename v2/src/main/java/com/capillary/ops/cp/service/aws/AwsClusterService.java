@@ -37,6 +37,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
             cluster.setInstanceTypes(request.getInstanceTypes());
         }
 
+        if (request.getK8sRequestsToLimitsRatio() == null){
+            request.setK8sRequestsToLimitsRatio(1D);
+        }
         cluster.setRoleARN(request.getRoleARN());
         cluster.setTz(request.getTz());
         cluster.setExternalId(request.getExternalId());
