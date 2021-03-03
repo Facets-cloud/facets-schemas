@@ -1,9 +1,8 @@
 package com.capillary.ops.cp.controller;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.AwsCluster;
-import com.capillary.ops.cp.bo.SnapshotInfo;
-import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
+import com.capillary.ops.cp.bo.AzureCluster;
+import com.capillary.ops.cp.bo.requests.AzureClusterRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
@@ -11,15 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * All calls which can be made by the "Cluster Managers"
  */
 @RestController
-@RequestMapping("cc/v1/aws/clusters")
+@RequestMapping("cc/v1/azure/clusters")
 @Loggable
-public class AwsClusterController implements ClusterController<AwsCluster, AwsClusterRequest> {
+public class AzureClusterController implements ClusterController<AzureCluster, AzureClusterRequest> {
 
     @Autowired
     ClusterFacade clusterFacade;
@@ -33,16 +30,16 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
     @Override
     @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping()
-    public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
-        return (AwsCluster) clusterFacade.createCluster(request);
+    public AzureCluster createCluster(@RequestBody AzureClusterRequest request) {
+        return (AzureCluster) clusterFacade.createCluster(request);
     }
 
 
     @Override
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PutMapping("{clusterId}")
-    public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
-        return (AwsCluster) clusterFacade.updateCluster(request, clusterId);
+    public AzureCluster updateCluster(@RequestBody AzureClusterRequest request, @PathVariable String clusterId) {
+        return (AzureCluster) clusterFacade.updateCluster(request, clusterId);
     }
 
     /**
@@ -53,11 +50,11 @@ public class AwsClusterController implements ClusterController<AwsCluster, AwsCl
      */
     @Override
     @GetMapping("{clusterId}")
-    public AwsCluster getCluster(@PathVariable String clusterId) {
+    public AzureCluster getCluster(@PathVariable String clusterId) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        if (cluster instanceof AwsCluster) {
-            return (AwsCluster) cluster;
+        if (cluster instanceof AzureCluster) {
+            return (AzureCluster) cluster;
         }
-        throw new NotFoundException("This Cluster is not defined in AWS");
+        throw new NotFoundException("This Cluster is not defined in azure");
     }
 }
