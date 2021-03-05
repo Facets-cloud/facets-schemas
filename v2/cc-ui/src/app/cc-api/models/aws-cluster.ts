@@ -1,6 +1,5 @@
 /* tslint:disable */
 export interface AwsCluster {
-  accessKeyId?: string;
   autoSignOffSchedule?: string;
   awsRegion?: string;
   azs?: Array<string>;
@@ -17,7 +16,6 @@ export interface AwsCluster {
   requireSignOff?: boolean;
   roleARN?: string;
   schedules?: {[key: string]: string};
-  secretAccessKey?: string;
   secrets?: {[key: string]: string};
   stackName?: string;
   tz?: string;

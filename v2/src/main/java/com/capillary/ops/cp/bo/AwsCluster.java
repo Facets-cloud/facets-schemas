@@ -34,10 +34,6 @@ public class AwsCluster extends AbstractCluster {
 
     private String roleARN;
 
-    private String accessKeyId;
-
-    private String secretAccessKey;
-
     private List<String> instanceTypes = new ArrayList<String>(){
         {add(InstanceType.M5_2_XLARGE.toString());}
         {add(InstanceType.M4_2_XLARGE.toString());}
@@ -62,22 +58,6 @@ public class AwsCluster extends AbstractCluster {
 
     public void setRoleARN(String roleARN) {
         this.roleARN = roleARN;
-    }
-
-    public String getAccessKeyId() {
-        return accessKeyId;
-    }
-
-    public void setAccessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-    }
-
-    public String getSecretAccessKey() {
-        return secretAccessKey;
-    }
-
-    public void setSecretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
     }
 
     public String getAwsRegion() {

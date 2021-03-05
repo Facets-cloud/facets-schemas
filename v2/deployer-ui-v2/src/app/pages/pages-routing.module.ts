@@ -10,16 +10,11 @@ import { CreateApplicationPageComponent } from './create-application-page/create
 import { UserManagementComponent } from './user-management/user-management.component';
 import { BuildDetailsPageComponent } from './build-details-page/build-details-page.component';
 import {ApplicationMetricsAllComponent} from "./application-metrics-all/application-metrics-all.component";
-import { SigninComponent } from './signin/signin.component';
 
 const routes: Routes = [{
   path: '',
   component: PagesComponent,
   children: [
-    {
-      path: 'signin',
-      component: SigninComponent
-    },
     {
       path: 'dashboard',
       component: DashboardComponent,

@@ -5,7 +5,6 @@ import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
-import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("cc/v1/clusters")
@@ -24,6 +21,7 @@ public class CommonClusterController {
     @Autowired
     ClusterFacade clusterFacade;
 
+    @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("{clusterId}/credentials")
     public Boolean addClusterK8sCredentials(@RequestBody K8sCredentials request, @PathVariable String clusterId) {
         request.setClusterId(clusterId);
