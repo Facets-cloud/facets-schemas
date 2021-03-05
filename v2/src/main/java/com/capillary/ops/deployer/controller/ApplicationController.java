@@ -6,6 +6,7 @@ import com.capillary.ops.deployer.bo.actions.ApplicationAction;
 import com.capillary.ops.deployer.bo.ECRRegistry;
 import com.capillary.ops.deployer.bo.webhook.bitbucket.BitbucketPREvent;
 import com.capillary.ops.deployer.bo.webhook.github.GithubPREvent;
+import com.capillary.ops.deployer.service.BasicUserDetailsService;
 import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import com.capillary.ops.deployer.service.facade.ApplicationFacade;
 import com.capillary.ops.deployer.service.facade.RegistryFacade;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -385,7 +387,14 @@ public class ApplicationController {
 
     @GetMapping(value = "/me")
     public OAuth2UserServiceImpl.SimpleOauth2User me() {
-        return (OAuth2UserServiceImpl.SimpleOauth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof BasicUserDetailsService.SimpleBasicAuthUser) {
+            BasicUserDetailsService.SimpleBasicAuthUser basicAuthUser = (BasicUserDetailsService.SimpleBasicAuthUser) principal;
+            return new OAuth2UserServiceImpl.SimpleOauth2User(
+                    basicAuthUser.getAuthorities(), new HashMap<>(), basicAuthUser.getUsername());
+        }
+
+        return (OAuth2UserServiceImpl.SimpleOauth2User) principal;
     }
 
     @GetMapping(value = "/stats")
@@ -505,6 +514,11 @@ public class ApplicationController {
 
         return applicationFacade.getEcrTokenMapping();
 
+    }
+
+    @RequestMapping("login")
+    public String login() {
+        return "login"; // will look for login.jsp inside WEB-INF/jsp/
     }
 
     @PreAuthorize("hasRole('ADMIN')")
