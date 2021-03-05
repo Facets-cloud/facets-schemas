@@ -1,17 +1,20 @@
 package com.capillary.ops.cp.service.aws;
 
+import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.service.ClusterService;
+import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import software.amazon.awssdk.services.ec2.model.InstanceType;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.SimpleTimeZone;
-import java.util.TimeZone;
 
 /**
  * AWS implementation of the Facade
@@ -23,12 +26,60 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
     @Autowired
     private AwsAssumeRoleService awsAssumeRoleService;
 
+    private static final Logger logger = LoggerFactory.getLogger(AwsClusterService.class);
+
+    private static final List<Regions> CN_REGIONS = Lists.newArrayList(Regions.CN_NORTH_1, Regions.CN_NORTHWEST_1);
+
+    private boolean isClusterAccessibleByRole(String roleArn, String externalId) {
+        if (StringUtils.isEmpty(roleArn) || StringUtils.isEmpty(externalId)) {
+            throw new NotFoundException("could not find role or external id");
+        }
+
+        return awsAssumeRoleService.testRoleAccess(roleArn, externalId);
+    }
+
+    private boolean isClusterAccessibleByAccessId(String accessKeyId, String secretAccessKey) {
+        if (StringUtils.isEmpty(accessKeyId) || StringUtils.isEmpty(secretAccessKey)) {
+            throw new NotFoundException("could not find access key id or secret access key");
+        }
+
+        return true;
+    }
+
+    private boolean isClusterAccessible(AwsClusterRequest request) {
+        boolean accessible = false;
+
+        try {
+            accessible = isClusterAccessibleByRole(request.getRoleARN(), request.getExternalId());
+        } catch (NotFoundException e) {
+            logger.info("params for accessing cluster by role not found: {}", e.toString());
+        }
+
+        if (!accessible) {
+            try {
+                accessible = isClusterAccessibleByAccessId(request.getAccessKeyId(), request.getSecretAccessKey());
+            } catch (NotFoundException e) {
+                logger.info("params for accessing cluster by access id not found: {}", e.toString());
+            }
+        }
+
+        return accessible;
+    }
+
+    private boolean clusterSupportsAccessKeyAuth(AwsClusterRequest request) {
+        return CN_REGIONS.contains(request.getRegion());
+    }
+
+    private boolean requestHasAccessKeyAuth(AwsClusterRequest request) {
+        return !StringUtils.isEmpty(request.getAccessKeyId()) || !StringUtils.isEmpty(request.getSecretAccessKey());
+    }
+
     @Override
     public AwsCluster createCluster(AwsClusterRequest request) {
         //DONE: Validations
         //1. Test the arn & external Id connectivity
-        if (!awsAssumeRoleService.testRoleAccess(request.getRoleARN(), request.getExternalId())) {
-            throw new RuntimeException("No Access for given Role");
+        if (!isClusterAccessible(request)) {
+            throw new RuntimeException("cluster not accessible by provided role or access key");
         }
         //DONE: Variable Assignment
         AwsCluster cluster = new AwsCluster(request.getClusterName());
@@ -40,6 +91,13 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         if (request.getK8sRequestsToLimitsRatio() == null){
             request.setK8sRequestsToLimitsRatio(1D);
         }
+        if (shouldSetAccessKey(request)) {
+            cluster.setAccessKeyId(request.getAccessKeyId());
+            cluster.setSecretAccessKey(request.getSecretAccessKey());
+        } else if (requestHasAccessKeyAuth(request)) {
+            throw new RuntimeException("Access key based cluster authentication not supported for region " + request.getRegion().toString());
+        }
+
         cluster.setRoleARN(request.getRoleARN());
         cluster.setTz(request.getTz());
         cluster.setExternalId(request.getExternalId());
@@ -54,6 +112,10 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setCdPipelineParent(request.getCdPipelineParent());
         cluster.setRequireSignOff(request.getRequireSignOff());
         return cluster;
+    }
+
+    private boolean shouldSetAccessKey(AwsClusterRequest request) {
+        return requestHasAccessKeyAuth(request) && clusterSupportsAccessKeyAuth(request);
     }
 
     @Override
@@ -78,6 +140,11 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
             request.getExternalId())) {
             existing.setRoleARN(request.getRoleARN());
             existing.setExternalId(request.getExternalId());
+        }
+        if (shouldSetAccessKey(request) && (checkChanged(existing.getAccessKeyId(), request.getAccessKeyId()) ||
+                checkChanged(existing.getSecretAccessKey(), request.getSecretAccessKey()))) {
+            existing.setAccessKeyId(request.getAccessKeyId());
+            existing.setSecretAccessKey(request.getSecretAccessKey());
         }
         if (checkChanged(existing.getK8sRequestsToLimitsRatio(), request.getK8sRequestsToLimitsRatio())) {
             existing.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());

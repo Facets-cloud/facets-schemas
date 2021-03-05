@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
@@ -32,6 +33,9 @@ public class MockDataBootstrap {
 
     @Autowired
     ApplicationSecretRequestsRepository applicationSecretRequestsRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostConstruct
     private void init() {
@@ -66,6 +70,13 @@ public class MockDataBootstrap {
 
         createApplication("deployer", ApplicationFamily.OPS);
 
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        User user = new User();
+        user.setUserName("cn-read");
+        user.setPassword(bCryptPasswordEncoder.encode("deal20hunt"));
+        user.setRoles(Lists.newArrayList("ADMIN"));
+
+        userRepository.save(user);
     }
 
     private Environment createEnvironment(String name, EnvironmentType type, ApplicationFamily applicationFamily) {
