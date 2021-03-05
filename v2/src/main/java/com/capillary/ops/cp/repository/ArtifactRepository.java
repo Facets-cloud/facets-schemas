@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface ArtifactRepository extends MongoRepository<Artifact, String> {
     Optional<Artifact> findOneByArtifactoryAndApplicationNameAndReleaseStreamAndReleaseType(String artifactory, String applicationName, BuildStrategy releaseStream, ReleaseType releaseType);
     List<Artifact> findByReleaseStreamAndReleaseType(BuildStrategy releaseStream, ReleaseType releaseType);
+
+    Iterable<Artifact> findByArtifactoryInAndReleaseStreamAndReleaseType(Iterable<String> artifactories, BuildStrategy releaseStream, ReleaseType releaseType);
 }

@@ -17,7 +17,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -61,6 +63,7 @@ public class UiCommonClusterController {
     }
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
+    @PreFilter(value = "hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId).getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')", filterTarget = "request")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
         @RequestBody List<OverrideRequest> request) {
@@ -69,6 +72,7 @@ public class UiCommonClusterController {
     }
 
     @GetMapping("{clusterId}/overrides")
+    @PostFilter("hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId).getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')")
     public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
         List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
         return overrides;

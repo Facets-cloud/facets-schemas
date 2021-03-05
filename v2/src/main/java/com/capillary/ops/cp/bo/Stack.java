@@ -35,6 +35,8 @@ public class Stack {
     // @JsonIgnore
     private List<String> childStacks = new ArrayList<>();
 
+    private List<String> artifactories = new ArrayList<>();
+
     public String getName() {
         return name;
     }
@@ -113,5 +115,13 @@ public class Stack {
 
     public void setChildStacks(List<String> childStacks) {
         this.childStacks = childStacks;
+    }
+
+    public List<String> getArtifactories() {
+        return artifactories;
+    }
+
+    public void setArtifactories(List<String> artifactories) {
+        this.artifactories = artifactories;
     }
 }

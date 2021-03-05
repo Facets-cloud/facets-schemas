@@ -1,3 +1,4 @@
+import {StackCreateComponent } from './pages/cluster-pages/stack-create/stack-create.component';
 import {ClusterCreateComponent} from './pages/cluster-pages/cluster-create/cluster-create.component';
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
@@ -16,11 +17,20 @@ import {ClusterDisasterRecoveryComponent} from './pages/cluster-pages/cluster-di
 import {ClusterAlertsComponent} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.component";
 import {ClusterResourceDetailsComponent} from './pages/cluster-pages/cluster-resource-details/cluster-resource-details.component';
 import {ClusterTunnelComponent} from "./pages/cluster-pages/cluster-tunnel/cluster-tunnel.component";
+import { TeamsOverviewComponent } from './pages/teams-overview/teams-overview.component';
+import { TeamManagementComponent } from './pages/team-management/team-management.component';
 
 
 const routes: Routes = [
   {
     path: 'capc/home', component: HomeComponent, canActivate: [AuthGuard]
+  },
+  {path: 'capc/createStack', component: StackCreateComponent, canActivate: [AuthGuard]},
+  {
+    path: 'capc/teams', component: TeamsOverviewComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/teams/:teamId', component: TeamManagementComponent, canActivate: [AuthGuard]
   },
   {path: 'capc/stack/:stackName', component: StackOverviewComponent, canActivate: [AuthGuard]},
   {path: 'capc/:stackName/clusterCreate', component: ClusterCreateComponent, canActivate: [AuthGuard]},

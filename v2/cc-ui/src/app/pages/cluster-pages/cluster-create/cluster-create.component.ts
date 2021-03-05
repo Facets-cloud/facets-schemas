@@ -89,7 +89,6 @@ export class ClusterCreateComponent implements OnInit {
   };
 
   ngOnInit() {
-
     this.activatedRoute.params.subscribe(p => {
       this.stackName = p.stackName;
       if (p.clusterId) {
@@ -135,7 +134,6 @@ export class ClusterCreateComponent implements OnInit {
   }
 
   loadClusterVarsFromCluster(cluster: AbstractCluster){
-    console.log('****** loading from Cluster');
     let dataSourceForCommonVars = [];
     let dataSourceForSecrets = [];
     Object.keys(cluster.commonEnvironmentVariables).forEach(element => {
@@ -165,6 +163,8 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.vpcCIDR = this.cluster.vpcCIDR;
     this.awsClusterRequest.externalId = this.cluster.externalId;
     this.awsClusterRequest.roleARN = this.cluster.roleARN;
+    this.awsClusterRequest.accessKeyId = this.cluster.accessKeyId;
+    this.awsClusterRequest.secretAccessKey = this.cluster.secretAccessKey;
     this.awsClusterRequest.k8sRequestsToLimitsRatio = this.cluster.k8sRequestsToLimitsRatio;
     this.awsClusterRequest.requireSignOff = this.cluster.requireSignOff;
     this.awsClusterRequest.schedules = this.cluster.schedules;
@@ -172,8 +172,6 @@ export class ClusterCreateComponent implements OnInit {
     this.regionModelBound = this.cluster.awsRegion.toUpperCase().replace('-', '_').replace('-', '_');
     this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
     this.cronScheduleModelBound = this.cluster.schedules.RELEASE;
-    console.log(this.cluster);
-    console.log(this.awsClusterRequest);
   }
 
   async createCluster() {
@@ -192,11 +190,10 @@ export class ClusterCreateComponent implements OnInit {
       this.awsClusterRequest.clusterVars[element.name] = element.value;
     });
 
-    console.log(this.awsClusterRequest);
     try {
-    this.clusterController.createClusterUsingPOST1(this.awsClusterRequest)
-    .subscribe(cluster => {
-      this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
+      this.clusterController.createClusterUsingPOST1(this.awsClusterRequest)
+      .subscribe(cluster => {
+        this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
     },
     error => {
       this.toastrService.danger('Cluster creation failed ' + error.statusText, 'Error', {duration: 8000});
@@ -227,6 +224,10 @@ export class ClusterCreateComponent implements OnInit {
     }
 
     return false;
+  }
+
+  isChinaRegion() {
+    return this.regionModelBound === 'CN_NORTH_1' || this.regionModelBound === 'CN_NORTHWEST_1';
   }
 
   async updateCluster(){

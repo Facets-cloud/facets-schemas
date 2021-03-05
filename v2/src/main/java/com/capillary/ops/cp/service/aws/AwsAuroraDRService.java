@@ -60,10 +60,10 @@ public class AwsAuroraDRService extends BaseAwsDRService implements DRCloudServi
     public List<SnapshotInfo> listSnapshots(AbstractCluster cluster, String instanceName) {
         AwsCluster awsCluster = (AwsCluster) cluster;
 
-        List<DBClusterSnapshot> snapshots = rdsService.getSnapshots(awsCluster, RDSService.SnapshotType.manual);
-        String sanitizedName = removeHyphens(cluster.getName() + instanceName) + "snapshot";
+        List<DBClusterSnapshot> snapshots = rdsService.getSnapshots(awsCluster, RDSService.SnapshotType.automated);
+        String sanitizedName = "rds:" + removeHyphens(cluster.getName() + instanceName) + "-";
         List<DBClusterSnapshot> dbClusterSnapshots = snapshots.stream()
-                .filter(snap -> removeHyphens(snap.dbClusterSnapshotIdentifier()).startsWith(sanitizedName))
+                .filter(snap -> snap.dbClusterSnapshotIdentifier().startsWith(sanitizedName))
                 .collect(Collectors.toList());
         logger.info("found {} rds snapshots for db: {} and cluster: {}", dbClusterSnapshots.size(), sanitizedName,
                 awsCluster.getId());

@@ -41,6 +41,7 @@ import software.amazon.awssdk.services.codebuild.CodeBuildClient;
 import software.amazon.awssdk.services.codebuild.model.*;
 import software.amazon.awssdk.services.codebuild.model.ResourceNotFoundException;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,20 +66,47 @@ import java.util.zip.ZipOutputStream;
 public class AwsCodeBuildService implements TFBuildService {
 
     public static final String LOG_GROUP_NAME = "codebuild-test";
-    public static final String CC_STACK_SOURCE = "cc-stack-source";
+
+    @Value("${cc_deployment_bucket}")
+    public String CC_STACK_SOURCE;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
 
-    private static final Region BUILD_REGION = Region.US_WEST_1;
-    public static final String BUILD_NAME = "capillary-cloud-tf-apply";
+    @Value("${cc_aws_region}")
+    public Region BUILD_REGION;
+    @Value("${cc_codebuild_name}")
+    public String BUILD_NAME;
+    @Value("${cc_vpc_id}")
+    public String CC_VPC_ID;
+    @Value("${cc_route_table_id}")
+    public String CC_ROUTE_TABLE_ID;
+    @Value("${cc_vpc_cidr}")
+    public String CC_VPC_CIDR;
+    @Value("${cc_tf_state_bucket}")
+    public String CC_TF_STATE_BUCKET;
+    @Value("${cc_tf_dynamo_table}")
+    private String CC_TF_DYNAMO_TABLE;
+    @Value("${cc_tf_state_region}")
+    private String CC_TF_STATE_REGION;
+
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
     public static final String CC_AUTH_TOKEN = "TF_VAR_cc_auth_token";
+    public static final String CC_VPC_ID_LABEL = "TF_VAR_cc_vpc_id";
+    public static final String CC_ROUTE_TABLE_ID_LABEL = "TF_VAR_route_table_id";
+    public static final String CC_VPC_CIDR_LABEL = "TF_VAR_cc_vpc_cidr";
+    public static final String CC_REGION_LABEL = "TF_VAR_cc_region";
+    public static final String CC_TF_STATE_BUCKET_LABEL = "TF_VAR_cc_tf_state_bucket";
+    private static final String CC_TF_STATE_REGION_LABEL = "TF_VAR_cc_tf_state_region";
+
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
     public static final String SUBSTACK_SUBDIRECTORY_PREFIX = "SUBSTACK_SUBDIRECTORY_";
     public static final String STACK_NAME = "STACK_NAME";
     private static final String CLUSTER_NAME = "CLUSTER_NAME";
+    private static final String CLOUD_TF_PROVIDER = "CLOUD_TF_PROVIDER";
+    private static final String CC_TF_DYNAMO_TABLE_LABEL = "TF_VAR_cc_tf_dynamo_table";
+
 
     @Value("${internalApiAuthToken}")
     private String authToken;
@@ -95,7 +123,7 @@ public class AwsCodeBuildService implements TFBuildService {
     @Autowired
     private ICodeBuildService codeBuildService;
 
-    @Value("${aws.s3bucket.testOutputBucket.name}")
+    @Value("${cc_artifact_s3bucket}")
     private String artifactS3Bucket;
 
     @Value("${aws.s3bucket.testOutputBucket.region}")
@@ -116,6 +144,13 @@ public class AwsCodeBuildService implements TFBuildService {
     @Autowired
     private StackService stackService;
 
+    @Autowired
+    private CloudTFImplementationSelector tfImplementationSelector;
+
+    @PostConstruct
+    public void test(){
+        System.out.println("test");
+    }
     /**
      * Deploy the latest build in the specified clusterId
      *
@@ -152,7 +187,23 @@ public class AwsCodeBuildService implements TFBuildService {
                 .build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
             .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_REGION_LABEL).value(BUILD_REGION.toString())
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_ROUTE_TABLE_ID_LABEL).value(CC_ROUTE_TABLE_ID)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_VPC_ID_LABEL).value(CC_VPC_ID)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_VPC_CIDR_LABEL).value(CC_VPC_CIDR)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_STATE_BUCKET_LABEL).value(CC_TF_STATE_BUCKET)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_DYNAMO_TABLE_LABEL).value(CC_TF_DYNAMO_TABLE)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_STATE_REGION_LABEL).value(CC_TF_STATE_REGION)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CLOUD_TF_PROVIDER).value(tfImplementationSelector.selectTFProvider(cluster))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
@@ -357,10 +408,10 @@ public class AwsCodeBuildService implements TFBuildService {
 //    }
 //
 //    @Override
-    private Map<String, Artifact> getDeploymentReport(String runId) {
+    private Map<String, Artifact> getDeploymentReport(String tfProvider, String runId) {
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
         try {
-            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/artifacts.json", runId.split(":")[1]);
+            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/%s/artifacts.json", runId.split(":")[1], tfProvider);
             String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
             return new Gson().fromJson(report, new TypeToken<Map<String, Artifact>>(){}.getType());
         } catch (Throwable e) {
@@ -384,7 +435,10 @@ public class AwsCodeBuildService implements TFBuildService {
                 List<TerraformChange> terraformChanges = getTerraformChanges(streamName);
                 deploymentLog.setStatus(build.buildStatus());
                 deploymentLog.setChangesApplied(terraformChanges);
-                Map<String, Artifact> artifactMap = getDeploymentReport(build.id());
+                Map<String, String> envVars
+                  = build.environment().environmentVariables().stream().collect(Collectors.toMap(x -> x.name(), x -> x.value()));
+                String tfProvider = envVars.getOrDefault("CLOUD_TF_PROVIDER", "tfaws");
+                Map<String, Artifact> artifactMap = getDeploymentReport(tfProvider, build.id());
                 List<AppDeployment> appDeployments = terraformChanges.stream()
                         .filter(x -> x.getResourcePath().contains("module.application.helm_release"))
                         .map(x -> new AppDeployment(x.getResourceKey(), artifactMap.get(x.getResourceKey())))
@@ -505,7 +559,7 @@ public class AwsCodeBuildService implements TFBuildService {
             out.closeEntry();
             out.close();
             AmazonS3 amazonS3 =
-                    AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+                    AmazonS3ClientBuilder.standard().withRegion(Regions.fromName(BUILD_REGION.toString())).build();
             amazonS3.putObject(CC_STACK_SOURCE, tempFile.getName(), tempFile);
             tempFile.delete();
             return ProjectSource.builder().type(SourceType.S3)
@@ -528,10 +582,14 @@ public class AwsCodeBuildService implements TFBuildService {
     private String getBuildSpec(DeploymentRequest deploymentRequest) {
         try {
             String buildSpecYaml =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
-                                    Charsets.UTF_8));
+                CharStreams.toString(
+                    new InputStreamReader(
+                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                            Charsets.UTF_8));
+            if(deploymentRequest.getOverrideBuildSteps() == null ||
+                    deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                return buildSpecYaml;
+            }
             Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
             YAMLMapper yamlMapper = new YAMLMapper();
             yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);

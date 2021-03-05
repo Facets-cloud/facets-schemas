@@ -1,5 +1,6 @@
 /* tslint:disable */
 export interface Build {
+  additionalRepositoryImages?: Array<string>;
   applicationFamily?: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
   applicationId?: string;
   artifactUrl?: string;

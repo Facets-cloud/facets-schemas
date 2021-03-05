@@ -213,4 +213,15 @@ public class StackFacade {
         }
         return null;
     }
+
+    public Stack updateStack(Stack stack, String stackName){
+        Optional<Stack> optionalStack = stackRepository.findById(stackName);
+        if (optionalStack.isPresent()){
+            Stack stack1 = optionalStack.get();
+            stack1.setArtifactories(stack.getArtifactories());
+            return stackRepository.save(stack1);
+        }else{
+            throw new NotFoundException("Stack with name " + stackName + " not found");
+        }
+    }
 }

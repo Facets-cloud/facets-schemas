@@ -8,6 +8,8 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { Stack } from '../models/stack';
+import { ClusterTask } from '../models/cluster-task';
+import { ClusterTaskRequest } from '../models/cluster-task-request';
 import { Substack } from '../models/substack';
 import { AbstractCluster } from '../models/abstract-cluster';
 import { DeploymentContext } from '../models/deployment-context';
@@ -23,6 +25,8 @@ import { ToggleRelease } from '../models/toggle-release';
 class UiStackControllerService extends __BaseService {
   static readonly getStacksUsingGET1Path = '/cc-ui/v1/stacks/';
   static readonly createStackUsingPOST1Path = '/cc-ui/v1/stacks/';
+  static readonly createClusterTasksUsingPOST1Path = '/cc-ui/v1/stacks/clusterTask';
+  static readonly getAllClusterTasksUsingGETPath = '/cc-ui/v1/stacks/clusterTask/{stackName}';
   static readonly createSubStackUsingPOSTPath = '/cc-ui/v1/stacks/substack/{substackName}';
   static readonly getStackUsingGETPath = '/cc-ui/v1/stacks/{stackName}';
   static readonly getClustersUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/clusters';
@@ -111,6 +115,82 @@ class UiStackControllerService extends __BaseService {
   createStackUsingPOST1(stack: Stack): __Observable<Stack> {
     return this.createStackUsingPOST1Response(stack).pipe(
       __map(_r => _r.body as Stack)
+    );
+  }
+
+  /**
+   * createClusterTasks
+   * @param taskRequest taskRequest
+   * @return OK
+   */
+  createClusterTasksUsingPOST1Response(taskRequest: ClusterTaskRequest): __Observable<__StrictHttpResponse<Array<ClusterTask>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = taskRequest;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/stacks/clusterTask`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ClusterTask>>;
+      })
+    );
+  }
+  /**
+   * createClusterTasks
+   * @param taskRequest taskRequest
+   * @return OK
+   */
+  createClusterTasksUsingPOST1(taskRequest: ClusterTaskRequest): __Observable<Array<ClusterTask>> {
+    return this.createClusterTasksUsingPOST1Response(taskRequest).pipe(
+      __map(_r => _r.body as Array<ClusterTask>)
+    );
+  }
+
+  /**
+   * getAllClusterTasks
+   * @param stackName stackName
+   * @return OK
+   */
+  getAllClusterTasksUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Array<ClusterTask>>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/stacks/clusterTask/${encodeURIComponent(stackName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Array<ClusterTask>>;
+      })
+    );
+  }
+  /**
+   * getAllClusterTasks
+   * @param stackName stackName
+   * @return OK
+   */
+  getAllClusterTasksUsingGET(stackName: string): __Observable<Array<ClusterTask>> {
+    return this.getAllClusterTasksUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Array<ClusterTask>)
     );
   }
 

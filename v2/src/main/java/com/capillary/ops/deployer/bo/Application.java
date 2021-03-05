@@ -323,7 +323,7 @@ public class Application {
     }
 
     public List<String> getTagBuildRepositoryIds() {
-        return tagBuildRepositoryIds;
+        return tagBuildRepositoryIds == null ? new ArrayList<>() : tagBuildRepositoryIds;
     }
 
     public void setTagBuildRepositoryIds(List<String> tagBuildRepositoryIds) {
@@ -331,7 +331,7 @@ public class Application {
     }
 
     public List<String> getBranchBuildRepositoryIds() {
-        return branchBuildRepositoryIds;
+        return branchBuildRepositoryIds == null ? new ArrayList<>() : branchBuildRepositoryIds;
     }
 
     public void setBranchBuildRepositoryIds(List<String> branchBuildRepositoryIds) {

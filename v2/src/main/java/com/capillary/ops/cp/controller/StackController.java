@@ -51,6 +51,12 @@ public class StackController {
         return stackFacade.createStack(stack);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN')")
+    @PutMapping("{stackName}")
+    public Stack updateStack(@RequestBody Stack stack, @PathVariable String stackName){
+        return stackFacade.updateStack(stack, stackName);
+    }
+
     @GetMapping("{stackName}/reload")
     public Stack reloadStack(@PathVariable String stackName) {
         return stackFacade.reloadStack(stackName);

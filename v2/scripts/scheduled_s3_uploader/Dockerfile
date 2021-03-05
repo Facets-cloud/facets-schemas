@@ -13,6 +13,8 @@ ENV DUMP_DIR $DUMP_DIR
 
 ENV S3_BUCKET k8s-file-dumps
 
+ENV S3_REGION ap-southeast-1
+
 ENV CLUSTER $CLUSTER
 
 CMD ["python", "scheduled_s3_uploader.py"]

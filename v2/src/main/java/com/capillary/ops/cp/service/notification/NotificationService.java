@@ -1,19 +1,19 @@
 package com.capillary.ops.cp.service.notification;
 
 
+import com.capillary.ops.cp.bo.Team;
 import com.capillary.ops.cp.bo.notifications.ChannelType;
 import com.capillary.ops.cp.bo.notifications.Notification;
 import com.capillary.ops.cp.bo.notifications.NotificationTag;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.repository.SubscriptionRepository;
+import com.capillary.ops.cp.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
@@ -24,6 +24,8 @@ public class NotificationService {
     @Autowired
     private List<Notifier> notifiers;
 
+    @Autowired
+    private TeamRepository teamRepository;
 
     private Map<ChannelType, Notifier> notifierMap = new HashMap<>();
 
@@ -49,11 +51,23 @@ public class NotificationService {
                 })
                 .forEach(x -> {
                     try {
-                        notifierMap.get(x.getChannelType()).notify(x, notification);
+                        notifierMap.get(x.getChannelType()).notify(x.getChannelAddress(), notification);
                     } catch (Throwable t) {
                         // pass
                     }
         });
+
+        // Notify team channels
+        if (notification.getTeamResource() != null) {
+          List<Team> teams = teamRepository.findAll()
+            .stream().filter(x -> x.getResources().contains(notification.getTeamResource()))
+            .collect(Collectors.toList());
+          for (Team team: teams) {
+            Map<ChannelType, String> notificationChannels = team.getNotificationChannels();
+            Set<ChannelType> channelTypes = notificationChannels.keySet();
+            channelTypes.forEach(x -> notifierMap.get(x).notify(notificationChannels.get(x), notification));
+          }
+        }
 
     }
 
