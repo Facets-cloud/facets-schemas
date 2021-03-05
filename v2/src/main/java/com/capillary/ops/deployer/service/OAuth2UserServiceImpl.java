@@ -4,14 +4,17 @@ import com.capillary.ops.deployer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,17 +49,6 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
             return name;
         }
 
-        public void setGrantedAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
-            this.grantedAuthorities = grantedAuthorities;
-        }
-
-        public void setAttributes(Map<String, Object> attributes) {
-            this.attributes = attributes;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
     }
     @Autowired
     private UserRepository userRepository;

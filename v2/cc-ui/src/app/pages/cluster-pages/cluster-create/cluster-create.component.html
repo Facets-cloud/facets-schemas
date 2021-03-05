@@ -263,40 +263,6 @@
               </div>
             </div>
 
-            <div class="form-group row" [hidden]="!isChinaRegion()">
-              <label class="label col-sm-3">Access Key Id</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #roleARN="ngModel"
-                  nbInput
-                  fullWidth
-                  name="accessKeyId"
-                  id="accessKeyId"
-                  [(ngModel)]="awsClusterRequest.accessKeyId"
-                  placeholder="1234"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row" [hidden]="!isChinaRegion()">
-              <label class="label col-sm-3">Secret Access Key</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #roleARN="ngModel"
-                  nbInput
-                  fullWidth
-                  name="secretAccessKey"
-                  id="secretAccessKey"
-                  [(ngModel)]="awsClusterRequest.secretAccessKey"
-                  placeholder="1234"
-                />
-              </div>
-            </div>
-
             <div class="form-group row">
               <label class="label col-sm-3">Spot Instance Types</label>
               <div class="col-sm-5">

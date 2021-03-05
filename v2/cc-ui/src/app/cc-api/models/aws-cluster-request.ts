@@ -1,7 +1,6 @@
 /* tslint:disable */
 import { TimeZone } from './time-zone';
 export interface AwsClusterRequest {
-  accessKeyId?: string;
   autoSignOffSchedule?: string;
   azs?: Array<string>;
   cdPipelineParent?: string;
@@ -17,7 +16,6 @@ export interface AwsClusterRequest {
   requireSignOff?: boolean;
   roleARN?: string;
   schedules?: {[key: string]: string};
-  secretAccessKey?: string;
   stackName?: string;
   tz?: TimeZone;
   vpcCIDR?: string;

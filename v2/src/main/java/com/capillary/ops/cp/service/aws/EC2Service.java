@@ -5,11 +5,7 @@ import com.capillary.ops.deployer.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
@@ -39,21 +35,13 @@ public class EC2Service {
         return snapshots;
     }
 
-    private AwsCredentialsProvider getCredentialsProvider(AwsCluster cluster) {
-        if (!StringUtils.isEmpty(cluster.getRoleARN()) && !StringUtils.isEmpty(cluster.getExternalId())) {
-            String sessionName = String.format("cc-%s", UUID.randomUUID());
-            return getRoleCredentialsProvider(Region.of(cluster.getAwsRegion()),
-                    cluster.getRoleARN(), cluster.getExternalId(), sessionName);
-        }
-
-        return getStaticCredentialsProvider(cluster.getAccessKeyId(), cluster.getSecretAccessKey());
-    }
-
     private Ec2Client getEc2Client(AwsCluster cluster) {
-        AwsCredentialsProvider credentialsProvider = getCredentialsProvider(cluster);
+        String sessionName = String.format("cc-%s", UUID.randomUUID());
+        AwsCredentialsProvider awsCredentialsProvider = getRoleCredentialsProvider(Region.of(cluster.getAwsRegion()),
+                cluster.getRoleARN(), cluster.getExternalId(), sessionName);
         return Ec2Client.builder()
                 .region(Region.of(cluster.getAwsRegion()))
-                .credentialsProvider(credentialsProvider)
+                .credentialsProvider(awsCredentialsProvider)
                 .build();
     }
 
@@ -73,10 +61,5 @@ public class EC2Service {
                 .refreshRequest(assumeRoleRequest)
                 .asyncCredentialUpdateEnabled(true)
                 .build();
-    }
-
-    private AwsCredentialsProvider getStaticCredentialsProvider(String accessKeyId, String secretAccessKey) {
-        AwsBasicCredentials basicCredentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
-        return StaticCredentialsProvider.create(basicCredentials);
     }
 }
