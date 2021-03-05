@@ -1,0 +1,22 @@
+<div class="signin-container">
+    <nb-card style="width: 22rem;">
+        <nb-card-header>Login</nb-card-header>
+
+        <nb-card-body class="example-items-rows">
+            <button nbButton status="primary" (click)="googleLogin()" style="width: 100%;">
+                <nb-icon icon="google"></nb-icon>Google Login
+            </button>
+            <hr style="margin: 1rem;">
+            <form #buildForm="ngForm" (ngSubmit)="formLogin()">
+                <div class="form-group" style="width: 100%;">
+                    <input required type="text" nbInput placeholder="USERNAME" [(ngModel)]="username" name="username"
+                        id="username" style="width: 100%;">
+                    <input required type="password" nbInput placeholder="PASSWORD" [(ngModel)]="password"
+                        name="password" id="password" style="width: 100%;">
+                </div>
+                <button [disabled]="!buildForm.valid" type="submit" style="width: 14rem;" nbButton status="primary"
+                    style="width: 100%;">Submit</button>
+            </form>
+        </nb-card-body>
+    </nb-card>
+</div>

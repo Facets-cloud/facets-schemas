@@ -10,6 +10,10 @@ public class AwsClusterRequest extends ClusterRequest {
 
     private String roleARN;
 
+    private String accessKeyId;
+
+    private String secretAccessKey;
+
     private Regions region;
 
     private List<String> azs;
@@ -36,6 +40,22 @@ public class AwsClusterRequest extends ClusterRequest {
 
     public void setRoleARN(String roleARN) {
         this.roleARN = roleARN;
+    }
+
+    public String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+    }
+
+    public String getSecretAccessKey() {
+        return secretAccessKey;
+    }
+
+    public void setSecretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
     }
 
     public Regions getRegion() {
