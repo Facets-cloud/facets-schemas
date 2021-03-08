@@ -131,7 +131,8 @@ public class UiDeploymentController {
      * @return DeploymentLog
      */
     @PostMapping("/ccTestSuite")
-    DeploymentLog triggerIntegrationTests(@PathVariable String clusterId) throws Exception {
-        return deploymentFacade.triggerIntegrationSuite(clusterId);
+    DeploymentLog triggerIntegrationTests(@PathVariable String clusterId,
+                                         @RequestBody String tfbranch) throws Exception {
+        return deploymentFacade.triggerIntegrationSuite(tfbranch, clusterId);
     }
 }

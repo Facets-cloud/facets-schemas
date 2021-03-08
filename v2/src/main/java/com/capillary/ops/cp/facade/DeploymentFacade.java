@@ -784,16 +784,22 @@ public class DeploymentFacade {
         return expression;
     }
 
-    public DeploymentLog triggerIntegrationSuite(String clusterId) {
+    public DeploymentLog triggerIntegrationSuite(String tfBranch, String clusterId) {
         List<String> buildSteps = new ArrayList<>();
-        buildSteps.add("terraform apply -target module.infra -auto-approve -no-color -parallelism=20");
-        buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
-        buildSteps.add("cd ../../cc-integration-tests");
-        buildSteps.add("mvn clean test");
-        buildSteps.add("terraform destroy -auto-approve");
         DeploymentRequest deploymentRequest = new DeploymentRequest();
-        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
-        deploymentRequest.setOverrideBuildSteps(buildSteps);
+        deploymentRequest.setOverrideCCVersion(tfBranch);
+        //TODO: check if cluster exists
+        if(true == true){
+            buildSteps.add("terraform destroy -auto-approve");
+        }else {
+            buildSteps.add("terraform apply -target module.infra -auto-approve -no-color -parallelism=20");
+            buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
+            buildSteps.add("cd ../../cc-integration-tests");
+            buildSteps.add("mvn clean test");
+            buildSteps.add("terraform destroy -auto-approve");
+            deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+            deploymentRequest.setOverrideBuildSteps(buildSteps);
+        }
         return createDeployment(clusterId, deploymentRequest);
     }
 }
