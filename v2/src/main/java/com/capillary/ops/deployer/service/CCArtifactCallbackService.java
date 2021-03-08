@@ -113,6 +113,7 @@ public class CCArtifactCallbackService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("X-DEPLOYER-INTERNAL-AUTH-TOKEN", authToken);
         httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Artifact> httpEntity = new HttpEntity<>(artifact, httpHeaders);
         restTemplate.postForObject(url, httpEntity, Object.class);
         logger.info("api call made to china to register artifact");
