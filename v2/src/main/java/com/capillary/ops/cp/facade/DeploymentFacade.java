@@ -783,4 +783,17 @@ public class DeploymentFacade {
                         resource.getResourceName());
         return expression;
     }
+
+    public DeploymentLog triggerIntegrationSuite(String clusterId) {
+        List<String> buildSteps = new ArrayList<>();
+        buildSteps.add("terraform apply -target module.infra -auto-approve -no-color -parallelism=20");
+        buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
+        buildSteps.add("cd ../../cc-integration-tests");
+        buildSteps.add("mvn clean test");
+        buildSteps.add("terraform destroy -auto-approve");
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(buildSteps);
+        return createDeployment(clusterId, deploymentRequest);
+    }
 }

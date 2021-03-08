@@ -123,4 +123,15 @@ public class UiDeploymentController {
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runHotfixDeploymentRecipe(clusterId, deploymentRecipe);
     }
+
+    /**
+     * Trigger CC integration suite
+     *
+     * @param clusterId Cluster Id
+     * @return DeploymentLog
+     */
+    @PostMapping("/ccTestSuite")
+    DeploymentLog triggerIntegrationTests(@PathVariable String clusterId) throws Exception {
+        return deploymentFacade.triggerIntegrationSuite(clusterId);
+    }
 }
