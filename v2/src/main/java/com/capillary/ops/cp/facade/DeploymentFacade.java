@@ -788,17 +788,21 @@ public class DeploymentFacade {
         List<String> buildSteps = new ArrayList<>();
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setOverrideCCVersion(tfBranch);
-        //TODO: check if cluster exists
+        //TODO: check if old cluster exists partially
         if(true == true){
+            logger.info("Cluster destroy incomplete, attempting again");
+            deploymentRequest.setTriggeredBy("deployer");
             buildSteps.add("terraform destroy -auto-approve");
         }else {
             buildSteps.add("terraform apply -target module.infra -auto-approve -no-color -parallelism=20");
             buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
-            buildSteps.add("cd ../../cc-integration-tests");
+            buildSteps.add("cd ../../v2/cc-integration-tests");
             buildSteps.add("mvn clean test");
             buildSteps.add("terraform destroy -auto-approve");
             deploymentRequest.setReleaseType(ReleaseType.RELEASE);
             deploymentRequest.setOverrideBuildSteps(buildSteps);
+            deploymentRequest.setTag("Integration tests");
+            deploymentRequest.setTriggeredBy("deployer");
         }
         return createDeployment(clusterId, deploymentRequest);
     }

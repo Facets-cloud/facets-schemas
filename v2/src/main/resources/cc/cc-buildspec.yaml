@@ -29,6 +29,7 @@ artifacts:
   files:
     - capillary-cloud-tf/$CLOUD_TF_PROVIDER/fetched_builds/**/*
     - capillary-cloud-tf/$CLOUD_TF_PROVIDER/*.json
+    - v2/cc-integration-tests/target/site/*.html
 cache:
   paths:
     - capillary-cloud-tf/$CLOUD_TF_PROVIDER/.terraform/**/*
