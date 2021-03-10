@@ -29,6 +29,8 @@ public class DeploymentRequest {
 
     private String triggeredBy;
 
+    private boolean isTestDeployment;
+
     public String getId() {
         return id;
     }
@@ -94,5 +96,13 @@ public class DeploymentRequest {
 
     public void setPreBuildSteps(List<String> preBuildSteps) {
         this.preBuildSteps = preBuildSteps;
+    }
+
+    public boolean isTestDeployment() {
+        return isTestDeployment;
+    }
+
+    public void setTestDeployment(boolean testDeployment) {
+        isTestDeployment = testDeployment;
     }
 }

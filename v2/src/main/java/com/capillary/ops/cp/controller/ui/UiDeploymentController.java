@@ -44,6 +44,9 @@ public class UiDeploymentController {
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
+        if (deploymentRequest.isTestDeployment()) {
+            return deploymentFacade.triggerIntegrationSuite(deploymentRequest.getOverrideCCVersion(),clusterId);
+        }
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
     }
 
@@ -122,17 +125,5 @@ public class UiDeploymentController {
     DeploymentLog runHotfixDeploymentRecipe(@PathVariable String clusterId,
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {
         return deploymentFacade.runHotfixDeploymentRecipe(clusterId, deploymentRecipe);
-    }
-
-    /**
-     * Trigger CC integration suite
-     *
-     * @param clusterId Cluster Id
-     * @return DeploymentLog
-     */
-    @PostMapping("/ccTestSuite")
-    DeploymentLog triggerIntegrationTests(@PathVariable String clusterId,
-                                         @RequestBody String tfbranch) throws Exception {
-        return deploymentFacade.triggerIntegrationSuite(tfbranch, clusterId);
     }
 }

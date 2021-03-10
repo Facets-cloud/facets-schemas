@@ -601,7 +601,7 @@ public class DeploymentFacade {
 
         clusterResourceRefreshService.saveClusterResourceDetails(callback.getCodebuidId(), deploymentLog.getStatus());
 
-        if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
+        if(!deploymentLog.isTestDeployment() && deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
             deploymentLog.getAppDeployments().stream().forEach(
                     x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
         }
