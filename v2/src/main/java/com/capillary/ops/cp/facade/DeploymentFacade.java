@@ -788,8 +788,10 @@ public class DeploymentFacade {
         List<String> buildSteps = new ArrayList<>();
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setOverrideCCVersion(tfBranch);
-        //TODO: check if old cluster exists partially
-        if(true == true){
+        List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        DeploymentLog lastDeployment = deployments.stream().filter(d -> d.isTestDeployment()).findFirst().get();
+        
+        if(!lastDeployment.getStatus().equals(StatusType.SUCCEEDED)){
             logger.info("Cluster destroy incomplete, attempting again");
             deploymentRequest.setTriggeredBy("deployer");
             buildSteps.add("terraform destroy -auto-approve");
