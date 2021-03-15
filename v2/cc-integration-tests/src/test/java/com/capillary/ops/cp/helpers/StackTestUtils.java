@@ -3,15 +3,14 @@ package com.capillary.ops.cp.helpers;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
 public class StackTestUtils {
 
-    private final String STACK_ROOT = "";
+    private String STACK_ROOT = "";
 
-    public HashMap<String,String> getInstanceSizing(String moduleName, String instanceName ) throws Exception {
+    public HashMap<String, String> getInstanceSizing(String moduleName, String instanceName) throws Exception {
         Gson gson = new Gson();
         BufferedReader bufferedReader;
 
@@ -21,7 +20,12 @@ public class StackTestUtils {
         String instanceSize = instanceJson.get("size");
         String instanceSizeStrategy = instanceJson.get("resourceAllocationStrategy");
 
-        String sizingMetaPath = STACK_ROOT + "/" + moduleName + "/" + "sizing." + instanceSizeStrategy + ".json";
+        String sizingMetaPath = "";
+        if (instanceSizeStrategy == null || instanceSizeStrategy.isEmpty()) {
+            sizingMetaPath = STACK_ROOT + "/" + moduleName + "/" + "sizing." + ".json";
+        } else {
+            sizingMetaPath = STACK_ROOT + "/" + moduleName + "/" + "sizing." + instanceSizeStrategy + ".json";
+        }
         bufferedReader = new BufferedReader(new FileReader(sizingMetaPath));
         HashMap<String, String> sizingJson = gson.fromJson(bufferedReader, HashMap.class);
 
