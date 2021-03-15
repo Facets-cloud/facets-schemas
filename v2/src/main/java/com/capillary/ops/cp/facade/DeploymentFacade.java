@@ -790,14 +790,17 @@ public class DeploymentFacade {
         deploymentRequest.setOverrideCCVersion(tfBranch);
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
         DeploymentLog lastDeployment = deployments.stream().filter(d -> d.isTestDeployment()).findFirst().get();
-        
+
         if(!lastDeployment.getStatus().equals(StatusType.SUCCEEDED)){
-            logger.info("Cluster destroy incomplete, attempting again");
-            deploymentRequest.setTriggeredBy("deployer");
+            logger.info("Destroying existing cluster");
             buildSteps.add("terraform destroy -auto-approve");
+            deploymentRequest.setTriggeredBy("deployer");
+            deploymentRequest.setOverrideBuildSteps(buildSteps);
         }else {
-            buildSteps.add("terraform apply -target module.infra -auto-approve -no-color -parallelism=20");
-            buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
+            logger.info("Triggering Launch -> Test -> Destroy flow");
+            buildSteps.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
+            buildSteps.add("terraform apply -target module.infra.module.baseinfra -auto-approve -no-color -parallelism=10");
+            //buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
             buildSteps.add("cd ../../v2/cc-integration-tests");
             buildSteps.add("mvn clean test");
             buildSteps.add("terraform destroy -auto-approve");
