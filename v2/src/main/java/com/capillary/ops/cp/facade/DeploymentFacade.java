@@ -787,36 +787,38 @@ public class DeploymentFacade {
 
         if(!lastDeployment.getStatus().equals(StatusType.SUCCEEDED)){
             logger.info("Destroying existing cluster");
-            //destroy commands
-            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
-            buildSteps.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
-            buildSteps.add("python3 scripts/testing_utils/testing_utils.py");
-            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
-            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
-            buildSteps.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
+            buildSteps.addAll(getClusterDestroyCommands());
             deploymentRequest.setTriggeredBy("deployer");
             deploymentRequest.setOverrideBuildSteps(buildSteps);
         }else {
             logger.info("Triggering Launch -> Test -> Destroy flow");
-            buildSteps.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
-            buildSteps.add("terraform apply -target module.infra.module.baseinfra -auto-approve -no-color -parallelism=10");
-            //buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
+            buildSteps.addAll(getClusterCreateCommands());
             buildSteps.add("cd ../../v2/cc-integration-tests");
             buildSteps.add("mvn clean test");
-
-            //destroy commands
-            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
-            buildSteps.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
-            buildSteps.add("python3 scripts/testing_utils/testing_utils.py");
-            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
-            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
-            buildSteps.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
-
+            buildSteps.addAll(getClusterDestroyCommands());
             deploymentRequest.setReleaseType(ReleaseType.RELEASE);
             deploymentRequest.setOverrideBuildSteps(buildSteps);
             deploymentRequest.setTag("Integration tests");
             deploymentRequest.setTriggeredBy("deployer");
         }
         return createDeployment(clusterId, deploymentRequest);
+    }
+
+    public List<String> getClusterCreateCommands(){
+        List<String> commands = new ArrayList<>();
+        commands.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
+        commands.add("terraform apply -target module.infra.module.baseinfra -auto-approve -no-color -parallelism=10");
+        return commands;
+    }
+
+    public List<String> getClusterDestroyCommands(){
+        List<String> commands = new ArrayList<>();
+        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
+        commands.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
+        commands.add("python3 scripts/testing_utils/testing_utils.py");
+        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
+        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
+        commands.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
+        return commands;
     }
 }
