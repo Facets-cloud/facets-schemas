@@ -6,16 +6,10 @@ import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.notifications.SignOffNotification;
-import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.HotfixDeploymentRecipe;
-import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
+import com.capillary.ops.cp.bo.recipes.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
-import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
@@ -793,7 +787,13 @@ public class DeploymentFacade {
 
         if(!lastDeployment.getStatus().equals(StatusType.SUCCEEDED)){
             logger.info("Destroying existing cluster");
-            buildSteps.add("terraform destroy -auto-approve");
+            //destroy commands
+            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
+            buildSteps.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
+            buildSteps.add("python3 scripts/testing_utils/testing_utils.py");
+            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
+            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
+            buildSteps.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
             deploymentRequest.setTriggeredBy("deployer");
             deploymentRequest.setOverrideBuildSteps(buildSteps);
         }else {
@@ -803,7 +803,15 @@ public class DeploymentFacade {
             //buildSteps.add("terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20");
             buildSteps.add("cd ../../v2/cc-integration-tests");
             buildSteps.add("mvn clean test");
-            buildSteps.add("terraform destroy -auto-approve");
+
+            //destroy commands
+            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
+            buildSteps.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
+            buildSteps.add("python3 scripts/testing_utils/testing_utils.py");
+            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
+            buildSteps.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
+            buildSteps.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
+
             deploymentRequest.setReleaseType(ReleaseType.RELEASE);
             deploymentRequest.setOverrideBuildSteps(buildSteps);
             deploymentRequest.setTag("Integration tests");

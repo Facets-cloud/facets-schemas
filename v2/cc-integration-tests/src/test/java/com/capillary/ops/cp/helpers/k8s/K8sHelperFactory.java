@@ -11,7 +11,7 @@ public class K8sHelperFactory {
     @Autowired
     private localK8sHelper localK8sHelper;
 
-    public K8sConfig getK8sConfig(String cloudProvider) {
+    public K8sConfig getK8sConfig(String cloudProvider) throws Exception {
         switch (cloudProvider) {
             case "AWS":
                 return eksHelper.getK8sConfig();
