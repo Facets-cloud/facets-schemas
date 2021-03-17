@@ -31,6 +31,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   private BitbucketIpAccessController bitbucketIpAccessController;
 
   @Autowired
+  private SonarCallbackAccessController sonarCallbackAccessController;
+
+  @Autowired
   private InternalRequestAccessController internalRequestAccessController;
 
   @Autowired
@@ -69,6 +72,10 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers("/api/*/applications/*/webhooks/pr/bitbucket")
             .access("@bitbucketIpAccessController.authenticate(request)")
+            .and()
+            .authorizeRequests()
+            .antMatchers("/callback/sonar")
+            .access("@sonarCallbackAccessController.authenticate(request)")
             .and()
             .authorizeRequests()
             .antMatchers("/api/**", "/capillarycloud/api/**", "/cc-ui/**", "/tunnel/**")
