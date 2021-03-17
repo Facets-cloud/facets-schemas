@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("callback")
@@ -20,7 +22,6 @@ public class CallbackController {
     @PermitAll
     @PostMapping("/sonar")
     public boolean sonarCallBack(@RequestBody CallbackBody body){
-
         return applicationFacade.processSonarCallback(body);
     }
 
