@@ -58,7 +58,7 @@ public class DeploymentLog {
 
     private List<String> overrideBuildSteps = new ArrayList<>();
 
-    private boolean isTestDeployment = false;
+    private Boolean isTestDeployment = false;
 
     public String getId() {
         return id;
@@ -203,7 +203,7 @@ public class DeploymentLog {
         return isTestDeployment;
     }
 
-    public void setTestDeployment(boolean testDeployment) {
+    public void setTestDeployment(Boolean testDeployment) {
         isTestDeployment = testDeployment;
     }
 }

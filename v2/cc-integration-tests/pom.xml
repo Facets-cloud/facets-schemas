@@ -141,8 +141,8 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>sts</artifactId>
-            <version>2.16.14</version>
+            <artifactId>eks</artifactId>
+            <version>2.16.13</version>
         </dependency>
         <!-- OAuth2 Client -->
         <dependency>
@@ -154,21 +154,21 @@
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.11.545</version>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sts</artifactId>
-            <version>1.11.960</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.amazonaws</groupId>-->
+<!--            <artifactId>aws-java-sdk-sts</artifactId>-->
+<!--            <version>1.11.960</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-iam</artifactId>
             <version>1.11.971</version>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-eks</artifactId>
-            <version>1.11.960</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.amazonaws</groupId>-->
+<!--            <artifactId>aws-java-sdk-eks</artifactId>-->
+<!--            <version>1.11.960</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>net.rakugakibox.spring.boot</groupId>
             <artifactId>logback-access-spring-boot-starter</artifactId>

@@ -28,7 +28,7 @@ public class DeploymentRequest {
 
     private String triggeredBy;
 
-    private boolean isTestDeployment = false;
+    private Boolean isTestDeployment = false;
 
     public String getId() {
         return id;
@@ -101,7 +101,7 @@ public class DeploymentRequest {
         return isTestDeployment;
     }
 
-    public void setTestDeployment(boolean testDeployment) {
+    public void setTestDeployment(Boolean testDeployment) {
         isTestDeployment = testDeployment;
     }
 }
