@@ -1,12 +1,19 @@
 package com.capillary.ops.cp.helpers;
 
+import com.capillary.ops.cp.exceptions.ClusterDetailsNotFound;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
+import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.Optional;
 
 @Service
 public class CommonUtils {

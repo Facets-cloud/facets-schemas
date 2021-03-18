@@ -144,6 +144,11 @@
             <artifactId>eks</artifactId>
             <version>2.16.13</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
+            <version>2.16.13</version>
+        </dependency>
         <!-- OAuth2 Client -->
         <dependency>
             <groupId>org.springframework.session</groupId>
@@ -216,11 +221,11 @@
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>4.1.7.RELEASE</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework</groupId>-->
+<!--            <artifactId>spring-context</artifactId>-->
+<!--            <version>4.1.7.RELEASE</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>it.ozimov</groupId>
             <artifactId>embedded-redis</artifactId>
