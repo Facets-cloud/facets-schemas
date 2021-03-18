@@ -58,6 +58,8 @@ public class DeploymentLog {
 
     private List<String> overrideBuildSteps = new ArrayList<>();
 
+    private Boolean isTestDeployment = false;
+
     public String getId() {
         return id;
     }
@@ -195,5 +197,13 @@ public class DeploymentLog {
 
     public void setTriggeredBy(String triggeredBy) {
         this.triggeredBy = triggeredBy;
+    }
+
+    public boolean isTestDeployment() {
+        return isTestDeployment;
+    }
+
+    public void setTestDeployment(Boolean testDeployment) {
+        isTestDeployment = testDeployment;
     }
 }

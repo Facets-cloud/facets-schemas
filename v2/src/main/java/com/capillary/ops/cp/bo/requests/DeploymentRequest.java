@@ -2,7 +2,6 @@ package com.capillary.ops.cp.bo.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +27,8 @@ public class DeploymentRequest {
     private List<String> preBuildSteps = new ArrayList<>();
 
     private String triggeredBy;
+
+    private Boolean isTestDeployment = false;
 
     public String getId() {
         return id;
@@ -94,5 +95,13 @@ public class DeploymentRequest {
 
     public void setPreBuildSteps(List<String> preBuildSteps) {
         this.preBuildSteps = preBuildSteps;
+    }
+
+    public boolean isTestDeployment() {
+        return isTestDeployment;
+    }
+
+    public void setTestDeployment(Boolean testDeployment) {
+        isTestDeployment = testDeployment;
     }
 }

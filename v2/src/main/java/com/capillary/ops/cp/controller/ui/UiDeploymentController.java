@@ -44,6 +44,9 @@ public class UiDeploymentController {
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
+        if (deploymentRequest.isTestDeployment()) {
+            return deploymentFacade.triggerIntegrationSuite(deploymentRequest.getOverrideCCVersion(),clusterId);
+        }
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
     }
 

@@ -6,16 +6,10 @@ import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.notifications.SignOffNotification;
-import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.ESDRDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.MongoVolumeResizeDeploymentRecipe;
-import com.capillary.ops.cp.bo.recipes.HotfixDeploymentRecipe;
-import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
+import com.capillary.ops.cp.bo.recipes.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
-import com.capillary.ops.cp.controller.StackController;
 import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
@@ -601,7 +595,7 @@ public class DeploymentFacade {
 
         clusterResourceRefreshService.saveClusterResourceDetails(callback.getCodebuidId(), deploymentLog.getStatus());
 
-        if(deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
+        if(!deploymentLog.isTestDeployment() && deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
             deploymentLog.getAppDeployments().stream().forEach(
                     x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
         }
@@ -782,5 +776,49 @@ public class DeploymentFacade {
                         tfModulePath.get(resource.getResourceType()),
                         resource.getResourceName());
         return expression;
+    }
+
+    public DeploymentLog triggerIntegrationSuite(String tfBranch, String clusterId) {
+        List<String> buildSteps = new ArrayList<>();
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        deploymentRequest.setOverrideCCVersion(tfBranch);
+        List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        DeploymentLog lastDeployment = deployments.stream().filter(d -> d.isTestDeployment()).findFirst().get();
+
+        if(!lastDeployment.getStatus().equals(StatusType.SUCCEEDED)){
+            logger.info("Destroying existing cluster");
+            buildSteps.addAll(getClusterDestroyCommands());
+            deploymentRequest.setTriggeredBy("deployer");
+            deploymentRequest.setOverrideBuildSteps(buildSteps);
+        }else {
+            logger.info("Triggering Launch -> Test -> Destroy flow");
+            buildSteps.addAll(getClusterCreateCommands());
+            buildSteps.add("cd ../../v2/cc-integration-tests");
+            buildSteps.add("mvn clean test");
+            buildSteps.addAll(getClusterDestroyCommands());
+            deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+            deploymentRequest.setOverrideBuildSteps(buildSteps);
+            deploymentRequest.setTag("Integration tests");
+            deploymentRequest.setTriggeredBy("deployer");
+        }
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
+    public List<String> getClusterCreateCommands(){
+        List<String> commands = new ArrayList<>();
+        commands.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
+        commands.add("terraform apply -target module.infra.module.baseinfra -auto-approve -no-color -parallelism=10");
+        return commands;
+    }
+
+    public List<String> getClusterDestroyCommands(){
+        List<String> commands = new ArrayList<>();
+        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
+        commands.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
+        commands.add("python3 scripts/testing_utils/testing_utils.py");
+        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
+        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
+        commands.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
+        return commands;
     }
 }
