@@ -17,13 +17,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
+@Service
 public class EksHelper implements K8sHelper {
 
     @Value("${stack.name}")
-    private String STACK_NAME;
+    private String STACK_NAME = "cc-stack-crm";
 
     @Value("${cluster.id}")
     private String CLUSTER_ID;

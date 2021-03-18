@@ -2,7 +2,6 @@ package com.capillary.ops.cp.bo.requests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
-import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class DeploymentRequest {
 
     private String triggeredBy;
 
-    private boolean isTestDeployment;
+    private boolean isTestDeployment = false;
 
     public String getId() {
         return id;

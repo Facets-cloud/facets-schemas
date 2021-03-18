@@ -58,7 +58,7 @@ public class DeploymentLog {
 
     private List<String> overrideBuildSteps = new ArrayList<>();
 
-    private boolean isTestDeployment;
+    private boolean isTestDeployment = false;
 
     public String getId() {
         return id;
