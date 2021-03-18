@@ -6,26 +6,21 @@ import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.eks.AmazonEKS;
 import com.amazonaws.services.eks.AmazonEKSClientBuilder;
 import com.amazonaws.services.eks.model.DescribeClusterRequest;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
-import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
-import com.amazonaws.services.securitytoken.model.Credentials;
+
 import com.capillary.ops.cp.bo.K8sConfig;
 import com.capillary.ops.cp.helpers.CommonUtils;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestPropertySource;
 
-import java.util.HashMap;
-
-@Service
+@Component
+@TestPropertySource(locations="classpath:test.properties")
 public class EksHelper implements K8sHelper {
 
     @Value("${stack.name}")
-    private String STACK_NAME = "cc-stack-crm";
+    private String STACK_NAME;
 
     @Value("${cluster.id}")
     private String CLUSTER_ID;
@@ -35,8 +30,8 @@ public class EksHelper implements K8sHelper {
 
     @Override
     public K8sConfig getK8sConfig() throws Exception {
-        HashMap<String, String> deploymentContextJson =  commonUtils.getDeploymentContext();
-        JsonObject cluster = new Gson().fromJson(deploymentContextJson.get("cluster"), JsonObject.class);
+        JsonObject deploymentContextJson =  commonUtils.getDeploymentContext();
+        JsonObject cluster = deploymentContextJson.getAsJsonObject("cluster");
         K8sConfig k8sConfig = new K8sConfig();
 
         String roleARN = cluster.get("roleARN").getAsString();

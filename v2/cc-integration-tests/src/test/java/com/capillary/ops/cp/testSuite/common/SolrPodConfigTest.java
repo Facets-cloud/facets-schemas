@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.HashMap;
 import java.util.Map;
 
-@TestPropertySource("/testApplication.properties")
+@TestPropertySource(locations="classpath:test.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})
 @SpringBootTest

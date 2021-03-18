@@ -8,11 +8,13 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.Map;
 
-@Service
+@Component
+@TestPropertySource(locations="classpath:test.properties")
 public class K8sTestUtils {
 
     @Value("${cloud.provider}")
@@ -23,7 +25,7 @@ public class K8sTestUtils {
 
     private KubernetesClient getKubernetesClient() throws Exception {
         CLOUD_PROVIDER = System.getenv("CLOUD_PROVIDER");
-        K8sConfig k8sConfig = k8sHelperFactory.getK8sConfig("CLOUD_PROVIDER");
+        K8sConfig k8sConfig = k8sHelperFactory.getK8sConfig(CLOUD_PROVIDER);
         return new DefaultKubernetesClient(
                 new ConfigBuilder()
                         .withMasterUrl(k8sConfig.getKubernetesApiEndpoint())
