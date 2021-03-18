@@ -5,12 +5,14 @@ import com.capillary.ops.deployer.service.OAuth2UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
@@ -41,6 +43,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
   @Autowired
   private BasicUserDetailsService basicUserDetailsService;
 
+  @Value("${facets_only:false}")
+  private Boolean isFacetsOnly;
+
   private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
   @Bean
@@ -58,7 +63,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .headers()
             .frameOptions()
             .sameOrigin();
-    http
+    OAuth2LoginConfigurer<HttpSecurity> jsessionid = http
             .authorizeRequests()
             .antMatchers("/cc/**")
             .access("@internalRequestAccessController.authenticate(request)")
@@ -102,7 +107,12 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .deleteCookies("JSESSIONID")
             .and()
             .oauth2Login()
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
+
+      if (isFacetsOnly) {
+          jsessionid = jsessionid.defaultSuccessUrl("/capc/home");
+      }
+    jsessionid
             .userInfoEndpoint()
             .userService(oAuth2UserService)
             .and()
