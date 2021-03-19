@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 
@@ -21,7 +22,15 @@ public class AwsCommonUtils {
                 .externalId(commonUtils.getExternalId())
                 .durationSeconds(3600)
                 .build();
-        return StsAssumeRoleCredentialsProvider.builder().refreshRequest(request).build();
+
+        StsClient stsClient = StsClient.builder().region(Region.of(commonUtils.getAwsRegion())).build();
+
+        return StsAssumeRoleCredentialsProvider
+                .builder()
+                .stsClient(stsClient)
+                .refreshRequest(request)
+                .asyncCredentialUpdateEnabled(true)
+                .build();
     }
 
     public Ec2Client getEC2Client() {
