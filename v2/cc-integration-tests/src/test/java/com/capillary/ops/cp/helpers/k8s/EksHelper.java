@@ -44,6 +44,8 @@ public class EksHelper implements K8sHelper {
                 .credentialsProvider(awsCommonUtils.getSTSCredentialsProvider())
                 .build();
 
+        //EksClient eksClient = new DefaultEksClientBuilder().region(Region.of(awsRegion)).credentialsProvider(awsCommonUtils.getSTSCredentialsProvider()).build()
+
         DescribeClusterRequest request = DescribeClusterRequest
                 .builder()
                 .name(k8sClusterName)
