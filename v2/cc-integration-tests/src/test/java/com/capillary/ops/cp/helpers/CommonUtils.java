@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.helpers;
 
+import com.capillary.ops.cp.exceptions.ClusterDetailsNotFound;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.Optional;
 
 @Service
 public class CommonUtils {
@@ -18,5 +20,27 @@ public class CommonUtils {
         JsonParser parser = new JsonParser();
         BufferedReader bufferedReader = new BufferedReader(new FileReader(DEPLOYMENT_CONTEXT_PATH));
         return parser.parse(bufferedReader).getAsJsonObject();
+    }
+
+    public Optional<JsonObject> getCluster() {
+        Optional<JsonObject> cluster;
+        try {
+            cluster = Optional.ofNullable(new Gson().fromJson(getDeploymentContext().get("cluster"), JsonObject.class));
+        } catch (Exception e) {
+            cluster = Optional.empty();
+        }
+        return cluster;
+    }
+
+    public String getAwsRegion() {
+        return getCluster().map(x -> x.get("awsRegion").getAsString()).orElseThrow(ClusterDetailsNotFound::new);
+    }
+
+    public String getRoleArn() {
+        return getCluster().map(x -> x.get("roleARN").getAsString()).orElseThrow(ClusterDetailsNotFound::new);
+    }
+
+    public String getExternalId() {
+        return getCluster().map(x -> x.get("externalId").getAsString()).orElseThrow(ClusterDetailsNotFound::new);
     }
 }

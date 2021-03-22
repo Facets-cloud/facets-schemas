@@ -17,6 +17,8 @@ import java.util.Map;
 @TestPropertySource(locations="classpath:test.properties")
 public class K8sTestUtils {
 
+    private String K8S_NAMESPACE = "default";
+
     @Value("${cloud.provider}")
     private String CLOUD_PROVIDER;
 
@@ -35,7 +37,17 @@ public class K8sTestUtils {
     }
 
     public Map<String, Quantity> getK8sPodSize(String podName) throws Exception {
-        Pod pod = getKubernetesClient().pods().withName(podName).get();
+        Pod pod = getKubernetesClient().pods().inNamespace(K8S_NAMESPACE).withName(podName).get();
+        return pod.getSpec().getContainers().get(0).getResources().getLimits();
+    }
+
+    public Map<String, Quantity> getK8sPodSize(String podName, Boolean isPattern) throws Exception {
+        Pod pod = getKubernetesClient().pods().inNamespace(K8S_NAMESPACE)
+                .list().getItems()
+                .stream()
+                .filter(p -> p.getMetadata().getName().contains(podName))
+                .findFirst()
+                .get();
         return pod.getSpec().getContainers().get(0).getResources().getLimits();
     }
 
