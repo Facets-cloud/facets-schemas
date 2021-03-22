@@ -21,6 +21,7 @@
             <nb-icon icon="bell-outline" status="danger" size="small" style="margin-right: 0.5rem"> </nb-icon>
              {{rule["annotations"]["message"]}}
             <nb-badge text='{{rule["alerts"].length}}' status="danger" position="top left"></nb-badge>
+            <nb-badge text='{{rule["groupName"]}}' status="warning" position="bottom left"></nb-badge>
           </nb-accordion-item-header>
           <nb-accordion-item-body *ngIf="rule['state'] != 'inactive'">
             <table class="table table-bordered">
@@ -81,6 +82,7 @@
         <nb-accordion-item *ngFor="let rule of rules">
           <nb-accordion-item-header *ngIf="rule['state'] == 'inactive'">
             <nb-icon icon="bell-outline" status="basic" size="small" style="margin-right: 0.5rem"> </nb-icon> {{rule["annotations"]["message"]}}
+            <nb-badge text='{{rule["groupName"]}}' status="warning" position="bottom left"></nb-badge>
           </nb-accordion-item-header>
 
           <nb-accordion-item-body *ngIf="rule['state'] == 'inactive'">

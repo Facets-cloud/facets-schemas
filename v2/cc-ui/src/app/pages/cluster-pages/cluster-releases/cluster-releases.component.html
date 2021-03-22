@@ -33,7 +33,9 @@
             <td class="vert-center" scope="col">{{deployment.id}}</td>
             <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
             <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
-            <td class="vert-center" scope="col">{{deployment.status}}</td>
+            <td class="vert-center" scope="col" *ngIf="deployment.status != 'FAULT'">{{deployment.status}}</td>
+            <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'">NO CHANGE</td>
+
             <td class="vert-center" scope="col">
               {{deployment.stackVersion | slice:0:7}}
               <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
@@ -48,6 +50,7 @@
               <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary">
                 <nb-icon icon="info"></nb-icon>
               </button>
+            </td>
             <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff}}
               <button *ngIf="deployment.allowSignoff" (click)="confirmSignoff(signoff, deployment)" nbButton ghost
                       status="primary">
