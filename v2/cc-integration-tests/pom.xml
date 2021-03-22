@@ -149,6 +149,11 @@
             <artifactId>sts</artifactId>
             <version>2.13.60</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>autoscaling</artifactId>
+            <version>2.13.60</version>
+        </dependency>
         <!-- OAuth2 Client -->
         <dependency>
             <groupId>org.springframework.session</groupId>
