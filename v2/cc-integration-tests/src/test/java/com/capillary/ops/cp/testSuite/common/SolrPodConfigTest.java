@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.ObjLongConsumer;
 
 @TestPropertySource(locations="classpath:test.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,9 +31,6 @@ public class SolrPodConfigTest {
     @Autowired
     private K8sTestUtils k8sTestUtils;
 
-    @Autowired
-    private K8sHelperFactory k8sHelperFactory;
-
     @Value("${stack.name}")
     private String STACK_NAME;
 
@@ -41,11 +39,13 @@ public class SolrPodConfigTest {
 
     @Test
     public void verifyPodSize() throws Exception {
-        System.out.println(STACK_NAME);
-        System.out.println(CLUSTER_ID);
         HashMap<String,String> stackSizing = stackTestUtils.getInstanceSizing("solr","intouch");
-        //Map<String, Quantity> k8sPodSizing = k8sTestUtils.getK8sPodSize("solr-intouch-0");
-        K8sConfig k8sConfig = k8sHelperFactory.getK8sConfig("AWS");
-        //assert(k8sPodSizing.get("cpu").equals(stackSizing.get("podCPULimit")));
+        Map<String, Quantity> k8sPodSizing = k8sTestUtils.getK8sPodSize("solr-intouch-0");
+
+        Object num = stackSizing.get("podCPULimit");
+        Integer stackSizingValue = ((Double) num).intValue();
+        Integer k8sPodSizingValue = Integer.parseInt(k8sPodSizing.get("cpu").getAmount());
+
+        assert(stackSizingValue.equals(k8sPodSizingValue));
     }
 }
