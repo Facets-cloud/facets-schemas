@@ -58,4 +58,19 @@ public class MockVcsService implements VcsService {
     public List<String> getSupportedActions() {
         return null;
     }
+
+    @Override
+    public String getDefaultBranchName(String owner, String repository) throws IOException {
+        return "default_branch";
+    }
+
+    @Override
+    public void approvePullRequest(PullRequest pullRequest) throws IOException {
+        // not implemented
+    }
+
+    @Override
+    public void rejectPullRequest(PullRequest pullRequest) throws IOException {
+        // not implemented
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,10 @@ public class Application {
 
     @NotNull
     private String repositoryUrl;
+
+    // this is needed for scheduled sonar triggers
+    @Null
+    private String repositoryDefaultBranch;
 
     @NotBlank
     private String applicationRootDirectory;
@@ -336,5 +341,13 @@ public class Application {
 
     public void setBranchBuildRepositoryIds(List<String> branchBuildRepositoryIds) {
         this.branchBuildRepositoryIds = branchBuildRepositoryIds;
+    }
+
+    public String getRepositoryDefaultBranch() {
+        return repositoryDefaultBranch;
+    }
+
+    public void setRepositoryDefaultBranch(String repositoryDefaultBranch) {
+        this.repositoryDefaultBranch = repositoryDefaultBranch;
     }
 }
