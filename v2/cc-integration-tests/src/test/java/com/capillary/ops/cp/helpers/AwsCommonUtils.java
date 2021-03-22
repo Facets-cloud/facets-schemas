@@ -26,12 +26,12 @@ public class AwsCommonUtils {
     public AwsCredentialsProvider getSTSCredentialsProvider() {
         AssumeRoleRequest request = AssumeRoleRequest.builder()
                 .roleSessionName("integration-test-session")
-                .roleArn(getRoleArn())
-                .externalId(getExternalId())
+                .roleArn(commonUtils.getRoleArn())
+                .externalId(commonUtils.getExternalId())
                 .durationSeconds(3600)
                 .build();
 
-        StsClient stsClient = StsClient.builder().region(Region.of(getAwsRegion())).build();
+        StsClient stsClient = StsClient.builder().region(Region.of(commonUtils.getAwsRegion())).build();
 
         return StsAssumeRoleCredentialsProvider
                 .builder()
