@@ -2,6 +2,7 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.notifications.AlertNotification;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
@@ -9,6 +10,7 @@ import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
+import com.capillary.ops.cp.service.notification.NotificationService;
 import com.capillary.ops.deployer.bo.KubeApplicationDetails;
 import com.capillary.ops.deployer.exceptions.InvalidActionException;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -79,6 +81,9 @@ public class ClusterFacade {
     @Autowired
     private CCKubernetesService ccKubernetesService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
 
     /**
@@ -95,7 +100,7 @@ public class ClusterFacade {
         String url = clusterHelper.getToolsURL(existing.get());
         String pass = clusterHelper.getToolsPws(existing.get());
         JsonObject allAlerts = prometheusService.getAllAlerts(url, pass);
-        return (new Gson()).fromJson(allAlerts,HashMap.class);
+        return (new Gson()).fromJson(allAlerts, HashMap.class);
     }
 
     /**
@@ -116,13 +121,25 @@ public class ClusterFacade {
         return (new Gson()).fromJson(allAlerts, HashMap.class);
     }
 
+    public boolean receiveAlerts(String clusterId, AlertManagerPayload.Response response) {
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException("No such cluster with id: " + clusterId);
+        }
+        AbstractCluster abstractCluster = existing.get();
+        List<AlertManagerPayload.Alert> alerts = response.getAlerts();
+        alerts.forEach(alert -> {
+            notificationService.publish(new AlertNotification(abstractCluster, alert));
+        });
+        return true;
+    }
+
     /**
-     *
      * @param clusterId
      * @param request
      * @return
      */
-    public HashMap silenceAlert(String clusterId, SilenceAlarmRequest request){
+    public HashMap silenceAlert(String clusterId, SilenceAlarmRequest request) {
         Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
         if (!existing.isPresent()) {
             throw new InvalidActionException("No such cluster with id: " + clusterId);
@@ -396,9 +413,9 @@ public class ClusterFacade {
         return true;
     }
 
-    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
-        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId,TaskStatus.QUEUED);
-        if(tasks.isPresent() && !tasks.get().isEmpty()){
+    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId) {
+        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId, TaskStatus.QUEUED);
+        if (tasks.isPresent() && !tasks.get().isEmpty()) {
             return tasks.get().get(0);
         }
         return null;
@@ -407,10 +424,10 @@ public class ClusterFacade {
     public ClusterTask disableClusterTask(String taskId) throws Exception {
         Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
         ClusterTask modifiedTask = null;
-        if(!task.isPresent()){
+        if (!task.isPresent()) {
             throw new Exception("Task does not exist");
         }
-        if(!task.get().getTaskStatus().equals(TaskStatus.QUEUED)){
+        if (!task.get().getTaskStatus().equals(TaskStatus.QUEUED)) {
             throw new Exception("Task not in QUEUED state");
         }
         modifiedTask = task.get();
@@ -422,10 +439,10 @@ public class ClusterFacade {
     public ClusterTask enableClusterTask(String taskId) throws Exception {
         Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
         ClusterTask modifiedTask = null;
-        if(!task.isPresent()){
+        if (!task.isPresent()) {
             throw new Exception("Task does not exist");
         }
-        if(!task.get().getTaskStatus().equals(TaskStatus.DISABLED)){
+        if (!task.get().getTaskStatus().equals(TaskStatus.DISABLED)) {
             throw new Exception("Task not in DISABLED state");
         }
         modifiedTask = task.get();

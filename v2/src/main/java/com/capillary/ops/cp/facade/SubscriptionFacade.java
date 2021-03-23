@@ -24,19 +24,6 @@ public class SubscriptionFacade {
 
     public Subscription createSubscription(Subscription subscription) {
         Subscription ret = notificationService.createSubscription(subscription);
-        Artifact artifact = new Artifact();
-        artifact.setArtifactUri("testapp:1.0");
-        AbstractCluster cluster = new AbstractCluster("localtest", Cloud.AWS) {
-            @Override
-            public String getStackName() {
-                return "crm";
-            }
-
-            @Override
-            public BuildStrategy getReleaseStream() {
-                return BuildStrategy.QA;
-            }
-        };
         return ret;
     }
 }
