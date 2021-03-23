@@ -7,8 +7,6 @@ phases:
       - apt-get install -y git
       - rm -rf capillary-cloud-tf/stacks/*
       - cp ${CODEBUILD_SRC_DIR_DEPLOYMENT_CONTEXT}/deploymentcontext.json capillary-cloud-tf/deploymentcontext.json
-      - mkdir -p $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/schema
-      - mkdir -p $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/seed_data
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY capillary-cloud-tf/stacks/$STACK_NAME
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/schema capillary-cloud-tf/schema
       - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY/seed_data capillary-cloud-tf/seed_data
@@ -35,3 +33,5 @@ artifacts:
 cache:
   paths:
     - capillary-cloud-tf/$CLOUD_TF_PROVIDER/.terraform/**/*
+    - /root/.m2/**/*
+    - /root/.m2/repository/**/*

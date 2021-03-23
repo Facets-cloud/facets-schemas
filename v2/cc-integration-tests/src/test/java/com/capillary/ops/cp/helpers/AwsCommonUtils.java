@@ -7,6 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.autoscaling.AutoScalingClient;
 import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.eks.EksClient;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
@@ -47,6 +48,10 @@ public class AwsCommonUtils {
 
     public AutoScalingClient getAutoScalingGroupsClient() {
         return AutoScalingClient.builder().region(Region.of(getAwsRegion())).credentialsProvider(getSTSCredentialsProvider()).build();
+    }
+
+    public EksClient getEKSClient() {
+        return EksClient.builder().region(Region.of(getAwsRegion())).credentialsProvider(getSTSCredentialsProvider()).build();
     }
 
     public String getAwsRegion() {

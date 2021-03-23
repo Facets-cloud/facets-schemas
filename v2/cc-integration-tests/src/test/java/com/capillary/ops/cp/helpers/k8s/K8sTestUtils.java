@@ -6,15 +6,23 @@ import com.capillary.ops.cp.bo.K8sConfig;
 import com.capillary.ops.cp.bo.MemorySize;
 import com.capillary.ops.cp.bo.MemoryUnits;
 import com.capillary.ops.cp.bo.PodSize;
+import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerSpec;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Probe;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
+import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
+import io.fabric8.kubernetes.api.model.rbac.Role;
+import io.fabric8.kubernetes.api.model.rbac.RoleBinding;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -29,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @Component
 @TestPropertySource(locations = "classpath:test.properties")
@@ -51,6 +60,17 @@ public class K8sTestUtils {
                         .withOauthToken(k8sConfig.getKubernetesToken())
                         .withTrustCerts(true)
                         .build());
+    }
+
+    private KubernetesClient getKubernetesClientHandle() {
+        Optional<KubernetesClient> kubernetesClient;
+        try {
+            kubernetesClient = Optional.of(getKubernetesClient());
+        } catch (Exception e) {
+            kubernetesClient = Optional.empty();
+        }
+
+        return kubernetesClient.orElseThrow(() -> new RuntimeException("Failed to get kubernetes client"));
     }
 
     public Pod getK8sPod(String podName) throws Exception {
@@ -160,5 +180,49 @@ public class K8sTestUtils {
 
     public Optional<Ingress> getK8sIngress(String ingressName) throws Exception {
         return Optional.ofNullable(getKubernetesClient().extensions().ingresses().inNamespace(K8S_NAMESPACE).withName(ingressName).get());
+    }
+
+    public String getK8sMajorVersion() throws Exception {
+        return getKubernetesClient().getVersion().getMajor();
+    }
+
+    public String getK8sMinorVersion() throws Exception {
+        return getKubernetesClient().getVersion().getMinor();
+    }
+
+    public Optional<Namespace> getClusterNameSpace(String namespace) throws Exception {
+        return Optional.ofNullable(getKubernetesClient().namespaces().withName(namespace).get());
+    }
+
+    public Optional<Role> getRole(String namespace, String roleName) throws Exception {
+        return Optional.ofNullable(getKubernetesClient().rbac().roles().inNamespace(namespace).withName(roleName).get());
+    }
+
+    public Optional<ServiceAccount> getServiceAccount(String namespace, String serviceAccountName) {
+        return Optional.ofNullable(getKubernetesClientHandle().serviceAccounts().inNamespace(namespace).withName(serviceAccountName).get());
+    }
+
+    public Optional<RoleBinding> getRoleBinding(String namespace, String roleBindingName) throws Exception {
+        return Optional.ofNullable(getKubernetesClient().rbac().roleBindings().inNamespace(namespace).withName(roleBindingName).get());
+    }
+
+    public Optional<ClusterRoleBinding> getClusterRoleBinding(String namespace, String clusterRoleBindingName) {
+        return Optional.ofNullable(getKubernetesClientHandle().rbac().clusterRoleBindings().inNamespace(namespace).withName(clusterRoleBindingName).get());
+    }
+
+    public Optional<ClusterRole> getClusterRole(String namespace, String clusterRoleName) {
+        return Optional.ofNullable(getKubernetesClientHandle().rbac().clusterRoles().inNamespace(namespace).withName(clusterRoleName).get());
+    }
+
+    public Optional<Secret> getSecret(String namespace, String secretName) {
+        return Optional.ofNullable(getKubernetesClientHandle().secrets().inNamespace(namespace).withName(secretName).get());
+    }
+
+    public Optional<CronJob> getCronJob(String namespace, String cronJobName) {
+        return Optional.ofNullable(getKubernetesClientHandle().batch().cronjobs().inNamespace(namespace).withName(cronJobName).get());
+    }
+
+    public Optional<Map<String, String>> getNodeSelector(String deploymentName, String namespace) {
+        return Optional.ofNullable(getKubernetesClientHandle().apps().deployments().inNamespace(namespace).withName(deploymentName).get().getSpec().getTemplate().getSpec().getNodeSelector());
     }
 }
