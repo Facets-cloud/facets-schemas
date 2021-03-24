@@ -5,11 +5,13 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Document
 public class Subscription {
+  public static final String ALL = "*";
   @Id
   private String id;
 
@@ -24,9 +26,9 @@ public class Subscription {
   // Eg BUILD, DEPLOYMENT, BUILD_PROMOTION
   private NotificationType notificationType;
 
-  private String notificationSubject;
+  private String notificationSubject = ALL;
 
-  private Map<NotificationTag, List<String>> filters;
+  private Map<NotificationTag, List<String>> filters = new HashMap<>();
 
   public String getId() {
     return id;

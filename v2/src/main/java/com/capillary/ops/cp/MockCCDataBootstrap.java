@@ -4,6 +4,8 @@ import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.ChannelType;
+import com.capillary.ops.cp.bo.notifications.NotificationType;
+import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.ClusterHelper;
@@ -52,6 +54,9 @@ public class MockCCDataBootstrap {
 
     @Autowired
     TeamMembershipRepository teamMembershipRepository;
+
+    @Autowired
+    SubscriptionRepository subscriptionRepository;
 
     @PostConstruct
     private void init() {
@@ -178,6 +183,14 @@ public class MockCCDataBootstrap {
         team.setNotificationChannels(ImmutableMap.of(ChannelType.FLOCK, "https://dummy"));
         teamRepository.save(team);
         teamMembershipRepository.save(new TeamMembership(team.getId(), adminUser));
+
+        Subscription subscription = new Subscription();
+        subscription.setNotificationType(NotificationType.ALERT);
+        subscription.setStackName("crm");
+        subscription.setChannelType(ChannelType.FLOCK);
+        subscription.setChannelAddress("https://api.flock.com/hooks/sendMessage/9f986e4b-8e7f-462a-9479-f9f1b716cfb0");
+        subscription.setNotificationSubject(Subscription.ALL);
+        subscriptionRepository.save(subscription);
     }
 
 }

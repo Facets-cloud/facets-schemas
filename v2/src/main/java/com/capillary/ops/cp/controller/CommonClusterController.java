@@ -93,7 +93,7 @@ public class CommonClusterController {
     }
 
     @PostMapping("{clusterId}/alerts")
-    public boolean notifyAlerts(@PathVariable String clusterId, AlertManagerPayload.Response alerts){
+    public boolean notifyAlerts(@PathVariable String clusterId, @RequestBody AlertManagerPayload.Response alerts){
         return clusterFacade.receiveAlerts(clusterId, alerts);
     }
 

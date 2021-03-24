@@ -48,7 +48,7 @@ public class AlertManagerPayload {
         private int truncatedAlerts;
         private String status;
         private String receiver;
-        private String groupLabels;
+        private HashMap<String, String> groupLabels;
         private String externalURL;
         private List<Alert> alerts;
     }

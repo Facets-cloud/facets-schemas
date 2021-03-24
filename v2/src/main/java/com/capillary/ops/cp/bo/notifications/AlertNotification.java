@@ -21,12 +21,13 @@ public class AlertNotification implements Notification {
 
     @Override
     public NotificationType getNotificationType() {
-        return NotificationType.APP_DEPLOYMENT;
+        return NotificationType.ALERT;
     }
 
     @Override
     public String getNotificationMessage() {
-        return alert.getMessage();
+        return "[" + alert.getSeverity() + "] [" + cluster.getStackName() + "/" + cluster.getName() +
+                "/" + alert.getResourceType() + "/" + alert.getResourceName() + "] " + alert.getMessage();
     }
 
     @Override
