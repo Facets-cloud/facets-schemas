@@ -7,6 +7,11 @@ import java.util.List;
 
 public class AlertManagerPayload {
 
+    public static final String NO_NAME = "No Name";
+    public static final String NO_TYPE = "No Type";
+    public static final String ALERTNAME = "alertname";
+
+
     @Getter
     public static class Alert {
         private String status;
@@ -25,13 +30,13 @@ public class AlertManagerPayload {
         public String getResourceType(){
             if (labels.containsKey("resourceType"))
                 return labels.get("resourceType");
-            return "No Type";
+            return NO_TYPE;
         }
 
         public String getResourceName(){
             if (labels.containsKey("resourceName"))
                 return labels.get("resourceName");
-            return "No Name";
+            return NO_NAME;
         }
 
         public String getSeverity(){

@@ -26,6 +26,7 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.CronJobList;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Loggable
+@Slf4j
 public class ClusterFacade {
 
     /**
@@ -129,6 +131,9 @@ public class ClusterFacade {
         AbstractCluster abstractCluster = existing.get();
         List<AlertManagerPayload.Alert> alerts = response.getAlerts();
         alerts.forEach(alert -> {
+            if (alert.getResourceName().equals(AlertManagerPayload.NO_NAME)) {
+                log.warn("Ignoring {} as this is old alert", alert.getLabels().get(AlertManagerPayload.ALERTNAME));
+            }
             notificationService.publish(new AlertNotification(abstractCluster, alert));
         });
         return true;
