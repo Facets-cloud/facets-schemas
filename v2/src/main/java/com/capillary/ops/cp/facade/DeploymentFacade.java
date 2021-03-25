@@ -815,6 +815,7 @@ public class DeploymentFacade {
         List<String> commands = new ArrayList<>();
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
         commands.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
+        commands.add("python3 -m pip install boto3");
         commands.add("python3 scripts/testing_utils/testing_utils.py");
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
