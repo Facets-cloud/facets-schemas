@@ -1067,6 +1067,17 @@ public class ApplicationFacade {
                     String value = cond.getValue();
                     message += newline + cond.getMetric() + " " + cond.getOperator() + " " + cond.getErrorThreshold()
                             + "(" + value + ")";
+                    try {
+                        vcsService.rejectPullRequest(pullRequest);
+                    } catch (IOException exception) {
+                        logger.error("Failed to reject PR", exception);
+                    }
+                }else {
+                    try {
+                        vcsService.approvePullRequest(pullRequest);
+                    } catch (IOException exception) {
+                        logger.error("Failed to approve PR", exception);
+                    }
                 }
             }
 
@@ -1112,10 +1123,22 @@ public class ApplicationFacade {
 
         List<Application> applications = applicationRepository.findAll();
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(-25, Calendar.HOUR);
+        Date startTime = calendar.getTime();
         // build for all ci enabled projects
         applications.parallelStream().forEach(application -> {
-            if(application.isCiEnabled())
-                triggerTestBuild(application, "master", 0);
+            // check if any build done in last 24Hours
+            Integer countOfBuildInLast24Hours = buildRepository
+                    .countByApplicationIdAndTimestampGreaterThanAndTestBuildIsFalse(application.getId(), startTime);
+            if(application.isCiEnabled() && countOfBuildInLast24Hours > 0 ) {
+                try {
+                    String defaultBranch = getDefaultBranch(application);
+                    triggerTestBuild(application, defaultBranch, 0);
+                }catch (IOException exception){
+                    logger.error("Failed to trigger daily run");
+                }
+            }
         });
 
 //        Calendar c = Calendar.getInstance();
@@ -1131,6 +1154,21 @@ public class ApplicationFacade {
 //            Application application = applicationRepository.findById(id).get();
 //            triggerTestBuild(application, "master", 0);
 //        });
+    }
+
+    private String getDefaultBranch(Application application) throws IOException {
+        if(application.getRepositoryDefaultBranch() != null){
+            return application.getRepositoryDefaultBranch();
+        }
+
+        // if no default is specified
+        String repositoryOwner = getRepositoryOwner(application);
+        String repositoryName = getRepositoryName(application);
+        VcsService vcsService = vcsServiceSelector.selectVcsService(application.getVcsProvider());
+        String branchName = vcsService.getDefaultBranchName(repositoryOwner, repositoryName);
+        application.setRepositoryDefaultBranch(branchName);
+        applicationRepository.save(application);
+        return branchName;
     }
 
     public Map<String,ApplicationMetrics> getApplicationMetricSummary(ApplicationFamily applicationFamily,
@@ -1244,7 +1282,6 @@ public class ApplicationFacade {
 
             }
         });
-
         return  ret;
     }
 

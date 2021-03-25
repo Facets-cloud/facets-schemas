@@ -23,4 +23,10 @@ public interface VcsService {
     public boolean shouldTriggerBuild(Application application, PullRequest pullRequest);
 
     public List<String> getSupportedActions();
+
+    public String getDefaultBranchName(String owner, String repository) throws IOException;
+
+    void approvePullRequest(PullRequest pullRequest) throws IOException;
+
+    void rejectPullRequest(PullRequest pullRequest) throws IOException;
 }
