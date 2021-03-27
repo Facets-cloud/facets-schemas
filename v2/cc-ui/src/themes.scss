@@ -1,5 +1,5 @@
 @import '~@nebular/theme/styles/theming';
-@import '~@nebular/theme/styles/themes/default';
+@import '~@nebular/theme/styles/themes/corporate';
 
 $nb-themes: nb-register-theme((
 
@@ -14,11 +14,6 @@ $nb-themes: nb-register-theme((
   // color-primary-700: #1a34b8,
   // color-primary-800: #102694,
   // color-primary-900: #091c7a,
-  smart-table-bg-even:#ffffff,
-  smart-table-bg-active:#ffffff,
-  smart-table-header-bg: #dddddd,
-  smart-table-header-font-size:1rem,
-  smart-table-header-font-weight:700,
-  smart-table-header-fg:#222b45,
 
-), default, default);
+
+), facets, corporate);

@@ -43,7 +43,7 @@ import { TeamManagementModule } from './pages/team-management/team-management.mo
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    NbThemeModule.forRoot({name: 'default'}),
+    NbThemeModule.forRoot({name: 'facets'}),
     NbLayoutModule,
     NbEvaIconsModule,
     HomeModule,

@@ -18,49 +18,124 @@ export class HeaderComponent implements OnInit {
   navs = [
     'overview', 'overrides', 'releases', 'disaster-recovery', 'alerts', 'resource-details', 'tools'
   ];
+  private BASE_URL = "/capc/";
+  currentClusterURL;
   clusters: AbstractCluster[];
-  currentCluster = '';
   isDemo: string = '';
+  userItems: any = [
+    {title: 'Profile'},
+    {title: 'Logout'},
+  ];
+  settingsItems: any = [
+    // {title: 'Manage Users', disabled: true},
+    // {title: 'Manage Teams'},
+  ];
+  stackClusters = {};
+  newNav = [];
+  private stackName: string;
+
 
   constructor(private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
               private router: Router, private uiStackControllerService: UiStackControllerService,
               private cookieService: CookieService) {
   }
 
+  initNav(): void {
+    this.newNav = [
+      {
+        groupName: "Stack",
+        pages: [
+          {
+            title: "All Stacks",
+            url: this.BASE_URL + "home",
+          },
+          {
+            title: "Create Stack",
+            url: this.BASE_URL + "createStack"
+          }
+        ]
+      },
+      {
+        groupName: "Cluster Pages",
+        pages: [
+          {
+            title: "Create Cluster",
+            url: this.BASE_URL + this.stackName + "/clusterCreate",
+          },
+          {
+            title: "Overview",
+            url: this.BASE_URL + this.currentClusterURL + "/overview",
+          },
+          {
+            title: "Overrides",
+            url: this.BASE_URL + this.currentClusterURL + "/overrides"
+          },
+          {
+            title: "Releases",
+            url: this.BASE_URL + this.currentClusterURL + "/releases"
+          },
+          {
+            title: "Disaster Recovery",
+            url: this.BASE_URL + this.currentClusterURL + "/disaster-recovery"
+          },
+          {
+            title: "Alerts",
+            url: this.BASE_URL + this.currentClusterURL + "/alerts"
+          },
+          {
+            title: "Discover Resources",
+            url: this.BASE_URL + this.currentClusterURL + "/resource-details"
+          },
+          {
+            title: "Grafana",
+            url: this.BASE_URL + this.currentClusterURL + "/tools"
+          }
+
+        ]
+      }
+    ]
+  }
+
   ngOnInit(): void {
+    this.route.params.subscribe(p => {
+      this.stackName = p.stackName;
+      if (!p.clusterId) {
+        console.log(p);
+        this.isClusterContext = false;
+      } else {
+        this.currentClusterURL = p.stackName + "/cluster/" + p.clusterId;
+      }
+    });
     this.isDemo = this.cookieService.get("isDemo");
-    this.route.url.subscribe(
-      s => this.currentNav = s[0].path
-    );
+    this.currentNav = window.location.pathname
     this.applicationControllerService.meUsingGET().subscribe(
       (x: SimpleOauth2User) => {
         this.user = x;
       },
     );
-    this.route.params.subscribe(p => {
-      if (!p.clusterId) {
-        console.log(p);
-        this.isClusterContext = false;
-      } else {
-        this.currentCluster = p.clusterId;
-        if (p.stackName) {
-          this.uiStackControllerService.getClustersUsingGET1(p.stackName).subscribe(
+    this.uiStackControllerService.getStacksUsingGET1().subscribe(
+      s => {
+        s.forEach(stack => {
+          this.uiStackControllerService.getClustersUsingGET1(stack.name).subscribe(
             c => {
-              this.clusters = c;
+              this.stackClusters[stack.name] = c;
+              if (!this.currentClusterURL) {
+                this.currentClusterURL = c[0].stackName + "/cluster/" + c[0].id
+              }
+              this.initNav()
             }
           );
-        }
+        })
       }
-    });
+    );
   }
 
   navToPage(): void {
-    const url = '../' + this.currentNav;
-    this.router.navigate([url], {relativeTo: this.route});
+    const url = this.BASE_URL + this.currentClusterURL + '/' + this.currentNav;
+    this.router.navigate([url]);
   }
 
-  navToCluster(): void {
-    const url = '../../' + this.currentCluster + '/' + this.currentNav;
-    this.router.navigate([url], {relativeTo: this.route});
+  navToPageWithURL() {
+    this.router.navigate([this.currentNav]);
   }
 }
