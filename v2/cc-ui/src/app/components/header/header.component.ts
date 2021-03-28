@@ -75,7 +75,7 @@ export class HeaderComponent implements OnInit {
             url: this.BASE_URL + this.currentClusterURL + "/releases"
           },
           {
-            title: "Disaster Recovery",
+            title: "Database Snapshots",
             url: this.BASE_URL + this.currentClusterURL + "/disaster-recovery"
           },
           {
