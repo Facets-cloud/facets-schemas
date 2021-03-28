@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.UnknownHostException;
 
 @Component
-@Slf4j
 public class InternalRequestAccessController {
 
     @Value("${internalApiAuthToken}")
@@ -21,7 +20,6 @@ public class InternalRequestAccessController {
         String authorization = request.getHeader("Authorization");
         String authTokenHeaderValue = request.getHeader(authTokenHeader);
         if(authorization !=null){
-            log.info("Bearer token auth");
             return authorization.endsWith(authToken);
         }
         if(authTokenHeaderValue == null) {

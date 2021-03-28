@@ -132,7 +132,7 @@ public class ClusterFacade {
         List<AlertManagerPayload.Alert> alerts = response.getAlerts();
         alerts.forEach(alert -> {
             if (alert.getResourceName().equals(AlertManagerPayload.NO_NAME)) {
-                log.warn("Ignoring {} as this is old alert", alert.getLabels().get(AlertManagerPayload.ALERTNAME));
+                logger.warn("Ignoring {} as this is old alert", alert.getLabels().get(AlertManagerPayload.ALERTNAME));
             }
             notificationService.publish(new AlertNotification(abstractCluster, alert));
         });
