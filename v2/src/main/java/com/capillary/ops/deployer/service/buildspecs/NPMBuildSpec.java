@@ -44,8 +44,6 @@ public class NPMBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("npm install");
-        buildCommands.add("npm test");
         buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +

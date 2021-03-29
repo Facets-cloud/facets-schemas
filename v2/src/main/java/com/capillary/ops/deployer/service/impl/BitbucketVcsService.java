@@ -222,20 +222,4 @@ public class BitbucketVcsService implements VcsService {
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
-
-    @Override
-    public String getDefaultBranchName(String owner, String repository) throws IOException {
-        return "master";
-    }
-
-    @Override
-    public void approvePullRequest(PullRequest pullRequest) throws IOException {
-        // not implemented
-    }
-
-    @Override
-    public void rejectPullRequest(PullRequest pullRequest) throws IOException {
-        // not implemented
-    }
-
 }
