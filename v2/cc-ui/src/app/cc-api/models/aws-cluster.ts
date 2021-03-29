@@ -7,6 +7,7 @@ export interface AwsCluster {
   cdPipelineParent?: string;
   cloud?: 'AWS' | 'AZURE';
   commonEnvironmentVariables?: {[key: string]: string};
+  componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
   externalId?: string;
   id?: string;

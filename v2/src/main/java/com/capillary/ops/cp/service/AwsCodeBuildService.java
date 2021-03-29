@@ -75,6 +75,7 @@ public class AwsCodeBuildService implements TFBuildService {
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLUSTER_ID = "CLUSTER_ID";
+    private static final String CLUSTER_REGION = "CLUSTER_REGION";
 
     @Value("${cc_aws_region}")
     public Region BUILD_REGION;
@@ -163,8 +164,9 @@ public class AwsCodeBuildService implements TFBuildService {
      * @return
      */
     @Override
-    public DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext)
+    public DeploymentLog deployLatest(AbstractCluster abstractCluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext)
     {
+        AwsCluster cluster = (AwsCluster) abstractCluster;
         ReleaseType releaseType = deploymentRequest.getReleaseType();
         List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv().entrySet().stream()
                 .map(x ->
@@ -184,6 +186,8 @@ public class AwsCodeBuildService implements TFBuildService {
         //DONE: Check if code build is defined for the said cloud
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
         environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
+            .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_REGION).value(cluster.getAwsRegion())
             .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(
             EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
@@ -609,10 +613,10 @@ public class AwsCodeBuildService implements TFBuildService {
     private String getBuildSpec(DeploymentRequest deploymentRequest) {
         try {
             String buildSpecYaml =
-                CharStreams.toString(
-                    new InputStreamReader(
-                        App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
-                            Charsets.UTF_8));
+                    CharStreams.toString(
+                            new InputStreamReader(
+                                    App.class.getClassLoader().getResourceAsStream("cc/cc-buildspec.yaml"),
+                                    Charsets.UTF_8));
             if(deploymentRequest.getOverrideBuildSteps() == null ||
                     deploymentRequest.getOverrideBuildSteps().isEmpty()) {
                 return buildSpecYaml;

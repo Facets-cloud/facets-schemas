@@ -1,15 +1,20 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.controller.AwsClusterController;
 import com.capillary.ops.cp.controller.ClusterController;
 import com.capillary.ops.cp.service.AclService;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;

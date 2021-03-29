@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.bo;
 
+import com.capillary.ops.cp.bo.components.ComponentType;
 import com.capillary.ops.cp.bo.requests.Cloud;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -59,6 +60,8 @@ public abstract class AbstractCluster {
     private Map<ReleaseType, String> schedules = new HashMap<>();
 
     private double k8sRequestsToLimitsRatio = 1;
+
+    private Map<ComponentType, String> componentVersions = new HashMap<>();
 
     public AbstractCluster(String name, Cloud cloud) {
         this.name = name;
@@ -194,4 +197,11 @@ public abstract class AbstractCluster {
         }
     }
 
+    public Map<ComponentType, String> getComponentVersions() {
+        return componentVersions;
+    }
+
+    public void setComponentVersions(Map<ComponentType, String> componentVersions) {
+        this.componentVersions = componentVersions;
+    }
 }

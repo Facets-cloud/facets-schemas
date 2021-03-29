@@ -6,7 +6,11 @@ import com.capillary.ops.cp.bo.notifications.AlertNotification;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
-import com.capillary.ops.cp.repository.*;
+import com.capillary.ops.cp.exceptions.UnsupportedComponentVersionException;
+import com.capillary.ops.cp.repository.CpClusterRepository;
+import com.capillary.ops.cp.repository.K8sCredentialsRepository;
+import com.capillary.ops.cp.repository.SnapshotInfoRepository;
+import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
@@ -33,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -75,13 +78,16 @@ public class ClusterFacade {
     private AutoSignoffScheduleService autoSignoffScheduleService;
 
     @Autowired
-    private ClusterTaskRepository clusterTaskRepository;
-
-    @Autowired
     PrometheusService prometheusService;
 
     @Autowired
     private CCKubernetesService ccKubernetesService;
+
+    @Autowired
+    private MetaService metaService;
+
+    @Autowired
+    private ClusterTaskService clusterTaskService;
 
     @Autowired
     private NotificationService notificationService;
@@ -193,7 +199,8 @@ public class ClusterFacade {
      * @param request Other request Params
      * @return The updated created cluster
      */
-    public AbstractCluster updateCluster(ClusterRequest request, String clusterId) {
+    public AbstractCluster updateCluster(ClusterRequest request, String clusterId)
+            throws UnsupportedComponentVersionException {
         //Done: Check if stack exists
         Optional<Stack> stack = stackRepository.findById(request.getStackName());
         if (!stack.isPresent()) {
@@ -206,19 +213,21 @@ public class ClusterFacade {
                     "No such cluster with name: " + request.getClusterName() + " present for " + "stack:" + request
                             .getStackName());
         }
+        AbstractCluster existingCluster = existing.get();
 
         if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
             throw new RuntimeException("Invalid CD parent cluster");
         }
 
         ClusterService service = factory.getService(request.getCloud());
-        AbstractCluster cluster = service.updateCluster(request, existing.get());
+        AbstractCluster cluster = service.updateCluster(request, existingCluster);
         Map<String, String> mergedClusterVars = new HashMap<>();
-        mergedClusterVars.putAll(existing.get().getUserInputVars());
+        mergedClusterVars.putAll(existingCluster.getUserInputVars());
         mergedClusterVars.putAll(request.getClusterVars());
         request.setClusterVars(mergedClusterVars);
         return upsertCommonTasks(request, stack, cluster);
     }
+
 
     private AbstractCluster upsertCommonTasks(ClusterRequest request, Optional<Stack> stack,
                                               AbstractCluster cluster) {
@@ -252,6 +261,7 @@ public class ClusterFacade {
         Map<String, String> secrets = clusterHelper.getSecrets(clusterObj, stack.get());
         clusterObj.setCommonEnvironmentVariables(additionalCommonVars);
         clusterObj.setSecrets(secrets);
+
         return clusterObj;
     }
 
@@ -418,41 +428,15 @@ public class ClusterFacade {
         return true;
     }
 
-    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId) {
-        Optional<List<ClusterTask>> tasks = clusterTaskRepository.findFirst15ByClusterIdAndTaskStatus(clusterId, TaskStatus.QUEUED);
-        if (tasks.isPresent() && !tasks.get().isEmpty()) {
-            return tasks.get().get(0);
-        }
-        return null;
+    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
+        return clusterTaskService.getQueuedClusterTaskForClusterId(clusterId);
     }
 
     public ClusterTask disableClusterTask(String taskId) throws Exception {
-        Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
-        ClusterTask modifiedTask = null;
-        if (!task.isPresent()) {
-            throw new Exception("Task does not exist");
-        }
-        if (!task.get().getTaskStatus().equals(TaskStatus.QUEUED)) {
-            throw new Exception("Task not in QUEUED state");
-        }
-        modifiedTask = task.get();
-        modifiedTask.setTaskStatus(TaskStatus.DISABLED);
-        clusterTaskRepository.save(modifiedTask);
-        return modifiedTask;
+        return clusterTaskService.disableClusterTask(taskId);
     }
 
     public ClusterTask enableClusterTask(String taskId) throws Exception {
-        Optional<ClusterTask> task = clusterTaskRepository.findById(taskId);
-        ClusterTask modifiedTask = null;
-        if (!task.isPresent()) {
-            throw new Exception("Task does not exist");
-        }
-        if (!task.get().getTaskStatus().equals(TaskStatus.DISABLED)) {
-            throw new Exception("Task not in DISABLED state");
-        }
-        modifiedTask = task.get();
-        modifiedTask.setTaskStatus(TaskStatus.QUEUED);
-        clusterTaskRepository.save(modifiedTask);
-        return modifiedTask;
+        return clusterTaskService.enableClusterTask(taskId);
     }
 }

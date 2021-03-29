@@ -4,14 +4,12 @@ import {UiAwsClusterControllerService} from '../../../cc-api/services/ui-aws-clu
 import {ApplicationControllerService } from '../../../cc-api/services/application-controller.service';
 import flat from 'flat';
 import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
-import {NbSelectModule, NbToastrService} from '@nebular/theme';
-import {NbToggleModule} from '@nebular/theme';
-import {AwsClusterRequest, AbstractCluster} from 'src/app/cc-api/models';
+import {NbDialogService, NbToastrService} from '@nebular/theme';
+import {AwsClusterRequest, AbstractCluster, Stack} from 'src/app/cc-api/models';
 import {UiCommonClusterControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {LocalDataSource} from 'ng2-smart-table';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
-import {element} from 'protractor';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { ComponentUpgradeDialogComponent } from './componentupgradedialog/componentupgradedialog.component';
 
 @Component({
   selector: 'app-cluster-overview',
@@ -68,6 +66,46 @@ export class ClusterOverviewComponent implements OnInit {
     },
   };
 
+  settingsComponentUpgrades = {
+    columns: {
+      component: {
+        title: 'Component',
+        filter: false,
+        width: '30%',
+        editable: false,
+      },
+      currentValue: {
+        title: 'Current Version',
+        filter: false,
+        width: '30%',
+        editable: false,
+        editor: {type: 'text'},
+      },
+      newValue: {
+        title: 'Available Version',
+        filter: false,
+        width: '30%',
+        editable: false,
+        editor: {type: 'text'},
+      }
+    },
+    noDataMessage: '',
+    pager: {
+      display: true,
+      perPage: 10,
+    },
+    actions: {
+      columnTitle: 'Upgrade',
+      add: false,
+      edit: false,
+      delete: false,
+      custom: [
+        { name: 'upgradeComponent', title: '<div style="padding-top: 25px;"><i class="eva-arrow-upward-outline eva"></i></div>'},
+      ],
+      position: 'right',
+    }
+  };
+
   clusterInfo;
 
   cluster: AwsCluster;
@@ -76,16 +114,20 @@ export class ClusterOverviewComponent implements OnInit {
   enableSubmitForClusterOverrides = true;
   nonSensitiveClusterSource: LocalDataSource = new LocalDataSource();
   sensitiveClusterSource: LocalDataSource = new LocalDataSource();
+  componentUpgradeSource: LocalDataSource = new LocalDataSource();
   originalClusterVariablesSource = [];
   addOverrideSpinner = false;
   stackName: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION'];
   isUserAdmin: any;
+  shouldUpgradeComponent = false;
+  clusterComponents: {[key: string]: string}
 
   constructor(private aWSClusterService: UiAwsClusterControllerService,
               private uiCommonClusterControllerService: UiCommonClusterControllerService,
               private route: ActivatedRoute,
               private router: Router,
+              private dialogService: NbDialogService,
               private toastrService: NbToastrService,
               private stackService: UiStackControllerService,
               private applicationController: ApplicationControllerService) {
@@ -96,7 +138,7 @@ export class ClusterOverviewComponent implements OnInit {
     this.route.params.subscribe(p => {
       if (p.clusterId) {
         clusterId = p.clusterId;
-        this.aWSClusterService.getClusterUsingGET1(clusterId).subscribe(t => {
+        this.aWSClusterService.getClusterUsingGET2(clusterId).subscribe(t => {
           this.updateTableSourceWithStackVariables(t);
           this.cluster = t;
           this.spotInstanceTypes = null;
@@ -104,6 +146,7 @@ export class ClusterOverviewComponent implements OnInit {
             this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
           }
           this.clusterInfo = flat.flatten(t);
+          this.populateComponentUpgrades(t)
         });
       }
 
@@ -116,6 +159,47 @@ export class ClusterOverviewComponent implements OnInit {
         || this.user.authorities.map(x => x.authority).includes('ROLE_USER_ADMIN');
       }
     );
+  }
+
+  async upgradeComponent(event) {
+    let data = event.data;
+    const awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
+    this.dialogService.open(ComponentUpgradeDialogComponent, {context: {component: data["component"], version: data["newValue"]}}).onClose.subscribe(proceed => {
+      if (proceed) {
+        awsClusterRequest.componentVersions[data['component']] = data['newValue'];
+        this.updateCluster(awsClusterRequest);
+      }
+    });
+  }
+
+  populateComponentUpgrades(cluster: AbstractCluster) {
+    this.stackService.getStackUsingGET(cluster.stackName).subscribe(stack => {
+      this.uiCommonClusterControllerService.getClusterTaskUsingGET(cluster.id).subscribe(clusterTasks => {
+        if (clusterTasks && clusterTasks.tasks && (clusterTasks.tasks.length > 0)) {
+          this.componentUpgradeSource.reset();
+          this.componentUpgradeSource.load([]);
+          return;
+        }
+
+        let componentUpgrades = [];
+        for (let clusterKey in cluster.componentVersions) {
+          let clusterValue = parseFloat(cluster.componentVersions[clusterKey]);
+          
+          let stackValue = stack.componentVersions[clusterKey];
+          if (clusterKey === "KUBERNETES") {
+            let k8sStackValue = parseFloat(stackValue);
+            if (k8sStackValue > clusterValue) {
+              componentUpgrades.push({
+                "component": clusterKey, 
+                "currentValue": clusterValue.toString(), 
+                "newValue": (clusterValue + 0.01).toString()})
+            }
+          }
+
+        }
+        this.componentUpgradeSource.load(componentUpgrades);
+      })
+    });
   }
 
   updateTableSourceWithStackVariables(cluster: AbstractCluster) {
@@ -143,10 +227,16 @@ export class ClusterOverviewComponent implements OnInit {
     event.confirm.resolve(event.newData);
   }
 
-  submitClusterOverrides() {
+  async submitClusterOverrides() {
     this.enableSubmitForClusterOverrides = true;
+    const awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
     try {
-      this.updateCluster();
+      if (this.isEmptyObject(awsClusterRequest.clusterVars)) {
+        this.toastrService.danger('No variables have changed, cannot update', 'Error');
+        this.addOverrideSpinner = false;
+        return;
+      }
+      this.updateCluster(awsClusterRequest);
     } catch (err) {
       console.log(err);
       this.addOverrideSpinner = false;
@@ -208,19 +298,11 @@ export class ClusterOverviewComponent implements OnInit {
     return (obj && (Object.keys(obj).length === 0));
   }
 
-  private async updateCluster() {
+  private async updateCluster(awsClusterRequest: AwsClusterRequest) {
     this.addOverrideSpinner = true;
 
-    const awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
-
-    if (this.isEmptyObject(awsClusterRequest.clusterVars)) {
-      this.toastrService.danger('No variables have changed, cannot update', 'Error');
-      this.addOverrideSpinner = false;
-      return;
-    }
-
     try {
-      this.aWSClusterService.updateClusterUsingPUT1({
+      this.aWSClusterService.updateClusterUsingPUT2({
         request: awsClusterRequest,
         clusterId: this.cluster.id
       }).subscribe(c => {
@@ -246,6 +328,7 @@ export class ClusterOverviewComponent implements OnInit {
     awsClusterRequest.cloud = this.cluster.cloud;
     awsClusterRequest.clusterName = this.cluster.name;
     awsClusterRequest.stackName = this.cluster.stackName;
+    awsClusterRequest.componentVersions = this.cluster.componentVersions;
     awsClusterRequest.clusterVars = {};
 
     const nonSensitiveSource = await this.nonSensitiveClusterSource.getAll();

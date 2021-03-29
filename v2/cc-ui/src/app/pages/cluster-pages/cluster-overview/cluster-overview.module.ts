@@ -14,10 +14,11 @@ import {LayoutsModule} from '../../../layouts/layouts.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormsModule } from '@angular/forms';
 import {NbEvaIconsModule} from "@nebular/eva-icons";
+import { ComponentUpgradeDialogComponent } from './componentupgradedialog/componentupgradedialog.component';
 
 
 @NgModule({
-  declarations: [ClusterOverviewComponent],
+  declarations: [ClusterOverviewComponent, ComponentUpgradeDialogComponent],
   providers: [
     AwsClusterControllerService,
     NbToastrService,
