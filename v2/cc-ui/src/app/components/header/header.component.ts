@@ -5,6 +5,9 @@ import {ApplicationControllerService} from '../../cc-api/services/application-co
 import {UiStackControllerService} from '../../cc-api/services/ui-stack-controller.service';
 import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
 import {CookieService} from "ngx-cookie-service";
+import {NbMenuService} from "@nebular/theme";
+import {filter, map} from "rxjs/operators";
+import {HttpClient, HttpHeaders, HttpParams, HttpRequest} from "@angular/common/http";
 
 @Component({
   selector: 'app-header',
@@ -24,7 +27,7 @@ export class HeaderComponent implements OnInit {
   isDemo: string = '';
   userItems: any = [
     {title: 'Profile'},
-    {title: 'Logout'},
+    {title: 'Log out'},
   ];
   settingsItems: any = [
     // {title: 'Manage Users', disabled: true},
@@ -37,7 +40,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
               private router: Router, private uiStackControllerService: UiStackControllerService,
-              private cookieService: CookieService) {
+              private cookieService: CookieService, private nbMenuService: NbMenuService, protected http: HttpClient) {
   }
 
   initNav(): void {
@@ -111,7 +114,7 @@ export class HeaderComponent implements OnInit {
     this.applicationControllerService.meUsingGET().subscribe(
       (x: SimpleOauth2User) => {
         this.user = x;
-      },
+      }
     );
     this.uiStackControllerService.getStacksUsingGET1().subscribe(
       s => {
@@ -128,10 +131,30 @@ export class HeaderComponent implements OnInit {
         })
       }
     );
+    this.addCallbacksToUserMenu()
   }
 
+  addCallbacksToUserMenu(): void {
+    this.nbMenuService.onItemClick()
+      .pipe(
+        filter(({tag}) => tag === 'user-menu'),
+        filter(({item: {title}}) => title == 'Log out'),
+      )
+      .subscribe(title => {
+        this.http.get(`/perform_logout`).subscribe(
+          (x: SimpleOauth2User) => {
+          },
+          (error) => {
+            window.location.reload()
+          }
+        );
+      });
+  }
+
+
   navToPage(): void {
-    const url = this.BASE_URL + this.currentClusterURL + '/' + this.currentNav;
+    let navParts = this.currentNav.split('/');
+    const url = this.BASE_URL + this.currentClusterURL + '/' + navParts[navParts.length-1];
     this.router.navigate([url]);
   }
 

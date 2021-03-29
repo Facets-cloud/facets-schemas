@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,16 +15,23 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@RestController
-@ControllerAdvice
+//@RestController
+//@ControllerAdvice
 public class LoginErrorController implements ErrorController {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginErrorController.class);
 
-    @RequestMapping(value = "/error", method = RequestMethod.GET)
+    @Value("${facets_only:false}")
+    private Boolean isFacetsOnly;
+
+//    @RequestMapping(value = "/error", method = RequestMethod.GET)
     public ModelAndView goToSigninPage(HttpServletRequest request, HttpServletResponse response) {
+        String loginUrl = "/pages/signin";
+        if(isFacetsOnly){
+            loginUrl = "/capc/login";
+        }
         logger.debug("error happened while returning response: {}", response);
-        return new ModelAndView(new RedirectView("/pages/signin", true));
+        return new ModelAndView(new RedirectView(loginUrl, true));
     }
 
     @Override

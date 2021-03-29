@@ -45,7 +45,7 @@
       </nb-action>
       <nb-action>
         <nb-user [name]=user?.attributes?.name [picture]="user?.attributes?.picture" [showTitle]="false"
-                 [nbContextMenu]="userItems" nbContextMenuTrigger="hover" size="small"></nb-user>
+                 [nbContextMenu]="userItems" nbContextMenuTrigger="hover" size="small" nbContextMenuTag='user-menu'></nb-user>
       </nb-action>
     </nb-actions>
   </div>

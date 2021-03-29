@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
       tap(authenticated => {
         if (!authenticated) {
           const curr = this.document.location.href;
-          this.document.location.href = '/oauth2/authorization/google?redirect=' + curr;
+          this.document.location.href = '/capc/login';
         }
       })
     );

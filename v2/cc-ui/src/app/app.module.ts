@@ -25,6 +25,7 @@ import { ClusterResourceDetailsModule } from './pages/cluster-pages/cluster-reso
 import {ClusterTunnelModule} from "./pages/cluster-pages/cluster-tunnel/cluster-tunnel.module";
 import { TeamsOverviewModule } from './pages/teams-overview/teams-overview.module';
 import { TeamManagementModule } from './pages/team-management/team-management.module';
+import {LoginPageModule} from "./pages/login-page/login-page.module";
 
 
 @NgModule({
@@ -38,7 +39,6 @@ import { TeamManagementModule } from './pages/team-management/team-management.mo
           name: 'email',
         }),
       ],
-      forms: {},
     }),
     BrowserModule,
     AppRoutingModule,
@@ -62,6 +62,7 @@ import { TeamManagementModule } from './pages/team-management/team-management.mo
     TeamsOverviewModule,
     TeamManagementModule,
     NbMenuModule.forRoot(),
+    LoginPageModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},
