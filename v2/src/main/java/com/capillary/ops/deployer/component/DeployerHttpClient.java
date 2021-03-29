@@ -5,7 +5,10 @@ import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -36,10 +39,6 @@ public class DeployerHttpClient {
     }
 
     public JSONObject makeGETRequest(String requestUri, String username, String password) throws IOException {
-        String json = makeGETRequestAndGetStringResponse(requestUri, username, password);
-        return new JSONObject(json);
-    }
-    public String makeGETRequestAndGetStringResponse(String requestUri, String username, String password) throws IOException {
         CloseableHttpClient httpClient = this.getHTTPClient();
 
         logger.debug("constructing base64 encoded credentials");
@@ -64,7 +63,8 @@ public class DeployerHttpClient {
         logger.debug("converting http response to json string with encoding: {}", encoding);
         String json = EntityUtils.toString(entity, encoding);
         httpClient.close();
-        return json;
+
+        return new JSONObject(json);
     }
 
     public JSONObject makeGETRequest(String requestUri) throws IOException {
@@ -106,30 +106,6 @@ public class DeployerHttpClient {
         post.addHeader(contentType);
 
         CloseableHttpResponse httpResponse = httpClient.execute(post);
-        HttpEntity entity = httpResponse.getEntity();
-        Header encodingHeader = entity.getContentEncoding();
-        Charset encoding = encodingHeader == null ? StandardCharsets.UTF_8 : Charsets.toCharset(encodingHeader.getValue());
-
-        logger.debug("converting http response to json string with encoding: {}", encoding);
-        String json = EntityUtils.toString(entity, encoding);
-        httpClient.close();
-        logger.info("Response for request: " + json + " - " + httpResponse.getStatusLine().getStatusCode());
-        return new JSONObject(json);
-    }
-
-    public JSONObject makePUTRequest(String requestUri, String body, String username, String password) throws IOException {
-        CloseableHttpClient httpClient = this.getHTTPClient();
-
-        String authHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
-        Header authorization = new BasicHeader(HttpHeaders.AUTHORIZATION, authHeader);
-        Header contentType = new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-
-        HttpPut put = new HttpPut(requestUri);
-        put.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
-        put.addHeader(authorization);
-        put.addHeader(contentType);
-
-        CloseableHttpResponse httpResponse = httpClient.execute(put);
         HttpEntity entity = httpResponse.getEntity();
         Header encodingHeader = entity.getContentEncoding();
         Charset encoding = encodingHeader == null ? StandardCharsets.UTF_8 : Charsets.toCharset(encodingHeader.getValue());
