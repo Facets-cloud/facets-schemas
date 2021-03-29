@@ -61,18 +61,27 @@ public class ApplicationModuleTests {
     @Test
     public void sidecarTest() throws Exception{
         JsonObject sidecarJson = stackTestUtils.getInstance(moduleName,appName).getAsJsonObject("sidecarContainers");
-        assert(k8sTestUtils.getK8sPod(appName));
-
+        int containerCount = 1;
+        if(sidecarJson.size()>1){
+            containerCount = 2;
+        }
+        assert(k8sTestUtils.getK8sPod(appName).getSpec().getContainers().size() == containerCount);
     }
 
     @Test
-    public void cloudflareTest() throws Exception{}
+    public void ingresRuleTest() throws Exception{
+        JsonObject stackIngressRules = stackTestUtils.getInstance(moduleName,appName).getAsJsonObject("ingress_rules");
+        int k8sIngressRules = k8sTestUtils.getK8sIngressRules(appName).size();
+        assert(stackIngressRules.size() == k8sIngressRules);
+    }
 
     @Test
-    public void ingresRuleTest() throws Exception{}
-
-    @Test
-    public void prodQaTest() throws Exception{}
+    public void prodQaTest() throws Exception{
+        String nodeLifecycle = stackTestUtils.getInstance(moduleName,appName).getAsJsonObject("nodeLifecycle").toString();
+        if(nodeLifecycle.equals("ondemand")){
+            
+        }
+    }
 
     @Test
     public void annotations() throws Exception{}
