@@ -387,6 +387,8 @@ public class ApplicationController {
 
     @GetMapping(value = "/me")
     public OAuth2UserServiceImpl.SimpleOauth2User me() {
+        if(true)
+            return null;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof BasicUserDetailsService.SimpleBasicAuthUser) {
             BasicUserDetailsService.SimpleBasicAuthUser basicAuthUser = (BasicUserDetailsService.SimpleBasicAuthUser) principal;

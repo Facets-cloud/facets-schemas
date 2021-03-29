@@ -3,6 +3,7 @@ package com.capillary.ops.deployer.service.impl;
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Build;
 import com.capillary.ops.deployer.bo.PullRequest;
+import com.capillary.ops.deployer.bo.webhook.github.GithubPRReview;
 import com.capillary.ops.deployer.bo.webhook.github.SupportedActions;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
@@ -11,8 +12,12 @@ import com.capillary.ops.deployer.repository.PullRequestRepository;
 import com.capillary.ops.deployer.service.VcsService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.eclipse.egit.github.core.*;
+import org.eclipse.egit.github.core.service.GitHubService;
 import org.eclipse.egit.github.core.service.RepositoryService;
+import org.eclipse.egit.github.core.service.UserService;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +43,11 @@ public class GithubVcsService implements VcsService {
 
     @Autowired
     private PullRequestRepository pullRequestRepository;
+
+    private String currentUserName;
+
+    @Autowired
+    private Gson gson;
 
     @Autowired
     private BuildRepository buildRepository;
@@ -53,16 +67,7 @@ public class GithubVcsService implements VcsService {
 
     @Override
     public List<String> getBranches(String owner, String repository) throws IOException {
-        String username = System.getenv("GITHUB_USERNAME");
-        String password = System.getenv("GITHUB_PASSWORD");
-
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            logger.error("github credentials not found, please fulfill the credentials to use this api");
-            throw new NotFoundException("Please fulfill the Github credentials to use this api");
-        }
-
-        RepositoryService repositoryService = new RepositoryService();
-        repositoryService.getClient().setCredentials(username, password);
+        RepositoryService repositoryService = getRepositoryService();
 
         RepositoryId repositoryId = new RepositoryId(owner, repository);
         logger.debug("fetching github branches");
@@ -72,18 +77,16 @@ public class GithubVcsService implements VcsService {
         return branches.parallelStream().map(RepositoryBranch::getName).collect(Collectors.toList());
     }
 
-    @Override
-    public List<String> getTags(String owner, String repository) throws IOException {
-        String username = System.getenv("GITHUB_USERNAME");
-        String password = System.getenv("GITHUB_PASSWORD");
-
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            logger.error("github credentials not found, please fulfill the credentials to use this api");
-            throw new NotFoundException("Please fulfill the Github credentials to use this api");
-        }
+    private RepositoryService getRepositoryService() {
 
         RepositoryService repositoryService = new RepositoryService();
-        repositoryService.getClient().setCredentials(username, password);
+        setCredentials(repositoryService);
+        return repositoryService;
+    }
+
+    @Override
+    public List<String> getTags(String owner, String repository) throws IOException {
+        RepositoryService repositoryService = getRepositoryService();
 
         RepositoryId repositoryId = new RepositoryId(owner, repository);
         logger.debug("fetching github tags");
@@ -103,12 +106,9 @@ public class GithubVcsService implements VcsService {
             host = DEFAULT_WEBHOOK_HOST;
         }
 
-        String username = System.getenv("GITHUB_USERNAME");
-        String password = System.getenv("GITHUB_PASSWORD");
-
         RepositoryId repositoryId = new RepositoryId(owner, repository);
         RepositoryService repositoryService = new RepositoryService();
-        repositoryService.getClient().setCredentials(username, password);
+        setCredentials(repositoryService);
 
         String webhookURL = String.format(PR_WEBHOOK_URL, host, application.getApplicationFamily(), application.getId());
         RepositoryHook repositoryHook = new RepositoryHook()
@@ -171,4 +171,114 @@ public class GithubVcsService implements VcsService {
                 .map(Enum::name)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String getDefaultBranchName(String owner, String repository) throws IOException {
+        RepositoryService repositoryService = getRepositoryService();
+        Repository repositoryDetailsFetched = repositoryService.getRepository(owner, repository);
+        return repositoryDetailsFetched.getDefaultBranch();
+    }
+
+    private void startNewReview(PullRequest pullRequest, Boolean isApproval ){
+
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
+
+        String createReviewUrl  = pullRequest.getUrl() + "/reviews";
+        String body = isApproval
+                ? "{\"event\":\"APPROVE\"}"
+                : "{\"event\":\"REQUEST_CHANGES\", \"body\": \"validation failed\"}";
+
+        try {
+            httpClient.makePOSTRequest(createReviewUrl, body, username, password);
+        } catch (IOException e) {
+            logger.error("could not connect to github vcs service");
+        }
+    }
+
+    private void dismissChangesRequested(PullRequest pullRequest, Long reviewId){
+
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
+
+        String createReviewUrl  = pullRequest.getUrl() + "/reviews/"+ reviewId + "/" + "dismissals";
+        String body =  "{\"message\":\"canceling the pending approval\"}";
+
+        try {
+            httpClient.makePUTRequest(createReviewUrl, body, username, password);
+        } catch (IOException e) {
+            logger.error("could not connect to github vcs service");
+        }
+    }
+
+    @Override
+    public void approvePullRequest(PullRequest pullRequest) throws IOException{
+        approveOrRejectPullRequest(pullRequest, true);
+    }
+
+    @Override
+    public void rejectPullRequest(PullRequest pullRequest) throws IOException{
+        approveOrRejectPullRequest(pullRequest, false);
+    }
+
+    private void approveOrRejectPullRequest(PullRequest pullRequest, Boolean isApproval) throws IOException {
+
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
+
+        String reviewUrl = pullRequest.getUrl() + "/reviews";
+        String response = httpClient.makeGETRequestAndGetStringResponse(reviewUrl, username, password);
+        Type type = new TypeToken<ArrayList<GithubPRReview>>() {}.getType();
+        List<GithubPRReview> reviews = gson.fromJson(response, type);
+
+        Optional<GithubPRReview> activeReviewOption = reviews.stream().filter(review ->
+                review.getUserName() == getCurrentUser() && !review.isApproved()).findFirst();
+
+        /**
+         * Old 		new 		Action
+         * =====================================
+         * Approved	Rejected	Create new -> not changed
+         * Approved	Approved	No change
+         * Rejected	Rejected	No change
+         * Rejected	Approved	Dismiss ; create new
+         *
+         * New      - Create new
+         */
+        if(!activeReviewOption.isPresent() ){
+            startNewReview(pullRequest, isApproval);
+        }else if( ! activeReviewOption.get().isApproved() && isApproval) {
+            // old value is reject and new is approval
+            dismissChangesRequested(pullRequest, activeReviewOption.get().getId());
+            startNewReview(pullRequest, isApproval);
+        }else {
+            // was rejected earlier and is still in reject state; no change
+        }
+    }
+
+    private String getCurrentUser(){
+        if(currentUserName == null) {
+            UserService userService = new UserService();
+            setCredentials(userService);
+
+            try {
+                currentUserName = userService.getUser().getLogin();
+            } catch (IOException exception) {
+                logger.error("failed to get user info");
+            }
+        }
+        return currentUserName;
+    }
+
+    private void setCredentials(GitHubService gitHubService) {
+        String username = System.getenv("GITHUB_USERNAME");
+        String password = System.getenv("GITHUB_PASSWORD");
+
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+            logger.error("github credentials not found, please fulfill the credentials to use this api");
+            throw new NotFoundException("Please fulfill the Github credentials to use this api");
+        }
+
+        gitHubService.getClient().setCredentials(username, password);
+    }
+
 }
