@@ -10,7 +10,7 @@
         </div>
       </nb-action>
       <nb-action>
-        <nb-select size="small" placeholder="Pages" [(selected)]="currentNav" (selectedChange)="navToPageWithURL()">
+        <nb-select size="small" placeholder="Navigation" [(selected)]="currentNav" (selectedChange)="navToPageWithURL()">
           <nb-option-group *ngFor="let nav of newNav" title="{{nav.groupName}}">
             <nb-option #cluster *ngFor="let page of nav.pages" value="{{page.url}}" size="small">
               {{page.title}}
@@ -41,7 +41,8 @@
           </nb-option-group>
         </nb-select>
       </nb-action>
-      <nb-action icon="settings-2-outline" disabled nbTooltip="Team and User Management" nbTooltipStatus="primary">
+      <nb-action icon="settings-2-outline" [nbContextMenu]="settingsItems" nbContextMenuTrigger="hover">
+
       </nb-action>
       <nb-action>
         <nb-user [name]=user?.attributes?.name [picture]="user?.attributes?.picture" [showTitle]="false"

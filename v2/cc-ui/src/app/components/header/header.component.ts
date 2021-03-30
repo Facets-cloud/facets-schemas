@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit {
   ];
   settingsItems: any = [
     // {title: 'Manage Users', disabled: true},
-    // {title: 'Manage Teams'},
+     {title: 'Manage Teams', url: '/capc/teams'},
   ];
   stackClusters = {};
   newNav = [];

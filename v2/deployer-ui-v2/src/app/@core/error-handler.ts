@@ -10,6 +10,10 @@ export class GlobalErrorHandler implements ErrorHandler {
         if (error instanceof HttpErrorResponse) {
           if ((<HttpErrorResponse> error).status === 401) {
             // this.document.location.href = '/login';
+             let blacklistUrl = window.location.pathname;
+                    if(blacklistUrl == '/pages/signin'){
+                      return;
+                    }
             this.document.location.href = '/pages/signin';
           }
         }
