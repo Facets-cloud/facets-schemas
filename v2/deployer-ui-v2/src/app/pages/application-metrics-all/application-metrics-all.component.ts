@@ -86,11 +86,6 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    // this.activatedRoute.paramMap.subscribe(
-    //   paramMap => {
-    //     this.applicationFamily = <'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>paramMap.get('appFamily');
-    //   });
-
     this.populateAppFamilies();
 
   }
@@ -109,6 +104,20 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
       });
   }
 
+  private sortKPI(direction: any, a: string, b: string) {
+    let aNumber: Number, bNumber: Number;
+    aNumber = Number.parseFloat(a);
+    bNumber = Number.parseFloat(b);
+
+    if (aNumber < bNumber) {
+      return -1 * direction;
+    }
+    if (aNumber > bNumber) {
+      return direction;
+    }
+    return 0;
+  }
+
   settings = {
     columns: {
       name: {
@@ -119,23 +128,28 @@ export class ApplicationMetricsAllComponent implements OnInit, OnChanges {
       buildFailures: {
         title: 'Build Failures',
         filter: false,
+        compareFunction: this.sortKPI,
       },
       codeSmells: {
         title: 'Critical Code smells',
         filter: false,
+        compareFunction: this.sortKPI,
       },
       unitTestCoverage: {
         title: 'UT coverage',
         filter: false,
+        compareFunction: this.sortKPI,
       },
       unitTests: {
         title: 'Unit Tests',
         filter: false,
+        compareFunction: this.sortKPI,
       },
       sonarUrl: {
         title: 'Sonar',
         filter: false,
         type : 'html',
+        nosort: true,
       },
     },
     noDataMessage: 'No projects to show',
