@@ -22,3 +22,20 @@ RUN apt-get install zip git -y
 COPY scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm
 RUN apt-get install -y python3 python3-pip
 RUN pip3 install requests bcrypt jsonmerge python-hcl2==2.0.0 boto3 pystache pyyaml
+
+# Install maven 3.3.9
+RUN wget --no-verbose -O /tmp/apache-maven-3.3.9-bin.tar.gz http://www-eu.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz && \
+    tar xzf /tmp/apache-maven-3.3.9-bin.tar.gz -C /opt/ && \
+    ln -s /opt/apache-maven-3.3.9 /opt/maven && \
+    ln -s /opt/maven/bin/mvn /usr/local/bin  && \
+    rm -f /tmp/apache-maven-3.3.9-bin.tar.gz
+RUN apt-get install -y openjdk-8-jdk 
+
+RUN apt-get update && \
+    apt-get install ca-certificates-java && \
+    apt-get clean && \
+    update-ca-certificates -f;
+
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+ENV MAVEN_HOME /opt/maven
+
