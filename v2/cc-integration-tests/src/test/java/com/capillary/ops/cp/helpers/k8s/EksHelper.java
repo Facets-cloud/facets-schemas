@@ -33,9 +33,6 @@ public class EksHelper implements K8sHelper {
     @Value("${stack.name}")
     private String STACK_NAME;
 
-    @Value("${cluster.id}")
-    private String CLUSTER_ID;
-
     @Autowired
     CommonUtils commonUtils;
 

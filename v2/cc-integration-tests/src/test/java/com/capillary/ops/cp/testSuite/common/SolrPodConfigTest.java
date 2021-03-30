@@ -37,9 +37,6 @@ public class SolrPodConfigTest {
     @Value("${stack.name}")
     private String STACK_NAME;
 
-    @Value("${cluster.id}")
-    private String CLUSTER_ID;
-
     @Test
     public void verifyPodSize() throws Exception {
         PodSize k8sPodSize = k8sTestUtils.getK8sPodSize("solr-intouch-0");

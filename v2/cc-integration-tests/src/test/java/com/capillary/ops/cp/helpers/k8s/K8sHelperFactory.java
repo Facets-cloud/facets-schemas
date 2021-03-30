@@ -15,7 +15,7 @@ public class K8sHelperFactory {
 
     public K8sConfig getK8sConfig(String cloudProvider) throws Exception {
         switch (cloudProvider) {
-            case "AWS":
+            case "tfaws":
                 return eksHelper.getK8sConfig();
             case "localcluster":
                 return localK8sHelper.getK8sConfig();
