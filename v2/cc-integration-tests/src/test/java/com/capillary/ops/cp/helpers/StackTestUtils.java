@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
-import springfox.documentation.spring.web.json.Json;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -15,7 +14,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 @Component
-@TestPropertySource(locations="classpath:test.properties")
+@TestPropertySource(locations = "classpath:test.properties")
 public class StackTestUtils {
 
     @Value("${stack.name}")
@@ -36,8 +35,8 @@ public class StackTestUtils {
 
     public JsonObject getInstanceSizing(String moduleName, String instanceName) throws Exception {
         JsonObject instance = getInstance(moduleName, instanceName);
-        String instanceSize = instance.getAsJsonObject("size").toString();
-        String instanceSizeStrategy = instance.getAsJsonObject("resourceAllocationStrategy").toString();
+        String instanceSize = instance.get("size").getAsString();
+        String instanceSizeStrategy = instance.get("resourceAllocationStrategy") == null ? null : instance.get("resourceAllocationStrategy").getAsString();
 
         String sizingMetaPath = "";
         if (instanceSizeStrategy == null || instanceSizeStrategy.isEmpty()) {
@@ -52,13 +51,13 @@ public class StackTestUtils {
     public HashMap getStackVars() throws Exception {
         String stackDefinitionFile = STACK_ROOT + STACK_NAME + "/stack.json";
         JsonObject stackVarsObject = readFile(stackDefinitionFile).getAsJsonObject("stackVariables");
-        return new Gson().fromJson(stackVarsObject.toString(),HashMap.class);
+        return new Gson().fromJson(stackVarsObject.toString(), HashMap.class);
     }
 
     public Set getClusterVars() throws Exception {
         String stackDefinitionFile = STACK_ROOT + STACK_NAME + "/stack.json";
         JsonObject clusterVarsObject = readFile(stackDefinitionFile).getAsJsonObject("clusterVariablesMeta");
-        return new Gson().fromJson(clusterVarsObject.toString(),HashMap.class).keySet();
+        return new Gson().fromJson(clusterVarsObject.toString(), HashMap.class).keySet();
     }
 
     public HashMap getInstanceEnvVariables(String moduleName, String instanceName) throws Exception {
@@ -66,8 +65,8 @@ public class StackTestUtils {
         JsonObject instance = getInstance(moduleName, instanceName);
         JsonObject staticVars = instance.getAsJsonObject("environmentVariables").getAsJsonObject("static");
         JsonObject dynamicVars = instance.getAsJsonObject("environmentVariables").getAsJsonObject("static");
-        envMap.putAll(new Gson().fromJson(staticVars.toString(),HashMap.class));
-        envMap.putAll(new Gson().fromJson(dynamicVars.toString(),HashMap.class));
+        envMap.putAll(new Gson().fromJson(staticVars.toString(), HashMap.class));
+        envMap.putAll(new Gson().fromJson(dynamicVars.toString(), HashMap.class));
         return envMap;
     }
 

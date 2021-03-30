@@ -1,6 +1,0 @@
-ccTestStack:
-  app1:
-    name: demo-backend
-crm-nightly-new:
-  app1:
-    name: intouch-api

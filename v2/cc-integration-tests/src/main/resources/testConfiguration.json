@@ -1,0 +1,10 @@
+{
+  "ccTestStack": {
+    "primaryAppName": "demo-backend",
+    "secondaryAppName": "demo-frontend"
+  },
+  "crm-nightly-new": {
+    "primaryAppName": "intouch-api",
+    "secondaryAppName": "reon-meta-api"
+  }
+}

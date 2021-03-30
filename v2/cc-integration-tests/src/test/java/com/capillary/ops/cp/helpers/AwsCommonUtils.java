@@ -1,7 +1,6 @@
 package com.capillary.ops.cp.helpers;
 
 import com.capillary.ops.cp.exceptions.ClusterDetailsNotFound;
-import com.google.gson.JsonArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -13,9 +12,7 @@ import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider
 import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AwsCommonUtils {

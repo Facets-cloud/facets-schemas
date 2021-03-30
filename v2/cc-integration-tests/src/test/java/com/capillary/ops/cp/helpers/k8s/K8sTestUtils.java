@@ -4,6 +4,7 @@ import com.capillary.ops.cp.bo.K8sConfig;
 import com.capillary.ops.cp.bo.PodSize;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -87,11 +88,19 @@ public class K8sTestUtils {
         return Double.parseDouble(k8sMemoryString);
     }
 
-    public List<Ingress> getK8sIngressRules(String appName) throws Exception{
+    public List<Ingress> getK8sIngressRules(String appName) throws Exception {
         return getKubernetesClient().extensions().ingresses()
                 .list().getItems()
                 .stream()
                 .filter(p -> p.getMetadata().getName().contains(appName))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Service> getK8sService(String name) throws Exception{
+        return getKubernetesClient().services()
+                .list().getItems()
+                .stream()
+                .filter(p -> p.getMetadata().getName().contains(name))
+                .findFirst();
     }
 }

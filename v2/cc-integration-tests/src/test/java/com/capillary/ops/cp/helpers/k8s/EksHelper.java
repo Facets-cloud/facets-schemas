@@ -8,40 +8,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
-
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.signer.Aws4Signer;
 import software.amazon.awssdk.auth.signer.params.Aws4PresignerParams;
 import software.amazon.awssdk.http.SdkHttpFullRequest;
 import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.eks.*;
+import software.amazon.awssdk.services.eks.EksClient;
 import software.amazon.awssdk.services.eks.model.Cluster;
 import software.amazon.awssdk.services.eks.model.DescribeClusterRequest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Clock;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.util.Base64;
 import java.util.Date;
 
 @Component
-@TestPropertySource(locations="classpath:test.properties")
+@TestPropertySource(locations = "classpath:test.properties")
 public class EksHelper implements K8sHelper {
-
-    @Value("${stack.name}")
-    private String STACK_NAME;
 
     @Autowired
     CommonUtils commonUtils;
-
     @Autowired
     AwsCommonUtils awsCommonUtils;
+    @Value("${stack.name}")
+    private String STACK_NAME;
 
     @Override
     public K8sConfig getK8sConfig() throws Exception {
-        JsonObject deploymentContextJson =  commonUtils.getDeploymentContext();
+        JsonObject deploymentContextJson = commonUtils.getDeploymentContext();
         JsonObject cluster = deploymentContextJson.getAsJsonObject("cluster");
         K8sConfig k8sConfig = new K8sConfig();
 
@@ -62,7 +59,7 @@ public class EksHelper implements K8sHelper {
 
         Cluster eksCluster = eksClient.describeCluster(request).cluster();
         k8sConfig.setKubernetesApiEndpoint(eksCluster.endpoint());
-        k8sConfig.setKubernetesToken(getAuthenticationToken(awsCommonUtils.getSTSCredentialsProvider(),Region.of(commonUtils.getAwsRegion()),k8sClusterName));
+        k8sConfig.setKubernetesToken(getAuthenticationToken(awsCommonUtils.getSTSCredentialsProvider(), Region.of(commonUtils.getAwsRegion()), k8sClusterName));
 
         return k8sConfig;
     }
@@ -84,7 +81,7 @@ public class EksHelper implements K8sHelper {
                     .signingRegion(awsRegion)
                     .signingName("sts")
                     .signingClockOverride(Clock.systemUTC())
-                    .expirationTime(new Date(one.getTime() + 120000).toInstant())
+                    .expirationTime(new Date(one.getTime() + 300000).toInstant())
                     .build();
 
             SdkHttpFullRequest signedRequest = Aws4Signer.create().presign(requestToSign, presignerParams);
