@@ -64,7 +64,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .headers()
             .frameOptions()
             .sameOrigin();
-    FormLoginConfigurer<HttpSecurity> jsessionid = http
+    http
             .authorizeRequests()
             .antMatchers("/cc/**")
             .access("@internalRequestAccessController.authenticate(request)")
@@ -89,32 +89,16 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/**", "/capillarycloud/api/**", "/cc-ui/**", "/tunnel/**")
             .authenticated()
             .and()
-            .authorizeRequests()
-            .antMatchers("/login*", "/pages/signin").permitAll()
-            .antMatchers("/resources/static/**").permitAll()
-            .antMatchers("/*.js").permitAll()
-            .antMatchers("/v2/api-docs").permitAll()
-            .antMatchers("/*.css").permitAll()
-            .anyRequest().authenticated()
-            .and()
             .formLogin()
             .loginProcessingUrl("/perform_login")
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
-            if (isFacetsOnly) {
-              jsessionid = jsessionid.defaultSuccessUrl("/capc/home");
-            }
-    OAuth2LoginConfigurer<HttpSecurity> jsessionid1 = jsessionid.and()
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
+            .and()
             .logout()
             .logoutUrl("/perform_logout")
             .deleteCookies("JSESSIONID")
             .and()
             .oauth2Login()
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
-
-      if (isFacetsOnly) {
-          jsessionid1 = jsessionid1.defaultSuccessUrl("/capc/home");
-      }
-    jsessionid1
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
             .userInfoEndpoint()
             .userService(oAuth2UserService)
             .and()
