@@ -7,6 +7,7 @@ import com.capillary.ops.cp.bo.notifications.ChannelType;
 import com.capillary.ops.cp.bo.notifications.NotificationType;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
+import com.capillary.ops.cp.bo.user.Role;
 import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.ClusterHelper;
 import com.capillary.ops.deployer.bo.User;
@@ -174,6 +175,7 @@ public class MockCCDataBootstrap {
         List<String> roles = new ArrayList<>();
         roles.add("CRM_WRITE");
         roles.add("CC-ADMIN");
+        roles.add(Role.K8S_READER.getId());
         user.setRoles(roles);
         userRepository.save(user);
 
