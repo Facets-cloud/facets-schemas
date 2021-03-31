@@ -19,7 +19,7 @@ export class LoginPageComponent implements OnInit {
   }
 
   googleLogin() {
-    window.location.href = '/oauth2/authorization/google';
+    window.location.href = '/oauth2/authorization/google?state='+window.location.href;
   }
 
   formLogin() {

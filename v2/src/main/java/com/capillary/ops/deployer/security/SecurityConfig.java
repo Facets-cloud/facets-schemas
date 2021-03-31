@@ -16,7 +16,11 @@ import org.springframework.security.config.annotation.web.configurers.FormLoginC
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.ForwardAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.GenericFilter;
@@ -43,6 +47,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private BasicUserDetailsService basicUserDetailsService;
+
 
   @Value("${facets_only:false}")
   private Boolean isFacetsOnly;
@@ -87,28 +92,33 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/api/**", "/capillarycloud/api/**", "/cc-ui/**", "/tunnel/**")
-            .authenticated()
-            .and()
-            .formLogin()
-            .loginProcessingUrl("/perform_login")
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
-            .and()
-            .logout()
-            .logoutUrl("/perform_logout")
-            .deleteCookies("JSESSIONID")
-            .and()
-            .oauth2Login()
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
-            .userInfoEndpoint()
-            .userService(oAuth2UserService)
-            .and()
-            .and()
-            .csrf().disable()
-            .exceptionHandling()
-            .authenticationEntryPoint(
-                    (a,b,c) -> b.sendError(HttpServletResponse.SC_UNAUTHORIZED)
-            )
-            .and()
-            .cors();
+            .authenticated();
+
+      http.formLogin()
+              .loginProcessingUrl("/perform_login")
+              .successHandler(new SimpleUrlAuthenticationSuccessHandler())
+              .failureHandler(new SimpleUrlAuthenticationFailureHandler());
+
+
+    String defaultSuccessUrl = "/";
+    if (isFacetsOnly) {
+      defaultSuccessUrl = "/capc";
+    }
+    http.oauth2Login()
+              .defaultSuccessUrl(defaultSuccessUrl)
+              .userInfoEndpoint()
+              .userService(oAuth2UserService);
+
+      http.csrf().disable()
+              .exceptionHandling()
+              .authenticationEntryPoint(
+                      (a, b, c) -> b.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+              )
+              .and()
+              .cors();
+
+      http.logout()
+              .logoutUrl("/perform_logout")
+              .deleteCookies("JSESSIONID");
   }
 }

@@ -16,7 +16,9 @@ public class UserFacade {
 
     public User createUser(User user) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        if(user.getPassword() !=null) {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
         return userRepository.save(user);
     }
 

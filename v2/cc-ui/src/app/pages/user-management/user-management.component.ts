@@ -53,6 +53,7 @@ export class UserManagementComponent implements OnInit {
     },
     mode: "external",
     actions: {
+      add: false,
       position: 'right',
       delete: false,
       custom: [{name: 'Edit', title: '<i class="eva-edit-2-outline eva"></i>', type: 'html'}]
