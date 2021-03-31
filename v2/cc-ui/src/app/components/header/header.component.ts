@@ -36,6 +36,7 @@ export class HeaderComponent implements OnInit {
   stackClusters = {};
   newNav = [];
   private stackName: string;
+  userName: any;
 
 
   constructor(private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
@@ -61,10 +62,6 @@ export class HeaderComponent implements OnInit {
       {
         groupName: "Cluster Pages",
         pages: [
-          {
-            title: "Create Cluster",
-            url: this.BASE_URL + this.stackName + "/clusterCreate",
-          },
           {
             title: "Overview",
             url: this.BASE_URL + this.currentClusterURL + "/overview",
@@ -114,6 +111,7 @@ export class HeaderComponent implements OnInit {
     this.applicationControllerService.meUsingGET().subscribe(
       (x: SimpleOauth2User) => {
         this.user = x;
+        this.userName = x?.attributes["name"] || x?.name;
       }
     );
     this.uiStackControllerService.getStacksUsingGET1().subscribe(
