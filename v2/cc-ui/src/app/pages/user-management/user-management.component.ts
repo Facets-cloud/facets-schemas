@@ -29,6 +29,9 @@ export class UserManagementComponent implements OnInit {
         title: 'Roles',
         filter: false,
         type: 'List',
+        valuePrepareFunction: (cell) => {
+         return cell.map(c=>this.roles.filter(r=>r.id==c)[0].label)
+        }
       },
       password: {
         title: 'User Type',
