@@ -1,0 +1,52 @@
+<app-layout-one-column>
+  <nb-card>
+    <nb-card-header>Users</nb-card-header>
+    <nb-card-body>
+      <ng2-smart-table class="cc-no-standard" [settings]="tableSettings" [source]="users"
+                       (create)="openCreatePopup(createUser)" (custom)="openEditPopup(createUser, $event)"></ng2-smart-table>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>
+
+<ng-template #createUser let-data let-ref="dialogRef">
+  <nb-card size="large" >
+    <nb-card-header>
+      Create User
+    </nb-card-header>
+    <nb-card-body>
+      <form>
+        <div class="form-group">
+          <label for="email" class="sr-only-2" >Username*</label>
+          <input nbInput type="email" name="userName" id="email" class="form-control" placeholder="Email address"
+                 required [(ngModel)]="userEdited.userName" >
+        </div>
+        <div class="form-group">
+          <label class="sr-only-2" for="base-role">Base Role*</label>
+          <nb-select placeholder="Select Base Role" [(ngModel)]="userEdited.baseRole" name="roles">
+            <nb-option *ngFor="let role of this.baseRoles" id= "base-role" value="{{role.id}}">{{role.label}}</nb-option>
+          </nb-select>
+        </div>
+        <div class="form-group">
+          <label class="sr-only-2" for="addn-role"  >Additional Roles</label>
+          <nb-select placeholder="Select Additional Roles" multiple [(selected)]="userEdited.additionalRoles"
+                     [(ngModel)]="userEdited.additionalRoles" name="addnlRoles">
+            <nb-option *ngFor="let role of this.additionalRoles" value="{{role.id}}" id="addn-role">{{role.label}}</nb-option>
+          </nb-select>
+        </div>
+        <div class="form-group">
+          <label for="password" class="sr-only-2" >Password</label>
+          <input nbInput type="password" name="password" id="password" class="form-control"
+                 placeholder="***********" required [(ngModel)]="userEdited.password">
+        </div>
+        <div class="form-group">
+          <p style="color: red">{{this.errorMsg}}</p>
+        </div>
+      </form>
+    </nb-card-body>
+    <nb-card-footer>
+      <button class=" cc-margin-right" nbButton status="primary" (click)='submitForm(data["edit"], ref)'>Proceed
+      </button>
+      <button class=" cc-margin-right" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

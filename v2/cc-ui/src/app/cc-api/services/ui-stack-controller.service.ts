@@ -29,6 +29,7 @@ class UiStackControllerService extends __BaseService {
   static readonly getAllClusterTasksUsingGETPath = '/cc-ui/v1/stacks/clusterTask/{stackName}';
   static readonly createSubStackUsingPOSTPath = '/cc-ui/v1/stacks/substack/{substackName}';
   static readonly getStackUsingGETPath = '/cc-ui/v1/stacks/{stackName}';
+  static readonly updateStackUsingPUT1Path = '/cc-ui/v1/stacks/{stackName}';
   static readonly getClustersUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/clusters';
   static readonly getLocalDeploymentContextUsingGETPath = '/cc-ui/v1/stacks/{stackName}/localDeploymentContext';
   static readonly getAllSubscriptionsUsingGETPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
@@ -277,6 +278,55 @@ class UiStackControllerService extends __BaseService {
    */
   getStackUsingGET(stackName: string): __Observable<Stack> {
     return this.getStackUsingGETResponse(stackName).pipe(
+      __map(_r => _r.body as Stack)
+    );
+  }
+
+  /**
+   * updateStack
+   * @param params The `UiStackControllerService.UpdateStackUsingPUT1Params` containing the following parameters:
+   *
+   * - `stackName`: stackName
+   *
+   * - `stack`: stack
+   *
+   * @return OK
+   */
+  updateStackUsingPUT1Response(params: UiStackControllerService.UpdateStackUsingPUT1Params): __Observable<__StrictHttpResponse<Stack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.stack;
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/cc-ui/v1/stacks/${encodeURIComponent(params.stackName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Stack>;
+      })
+    );
+  }
+  /**
+   * updateStack
+   * @param params The `UiStackControllerService.UpdateStackUsingPUT1Params` containing the following parameters:
+   *
+   * - `stackName`: stackName
+   *
+   * - `stack`: stack
+   *
+   * @return OK
+   */
+  updateStackUsingPUT1(params: UiStackControllerService.UpdateStackUsingPUT1Params): __Observable<Stack> {
+    return this.updateStackUsingPUT1Response(params).pipe(
       __map(_r => _r.body as Stack)
     );
   }
@@ -635,6 +685,22 @@ module UiStackControllerService {
      * subStack
      */
     subStack: Substack;
+  }
+
+  /**
+   * Parameters for updateStackUsingPUT1
+   */
+  export interface UpdateStackUsingPUT1Params {
+
+    /**
+     * stackName
+     */
+    stackName: string;
+
+    /**
+     * stack
+     */
+    stack: Stack;
   }
 
   /**

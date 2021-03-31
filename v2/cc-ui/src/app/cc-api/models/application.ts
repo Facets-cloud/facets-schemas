@@ -21,6 +21,7 @@ export interface Application {
   newRelicAlertRecipients?: string;
   ports?: Array<Port>;
   pvcList?: Array<PVC>;
+  repositoryDefaultBranch?: string;
   repositoryUrl?: string;
   resourceAllocationStrategy?: 'GENERAL_PURPOSE' | 'CPU_INTENSIVE';
   statusCallbackUrl?: string;

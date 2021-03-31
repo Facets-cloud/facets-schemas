@@ -1,11 +1,12 @@
 package com.capillary.ops.deployer.bo;
 
+import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 public class User {
 
     @Id
@@ -16,12 +17,18 @@ public class User {
 
     private String password;
 
-    private List<String> roles;
+    private String picture;
+
+    private List<String> roles = new ArrayList<>();
 
     private Set<String> teams;
 
     public String getId() {
         return id;
+    }
+
+    public String getPicture() {
+        return picture;
     }
 
     public void setId(String id) {
@@ -30,6 +37,10 @@ public class User {
 
     public String getUserName() {
         return userName;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public void setUserName(String userName) {

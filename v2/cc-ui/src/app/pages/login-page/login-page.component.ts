@@ -35,6 +35,10 @@ export class LoginPageComponent implements OnInit {
         window.location.href = '/capc/home'
       },
       (err) => {
+        if(err.status == 404){
+          window.location.href = '/capc/home'
+          return;
+        }
         console.log(err);
         this.errorMsg = "Invalid credentials"
       })

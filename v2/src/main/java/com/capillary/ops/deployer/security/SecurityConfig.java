@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,7 +64,7 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .headers()
             .frameOptions()
             .sameOrigin();
-    OAuth2LoginConfigurer<HttpSecurity> jsessionid = http
+    FormLoginConfigurer<HttpSecurity> jsessionid = http
             .authorizeRequests()
             .antMatchers("/cc/**")
             .access("@internalRequestAccessController.authenticate(request)")
@@ -92,16 +93,17 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .antMatchers("/login*", "/pages/signin").permitAll()
             .antMatchers("/resources/static/**").permitAll()
             .antMatchers("/*.js").permitAll()
+            .antMatchers("/v2/api-docs").permitAll()
             .antMatchers("/*.css").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin()
-            .loginPage("/pages/signin")
-            .failureHandler(new ForwardAuthenticationFailureHandler("/pages/signin"))
-            .failureForwardUrl("/pages/signin")
             .loginProcessingUrl("/perform_login")
-            .successHandler(new RefererRedirectionAuthenticationSuccessHandler())
-            .and()
+            .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
+            if (isFacetsOnly) {
+              jsessionid = jsessionid.defaultSuccessUrl("/capc/home");
+            }
+    OAuth2LoginConfigurer<HttpSecurity> jsessionid1 = jsessionid.and()
             .logout()
             .logoutUrl("/perform_logout")
             .deleteCookies("JSESSIONID")
@@ -110,9 +112,9 @@ public class SecurityConfig  extends WebSecurityConfigurerAdapter {
             .successHandler(new RefererRedirectionAuthenticationSuccessHandler());
 
       if (isFacetsOnly) {
-          jsessionid = jsessionid.defaultSuccessUrl("/capc/home");
+          jsessionid1 = jsessionid1.defaultSuccessUrl("/capc/home");
       }
-    jsessionid
+    jsessionid1
             .userInfoEndpoint()
             .userService(oAuth2UserService)
             .and()

@@ -7,6 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
+import { Response } from '../models/response';
 import { K8sCredentials } from '../models/k8s-credentials';
 import { SnapshotInfo } from '../models/snapshot-info';
 import { OverrideObject } from '../models/override-object';
@@ -19,6 +20,7 @@ import { OverrideRequest } from '../models/override-request';
   providedIn: 'root',
 })
 class CommonClusterControllerService extends __BaseService {
+  static readonly notifyAlertsUsingPOSTPath = '/cc/v1/clusters/{clusterId}/alerts';
   static readonly addClusterK8sCredentialsUsingPOSTPath = '/cc/v1/clusters/{clusterId}/credentials';
   static readonly listSnapshotsUsingGETPath = '/cc/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}';
   static readonly getPinnedSnapshotUsingGETPath = '/cc/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
@@ -31,6 +33,55 @@ class CommonClusterControllerService extends __BaseService {
     http: HttpClient
   ) {
     super(config, http);
+  }
+
+  /**
+   * notifyAlerts
+   * @param params The `CommonClusterControllerService.NotifyAlertsUsingPOSTParams` containing the following parameters:
+   *
+   * - `clusterId`: clusterId
+   *
+   * - `alerts`: alerts
+   *
+   * @return OK
+   */
+  notifyAlertsUsingPOSTResponse(params: CommonClusterControllerService.NotifyAlertsUsingPOSTParams): __Observable<__StrictHttpResponse<boolean>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.alerts;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/alerts`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return (_r as HttpResponse<any>).clone({ body: (_r as HttpResponse<any>).body === 'true' }) as __StrictHttpResponse<boolean>
+      })
+    );
+  }
+  /**
+   * notifyAlerts
+   * @param params The `CommonClusterControllerService.NotifyAlertsUsingPOSTParams` containing the following parameters:
+   *
+   * - `clusterId`: clusterId
+   *
+   * - `alerts`: alerts
+   *
+   * @return OK
+   */
+  notifyAlertsUsingPOST(params: CommonClusterControllerService.NotifyAlertsUsingPOSTParams): __Observable<boolean> {
+    return this.notifyAlertsUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as boolean)
+    );
   }
 
   /**
@@ -338,6 +389,22 @@ class CommonClusterControllerService extends __BaseService {
 }
 
 module CommonClusterControllerService {
+
+  /**
+   * Parameters for notifyAlertsUsingPOST
+   */
+  export interface NotifyAlertsUsingPOSTParams {
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+
+    /**
+     * alerts
+     */
+    alerts: Response;
+  }
 
   /**
    * Parameters for addClusterK8sCredentialsUsingPOST

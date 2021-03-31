@@ -1,17 +1,20 @@
 /* tslint:disable */
-export interface AbstractCluster {
+import { TimeZone } from './time-zone';
+export interface AzureClusterRequest {
   autoSignOffSchedule?: string;
   cdPipelineParent?: string;
+  clientId?: string;
+  clientSecret?: string;
   cloud?: 'AWS' | 'AZURE';
-  commonEnvironmentVariables?: {[key: string]: string};
+  clusterName?: string;
+  clusterVars?: {[key: string]: string};
   enableAutoSignOff?: boolean;
-  id?: string;
   k8sRequestsToLimitsRatio?: number;
-  name?: string;
   releaseStream?: 'QA' | 'STAGING' | 'PROD';
   requireSignOff?: boolean;
   schedules?: {[key: string]: string};
-  secrets?: {[key: string]: string};
   stackName?: string;
-  tz?: string;
+  subscriptionId?: string;
+  tenantId?: string;
+  tz?: TimeZone;
 }

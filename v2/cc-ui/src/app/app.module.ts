@@ -26,6 +26,7 @@ import {ClusterTunnelModule} from "./pages/cluster-pages/cluster-tunnel/cluster-
 import { TeamsOverviewModule } from './pages/teams-overview/teams-overview.module';
 import { TeamManagementModule } from './pages/team-management/team-management.module';
 import {LoginPageModule} from "./pages/login-page/login-page.module";
+import {UserManagementModule} from "./pages/user-management/user-management.module";
 
 
 @NgModule({
@@ -62,7 +63,8 @@ import {LoginPageModule} from "./pages/login-page/login-page.module";
     TeamsOverviewModule,
     TeamManagementModule,
     NbMenuModule.forRoot(),
-    LoginPageModule
+    LoginPageModule,
+    UserManagementModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},

@@ -7,12 +7,15 @@ import { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.serv
 import { OperationHandlerService } from './services/operation-handler.service';
 import { ApplicationControllerService } from './services/application-controller.service';
 import { CallbackControllerService } from './services/callback-controller.service';
+import { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
 import { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
 import { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 import { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 import { UiStackControllerService } from './services/ui-stack-controller.service';
 import { UiTeamControllerService } from './services/ui-team-controller.service';
+import { UiUserControllerService } from './services/ui-user-controller.service';
+import { ArtifactoryControllerService } from './services/artifactory-controller.service';
 import { ArtifactControllerService } from './services/artifact-controller.service';
 import { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 import { BuildControllerService } from './services/build-controller.service';
@@ -39,12 +42,15 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     OperationHandlerService,
     ApplicationControllerService,
     CallbackControllerService,
+    UiArtifactoryControllerService,
     UiAwsClusterControllerService,
     MockCallBackControllerService,
     UiCommonClusterControllerService,
     UiDeploymentControllerService,
     UiStackControllerService,
     UiTeamControllerService,
+    UiUserControllerService,
+    ArtifactoryControllerService,
     ArtifactControllerService,
     AwsClusterControllerService,
     BuildControllerService,

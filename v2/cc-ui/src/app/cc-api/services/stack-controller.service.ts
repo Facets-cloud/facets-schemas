@@ -28,6 +28,7 @@ class StackControllerService extends __BaseService {
   static readonly getSubstacksUsingGETPath = '/cc/v1/stacks/substack';
   static readonly getSubstackUsingGETPath = '/cc/v1/stacks/substack/{substackName}';
   static readonly createSubstackUsingPOSTPath = '/cc/v1/stacks/substack/{substackName}';
+  static readonly updateStackUsingPUTPath = '/cc/v1/stacks/{stackName}';
   static readonly getClustersUsingGETPath = '/cc/v1/stacks/{stackName}/clusters';
   static readonly reloadStackUsingGETPath = '/cc/v1/stacks/{stackName}/reload';
   static readonly toggleReleaseUsingPOSTPath = '/cc/v1/stacks/{stackName}/toggleRelease';
@@ -325,6 +326,55 @@ class StackControllerService extends __BaseService {
   }
 
   /**
+   * updateStack
+   * @param params The `StackControllerService.UpdateStackUsingPUTParams` containing the following parameters:
+   *
+   * - `stackName`: stackName
+   *
+   * - `stack`: stack
+   *
+   * @return OK
+   */
+  updateStackUsingPUTResponse(params: StackControllerService.UpdateStackUsingPUTParams): __Observable<__StrictHttpResponse<Stack>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.stack;
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/cc/v1/stacks/${encodeURIComponent(params.stackName)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<Stack>;
+      })
+    );
+  }
+  /**
+   * updateStack
+   * @param params The `StackControllerService.UpdateStackUsingPUTParams` containing the following parameters:
+   *
+   * - `stackName`: stackName
+   *
+   * - `stack`: stack
+   *
+   * @return OK
+   */
+  updateStackUsingPUT(params: StackControllerService.UpdateStackUsingPUTParams): __Observable<Stack> {
+    return this.updateStackUsingPUTResponse(params).pipe(
+      __map(_r => _r.body as Stack)
+    );
+  }
+
+  /**
    * getClusters
    * @param stackName stackName
    * @return OK
@@ -482,6 +532,22 @@ module StackControllerService {
      * subStack
      */
     subStack: Substack;
+  }
+
+  /**
+   * Parameters for updateStackUsingPUT
+   */
+  export interface UpdateStackUsingPUTParams {
+
+    /**
+     * stackName
+     */
+    stackName: string;
+
+    /**
+     * stack
+     */
+    stack: Stack;
   }
 
   /**

@@ -20,6 +20,7 @@ import {ClusterTunnelComponent} from "./pages/cluster-pages/cluster-tunnel/clust
 import {TeamsOverviewComponent} from './pages/teams-overview/teams-overview.component';
 import {TeamManagementComponent} from './pages/team-management/team-management.component';
 import {LoginPageComponent} from "./pages/login-page/login-page.component";
+import {UserManagementComponent} from "./pages/user-management/user-management.component";
 
 
 const routes: Routes = [
@@ -31,6 +32,9 @@ const routes: Routes = [
   },
   {
     path: 'capc/createStack', component: StackCreateComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/users', component: UserManagementComponent, canActivate: [AuthGuard]
   },
   {
     path: 'capc/teams', component: TeamsOverviewComponent, canActivate: [AuthGuard]

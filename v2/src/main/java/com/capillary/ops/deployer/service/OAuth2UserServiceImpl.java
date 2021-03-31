@@ -1,5 +1,7 @@
 package com.capillary.ops.deployer.service;
 
+import com.capillary.ops.cp.bo.user.Role;
+import com.capillary.ops.deployer.bo.User;
 import com.capillary.ops.deployer.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -72,8 +74,22 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         try {
             com.capillary.ops.deployer.bo.User user = userRepository.findOneByUserName(username).get();
             grantedAuthorities.addAll(roles(user.getRoles()));
+            if(user.getPicture() == null && oAuth2User.getAttributes().get("picture") !=null){
+                user.setPicture(oAuth2User.getAttributes().get("picture").toString());
+                userRepository.save(user);
+            }
             return new SimpleOauth2User(grantedAuthorities, oAuth2User.getAttributes(), username);
         } catch (NoSuchElementException e) {
+            User user = new User();
+            user.setUserName(username);
+            if(user.getPicture() == null && oAuth2User.getAttributes().get("picture") !=null) {
+                user.setPicture(oAuth2User.getAttributes().get("picture").toString());
+            }
+            List<String> roles = new ArrayList<String>(){{
+                add(Role.GUEST.getId());
+            }};
+            user.setRoles(roles);
+            userRepository.save(user);
             return new SimpleOauth2User(grantedAuthorities, oAuth2User.getAttributes(), username);
         }
     }

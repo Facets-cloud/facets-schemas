@@ -3,6 +3,7 @@ import { VariableDetails } from './variable-details';
 export interface Substack {
   appPassword?: string;
   artifactPath?: string;
+  artifactories?: Array<string>;
   childStacks?: Array<string>;
   clusterVariablesMeta?: {[key: string]: VariableDetails};
   name?: string;

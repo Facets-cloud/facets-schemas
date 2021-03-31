@@ -1,7 +1,9 @@
 /* tslint:disable */
-export interface AbstractCluster {
+export interface AzureCluster {
   autoSignOffSchedule?: string;
   cdPipelineParent?: string;
+  clientId?: string;
+  clientSecret?: string;
   cloud?: 'AWS' | 'AZURE';
   commonEnvironmentVariables?: {[key: string]: string};
   enableAutoSignOff?: boolean;
@@ -13,5 +15,7 @@ export interface AbstractCluster {
   schedules?: {[key: string]: string};
   secrets?: {[key: string]: string};
   stackName?: string;
+  subscriptionId?: string;
+  tenantId?: string;
   tz?: string;
 }

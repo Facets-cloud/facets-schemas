@@ -49,6 +49,13 @@ class ApplicationControllerService extends __BaseService {
   static readonly createECRRegistryUsingPOSTPath = '/api/ecrRegistry';
   static readonly getEcrTokenUsingGETPath = '/api/getEcrLoginToken';
   static readonly getAllRegistriesUsingGETPath = '/api/getRegistries';
+  static readonly loginUsingGETPath = '/api/login';
+  static readonly loginUsingHEADPath = '/api/login';
+  static readonly loginUsingPOSTPath = '/api/login';
+  static readonly loginUsingPUTPath = '/api/login';
+  static readonly loginUsingDELETEPath = '/api/login';
+  static readonly loginUsingOPTIONSPath = '/api/login';
+  static readonly loginUsingPATCHPath = '/api/login';
   static readonly meUsingGETPath = '/api/me';
   static readonly globalStatsUsingGETPath = '/api/stats';
   static readonly getUsersUsingGETPath = '/api/users';
@@ -408,6 +415,251 @@ class ApplicationControllerService extends __BaseService {
   getAllRegistriesUsingGET(): __Observable<Array<Registry>> {
     return this.getAllRegistriesUsingGETResponse().pipe(
       __map(_r => _r.body as Array<Registry>)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingGETResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingGET(): __Observable<string> {
+    return this.loginUsingGETResponse().pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingHEADResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'HEAD',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingHEAD(): __Observable<string> {
+    return this.loginUsingHEADResponse().pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingPOSTResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingPOST(): __Observable<string> {
+    return this.loginUsingPOSTResponse().pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingPUTResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingPUT(): __Observable<string> {
+    return this.loginUsingPUTResponse().pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingDELETEResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingDELETE(): __Observable<string> {
+    return this.loginUsingDELETEResponse().pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingOPTIONSResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'OPTIONS',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingOPTIONS(): __Observable<string> {
+    return this.loginUsingOPTIONSResponse().pipe(
+      __map(_r => _r.body as string)
+    );
+  }
+
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingPATCHResponse(): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    let req = new HttpRequest<any>(
+      'PATCH',
+      this.rootUrl + `/api/login`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * login
+   * @return OK
+   */
+  loginUsingPATCH(): __Observable<string> {
+    return this.loginUsingPATCHResponse().pipe(
+      __map(_r => _r.body as string)
     );
   }
 
