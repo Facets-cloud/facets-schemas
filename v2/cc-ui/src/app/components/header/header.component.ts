@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
     {title: 'Log out'},
   ];
   settingsItems: any = [
-    // {title: 'Manage Users', disabled: true},
+     {title: 'Manage Users', url: '/capc/users'},
      {title: 'Manage Teams', url: '/capc/teams'},
   ];
   stackClusters = {};
