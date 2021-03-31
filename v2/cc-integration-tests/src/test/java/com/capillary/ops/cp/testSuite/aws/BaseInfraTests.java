@@ -4,6 +4,7 @@ import com.capillary.ops.cp.App;
 import com.capillary.ops.cp.helpers.AwsCommonUtils;
 
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.Assert;
@@ -33,7 +34,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-
+@Ignore
 @TestPropertySource(locations="classpath:test.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})

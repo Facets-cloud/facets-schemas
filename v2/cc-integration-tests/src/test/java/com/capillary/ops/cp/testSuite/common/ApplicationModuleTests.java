@@ -86,9 +86,9 @@ public class ApplicationModuleTests {
 
     @Test
     public void sidecarTest() throws Exception {
-        JsonObject sidecarJson = stackTestUtils.getInstance(moduleName, appName).getAsJsonObject("sidecarContainers");
+        JsonArray sidecarJson = stackTestUtils.getInstance(moduleName, appName).getAsJsonArray("sidecarContainers");
         int containerCount = 1;
-        if (sidecarJson.size() > 1) {
+        if (sidecarJson != null && sidecarJson.size() > 1) {
             containerCount = 2;
         }
         Assert.assertEquals(applicationPod.getSpec().getContainers().size(), containerCount);
@@ -96,7 +96,7 @@ public class ApplicationModuleTests {
 
     @Test
     public void ingresRuleTest() throws Exception {
-        JsonObject stackIngressRules = stackTestUtils.getInstance(moduleName, appName).getAsJsonObject("ingress_rules");
+        JsonArray stackIngressRules = stackTestUtils.getInstance(moduleName, appName).getAsJsonArray("ingress_rules");
         int k8sIngressRules = k8sTestUtils.getK8sIngressRules(appName).size();
         Assert.assertEquals(stackIngressRules.size(),k8sIngressRules);
     }
