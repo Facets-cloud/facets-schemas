@@ -58,7 +58,7 @@ export class UserManagementComponent implements OnInit {
       custom: [{name: 'Edit', title: '<i class="eva-edit-2-outline eva"></i>', type: 'html'}]
     },
   };
-  private errorMsg: string;
+  errorMsg: string;
 
   constructor(private usersController: UiUserControllerService, private dialogService: NbDialogService,
               private applicationController: ApplicationControllerService) {
