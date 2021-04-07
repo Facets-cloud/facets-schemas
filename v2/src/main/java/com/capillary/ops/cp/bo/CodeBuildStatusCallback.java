@@ -4,6 +4,14 @@ import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 public class CodeBuildStatusCallback {
 
+    public CodeBuildStatusCallback(String codebuidId, StatusType status) {
+        this.codebuidId = codebuidId;
+        this.status = status;
+    }
+
+    public CodeBuildStatusCallback() {
+    }
+
     private String codebuidId;
     private StatusType status;
 

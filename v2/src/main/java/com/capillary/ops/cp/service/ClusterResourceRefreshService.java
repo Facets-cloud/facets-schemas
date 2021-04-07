@@ -40,6 +40,15 @@ public class ClusterResourceRefreshService {
 
     private static final Logger logger = LoggerFactory.getLogger(ClusterResourceRefreshService.class);
 
+    public boolean isSaveClusterResourceDetailsDone(final String codeBuildId, final StatusType resourceRefreshStatus){
+        Optional<ClusterResourceDetails> refreshResourceJob = clusterResourceDetailsRepository.findByCodeBuildId(codeBuildId);
+        if(refreshResourceJob.isPresent()){
+            ClusterResourceDetails resourceJob = refreshResourceJob.get();
+            return !StatusType.IN_PROGRESS.equals(resourceJob.getStatus());
+        }
+        return false;
+    }
+
     public void saveClusterResourceDetails(final String codeBuildId, final StatusType resourceRefreshStatus) {
 
         Optional<ClusterResourceDetails> refreshResourceJob = clusterResourceDetailsRepository.findByCodeBuildId(codeBuildId);
@@ -68,7 +77,7 @@ public class ClusterResourceRefreshService {
         clusterResourceDetailsRepository.save(clusterResourceDetails);
     }
 
-    public List<ResourceDetails> getClusterResourceDetails(final String clusterId) {
+    public List<ResourceDetails> isSaveClusterResourceDetailsDone(final String clusterId) {
         Optional<ClusterResourceDetails> first = clusterResourceDetailsRepository.findFirstByClusterIdAndStatusOrderByIdDesc(clusterId, StatusType.SUCCEEDED);
 
         return first.orElseThrow(() -> new NotFoundException(String.format("cluster details for id %s not found", clusterId))).getResourceDetails();

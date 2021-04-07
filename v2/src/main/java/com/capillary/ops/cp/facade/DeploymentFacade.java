@@ -13,11 +13,9 @@ import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.exceptions.ProdReleaseDisabled;
 import com.capillary.ops.cp.exceptions.QACallbackAbsentException;
 import com.capillary.ops.cp.repository.*;
-import com.capillary.ops.cp.service.BaseDRService;
-import com.capillary.ops.cp.service.ClusterResourceRefreshService;
-import com.capillary.ops.cp.service.GitService;
-import com.capillary.ops.cp.service.TFBuildService;
+import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.notification.NotificationService;
+import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.capillary.ops.deployer.component.DeployerHttpClient;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.utils.DeployerUtil;
@@ -100,6 +98,9 @@ public class DeploymentFacade {
 
     @Autowired
     private ClusterTaskRepository clusterTaskRepository;
+
+    @Autowired
+    private AwsCodeBuildService awsCodeBuildService;
 
     private static final Logger logger = LoggerFactory.getLogger(DeploymentFacade.class);
 
@@ -567,6 +568,17 @@ public class DeploymentFacade {
         return tfBuildService.loadDeploymentStatus(deployment, true);
     }
 
+    public TokenPaginatedResponse getDeploymentLogs(String deploymentId, Optional<String> nextToken) {
+        DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
+        String codebuildId = deployment.getCodebuildId();
+        TokenPaginatedResponse buildLogs = awsCodeBuildService.getBuildLogs(deployment, nextToken);
+        if(buildLogs.getBuild().buildStatus().equals(StatusType.FAILED) || buildLogs.getBuild().buildStatus().equals(StatusType.SUCCEEDED)){
+            clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, buildLogs.getBuild().buildStatus());
+            handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, buildLogs.getBuild().buildStatus()));
+        }
+        return buildLogs;
+    }
+
     public DeploymentContext getDeploymentContext(String clusterId, DeploymentRequest deploymentRequest) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         List<String> artifactories = stackFacade.getStackByName(cluster.getStackName()).getArtifactories();
@@ -751,7 +763,7 @@ public class DeploymentFacade {
     }
 
     public List<ResourceDetails> getClusterResourceDetails(String clusterId) {
-        return clusterResourceRefreshService.getClusterResourceDetails(clusterId);
+        return clusterResourceRefreshService.isSaveClusterResourceDetailsDone(clusterId);
     }
 
     public DeploymentLog runHotfixDeploymentRecipe(String clusterId, HotfixDeploymentRecipe hotfixDeploymentRecipe){

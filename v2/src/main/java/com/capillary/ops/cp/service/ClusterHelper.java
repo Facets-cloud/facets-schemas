@@ -108,7 +108,7 @@ public class ClusterHelper {
         List<ResourceDetails> clusterResourceDetails;
         String pwd = "";
         try {
-            clusterResourceDetails = clusterResourceRefreshService.getClusterResourceDetails(cluster.getId());
+            clusterResourceDetails = clusterResourceRefreshService.isSaveClusterResourceDetailsDone(cluster.getId());
             Optional<ResourceDetails> resourceDetails = clusterResourceDetails.stream().filter((x) -> x.getName().equals(TOOLS_NAME_IN_RESOURCES) && x.getKey().equals(TOOLS_PASS_KEY_IN_RESOURCES)).findAny();
             pwd = resourceDetails.orElseGet(() -> {
                 ResourceDetails details = new ResourceDetails();
