@@ -5,11 +5,18 @@
       <div style="float:right;">
         <button
           nbButton
-          fullWidth
           status="primary"
+          class="cc-margin-right"
+          (click)="openDeploymentPopupFull(deploymentUIFull)"
+        >
+          Release
+        </button>
+        <button
+          nbButton
+          status="basic"
           (click)="openDeploymentPopup(deploymentUI)"
         >
-          Trigger Deployment
+          Hotfix Application
         </button>
       </div>
     </nb-card-header>
@@ -298,6 +305,26 @@
                [disabled]="!resourceMap || resourceMap.length == 0" class="cc-margin-right">Confirm
       </button>
       <button  nbButton status=basic (click)="ref.close()" class="cc-margin-right">Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #deploymentUIFull let-data let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>Deployment</nb-card-header>
+
+    <nb-card-body>
+      <div style="background: rgba(255, 255, 255, 0.8);min-width:420px;padding:inherit;" class="row">
+        <div class="row" style="padding-bottom:inherit;">
+          This will trigger the full deployment of your stack definition. Do you want to proceed?
+        </div>
+
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton status=primary (click)="this.triggerFullRelease(ref)" class="cc-margin-right">Confirm
+      </button>
+      <button nbButton status=basic (click)="ref.close()" class="cc-margin-right">Cancel</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>

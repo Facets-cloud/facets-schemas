@@ -7,7 +7,7 @@ import {
   UiStackControllerService
 } from 'src/app/cc-api/services';
 import {ActivatedRoute, Router} from '@angular/router';
-import {DeploymentLog} from 'src/app/cc-api/models';
+import {DeploymentLog, DeploymentRequest} from 'src/app/cc-api/models';
 import {NbDialogService, NbToastrService, NbSelectModule} from '@nebular/theme';
 import {ApplicationControllerService} from '../../../cc-api/services/application-controller.service';
 import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
@@ -182,6 +182,32 @@ export class ClusterReleasesComponent implements OnInit {
     this.toastrService.warning(error.error.message, 'Error');
   }
 
+  openDeploymentPopupFull(deploymentUI) {
+    this.dialogService.open(deploymentUI, {context: 'NA'});
+  }
+
+  triggerFullRelease(ref: any) {
+    this.loading = true;
+    let dr: DeploymentRequest = {
+      releaseType: "RELEASE"
+    }
+    ref.close();
+    this.deploymentService.createDeploymentUsingPOST({
+      clusterId: this.clusterId,
+      deploymentRequest: dr
+    }).subscribe(
+      c => {
+        console.log(c);
+        this.toastrService.success('Triggered Full deployment', 'Success');
+        this.ngOnInit();
+      },
+      err => {
+        this.errorHandler(err);
+      }
+    );
+  }
+
+
   openDeploymentPopup(deploymentUI) {
     this.dialogService.open(deploymentUI, {context: 'NA'}).onClose.subscribe(
       result => {
@@ -203,7 +229,7 @@ export class ClusterReleasesComponent implements OnInit {
               deploymentRecipe: recipe
             }).subscribe(c => {
                 console.log(c);
-                this.toastrService.success('Triggered terraform apply', 'Success');
+                this.toastrService.success('Triggered Hotfix', 'Success');
                 this.ngOnInit();
               },
               err => {
@@ -213,7 +239,7 @@ export class ClusterReleasesComponent implements OnInit {
           } catch (err) {
             console.log(err);
             console.log('Trigger failed');
-            this.toastrService.warning('Trigger Failed', 'Error');
+            this.toastrService.warning('Trigger Hotfix Failed', 'Error');
           }
         }
       },
