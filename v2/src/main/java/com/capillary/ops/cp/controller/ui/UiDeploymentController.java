@@ -84,7 +84,7 @@ public class UiDeploymentController {
         return deploymentFacade.getDeployment(deploymentId);
     }
 
-    @GetMapping("/{deploymentId}/codebuild")
+    @GetMapping("/{deploymentId}/logs")
     TokenPaginatedResponse getDeploymentLogs(@PathVariable String clusterId, @PathVariable String deploymentId,
                                     @RequestParam Optional<String> nextToken) {
         return deploymentFacade.getDeploymentLogs(deploymentId, nextToken);
