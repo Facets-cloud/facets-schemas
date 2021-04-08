@@ -1,6 +1,6 @@
 package com.capillary.ops.deployer.bo;
 
-import net.minidev.json.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
