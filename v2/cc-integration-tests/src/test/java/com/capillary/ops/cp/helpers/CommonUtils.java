@@ -32,6 +32,14 @@ public class CommonUtils {
         return cluster;
     }
 
+    public String getClusterName() {
+        return getCluster().map(x -> x.get("name").getAsString()).orElseThrow(ClusterDetailsNotFound::new);
+    }
+
+    public String getStackName() {
+        return getCluster().map(x -> x.get("stackName").getAsString()).orElseThrow(ClusterDetailsNotFound::new);
+    }
+
     public String getAwsRegion() {
         return getCluster().map(x -> x.get("awsRegion").getAsString()).orElseThrow(ClusterDetailsNotFound::new);
     }

@@ -9,7 +9,7 @@ public class LocalK8sHelper implements K8sHelper {
     @Override
     public K8sConfig getK8sConfig() {
 
-        //SET KUBERNETES_KUBECONFIG_FILE
+        //TODO: fabric8 client from kubeconfig
         return null;
     }
 }

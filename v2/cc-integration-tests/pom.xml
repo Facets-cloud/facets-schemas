@@ -20,6 +20,7 @@
         <jmockit.version>1.43</jmockit.version>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -31,6 +32,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -248,6 +250,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -311,6 +314,7 @@
             </extension>
         </extensions>
     </build>
+
     <repositories>
         <repository>
             <id>jitpack.io</id>
