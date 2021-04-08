@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.service.TFBuildService;
+import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
@@ -74,10 +75,10 @@ public class MockAwsCodeBuildService implements TFBuildService {
     @Override
     public TokenPaginatedResponse getBuildLogs(DeploymentLog deployment, Optional<String> nextToken) {
 
-        TokenPaginatedResponse tokenPaginatedResponse = new TokenPaginatedResponse();
+        TokenPaginatedResponse<LogEvent> tokenPaginatedResponse = new TokenPaginatedResponse<LogEvent>();
 
         tokenPaginatedResponse.setNextToken("xyz");
-        tokenPaginatedResponse.setLogEventList(Arrays.asList("Log Line 1", "Log Line 2", "Log line 3", "...s", "Log line 100"));
+        tokenPaginatedResponse.setLogEventList(Arrays.asList(new LogEvent(0L, "Log1"), new LogEvent(10L, "Log2")));
         return tokenPaginatedResponse;
     }
 

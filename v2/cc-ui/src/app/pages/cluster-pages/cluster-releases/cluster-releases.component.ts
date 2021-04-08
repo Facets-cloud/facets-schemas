@@ -258,7 +258,9 @@ export class ClusterReleasesComponent implements OnInit {
       nextToken: this.nextToken
     })
       .subscribe(r => {
-        this.logLines.push(...r.logEventList);
+        r.logEventList.forEach(
+          le => this.logLines.push(le["message"])
+        )
         this.nextToken = r.nextToken;
       })
   }
