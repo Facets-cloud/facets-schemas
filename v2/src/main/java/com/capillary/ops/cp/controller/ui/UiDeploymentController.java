@@ -85,6 +85,7 @@ public class UiDeploymentController {
     }
 
     @GetMapping("/{deploymentId}/logs")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
     TokenPaginatedResponse getDeploymentLogs(@PathVariable String clusterId, @PathVariable String deploymentId,
                                     @RequestParam Optional<String> nextToken) {
         return deploymentFacade.getDeploymentLogs(deploymentId, nextToken);
