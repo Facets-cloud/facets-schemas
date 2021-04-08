@@ -38,6 +38,8 @@ export class ClusterReleasesComponent implements OnInit {
   applicationNameList: any;
   cronjobNameList: any = '';
   statefulSetNameList: any = '';
+  logLines: any[];
+  private nextToken: string;
 
 
   constructor(private deploymentController: UiDeploymentControllerService,
@@ -147,9 +149,12 @@ export class ClusterReleasesComponent implements OnInit {
 
 
   showDetails(dialog, deploymentId) {
+    this.logLines = [];
+    this.nextToken = undefined;
     this.deploymentController.getDeploymentUsingGET({deploymentId: deploymentId, clusterId: this.clusterId}).subscribe(
       d => this.dialogService.open(dialog, {
         context: {
+          deploymentId:deploymentId,
           changes: d.changesApplied,
           appDeployments: d.appDeployments,
           errors: d.errorLogs,
@@ -246,4 +251,15 @@ export class ClusterReleasesComponent implements OnInit {
     );
   }
 
+  getLogs(deploymentId) {
+    this.deploymentController.getDeploymentLogsUsingGET({
+      clusterId: this.clusterId,
+      deploymentId: deploymentId,
+      nextToken: this.nextToken
+    })
+      .subscribe(r => {
+        this.logLines.push(...r.logEventList);
+        this.nextToken = r.nextToken;
+      })
+  }
 }

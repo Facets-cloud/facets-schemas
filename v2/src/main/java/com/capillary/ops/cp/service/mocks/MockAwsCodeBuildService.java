@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.service.TFBuildService;
+import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.base.Charsets;
@@ -23,10 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,8 +41,7 @@ public class MockAwsCodeBuildService implements TFBuildService {
     @Override
     public DeploymentLog deployLatest(AbstractCluster cluster,
                                       DeploymentRequest deploymentRequest,
-                                      DeploymentContext deploymentContext)
-    {
+                                      DeploymentContext deploymentContext) {
 
         DeploymentLog log = new DeploymentLog();
         String codeBuildId = "45kdfslsdlksf" + new Random().nextInt(100) + "iop";
@@ -69,9 +66,19 @@ public class MockAwsCodeBuildService implements TFBuildService {
     }
 
     @Override
+    public TokenPaginatedResponse getBuildLogs(DeploymentLog deployment, Optional<String> nextToken) {
+
+        TokenPaginatedResponse tokenPaginatedResponse = new TokenPaginatedResponse();
+
+        tokenPaginatedResponse.setNextToken("xyz");
+        tokenPaginatedResponse.setLogEventList(Arrays.asList("Log Line 1", "Log Line 2", "Log line 3", "...s", "Log line 100"));
+        return tokenPaginatedResponse;
+    }
+
+    @Override
     public DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails) {
 
-        if(loadBuildDetails){
+        if (loadBuildDetails) {
             Artifact a = new Artifact("mock_artifact_application_name", "mock_artifact_uri", deploymentLog.getCodebuildId(), "mock_artifact_build_description", BuildStrategy.QA, deploymentLog.getReleaseType(), "mock_artifactory");
 
             List<TerraformChange> tc = getTerraformChanges(deploymentLog.getCodebuildId());
@@ -105,9 +112,9 @@ public class MockAwsCodeBuildService implements TFBuildService {
             YAMLMapper yamlMapper = new YAMLMapper();
             yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
             yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);
-            if(deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps().isEmpty()) {
-                if(deploymentRequest.getPreBuildSteps() != null && !deploymentRequest.getPreBuildSteps().isEmpty()){
-                    ((List<String>)(((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).get("commands"))
+            if (deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+                if (deploymentRequest.getPreBuildSteps() != null && !deploymentRequest.getPreBuildSteps().isEmpty()) {
+                    ((List<String>) (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).get("commands"))
                             .addAll(deploymentRequest.getPreBuildSteps());
                     return yamlMapper.writeValueAsString(buildSpec);
                 }
@@ -121,10 +128,10 @@ public class MockAwsCodeBuildService implements TFBuildService {
         }
     }
 
-    private void saveDeploymentContext(DeploymentContext deploymentContext){
+    private void saveDeploymentContext(DeploymentContext deploymentContext) {
         String deploymentContextJson = new Gson().toJson(deploymentContext);
         byte[] data = deploymentContextJson.getBytes();
-        try{
+        try {
             FileOutputStream outputStream = new FileOutputStream("deploymentcontext.json");
             outputStream.write(data);
             outputStream.close();

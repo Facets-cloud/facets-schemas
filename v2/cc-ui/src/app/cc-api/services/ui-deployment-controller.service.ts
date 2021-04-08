@@ -16,6 +16,7 @@ import { HotfixDeploymentRecipe } from '../models/hotfix-deployment-recipe';
 import { ESDRDeploymentRecipe } from '../models/esdrdeployment-recipe';
 import { MongoDRDeploymentRecipe } from '../models/mongo-drdeployment-recipe';
 import { MongoVolumeResizeDeploymentRecipe } from '../models/mongo-volume-resize-deployment-recipe';
+import { TokenPaginatedResponse } from '../models/token-paginated-response';
 
 /**
  * Ui Deployment Controller
@@ -34,6 +35,7 @@ class UiDeploymentControllerService extends __BaseService {
   static readonly runMongoDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/dr';
   static readonly runMongoResizeRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/resize';
   static readonly getDeploymentUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}';
+  static readonly getDeploymentLogsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/logs';
   static readonly signOffDeploymentUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/signoff';
 
   constructor(
@@ -519,6 +521,60 @@ class UiDeploymentControllerService extends __BaseService {
   }
 
   /**
+   * getDeploymentLogs
+   * @param params The `UiDeploymentControllerService.GetDeploymentLogsUsingGETParams` containing the following parameters:
+   *
+   * - `deploymentId`: deploymentId
+   *
+   * - `clusterId`: clusterId
+   *
+   * - `nextToken`: nextToken
+   *
+   * @return OK
+   */
+  getDeploymentLogsUsingGETResponse(params: UiDeploymentControllerService.GetDeploymentLogsUsingGETParams): __Observable<__StrictHttpResponse<TokenPaginatedResponse>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+
+    if (params.nextToken != null) __params = __params.set('nextToken', params.nextToken.toString());
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/${encodeURIComponent(params.deploymentId)}/logs`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<TokenPaginatedResponse>;
+      })
+    );
+  }
+  /**
+   * getDeploymentLogs
+   * @param params The `UiDeploymentControllerService.GetDeploymentLogsUsingGETParams` containing the following parameters:
+   *
+   * - `deploymentId`: deploymentId
+   *
+   * - `clusterId`: clusterId
+   *
+   * - `nextToken`: nextToken
+   *
+   * @return OK
+   */
+  getDeploymentLogsUsingGET(params: UiDeploymentControllerService.GetDeploymentLogsUsingGETParams): __Observable<TokenPaginatedResponse> {
+    return this.getDeploymentLogsUsingGETResponse(params).pipe(
+      __map(_r => _r.body as TokenPaginatedResponse)
+    );
+  }
+
+  /**
    * signOffDeployment
    * @param params The `UiDeploymentControllerService.SignOffDeploymentUsingPUTParams` containing the following parameters:
    *
@@ -712,6 +768,27 @@ module UiDeploymentControllerService {
      * clusterId
      */
     clusterId: string;
+  }
+
+  /**
+   * Parameters for getDeploymentLogsUsingGET
+   */
+  export interface GetDeploymentLogsUsingGETParams {
+
+    /**
+     * deploymentId
+     */
+    deploymentId: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+
+    /**
+     * nextToken
+     */
+    nextToken?: string;
   }
 
   /**

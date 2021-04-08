@@ -231,6 +231,16 @@
             </table>
           </div>
         </nb-tab> -->
+        <nb-tab tabTitle="Logs">
+          <nb-list nbInfiniteList [threshold]="500">
+            <nb-list-item *ngFor="let log of this.logLines">
+              {{ log }}
+            </nb-list-item>
+          </nb-list>
+          <div style='text-align: center; padding-top: 1rem '>
+          <button  nbButton status=basic (click)="this.getLogs(data.deploymentId)">Load More</button>
+          </div>
+        </nb-tab>
       </nb-tabset>
     </nb-card-body>
   </nb-card>
