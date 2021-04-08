@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.IOException;
@@ -560,7 +561,17 @@ public class DeploymentFacade {
 
     public DeploymentLog getDeployment(String deploymentId) {
         DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
-        return tfBuildService.loadDeploymentStatus(deployment, true);
+        String codebuildId = deployment.getCodebuildId();
+        Build build = tfBuildService.getBuild(codebuildId);
+        if (build != null &&
+                (build.buildStatus().equals(StatusType.FAILED)
+                        || build.buildStatus().equals(StatusType.SUCCEEDED))) {
+            if(clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, build.buildStatus())) {
+                handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, build.buildStatus()));
+            }
+        }
+        DeploymentLog deploymentLog = tfBuildService.loadDeploymentStatus(deployment, true);
+        return deploymentLog;
     }
 
     public TokenPaginatedResponse getDeploymentLogs(String deploymentId, Optional<String> nextToken) {
@@ -570,8 +581,9 @@ public class DeploymentFacade {
         if (buildLogs.getBuild() != null &&
                 (buildLogs.getBuild().buildStatus().equals(StatusType.FAILED)
                         || buildLogs.getBuild().buildStatus().equals(StatusType.SUCCEEDED))) {
-            clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, buildLogs.getBuild().buildStatus());
-            handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, buildLogs.getBuild().buildStatus()));
+            if(clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, buildLogs.getBuild().buildStatus())) {
+                handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, buildLogs.getBuild().buildStatus()));
+            }
         }
         return buildLogs;
     }

@@ -14,6 +14,8 @@ public interface TFBuildService {
 
     DeploymentLog deployLatest(AbstractCluster cluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext);
 
+    Build getBuild(String runId);
+
     TokenPaginatedResponse getBuildLogs(DeploymentLog deployment, Optional<String> nextToken);
 
     DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails);

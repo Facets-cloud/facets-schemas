@@ -400,7 +400,8 @@ public class AwsCodeBuildService implements TFBuildService {
 //        return getBuild(runId).buildStatus();
 //    }
 
-    private Build getBuild(String runId) {
+    @Override
+    public Build getBuild(String runId) {
         return codeBuildService.getBuild(BUILD_REGION, runId);
     }
 

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
+import software.amazon.awssdk.services.codebuild.model.Build;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.FileNotFoundException;
@@ -63,6 +64,11 @@ public class MockAwsCodeBuildService implements TFBuildService {
         System.out.println(buildSpec);
 
         return deploymentLogRepository.save(log);
+    }
+
+    @Override
+    public Build getBuild(String runId) {
+        return null;
     }
 
     @Override
