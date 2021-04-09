@@ -5,6 +5,8 @@ import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.helpers.StackTestUtils;
 import com.capillary.ops.cp.helpers.k8s.K8sTestUtils;
 import com.google.gson.JsonObject;
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@Ignore
 @TestPropertySource(locations = "classpath:test.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})
@@ -28,16 +29,21 @@ public class SolrPodConfigTest {
     @Autowired
     private K8sTestUtils k8sTestUtils;
 
+    private static final String cpuUnits = "";
+
+    private static final String memoryUnits = "Mi";
+
     @Value("${stack.name}")
     private String STACK_NAME;
 
     @Test
     public void verifyPodSize() throws Exception {
+        Assume.assumeTrue(!STACK_NAME.equals("cc-infra-testing"));
         PodSize k8sPodSize = k8sTestUtils.getK8sPodSize("solr-intouch-0");
 
-        PodSize stackSizing = stackTestUtils.getInstanceSizing("solr", "intouch");
+        PodSize stackSizing = stackTestUtils.getInstanceSizing("solr", "intouch", cpuUnits, memoryUnits);
 
-        assert (k8sPodSize.getCpu().equals(stackSizing.getCpu()));
-        assert (k8sPodSize.getMemory().equals(stackSizing.getMemory()));
+        Assert.assertEquals(k8sPodSize.getCpu(), stackSizing.getCpu());
+        Assert.assertEquals(k8sPodSize.getMemory(), stackSizing.getMemory());
     }
 }

@@ -6,5 +6,9 @@
   "crm-nightly-new": {
     "primaryAppName": "intouch-api",
     "secondaryAppName": "reon-meta-api"
+  },
+  "cc-infra-testing1": {
+    "primaryAppName": "backend",
+    "secondaryAppName": "frontend"
   }
 }
