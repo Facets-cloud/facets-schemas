@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
+@Ignore
 @TestPropertySource(locations = "classpath:test.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})
@@ -35,12 +35,9 @@ public class SolrPodConfigTest {
     public void verifyPodSize() throws Exception {
         PodSize k8sPodSize = k8sTestUtils.getK8sPodSize("solr-intouch-0");
 
-        JsonObject stackSizing = stackTestUtils.getInstanceSizing("solr", "intouch");
+        PodSize stackSizing = stackTestUtils.getInstanceSizing("solr", "intouch");
 
-        String stackSizingCpu = stackSizing.get("podCPULimit").getAsString();
-        String stackSizingMemory = stackSizing.get("podCPULimit").getAsString();
-
-        assert (k8sPodSize.getCpu().equals(Double.parseDouble(stackSizingCpu)));
-        assert (k8sPodSize.getMemory().equals(Double.parseDouble(stackSizingMemory)));
+        assert (k8sPodSize.getCpu().equals(stackSizing.getCpu()));
+        assert (k8sPodSize.getMemory().equals(stackSizing.getMemory()));
     }
 }

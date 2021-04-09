@@ -90,9 +90,12 @@ public class K8sTestUtils {
 
     public List<Ingress> getK8sIngressRules(String appName) throws Exception {
         return getKubernetesClient().extensions().ingresses()
+                .inNamespace("default")
                 .list().getItems()
                 .stream()
                 .filter(p -> p.getMetadata().getName().contains(appName))
+                .filter(p -> p.getSpec().getRules().get(0).getHost().contains("cc.capillarytech.com"))
+                .filter(p -> p.getSpec().getRules().get(0).getHttp().getPaths().get(0).getBackend().getServiceName().equals(appName))
                 .collect(Collectors.toList());
     }
 
