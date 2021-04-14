@@ -2,6 +2,7 @@ package com.capillary.ops.deployer.bo;
 
 public enum BuildType {
     MVN,
+    JDK11_MAVEN3,
     JAVA8_LIBRARY,
     FREESTYLE_DOCKER,
     DOTNET_CORE,
