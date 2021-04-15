@@ -1,0 +1,7 @@
+curl -O https://download.docker.com/linux/debian/dists/buster/pool/stable/amd64/containerd.io_1.4.3-1_amd64.deb
+apt update && apt install ./containerd.io_1.4.3-1_amd64.deb
+apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+apt-key fingerprint 0EBFCD88
+add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+apt-get update && apt-get install -y docker-ce
