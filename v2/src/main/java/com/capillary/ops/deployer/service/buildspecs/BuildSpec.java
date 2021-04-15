@@ -153,7 +153,7 @@ public abstract class BuildSpec {
 
     protected abstract List<String> getArtifactSpecTest();
 
-    private Map<String, Object> getInstallPhase() {
+    public Map<String, Object> getInstallPhase() {
         List<String> installCommands = new ArrayList<>();
         Map<String, Object> installPhase = new HashMap<>();
         if(configureDockerBuildSteps()) {

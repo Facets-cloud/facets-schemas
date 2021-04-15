@@ -191,6 +191,8 @@ public class CodeBuildService implements ICodeBuildService {
                 return new MavenIonicBuildSpec(application, testBuild, registries);
             case JDK6_MAVEN2:
                 return new JDK6Maven2BuildSpec(application, testBuild, registries);
+            case JDK11_MAVEN3:
+                return new JDK11Maven3BuildSpec(application, testBuild, registries);
             case MJ_NUGET:
                 return new MJNugetBuildSpec(application, testBuild, registries);
             case DOTNET_CORE3:
