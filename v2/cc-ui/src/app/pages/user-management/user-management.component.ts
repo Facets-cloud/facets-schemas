@@ -30,7 +30,7 @@ export class UserManagementComponent implements OnInit {
         filter: false,
         type: 'List',
         valuePrepareFunction: (cell) => {
-         return cell.map(c=>this.roles.filter(r=>r.id==c)[0].label)
+          return cell.map(c => this.roles.filter(r => r.id == c)[0].label)
         }
       },
       password: {
@@ -59,7 +59,8 @@ export class UserManagementComponent implements OnInit {
       add: false,
       position: 'right',
       delete: false,
-      custom: [{name: 'Edit', title: '<i class="eva-edit-2-outline eva"></i>', type: 'html'}]
+      custom: [{name: 'Edit', title: '<i class="eva-edit-2-outline eva"></i>', type: 'html'},
+        {name: 'Change Password', title: '<i class="eva-lock eva"></i>', type: 'html'}]
     },
   };
   errorMsg: string;
@@ -105,16 +106,20 @@ export class UserManagementComponent implements OnInit {
     this.dialogService.open(dialogRef, {context: {edit: false}});
   }
 
-  openEditPopup(dialogRef, event) {
-    this.errorMsg = "";
-    this.userEdited.id = event.data.id;
-    this.userEdited.password = event.data.password;
-    this.userEdited.picture = event.data.picture;
-    this.userEdited.baseRole = event.data.roles.filter(r => this.baseRoles.map(r2 => r2.id).indexOf(r) != -1)[0]
-    this.userEdited.additionalRoles = event.data.roles.filter(r => this.additionalRoles.map(r2 => r2.id).indexOf(r) != -1)
-    this.userEdited.teams = event.data.teams
-    this.userEdited.userName = event.data.userName
-    this.dialogService.open(dialogRef, {context: {edit: true, user: this.userEdited}});
+  openEditPopup(dialogRef, event, changePwd) {
+    if (event.name == "Edit") {
+      this.errorMsg = "";
+      this.userEdited.id = event.data.id;
+      this.userEdited.password = event.data.password;
+      this.userEdited.picture = event.data.picture;
+      this.userEdited.baseRole = event.data.roles.filter(r => this.baseRoles.map(r2 => r2.id).indexOf(r) != -1)[0]
+      this.userEdited.additionalRoles = event.data.roles.filter(r => this.additionalRoles.map(r2 => r2.id).indexOf(r) != -1)
+      this.userEdited.teams = event.data.teams
+      this.userEdited.userName = event.data.userName
+      this.dialogService.open(dialogRef, {context: {edit: true, user: this.userEdited}});
+    } else {
+      this.dialogService.open(changePwd, {context: {id: event.data.id}});
+    }
   }
 
   submitForm(edit: any, dialogRef) {
@@ -170,5 +175,14 @@ export class UserManagementComponent implements OnInit {
         },
       )
     }
+  }
+
+  changePassword(userId, value: any, dialogRef) {
+    this.applicationController.changePasswordUsingPUT({userId: userId, pwdChange: {newPassword: value}}).subscribe(
+      x => dialogRef.close(true),
+      error => {
+        this.errorMsg = "Something went wrong: " + error.error.message
+      },
+    )
   }
 }

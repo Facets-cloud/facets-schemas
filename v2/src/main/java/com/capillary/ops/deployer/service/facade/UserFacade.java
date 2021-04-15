@@ -1,5 +1,6 @@
 package com.capillary.ops.deployer.service.facade;
 
+import com.capillary.ops.deployer.bo.PasswordChange;
 import com.capillary.ops.deployer.bo.User;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.repository.UserRepository;
@@ -15,6 +16,22 @@ public class UserFacade {
 
     @Autowired
     private UserRepository userRepository;
+
+    public User changePassword(String userId, PasswordChange pwdChange, boolean verifyOld) {
+        Optional<User> byId = userRepository.findById(userId);
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        if (!byId.isPresent()) {
+            throw new NotFoundException("User with id " + userId + " not found");
+        }
+        User user = byId.get();
+        if(verifyOld){
+            if(pwdChange.getOldPassword() == null || !user.getPassword().equals(bCryptPasswordEncoder.encode(pwdChange.getOldPassword()))){
+                throw new IllegalArgumentException("Provided Old Password is not correct");
+            }
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(pwdChange.getNewPassword()));
+        return userRepository.save(user);
+    }
 
     public User createUser(User user) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();

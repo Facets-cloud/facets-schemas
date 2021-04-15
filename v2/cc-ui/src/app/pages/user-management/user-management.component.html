@@ -15,10 +15,47 @@
     </nb-card-header>
     <nb-card-body>
       <ng2-smart-table class="cc-no-standard" [settings]="tableSettings" [source]="users"
-                       (create)="openCreatePopup(createUser)" (custom)="openEditPopup(createUser, $event)"></ng2-smart-table>
+                       (create)="openCreatePopup(createUser)" (custom)="openEditPopup(createUser, $event, changePasswordDialog)"></ng2-smart-table>
     </nb-card-body>
   </nb-card>
 </app-layout-one-column>
+
+<ng-template #changePasswordDialog let-data let-ref="dialogRef">
+  <nb-card size="large" >
+    <nb-card-header>
+      Change Password
+
+    </nb-card-header>
+    <nb-card-body>
+      <form #formChPwd="ngForm">
+        <div class="form-group">
+          <label for="password" class="sr-only-2" > New Password</label>
+          <input nbInput type="password" name="password" id="newpassword" class="form-control min-width"
+                 placeholder="***********" required [(ngModel)]="userEdited.password" #newPassword="ngModel"
+                 minlength=8 maxlength=20
+                 [status]="newPassword.dirty ? (newPassword.invalid ? 'danger' : 'success'):''">
+          <ng-container *ngIf="newPassword.invalid && newPassword.touched ">
+            <p class="caption status-danger" *ngIf="newPassword.errors?.required">
+              Password is required!
+            </p>
+            <p class="caption status-danger" *ngIf="newPassword.errors?.minlength || newPassword.errors?.maxlength">
+              Password should contain from 8 to 20 characters
+            </p>
+          </ng-container>
+        </div>
+        <div class="form-group">
+          <p style="color: red">{{this.errorMsg}}</p>
+        </div>
+      </form>
+    </nb-card-body>
+    <nb-card-footer>
+      <button class=" cc-margin-right" nbButton status="primary" (click)='changePassword(data.id, newPassword.value, ref)'
+              [disabled]="!formChPwd.valid">Proceed
+      </button>
+      <button class=" cc-margin-right" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
 
 <ng-template #createUser let-data let-ref="dialogRef">
   <nb-card size="large" >
