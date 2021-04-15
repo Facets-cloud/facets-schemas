@@ -1,8 +1,6 @@
 package com.capillary.ops.cp.controller.ui;
 
-import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.bo.DeploymentLog;
-import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
@@ -13,14 +11,14 @@ import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.wrappers.ListDeploymentsWrapper;
 import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.service.AclService;
+import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("cc-ui/v1/clusters/{clusterId}/deployments")
@@ -44,6 +42,9 @@ public class UiDeploymentController {
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
+        if (deploymentRequest.isTestDeployment()) {
+            return deploymentFacade.triggerIntegrationSuite(deploymentRequest.getOverrideCCVersion(),clusterId);
+        }
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
     }
 
@@ -81,6 +82,13 @@ public class UiDeploymentController {
     @GetMapping("/{deploymentId}")
     DeploymentLog getDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.getDeployment(deploymentId);
+    }
+
+    @GetMapping("/{deploymentId}/logs")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
+    TokenPaginatedResponse getDeploymentLogs(@PathVariable String clusterId, @PathVariable String deploymentId,
+                                    @RequestParam Optional<String> nextToken) {
+        return deploymentFacade.getDeploymentLogs(deploymentId, nextToken);
     }
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")

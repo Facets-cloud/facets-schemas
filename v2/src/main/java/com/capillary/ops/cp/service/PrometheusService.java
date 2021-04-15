@@ -38,23 +38,32 @@ public class PrometheusService {
         String url = HTTPS_PROMETHEUS + baseUrl + "/api/v1/rules?type=alert";
         JsonObject allAlerts = this.callAPI(baseUrl, auth, url);
         JsonObject openAlerts = this.getOpenAlerts(baseUrl, auth);
-        if(!allAlerts.get("status").getAsString().equals("success") || !openAlerts.get("status").getAsString().equals("success")){
-            return  allAlerts;
+        if (!allAlerts.get("status").getAsString().equals("success") || !openAlerts.get("status").getAsString().equals("success")) {
+            return allAlerts;
         }
-        allAlerts.getAsJsonObject("data").getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("rules").forEach(
-                r->{
-                   r.getAsJsonObject().add("alerts",new JsonArray());
+        JsonArray groups = allAlerts.getAsJsonObject("data").getAsJsonArray("groups");
+        groups.forEach(
+                g -> {
+                    g.getAsJsonObject().getAsJsonArray("rules").forEach(
+                            r -> {
+                                r.getAsJsonObject().add("alerts", new JsonArray());
+                            }
+                    );
                 }
         );
 
-        openAlerts.getAsJsonArray("data").forEach(x->
+        openAlerts.getAsJsonArray("data").forEach(x ->
         {
             String alertName = x.getAsJsonObject().get("labels").getAsJsonObject().get("alertname").getAsString();
-            allAlerts.getAsJsonObject("data").getAsJsonArray("groups").get(0).getAsJsonObject().getAsJsonArray("rules").forEach(
-                    r->{
-                        if(r.getAsJsonObject().get("name").getAsString().equals(alertName)){
-                            r.getAsJsonObject().getAsJsonArray("alerts").add(x);
-                        }
+            groups.forEach(
+                    g -> {
+                        g.getAsJsonObject().getAsJsonArray("rules").forEach(
+                                r -> {
+                                    if (r.getAsJsonObject().get("name").getAsString().equals(alertName)) {
+                                        r.getAsJsonObject().getAsJsonArray("alerts").add(x);
+                                    }
+                                }
+                        );
                     }
             );
         });
@@ -66,19 +75,19 @@ public class PrometheusService {
         JsonObject dummy = this.callAPI(baseUrl, auth, url2);
         String url = HTTPS_ALERTMANAGER + baseUrl + "/api/v1/alerts";
         JsonObject allAlerts = this.callAPI(baseUrl, auth, url);
-        if(allAlerts.get("status").getAsString().equals("success")){
+        if (allAlerts.get("status").getAsString().equals("success")) {
             JsonArray data = allAlerts.getAsJsonArray("data");
             data.forEach(x ->
             {
                 JsonObject obj = x.getAsJsonObject();
                 String state = obj.getAsJsonObject("status").get("state").getAsString();
-                if(state.equals("suppressed")){
+                if (state.equals("suppressed")) {
                     JsonArray silencedIds = obj.getAsJsonObject("status").getAsJsonArray("silencedBy");
                     JsonArray silenceArr = new JsonArray();
                     silencedIds.forEach(sj -> {
                         String silencedId = sj.getAsString();
                         JsonObject silenceInfo = this.getSilenceById(baseUrl, auth, silencedId);
-                        if(silenceInfo.get("status").getAsString().equals("success")) {
+                        if (silenceInfo.get("status").getAsString().equals("success")) {
                             silenceArr.add(silenceInfo.getAsJsonObject("data"));
                         }
                     });
@@ -108,10 +117,10 @@ public class PrometheusService {
         payload.addProperty("createdBy", userName);
         payload.addProperty("comment", request.getComment());
         JsonArray matchers = new JsonArray();
-        request.getLabels().entrySet().stream().map(e-> {
+        request.getLabels().entrySet().stream().map(e -> {
             JsonObject o = new JsonObject();
-            o.addProperty("name",e.getKey());
-            o.addProperty("value",e.getValue());
+            o.addProperty("name", e.getKey());
+            o.addProperty("value", e.getValue());
             return o;
         }).forEach(e -> matchers.add(e));
         payload.add("matchers", matchers);
@@ -136,10 +145,10 @@ public class PrometheusService {
             // create request
 
             ResponseEntity<String> response;
-            if(body == null) {
+            if (body == null) {
                 HttpEntity<String> request = new HttpEntity<>(headers);
-                 response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
-            }else{
+                response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+            } else {
                 HttpEntity<HashMap> request = new HttpEntity<>((new Gson()).fromJson(body, HashMap.class), headers);
                 response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
             }

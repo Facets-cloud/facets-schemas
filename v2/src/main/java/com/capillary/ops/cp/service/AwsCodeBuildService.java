@@ -12,11 +12,14 @@ import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.repository.SubstackRepository;
+import com.capillary.ops.deployer.bo.LogEvent;
+import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -237,7 +240,7 @@ public class AwsCodeBuildService implements TFBuildService {
         String primarySourceVersion = "master";
 
         if (!StringUtils.isEmpty(deploymentRequest.getOverrideCCVersion()) &&
-                cluster.getStackName().equalsIgnoreCase("cc-stack-cctesting")) {
+                (cluster.getStackName().equalsIgnoreCase("cc-stack-cctesting") || cluster.getStackName().equalsIgnoreCase("cc-infra-testing"))) {
             primarySourceVersion = deploymentRequest.getOverrideCCVersion();
         }
 
@@ -397,7 +400,8 @@ public class AwsCodeBuildService implements TFBuildService {
 //        return getBuild(runId).buildStatus();
 //    }
 
-    private Build getBuild(String runId) {
+    @Override
+    public Build getBuild(String runId) {
         return codeBuildService.getBuild(BUILD_REGION, runId);
     }
 
@@ -418,7 +422,30 @@ public class AwsCodeBuildService implements TFBuildService {
             return new HashMap<>();
         }
     }
+    public TokenPaginatedResponse getBuildLogs(DeploymentLog deploymentLog, Optional<String> nextToken){
+        CodeBuildClient codeBuildClient = getCodeBuildClient();
+        BatchGetBuildsResponse batchGetBuildsResponse = codeBuildClient.batchGetBuilds(BatchGetBuildsRequest.builder()
+                .ids(deploymentLog.getCodebuildId())
+                .build());
+        Build build = batchGetBuildsResponse.builds().get(0);
+        GetLogEventsRequest.Builder builder = GetLogEventsRequest.builder()
+                .logGroupName(build.logs().groupName())
+                .logStreamName(build.logs().streamName())
+                .limit(100);
+        if(nextToken == null || !nextToken.isPresent()) {
+            builder.startFromHead(false);
+        } else {
+            builder.startFromHead(false);
+            builder.nextToken(nextToken.get());
+        }
+        GetLogEventsResponse cloudWatchResponse = getCloudWatchLogsClient().getLogEvents(builder.build());
+        List<OutputLogEvent> logEvents = cloudWatchResponse.events();
+        List<LogEvent> logEventList = logEvents.stream()
+                .map(x -> new LogEvent(x.timestamp(), x.message()))
+                .collect(Collectors.toList());
+        return new TokenPaginatedResponse(Lists.reverse(logEventList), cloudWatchResponse.nextBackwardToken(), build);
 
+    }
     @Override
     public DeploymentLog loadDeploymentStatus(DeploymentLog deploymentLog, boolean loadBuildDetails) {
         // status is not present in db

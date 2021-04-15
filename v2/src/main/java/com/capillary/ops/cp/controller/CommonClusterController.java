@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.controller;
 
+import com.capillary.ops.cp.bo.AlertManagerPayload;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.SnapshotInfo;
@@ -90,4 +91,10 @@ public class CommonClusterController {
                                           @PathVariable String instanceName) {
         return clusterFacade.getPinnedSnapshot(clusterId, resourceType, instanceName);
     }
+
+    @PostMapping("{clusterId}/alerts")
+    public boolean notifyAlerts(@PathVariable String clusterId, @RequestBody AlertManagerPayload.Response alerts){
+        return clusterFacade.receiveAlerts(clusterId, alerts);
+    }
+
 }

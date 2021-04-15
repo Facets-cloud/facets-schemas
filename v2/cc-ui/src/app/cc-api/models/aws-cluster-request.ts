@@ -5,7 +5,7 @@ export interface AwsClusterRequest {
   autoSignOffSchedule?: string;
   azs?: Array<string>;
   cdPipelineParent?: string;
-  cloud?: 'AWS';
+  cloud?: 'AWS' | 'AZURE';
   clusterName?: string;
   clusterVars?: {[key: string]: string};
   enableAutoSignOff?: boolean;

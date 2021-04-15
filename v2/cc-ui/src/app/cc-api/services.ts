@@ -1,12 +1,16 @@
 export { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.service';
+export { OperationHandlerService } from './services/operation-handler.service';
 export { ApplicationControllerService } from './services/application-controller.service';
 export { CallbackControllerService } from './services/callback-controller.service';
+export { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
 export { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
 export { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 export { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 export { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 export { UiStackControllerService } from './services/ui-stack-controller.service';
 export { UiTeamControllerService } from './services/ui-team-controller.service';
+export { UiUserControllerService } from './services/ui-user-controller.service';
+export { ArtifactoryControllerService } from './services/artifactory-controller.service';
 export { ArtifactControllerService } from './services/artifact-controller.service';
 export { AwsClusterControllerService } from './services/aws-cluster-controller.service';
 export { BuildControllerService } from './services/build-controller.service';

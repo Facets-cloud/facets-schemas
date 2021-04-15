@@ -39,9 +39,14 @@ public class NotificationService {
                 subscriptionRepository.findByStackNameAndNotificationTypeAndNotificationSubject(
                         notification.getStackName(), notification.getNotificationType(),
                         notification.getNotificationSubject());
+
+        List<Subscription> blanketSubscriptions = subscriptionRepository.findByStackNameAndNotificationTypeAndNotificationSubject(
+                notification.getStackName(), notification.getNotificationType(),
+                Subscription.ALL);
+        subscriptions.addAll(blanketSubscriptions);
         subscriptions.stream()
                 .filter(x -> {
-                    for (NotificationTag t: x.getFilters().keySet()) {
+                    for (NotificationTag t : x.getFilters().keySet()) {
                         String v = notification.getNotificationTags().get(t);
                         if (x.getFilters().get(t).stream().noneMatch(f -> f.equalsIgnoreCase(v))) {
                             return false;
@@ -55,18 +60,18 @@ public class NotificationService {
                     } catch (Throwable t) {
                         // pass
                     }
-        });
+                });
 
         // Notify team channels
         if (notification.getTeamResource() != null) {
-          List<Team> teams = teamRepository.findAll()
-            .stream().filter(x -> x.getResources().contains(notification.getTeamResource()))
-            .collect(Collectors.toList());
-          for (Team team: teams) {
-            Map<ChannelType, String> notificationChannels = team.getNotificationChannels();
-            Set<ChannelType> channelTypes = notificationChannels.keySet();
-            channelTypes.forEach(x -> notifierMap.get(x).notify(notificationChannels.get(x), notification));
-          }
+            List<Team> teams = teamRepository.findAll()
+                    .stream().filter(x -> x.getResources().contains(notification.getTeamResource()))
+                    .collect(Collectors.toList());
+            for (Team team : teams) {
+                Map<ChannelType, String> notificationChannels = team.getNotificationChannels();
+                Set<ChannelType> channelTypes = notificationChannels.keySet();
+                channelTypes.forEach(x -> notifierMap.get(x).notify(notificationChannels.get(x), notification));
+            }
         }
 
     }

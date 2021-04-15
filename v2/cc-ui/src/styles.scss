@@ -68,12 +68,12 @@ nav.fixed {
 }
 
 nb-card-header{
-  color: #222b45;
+  color: nb-theme(color-primary-900);
   font-weight: 400 !important;
   font-size: 1.1rem !important;
 }
 .cc-key {
-  color: #222b45;
+  color: nb-theme(color-primary-900);
   font-family: Open Sans, sans-serif;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -93,4 +93,16 @@ nb-card-header{
 .cc-margin-right{
   margin-right: 1rem;
 
+}
+
+.nb-theme-facets nb-option-list .option-list {
+  max-height: 35rem!important;
+}
+
+.nb-theme-facets app-header .select-button {
+  background: nb-theme(color-basic-100)!important;
+  border:none!important;
+  :hover{
+    background: nb-theme(color-basic-100)!important;
+  }
 }

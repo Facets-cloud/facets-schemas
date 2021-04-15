@@ -42,6 +42,7 @@ public class FlockNotifier implements Notifier {
         Message message = new Message(notification.getNotificationMessage());
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Message> httpEntity = new HttpEntity<>(message, headers);
         restTemplate.postForEntity(channelAddress, httpEntity, Object.class);
     }

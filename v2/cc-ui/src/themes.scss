@@ -16,9 +16,9 @@ $nb-themes: nb-register-theme((
   // color-primary-900: #091c7a,
   smart-table-bg-even:#ffffff,
   smart-table-bg-active:#ffffff,
-  smart-table-header-bg: #dddddd,
+  smart-table-header-bg: #f0f1f2,
   smart-table-header-font-size:1rem,
-  smart-table-header-font-weight:700,
+  smart-table-header-font-weight:500,
   smart-table-header-fg:#222b45,
 
-), default, default);
+), facets, default);

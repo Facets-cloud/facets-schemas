@@ -7,14 +7,18 @@ export class GlobalErrorHandler implements ErrorHandler {
   constructor(@Inject(DOCUMENT) private document: any) { }
   handleError(error) {
      if (error) {
-        // if (error instanceof HttpErrorResponse) {
-        //   if ((<HttpErrorResponse> error).status === 401) {
-        //     // this.document.location.href = '/login';
-        //     this.document.location.href = '/oauth2/authorization/google';
-        //   }
-        // }
-        // console.log(error);
-        // throw error;
+        if (error instanceof HttpErrorResponse) {
+          if ((<HttpErrorResponse> error).status === 401) {
+            // this.document.location.href = '/login';
+             let blacklistUrl = window.location.pathname;
+                    if(blacklistUrl == '/pages/signin'){
+                      return;
+                    }
+            this.document.location.href = '/pages/signin';
+          }
+        }
+        console.log(error);
+        throw error;
      }
   }
 

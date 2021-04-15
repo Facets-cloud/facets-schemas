@@ -19,6 +19,7 @@ public class RefererRedirectionAuthenticationSuccessHandler extends SimpleUrlAut
 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
+
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }

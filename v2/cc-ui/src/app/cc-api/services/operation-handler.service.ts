@@ -77,7 +77,7 @@ class OperationHandlerService extends __BaseService {
     __body = body;
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/actuator/health/${encodeURIComponent(component)}`,
+      this.rootUrl + `/actuator/health/`,
       __body,
       {
         headers: __headers,
@@ -115,7 +115,7 @@ class OperationHandlerService extends __BaseService {
     __body = body;
     let req = new HttpRequest<any>(
       'GET',
-      this.rootUrl + `/actuator/health/${encodeURIComponent(component)}/${encodeURIComponent(instance)}`,
+      this.rootUrl + `/actuator/health/`,
       __body,
       {
         headers: __headers,
