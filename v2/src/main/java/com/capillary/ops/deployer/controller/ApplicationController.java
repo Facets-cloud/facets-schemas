@@ -191,7 +191,7 @@ public class ApplicationController {
     @PutMapping(value = "/users/{userId}", produces = "application/json")
     public User updateUser(@RequestBody User user, @PathVariable("userId") String userId) {
         user.setId(userId);
-        return userFacade.createUser(user);
+        return userFacade.updateUser(user);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
