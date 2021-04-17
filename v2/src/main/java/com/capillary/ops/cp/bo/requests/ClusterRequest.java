@@ -1,6 +1,7 @@
 package com.capillary.ops.cp.bo.requests;
 
 import com.capillary.ops.cp.bo.BuildStrategy;
+import com.capillary.ops.cp.bo.components.ComponentType;
 import io.swagger.annotations.ApiParam;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ public abstract class ClusterRequest {
     private Map<ReleaseType, String> schedules;
     private String autoSignOffSchedule;
     private Boolean enableAutoSignOff;
+    private Map<ComponentType, String> componentVersions = new HashMap<>();
 
     public ClusterRequest() {
     }
@@ -121,5 +123,13 @@ public abstract class ClusterRequest {
 
     public void setEnableAutoSignOff(Boolean enableAutoSignOff) {
         this.enableAutoSignOff = enableAutoSignOff;
+    }
+
+    public Map<ComponentType, String> getComponentVersions() {
+        return componentVersions;
+    }
+
+    public void setComponentVersions(Map<ComponentType, String> componentVersions) {
+        this.componentVersions = componentVersions;
     }
 }

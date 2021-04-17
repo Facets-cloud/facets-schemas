@@ -6,18 +6,18 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.bo.Substack;
+import com.capillary.ops.cp.bo.components.ComponentType;
+import com.capillary.ops.cp.bo.components.SupportedVersions;
 import com.capillary.ops.cp.bo.stack.Composition;
 import com.capillary.ops.cp.bo.stack.Plugin;
+import com.capillary.ops.cp.exceptions.UnsupportedComponentVersionException;
 import com.capillary.ops.cp.repository.StackRepository;
 import com.capillary.ops.cp.repository.SubstackRepository;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.zeroturnaround.zip.ZipUtil;
@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -42,6 +44,9 @@ public class StackService {
     private SubstackRepository substackRepository;
 
     @Autowired
+    private MetaService metaService;
+
+    @Autowired
     GitService gitService;
 
     @Value("${aws.s3bucket.ccSubstackBucket.name}")
@@ -49,6 +54,9 @@ public class StackService {
 
     @Value("${aws.s3bucket.ccSubstackBucket.region}")
     private String substackS3BucketRegion;
+
+    @Value(("${kubernetes.version.default}"))
+    private String defaultKubernetesVersion;
 
     //@Cacheable(value = "substacks", unless="#result == null")
     public List<Substack> getSubstacks(String stackName) {
@@ -86,6 +94,7 @@ public class StackService {
             StackFile file = gson.fromJson(new FileReader(stackFile), StackFile.class);
             stack.setStackVars(file.getStackVariables());
             stack.setClusterVariablesMeta(file.getClusterVariablesMeta());
+            stack.setComponentVersions(getStackComponentVersions(stack, file));
             Composition stackComposition = file.getComposition();
             if (stackComposition != null) {
                 List<Plugin> enabledPlugins = stackComposition.getPlugins().stream()
@@ -104,6 +113,30 @@ public class StackService {
         }
 
         return stack;
+    }
+
+    private Map<ComponentType, String> getStackComponentVersions(Stack stack, StackFile stackFile) {
+        List<SupportedVersions> supportedVersionsList = metaService.getSupportedComponentVersions();
+        Map<ComponentType, String> stackVersions = stack.getComponentVersions();
+        Map<ComponentType, String> fileVersions = stackFile.getComponentVersions();
+
+        supportedVersionsList.forEach(component -> {
+            Set<String> supportedVersions = component.getSupportedVersions();
+            ComponentType componentType = component.getComponentType();
+            String fileVersion = fileVersions.getOrDefault(componentType, defaultKubernetesVersion);
+
+            if (componentType.equals(ComponentType.KUBERNETES)) {
+                if (!supportedVersions.contains(fileVersion)) {
+                    throw new UnsupportedComponentVersionException(
+                            String.format("version %s for component type %s is not supported, supported versions are: %s",
+                                    fileVersion, componentType, supportedVersions));
+                } else {
+                    stackVersions.put(ComponentType.KUBERNETES, fileVersion);
+                }
+            }
+        });
+
+        return stackVersions;
     }
 
     private File loadStackFile(Stack stack, Path location, String relativePath) {
@@ -127,5 +160,13 @@ public class StackService {
         FileUtils.deleteDirectory(repositoryArchive);
 
         return archivePath;
+    }
+
+    public List<Stack> getAllStacks() {
+        return stackRepository.findAll();
+    }
+
+    public Optional<Stack> getStackById(String id) {
+        return stackRepository.findById(id);
     }
 }

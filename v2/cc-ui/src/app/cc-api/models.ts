@@ -92,6 +92,7 @@ export { SnapshotInfo } from './models/snapshot-info';
 export { Stack } from './models/stack';
 export { Subscription } from './models/subscription';
 export { Substack } from './models/substack';
+export { SupportedVersions } from './models/supported-versions';
 export { Team } from './models/team';
 export { TeamMembership } from './models/team-membership';
 export { TeamResource } from './models/team-resource';

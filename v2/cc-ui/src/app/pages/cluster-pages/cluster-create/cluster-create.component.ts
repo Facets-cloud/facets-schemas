@@ -92,7 +92,7 @@ export class ClusterCreateComponent implements OnInit {
     this.activatedRoute.params.subscribe(p => {
       this.stackName = p.stackName;
       if (p.clusterId) {
-        this.clusterController.getClusterUsingGET1(p.clusterId).subscribe(clusterObj => {
+        this.clusterController.getClusterUsingGET2(p.clusterId).subscribe(clusterObj => {
           this.cluster = clusterObj;
           this.initAWSClusterRequestObject();
           this.loadClusterVarsFromCluster(clusterObj);
@@ -191,7 +191,7 @@ export class ClusterCreateComponent implements OnInit {
     });
 
     try {
-      this.clusterController.createClusterUsingPOST1(this.awsClusterRequest)
+      this.clusterController.createClusterUsingPOST2(this.awsClusterRequest)
       .subscribe(cluster => {
         this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
     },
@@ -251,7 +251,7 @@ export class ClusterCreateComponent implements OnInit {
     });
 
     try {
-      this.clusterController.updateClusterUsingPUT1({
+      this.clusterController.updateClusterUsingPUT2({
         request: this.awsClusterRequest,
         clusterId: this.cluster.id
       }).subscribe(c => {

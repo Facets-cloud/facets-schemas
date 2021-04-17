@@ -19,6 +19,25 @@
 
     </div>
   </div>
+
+  <div class="row" *ngIf="componentUpgradeSource.count() > 0">
+    <div class="col-md-12">
+      <nb-card size="tiny" class="cc-info">
+        <nb-card-header>Component Upgrade</nb-card-header>
+        <nb-card-body class="aws-back">
+          <div>
+            <ng2-smart-table
+              [settings]="settingsComponentUpgrades"
+              [source]="componentUpgradeSource"
+              (custom)="upgradeComponent($event)"
+            >
+            </ng2-smart-table>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-md-6">
       <nb-card size="tiny" class="cc-info">

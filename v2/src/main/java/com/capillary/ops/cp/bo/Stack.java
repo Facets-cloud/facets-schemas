@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.bo;
 
+import com.capillary.ops.cp.bo.components.ComponentType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,6 +26,8 @@ public class Stack {
 
 //    @Transient
     private String appPassword;
+
+    private Map<ComponentType, String> componentVersions = new HashMap<>();
 
     private boolean pauseReleases = false;
 
@@ -83,6 +86,14 @@ public class Stack {
 
     public void setAppPassword(String appPassword) {
         this.appPassword = appPassword;
+    }
+
+    public Map<ComponentType, String> getComponentVersions() {
+        return componentVersions;
+    }
+
+    public void setComponentVersions(Map<ComponentType, String> componentVersions) {
+        this.componentVersions = componentVersions;
     }
 
     public Map<String, String> getStackVars() {

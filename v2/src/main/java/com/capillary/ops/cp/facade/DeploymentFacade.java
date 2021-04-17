@@ -141,6 +141,10 @@ public class DeploymentFacade {
         }
     }
 
+    private boolean isTestingStack(String stackName) {
+        return stackName.equals("cc-stack-cctesting");
+    }
+
     private void sendCCNotification(String message) {
         JSONObject messageJson = new JSONObject();
         messageJson.put("text", message);

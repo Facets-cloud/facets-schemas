@@ -1,5 +1,5 @@
 export { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.service';
-export { OperationHandlerService } from './services/operation-handler.service';
+// export { OperationHandlerService } from './services/operation-handler.service';
 export { ApplicationControllerService } from './services/application-controller.service';
 export { CallbackControllerService } from './services/callback-controller.service';
 export { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
@@ -7,15 +7,18 @@ export { UiAwsClusterControllerService } from './services/ui-aws-cluster-control
 export { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 export { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 export { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
+export { UiMetaControllerService } from './services/ui-meta-controller.service';
 export { UiStackControllerService } from './services/ui-stack-controller.service';
 export { UiTeamControllerService } from './services/ui-team-controller.service';
 export { UiUserControllerService } from './services/ui-user-controller.service';
 export { ArtifactoryControllerService } from './services/artifactory-controller.service';
 export { ArtifactControllerService } from './services/artifact-controller.service';
 export { AwsClusterControllerService } from './services/aws-cluster-controller.service';
+export { AzureClusterControllerService } from './services/azure-cluster-controller.service';
 export { BuildControllerService } from './services/build-controller.service';
 export { CapillaryCloudCallbackControllerService } from './services/capillary-cloud-callback-controller.service';
 export { CommonClusterControllerService } from './services/common-cluster-controller.service';
 export { DeploymentControllerService } from './services/deployment-controller.service';
+export { MetaControllerService } from './services/meta-controller.service';
 export { StackControllerService } from './services/stack-controller.service';
 export { BasicErrorControllerService } from './services/basic-error-controller.service';

@@ -1,15 +1,20 @@
 package com.capillary.ops.cp.service.azure;
 
-import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.AzureCluster;
+import com.capillary.ops.cp.bo.components.ComponentType;
 import com.capillary.ops.cp.bo.requests.AzureClusterRequest;
 import com.capillary.ops.cp.service.ClusterService;
-import software.amazon.awssdk.services.ec2.model.InstanceType;
+import com.capillary.ops.cp.service.ComponentVersionService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.SimpleTimeZone;
 
 public class AzureClusterService implements ClusterService<AzureCluster, AzureClusterRequest> {
+
+  @Autowired
+  private ComponentVersionService componentVersionService;
+
   @Override
   public AzureCluster createCluster(AzureClusterRequest request) {
     AzureCluster cluster = new AzureCluster(request.getClusterName());
@@ -28,6 +33,11 @@ public class AzureClusterService implements ClusterService<AzureCluster, AzureCl
     cluster.setStackName(request.getStackName());
     cluster.setCdPipelineParent(request.getCdPipelineParent());
     cluster.setRequireSignOff(request.getRequireSignOff());
+
+    Map<ComponentType, String> componentVersions = componentVersionService.getClusterComponentVersions(
+            cluster.getStackName(), request);
+    cluster.setComponentVersions(componentVersions);
+
     return cluster;
   }
 
@@ -60,6 +70,7 @@ public class AzureClusterService implements ClusterService<AzureCluster, AzureCl
     if (checkChanged(existing.getRequireSignOff(), request.getRequireSignOff())) {
       existing.setRequireSignOff(request.getRequireSignOff());
     }
+    componentVersionService.syncComponentsVersion(request, existing);
     return existing;
   }
 

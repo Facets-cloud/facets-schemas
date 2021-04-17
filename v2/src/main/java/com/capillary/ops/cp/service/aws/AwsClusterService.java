@@ -2,8 +2,11 @@ package com.capillary.ops.cp.service.aws;
 
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.AwsCluster;
+import com.capillary.ops.cp.bo.components.ComponentType;
 import com.capillary.ops.cp.bo.requests.AwsClusterRequest;
 import com.capillary.ops.cp.service.ClusterService;
+import com.capillary.ops.cp.service.ClusterTaskService;
+import com.capillary.ops.cp.service.ComponentVersionService;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.SimpleTimeZone;
 
 /**
@@ -25,6 +29,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
 
     @Autowired
     private AwsAssumeRoleService awsAssumeRoleService;
+
+    @Autowired
+    private ComponentVersionService componentVersionService;
 
     private static final Logger logger = LoggerFactory.getLogger(AwsClusterService.class);
 
@@ -98,6 +105,10 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
             throw new RuntimeException("Access key based cluster authentication not supported for region " + request.getRegion().toString());
         }
 
+        Map<ComponentType, String> componentVersions = componentVersionService.getClusterComponentVersions(
+                cluster.getStackName(), request);
+        cluster.setComponentVersions(componentVersions);
+
         cluster.setRoleARN(request.getRoleARN());
         cluster.setTz(request.getTz());
         cluster.setExternalId(request.getExternalId());
@@ -111,6 +122,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setStackName(request.getStackName());
         cluster.setCdPipelineParent(request.getCdPipelineParent());
         cluster.setRequireSignOff(request.getRequireSignOff());
+        cluster.setComponentVersions(request.getComponentVersions());
         return cluster;
     }
 
@@ -155,6 +167,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         if (checkChanged(existing.getRequireSignOff(), request.getRequireSignOff())) {
             existing.setRequireSignOff(request.getRequireSignOff());
         }
+        componentVersionService.syncComponentsVersion(request, existing);
         return existing;
     }
 
