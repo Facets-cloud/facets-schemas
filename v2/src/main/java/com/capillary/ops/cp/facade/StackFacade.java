@@ -63,6 +63,9 @@ public class StackFacade {
     @Autowired
     private ClusterFacade clusterFacade;
 
+    @Autowired
+    private MetaFacade metaFacade;
+
     @Value("${flock.notification.pauseReleases.endpoint}")
     private String pauseReleaseNotifier;
 

@@ -48,6 +48,7 @@ export class PopupAppOverrideComponent implements OnInit {
     }
 
     this.newOverrideCurrentSelection = instance;
+    this.editorNewOverride.set(instance);
     this.editNewOverrides();
   }
 
@@ -77,12 +78,6 @@ export class PopupAppOverrideComponent implements OnInit {
     this.enableSubmitForNewOverrides = true;
   }
 
-  resetNewOverrides() {
-    this.enableSubmitForNewOverrides = false;
-    this.newOverrideCurrentSelection = {};
-    this.newOverrideCurrentSelection.overrides = {};
-  }
-
   submitNewOverrides() {
     try {
       if (!this.areValidNewOverrides()) {
@@ -110,13 +105,12 @@ export class PopupAppOverrideComponent implements OnInit {
     } catch {
       console.log('Invalid Json');
       this.toastrService.danger("Invalid configuration for new overrides", "Error");
-    } finally {
-      this.resetNewOverrides();
     }
   }
 
   appSelected($event: string) {
     this.newOverrideInstanceName = $event;
+    this.searchExistingOerride();
   }
 
   rtSelected($event: string) {

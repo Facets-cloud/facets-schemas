@@ -17,9 +17,9 @@ import { AwsClusterRequest } from '../models/aws-cluster-request';
   providedIn: 'root',
 })
 class UiAwsClusterControllerService extends __BaseService {
-  static readonly createClusterUsingPOST1Path = '/cc-ui/v1/aws/clusters';
-  static readonly getClusterUsingGET1Path = '/cc-ui/v1/aws/clusters/{clusterId}';
-  static readonly updateClusterUsingPUT1Path = '/cc-ui/v1/aws/clusters/{clusterId}';
+  static readonly createClusterUsingPOST2Path = '/cc-ui/v1/aws/clusters';
+  static readonly getClusterUsingGET2Path = '/cc-ui/v1/aws/clusters/{clusterId}';
+  static readonly updateClusterUsingPUT2Path = '/cc-ui/v1/aws/clusters/{clusterId}';
 
   constructor(
     config: __Configuration,
@@ -33,7 +33,7 @@ class UiAwsClusterControllerService extends __BaseService {
    * @param request request
    * @return OK
    */
-  createClusterUsingPOST1Response(request: AwsClusterRequest): __Observable<__StrictHttpResponse<AwsCluster>> {
+  createClusterUsingPOST2Response(request: AwsClusterRequest): __Observable<__StrictHttpResponse<AwsCluster>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -60,8 +60,8 @@ class UiAwsClusterControllerService extends __BaseService {
    * @param request request
    * @return OK
    */
-  createClusterUsingPOST1(request: AwsClusterRequest): __Observable<AwsCluster> {
-    return this.createClusterUsingPOST1Response(request).pipe(
+  createClusterUsingPOST2(request: AwsClusterRequest): __Observable<AwsCluster> {
+    return this.createClusterUsingPOST2Response(request).pipe(
       __map(_r => _r.body as AwsCluster)
     );
   }
@@ -71,7 +71,7 @@ class UiAwsClusterControllerService extends __BaseService {
    * @param clusterId clusterId
    * @return OK
    */
-  getClusterUsingGET1Response(clusterId: string): __Observable<__StrictHttpResponse<AwsCluster>> {
+  getClusterUsingGET2Response(clusterId: string): __Observable<__StrictHttpResponse<AwsCluster>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -98,15 +98,15 @@ class UiAwsClusterControllerService extends __BaseService {
    * @param clusterId clusterId
    * @return OK
    */
-  getClusterUsingGET1(clusterId: string): __Observable<AwsCluster> {
-    return this.getClusterUsingGET1Response(clusterId).pipe(
+  getClusterUsingGET2(clusterId: string): __Observable<AwsCluster> {
+    return this.getClusterUsingGET2Response(clusterId).pipe(
       __map(_r => _r.body as AwsCluster)
     );
   }
 
   /**
    * updateCluster
-   * @param params The `UiAwsClusterControllerService.UpdateClusterUsingPUT1Params` containing the following parameters:
+   * @param params The `UiAwsClusterControllerService.UpdateClusterUsingPUT2Params` containing the following parameters:
    *
    * - `request`: request
    *
@@ -114,7 +114,7 @@ class UiAwsClusterControllerService extends __BaseService {
    *
    * @return OK
    */
-  updateClusterUsingPUT1Response(params: UiAwsClusterControllerService.UpdateClusterUsingPUT1Params): __Observable<__StrictHttpResponse<AwsCluster>> {
+  updateClusterUsingPUT2Response(params: UiAwsClusterControllerService.UpdateClusterUsingPUT2Params): __Observable<__StrictHttpResponse<AwsCluster>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -139,7 +139,7 @@ class UiAwsClusterControllerService extends __BaseService {
   }
   /**
    * updateCluster
-   * @param params The `UiAwsClusterControllerService.UpdateClusterUsingPUT1Params` containing the following parameters:
+   * @param params The `UiAwsClusterControllerService.UpdateClusterUsingPUT2Params` containing the following parameters:
    *
    * - `request`: request
    *
@@ -147,8 +147,8 @@ class UiAwsClusterControllerService extends __BaseService {
    *
    * @return OK
    */
-  updateClusterUsingPUT1(params: UiAwsClusterControllerService.UpdateClusterUsingPUT1Params): __Observable<AwsCluster> {
-    return this.updateClusterUsingPUT1Response(params).pipe(
+  updateClusterUsingPUT2(params: UiAwsClusterControllerService.UpdateClusterUsingPUT2Params): __Observable<AwsCluster> {
+    return this.updateClusterUsingPUT2Response(params).pipe(
       __map(_r => _r.body as AwsCluster)
     );
   }
@@ -157,9 +157,9 @@ class UiAwsClusterControllerService extends __BaseService {
 module UiAwsClusterControllerService {
 
   /**
-   * Parameters for updateClusterUsingPUT1
+   * Parameters for updateClusterUsingPUT2
    */
-  export interface UpdateClusterUsingPUT1Params {
+  export interface UpdateClusterUsingPUT2Params {
 
     /**
      * request

@@ -4,6 +4,7 @@ export interface AbstractCluster {
   cdPipelineParent?: string;
   cloud?: 'AWS' | 'AZURE';
   commonEnvironmentVariables?: {[key: string]: string};
+  componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
   id?: string;
   k8sRequestsToLimitsRatio?: number;

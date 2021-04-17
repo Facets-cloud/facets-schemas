@@ -11,6 +11,8 @@ RUN unzip terraform_0.12.20_linux_amd64.zip
 RUN chmod +x terraform
 RUN mv ./terraform /usr/bin/
 
+RUN apt-get update && apt-get install zip git -y
+
 RUN wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
 RUN tar -zxvf helm-v3.5.4-linux-amd64.tar.gz
 RUN chmod +x linux-amd64/helm
@@ -23,7 +25,6 @@ RUN pip install awscli
 RUN pip install requests
 RUN apt-get install perl -y
 RUN apt-get install libmysql-diff-perl -y
-RUN apt-get install zip git -y
 COPY scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm
 RUN apt-get install -y python3 python3-pip
 RUN pip3 install requests bcrypt jsonmerge python-hcl2==2.0.0 boto3 pystache pyyaml

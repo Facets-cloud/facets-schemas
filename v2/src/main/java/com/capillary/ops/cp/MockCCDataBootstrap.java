@@ -3,6 +3,7 @@ package com.capillary.ops.cp;
 import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.components.ComponentType;
 import com.capillary.ops.cp.bo.notifications.ChannelType;
 import com.capillary.ops.cp.bo.notifications.NotificationType;
 import com.capillary.ops.cp.bo.notifications.Subscription;
@@ -81,7 +82,33 @@ public class MockCCDataBootstrap {
         stackVars.put("sv5","v5");
         stack.setStackVars(stackVars);
         stack.setVcsUrl("https://github.com/Capillary/cc-stack-crm.git");
+        Map<ComponentType, String> stackComponentVersion = new HashMap<>();
+        stackComponentVersion.put(ComponentType.KUBERNETES, "1.17");
+        stack.setComponentVersions(stackComponentVersion);
         stackRepository.save(stack);
+
+        Stack stackTesting = new Stack();
+        stackTesting.setName("cc-stack-cctesting");
+        stackTesting.setUser("ambar-cap");
+        stackTesting.setAppPassword("935d4d4ee673a9531a7d2241f1e9d1ddbbbf0ee1");
+        stackTesting.setRelativePath("/");
+        stackTesting.setVcs(VCS.GITHUB);
+        stackTesting.setVcsUrl("tmp");
+        StackFile.VariableDetails v1Testing = new StackFile.VariableDetails(false,"test1");
+        StackFile.VariableDetails v2Testing = new StackFile.VariableDetails(true,"test2");
+        StackFile.VariableDetails v3Testing = new StackFile.VariableDetails(true,"test2");
+        HashMap<String, StackFile.VariableDetails> varsTesting = new HashMap<>();
+        varsTesting.put("cv1",v1Testing);
+        varsTesting.put("cv2",v2Testing);
+        varsTesting.put("cv3",v3Testing);
+        stackTesting.setClusterVariablesMeta(varsTesting);
+        HashMap<String,String> stackVarsTesting = new HashMap<>();
+        stackVarsTesting.put("sv4","v4");
+        stackVarsTesting.put("sv5","v5");
+        stackTesting.setStackVars(stackVarsTesting);
+        stackTesting.setVcsUrl("https://github.com/Capillary/cc-stack-cctesting.git");
+        stackTesting.setComponentVersions(stackComponentVersion);
+        stackRepository.save(stackTesting);
 
         AutoCompleteObject apps = new AutoCompleteObject("crm","application");
         AutoCompleteObject crons = new AutoCompleteObject("crm","cronjob");
@@ -95,6 +122,18 @@ public class MockCCDataBootstrap {
         autoCompleteObjects.add(statefulsets);
         autoCompleteObjectRepository.saveAll(autoCompleteObjects);
 
+        AutoCompleteObject appsTesting = new AutoCompleteObject("cc-stack-cctesting","application");
+        AutoCompleteObject cronsTesting = new AutoCompleteObject("cc-stack-cctesting","cronjob");
+        AutoCompleteObject statefulsetsTesting = new AutoCompleteObject("cc-stack-cctesting","statefulsets");
+        appsTesting.setResourceNames(new HashSet<>(Arrays.asList("intouch-api", "emf")));
+        cronsTesting.setResourceNames(new HashSet<>(Arrays.asList("crondemo-one", "crondemo-two")));
+        statefulsetsTesting.setResourceNames(new HashSet<>(Arrays.asList("sts-demo", "sts-demo-two")));
+        List<AutoCompleteObject> autoCompleteObjectsTesting = new ArrayList<>();
+        autoCompleteObjectsTesting.add(appsTesting);
+        autoCompleteObjectsTesting.add(cronsTesting);
+        autoCompleteObjectsTesting.add(statefulsetsTesting);
+        autoCompleteObjectRepository.saveAll(autoCompleteObjectsTesting);
+
         ClusterResourceDetails cd = new ClusterResourceDetails();
         cd.setClusterId("cluster1");
         cd.setStatus(StatusType.SUCCEEDED);
@@ -105,7 +144,6 @@ public class MockCCDataBootstrap {
         rd.setKey(ClusterHelper.TOOLS_PASS_KEY_IN_RESOURCES);
         rd.setValue("NfWaKLiPZt");
         cd.setResourceDetails(Collections.singletonList(rd));
-
         clusterResourceDetailsRepository.save(cd);
 
         AwsCluster cluster = new AwsCluster("crm-staging-new");
@@ -114,7 +152,19 @@ public class MockCCDataBootstrap {
         cluster.setAwsRegion(Regions.US_EAST_1.getName());
         cluster.setReleaseStream(BuildStrategy.QA);
         cluster.setStackName(stack.getName());
+        Map<ComponentType, String> componentVersion = new HashMap<>();
+        componentVersion.put(ComponentType.KUBERNETES, "1.15");
+        cluster.setComponentVersions(componentVersion);
         cpClusterRepository.save(cluster);
+
+        AwsCluster clusterEksUpgrade = new AwsCluster("eks-upgrade");
+        clusterEksUpgrade.setId("eks-upgrade");
+        clusterEksUpgrade.setTz(TimeZone.getDefault());
+        clusterEksUpgrade.setAwsRegion(Regions.US_EAST_1.getName());
+        clusterEksUpgrade.setReleaseStream(BuildStrategy.QA);
+        clusterEksUpgrade.setStackName(stackTesting.getName());
+        clusterEksUpgrade.setComponentVersions(componentVersion);
+        cpClusterRepository.save(clusterEksUpgrade);
 
         K8sCredentials x = new K8sCredentials();
         x.setClusterId(cluster.getName());
@@ -130,6 +180,7 @@ public class MockCCDataBootstrap {
         cluster2.setAwsRegion(Regions.US_WEST_2.getName());
         cluster2.setReleaseStream(BuildStrategy.PROD);
         cluster2.setStackName(stack.getName());
+        cluster2.setComponentVersions(componentVersion);
         //        cluster2.setSchedules(new HashMap<ReleaseType, String>() {{
         //            put(ReleaseType.HOTFIX, "* * * * *");
         //        }});

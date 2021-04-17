@@ -6,6 +6,7 @@ export interface Substack {
   artifactories?: Array<string>;
   childStacks?: Array<string>;
   clusterVariablesMeta?: {[key: string]: VariableDetails};
+  componentVersions?: {[key: string]: string};
   name?: string;
   pauseReleases?: boolean;
   relativePath?: string;
