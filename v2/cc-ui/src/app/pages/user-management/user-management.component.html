@@ -15,10 +15,47 @@
     </nb-card-header>
     <nb-card-body>
       <ng2-smart-table class="cc-no-standard" [settings]="tableSettings" [source]="users"
-                       (create)="openCreatePopup(createUser)" (custom)="openEditPopup(createUser, $event)"></ng2-smart-table>
+                       (create)="openCreatePopup(createUser)" (custom)="openEditPopup(createUser, $event, changePasswordDialog)"></ng2-smart-table>
     </nb-card-body>
   </nb-card>
 </app-layout-one-column>
+
+<ng-template #changePasswordDialog let-data let-ref="dialogRef">
+  <nb-card size="large" >
+    <nb-card-header>
+      Change Password
+
+    </nb-card-header>
+    <nb-card-body>
+      <form #formChPwd="ngForm">
+        <div class="form-group">
+          <label for="password" class="sr-only-2" > New Password</label>
+          <input nbInput type="password" name="password" id="newpassword" class="form-control min-width"
+                 placeholder="***********" required [(ngModel)]="userEdited.password" #newPassword="ngModel"
+                 minlength=8 maxlength=20
+                 [status]="newPassword.dirty ? (newPassword.invalid ? 'danger' : 'success'):''">
+          <ng-container *ngIf="newPassword.invalid && newPassword.touched ">
+            <p class="caption status-danger" *ngIf="newPassword.errors?.required">
+              Password is required!
+            </p>
+            <p class="caption status-danger" *ngIf="newPassword.errors?.minlength || newPassword.errors?.maxlength">
+              Password should contain from 8 to 20 characters
+            </p>
+          </ng-container>
+        </div>
+        <div class="form-group">
+          <p style="color: red">{{this.errorMsg}}</p>
+        </div>
+      </form>
+    </nb-card-body>
+    <nb-card-footer>
+      <button class=" cc-margin-right" nbButton status="primary" (click)='changePassword(data.id, newPassword.value, ref)'
+              [disabled]="!formChPwd.valid">Proceed
+      </button>
+      <button class=" cc-margin-right" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
 
 <ng-template #createUser let-data let-ref="dialogRef">
   <nb-card size="large" >
@@ -27,17 +64,32 @@
 
     </nb-card-header>
     <nb-card-body>
-      <form>
+      <form #form="ngForm">
         <div class="form-group">
           <label for="email" class="sr-only-2" >Username*</label>
-          <input nbInput type="email" name="userName" id="email" class="form-control min-width" placeholder="Email address"
-                 required [(ngModel)]="userEdited.userName" >
+          <input nbInput type="email" name="userName" #email="ngModel" id="email" class="form-control min-width"
+                 placeholder="Email address" pattern=".+@.+\..+"
+                 required [(ngModel)]="userEdited.userName" [status]="email.dirty ? (email.invalid ? 'danger' : 'success'):''" >
+          <ng-container *ngIf="email.invalid && email.touched">
+            <p class="caption status-danger" *ngIf="email.errors?.required">
+              Username is required!
+            </p>
+            <p class="caption status-danger" *ngIf="email.errors?.pattern">
+              Username should be a valid email address.
+            </p>
+          </ng-container>
         </div>
         <div class="form-group">
           <label class="sr-only-2" for="base-role">Base Role*</label>
-          <nb-select placeholder="Select Base Role" [(ngModel)]="userEdited.baseRole" name="roles" class="min-width">
+          <nb-select placeholder="Select Base Role" [(ngModel)]="userEdited.baseRole"  #baseRole="ngModel" name="roles"
+                     class="min-width"  [status]="baseRole.dirty ? (baseRole.invalid ? 'danger' : 'success'):''">
             <nb-option *ngFor="let role of this.baseRoles" id= "base-role" value="{{role.id}}">{{role.label}}</nb-option>
           </nb-select>
+          <ng-container *ngIf="baseRole.invalid && baseRole.touched">
+            <p class="caption status-danger" *ngIf="baseRole.errors?.required">
+              Base Role is required!
+            </p>
+          </ng-container>
         </div>
         <div class="form-group">
           <label class="sr-only-2" for="addn-role"  >Additional Roles</label>
@@ -46,10 +98,19 @@
             <nb-option *ngFor="let role of this.additionalRoles" value="{{role.id}}" id="addn-role">{{role.label}}</nb-option>
           </nb-select>
         </div>
-        <div class="form-group">
+        <div class="form-group" *ngIf="!data.edit">
           <label for="password" class="sr-only-2" >Password</label>
           <input nbInput type="password" name="password" id="password" class="form-control min-width"
-                 placeholder="***********" required [(ngModel)]="userEdited.password">
+                 placeholder="***********" required [(ngModel)]="userEdited.password" #password="ngModel"
+                 [status]="password.dirty ? (password.invalid ? 'danger' : 'success'):''">
+          <ng-container *ngIf="password.invalid && password.touched ">
+            <p class="caption status-danger" *ngIf="password.errors?.required">
+              Password is required!
+            </p>
+            <p class="caption status-danger" *ngIf="password.errors?.minlength || password.errors?.maxlength">
+              Password should contain from 8 to 20 characters
+            </p>
+          </ng-container>
         </div>
         <div class="form-group">
           <p style="color: red">{{this.errorMsg}}</p>
@@ -57,7 +118,8 @@
       </form>
     </nb-card-body>
     <nb-card-footer>
-      <button class=" cc-margin-right" nbButton status="primary" (click)='submitForm(data["edit"], ref)'>Proceed
+      <button class=" cc-margin-right" nbButton status="primary" (click)='submitForm(data["edit"], ref)'
+              [disabled]="!form.valid">Proceed
       </button>
       <button class=" cc-margin-right" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
     </nb-card-footer>

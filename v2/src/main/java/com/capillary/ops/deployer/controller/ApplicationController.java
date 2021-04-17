@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class ApplicationController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', #applicationFamily + '_' + #environment + '_' + 'MODERATOR')")
     @PostMapping(value = "/{applicationFamily}/applications", produces = "application/json")
-    public Application createApplication(@Valid @RequestBody  Application application,
+    public Application createApplication(@Valid @RequestBody Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                          @ApiParam(value = "Host", hidden = true) @RequestHeader("Host") String host) {
         application.setApplicationFamily(applicationFamily);
@@ -62,7 +63,7 @@ public class ApplicationController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', #applicationFamily + '_' + #environment + '_' + 'MODERATOR')")
     @PutMapping(value = "/{applicationFamily}/applications", produces = "application/json")
-    public Application updateApplication(@Valid @RequestBody  Application application,
+    public Application updateApplication(@Valid @RequestBody Application application,
                                          @PathVariable("applicationFamily") ApplicationFamily applicationFamily,
                                          @ApiParam(value = "Host", hidden = true) @RequestHeader("Host") String host) {
         application.setApplicationFamily(applicationFamily);
@@ -76,7 +77,7 @@ public class ApplicationController {
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}", produces = "application/json")
     public Application getApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                            @PathVariable("applicationId") String applicationId) {
+                                      @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getApplication(applicationFamily, applicationId);
     }
 
@@ -121,7 +122,7 @@ public class ApplicationController {
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/testDetails", produces =
             "application/json")
     public TestBuildDetails getTestBuildDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
+                                                @PathVariable("applicationId") String applicationId, @PathVariable String buildId) {
         TestBuildDetails build = applicationFacade.getTestBuildDetails(applicationFamily, applicationId, buildId);
         //build.setApplicationFamily(applicationFamily);
         return build;
@@ -130,7 +131,7 @@ public class ApplicationController {
     @PreAuthorize("hasAnyRole('ADMIN', 'PROMOTERS')")
     @PutMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}", produces = "application/json")
     public Build updateBuild(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                          @PathVariable("applicationId") String applicationId, @PathVariable String buildId, @RequestBody Build build) {
+                             @PathVariable("applicationId") String applicationId, @PathVariable String buildId, @RequestBody Build build) {
         build.setApplicationId(applicationId);
         build.setApplicationFamily(applicationFamily);
         return applicationFacade.updateBuild(applicationFamily, applicationId, buildId, build);
@@ -138,26 +139,26 @@ public class ApplicationController {
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/branches", produces = "application/json")
     public List<String> getApplicationBranches(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                       @PathVariable("applicationId") String applicationId) throws IOException {
+                                               @PathVariable("applicationId") String applicationId) throws IOException {
         return applicationFacade.getApplicationBranches(applicationFamily, applicationId);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/tags", produces = "application/json")
     public List<String> getApplicationTags(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                               @PathVariable("applicationId") String applicationId) throws IOException {
+                                           @PathVariable("applicationId") String applicationId) throws IOException {
         return applicationFacade.getApplicationTags(applicationFamily, applicationId);
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds/{buildId}/logs", produces = "application/json")
     public TokenPaginatedResponse<LogEvent> getBuildLogs(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                               @PathVariable("applicationId") String applicationId,
-                                               @PathVariable String buildId, @RequestParam Optional<String> nextToken) {
+                                                         @PathVariable("applicationId") String applicationId,
+                                                         @PathVariable String buildId, @RequestParam Optional<String> nextToken) {
         return applicationFacade.getBuildLogs(applicationFamily, applicationId, buildId, nextToken.orElse(""));
     }
 
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/builds", produces = "application/json")
     public List<Build> getBuilds(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                @PathVariable("applicationId") String applicationId) {
+                                 @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getBuilds(applicationFamily, applicationId);
     }
 
@@ -170,11 +171,11 @@ public class ApplicationController {
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployments", produces = "application/json")
     public Deployment deploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                        @PathVariable("environment") String environment,
-                                        @RequestBody Deployment deployment,
-                                        @PathVariable("applicationId") String applicationId) {
+                             @PathVariable("environment") String environment,
+                             @RequestBody Deployment deployment,
+                             @PathVariable("applicationId") String applicationId) {
         deployment.setApplicationId(applicationId);
-        if(deployment.isRollbackEnabled()){
+        if (deployment.isRollbackEnabled()) {
             applicationFacade.rollbackDeployment(applicationFamily, environment, applicationId);
             return null;
         }
@@ -183,15 +184,25 @@ public class ApplicationController {
 
     @PreAuthorize("hasRole('USER_ADMIN') or hasRole('CC-ADMIN')")
     @PostMapping(value = "/users", produces = "application/json")
-    public User createUser(@RequestBody  User user) {
+    public User createUser(@RequestBody User user) {
         return userFacade.createUser(user);
     }
 
-    @PreAuthorize("hasRole('USER_ADMIN')or hasRole('CC-ADMIN')" )
+    @PreAuthorize("hasRole('USER_ADMIN')or hasRole('CC-ADMIN')")
     @PutMapping(value = "/users/{userId}", produces = "application/json")
     public User updateUser(@RequestBody User user, @PathVariable("userId") String userId) {
         user.setId(userId);
-        return userFacade.createUser(user);
+        return userFacade.updateUser(user);
+    }
+
+    @PutMapping(value = "/users/{userId}/changePassword", produces = "application/json")
+    public User changePassword(@RequestBody PasswordChange pwdChange, @PathVariable("userId") String userId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean verifyOld = true;
+        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_CC-ADMIN"))) {
+            verifyOld = false;
+        }
+        return userFacade.changePassword(userId, pwdChange, verifyOld);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER_ADMIN')")
@@ -202,15 +213,15 @@ public class ApplicationController {
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deploymentStatus", produces = "application/json")
     public DeploymentStatusDetails getDeploymentStatus(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                      @PathVariable("environment") String environment,
-                                      @PathVariable("applicationId") String applicationId) {
+                                                       @PathVariable("environment") String environment,
+                                                       @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getDeploymentStatus(applicationFamily, environment, applicationId);
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/podDetails", produces = "application/json")
     public List<ApplicationPodDetails> getApplicationPodDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                      @PathVariable("environment") String environment,
-                                      @PathVariable("applicationId") String applicationId) {
+                                                                @PathVariable("environment") String environment,
+                                                                @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getApplicationPodDetails(applicationFamily, environment, applicationId);
     }
 
@@ -260,9 +271,9 @@ public class ApplicationController {
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/dumps/download")
     public ResponseEntity<InputStreamResource> downloadDumpFile(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                   @PathVariable("environment") String environment,
-                                                   @RequestParam("path") String path,
-                                                   @PathVariable String applicationId) {
+                                                                @PathVariable("environment") String environment,
+                                                                @RequestParam("path") String path,
+                                                                @PathVariable String applicationId) {
         S3DumpFile dumpFileFromS3 = applicationFacade.downloadDumpFileFromS3(path);
 
         HttpHeaders headers = new HttpHeaders();
@@ -305,14 +316,14 @@ public class ApplicationController {
     @JsonView(UserView.SecretName.class)
     @PostMapping("/{applicationFamily}/applications/{applicationId}/secretRequests")
     public List<ApplicationSecretRequest> createAppSecretRequest(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                                @PathVariable("applicationId") String applicationId,
-                                                                @RequestBody List<ApplicationSecretRequest> applicationSecretRequests) {
+                                                                 @PathVariable("applicationId") String applicationId,
+                                                                 @RequestBody List<ApplicationSecretRequest> applicationSecretRequests) {
         return applicationFacade.createApplicaitonSecretRequest(applicationFamily, applicationId, applicationSecretRequests);
     }
 
     @GetMapping("/{applicationFamily}/applications/{applicationId}/secretRequests")
     public List<ApplicationSecretRequest> getApplicationSecretRequests(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                            @PathVariable("applicationId") String applicationId) {
+                                                                       @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getApplicaitonSecretRequests(applicationFamily, applicationId);
     }
 
@@ -320,8 +331,8 @@ public class ApplicationController {
     @JsonView(UserView.SecretName.class)
     @GetMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secretRequests")
     public List<ApplicationSecret> getApplicationSecrets(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                                       @PathVariable("environment") String environment,
-                                                                       @PathVariable("applicationId") String applicationId) {
+                                                         @PathVariable("environment") String environment,
+                                                         @PathVariable("applicationId") String applicationId) {
         return applicationFacade.getApplicationSecrets(environment, applicationFamily, applicationId);
     }
 
@@ -337,9 +348,9 @@ public class ApplicationController {
     @JsonView(UserView.SecretName.class)
     @DeleteMapping("/{applicationFamily}/{environment}/applications/{applicationId}/secrets/{secretName}")
     public boolean deleteApplicationSecret(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                            @PathVariable("environment") String environment,
-                                                            @PathVariable("applicationId") String applicationId,
-                                                            @PathVariable("secretName") String secretName) {
+                                           @PathVariable("environment") String environment,
+                                           @PathVariable("applicationId") String applicationId,
+                                           @PathVariable("secretName") String secretName) {
         return applicationFacade.deleteApplicaitonSecret(environment, applicationFamily, applicationId, secretName);
     }
 
@@ -351,13 +362,13 @@ public class ApplicationController {
 
     @GetMapping("cc/{applicationFamily}/environmentMetaData")
     public ResponseEntity<List<EnvironmentMetaData>> getCCEnvironmentMetaData(
-        @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {
+            @PathVariable("applicationFamily") ApplicationFamily applicationFamily) throws FileNotFoundException {
         return new ResponseEntity<>(applicationFacade.getEnvironmentMetaDataCC(applicationFamily), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/deployment/current", produces = "application/json")
     public Deployment getCurrentDeployment(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                 @PathVariable("applicationId") String applicationId, @PathVariable("environment") String environment) {
+                                           @PathVariable("applicationId") String applicationId, @PathVariable("environment") String environment) {
         return applicationFacade.getCurrentDeployment(applicationFamily, applicationId, environment);
     }
 
@@ -371,7 +382,7 @@ public class ApplicationController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{applicationFamily}/environments/{id}")
     public ResponseEntity<Environment> getEnvironment(@PathVariable ApplicationFamily applicationFamily,
-                                                       @PathVariable String id) {
+                                                      @PathVariable String id) {
         Environment result = applicationFacade.getEnvironment(applicationFamily, id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -413,86 +424,86 @@ public class ApplicationController {
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
     public boolean enableMonitoring(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                         @PathVariable("applicationId") String applicationId,
-                                         @PathVariable("environment") String environment) {
+                                    @PathVariable("applicationId") String applicationId,
+                                    @PathVariable("environment") String environment) {
         return applicationFacade.enableNewrelicMonitoring(applicationFamily, applicationId, environment);
     }
 
     @RolesAllowed("ADMIN")
     @DeleteMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
     public boolean disableMonitoring(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                         @PathVariable("applicationId") String applicationId,
-                                         @PathVariable("environment") String environment) {
+                                     @PathVariable("applicationId") String applicationId,
+                                     @PathVariable("environment") String environment) {
         return applicationFacade.disableNewrelicMonitoring(applicationFamily, applicationId, environment);
     }
 
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/alerting", produces = "application/json")
     public boolean enableAlerting(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                    @PathVariable("applicationId") String applicationId,
-                                    @PathVariable("environment") String environment) {
+                                  @PathVariable("applicationId") String applicationId,
+                                  @PathVariable("environment") String environment) {
         return applicationFacade.enableNewrelicAlerting(applicationFamily, applicationId, environment);
     }
 
     @RolesAllowed("ADMIN")
     @DeleteMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/alerting", produces = "application/json")
     public boolean disableAlerting(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                     @PathVariable("applicationId") String applicationId,
-                                     @PathVariable("environment") String environment) {
+                                   @PathVariable("applicationId") String applicationId,
+                                   @PathVariable("environment") String environment) {
         return applicationFacade.disableNewrelicAlerting(applicationFamily, applicationId, environment);
     }
 
     @RolesAllowed("ADMIN")
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/monitoring", produces = "application/json")
     public Monitoring getMonitoringDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                     @PathVariable("applicationId") String applicationId,
-                                     @PathVariable("environment") String environment) {
+                                           @PathVariable("applicationId") String applicationId,
+                                           @PathVariable("environment") String environment) {
         return applicationFacade.getMonitoringDetails(applicationFamily, applicationId, environment);
     }
 
     @RolesAllowed("ADMIN")
     @GetMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/alerting", produces = "application/json")
     public Alerting getAlertingDetails(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                            @PathVariable("applicationId") String applicationId,
-                                            @PathVariable("environment") String environment) {
+                                       @PathVariable("applicationId") String applicationId,
+                                       @PathVariable("environment") String environment) {
         return applicationFacade.getAlertingDetails(applicationFamily, applicationId, environment);
     }
-
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/halt", produces = "application/json")
     public boolean haltApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                    @PathVariable("applicationId") String applicationId,
-                                    @PathVariable("environment") String environment) {
+                                   @PathVariable("applicationId") String applicationId,
+                                   @PathVariable("environment") String environment) {
         return applicationFacade.shutdownApplication(applicationFamily, applicationId, environment);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'DEPLOYERS', #applicationFamily + '_' + #environment + '_' + 'DEPLOYERS')")
     @PostMapping(value = "/{applicationFamily}/{environment}/applications/{applicationId}/resume", produces = "application/json")
     public boolean resumeApplication(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                       @PathVariable("applicationId") String applicationId,
-                                       @PathVariable("environment") String environment) {
+                                     @PathVariable("applicationId") String applicationId,
+                                     @PathVariable("environment") String environment) {
         return applicationFacade.resumeApplication(applicationFamily, applicationId, environment);
     }
 
     @RolesAllowed("ADMIN")
     @PostMapping(value = "/{applicationFamily}/{environment}/redeployment", produces = "application/json")
     public Map<String, Boolean> redeploy(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                       @PathVariable("environment") String environment) {
+                                         @PathVariable("environment") String environment) {
         return applicationFacade.redeploy(applicationFamily, environment);
     }
 
     @PreAuthorize("true")
     @GetMapping(value = "/{applicationFamily}/applications/{applicationId}/metrics", produces =
             "application/json")
-    public Map<String,ApplicationMetrics> getApplicationMetricSummary(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
-                                                           @PathVariable("applicationId") String applicationId) {
+    public Map<String, ApplicationMetrics> getApplicationMetricSummary(@PathVariable("applicationFamily") ApplicationFamily applicationFamily,
+                                                                       @PathVariable("applicationId") String applicationId) {
         Map<String, ApplicationMetrics> ret = applicationFacade.getApplicationMetricSummary(applicationFamily,
                 applicationId);
 
         return ret;
     }
+
     @PreAuthorize("true")
     @GetMapping(value = "/{applicationFamily}/appmetrics", produces =
             "application/json")
@@ -508,8 +519,9 @@ public class ApplicationController {
         applicationFacade.refreshBuildDetails(codeBuildId);
         return true;
     }
+
     @PreAuthorize("true")
-    @RequestMapping(value = "/getEcrLoginToken",method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/getEcrLoginToken", method = RequestMethod.GET, produces = "application/json")
     public EcrTokenMap getEcrToken() {
 
         return applicationFacade.getEcrTokenMapping();
@@ -523,13 +535,13 @@ public class ApplicationController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/ecrRegistry")
-    public ECRRegistry createECRRegistry(@RequestBody ECRRegistry ecrRegistry){
+    public ECRRegistry createECRRegistry(@RequestBody ECRRegistry ecrRegistry) {
         return registryFacade.createECRRegistry(ecrRegistry);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/getRegistries")
-    public List<Registry> getAllRegistries(){
+    public List<Registry> getAllRegistries() {
         return registryFacade.getAllRegistries();
     }
 

@@ -15,6 +15,7 @@ import { Registry } from '../models/registry';
 import { SimpleOauth2User } from '../models/simple-oauth-2user';
 import { GlobalStats } from '../models/global-stats';
 import { User } from '../models/user';
+import { PasswordChange } from '../models/password-change';
 import { Application } from '../models/application';
 import { Build } from '../models/build';
 import { InputStreamResource } from '../models/input-stream-resource';
@@ -61,6 +62,7 @@ class ApplicationControllerService extends __BaseService {
   static readonly getUsersUsingGETPath = '/api/users';
   static readonly createUserUsingPOSTPath = '/api/users';
   static readonly updateUserUsingPUTPath = '/api/users/{userId}';
+  static readonly changePasswordUsingPUTPath = '/api/users/{userId}/changePassword';
   static readonly getApplicationsUsingGETPath = '/api/{applicationFamily}/applications';
   static readonly createApplicationUsingPOSTPath = '/api/{applicationFamily}/applications';
   static readonly updateApplicationUsingPUTPath = '/api/{applicationFamily}/applications';
@@ -851,6 +853,55 @@ class ApplicationControllerService extends __BaseService {
    */
   updateUserUsingPUT(params: ApplicationControllerService.UpdateUserUsingPUTParams): __Observable<User> {
     return this.updateUserUsingPUTResponse(params).pipe(
+      __map(_r => _r.body as User)
+    );
+  }
+
+  /**
+   * changePassword
+   * @param params The `ApplicationControllerService.ChangePasswordUsingPUTParams` containing the following parameters:
+   *
+   * - `userId`: userId
+   *
+   * - `pwdChange`: pwdChange
+   *
+   * @return OK
+   */
+  changePasswordUsingPUTResponse(params: ApplicationControllerService.ChangePasswordUsingPUTParams): __Observable<__StrictHttpResponse<User>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    __body = params.pwdChange;
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/api/users/${encodeURIComponent(params.userId)}/changePassword`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<User>;
+      })
+    );
+  }
+  /**
+   * changePassword
+   * @param params The `ApplicationControllerService.ChangePasswordUsingPUTParams` containing the following parameters:
+   *
+   * - `userId`: userId
+   *
+   * - `pwdChange`: pwdChange
+   *
+   * @return OK
+   */
+  changePasswordUsingPUT(params: ApplicationControllerService.ChangePasswordUsingPUTParams): __Observable<User> {
+    return this.changePasswordUsingPUTResponse(params).pipe(
       __map(_r => _r.body as User)
     );
   }
@@ -3281,7 +3332,7 @@ module ApplicationControllerService {
     /**
      * buildType
      */
-    buildType: 'MVN' | 'JAVA8_LIBRARY' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3' | 'SBT' | 'NPM' | 'NPM_UI';
+    buildType: 'MVN' | 'JDK11_MAVEN3' | 'JAVA8_LIBRARY' | 'FREESTYLE_DOCKER' | 'DOTNET_CORE' | 'MVN_IONIC' | 'JDK6_MAVEN2' | 'MJ_NUGET' | 'DOTNET_CORE22' | 'DOTNET_CORE3' | 'SBT' | 'NPM' | 'NPM_UI';
 
     /**
      * applicationAction
@@ -3303,6 +3354,22 @@ module ApplicationControllerService {
      * user
      */
     user: User;
+  }
+
+  /**
+   * Parameters for changePasswordUsingPUT
+   */
+  export interface ChangePasswordUsingPUTParams {
+
+    /**
+     * userId
+     */
+    userId: string;
+
+    /**
+     * pwdChange
+     */
+    pwdChange: PasswordChange;
   }
 
   /**

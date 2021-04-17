@@ -71,6 +71,7 @@ export { Monitoring } from './models/monitoring';
 export { OverrideObject } from './models/override-object';
 export { OverrideRequest } from './models/override-request';
 export { PVC } from './models/pvc';
+export { PasswordChange } from './models/password-change';
 export { PodReplicationDetails } from './models/pod-replication-details';
 export { PodResource } from './models/pod-resource';
 export { Port } from './models/port';

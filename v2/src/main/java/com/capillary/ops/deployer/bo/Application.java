@@ -91,7 +91,6 @@ public class Application {
     private String repositoryUrl;
 
     // this is needed for scheduled sonar triggers
-    @Null
     private String repositoryDefaultBranch;
 
     @NotBlank
