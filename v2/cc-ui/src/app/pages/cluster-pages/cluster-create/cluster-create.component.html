@@ -91,7 +91,7 @@
             </nb-accordion-item-header>
             <nb-accordion-item-body>
               <app-form-field *ngFor="let variable of dataSourceForCommonVars" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
-                              tooltipText="Cluster variables are common variables used across applications in cluster"
+                              tooltipText="Cluster variables are common variables defined in stack.json, used across applications in cluster"
                               [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
             </nb-accordion-item-body>
           </nb-accordion-item>
@@ -102,7 +102,7 @@
             </nb-accordion-item-header>
             <nb-accordion-item-body>
               <app-form-field *ngFor="let variable of dataSourceForSecrets" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
-                              tooltipText="Cluster variables are common variables used across applications in cluster"
+                              tooltipText="Secrets are common secrets defined in stack.json, used across applications in cluster"
                               [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
             </nb-accordion-item-body>
           </nb-accordion-item>
