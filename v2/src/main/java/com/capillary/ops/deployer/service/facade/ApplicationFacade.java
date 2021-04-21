@@ -1061,25 +1061,25 @@ public class ApplicationFacade {
             final String newline = "-----         ";
             String message = "Status :" + body.getQualityGate().getStatus();
             message = message + newline + "Sonar url: " + testBuildDetails.getSonarUrl();
+            Boolean sonarPassed = true;
             for (Condition cond : body.getQualityGate().getConditions()) {
                 // if any condition is not ok
                 if (!cond.getStatus().equalsIgnoreCase("OK") && cond.getValue() != null) {
                     String value = cond.getValue();
                     message += newline + cond.getMetric() + " " + cond.getOperator() + " " + cond.getErrorThreshold()
                             + "(" + value + ")";
-                    try {
-                        vcsService.rejectPullRequest(pullRequest);
-                    } catch (IOException exception) {
-                        logger.error("Failed to reject PR", exception);
-                    }
-                }else {
-                    try {
-                        vcsService.approvePullRequest(pullRequest);
-                    } catch (IOException exception) {
-                        logger.error("Failed to approve PR", exception);
-                    }
+                    sonarPassed = false;
                 }
             }
+            try {
+                if(sonarPassed)
+                    vcsService.approvePullRequest(pullRequest);
+                else
+                    vcsService.rejectPullRequest(pullRequest);
+            } catch (IOException exception) {
+                logger.error("Failed to change PR status", exception);
+            }
+
 
             // report all the failed
             vcsService.commentOnPullRequest(pullRequest, message);
