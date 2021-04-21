@@ -1,8 +1,8 @@
 <app-layout-one-column>
   <nb-card accent="info">
-    <nb-card-header *ngIf="!cluster?.id">Create Cluster</nb-card-header>
+    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack</nb-card-header>
     <nb-card-header *ngIf="cluster?.id">
-      Update Cluster ({{ awsClusterRequest?.clusterName }})
+      Update Cluster ({{ awsClusterRequest?.clusterName }} of <b>{{stackName}}</b> stack)
     </nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
@@ -84,7 +84,7 @@
                         [selectValues]='[{value:true, label:"Yes"},{value:false, label:"No"}]'></app-form-field>
 
 
-        <nb-accordion multi class="col-md-8 offset-md-2">
+        <nb-accordion multi class="col-md-12">
           <nb-accordion-item expanded>
             <nb-accordion-item-header>
               Common Variables
