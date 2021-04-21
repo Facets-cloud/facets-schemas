@@ -1,10 +1,16 @@
 <!--RelativePath-->
 <div *ngIf="!select">
   <div class="form-group row" >
-    <label [for]="fieldId" class="col-md-3 offset-md-2">{{label}}
+    <label [for]="fieldId" class="col-md-3 offset-md-2">
+      {{label}}
+      <nb-icon icon="star" *ngIf="required"
+               size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3">
+      </nb-icon>
+      &nbsp;
       <nb-icon icon="info"
                size="tiny" [nbTooltip]="tooltipText">
       </nb-icon>
+
     </label>
     <div class="col-md-5">
       <input
@@ -21,6 +27,7 @@
         [required]="required"
         (change)="onChange(innerValue)"
         (blur)="onTouched()"
+        [disabled]="disabled"
         minlength="{{minlength}}"
         [status]="fieldIdModel.dirty ? (fieldIdModel.invalid ? 'danger' : 'success'):''"
       />
@@ -41,6 +48,10 @@
 <div *ngIf="select">
   <div class="form-group row" >
     <label [for]="fieldId" class="col-md-3 offset-md-2">{{label}}
+      <nb-icon icon="star"
+               size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3" *ngIf="required">
+      </nb-icon>
+      &nbsp;
       <nb-icon icon="info"
                size="tiny" [nbTooltip]="tooltipText">
       </nb-icon>
@@ -57,7 +68,10 @@
         [required]="required"
         (change)="onChange(innerValue)"
         (blur)="onTouched()"
+        [disabled]="disabled"
+        [multiple]="multiple"
         [status]="fieldIdModel2.dirty ? (fieldIdModel2.invalid ? 'danger' : 'success'):''">
+        <nb-option [value]="null" *ngIf="optional">Clear Selection</nb-option>
         <nb-option *ngFor="let value of selectValues" value="{{value.value}}">{{value.label}}</nb-option>
       </nb-select>
     </div>

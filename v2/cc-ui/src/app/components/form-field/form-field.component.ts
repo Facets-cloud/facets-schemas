@@ -15,7 +15,7 @@ const noop = () => {
   }]
 })
 export class FormFieldComponent implements OnInit, ControlValueAccessor {
-  @Input("fieldId")
+  @Input("name")
   fieldId: string;
   innerValue: string;
   @Input("patternMatch")
@@ -32,20 +32,29 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   tooltipText: string;
 
   @Input("required")
-  required: string;
+  required: boolean;
+  @Input("disabled")
+  disabled:boolean;
   @Input("minlength")
   minlength: number
   @Input("select")
-  select: boolean
+  select: boolean = false;
   @Input("selectValues")
-  selectValues: any;
+  selectValues:{ value: string; label: string}[];
 
-  disabled: boolean;
+  @Input("multiple")
+  multiple: boolean = false;
+  @Input("optional")
+  optional: boolean;
+
+
 
   constructor() {
   }
 
   ngOnInit(): void {
+    this.invalidMsg = this.label + " is invalid!"
+    this.missingMsg = this.label + " is required!";
   }
 
   /**
@@ -69,7 +78,7 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   writeValue(value: any): void {
     if (value != this.innerValue) {
       this.innerValue = value
-      this.onChange(this.value);
+      this.onChange(this.multiple && !this.select? this.value.split(","):this.value);
     }
   }
 

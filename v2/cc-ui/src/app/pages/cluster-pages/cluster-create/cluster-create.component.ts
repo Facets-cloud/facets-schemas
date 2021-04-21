@@ -1,12 +1,12 @@
-import { Stack } from './../../../cc-api/models/stack';
-import { UiAwsClusterControllerService, UiStackControllerService } from 'src/app/cc-api/services';
-import { AwsClusterRequest } from './../../../cc-api/models/aws-cluster-request';
-import { Component, OnInit } from '@angular/core';
+import {Stack} from './../../../cc-api/models/stack';
+import {UiAwsClusterControllerService, UiStackControllerService} from 'src/app/cc-api/services';
+import {AwsClusterRequest} from './../../../cc-api/models/aws-cluster-request';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
-import {NbToastrService, NbSelectModule } from '@nebular/theme';
+import {NbToastrService} from '@nebular/theme';
 import {LocalDataSource} from 'ng2-smart-table';
-import { AbstractCluster } from 'src/app/cc-api/models';
+import {AbstractCluster} from 'src/app/cc-api/models';
 
 @Component({
   selector: 'app-cluster-create',
@@ -14,6 +14,8 @@ import { AbstractCluster } from 'src/app/cc-api/models';
   styleUrls: ['./cluster-create.component.scss']
 })
 export class ClusterCreateComponent implements OnInit {
+  regionValues: { label: string; value: string }[];
+  clusterListValues: { label: string; value: string }[];
   constructor(private clusterController: UiAwsClusterControllerService,
               private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -30,7 +32,7 @@ export class ClusterCreateComponent implements OnInit {
   stack: Stack;
   cluster: AwsCluster = null;
   cronScheduleModelBound: any;
-  regionModelBound: any;
+  regionModelBound: any = 'US_EAST_1';
   timeZoneModelBound: any;
   commonVariablesTable: LocalDataSource = new LocalDataSource();
   secretsTable: LocalDataSource = new LocalDataSource();
@@ -51,6 +53,11 @@ export class ClusterCreateComponent implements OnInit {
     'AP_EAST_1' , 'AP_SOUTH_1' , 'AP_SOUTHEAST_1' , 'AP_SOUTHEAST_2' , 'AP_NORTHEAST_1' ,
      'AP_NORTHEAST_2' , 'SA_EAST_1' , 'CN_NORTH_1' , 'CN_NORTHWEST_1', 'CA_CENTRAL_1', 'GovCloud' ,
       'US_GOV_EAST_1' ];
+
+  regionAZ: any = {
+    'US_EAST_1': Array.from('abcdef').map(x=>{return {"value": 'us-east-1'+x, "label": "1"+x}}),
+    'US_EAST_2': Array.from('abc'),
+  };
 
   settings = {
     columns: {
@@ -87,6 +94,8 @@ export class ClusterCreateComponent implements OnInit {
       confirmSave: false,
     },
   };
+   dataSourceForSecrets: any;
+   dataSourceForCommonVars: any;
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(p => {
@@ -100,16 +109,24 @@ export class ClusterCreateComponent implements OnInit {
       }else {
         this.stackController.getStackUsingGET(this.stackName).subscribe(
           s => {
+            debugger;
             this.loadClusterVarsFromStack(s);
             this.stack = s;
             console.log(this.stack);
           });
       }
+      this.regionValues = this.awsRegions.map(x => {
+        return {
+          "value": x,
+          "label": x.replace("_"," ").replace("_"," ")
+        }
+      });
     });
 
     this.uiStackControllerService.getClustersUsingGET1(this.stackName).subscribe(
       c => {
         this.clusterList = c;
+        this.clusterListValues = this.clusterList.map(c=>{return {"value": c.id, "label": c.name}})
       }
     );
   }
@@ -117,20 +134,18 @@ export class ClusterCreateComponent implements OnInit {
 
   loadClusterVarsFromStack(stackObj: Stack) {
     console.log('****** loading from Stack');
-    let dataSourceForCommonVars = [];
-    let dataSourceForSecrets = [];
     // Object.keys(stackObj.stackVars).forEach(ele => {
     //   dataSourceForCommonVars.push({name: ele, value: stackObj.stackVars[ele]});
     // });
     Object.keys(stackObj.clusterVariablesMeta).forEach(ele => {
       if (stackObj.clusterVariablesMeta[ele].secret){
-        dataSourceForSecrets.push({name: ele, value: stackObj.clusterVariablesMeta[ele].value});
+        this.dataSourceForSecrets.push({name: ele, value: stackObj.clusterVariablesMeta[ele].value});
       }else{
-        dataSourceForCommonVars.push({name: ele, value: stackObj.clusterVariablesMeta[ele].value});
+        this.dataSourceForCommonVars.push({name: ele, value: stackObj.clusterVariablesMeta[ele].value});
     }
     });
-    this.commonVariablesTable.load(dataSourceForCommonVars);
-    this.secretsTable.load(dataSourceForSecrets);
+    this.commonVariablesTable.load(this.dataSourceForCommonVars);
+    this.secretsTable.load(this.dataSourceForSecrets);
   }
 
   loadClusterVarsFromCluster(cluster: AbstractCluster){
@@ -272,4 +287,7 @@ export class ClusterCreateComponent implements OnInit {
     event.confirm.resolve(event.newData);
   }
 
+  test(form) {
+    return true;
+  }
 }
