@@ -6,14 +6,16 @@ import {LayoutsModule} from '../../../layouts/layouts.module';
 import {Ng2SmartTableModule} from 'ng2-smart-table';
 import {NbEvaIconsModule} from '@nebular/eva-icons';
 import { FormsModule } from '@angular/forms';
-import {NbButtonModule, NbCardModule, NbIconModule, NbStepperModule,
-  NbSelectModule, NbToggleModule, NbInputModule} from '@nebular/theme';
+import {
+  NbButtonModule, NbCardModule, NbIconModule,
+  NbSelectModule, NbToggleModule, NbInputModule, NbTooltipModule
+} from '@nebular/theme';
+import {ComponentsModule} from "../../../components/components.module";
 
 @NgModule({
   declarations: [StackCreateComponent],
   imports: [
     CommonModule,
-    NbStepperModule,
     NbCardModule,
     NbButtonModule,
     NbSelectModule,
@@ -24,7 +26,9 @@ import {NbButtonModule, NbCardModule, NbIconModule, NbStepperModule,
     NbEvaIconsModule,
     Ng2SmartTableModule,
     LayoutsModule,
-    RouterModule
+    RouterModule,
+    NbTooltipModule,
+    ComponentsModule
   ]
 })
 export class StackCreateModule { }

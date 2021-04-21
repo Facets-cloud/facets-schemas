@@ -1,0 +1,73 @@
+<!--RelativePath-->
+<div *ngIf="!select">
+  <div class="form-group row" >
+    <label [for]="fieldId" class="col-md-3 offset-md-2">{{label}}
+      <nb-icon icon="info"
+               size="tiny" [nbTooltip]="tooltipText">
+      </nb-icon>
+    </label>
+    <div class="col-md-5">
+      <input
+        fieldSize="medium"
+        type="text"
+        nbInput
+        fullWidth
+        [name]="fieldId"
+        [id]="fieldId"
+        [(ngModel)]="innerValue"
+        [placeholder]="placeholder"
+        [pattern]="patternMatch"
+        #fieldIdModel="ngModel"
+        [required]="required"
+        (change)="onChange(innerValue)"
+        (blur)="onTouched()"
+        minlength="{{minlength}}"
+      />
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="fieldIdModel.invalid && fieldIdModel.touched" class="col-md-5 offset-md-5">
+      <p class="caption status-danger" *ngIf="fieldIdModel.errors?.required">
+        {{missingMsg}}
+      </p>
+      <p class="caption status-danger" *ngIf="fieldIdModel.errors?.pattern || fieldIdModel.errors?.minlength">
+        {{invalidMsg}}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="select">
+  <div class="form-group row" >
+    <label [for]="fieldId" class="col-md-3 offset-md-2">{{label}}
+      <nb-icon icon="info"
+               size="tiny" [nbTooltip]="tooltipText">
+      </nb-icon>
+    </label>
+    <div class="col-md-5">
+      <nb-select
+        fullWidth
+        #fieldIdModel2="ngModel"
+        [name]="fieldId"
+        [id]="fieldId"
+        [(ngModel)]="innerValue"
+        [placeholder]="placeholder"
+        [pattern]="patternMatch"
+        [required]="required"
+        (change)="onChange(innerValue)"
+        (blur)="onTouched()">
+        <nb-option *ngFor="let value of selectValues" value="{{value.value}}">{{value.label}}</nb-option>
+      </nb-select>
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="fieldIdModel2.invalid && fieldIdModel2.touched" class="col-md-5 offset-md-5">
+      <p class="caption status-danger" *ngIf="fieldIdModel2.errors?.required">
+        {{missingMsg}}
+      </p>
+      <p class="caption status-danger" *ngIf="fieldIdModel2.errors?.pattern || fieldIdModel2.errors?.minlength">
+        {{invalidMsg}}
+      </p>
+    </div>
+  </div>
+</div>

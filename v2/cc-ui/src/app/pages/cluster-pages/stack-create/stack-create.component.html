@@ -2,201 +2,44 @@
   <nb-card accent="info">
     <nb-card-header>Create Stack</nb-card-header>
     <nb-card-body>
-      <div style="margin-left: 3rem; margin-right: 3rem; margin-bottom: 3rem">
-        <nb-stepper #stepper linear="true">
-          <nb-step label="Basic Details">
-
-
-            <div class="form-group row">
-              <label for="stackName" class="label col-sm-3">Name</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #clusterName="ngModel"
-                  nbInput
-                  fullWidth
-                  name="stackName"
-                  id="stackName"
-                  [(ngModel)]="stack.name"
-                  placeholder="stack-name"
-                  pattern="[a-z-]+"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label class="label col-sm-3">VCS</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [(ngModel)]="stack.vcs"
-                  #vcs="ngModel"
-                  name="vcs"
-                  id="vcs"
-                  fullWidth
-                  size="small"
-                  placeholder="Please select"
-                >
-                  <nb-option value="BITBUCKET">BITBUCKET</nb-option>
-                  <nb-option value="GITHUB">GITHUB</nb-option>
-                </nb-select>
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="vcsUrl" class="label col-sm-3">VCS URL</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #vcsUrl="ngModel"
-                  nbInput
-                  fullWidth
-                  name="vcsUrl"
-                  id="vcsUrl"
-                  [(ngModel)]="stack.vcsUrl"
-                  placeholder="https://github.com/example.git"
-                  pattern="[a-z-]+"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="relativePath" class="label col-sm-3"
-                >Relative path</label
-              >
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #relativePath="ngModel"
-                  nbInput
-                  fullWidth
-                  name="relativePath"
-                  id="relativePath"
-                  [(ngModel)]="stack.relativePath"
-                  placeholder="directory-name"
-                  pattern="[a-z-]+"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="user" class="label col-sm-3">User</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #user="ngModel"
-                  nbInput
-                  fullWidth
-                  name="user"
-                  id="user"
-                  [(ngModel)]="stack.user"
-                  placeholder="stack-user"
-                  pattern="[a-z-]+"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="appPassword" class="label col-sm-3">Password</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #appPassword="ngModel"
-                  nbInput
-                  fullWidth
-                  name="appPassword"
-                  id="appPassword"
-                  [(ngModel)]="stack.appPassword"
-                  pattern="[a-z-]+"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="pauseReleases" class="label col-sm-3"
-                >Pause Releases</label
-              >
-              <div class="col-sm-5">
-                <nb-toggle
-                  [(ngModel)]="stack.pauseReleases"
-                  name="pauseReleases"
-                  #pauseReleases="ngModel"
-                  id="pauseReleases"
-                ></nb-toggle>
-              </div>
-            </div>
-
-            <div style="padding-top: 1rem; float: right">
-              <button nbStepperNext status="info" nbButton>Next</button>
-            </div>
-          </nb-step>
-
-          <nb-step label="Stack Variables">
-
-
-            <div class="form-group row">
-                <label for="stackVars" class="label col-sm-3"
-                  >Stack Variables</label
-                >
-              </div>
-              <div class="form-group row">
-                <div class="col-sm-9">
-                  <ng2-smart-table
-                    (createConfirm)="validateValue($event)"
-                    (editConfirm)="validateValue($event)"
-                    [settings]="settings"
-                    [source]="stackVarsTable"
-                  >
-                  </ng2-smart-table>
-                </div>
-              </div>
-
-
-            <div style="padding-top: 1rem; float: right">
-              <button nbStepperNext status="info" nbButton>Next</button>
-            </div>
-
-          </nb-step>
-
-
-          <nb-step label="Cluster Variables">
-
-          <div class="form-group row">
-                <label for="stackVars" class="label col-sm-3"
-                  >Cluster Variable Details</label
-                >
-              </div>
-              <div class="form-group row">
-                <div class="col-sm-9">
-                  <ng2-smart-table
-                    (createConfirm)="validateValue($event)"
-                    (editConfirm)="validateValue($event)"
-                    [settings]="settingsClusterVars"
-                    [source]="clusterVarsTable"
-                  >
-                  </ng2-smart-table>
-                </div>
-              </div>
-
-              <div style="padding-top: 1rem; float: right">
-              <button
-                nbButton
-                status="primary"
-                (click)="createCluster()"
-              >
-                Create
-              </button>
-              </div>
-
-           </nb-step>
-
-
-        </nb-stepper>
-      </div>
+      <form #form="ngForm">
+        <app-form-field label="Stack Name" fieldId="stackName" invalidMsg="Stack Name is too Short or contains invalid characters (alphanumeric allowed)"
+                        missingMsg="Stack Name is required!" placeholder="Stack Name"
+                        tooltipText="Name to uniquely identify your stack" patternMatch="[a-z-]+"
+                        [(ngModel)]="stack.name" name="stackName" required minlength="5"></app-form-field>
+        <!--VCS Field-->
+        <app-form-field label="Git Provider" fieldId="vcs" invalidMsg="Git Provider is invalid"
+                        missingMsg="Git Provider is required!" placeholder="Git Provider"
+                        tooltipText="Git version control system"
+                        [(ngModel)]="stack.vcs" name="vcs" required select="true"
+                        [selectValues]='[{"value":"BITBUCKET", "label":"Bitbucket"},{"value":"GITHUB", "label":"Github"}]'></app-form-field>
+        <!--VCS URL-->
+        <app-form-field label="Repository URL" fieldId="vcsUrl" invalidMsg="Specified Repo URL is invalid!"
+                        missingMsg="Repository URL is required!" placeholder="https://github.com/example.git"
+                        tooltipText="The https url used to do git clone in local"   required [(ngModel)]="stack.vcsUrl" name="vcsUrl"
+                        ></app-form-field>
+        <!--RelativePath-->
+        <app-form-field label="Relative Path" fieldId="relativePath" invalidMsg="Specified Relative Path is invalid!"
+                        missingMsg="Relative Path is required! Key in '.' if it is same as repo URL" placeholder="."
+                        tooltipText="The directory which contains the stack definition relative to repository url"
+                         patternMatch="[a-z-\.]+" required [(ngModel)]="stack.relativePath" name="relativePath"></app-form-field>
+        <!--Repository User-->
+        <app-form-field label="Username" fieldId="userName" invalidMsg="User Name is invalid"
+                        missingMsg="User is required to checkout the stack!" placeholder="User Name"
+                        tooltipText="AppUser to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
+                         patternMatch="[a-z-\.]+" required [(ngModel)]="stack.user" name="user"></app-form-field>
+        <!--Password-->
+        <app-form-field label="Password" fieldId="appPassword" invalidMsg="Password is invalid"
+                        missingMsg="Password is required to checkout the stack!" placeholder="Password"
+                        tooltipText="AppUser's Password to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
+                         patternMatch="[a-z-]+" required [(ngModel)]="stack.appPassword" name="appPassword"></app-form-field>
+      </form>
     </nb-card-body>
+    <nb-card-footer>
+      <button class=" cc-margin-right" nbButton status="primary" (click)='createCluster()'
+              [disabled]="!form.valid">Create
+      </button>
+      <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
+    </nb-card-footer>
   </nb-card>
 </app-layout-one-column>
