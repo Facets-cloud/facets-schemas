@@ -65,6 +65,9 @@
     </nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
+        <!--<app-form-field label="Username" tooltipText="Email address of the user" placeholder="Email address"
+        patternMatch=".+@.+\..+" required missingMsg="Username is required!" invalidMsg="Username should be a valid email address.">
+        </app-form-field>-->
         <div class="form-group">
           <label for="email" class="sr-only-2" >Username*</label>
           <input nbInput type="email" name="userName" #email="ngModel" id="email" class="form-control min-width"

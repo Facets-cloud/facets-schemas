@@ -107,7 +107,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   openEditPopup(dialogRef, event, changePwd) {
-    if (event.name == "Edit") {
+    if (event.action == "Edit") {
       this.errorMsg = "";
       this.userEdited.id = event.data.id;
       this.userEdited.password = event.data.password;

@@ -22,6 +22,7 @@
         (change)="onChange(innerValue)"
         (blur)="onTouched()"
         minlength="{{minlength}}"
+        [status]="fieldIdModel.dirty ? (fieldIdModel.invalid ? 'danger' : 'success'):''"
       />
     </div>
   </div>
@@ -55,7 +56,8 @@
         [pattern]="patternMatch"
         [required]="required"
         (change)="onChange(innerValue)"
-        (blur)="onTouched()">
+        (blur)="onTouched()"
+        [status]="fieldIdModel2.dirty ? (fieldIdModel2.invalid ? 'danger' : 'success'):''">
         <nb-option *ngFor="let value of selectValues" value="{{value.value}}">{{value.label}}</nb-option>
       </nb-select>
     </div>
