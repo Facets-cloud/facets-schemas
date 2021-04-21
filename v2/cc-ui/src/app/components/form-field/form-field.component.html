@@ -7,7 +7,7 @@
                size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3">
       </nb-icon>
       &nbsp;
-      <nb-icon icon="info"
+      <nb-icon icon="info-outline"
                size="tiny" [nbTooltip]="tooltipText">
       </nb-icon>
 
@@ -35,6 +35,9 @@
   </div>
   <div class="row">
     <div *ngIf="fieldIdModel.invalid && fieldIdModel.touched" class="col-md-5 offset-md-5">
+<!--
+      {{fieldIdModel.errors | json}}
+-->
       <p class="caption status-danger" *ngIf="fieldIdModel.errors?.required">
         {{missingMsg}}
       </p>
@@ -52,7 +55,7 @@
                size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3" *ngIf="required">
       </nb-icon>
       &nbsp;
-      <nb-icon icon="info"
+      <nb-icon icon="info-outline"
                size="tiny" [nbTooltip]="tooltipText">
       </nb-icon>
     </label>
@@ -66,7 +69,7 @@
         [placeholder]="placeholder"
         [pattern]="patternMatch"
         [required]="required"
-        (change)="onChange(innerValue)"
+        (selectedChange)="onChange(innerValue)"
         (blur)="onTouched()"
         [disabled]="disabled"
         [multiple]="multiple"
@@ -78,6 +81,9 @@
   </div>
   <div class="row">
     <div *ngIf="fieldIdModel2.invalid && fieldIdModel2.touched" class="col-md-5 offset-md-5">
+<!--
+      {{fieldIdModel2.errors | json}} -  {{fieldIdModel2.valid}}
+-->
       <p class="caption status-danger" *ngIf="fieldIdModel2.errors?.required">
         {{missingMsg}}
       </p>

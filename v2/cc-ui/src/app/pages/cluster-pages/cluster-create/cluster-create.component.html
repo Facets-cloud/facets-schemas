@@ -38,10 +38,9 @@
                         [(ngModel)]="regionModelBound" required="true"  [disabled]="cluster?.id"></app-form-field>
 
 
-        <app-form-field label="Availability zone" name="az" placeholder="Select Availability zone"
-                        tooltipText="Select at least two availability Zones"
-                        select="true" [selectValues]="regionAZ[regionModelBound]" multiple="true"
-                        [(ngModel)]="awsClusterRequest.azs" required="true"  [disabled]="cluster?.id"></app-form-field>
+        <app-form-field label="Availability zone" name="az" placeholder="Availability zone(s)"
+                        tooltipText="Comma Separated value for at least two availability Zones"
+                        [(ngModel)]="azsCsv" required="true"  [disabled]="cluster?.id"></app-form-field>
 
         <app-form-field label="IAM Role" name="role"  placeholder="IAM Role ARN"
                         tooltipText="IAM Role created as per Documentation for provisioning cluster in your account"
@@ -59,7 +58,7 @@
                         tooltipText="Secret Access Key for above Access Key Id"
                         [(ngModel)]="awsClusterRequest.accessKeyId"  ></app-form-field>
 
-        <app-form-field label="Spot Instance Type" name="spotInstanceTypes"  placeholder="Comma separated spot instance types" [hidden]="!isChinaRegion()"
+        <app-form-field label="Spot Instance Type" name="spotInstanceTypes"  placeholder="Comma separated spot instance types"
                         tooltipText="The instances types you wish to use in your spot fleet"
                         [(ngModel)]="spotInstanceTypes"  required="true" ></app-form-field>
 
@@ -85,35 +84,29 @@
                         [selectValues]='[{value:true, label:"Yes"},{value:false, label:"No"}]'></app-form-field>
 
 
+        <nb-accordion multi class="col-md-8 offset-md-2">
+          <nb-accordion-item expanded>
+            <nb-accordion-item-header>
+              Common Variables
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <app-form-field *ngFor="let variable of dataSourceForCommonVars" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
+                              tooltipText="Cluster variables are common variables used across applications in cluster"
+                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
 
-              <div class="form-group row">
-                <div class="col-sm-9">
-                  <ng2-smart-table
-                    (createConfirm)="validateValue($event)"
-                    (editConfirm)="validateValue($event)"
-                    [settings]="settings"
-                    [source]="commonVariablesTable"
-                  >
-                  </ng2-smart-table>
-                </div>
-              </div>
-              <div class="form-group row">
-                <label  class="label col-sm-3"
-                  >Secrets</label
-                >
-              </div>
-
-              <div class="form-group row">
-                <div class="col-sm-9">
-                  <ng2-smart-table
-                    (createConfirm)="validateValue($event)"
-                    (editConfirm)="validateValue($event)"
-                    [settings]="settings"
-                    [source]="secretsTable"
-                  >
-                  </ng2-smart-table>
-                </div>
-              </div>
+          <nb-accordion-item expanded>
+            <nb-accordion-item-header>
+              Secrets
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <app-form-field *ngFor="let variable of dataSourceForSecrets" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
+                              tooltipText="Cluster variables are common variables used across applications in cluster"
+                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+        </nb-accordion>
       </form>
     </nb-card-body>
     <nb-card-footer>

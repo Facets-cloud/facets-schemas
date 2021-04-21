@@ -5,7 +5,6 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import {NbToastrService} from '@nebular/theme';
-import {LocalDataSource} from 'ng2-smart-table';
 import {AbstractCluster} from 'src/app/cc-api/models';
 
 @Component({
@@ -16,6 +15,7 @@ import {AbstractCluster} from 'src/app/cc-api/models';
 export class ClusterCreateComponent implements OnInit {
   regionValues: { label: string; value: string }[];
   clusterListValues: { label: string; value: string }[];
+  azsCsv: string;
   constructor(private clusterController: UiAwsClusterControllerService,
               private activatedRoute: ActivatedRoute,
               private router: Router,
@@ -24,9 +24,6 @@ export class ClusterCreateComponent implements OnInit {
               private stackController: UiStackControllerService) { }
 
 
-  // tzObj: TimeZone = {
-  //   displayName: ''
-  // };
   clusterList: any;
   stackName: any;
   stack: Stack;
@@ -34,8 +31,6 @@ export class ClusterCreateComponent implements OnInit {
   cronScheduleModelBound: any;
   regionModelBound: any = 'US_EAST_1';
   timeZoneModelBound: any;
-  commonVariablesTable: LocalDataSource = new LocalDataSource();
-  secretsTable: LocalDataSource = new LocalDataSource();
   originalClusterVariablesSource = [];
   awsClusterRequest: AwsClusterRequest = {
     clusterName: '',
@@ -54,48 +49,9 @@ export class ClusterCreateComponent implements OnInit {
      'AP_NORTHEAST_2' , 'SA_EAST_1' , 'CN_NORTH_1' , 'CN_NORTHWEST_1', 'CA_CENTRAL_1', 'GovCloud' ,
       'US_GOV_EAST_1' ];
 
-  regionAZ: any = {
-    'US_EAST_1': Array.from('abcdef').map(x=>{return {"value": 'us-east-1'+x, "label": "1"+x}}),
-    'US_EAST_2': Array.from('abc'),
-  };
 
-  settings = {
-    columns: {
-      name: {
-        title: 'Name',
-        filter: false,
-        width: '50%',
-        editable: false,
-      },
-      value: {
-        title: 'Value',
-        filter: false,
-        width: '50%',
-        editable: true,
-        editor: {type: 'text'},
-      }
-    },
-    noDataMessage: '',
-    pager: {
-      display: true,
-      perPage: 5,
-    },
-    actions: {
-      add: false,
-      edit: true,
-      delete: false,
-      position: 'right',
-    },
-    edit: {
-      inputClass: '',
-      editButtonContent: '<i class="eva-edit-outline eva"></i>',
-      saveButtonContent: '<i class="eva-checkmark-outline eva"></i>',
-      cancelButtonContent: '<i class="eva-close-outline eva"></i>',
-      confirmSave: false,
-    },
-  };
-   dataSourceForSecrets: any;
-   dataSourceForCommonVars: any;
+   dataSourceForSecrets: any = [];
+   dataSourceForCommonVars: any = [];
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(p => {
@@ -109,7 +65,6 @@ export class ClusterCreateComponent implements OnInit {
       }else {
         this.stackController.getStackUsingGET(this.stackName).subscribe(
           s => {
-            debugger;
             this.loadClusterVarsFromStack(s);
             this.stack = s;
             console.log(this.stack);
@@ -133,41 +88,34 @@ export class ClusterCreateComponent implements OnInit {
 
 
   loadClusterVarsFromStack(stackObj: Stack) {
-    console.log('****** loading from Stack');
-    // Object.keys(stackObj.stackVars).forEach(ele => {
-    //   dataSourceForCommonVars.push({name: ele, value: stackObj.stackVars[ele]});
-    // });
-    Object.keys(stackObj.clusterVariablesMeta).forEach(ele => {
-      if (stackObj.clusterVariablesMeta[ele].secret){
-        this.dataSourceForSecrets.push({name: ele, value: stackObj.clusterVariablesMeta[ele].value});
-      }else{
-        this.dataSourceForCommonVars.push({name: ele, value: stackObj.clusterVariablesMeta[ele].value});
-    }
+    Object.keys(stackObj.clusterVariablesMeta).forEach(key => {
+      let element = stackObj.clusterVariablesMeta[key];
+      if (element.secret) {
+        this.dataSourceForSecrets.push({name: key, value: element.value, required: element.required});
+      } else {
+        this.dataSourceForCommonVars.push({name: key, value: element.value, required: element.required});
+      }
     });
-    this.commonVariablesTable.load(this.dataSourceForCommonVars);
-    this.secretsTable.load(this.dataSourceForSecrets);
   }
 
   loadClusterVarsFromCluster(cluster: AbstractCluster){
-    let dataSourceForCommonVars = [];
-    let dataSourceForSecrets = [];
+debugger;
     Object.keys(cluster.commonEnvironmentVariables).forEach(element => {
       if (!this.extraEnvVars.includes(element)) {
-      dataSourceForCommonVars.push({name: element, value: cluster.commonEnvironmentVariables[element]});
+      this.dataSourceForCommonVars.push({name: element, value: cluster.commonEnvironmentVariables[element]});
       const clone = {name: element, value: cluster.commonEnvironmentVariables[element]};
       this.originalClusterVariablesSource.push(clone);
       }
     });
-    this.commonVariablesTable.load(dataSourceForCommonVars);
 
     Object.keys(cluster.secrets).forEach(element => {
-        dataSourceForSecrets.push({name: element, value: cluster.secrets[element]});
+        this.dataSourceForSecrets.push({name: element, value: cluster.secrets[element]});
         const clone = {name: element, value: cluster.secrets[element]};
         this.originalClusterVariablesSource.push(clone);
       });
-    this.secretsTable.load(dataSourceForSecrets);
   }
   initAWSClusterRequestObject() {
+    debugger;
     this.awsClusterRequest.clusterName = this.cluster.name;
     this.awsClusterRequest.cloud = this.cluster.cloud;
     this.timeZoneModelBound = this.cluster.tz;
@@ -186,6 +134,7 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.instanceTypes = this.cluster.instanceTypes;
     this.regionModelBound = this.cluster.awsRegion.toUpperCase().replace('-', '_').replace('-', '_');
     this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
+    this.azsCsv = this.cluster.azs ? this.cluster.azs.join(","):"";
     this.cronScheduleModelBound = this.cluster.schedules.RELEASE;
   }
 
@@ -195,17 +144,20 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.region = this.regionModelBound;
     this.awsClusterRequest.tz = this.timeZoneModelBound;
     this.awsClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
+    this.awsClusterRequest.azs = this.azsCsv.split(",")
 
-    const commmonVarsDataSource = await this.commonVariablesTable.getAll();
-    commmonVarsDataSource.forEach(element => {
+    this.dataSourceForCommonVars.forEach(element => {
       this.awsClusterRequest.clusterVars[element.name] = element.value;
     });
-    const secretsDataSource = await this.secretsTable.getAll();
+    const secretsDataSource = this.dataSourceForSecrets;
     secretsDataSource.forEach(element => {
-      this.awsClusterRequest.clusterVars[element.name] = element.value;
+      if(element.value!="****") {
+        this.awsClusterRequest.clusterVars[element.name] = element.value;
+      }
     });
 
     try {
+      debugger
       this.clusterController.createClusterUsingPOST2(this.awsClusterRequest)
       .subscribe(cluster => {
         this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
@@ -252,13 +204,12 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.tz = this.timeZoneModelBound;
     this.awsClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
 
-    const commmonVarsDataSource = await this.commonVariablesTable.getAll();
-    commmonVarsDataSource.forEach(element => {
-      if (this.hasClusterVariableChanged(commmonVarsDataSource, element.name)) {
+    this.dataSourceForCommonVars.forEach(element => {
+      if (this.hasClusterVariableChanged(this.dataSourceForCommonVars, element.name)) {
       this.awsClusterRequest.clusterVars[element.name] = element.value;
       }
     });
-    const secretsDataSource = await this.secretsTable.getAll();
+    const secretsDataSource = await this.dataSourceForSecrets;
     secretsDataSource.forEach(element => {
       if (this.hasClusterVariableChanged(secretsDataSource, element.name)) {
       this.awsClusterRequest.clusterVars[element.name] = element.value;
@@ -288,6 +239,7 @@ export class ClusterCreateComponent implements OnInit {
   }
 
   test(form) {
+    console.log(form.valid)
     return true;
   }
 }
