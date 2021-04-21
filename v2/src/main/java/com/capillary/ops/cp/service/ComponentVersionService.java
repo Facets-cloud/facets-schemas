@@ -37,7 +37,7 @@ public class ComponentVersionService {
         for (ComponentType componentType: componentVersions.keySet()) {
             String clusterComponentVersion = existingCluster.getComponentVersions().get(ComponentType.KUBERNETES);
             String newComponentVersion = componentVersions.get(ComponentType.KUBERNETES);
-            if (componentType.equals(ComponentType.KUBERNETES) &&
+            if (ComponentType.KUBERNETES.equals(componentType) &&
                     !clusterComponentVersion.equals(newComponentVersion)) {
                 syncKubernetesComponent(existingCluster, componentVersions);
             }
