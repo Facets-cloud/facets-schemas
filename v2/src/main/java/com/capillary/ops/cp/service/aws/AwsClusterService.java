@@ -90,6 +90,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         }
         //DONE: Variable Assignment
         AwsCluster cluster = new AwsCluster(request.getClusterName());
+        cluster.setStackName(request.getStackName());
 
         if (request.getInstanceTypes() != null && request.getInstanceTypes().size() > 0){
             cluster.setInstanceTypes(request.getInstanceTypes());
@@ -119,10 +120,8 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         //TODO: Variable Generations
         //1. Generate CIDR.
         cluster.setVpcCIDR(request.getVpcCIDR());
-        cluster.setStackName(request.getStackName());
         cluster.setCdPipelineParent(request.getCdPipelineParent());
         cluster.setRequireSignOff(request.getRequireSignOff());
-        cluster.setComponentVersions(request.getComponentVersions());
         return cluster;
     }
 
