@@ -39,7 +39,8 @@ export class ClusterCreateComponent implements OnInit {
     clusterVars: {},
     tz: {},
     region: null,
-    instanceTypes: null
+    instanceTypes: null,
+    componentVersions: {}
   };
   spotInstanceTypes: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION', 'sv4', 'sv5'];
@@ -132,6 +133,7 @@ debugger;
     this.awsClusterRequest.requireSignOff = this.cluster.requireSignOff;
     this.awsClusterRequest.schedules = this.cluster.schedules;
     this.awsClusterRequest.instanceTypes = this.cluster.instanceTypes;
+    this.awsClusterRequest.componentVersions = this.cluster.componentVersions;
     this.regionModelBound = this.cluster.awsRegion.toUpperCase().replace('-', '_').replace('-', '_');
     this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
     this.azsCsv = this.cluster.azs ? this.cluster.azs.join(","):"";
