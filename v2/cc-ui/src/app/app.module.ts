@@ -27,6 +27,8 @@ import { TeamsOverviewModule } from './pages/teams-overview/teams-overview.modul
 import { TeamManagementModule } from './pages/team-management/team-management.module';
 import {LoginPageModule} from "./pages/login-page/login-page.module";
 import {UserManagementModule} from "./pages/user-management/user-management.module";
+import {ArtifactoryManagementComponent} from "./pages/artifactory-management/artifactory-management.component";
+import {ArtifactoryManagementModule} from "./pages/artifactory-management/artifactory-management.module";
 
 
 @NgModule({
@@ -64,7 +66,8 @@ import {UserManagementModule} from "./pages/user-management/user-management.modu
     TeamManagementModule,
     NbMenuModule.forRoot(),
     LoginPageModule,
-    UserManagementModule
+    UserManagementModule,
+    ArtifactoryManagementModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},

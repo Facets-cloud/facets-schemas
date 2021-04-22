@@ -1,7 +1,7 @@
 <!--RelativePath-->
 <div *ngIf="!select">
   <div class="form-group row" >
-    <label [for]="fieldId" class="col-md-3 offset-md-2">
+    <label [for]="fieldId" class="col-md-{{labelSize}} offset-md-{{offset}}">
       {{label}}
       <nb-icon icon="star" *ngIf="required"
                size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3">
@@ -12,7 +12,7 @@
       </nb-icon>
 
     </label>
-    <div class="col-md-5">
+    <div class="col-md-{{inputSize}}">
       <input
         fieldSize="medium"
         type="text"
@@ -50,7 +50,7 @@
 
 <div *ngIf="select">
   <div class="form-group row" >
-    <label [for]="fieldId" class="col-md-3 offset-md-2">{{label}}
+    <label [for]="fieldId" class="col-md-{{labelSize}} offset-md-{{offset}}">{{label}}
       <nb-icon icon="star"
                size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3" *ngIf="required">
       </nb-icon>
@@ -59,7 +59,7 @@
                size="tiny" [nbTooltip]="tooltipText">
       </nb-icon>
     </label>
-    <div class="col-md-5">
+    <div class="col-md-{{inputSize}}">
       <nb-select
         fullWidth
         #fieldIdModel2="ngModel"

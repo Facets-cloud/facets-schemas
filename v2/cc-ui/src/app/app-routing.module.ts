@@ -21,6 +21,7 @@ import {TeamsOverviewComponent} from './pages/teams-overview/teams-overview.comp
 import {TeamManagementComponent} from './pages/team-management/team-management.component';
 import {LoginPageComponent} from "./pages/login-page/login-page.component";
 import {UserManagementComponent} from "./pages/user-management/user-management.component";
+import {ArtifactoryManagementComponent} from "./pages/artifactory-management/artifactory-management.component";
 
 
 const routes: Routes = [
@@ -35,6 +36,9 @@ const routes: Routes = [
   },
   {
     path: 'capc/users', component: UserManagementComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/artifactories', component: ArtifactoryManagementComponent, canActivate: [AuthGuard]
   },
   {
     path: 'capc/teams', component: TeamsOverviewComponent, canActivate: [AuthGuard]

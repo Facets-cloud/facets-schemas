@@ -1,0 +1,62 @@
+<app-layout-one-column>
+  <nb-card>
+    <nb-card-header><div style="float:left;">Artifactories</div>
+      <div style="float:right;">
+        <button
+          nbButton
+          fullWidth
+          status="primary"
+          (click)="openCreatePopup(createArtifactory)"
+        >
+
+          Create Artifactory
+        </button>
+      </div>
+    </nb-card-header>
+    <nb-card-body>
+      <ng2-smart-table class="cc-no-standard" [settings]="tableSettings" [source]="artifactories"
+                       (create)="openCreatePopup(createArtifactory)" (custom)="openEditPopup(createArtifactory, $event)"></ng2-smart-table>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>
+
+
+<ng-template #createArtifactory let-data let-ref="dialogRef">
+  <nb-card size="large">
+    <nb-card-header>
+      Create ECR Artifactory
+
+    </nb-card-header>
+    <nb-card-body>
+      <form #form="ngForm">
+        <app-form-field label="Artifactory Name" invalidMsg="Artifactory Name is too Short or contains invalid characters (alphanumeric allowed)"
+                        tooltipText="Name to uniquely identify your Artifactory" patternMatch="[a-z-]+"
+                        [(ngModel)]="artifactoryTemp.name" name="artifactoryName" required="true"  minlength="5" full="true"></app-form-field>
+        <app-form-field label="Artifactory URL"
+                        tooltipText="URL for the artifactory"
+                        [(ngModel)]="artifactoryTemp.uri" name="artifactoryUrl" required="true" full="true"></app-form-field>
+        <app-form-field label="AWS Account Id"
+                        tooltipText="Account Id where the ECR Repo resides"
+                        [(ngModel)]="artifactoryTemp.awsAccountId" name="awsAccount" required="true" full="true"></app-form-field>
+        <app-form-field label="AWS Region"
+                        tooltipText="AWS Region where the ECR Repo resides"
+                        [(ngModel)]="artifactoryTemp.awsRegion" name="awsRegion" required="true" full="true"></app-form-field>
+        <app-form-field label="AWS Key"
+                        tooltipText="AWS Key which has access to this ECr Repository"
+                        [(ngModel)]="artifactoryTemp.awsKey" name="awsKey" required="true" full="true"></app-form-field>
+        <app-form-field label="AWS Secret"
+                        tooltipText="AWS Secret for the above key"
+                        [(ngModel)]="artifactoryTemp.awsSecret" name="awsSecret" required="true" full="true"></app-form-field>
+        <p class="caption status-danger" *ngIf="error">
+          {{error}}
+        </p>
+      </form>
+    </nb-card-body>
+    <nb-card-footer>
+      <button class=" cc-margin-right" nbButton status="primary" (click)='createArtifactoryCall(ref)'
+              [disabled]="!form.valid">Create
+      </button>
+      <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

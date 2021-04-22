@@ -34,27 +34,38 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   @Input("required")
   required: boolean;
   @Input("disabled")
-  disabled:boolean;
+  disabled: boolean;
   @Input("minlength")
   minlength: number
   @Input("select")
   select: boolean = false;
   @Input("selectValues")
-  selectValues:{ value: string; label: string}[];
+  selectValues: { value: string; label: string }[];
 
   @Input("multiple")
   multiple: boolean = false;
   @Input("optional")
   optional: boolean;
 
+  @Input("full")
+  full: boolean;
 
+  offset = 2;
+  inputSize = 5;
+  labelSize = 3;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    this.invalidMsg = this.label + " is invalid!"
-    this.missingMsg = this.label + " is required!";
+    this.invalidMsg = this.invalidMsg || this.label + " is invalid!"
+    this.missingMsg = this.missingMsg || this.label + " is required!";
+    this.placeholder = this.placeholder || this.label;
+    if (this.full) {
+      this.offset = 0;
+      this.inputSize = 7;
+      this.labelSize = 5;
+    }
   }
 
   /**
@@ -78,7 +89,7 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   writeValue(value: any): void {
     if (value != this.innerValue) {
       this.innerValue = value
-      this.onChange(this.multiple && !this.select? this.value.split(","):this.value);
+      this.onChange(this.multiple && !this.select ? this.value.split(",") : this.value);
     }
   }
 
