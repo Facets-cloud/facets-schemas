@@ -156,7 +156,4 @@ export class HeaderComponent implements OnInit {
     this.router.navigate([url]);
   }
 
-  navToPageWithURL() {
-    this.router.navigate([this.currentNav]);
-  }
 }
