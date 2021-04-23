@@ -23,15 +23,19 @@
 
 <ng-template #createArtifactory let-data let-ref="dialogRef">
   <nb-card size="large">
-    <nb-card-header>
+    <nb-card-header *ngIf="!data.edit">
       Create ECR Artifactory
+
+    </nb-card-header>
+    <nb-card-header *ngIf="data.edit">
+      Update ECR Artifactory - {{artifactoryTemp.name}}
 
     </nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
         <app-form-field label="Artifactory Name" invalidMsg="Artifactory Name is too Short or contains invalid characters (alphanumeric allowed)"
                         tooltipText="Name to uniquely identify your Artifactory" patternMatch="[a-z-]+"
-                        [(ngModel)]="artifactoryTemp.name" name="artifactoryName" required="true"  minlength="5" full="true"></app-form-field>
+                        [(ngModel)]="artifactoryTemp.name" name="artifactoryName" required="true"  minlength="5" full="true" [disabled]="data.edit"></app-form-field>
         <app-form-field label="Artifactory URL"
                         tooltipText="URL for the artifactory"
                         [(ngModel)]="artifactoryTemp.uri" name="artifactoryUrl" required="true" full="true"></app-form-field>
@@ -52,9 +56,16 @@
         </p>
       </form>
     </nb-card-body>
-    <nb-card-footer>
+    <nb-card-footer *ngIf="!data.edit">
       <button class=" cc-margin-right" nbButton status="primary" (click)='createArtifactoryCall(ref)'
               [disabled]="!form.valid">Create
+      </button>
+      <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
+    </nb-card-footer>
+
+    <nb-card-footer *ngIf="data.edit">
+      <button class=" cc-margin-right" nbButton status="primary" (click)='editArtifactoryCall(ref)'
+              [disabled]="!form.valid">Update
       </button>
       <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
     </nb-card-footer>

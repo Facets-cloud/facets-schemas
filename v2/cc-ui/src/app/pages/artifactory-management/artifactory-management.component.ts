@@ -89,7 +89,42 @@ export class ArtifactoryManagementComponent implements OnInit {
 
   openEditPopup(dialogRef, $event: any) {
     this.error = undefined;
+    this.artifactoryTemp = new class implements ECRArtifactory {
+      awsAccountId: string;
+      awsKey: string;
+      awsRegion: string;
+      awsSecret: string;
+      id: string;
+      name: string;
+      uri: string;
+    }
+    this.artifactoryTemp.id = $event.data.id;
+    this.artifactoryTemp.name = $event.data.name;
+    this.artifactoryTemp.uri = $event.data.uri;
+    this.artifactoryTemp.awsRegion = $event.data.awsRegion;
+    this.artifactoryTemp.awsKey = $event.data.awsKey;
+    this.artifactoryTemp.awsAccountId = $event.data.awsAccountId;
     this.dialogService.open(dialogRef, {context: {edit: true}});
+  }
+
+  editArtifactoryCall(ref) {
+    this.artifactoryControllerService.updateECRArtifactoryUsingPOST({
+      artifactoryId: this.artifactoryTemp.id,
+      ecrArtifactory: this.artifactoryTemp
+    }).subscribe(
+      response => {
+        ref.close;
+        this.artifactoryControllerService.getAllArtifactoriesUsingGET1().subscribe(
+          response => {
+            this.artifactories = response;
+          }
+        )
+      },
+      error => {
+        debugger
+        this.error = error.error.message || error.message
+      }
+    )
   }
 
   createArtifactoryCall(ref) {
@@ -104,7 +139,7 @@ export class ArtifactoryManagementComponent implements OnInit {
       },
       error => {
         debugger
-        this.error = error.error.message||error.message
+        this.error = error.error.message || error.message
       }
     )
   }
