@@ -8,6 +8,7 @@ import {Ng2SmartTableModule} from 'ng2-smart-table';
 import {NbEvaIconsModule} from "@nebular/eva-icons";
 import { FormsModule } from '@angular/forms';
 import { PauseReleaseDialogComponent } from './pause-release-dialog/pause-release-dialog.component';
+import {DirectivesModule} from "../../directives/directives.module";
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { PauseReleaseDialogComponent } from './pause-release-dialog/pause-releas
     NbDialogModule,
     NbButtonModule,
     FormsModule,
-    NbButtonModule
+    NbButtonModule,
+    DirectivesModule
   ]
 })
 export class StackOverviewModule {

@@ -21,28 +21,30 @@ import {FormsModule} from "@angular/forms";
 import { ResourceTypeSelectorComponent } from './resource-type-selector/resource-type-selector.component';
 import { CustomActionsComponent } from './custom-actions/custom-actions.component';
 import { FormFieldComponent } from './form-field/form-field.component';
+import {DirectivesModule} from "../directives/directives.module";
 
 
 
 @NgModule({
   declarations: [HeaderComponent, ResourceSelectorComponent, ResourceTypeSelectorComponent, CustomActionsComponent, FormFieldComponent],
-    imports: [
-        CommonModule,
-        NbLayoutModule,
-        NbButtonModule,
-        NbUserModule,
-        NbActionsModule,
-        NbCardModule,
-        NbSelectModule,
-        RouterModule,
-        NbAutocompleteModule,
-        FormsModule,
-        NbInputModule,
-        NbIconModule,
-        NbEvaIconsModule,
-        NbContextMenuModule,
-        NbTooltipModule
-    ],
+  imports: [
+    CommonModule,
+    NbLayoutModule,
+    NbButtonModule,
+    NbUserModule,
+    NbActionsModule,
+    NbCardModule,
+    NbSelectModule,
+    RouterModule,
+    NbAutocompleteModule,
+    FormsModule,
+    NbInputModule,
+    NbIconModule,
+    NbEvaIconsModule,
+    NbContextMenuModule,
+    NbTooltipModule,
+    DirectivesModule
+  ],
   providers: [],
   exports: [
     HeaderComponent,

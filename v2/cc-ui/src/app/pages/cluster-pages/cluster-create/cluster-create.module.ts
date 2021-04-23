@@ -11,6 +11,7 @@ import {Ng2SmartTableModule} from 'ng2-smart-table';
 import {NbEvaIconsModule} from '@nebular/eva-icons';
 import { FormsModule } from '@angular/forms';
 import {ComponentsModule} from "../../../components/components.module";
+import {DirectivesModule} from "../../../directives/directives.module";
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import {ComponentsModule} from "../../../components/components.module";
     NbSelectModule,
     NbToggleModule,
     ComponentsModule,
-    NbAccordionModule
+    NbAccordionModule,
+    DirectivesModule
   ]
 })
 export class ClusterCreateModule { }

@@ -18,14 +18,15 @@
     <nb-card-header>
     <div style="float:left;">Clusters</div>
     <div style="float:right;">
-    <button
-              nbButton
-              fullWidth
-              status="primary"
-              (click)="createCluster()"
-              >
-              Create Cluster
-            </button>
+      <button
+        *appUserRole="['cc-admin']"
+        nbButton
+        fullWidth
+        status="primary"
+        (click)="createCluster()"
+      >
+        Create Cluster
+      </button>
     </div>
     </nb-card-header>
     <nb-card-body>

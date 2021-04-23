@@ -11,6 +11,7 @@ import {
   NbSelectModule, NbToggleModule, NbInputModule, NbTooltipModule
 } from '@nebular/theme';
 import {ComponentsModule} from "../../../components/components.module";
+import {DirectivesModule} from "../../../directives/directives.module";
 
 @NgModule({
   declarations: [StackCreateComponent],
@@ -28,7 +29,8 @@ import {ComponentsModule} from "../../../components/components.module";
     LayoutsModule,
     RouterModule,
     NbTooltipModule,
-    ComponentsModule
+    ComponentsModule,
+    DirectivesModule
   ]
 })
 export class StackCreateModule { }

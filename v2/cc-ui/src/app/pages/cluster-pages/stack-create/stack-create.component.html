@@ -37,7 +37,7 @@
     </nb-card-body>
     <nb-card-footer>
       <button class=" cc-margin-right" nbButton status="primary" (click)='createCluster()'
-              [disabled]="!form.valid">Create
+              [disabled]="!form.valid" *appUserRole="['cc-admin']">Create
       </button>
       <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
     </nb-card-footer>

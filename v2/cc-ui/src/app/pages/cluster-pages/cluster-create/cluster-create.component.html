@@ -109,12 +109,14 @@
         </nb-accordion>
       </form>
     </nb-card-body>
-    <nb-card-footer>
+    <nb-card-footer *ngIf="!cluster?.id">
       <button class=" cc-margin-right" nbButton status="primary" (click)='createCluster()'
-              [disabled]="test(form) && !form.valid" *ngIf="!cluster?.id">Create
+              [disabled]="test(form) && !form.valid"  *appUserRole="['cc-admin']">Create
       </button>
+    </nb-card-footer>
+    <nb-card-footer *ngIf="cluster?.id">
       <button class=" cc-margin-right" nbButton status="primary" (click)='updateCluster()'
-              [disabled]="!form.valid" *ngIf="cluster?.id">Update
+              [disabled]="!form.valid" *appUserRole="['cc-admin']" >Update
       </button>
       <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
     </nb-card-footer>

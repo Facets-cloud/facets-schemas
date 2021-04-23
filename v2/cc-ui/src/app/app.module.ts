@@ -29,6 +29,7 @@ import {LoginPageModule} from "./pages/login-page/login-page.module";
 import {UserManagementModule} from "./pages/user-management/user-management.module";
 import {ArtifactoryManagementComponent} from "./pages/artifactory-management/artifactory-management.component";
 import {ArtifactoryManagementModule} from "./pages/artifactory-management/artifactory-management.module";
+import {DirectivesModule} from "./directives/directives.module";
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import {ArtifactoryManagementModule} from "./pages/artifactory-management/artifa
     NbMenuModule.forRoot(),
     LoginPageModule,
     UserManagementModule,
-    ArtifactoryManagementModule
+    ArtifactoryManagementModule,
+    DirectivesModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},
