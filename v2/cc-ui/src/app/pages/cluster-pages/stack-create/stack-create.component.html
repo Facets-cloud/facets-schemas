@@ -1,6 +1,7 @@
 <app-layout-one-column>
   <nb-card accent="info">
-    <nb-card-header>Create Stack</nb-card-header>
+    <nb-card-header *ngIf="isCreate">Create Stack</nb-card-header>
+    <nb-card-header *ngIf="!isCreate">Edit {{stack.name}} Stack</nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
         <app-form-field label="Stack Name" fieldId="stackName" invalidMsg="Stack Name is too Short or contains invalid characters (alphanumeric allowed)"
@@ -39,11 +40,18 @@
                          [(ngModel)]="stack.artifactories" name="artifactory"></app-form-field>
       </form>
     </nb-card-body>
-    <nb-card-footer>
+    <nb-card-footer *ngIf="isCreate">
       <button class=" cc-margin-right" nbButton status="primary" (click)='createStack()'
               [disabled]="!form.valid" *appUserRole="['cc-admin']">Create
       </button>
-      <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
+      <button class=" cc-margin-right" status="basic" nbButton (click)="toHome()" >Cancel</button>
+    </nb-card-footer>
+
+    <nb-card-footer *ngIf="!isCreate">
+      <button class=" cc-margin-right" nbButton status="primary" (click)='updateStack()'
+              [disabled]="!form.valid" *appUserRole="['cc-admin']">Update
+      </button>
+      <button class=" cc-margin-right" status="basic" nbButton (click)="toHome()">Cancel</button>
     </nb-card-footer>
   </nb-card>
 </app-layout-one-column>

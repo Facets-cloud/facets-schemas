@@ -1,17 +1,13 @@
 import {StackCreateComponent} from './pages/cluster-pages/stack-create/stack-create.component';
 import {ClusterCreateComponent} from './pages/cluster-pages/cluster-create/cluster-create.component';
 import {NgModule} from '@angular/core';
-import {Routes, RouterModule} from '@angular/router';
+import {RouterModule, Routes} from '@angular/router';
 import {HomeComponent} from './pages/home/home.component';
 import {ClusterOverviewComponent} from './pages/cluster-pages/cluster-overview/cluster-overview.component';
 import {ClusterReleasesComponent} from './pages/cluster-pages/cluster-releases/cluster-releases.component';
-import {
-  NbAuthComponent, NbLoginComponent, NbLogoutComponent
-} from '@nebular/auth';
 import {StackOverviewComponent} from './pages/stack-overview/stack-overview.component';
 import {AuthGuard} from './auth-guard.service';
 import {ClusterOverridesComponent} from './pages/cluster-pages/cluster-overrides/cluster-overrides.component';
-import {AppComponent} from './app.component';
 import {ClusterPagesComponent} from './pages/cluster-pages/cluster-pages.component';
 import {ClusterDisasterRecoveryComponent} from './pages/cluster-pages/cluster-disaster-recovery/cluster-disaster-recovery.component';
 import {ClusterAlertsComponent} from "./pages/cluster-pages/cluster-alerts/cluster-alerts.component";
@@ -46,8 +42,15 @@ const routes: Routes = [
   {
     path: 'capc/teams/:teamId', component: TeamManagementComponent, canActivate: [AuthGuard]
   },
-  {path: 'capc/stack/:stackName', component: StackOverviewComponent, canActivate: [AuthGuard]},
-  {path: 'capc/:stackName/clusterCreate', component: ClusterCreateComponent, canActivate: [AuthGuard]},
+  {
+    path: 'capc/stack/:stackName', component: StackOverviewComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/:stackName/clusterCreate', component: ClusterCreateComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/stack/:stackName/edit', component: StackCreateComponent, canActivate: [AuthGuard]
+  },
   {
     path: 'capc/:stackName/cluster/:clusterId', component: ClusterPagesComponent, canActivate: [AuthGuard],
     children: [
