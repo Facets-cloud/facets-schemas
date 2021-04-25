@@ -27,7 +27,7 @@ export class UserManagementComponent implements OnInit {
       },
       roles: {
         title: 'Roles',
-        filter: false,
+        filter: true,
         type: 'List',
         valuePrepareFunction: (cell) => {
           return cell.map(c => this.roles.filter(r => r.id == c)[0].label)

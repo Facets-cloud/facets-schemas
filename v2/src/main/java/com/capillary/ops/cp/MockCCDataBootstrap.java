@@ -258,6 +258,16 @@ public class MockCCDataBootstrap {
         repo.setName("name");
         repo.setUri("uri");
         artifactoryRepository.save(repo);
+
+        repo = new ECRArtifactory();
+        repo.setAwsAccountId("accountId2");
+        repo.setAwsKey("key2");
+        repo.setAwsRegion("region2");
+        repo.setAwsSecret("secret2");
+        repo.setId("id2");
+        repo.setName("name2");
+        repo.setUri("uri2");
+        artifactoryRepository.save(repo);
     }
 
 }

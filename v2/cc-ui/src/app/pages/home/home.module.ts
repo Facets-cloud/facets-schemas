@@ -10,20 +10,22 @@ import {NbEvaIconsModule} from "@nebular/eva-icons";
 import {ComponentsModule} from '../../components/components.module';
 import {LayoutsModule} from '../../layouts/layouts.module';
 import {Ng2SmartTableModule} from 'ng2-smart-table';
+import {DirectivesModule} from "../../directives/directives.module";
 
 
 
 @NgModule({
   declarations: [HomeComponent],
-  imports: [
-    CommonModule,
-    RouterModule,
-    NbCardModule,
-    NbEvaIconsModule,
-    NbIconModule,
-    LayoutsModule,
-    Ng2SmartTableModule,
-    NbButtonModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule,
+        NbCardModule,
+        NbEvaIconsModule,
+        NbIconModule,
+        LayoutsModule,
+        Ng2SmartTableModule,
+        NbButtonModule,
+        DirectivesModule
+    ]
 })
 export class HomeModule { }

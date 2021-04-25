@@ -1,6 +1,6 @@
 import {VariableDetails} from './../../../cc-api/models/variable-details';
 import {Component, OnInit} from '@angular/core';
-import {UiStackControllerService} from 'src/app/cc-api/services';
+import {UiArtifactoryControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Stack} from './../../../cc-api/models/stack';
 import {LocalDataSource} from 'ng2-smart-table';
@@ -148,17 +148,20 @@ export class StackCreateComponent implements OnInit {
     }
   };
   private errorMessage: any;
+  artifactories: any = [];
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,
-              private uiStackControllerService: UiStackControllerService, private toastrService: NbToastrService,) {
+              private uiStackControllerService: UiStackControllerService, private toastrService: NbToastrService,
+              private artifactoryControllerService: UiArtifactoryControllerService, ) {
   }
 
   ngOnInit(): void {
-
+    this.artifactoryControllerService.getAllArtifactoriesUsingGET1()
+      .subscribe(arts => arts.map(a => a.name).forEach(n => this.artifactories.push({"value": n, "label": n})))
   }
 
-  async createCluster() {
+  async createStack() {
     try {
       const stackVarsDataSource = await this.stackVarsTable.getAll();
       stackVarsDataSource.forEach(ele => {

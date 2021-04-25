@@ -33,10 +33,14 @@
                         missingMsg="Password is required to checkout the stack!" placeholder="Password"
                         tooltipText="AppUser's Password to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
                          patternMatch="[a-z-]+" required="true"  [(ngModel)]="stack.appPassword" name="appPassword"></app-form-field>
+        <app-form-field label="Artifactories" placeholder="Select Artifactories"
+                        tooltipText="Artifactories to be used in this stack"
+                        select="true" [selectValues]="artifactories" multiple="true"
+                         [(ngModel)]="stack.artifactories" name="artifactory"></app-form-field>
       </form>
     </nb-card-body>
     <nb-card-footer>
-      <button class=" cc-margin-right" nbButton status="primary" (click)='createCluster()'
+      <button class=" cc-margin-right" nbButton status="primary" (click)='createStack()'
               [disabled]="!form.valid" *appUserRole="['cc-admin']">Create
       </button>
       <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
