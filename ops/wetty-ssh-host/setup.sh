@@ -5,7 +5,13 @@ apt-get update
 apt-get install -y --no-install-recommends less jq python2.7 curl python-dateutil gnupg2 telnet
 
 #######Additional installs
-apt-get install -y mongodb-clients mysql-client-5.7 redis-tools
+apt-get install -y vim libcurl4 mysql-client-5.7 redis-tools
+
+###### mongo clients and tools #######
+wget  https://repo.mongodb.org/apt/ubuntu/dists/bionic/mongodb-org/4.2/multiverse/binary-amd64/mongodb-org-tools_4.2.3_amd64.deb
+wget https://repo.mongodb.org/apt/ubuntu/dists/bionic/mongodb-org/4.2/multiverse/binary-amd64/mongodb-org-shell_4.2.3_amd64.deb
+dpkg -i mongodb-org-tools_4.2.3_amd64.deb
+dpkg -i mongodb-org-shell_4.2.13_amd64.deb
 
 #######s3cmd
 mkdir /usr/share/s3cmd
