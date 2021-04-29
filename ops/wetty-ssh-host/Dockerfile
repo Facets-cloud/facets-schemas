@@ -1,5 +1,5 @@
-FROM rastasheep/ubuntu-sshd:latest
+FROM rastasheep/ubuntu-sshd:18.04
 COPY setup.sh .
 RUN ls -l
 RUN /bin/bash setup.sh
-CMD [ "mkdir -p /mnt","&&","chown -R capk8s:capk8s /mnt/", "&&" ,"/usr/sbin/sshd", "-D", "-e"]
+CMD [ "chown -R capk8s:capk8s /mnt && /usr/sbin/sshd -D -e"]
