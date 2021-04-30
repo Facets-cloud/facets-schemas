@@ -2,7 +2,7 @@
 
 #######Basic tools
 apt-get update 
-apt-get install -y --no-install-recommends less jq python2.7 curl python-dateutil gnupg2 telnet openjdk-11-jre-headless java11-runtime-headless
+apt-get install -y --no-install-recommends less jq python2.7 curl python-dateutil gnupg2 telnet openjdk-11-jre-headless
 
 #######Additional installs
 apt-get install -y vim libcurl4 mysql-client-5.7 redis-tools
