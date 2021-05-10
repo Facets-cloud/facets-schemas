@@ -48,6 +48,12 @@ public class UiDeploymentController {
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
     }
 
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("/validateCluster")
+    DeploymentLog validateCluster(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
+        return deploymentFacade.validateCluster(deploymentRequest.getOverrideCCVersion(), clusterId);
+    }
+
     /**
      * Trigger job for automation suite
      *
