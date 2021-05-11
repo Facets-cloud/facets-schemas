@@ -15,6 +15,6 @@
   align-items: center;
 }
 
-:host ::ng-deep ng2-smart-table .ng2-smart-actions ng2-st-tbody-edit-delete  { 
+:host ::ng-deep .componentUpgrade .ng2-smart-actions ng2-st-tbody-edit-delete  { 
   display: none;  
 }
