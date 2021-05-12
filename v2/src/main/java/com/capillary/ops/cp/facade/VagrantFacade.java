@@ -41,10 +41,10 @@ public class VagrantFacade {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         String stackName = cluster.getStackName();
         Stack stack = stackFacade.getStackByName(stackName);
-        //    EcrTokenMap ecrTokenMapping = applicationFacade.getEcrTokenMapping();
-        EcrTokenMap ecrTokenMapping = new EcrTokenMap();
-        ecrTokenMapping.setAwsAccountId("accId");
-        ecrTokenMapping.setEcrToken("token");
+        EcrTokenMap ecrTokenMapping = applicationFacade.getEcrTokenMapping();
+//        EcrTokenMap ecrTokenMapping = new EcrTokenMap();
+//        ecrTokenMapping.setAwsAccountId("accId");
+//        ecrTokenMapping.setEcrToken("token");
         //TODO: get the ecr url as well
         String dockerLogin = "docker login -u AWS -p " + ecrTokenMapping.getEcrToken() +
                 " https://" + ecrTokenMapping.getAwsAccountId() + ".dkr.ecr.us-west-1.amazonaws.com";
