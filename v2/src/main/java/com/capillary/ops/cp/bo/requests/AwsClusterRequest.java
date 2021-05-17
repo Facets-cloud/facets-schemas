@@ -22,7 +22,7 @@ public class AwsClusterRequest extends ClusterRequest {
 
     private List<String> instanceTypes;
 
-    private String providedVPCId;
+    private String providedVPCId = "";
 
     public AwsClusterRequest() {
         super(Cloud.AWS);

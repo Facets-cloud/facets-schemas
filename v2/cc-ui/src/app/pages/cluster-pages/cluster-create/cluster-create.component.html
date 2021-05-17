@@ -42,6 +42,10 @@
                         tooltipText="Comma Separated value for at least two availability Zones"
                         [(ngModel)]="azsCsv" required="true"  [disabled]="cluster?.id"></app-form-field>
 
+        <app-form-field label="VPC ID" name="az" placeholder="An existing VPC ID to re-use"
+                        tooltipText="VPC Id to re-use, leave empty to create new"
+                        [(ngModel)]="awsClusterRequest.providedVPCId" required="false" [disabled]="cluster?.id"></app-form-field>
+
         <app-form-field label="IAM Role" name="role"  placeholder="IAM Role ARN"
                         tooltipText="IAM Role created as per Documentation for provisioning cluster in your account"
                         [(ngModel)]="awsClusterRequest.roleARN" required="true"  ></app-form-field>
