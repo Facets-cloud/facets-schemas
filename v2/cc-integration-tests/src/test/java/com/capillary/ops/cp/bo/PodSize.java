@@ -6,29 +6,29 @@ public class PodSize {
 
     public PodSize(){}
 
-    public PodSize(Double cpu, Double memory){
-        this.cpu = cpu;
-        this.memory = memory;
+    public PodSize(CpuSize cpuSize, MemorySize memorySize){
+        this.cpuSize = cpuSize;
+        this.memorySize = memorySize;
     }
 
-    Double cpu;
+    CpuSize cpuSize;
 
-    Double memory;
+    MemorySize memorySize;
 
-    public Double getCpu() {
-        return cpu;
+    public CpuSize getCpuSize() {
+        return cpuSize;
     }
 
-    public void setCpu(Double cpu) {
-        this.cpu = cpu;
+    public void setCpuSize(CpuSize cpuSize) {
+        this.cpuSize = cpuSize;
     }
 
-    public Double getMemory() {
-        return memory;
+    public MemorySize getMemorySize() {
+        return memorySize;
     }
 
-    public void setMemory(Double memory) {
-        this.memory = memory;
+    public void setMemorySize(MemorySize memorySize) {
+        this.memorySize = memorySize;
     }
 
     @Override
@@ -36,19 +36,19 @@ public class PodSize {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PodSize podSize = (PodSize) o;
-        return cpu.equals(podSize.cpu) && memory.equals(podSize.memory);
+        return cpuSize.equals(podSize.cpuSize) && memorySize.equals(podSize.memorySize);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cpu, memory);
+        return Objects.hash(cpuSize, memorySize);
     }
 
     @Override
     public String toString() {
         return "PodSize{" +
-                "cpu=" + cpu +
-                ", memory=" + memory +
+                "cpuSize=" + cpuSize +
+                ", memorySize=" + memorySize +
                 '}';
     }
 }

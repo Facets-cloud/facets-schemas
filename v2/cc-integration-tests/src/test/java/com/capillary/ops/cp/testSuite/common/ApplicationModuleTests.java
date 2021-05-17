@@ -1,10 +1,10 @@
 package com.capillary.ops.cp.testSuite.common;
 
 import com.capillary.ops.cp.App;
+import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.bo.StackIngressRule;
 import com.capillary.ops.cp.bo.Scaling;
 import com.capillary.ops.cp.bo.StackProbe;
-import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.helpers.CommonUtils;
 import com.capillary.ops.cp.helpers.ConfigManager;
 import com.capillary.ops.cp.helpers.IngressValidator;
@@ -20,7 +20,6 @@ import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,10 +142,10 @@ public class ApplicationModuleTests {
 
     @Test
     public void sizingTest() throws Exception {
-        PodSize k8sPodSize = k8sTestUtils.getK8sPodSize(appName);
-        PodSize stackPodSize = stackTestUtils.getInstanceSizing(moduleName, appName, cpuUnits, memoryUnits);
-        Assert.assertEquals(k8sPodSize.getCpu(), stackPodSize.getCpu());
-        Assert.assertEquals(k8sPodSize.getMemory(), stackPodSize.getMemory());
+        PodSize k8s = k8sTestUtils.getK8sPodSizeWithUnits(appName);
+        PodSize stacks = stackTestUtils.getInstanceSizingWithUnits(moduleName, appName, cpuUnits, memoryUnits);
+
+        Assert.assertEquals("Application size should match with the type mentioned in the instance in terms of the sizing defined for the application instances. ", stacks, k8s);
     }
 
     @Test

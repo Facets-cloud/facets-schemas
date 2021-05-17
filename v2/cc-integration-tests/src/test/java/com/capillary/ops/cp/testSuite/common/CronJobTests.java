@@ -65,10 +65,10 @@ public class CronJobTests {
             logger.info("sampled {} from cron jobs. ", cronJob);
             try {
                 Map<String, Quantity> limits = cronJobInstance.getSpec().getJobTemplate().getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits();
-                PodSize k8sCronJobSize = new PodSize(k8sTestUtils.getK8sCpuInCores(limits.get("cpu").getAmount()), k8sTestUtils.getK8sMemoryInGi(limits.get("memory").getAmount()));
-                PodSize instanceSizing = stackTestUtils.getInstanceSizing(CRONJOB, stackCronJobInstances.get(cronJob), cpuUnits, memoryUnits);
+                PodSize k8sCronJobSize = new PodSize(k8sTestUtils.getK8sCpuSize(limits.get("cpu").getAmount()), k8sTestUtils.getK8sMemorySize(limits.get("memory").getAmount()));
+                PodSize instanceSizing = stackTestUtils.getInstanceSizingWithUnits(CRONJOB, stackCronJobInstances.get(cronJob), cpuUnits, memoryUnits);
 
-                Assert.assertEquals("Cronjob size should match with the type mentioned in the instance in terms of the sizing defined for the cronjob instances.", k8sCronJobSize, instanceSizing);
+                Assert.assertEquals("Cronjob size should match with the type mentioned in the instance in terms of the sizing defined for the cronjob instances. ", k8sCronJobSize, instanceSizing);
             } catch (Exception e) {
                 e.printStackTrace();
             }

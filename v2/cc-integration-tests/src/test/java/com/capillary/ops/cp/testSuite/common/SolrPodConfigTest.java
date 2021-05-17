@@ -4,10 +4,8 @@ import com.capillary.ops.cp.App;
 import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.helpers.StackTestUtils;
 import com.capillary.ops.cp.helpers.k8s.K8sTestUtils;
-import com.google.gson.JsonObject;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +37,10 @@ public class SolrPodConfigTest {
     @Test
     public void verifyPodSize() throws Exception {
         Assume.assumeTrue(!STACK_NAME.equals("cc-infra-testing"));
-        PodSize k8sPodSize = k8sTestUtils.getK8sPodSize("solr-intouch-0");
 
-        PodSize stackSizing = stackTestUtils.getInstanceSizing("solr", "intouch", cpuUnits, memoryUnits);
+        PodSize k8s = k8sTestUtils.getK8sPodSizeWithUnits("solr-intouch-0");
+        PodSize stacks = stackTestUtils.getInstanceSizingWithUnits("solr", "intouch", cpuUnits, memoryUnits);
 
-        Assert.assertEquals(k8sPodSize.getCpu(), stackSizing.getCpu());
-        Assert.assertEquals(k8sPodSize.getMemory(), stackSizing.getMemory());
+        Assert.assertEquals(stacks, k8s);
     }
 }

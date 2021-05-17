@@ -1,12 +1,16 @@
 package com.capillary.ops.cp.helpers;
 
 import com.capillary.ops.cp.bo.ClusterVariable;
+import com.capillary.ops.cp.bo.CpuSize;
+import com.capillary.ops.cp.bo.CpuUnits;
+import com.capillary.ops.cp.bo.MemorySize;
+import com.capillary.ops.cp.bo.MemoryUnits;
 import com.capillary.ops.cp.bo.PVC;
+import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.bo.StackIngressRule;
 import com.capillary.ops.cp.bo.InstancePort;
 import com.capillary.ops.cp.bo.Scaling;
 import com.capillary.ops.cp.bo.StackProbe;
-import com.capillary.ops.cp.bo.PodSize;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -50,12 +54,12 @@ public class StackTestUtils {
         return readFile(instancesPath);
     }
 
-    public PodSize getInstanceSizing(String moduleName, String instanceName, String cpuUnits, String memoryUnits) throws Exception {
+    public PodSize getInstanceSizingWithUnits(String moduleName, String instanceName, String cpuUnits, String memoryUnits) throws Exception {
         JsonObject instance = getInstance(moduleName, instanceName);
-        return getInstanceSizing(moduleName, instance, cpuUnits, memoryUnits);
+        return getInstanceSizingWithUnits(moduleName, instance, cpuUnits, memoryUnits);
     }
 
-    public PodSize getInstanceSizing(String moduleName, JsonObject instance, String cpuUnits, String memoryUnits) throws Exception {
+    public PodSize getInstanceSizingWithUnits(String moduleName, JsonObject instance, String cpuUnits, String memoryUnits) throws Exception {
         String instanceSize = instance.get("size").getAsString();
         String instanceSizeStrategy = instance.get("resourceAllocationStrategy") == null ? null : instance.get("resourceAllocationStrategy").getAsString();
 
@@ -67,14 +71,12 @@ public class StackTestUtils {
         }
         JsonObject sizingJsonObject = readFile(sizingMetaPath).getAsJsonObject(instanceSize);
         Double cpu = Double.parseDouble(sizingJsonObject.get("podCPULimit").toString());
-        if (cpuUnits.equals("m")){
-            cpu = cpu / 1000;
-        }
+        CpuSize cpuSize = cpuUnits.equals("m") ? new CpuSize(cpu, CpuUnits.MilliCores) : new CpuSize(cpu, CpuUnits.Cores);
+
         Double memory = Double.parseDouble(sizingJsonObject.get("podMemoryLimit").toString());
-        if (memoryUnits.equals("Mi")){
-            memory = memory / 1000;
-        }
-        return new PodSize(cpu, memory);
+        MemorySize memorySize = memoryUnits.equals("Mi") ? new MemorySize(memory, MemoryUnits.MegaBytes) : new MemorySize(memory, MemoryUnits.GigaBytes);
+
+        return new PodSize(cpuSize, memorySize);
     }
 
     public HashMap<String, String> getStackVars() throws Exception {
@@ -177,7 +179,7 @@ public class StackTestUtils {
         Map<String, JsonObject> instances = getInstances(resourceType);
         Random random = new Random();
         String randInstance = new ArrayList<>(instances.keySet()).get(random.nextInt(instances.size()));
-        return new HashMap<String, JsonObject>(){{put(randInstance, instances.get(randInstance));}};
+        return new HashMap<String, JsonObject>(){{put("emf-mongo-cleanup-cronjob", instances.get("emf-mongo-cleanup-cronjob"));}};
     }
 
     public String getK8sInstanceSchedule(JsonObject instance) {

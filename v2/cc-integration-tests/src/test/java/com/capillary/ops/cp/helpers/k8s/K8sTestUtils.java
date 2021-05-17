@@ -1,12 +1,15 @@
 package com.capillary.ops.cp.helpers.k8s;
 
+import com.capillary.ops.cp.bo.CpuSize;
+import com.capillary.ops.cp.bo.CpuUnits;
 import com.capillary.ops.cp.bo.K8sConfig;
+import com.capillary.ops.cp.bo.MemorySize;
+import com.capillary.ops.cp.bo.MemoryUnits;
 import com.capillary.ops.cp.bo.PodSize;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerSpec;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Probe;
-import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
@@ -65,36 +68,34 @@ public class K8sTestUtils {
         return pod;
     }
 
-    public PodSize getK8sPodSize(String podName) throws Exception {
+    public PodSize getK8sPodSizeWithUnits(String podName) throws Exception {
         ResourceRequirements resources = getK8sPod(podName)
                 .getSpec()
                 .getContainers()
                 .get(0)
                 .getResources();
 
-        Double cpu = getK8sCpuInCores(resources.getLimits().get("cpu").getAmount());
-        Double memory = getK8sMemoryInGi(resources.getLimits().get("memory").getAmount());
+        CpuSize cpu = getK8sCpuSize(resources.getLimits().get("cpu").getAmount());
+        MemorySize memory = getK8sMemorySize(resources.getLimits().get("memory").getAmount());
+
         return new PodSize(cpu, memory);
     }
 
-    public Double getK8sCpuInCores(String k8sCpuString) {
+    public CpuSize getK8sCpuSize(String k8sCpuString) {
         if (k8sCpuString.contains("m")) {
-            String cpuTemp = k8sCpuString.replace("m", "");
-            return Double.parseDouble(cpuTemp) / 1000;
+            return new CpuSize(Double.parseDouble(k8sCpuString.replace("m", "")), CpuUnits.MilliCores);
         }
-        return Double.parseDouble(k8sCpuString);
+        return new CpuSize(Double.parseDouble(k8sCpuString), CpuUnits.Cores);
     }
 
-    public Double getK8sMemoryInGi(String k8sMemoryString) {
+    public MemorySize getK8sMemorySize(String k8sMemoryString) {
         if (k8sMemoryString.contains("Mi")) {
-            String memoryTemp = k8sMemoryString.replace("Mi", "");
-            return Double.parseDouble(memoryTemp) / 1000;
+            return new MemorySize(Double.parseDouble(k8sMemoryString.replace("Mi", "")), MemoryUnits.MegaBytes);
         }
         if (k8sMemoryString.contains("Gi")) {
-            String memoryTemp = k8sMemoryString.replace("Gi", "");
-            return Double.parseDouble(memoryTemp);
+            return new MemorySize(Double.parseDouble(k8sMemoryString.replace("Gi", "")), MemoryUnits.GigaBytes);
         }
-        return Double.parseDouble(k8sMemoryString);
+        return new MemorySize(Double.parseDouble(k8sMemoryString), MemoryUnits.GigaBytes);
     }
 
     public List<Ingress> getK8sIngressRules(String appName) throws Exception {

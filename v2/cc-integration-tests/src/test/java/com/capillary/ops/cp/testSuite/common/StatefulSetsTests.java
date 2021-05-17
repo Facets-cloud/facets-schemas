@@ -3,9 +3,9 @@ package com.capillary.ops.cp.testSuite.common;
 import com.capillary.ops.cp.App;
 import com.capillary.ops.cp.bo.InstancePort;
 import com.capillary.ops.cp.bo.PVC;
+import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.bo.StackIngressRule;
 import com.capillary.ops.cp.bo.StackProbe;
-import com.capillary.ops.cp.bo.PodSize;
 import com.capillary.ops.cp.helpers.CommonUtils;
 import com.capillary.ops.cp.helpers.IngressValidator;
 import com.capillary.ops.cp.helpers.ProbeValidator;
@@ -22,7 +22,6 @@ import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -96,11 +95,11 @@ public class StatefulSetsTests {
             logger.info("Sampled {} from the statefulsets.", statefulSet);
             try{
                 Map<String, Quantity> limits = statefulSetInstance.getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits();
-                PodSize k8sStatefulSetSize = new PodSize(k8sTestUtils.getK8sCpuInCores(limits.get("cpu").getAmount()), k8sTestUtils.getK8sMemoryInGi(limits.get("memory").getAmount()));
-                PodSize instanceSizing = stackTestUtils.getInstanceSizing(STATEFUL_SETS, stackStatefulSetsInstances.get(statefulSet), cpuUnits, memoryUnits);
+                PodSize k8sStatefulSetSize = new PodSize(k8sTestUtils.getK8sCpuSize(limits.get("cpu").getAmount()), k8sTestUtils.getK8sMemorySize(limits.get("memory").getAmount()));
+                PodSize instanceSizing = stackTestUtils.getInstanceSizingWithUnits(STATEFUL_SETS, stackStatefulSetsInstances.get(statefulSet), cpuUnits, memoryUnits);
 
-                Assert.assertEquals("Statefulset size should match with the type mentioned in the instance in terms of the sizing defined for the statefulsets instances.", k8sStatefulSetSize, instanceSizing);
-            } catch (Exception e){
+                Assert.assertEquals("Statefulset size should match with the type mentioned in the instance in terms of the sizing defined for the statefulsets instances. ", k8sStatefulSetSize, instanceSizing);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
