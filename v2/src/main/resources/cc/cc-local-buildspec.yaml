@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - apt-get update
+      - apt-get install -y git
+      - rm -rf capillary-cloud-tf/stacks/*
+      - mkdir -p cclocalshared/stack
+      - mkdir -p cclocalshared/cc
+      - cp ${CODEBUILD_SRC_DIR_DEPLOYMENT_CONTEXT}/deploymentcontext.json cclocalshared/deploymentcontext.json
+      - cp -r $CODEBUILD_SRC_DIR_STACK/$STACK_SUBDIRECTORY cclocalshared/stack
+      - python3 capillary-cloud-tf/tfaws/scripts/merge_overrides.py
+  build:
+    commands:
+      - cp capillary-cloud-tf/tflocal/scripts/Vagrantfile cclocalshared/Vagrantfile
+      - cp -r capillary-cloud-tf cclocalshared/cc/
+      - zip -r cclocalshared.zip cclocalshared/
+  post_build:
+    commands:
+artifacts:
+  files:
+    - cclocalshared.zip
