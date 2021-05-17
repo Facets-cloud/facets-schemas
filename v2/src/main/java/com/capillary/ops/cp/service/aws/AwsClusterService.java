@@ -117,6 +117,7 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         cluster.setAzs(request.getAzs());
         cluster.setReleaseStream(request.getReleaseStream());
         cluster.setK8sRequestsToLimitsRatio(request.getK8sRequestsToLimitsRatio());
+        cluster.setProvidedVPCId(request.getProvidedVPCId());
         //TODO: Variable Generations
         //1. Generate CIDR.
         cluster.setVpcCIDR(request.getVpcCIDR());
