@@ -30,6 +30,8 @@ import {UserManagementModule} from "./pages/user-management/user-management.modu
 import {ArtifactoryManagementComponent} from "./pages/artifactory-management/artifactory-management.component";
 import {ArtifactoryManagementModule} from "./pages/artifactory-management/artifactory-management.module";
 import {DirectivesModule} from "./directives/directives.module";
+import {ClusterChooserModule} from "./pages/cluster-pages/cluster-chooser/cluster-chooser.module";
+import {ClusterCreateLocalModule} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.module";
 
 
 @NgModule({
@@ -69,7 +71,9 @@ import {DirectivesModule} from "./directives/directives.module";
     LoginPageModule,
     UserManagementModule,
     ArtifactoryManagementModule,
-    DirectivesModule
+    DirectivesModule,
+    ClusterChooserModule,
+    ClusterCreateLocalModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},

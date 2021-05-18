@@ -7,6 +7,7 @@ export { UiAwsClusterControllerService } from './services/ui-aws-cluster-control
 export { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 export { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 export { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
+export { UiLocalClusterControllerService } from './services/ui-local-cluster-controller.service';
 export { UiMetaControllerService } from './services/ui-meta-controller.service';
 export { UiStackControllerService } from './services/ui-stack-controller.service';
 export { UiTeamControllerService } from './services/ui-team-controller.service';

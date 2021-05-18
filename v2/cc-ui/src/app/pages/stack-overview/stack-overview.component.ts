@@ -88,24 +88,10 @@ export class StackOverviewComponent implements OnInit {
     );
   }
 
-  gotoPage(x) {
-    console.log(x);
-    if (x.action === 'View') {
-      const clusterId = x.data.id;
-      console.log('Navigate to ' + clusterId);
-      this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId]);
-    } else if (x.action === 'Edit'){
-      if (this.isUserAdmin){
-      const clusterId = x.data.id;
-      console.log('Navigate to ' + clusterId);
-      this.router.navigate(['/capc/', x.data.stackName, 'cluster', clusterId, 'edit']);
-      }
-    }
-  }
 
   createCluster(): void {
     if (this.isUserAdmin){
-    this.router.navigate(['/capc/', this.stack.name , 'clusterCreate']);
+    this.router.navigate(['/capc/', this.stack.name , 'chooseClusterCreate']);
     }
   }
 
