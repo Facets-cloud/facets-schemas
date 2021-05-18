@@ -1,9 +1,7 @@
 /* tslint:disable */
-export interface AzureCluster {
+export interface LocalCluster {
   autoSignOffSchedule?: string;
   cdPipelineParent?: string;
-  clientId?: string;
-  clientSecret?: string;
   cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   commonEnvironmentVariables?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
@@ -16,7 +14,5 @@ export interface AzureCluster {
   schedules?: {[key: string]: string};
   secrets?: {[key: string]: string};
   stackName?: string;
-  subscriptionId?: string;
-  tenantId?: string;
   tz?: string;
 }

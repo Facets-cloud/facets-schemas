@@ -18,9 +18,6 @@ public class ClusterServiceFactory implements ServiceFactory<ClusterService> {
     AwsClusterService awsClusterService;
 
     @Autowired
-    AzureClusterService azureClusterService;
-
-    @Autowired
     LocalClusterService localClusterService;
 
     @Override

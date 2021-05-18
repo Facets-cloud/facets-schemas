@@ -1,5 +1,9 @@
 import {Stack} from './../../../cc-api/models/stack';
-import {UiAwsClusterControllerService, UiStackControllerService} from 'src/app/cc-api/services';
+import {
+  UiAwsClusterControllerService,
+  UiLocalClusterControllerService,
+  UiStackControllerService
+} from 'src/app/cc-api/services';
 import {AwsClusterRequest} from './../../../cc-api/models/aws-cluster-request';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -116,7 +120,6 @@ debugger;
       });
   }
   initAWSClusterRequestObject() {
-    debugger;
     this.awsClusterRequest.clusterName = this.cluster.name;
     this.awsClusterRequest.cloud = this.cluster.cloud;
     this.timeZoneModelBound = this.cluster.tz;

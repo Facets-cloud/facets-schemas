@@ -8,10 +8,11 @@ import com.capillary.ops.cp.bo.requests.LocalClusterRequest;
 import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.ComponentVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.SimpleTimeZone;
-
+@Service
 public class LocalClusterService implements ClusterService<LocalCluster, LocalClusterRequest> {
 
   @Autowired

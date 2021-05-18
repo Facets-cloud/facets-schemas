@@ -4,7 +4,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
 import { WebMvcLinksHandlerService } from './services/web-mvc-links-handler.service';
-// import { OperationHandlerService } from './services/operation-handler.service';
 import { ApplicationControllerService } from './services/application-controller.service';
 import { CallbackControllerService } from './services/callback-controller.service';
 import { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
@@ -12,6 +11,7 @@ import { UiAwsClusterControllerService } from './services/ui-aws-cluster-control
 import { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 import { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
+import { UiLocalClusterControllerService } from './services/ui-local-cluster-controller.service';
 import { UiMetaControllerService } from './services/ui-meta-controller.service';
 import { UiStackControllerService } from './services/ui-stack-controller.service';
 import { UiTeamControllerService } from './services/ui-team-controller.service';
@@ -42,7 +42,6 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
   providers: [
     ApiConfiguration,
     WebMvcLinksHandlerService,
-    OperationHandlerService,
     ApplicationControllerService,
     CallbackControllerService,
     UiArtifactoryControllerService,
@@ -50,6 +49,7 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     MockCallBackControllerService,
     UiCommonClusterControllerService,
     UiDeploymentControllerService,
+    UiLocalClusterControllerService,
     UiMetaControllerService,
     UiStackControllerService,
     UiTeamControllerService,

@@ -18,6 +18,8 @@ import {TeamManagementComponent} from './pages/team-management/team-management.c
 import {LoginPageComponent} from "./pages/login-page/login-page.component";
 import {UserManagementComponent} from "./pages/user-management/user-management.component";
 import {ArtifactoryManagementComponent} from "./pages/artifactory-management/artifactory-management.component";
+import {ClusterChooserComponent} from "./pages/cluster-pages/cluster-chooser/cluster-chooser.component";
+import {ClusterCreateLocalComponent} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.component";
 
 
 const routes: Routes = [
@@ -46,7 +48,13 @@ const routes: Routes = [
     path: 'capc/stack/:stackName', component: StackOverviewComponent, canActivate: [AuthGuard]
   },
   {
-    path: 'capc/:stackName/clusterCreate', component: ClusterCreateComponent, canActivate: [AuthGuard]
+    path: 'capc/:stackName/clusterCreate/aws', component: ClusterCreateComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/:stackName/clusterCreate/local', component: ClusterCreateLocalComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/:stackName/chooseClusterCreate', component: ClusterChooserComponent, canActivate: [AuthGuard]
   },
   {
     path: 'capc/stack/:stackName/edit', component: StackCreateComponent, canActivate: [AuthGuard]
@@ -71,7 +79,7 @@ const routes: Routes = [
         component: ClusterDisasterRecoveryComponent,
       },
       {
-        path: 'edit',
+        path: 'edit/aws',
         component: ClusterCreateComponent,
       },
       {

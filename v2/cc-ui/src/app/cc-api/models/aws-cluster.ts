@@ -5,7 +5,7 @@ export interface AwsCluster {
   awsRegion?: string;
   azs?: Array<string>;
   cdPipelineParent?: string;
-  cloud?: 'AWS' | 'AZURE';
+  cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   commonEnvironmentVariables?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;

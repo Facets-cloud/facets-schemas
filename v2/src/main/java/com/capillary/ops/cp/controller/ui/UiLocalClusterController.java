@@ -1,10 +1,11 @@
-package com.capillary.ops.cp.controller;
+package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
 import com.capillary.ops.cp.bo.AzureCluster;
 import com.capillary.ops.cp.bo.LocalCluster;
 import com.capillary.ops.cp.bo.requests.AzureClusterRequest;
 import com.capillary.ops.cp.bo.requests.LocalClusterRequest;
+import com.capillary.ops.cp.controller.ClusterController;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
  * All calls which can be made by the "Cluster Managers"
  */
 @RestController
-@RequestMapping("cc/v1/azure/clusters")
+@RequestMapping("cc-ui/v1/local/clusters")
 @Loggable
-public class LocalClusterController implements ClusterController<LocalCluster, LocalClusterRequest> {
+public class UiLocalClusterController implements ClusterController<LocalCluster, LocalClusterRequest> {
 
     @Autowired
     ClusterFacade clusterFacade;
