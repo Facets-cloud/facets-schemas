@@ -23,17 +23,12 @@ public class LocalClusterService implements ClusterService<LocalCluster, LocalCl
     LocalCluster cluster = new LocalCluster(request.getClusterName());
 
     cluster.setStackName(request.getStackName());
-    Map<ComponentType, String> componentVersions = componentVersionService.getClusterComponentVersions(
-            cluster.getStackName(), request);
-    cluster.setComponentVersions(componentVersions);
 
     return cluster;
   }
 
   @Override
   public LocalCluster updateCluster(LocalClusterRequest request, LocalCluster existing) {
-
-    componentVersionService.syncComponentsVersion(request, existing);
     return existing;
   }
 

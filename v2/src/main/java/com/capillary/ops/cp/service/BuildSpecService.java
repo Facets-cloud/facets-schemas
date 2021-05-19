@@ -73,11 +73,11 @@ public class BuildSpecService {
             putAll(input.getYaml());
         }};
 
-        if (overrideSteps != null || !overrideSteps.isEmpty()) {
+        if (overrideSteps != null && !overrideSteps.isEmpty()) {
             (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
                     .put("commands", overrideSteps);
         }
-        if (preBuildSteps != null || !preBuildSteps.isEmpty()) {
+        if (preBuildSteps != null && !preBuildSteps.isEmpty()) {
             ((List<String>) (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).get("commands"))
                     .addAll(preBuildSteps);
         }
