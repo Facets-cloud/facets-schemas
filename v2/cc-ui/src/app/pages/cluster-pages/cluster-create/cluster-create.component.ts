@@ -68,7 +68,7 @@ export class ClusterCreateComponent implements OnInit {
       } else {
         this.stackController.getStackUsingGET(this.stackName).subscribe(
           s => {
-            this.clusterCreateHelperService.loadClusterVarsFromStack(s, this.dataSourceForCommonVars,this.dataSourceForSecrets);
+            this.clusterCreateHelperService.loadClusterVarsFromStack(s, this.dataSourceForSecrets,this.dataSourceForCommonVars);
             this.stack = s;
             console.log(this.stack);
           });

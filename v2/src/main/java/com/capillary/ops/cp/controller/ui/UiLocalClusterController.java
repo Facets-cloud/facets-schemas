@@ -55,7 +55,7 @@ public class UiLocalClusterController implements ClusterController<LocalCluster,
     @GetMapping("{clusterId}")
     public LocalCluster getCluster(@PathVariable String clusterId) {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        if (cluster instanceof AzureCluster) {
+        if (cluster instanceof LocalCluster) {
             return (LocalCluster) cluster;
         }
         throw new NotFoundException("This Cluster is not defined in azure");
