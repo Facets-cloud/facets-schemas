@@ -578,6 +578,22 @@ public class DeploymentFacade {
         return deploymentLog;
     }
 
+    public DeploymentLog getLastSuccessfulDeployment(String clusterId) {
+        Optional<DeploymentLog> deploymentO = deploymentLogRepository
+                .findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(
+                        clusterId, StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
+        if (!deploymentO.isPresent()) {
+            throw new IllegalStateException("No Successful Regular build present for this cluster");
+        }
+        DeploymentLog deployment = deploymentO.get();
+        return deployment;
+    }
+
+    public String getSignedUrlVagrantArtifact(String clusterId, DeploymentLog deployment) {
+        String codebuildId = deployment.getCodebuildId();
+        return ((AwsCodeBuildService)tfBuildService).getArtifactZipForLocalCluster(codebuildId);
+    }
+
     public TokenPaginatedResponse getDeploymentLogs(String deploymentId, Optional<String> nextToken) {
         DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
         String codebuildId = deployment.getCodebuildId();

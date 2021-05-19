@@ -1,12 +1,12 @@
 package com.capillary.ops.cp.controller.ui;
 
 import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.AzureCluster;
+import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.LocalCluster;
-import com.capillary.ops.cp.bo.requests.AzureClusterRequest;
 import com.capillary.ops.cp.bo.requests.LocalClusterRequest;
 import com.capillary.ops.cp.controller.ClusterController;
 import com.capillary.ops.cp.facade.ClusterFacade;
+import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,9 @@ public class UiLocalClusterController implements ClusterController<LocalCluster,
 
     @Autowired
     ClusterFacade clusterFacade;
+
+    @Autowired
+    DeploymentFacade deploymentFacade;
 
     /**
      * Request to create a cluster of a particular Stack
@@ -58,6 +61,12 @@ public class UiLocalClusterController implements ClusterController<LocalCluster,
         if (cluster instanceof LocalCluster) {
             return (LocalCluster) cluster;
         }
-        throw new NotFoundException("This Cluster is not defined in azure");
+        throw new NotFoundException("This Cluster is not defined in Local");
+    }
+
+    @GetMapping("{clusterId}/vagrant")
+    public String getVagrant(@PathVariable String clusterId) {
+        DeploymentLog lastSuccessFullDeployment = deploymentFacade.getLastSuccessfulDeployment(clusterId);
+        return deploymentFacade.getSignedUrlVagrantArtifact(clusterId, lastSuccessFullDeployment);
     }
 }
