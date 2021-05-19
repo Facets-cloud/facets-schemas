@@ -6,7 +6,7 @@
       <form #form="ngForm">
         <app-form-field label="Stack Name" fieldId="stackName" invalidMsg="Stack Name is too Short or contains invalid characters (alphanumeric allowed)"
                         missingMsg="Stack Name is required!" placeholder="Stack Name"
-                        tooltipText="Name to uniquely identify your stack" patternMatch="[a-z-]+"
+                        tooltipText="Name to uniquely identify your stack" pattern="[a-z-]+"
                         [(ngModel)]="stack.name" name="stackName" required="true"  minlength="5"></app-form-field>
         <!--VCS Field-->
         <app-form-field label="Git Provider" fieldId="vcs" invalidMsg="Git Provider is invalid"
@@ -23,17 +23,17 @@
         <app-form-field label="Relative Path" fieldId="relativePath" invalidMsg="Specified Relative Path is invalid!"
                         missingMsg="Relative Path is required! Key in '.' if it is same as repo URL" placeholder="."
                         tooltipText="The directory which contains the stack definition relative to repository url"
-                         patternMatch="[a-z-\.]+" required="true"  [(ngModel)]="stack.relativePath" name="relativePath"></app-form-field>
+                         pattern="[a-z-\.]+" required="true"  [(ngModel)]="stack.relativePath" name="relativePath"></app-form-field>
         <!--Repository User-->
         <app-form-field label="Username" fieldId="userName" invalidMsg="User Name is invalid"
                         missingMsg="User is required to checkout the stack!" placeholder="User Name"
                         tooltipText="AppUser to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
-                         patternMatch="[a-z-\.]+" required="true"  [(ngModel)]="stack.user" name="user"></app-form-field>
+                         pattern="[a-z-\.]+" required="true"  [(ngModel)]="stack.user" name="user"></app-form-field>
         <!--Password-->
         <app-form-field label="Password" fieldId="appPassword" invalidMsg="Password is invalid"
                         missingMsg="Password is required to checkout the stack!" placeholder="Password"
                         tooltipText="AppUser's Password to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
-                         patternMatch="[a-z-]+" required="true"  [(ngModel)]="stack.appPassword" name="appPassword"></app-form-field>
+                         pattern="[a-z-]+" required="true"  [(ngModel)]="stack.appPassword" name="appPassword"></app-form-field>
         <app-form-field label="Artifactories" placeholder="Select Artifactories"
                         tooltipText="Artifactories to be used in this stack"
                         select="true" [selectValues]="artifactories" multiple="true"

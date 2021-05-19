@@ -11,7 +11,7 @@
         <app-form-field label="Cluster Name" name="clusterName"
                         invalidMsg="Cluster Name is too Short or contains invalid characters (alphanumeric allowed)"
                         missingMsg="Cluster Name is required!" placeholder="Cluster Name"
-                        tooltipText="Name to uniquely identify your cluster" patternMatch="[a-z-]+"
+                        tooltipText="Name to uniquely identify your cluster" pattern="[a-z-]+"
                         [(ngModel)]="awsClusterRequest.clusterName" required="true" minlength="5"
                         [disabled]="cluster?.id"></app-form-field>
         <nb-accordion multi class="col-md-12">
