@@ -1,8 +1,8 @@
 <app-layout-one-column>
-  <nb-card accent="info">
-    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack</nb-card-header>
+  <nb-card>
+    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack on AWS</nb-card-header>
     <nb-card-header *ngIf="cluster?.id">
-      Update Cluster ({{ awsClusterRequest?.clusterName }} of <b>{{stackName}}</b> stack)
+      Update Cluster ({{ cluster?.name }} of <b>{{stackName}}</b> stack)
     </nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
