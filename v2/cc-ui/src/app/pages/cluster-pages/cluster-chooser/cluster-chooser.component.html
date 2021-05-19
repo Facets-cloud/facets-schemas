@@ -1,50 +1,65 @@
 <app-layout-one-column>
-  <nb-card>
-    <nb-card-header>Choose type of cluster to create</nb-card-header>
-  </nb-card>
+
   <div class="container">
     <div class="row">
-      <nb-card class="col-md-3">
-        <nb-card-header>
-          <nb-user name="AWS" title="Public Cloud" picture="https://images.squarespace-cdn.com/content/v1/52ca3b73e4b04a45ef2c5cb6/1551884861331-C9U2RHJQLOPL9F332X5O/ke17ZwdGBToddI8pDm48kK6x8IOhzX_rTtQGKY1qp-hZw-zPPgdn4jUwVcJE1ZvWhcwhEtWJXoshNdA9f1qD7XaGPskfQtVutuSA2B-JW6wkqqV024XP-059DP6wRYqYVUGMzsBxTo2UlkZq10GTrg/AWS_blog_01.PNG?format=750w"></nb-user>
-        </nb-card-header>
-        <nb-card-body>
-          Launch your stack in an AWS account. You should have Admin privileges to this account in order to complete the creation process.
-        </nb-card-body>
-        <nb-card-footer style="text-align: center">
-          <a href="capc/{{stackName}}/clusterCreate/aws">
-            <button nbButton status="primary" *appUserRole="['cc-admin']">Select</button>
-          </a>
-        </nb-card-footer>
-      </nb-card>
-      <div class="col-md-1"></div>
-      <nb-card class="col-md-3">
-        <nb-card-header>
-          <nb-user name="Azure" title="Public Cloud" picture="https://cdn.icon-icons.com/icons2/2407/PNG/512/azure_icon_146223.png"></nb-user>
-        </nb-card-header>
-        <nb-card-body>
-          Launch your stack in an Azure account. You should have Admin privileges to this account in order to complete the creation process.
-        </nb-card-body>
-        <nb-card-footer style="text-align: center">
-          <a href="capc/{{stackName}}/clusterCreate/azure">
-            <button nbButton status="primary" *appUserRole="['cc-admin']" disabled>Select</button>
-          </a>
-        </nb-card-footer>
-      </nb-card>
-      <div class="col-md-1"></div>
-      <nb-card class="col-md-3">
-        <nb-card-header>
-          <nb-user name="Local" title="Developer Machine" picture="https://i.pinimg.com/564x/c4/f3/b4/c4f3b4f87acfeaa82a357b289c13263b.jpg"></nb-user>
-        </nb-card-header>
-        <nb-card-body>
-          A Downloadable Vagrant File for your stack, with latest builds and overrides.
-        </nb-card-body>
-        <nb-card-footer style="text-align: center">
-          <a href="capc/{{stackName}}/clusterCreate/local">
-            <button nbButton status="primary">Select</button>
-          </a>
-        </nb-card-footer>
-      </nb-card>
+      <div class="col-md-12">
+        <nb-card>
+          <nb-card-header>Choose type of cluster to create</nb-card-header>
+        </nb-card>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <nb-card>
+          <nb-card-header>
+            <nb-user name="AWS" title="Public Cloud"
+                     picture="https://images.squarespace-cdn.com/content/v1/52ca3b73e4b04a45ef2c5cb6/1551884861331-C9U2RHJQLOPL9F332X5O/ke17ZwdGBToddI8pDm48kK6x8IOhzX_rTtQGKY1qp-hZw-zPPgdn4jUwVcJE1ZvWhcwhEtWJXoshNdA9f1qD7XaGPskfQtVutuSA2B-JW6wkqqV024XP-059DP6wRYqYVUGMzsBxTo2UlkZq10GTrg/AWS_blog_01.PNG?format=750w"></nb-user>
+          </nb-card-header>
+          <nb-card-body>
+            Launch your stack in an AWS account. You should have Admin privileges to this account in order to complete
+            the creation process.
+          </nb-card-body>
+          <nb-card-footer style="text-align: center">
+            <a href="capc/{{stackName}}/clusterCreate/aws">
+              <button nbButton status="primary" *appUserRole="['cc-admin']">Select</button>
+            </a>
+          </nb-card-footer>
+        </nb-card>
+      </div>
+      <div class="col-md-4">
+        <nb-card>
+          <nb-card-header>
+            <nb-user name="Azure" title="Public Cloud"
+                     picture="https://cdn.icon-icons.com/icons2/2407/PNG/512/azure_icon_146223.png"></nb-user>
+          </nb-card-header>
+          <nb-card-body>
+            Launch your stack in an Azure account. You should have Admin privileges to this account in order to complete
+            the creation process.
+          </nb-card-body>
+          <nb-card-footer style="text-align: center">
+            <a href="capc/{{stackName}}/clusterCreate/azure">
+              <button nbButton status="primary" *appUserRole="['cc-admin']" disabled>Select</button>
+            </a>
+          </nb-card-footer>
+        </nb-card>
+      </div>
+      <div class="col-md-4">
+        <nb-card>
+          <nb-card-header>
+            <nb-user name="Local" title="Developer Machine"
+                     picture="https://i.pinimg.com/564x/c4/f3/b4/c4f3b4f87acfeaa82a357b289c13263b.jpg"></nb-user>
+          </nb-card-header>
+          <nb-card-body>
+            To be used for local development. It provides a Downloadable Vagrant File for your stack, with latest builds
+            and overrides.
+          </nb-card-body>
+          <nb-card-footer style="text-align: center">
+            <a href="capc/{{stackName}}/clusterCreate/local">
+              <button nbButton status="primary">Select</button>
+            </a>
+          </nb-card-footer>
+        </nb-card>
+      </div>
     </div>
   </div>
 </app-layout-one-column>
