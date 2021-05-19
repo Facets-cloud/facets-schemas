@@ -34,7 +34,7 @@
     <nb-card-body>
       <form #form="ngForm">
         <app-form-field label="Artifactory Name" invalidMsg="Artifactory Name is too Short or contains invalid characters (alphanumeric allowed)"
-                        tooltipText="Name to uniquely identify your Artifactory" patternMatch="[a-z-]+"
+                        tooltipText="Name to uniquely identify your Artifactory" pattern="[a-z-]+"
                         [(ngModel)]="artifactoryTemp.name" name="artifactoryName" required="true"  minlength="5" full="true" [disabled]="data.edit"></app-form-field>
         <app-form-field label="Artifactory URL"
                         tooltipText="URL for the artifactory"
