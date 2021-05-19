@@ -17,6 +17,7 @@ public class CloudTFImplementationSelector {
     private static final String TF_PROVIDER_DEFAULT = "tfaws";
     private static final String TF_PROVIDER_AWS_DEFAULT = "tfaws";
     private static final String TF_PROVIDER_AWS_CN = "tfawscn";
+    private static final String TF_PROVIDER_LOCAL = "tflocal";
 
     private String selectAwsTfProvider(AwsCluster awsCluster) {
         switch (Regions.fromName(awsCluster.getAwsRegion())) {
@@ -41,6 +42,8 @@ public class CloudTFImplementationSelector {
         switch (cluster.getCloud()) {
             case AWS:
                 return selectAwsTfProvider((AwsCluster) cluster);
+            case LOCAL:
+                return TF_PROVIDER_LOCAL;
             default:
                 throw new InvalidCloudProviderException(String.valueOf(cluster.getCloud()));
         }

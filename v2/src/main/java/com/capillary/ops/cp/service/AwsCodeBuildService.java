@@ -234,6 +234,9 @@ public class AwsCodeBuildService implements TFBuildService {
                         .type(EnvironmentVariableType.PLAINTEXT).build());
                 buildName = BUILD_NAME;
                 break;
+            default:
+                buildName = BUILD_NAME;
+                break;
         }
 
         String primarySourceVersion = "master";
