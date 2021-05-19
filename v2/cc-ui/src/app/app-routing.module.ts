@@ -83,6 +83,10 @@ const routes: Routes = [
         component: ClusterCreateComponent,
       },
       {
+        path: 'edit/local',
+        component: ClusterCreateLocalComponent,
+      },
+      {
         path: 'alerts',
         component: ClusterAlertsComponent,
       },

@@ -3,7 +3,6 @@ package com.capillary.ops.cp.service;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.capillary.ops.App;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.requests.Cloud;
@@ -12,16 +11,11 @@ import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.repository.QASuiteResultRepository;
 import com.capillary.ops.cp.repository.StackRepository;
-import com.capillary.ops.cp.repository.SubstackRepository;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
 import com.capillary.ops.deployer.service.interfaces.ICodeBuildService;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jcabi.aspects.Loggable;
@@ -36,7 +30,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
@@ -50,7 +43,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -170,7 +162,6 @@ public class AwsCodeBuildService implements TFBuildService {
      */
     @Override
     public DeploymentLog deployLatest(AbstractCluster abstractCluster, DeploymentRequest deploymentRequest, DeploymentContext deploymentContext) {
-        AwsCluster cluster = (AwsCluster) abstractCluster;
         ReleaseType releaseType = deploymentRequest.getReleaseType();
         List<EnvironmentVariable> extraEnv = deploymentRequest.getExtraEnv().entrySet().stream()
                 .map(x ->
@@ -179,7 +170,7 @@ public class AwsCodeBuildService implements TFBuildService {
                                 .value(x.getValue())
                                 .type(EnvironmentVariableType.PLAINTEXT).build())
                 .collect(Collectors.toList());
-        Optional<Stack> stackO = stackRepository.findById(cluster.getStackName());
+        Optional<Stack> stackO = stackRepository.findById(abstractCluster.getStackName());
         if (!stackO.isPresent()) {
             throw new NotFoundException("The Stack for this cluster does not exist NOW");
         }
@@ -189,14 +180,12 @@ public class AwsCodeBuildService implements TFBuildService {
 
         //DONE: Check if code build is defined for the said cloud
         List<EnvironmentVariable> environmentVariables = new ArrayList<>();
-        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_ID).value(cluster.getId())
-                .type(EnvironmentVariableType.PLAINTEXT).build());
-        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_REGION).value(cluster.getAwsRegion())
+        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_ID).value(abstractCluster.getId())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(
                 EnvironmentVariable.builder().name(CC_AUTH_TOKEN).value(authToken).type(EnvironmentVariableType.PLAINTEXT)
                         .build());
-        environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(cluster.getStackName())
+        environmentVariables.add(EnvironmentVariable.builder().name(STACK_NAME).value(abstractCluster.getStackName())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CC_REGION_LABEL).value(BUILD_REGION.toString())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
@@ -212,9 +201,9 @@ public class AwsCodeBuildService implements TFBuildService {
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CC_TF_STATE_REGION_LABEL).value(CC_TF_STATE_REGION)
                 .type(EnvironmentVariableType.PLAINTEXT).build());
-        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(cluster.getName())
+        environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_NAME).value(abstractCluster.getName())
                 .type(EnvironmentVariableType.PLAINTEXT).build());
-        environmentVariables.add(EnvironmentVariable.builder().name(CLOUD_TF_PROVIDER).value(tfImplementationSelector.selectTFProvider(cluster))
+        environmentVariables.add(EnvironmentVariable.builder().name(CLOUD_TF_PROVIDER).value(tfImplementationSelector.selectTFProvider(abstractCluster))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
@@ -238,9 +227,11 @@ public class AwsCodeBuildService implements TFBuildService {
         }
 
         String buildName = "";
-        switch (cluster.getCloud()) {
+        switch (abstractCluster.getCloud()) {
 
             case AWS:
+                environmentVariables.add(EnvironmentVariable.builder().name(CLUSTER_REGION).value(((AwsCluster)abstractCluster).getAwsRegion())
+                        .type(EnvironmentVariableType.PLAINTEXT).build());
                 buildName = BUILD_NAME;
                 break;
         }
@@ -248,7 +239,7 @@ public class AwsCodeBuildService implements TFBuildService {
         String primarySourceVersion = "master";
 
         if (!StringUtils.isEmpty(deploymentRequest.getOverrideCCVersion()) &&
-                (cluster.getStackName().equalsIgnoreCase("cc-stack-cctesting") || cluster.getStackName().equalsIgnoreCase("cc-infra-testing"))) {
+                (abstractCluster.getStackName().equalsIgnoreCase("cc-stack-cctesting") || abstractCluster.getStackName().equalsIgnoreCase("cc-infra-testing"))) {
             primarySourceVersion = deploymentRequest.getOverrideCCVersion();
         }
 
@@ -271,15 +262,15 @@ public class AwsCodeBuildService implements TFBuildService {
                 ProjectSourceVersion.builder().sourceIdentifier("STACK").sourceVersion(masterHead).build();
 
 
-        if (cluster.getCdPipelineParent() != null) {
+        if (abstractCluster.getCdPipelineParent() != null) {
             Optional<DeploymentLog> pipelineParentDeploymentOptional = Optional.empty();
-            if (cluster.getRequireSignOff()) {
+            if (abstractCluster.getRequireSignOff()) {
                 pipelineParentDeploymentOptional =
-                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(cluster.getCdPipelineParent(),
+                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(abstractCluster.getCdPipelineParent(),
                                 StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
             } else {
                 pipelineParentDeploymentOptional =
-                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(cluster.getCdPipelineParent(),
+                        deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(abstractCluster.getCdPipelineParent(),
                                 StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
             }
 
@@ -304,7 +295,7 @@ public class AwsCodeBuildService implements TFBuildService {
         // a regular trigger
         if (deploymentRequest.getOverrideBuildSteps() != null) {
             Optional<DeploymentLog> lastDeploymentOptional =
-                    deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(cluster.getId(),
+                    deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(abstractCluster.getId(),
                             StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
             if (lastDeploymentOptional.isPresent()) {
                 DeploymentLog lastDeployment = lastDeploymentOptional.get();
@@ -313,14 +304,14 @@ public class AwsCodeBuildService implements TFBuildService {
                         primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion()) &&
                         CollectionUtils.isEmpty(deploymentRequest.getOverrideBuildSteps())
                 ) {
-                    DeploymentLog deploymentLog = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, UUID.randomUUID().toString(), primarySourceVersion);
+                    DeploymentLog deploymentLog = getDeploymentLog(abstractCluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, UUID.randomUUID().toString(), primarySourceVersion);
                     deploymentLog.setStatus(StatusType.FAULT);
                     return deploymentLogRepository.save(deploymentLog);
                 }
             }
         }
 
-        ComputeType computeType = cluster.getReleaseStream().equals(BuildStrategy.PROD) ?
+        ComputeType computeType = abstractCluster.getReleaseStream().equals(BuildStrategy.PROD) ?
                 ComputeType.BUILD_GENERAL1_2_XLARGE : ComputeType.BUILD_GENERAL1_LARGE;
 
         List<ProjectSource> secondarySources = new ArrayList<>();
@@ -341,10 +332,10 @@ public class AwsCodeBuildService implements TFBuildService {
                         .secondarySourcesOverride(secondarySources)
                         .secondarySourcesVersionOverride(secondarySourceVersion)
                         .sourceVersion(primarySourceVersion)
-                        .buildspecOverride(getBuildSpec(deploymentRequest, cluster.getCloud()))
+                        .buildspecOverride(getBuildSpec(deploymentRequest, abstractCluster.getCloud()))
                         .build();
 
-        List<Build> runningBuilds = getRunningBuilds(cluster, buildName);
+        List<Build> runningBuilds = getRunningBuilds(abstractCluster, buildName);
 
         if (runningBuilds.size() > 0) {
             throw new IllegalStateException("Build is already in Progress: " + runningBuilds.get(0).id());
@@ -352,11 +343,11 @@ public class AwsCodeBuildService implements TFBuildService {
 
         try {
             String buildId = getCodeBuildClient().startBuild(startBuildRequest).build().id();
-            DeploymentLog log = getDeploymentLog(cluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, buildId, primarySourceVersion);
+            DeploymentLog log = getDeploymentLog(abstractCluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, buildId, primarySourceVersion);
             return deploymentLogRepository.save(log);
 
         } catch (ResourceNotFoundException ex) {
-            throw new RuntimeException("No Build defined for " + cluster.getCloud(), ex);
+            throw new RuntimeException("No Build defined for " + abstractCluster.getCloud(), ex);
         }
     }
 
