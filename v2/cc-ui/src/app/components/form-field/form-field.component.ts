@@ -20,6 +20,8 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   innerValue: string;
   @Input("patternMatch")
   patternMatch: string;
+  @Input("pattern")
+  pattern: string;
   @Input("missingMsg")
   missingMsg: string;
   @Input("invalidMsg")
