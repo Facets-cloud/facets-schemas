@@ -418,6 +418,12 @@ public class AwsCodeBuildService implements TFBuildService {
 //
 //    @Override
 
+    /**
+     * Looking for a specific zip file will succeed only for regular build of local cluster
+     *
+     * @param runId
+     * @return
+     */
     public String getArtifactZipForLocalCluster(String runId){
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
         try {
