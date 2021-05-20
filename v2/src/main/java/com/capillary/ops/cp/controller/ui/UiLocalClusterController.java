@@ -67,6 +67,7 @@ public class UiLocalClusterController implements ClusterController<LocalCluster,
     @GetMapping("{clusterId}/vagrant")
     public String getVagrant(@PathVariable String clusterId) {
         DeploymentLog lastSuccessFullDeployment = deploymentFacade.getLastSuccessfulDeployment(clusterId);
-        return deploymentFacade.getSignedUrlVagrantArtifact(clusterId, lastSuccessFullDeployment);
+        throw new NullPointerException("Fat gaya");
+//        return deploymentFacade.getSignedUrlVagrantArtifact(clusterId, lastSuccessFullDeployment);
     }
 }

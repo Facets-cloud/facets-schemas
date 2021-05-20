@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
@@ -39,7 +40,7 @@ public class BuildSpecService {
      * @return
      * @throws IOException
      */
-    public YamlMap getBuildSpecYaml(Cloud cloud) throws IOException {
+    public String getBuildSpecYaml(Cloud cloud) throws IOException {
         String yamlFile = "";
         switch (cloud) {
             case LOCAL:
@@ -49,39 +50,45 @@ public class BuildSpecService {
             default:
                 yamlFile = "cc/cc-buildspec.yaml";
         }
-        String buildSpecYaml =
-                CharStreams.toString(
-                        new InputStreamReader(
-                                App.class.getClassLoader().getResourceAsStream(yamlFile),
-                                Charsets.UTF_8));
-        Map<String, Object> buildSpec = new Yaml().load(buildSpecYaml);
-        return new YamlMap(buildSpec);
+        return CharStreams.toString(
+                new InputStreamReader(
+                        App.class.getClassLoader().getResourceAsStream(yamlFile),
+                        Charsets.UTF_8));
     }
 
     /**
-     * Given a Yaml template map override the steps
+     * Given a Yaml file  override the steps
      *
-     * @param input
+     * @param yaml
      * @param overrideSteps
      * @param preBuildSteps
      * @return
      */
-    public YamlMap overrideBuildSpec(YamlMap input,
-                                     List<String> overrideSteps,
-                                     List<String> preBuildSteps) {
-        Map<String, Object> buildSpec = new HashMap<String, Object>() {{
-            putAll(input.getYaml());
-        }};
+    public String overrideBuildSpec(String yaml,
+                                    List<String> overrideSteps,
+                                    List<String> preBuildSteps) throws JsonProcessingException {
+        if(StringUtils.isEmpty(yaml)){
+            throw new IllegalArgumentException("Yaml cannot be empty");
+        }
+        Map<String, Object> buildSpec = new Yaml().load(yaml);
 
         if (overrideSteps != null && !overrideSteps.isEmpty()) {
-            (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("build")))
-                    .put("commands", overrideSteps);
+            Map<String, Object> phases = (Map<String, Object>) buildSpec.getOrDefault("phases", new HashMap<>());
+            Map<String, Object> build = (Map<String, Object>) phases.getOrDefault("build", new HashMap<>());
+            List<String> commands = overrideSteps;
+            build.put("commands", commands);
+            phases.put("build", build);
+            buildSpec.put("phases", phases);
         }
         if (preBuildSteps != null && !preBuildSteps.isEmpty()) {
-            ((List<String>) (((Map<String, Object>) ((Map<String, Object>) buildSpec.get("phases")).get("pre_build"))).get("commands"))
-                    .addAll(preBuildSteps);
+            Map<String, Object> phases = (Map<String, Object>) buildSpec.getOrDefault("phases", new HashMap<>());
+            Map<String, Object> build = (Map<String, Object>) phases.getOrDefault("pre_build", new HashMap<>());
+            List<String> commands = preBuildSteps;
+            build.put("commands", commands);
+            phases.put("pre_build", build);
+            buildSpec.put("phases", phases);
         }
-        return new YamlMap(buildSpec);
+        return this.toYamlString(new YamlMap(buildSpec));
     }
 
     /**
@@ -91,7 +98,7 @@ public class BuildSpecService {
      * @return
      * @throws JsonProcessingException
      */
-    public String toYamlString(YamlMap yamlMap) throws JsonProcessingException {
+    private String toYamlString(YamlMap yamlMap) throws JsonProcessingException {
         YAMLMapper yamlMapper = new YAMLMapper();
         yamlMapper.configure(YAMLGenerator.Feature.MINIMIZE_QUOTES, true);
         yamlMapper.configure(YAMLGenerator.Feature.SPLIT_LINES, false);

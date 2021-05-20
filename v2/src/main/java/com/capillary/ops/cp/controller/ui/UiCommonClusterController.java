@@ -1,11 +1,7 @@
 package com.capillary.ops.cp.controller.ui;
 
 import com.amazonaws.util.IOUtils;
-import com.capillary.ops.cp.bo.ClusterTask;
-import com.capillary.ops.cp.bo.DeploymentLog;
-import com.capillary.ops.cp.bo.OverrideObject;
-import com.capillary.ops.cp.bo.ResourceDetails;
-import com.capillary.ops.cp.bo.SnapshotInfo;
+import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
@@ -33,6 +29,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -196,17 +194,15 @@ public class UiCommonClusterController {
         return deploymentFacade.getClusterResourceDetails(clusterId);
     }
 
-    @GetMapping(value = "{clusterId}/getVagrant", produces = "application/zip")
-    void downLoadVagrantZip(@PathVariable String clusterId, HttpServletResponse response) throws IOException, GitAPIException {
-        String zipFileName = "Vagrant-"+ clusterId + ".zip";
-        response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
-        response.addHeader(HttpHeaders.CONTENT_TYPE, "application/zip");
-        ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-        vagrantFacade.getFiles(clusterId, zipOutputStream);
-        zipOutputStream.finish();
-        zipOutputStream.close();
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.flushBuffer();
-
+    /**
+     * Get Cluster Details
+     *
+     * @param clusterId Id of the cluster
+     * @return Cluster Object
+     */
+    @GetMapping("{clusterId}")
+    public AbstractCluster getClusterCommon(@PathVariable String clusterId) {
+        AbstractCluster cluster = clusterFacade.getCluster(clusterId);
+        return cluster;
     }
 }

@@ -1,0 +1,84 @@
+<app-layout-one-column>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <nb-card>
+          <nb-card-header class="cc-head">
+            <nb-user name="Local" title="Developer Laptop" style="float: right; margin-right: 1rem"
+                     picture="https://i.pinimg.com/564x/c4/f3/b4/c4f3b4f87acfeaa82a357b289c13263b.jpg"></nb-user>
+            <div style="display: flex; vertical-align: middle;     margin-top: 9px;">
+              <h6 style="display: inline-block">Overview-</h6> {{cluster?.name}} of {{cluster?.stackName}} stack
+            </div>
+          </nb-card-header>
+        </nb-card>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <nb-card size="small" class="cc-info">
+          <nb-card-header>Cluster Information
+          </nb-card-header>
+          <nb-card-body>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Name</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.name }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Id</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.id }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">ReleaseStream</div>
+                  <div class="col-sm-6 cc-value">
+                    {{ cluster?.releaseStream }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Stack</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.stackName }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">TimeZone</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.tz }}</div>
+                </div>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+
+      <div class="col-md-6">
+        <nb-card size="small" class="cc-info">
+          <nb-card-header>Download Latest Vagrant Zip
+
+          </nb-card-header>
+          <nb-card-body>
+            Download to get started with running your stack on virtualbox VM. This currently makes use of Kind
+            Kubernetes
+            distribution inside VM to launch the infra and application pods.
+
+            <div style="text-align: center; margin-top: 3rem" *ngIf="!s3Url">
+              <button nbButton status="warning" (click)="prepareDownload()">
+                <nb-icon icon="download-outline"></nb-icon>
+                Prepare Download
+              </button>
+            </div>
+            <div style="text-align: center; margin-top: 3rem" *ngIf="s3Url">
+              <a href="{{s3Url}}" target="_blank">
+                <button nbButton status="primary">
+                  <nb-icon icon="download-outline"></nb-icon>
+                  Download
+                </button>
+              </a>
+            </div>
+            <div style="color: darkred; margin-top: 3rem" *ngIf="s3Err">
+              {{s3Err}}
+            </div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </div>
+  </div>
+</app-layout-one-column>

@@ -244,7 +244,7 @@ public class AwsCodeBuildService implements TFBuildService {
         }
 
         String primarySourceVersion = "master";
-
+        deploymentRequest.setOverrideCCVersion("cc-local-product");
         if (!StringUtils.isEmpty(deploymentRequest.getOverrideCCVersion()) &&
                 (abstractCluster.getStackName().equalsIgnoreCase("cc-stack-cctesting") || abstractCluster.getStackName().equalsIgnoreCase("cc-infra-testing"))) {
             primarySourceVersion = deploymentRequest.getOverrideCCVersion();
@@ -645,10 +645,9 @@ public class AwsCodeBuildService implements TFBuildService {
 
     private String getBuildSpec(DeploymentRequest deploymentRequest, Cloud cloud) {
         try {
-            BuildSpecService.YamlMap rawBuildSpecYaml = buildSpecService.getBuildSpecYaml(cloud);
-            BuildSpecService.YamlMap buildSpecYaml = buildSpecService.overrideBuildSpec(rawBuildSpecYaml,
+            String buildSpecYamlFile = buildSpecService.getBuildSpecYaml(cloud);
+            return buildSpecService.overrideBuildSpec(buildSpecYamlFile,
                     deploymentRequest.getOverrideBuildSteps(), deploymentRequest.getPreBuildSteps());
-            return buildSpecService.toYamlString(buildSpecYaml);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
