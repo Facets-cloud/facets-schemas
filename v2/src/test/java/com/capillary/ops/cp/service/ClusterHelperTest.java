@@ -4,6 +4,7 @@ import com.amazonaws.regions.Regions;
 import com.capillary.ops.cp.bo.AwsCluster;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
+import mockit.Injectable;
 import mockit.Tested;
 import org.junit.Test;
 
@@ -15,6 +16,9 @@ public class ClusterHelperTest {
 
     @Tested
     ClusterHelper clusterHelper;
+
+    @Injectable
+    ClusterResourceRefreshService clusterResourceRefreshService;
 
     @Test
     public void getCommonVariables() {

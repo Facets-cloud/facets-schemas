@@ -20,6 +20,7 @@ import {UserManagementComponent} from "./pages/user-management/user-management.c
 import {ArtifactoryManagementComponent} from "./pages/artifactory-management/artifactory-management.component";
 import {ClusterChooserComponent} from "./pages/cluster-pages/cluster-chooser/cluster-chooser.component";
 import {ClusterCreateLocalComponent} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.component";
+import {ClusterOverviewAssemblerComponent} from "./pages/cluster-pages/cluster-overview-assembler/cluster-overview-assembler.component";
 
 
 const routes: Routes = [
@@ -64,7 +65,7 @@ const routes: Routes = [
     children: [
       {
         path: 'overview',
-        component: ClusterOverviewComponent,
+        component: ClusterOverviewAssemblerComponent,
       },
       {
         path: 'releases',

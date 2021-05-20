@@ -12,6 +12,9 @@ import {ComponentsModule} from "../../../components/components.module";
   declarations: [
     ClusterCreateLocalComponent
   ],
+  exports: [
+    ClusterCreateLocalComponent
+  ],
   imports: [
     CommonModule,
     LayoutsModule,

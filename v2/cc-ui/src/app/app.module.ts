@@ -32,6 +32,7 @@ import {ArtifactoryManagementModule} from "./pages/artifactory-management/artifa
 import {DirectivesModule} from "./directives/directives.module";
 import {ClusterChooserModule} from "./pages/cluster-pages/cluster-chooser/cluster-chooser.module";
 import {ClusterCreateLocalModule} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.module";
+import {ClusterOverviewAssemblerModule} from "./pages/cluster-pages/cluster-overview-assembler/cluster-overview-assembler.module";
 
 
 @NgModule({
@@ -73,7 +74,8 @@ import {ClusterCreateLocalModule} from "./pages/cluster-pages/cluster-create-loc
     ArtifactoryManagementModule,
     DirectivesModule,
     ClusterChooserModule,
-    ClusterCreateLocalModule
+    ClusterCreateLocalModule,
+    ClusterOverviewAssemblerModule
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},
