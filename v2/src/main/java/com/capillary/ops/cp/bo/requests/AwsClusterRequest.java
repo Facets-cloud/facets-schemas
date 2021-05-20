@@ -22,6 +22,8 @@ public class AwsClusterRequest extends ClusterRequest {
 
     private List<String> instanceTypes;
 
+    private String providedVPCId = "";
+
     public AwsClusterRequest() {
         super(Cloud.AWS);
     }
@@ -89,4 +91,12 @@ public class AwsClusterRequest extends ClusterRequest {
     public void setInstanceTypes(List<String> instanceTypes) {
         this.instanceTypes = instanceTypes;
     }
+
+  public String getProvidedVPCId() {
+    return providedVPCId;
+  }
+
+  public void setProvidedVPCId(String providedVPCId) {
+    this.providedVPCId = providedVPCId;
+  }
 }

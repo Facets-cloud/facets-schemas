@@ -6,6 +6,8 @@ import {NbButtonModule, NbCardModule, NbIconModule, NbInputModule, NbSelectModul
 import {Ng2SmartTableModule} from "ng2-smart-table";
 import {UserRendererComponent} from "./user-renderer.component";
 import {FormsModule} from "@angular/forms";
+import {ComponentsModule} from "../../components/components.module";
+import {DirectivesModule} from "../../directives/directives.module";
 
 
 
@@ -21,7 +23,9 @@ import {FormsModule} from "@angular/forms";
     NbButtonModule,
     NbSelectModule,
     FormsModule,
-    NbIconModule
+    NbIconModule,
+    ComponentsModule,
+    DirectivesModule
   ]
 })
 export class UserManagementModule { }

@@ -18,9 +18,6 @@ export class HeaderComponent implements OnInit {
   isClusterContext = true;
   user: SimpleOauth2User;
   currentNav = '';
-  navs = [
-    'overview', 'overrides', 'releases', 'disaster-recovery', 'alerts', 'resource-details', 'tools'
-  ];
   private BASE_URL = "/capc/";
   currentClusterURL;
   clusters: AbstractCluster[];
@@ -32,6 +29,7 @@ export class HeaderComponent implements OnInit {
   settingsItems: any = [
      {title: 'Manage Users', url: '/capc/users'},
      {title: 'Manage Teams', url: '/capc/teams'},
+     {title: 'Manage Artifactories', url: '/capc/artifactories'},
   ];
   stackClusters = {};
   newNav = [];

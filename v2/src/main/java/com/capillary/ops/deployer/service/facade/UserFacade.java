@@ -38,6 +38,10 @@ public class UserFacade {
         if (user.getPassword() != null) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         }
+        Optional<User> oneByUserName = userRepository.findOneByUserName(user.getUserName());
+        if(oneByUserName.isPresent()){
+            throw new IllegalArgumentException("User with username " + user.getUserName() + " already exists");
+        }
         return userRepository.save(user);
     }
 

@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.amazonaws.util.IOUtils;
 import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.DeploymentLog;
 import com.capillary.ops.cp.bo.OverrideObject;
@@ -9,9 +10,11 @@ import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.DeploymentFacade;
+import com.capillary.ops.cp.facade.VagrantFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,11 +23,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreFilter;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("cc-ui/v1/clusters")
@@ -38,27 +48,30 @@ public class UiCommonClusterController {
     DeploymentFacade deploymentFacade;
 
     @Autowired
+    VagrantFacade vagrantFacade;
+
+    @Autowired
     private AclService aclService;
 
     //@GetMapping("{clusterId}/deployments/{value}")
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
-        @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
+                                             @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
     @GetMapping("{clusterId}/alerts")
-    public HashMap<String, Object> getAlerts(@PathVariable String clusterId){
+    public HashMap<String, Object> getAlerts(@PathVariable String clusterId) {
         return clusterFacade.getAllClusterAlerts(clusterId);
     }
 
     @GetMapping("{clusterId}/open-alerts")
-    public HashMap<String, Object> getOpenAlerts(@PathVariable String clusterId){
+    public HashMap<String, Object> getOpenAlerts(@PathVariable String clusterId) {
         return clusterFacade.getOpenClusterAlerts(clusterId);
     }
 
     @PostMapping("{clusterId}/silence-alerts")
     public HashMap<String, Object> silenceAlerts(@PathVariable String clusterId,
-                                                 @RequestBody SilenceAlarmRequest request){
+                                                 @RequestBody SilenceAlarmRequest request) {
         return clusterFacade.silenceAlert(clusterId, request);
     }
 
@@ -66,7 +79,7 @@ public class UiCommonClusterController {
     @PreFilter(value = "hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId).getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')", filterTarget = "request")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
-        @RequestBody List<OverrideRequest> request) {
+                                               @RequestBody List<OverrideRequest> request) {
 
         return clusterFacade.override(clusterId, request);
     }
@@ -89,9 +102,9 @@ public class UiCommonClusterController {
     /**
      * List snapshots for a particular resource inside a given cluster
      *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
-     * @param resourceType  Resource type -> e.g. aurora
-     * @param instanceName  Instance name -> e.g. billdump
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
+     * @param resourceType Resource type -> e.g. aurora
+     * @param instanceName Instance name -> e.g. billdump
      * @return List of SnapshotInfo
      */
     @GetMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}")
@@ -101,8 +114,7 @@ public class UiCommonClusterController {
     }
 
     /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
      * @param resourceType Resource type -> e.g. aurora
      * @param instanceName Instance name -> e.g. billdump
      * @param snapshotInfo Information about snapshot to be pinned
@@ -111,13 +123,12 @@ public class UiCommonClusterController {
     @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot")
     public SnapshotInfo pinSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
-                                          @PathVariable String instanceName, @RequestBody SnapshotInfo snapshotInfo) {
+                                    @PathVariable String instanceName, @RequestBody SnapshotInfo snapshotInfo) {
         return clusterFacade.pinSnapshot(clusterId, resourceType, instanceName, snapshotInfo);
     }
 
     /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
      * @param resourceType Resource type -> e.g. aurora
      * @param instanceName Instance name -> e.g. billdump
      * @return SnapshotInfo
@@ -129,8 +140,7 @@ public class UiCommonClusterController {
     }
 
     /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
      * @param resourceType Resource type -> e.g. aurora
      * @param instanceName Instance name -> e.g. billdump
      * @return true/false
@@ -138,7 +148,7 @@ public class UiCommonClusterController {
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}")
     public boolean createSnapshot(@PathVariable String clusterId, @PathVariable String resourceType,
-                                          @PathVariable String instanceName) {
+                                  @PathVariable String instanceName) {
         return clusterFacade.createSnapshot(clusterId, resourceType, instanceName);
     }
 
@@ -152,7 +162,7 @@ public class UiCommonClusterController {
     }
 
     @GetMapping("{clusterId}/clusterTask")
-    public ClusterTask getClusterTask(String clusterId){
+    public ClusterTask getClusterTask(String clusterId) {
         return clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
     }
 
@@ -177,12 +187,26 @@ public class UiCommonClusterController {
 
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("{clusterId}/refreshResource")
-    DeploymentLog refreshResource(@PathVariable String clusterId){
+    DeploymentLog refreshResource(@PathVariable String clusterId) {
         return deploymentFacade.createClusterResourceDetails(clusterId);
     }
 
     @GetMapping("{clusterId}/resourceDetails")
-    List<ResourceDetails> resourceDetails(@PathVariable String clusterId){
+    List<ResourceDetails> resourceDetails(@PathVariable String clusterId) {
         return deploymentFacade.getClusterResourceDetails(clusterId);
+    }
+
+    @GetMapping(value = "{clusterId}/getVagrant", produces = "application/zip")
+    void downLoadVagrantZip(@PathVariable String clusterId, HttpServletResponse response) throws IOException, GitAPIException {
+        String zipFileName = "Vagrant-"+ clusterId + ".zip";
+        response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + zipFileName + "\"");
+        response.addHeader(HttpHeaders.CONTENT_TYPE, "application/zip");
+        ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
+        vagrantFacade.getFiles(clusterId, zipOutputStream);
+        zipOutputStream.finish();
+        zipOutputStream.close();
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.flushBuffer();
+
     }
 }

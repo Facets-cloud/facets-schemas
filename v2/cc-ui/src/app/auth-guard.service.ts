@@ -3,12 +3,13 @@ import {CanActivate, Router} from '@angular/router';
 import {NbAuthService} from '@nebular/auth';
 import {catchError, map, tap} from 'rxjs/internal/operators';
 import {ApplicationControllerService} from './cc-api/services/application-controller.service';
-import {SimpleOauth2User} from './cc-api/models/simple-oauth-2user';
-import {from, Observable, of} from 'rxjs/index';
+import {of} from 'rxjs/index';
 import {DOCUMENT} from "@angular/common";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+
+  private roles: string[] = [];
 
   constructor(private applicationControllerService: ApplicationControllerService,
               private router: Router, private authService: NbAuthService, @Inject(DOCUMENT) private document: any) {
@@ -16,7 +17,10 @@ export class AuthGuard implements CanActivate {
 
   canActivate() {
     return this.applicationControllerService.meUsingGET().pipe(
-      map(res => true),
+      map(res => {
+        res.authorities.forEach(a => this.roles.push(a.authority.toLowerCase()))
+        return true
+      }),
       catchError(err => of(false)),
       tap(authenticated => {
         if (!authenticated) {
@@ -25,5 +29,9 @@ export class AuthGuard implements CanActivate {
         }
       })
     );
+  }
+
+  checkRole(roleName): boolean {
+    return this.roles.indexOf("role_" + roleName.toLowerCase()) != -1
   }
 }

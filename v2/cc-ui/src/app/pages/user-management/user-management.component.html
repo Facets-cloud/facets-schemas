@@ -5,6 +5,7 @@
         <button
           nbButton
           fullWidth
+          *appUserRole="['cc-admin']"
           status="primary"
           (click)="openCreatePopup(createUser)"
         >
@@ -21,12 +22,12 @@
 </app-layout-one-column>
 
 <ng-template #changePasswordDialog let-data let-ref="dialogRef">
-  <nb-card size="large" >
+  <nb-card size="large" *appUserRole="['cc-admin']">
     <nb-card-header>
       Change Password
 
     </nb-card-header>
-    <nb-card-body>
+    <nb-card-body >
       <form #formChPwd="ngForm">
         <div class="form-group">
           <label for="password" class="sr-only-2" > New Password</label>
@@ -58,13 +59,16 @@
 </ng-template>
 
 <ng-template #createUser let-data let-ref="dialogRef">
-  <nb-card size="large" >
+  <nb-card size="large" *appUserRole="['cc-admin']">
     <nb-card-header>
       Create User
 
     </nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
+        <!--<app-form-field label="Username" tooltipText="Email address of the user" placeholder="Email address"
+        patternMatch=".+@.+\..+" required missingMsg="Username is required!" invalidMsg="Username should be a valid email address.">
+        </app-form-field>-->
         <div class="form-group">
           <label for="email" class="sr-only-2" >Username*</label>
           <input nbInput type="email" name="userName" #email="ngModel" id="email" class="form-control min-width"
@@ -119,7 +123,7 @@
     </nb-card-body>
     <nb-card-footer>
       <button class=" cc-margin-right" nbButton status="primary" (click)='submitForm(data["edit"], ref)'
-              [disabled]="!form.valid">Proceed
+              [disabled]="!form.valid" *appUserRole="['cc-admin']" disableOnly="true">Proceed
       </button>
       <button class=" cc-margin-right" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
     </nb-card-footer>

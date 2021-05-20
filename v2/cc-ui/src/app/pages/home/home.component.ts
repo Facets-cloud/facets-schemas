@@ -3,7 +3,7 @@ import {UiStackControllerService} from '../../cc-api/services/ui-stack-controlle
 import {Stack} from '../../cc-api/models/stack';
 import {Router} from '@angular/router';
 import {SimpleOauth2User} from '../../cc-api/models/simple-oauth-2user';
-import {ApplicationControllerService } from '../../cc-api/services/application-controller.service';
+import {ApplicationControllerService} from '../../cc-api/services/application-controller.service';
 
 @Component({
   selector: 'app-home',
@@ -32,7 +32,8 @@ export class HomeComponent implements OnInit {
       delete: false,
       add: false,
       position: 'right',
-      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>', type: 'html'}]
+      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>', type: 'html'},
+        {name: 'Edit', title: '<i class="eva-edit-2-outline eva"></i>', type: 'html'}]
     },
     hideSubHeader: true,
   };
@@ -56,7 +57,7 @@ export class HomeComponent implements OnInit {
       (x: SimpleOauth2User) => {
         this.user = x;
         this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
-        || this.user.authorities.map(x => x.authority).includes('ROLE_CC-ADMIN');
+          || this.user.authorities.map(x => x.authority).includes('ROLE_CC-ADMIN');
       }
     );
   }
@@ -67,12 +68,17 @@ export class HomeComponent implements OnInit {
       console.log('Navigate to Stack ' + stackName);
       this.router.navigate(['/capc', 'stack', stackName]);
     }
+    if (x.action === 'Edit') {
+      const stackName = x.data.name;
+      console.log('Navigate to Stack Edit' + stackName);
+      this.router.navigate(['/capc', 'stack', stackName, 'edit']);
+    }
   }
 
   createStack() {
-    if (this.isUserAdmin){
+    if (this.isUserAdmin) {
       this.router.navigate(['/capc/', 'createStack']);
-      }
+    }
   }
 
 }

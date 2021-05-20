@@ -1,456 +1,128 @@
 <app-layout-one-column>
   <nb-card accent="info">
-    <nb-card-header *ngIf="!cluster?.id">Create Cluster</nb-card-header>
+    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack</nb-card-header>
     <nb-card-header *ngIf="cluster?.id">
-      Update Cluster ({{ awsClusterRequest?.clusterName }})
+      Update Cluster ({{ awsClusterRequest?.clusterName }} of <b>{{stackName}}</b> stack)
     </nb-card-header>
     <nb-card-body>
-      <div style="margin-left: 3rem; margin-right: 3rem; margin-bottom: 3rem">
-        <nb-stepper #stepper linear="true">
-          <nb-step label="Basic Details">
-            <div class="form-group row">
-              <label for="clusterName" class="label col-sm-3">Name</label>
-              <div class="col-sm-5">
-                <input
-                  [disabled]="cluster?.id"
-                  fieldSize="small"
-                  type="text"
-                  #clusterName="ngModel"
-                  nbInput
-                  fullWidth
-                  name="clusterName"
-                  id="clusterName"
-                  [(ngModel)]="awsClusterRequest.clusterName"
-                  placeholder="cluster-name"
-                  pattern="[a-z-]+"
-                />
-              </div>
-            </div>
+      <form #form="ngForm">
 
-            <div class="form-group row">
-              <label class="label col-sm-3">Time Zone</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [(ngModel)]="timeZoneModelBound"
-                  #tz="ngModel"
-                  name="tz"
-                  id="tz"
-                  fullWidth
-                  size="small"
-                  placeholder="TZ"
-                  [disabled]="cluster?.id"
-                >
-                  <nb-option value="GMT">GMT</nb-option>
-                  <nb-option value="Asia/Kolkata">Asia/Kolkata</nb-option>
-                </nb-select>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="label col-sm-3">Release Stream</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [(ngModel)]="awsClusterRequest.releaseStream"
-                  #releaseStream="ngModel"
-                  name="releaseStream"
-                  id="releaseStream"
-                  selected="QA"
-                  fullWidth
-                  size="small"
-                  placeholder="QA"
-                >
-                  <nb-option value="QA">QA</nb-option>
-                  <nb-option value="STAGING">STAGING</nb-option>
-                  <nb-option value="PROD">PROD</nb-option>
-                </nb-select>
-              </div>
-            </div>
+        <app-form-field label="Cluster Name" name="clusterName" invalidMsg="Cluster Name is too Short or contains invalid characters (alphanumeric allowed)"
+                        missingMsg="Cluster Name is required!" placeholder="Cluster Name"
+                        tooltipText="Name to uniquely identify your cluster" patternMatch="[a-z-]+"
+                        [(ngModel)]="awsClusterRequest.clusterName" required="true"  minlength="5" [disabled]="cluster?.id"></app-form-field>
+        <app-form-field label="Time Zone" name="tz" placeholder="Select Time Zone"
+                        tooltipText="Timezone to be set in your kubernetes cluster and all resources"
+                        [(ngModel)]="timeZoneModelBound"  required="true"  [disabled]="cluster?.id"
+                        select = true
+                        [selectValues]='[{value:"GMT", label:"GMT/UTC"},{value:"Asia/Kolkata", label:"IST"}]'></app-form-field>
+        <app-form-field label="Release Stream" name="releaseStream" placeholder="Select Release Stream"
+                        tooltipText="This will determine the builds which are picked in this cluster"
+                        [(ngModel)]="awsClusterRequest.releaseStream" required="true"
+                        select=true
+                        [selectValues]='[{value:"QA", label:"QA"},{value:"STAGING", label:"Pre Production"},{value:"PROD", label:"Production"}]'></app-form-field>
+
+        <app-form-field label="Cloud Provider" name="cloud" placeholder="Select Cloud Provider"
+                        tooltipText="The provider for which you want to launch the cluster"
+                        [(ngModel)]="awsClusterRequest.cloud" required="true"
+                        select=true
+                        [selectValues]='[{value:"AWS", label:"Amazon Web Services"},{value:"LOCAL", label:"Local Environment"},{value:"AZURE", label:"Azure"}]'></app-form-field>
+
+        <app-form-field label="CIDR Range" name="cidr" placeholder="0.0.0.0/0"
+                        tooltipText="Specify an IPv4 CIDR block for the VPC. The allowed block size is between a /16 netmask (65,536 IP addresses) and /28 netmask (16 IP addresses)" patternMatch="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/(3[0-1]|2[0-9]|1[0-9]|[4-9]))?(?!\/)\b"
+                        [(ngModel)]="awsClusterRequest.vpcCIDR" required="true"   [disabled]="cluster?.id"></app-form-field>
+
+        <app-form-field label="AWS Region" name="region" placeholder="Select Region"
+                        tooltipText="Select the region where the cluster should be launched"
+                        select="true" [selectValues]="regionValues"
+                        [(ngModel)]="regionModelBound" required="true"  [disabled]="cluster?.id"></app-form-field>
 
 
+        <app-form-field label="Availability zone" name="az" placeholder="Availability zone(s)"
+                        tooltipText="Comma Separated value for at least two availability Zones"
+                        [(ngModel)]="azsCsv" required="true"  [disabled]="cluster?.id"></app-form-field>
 
-            <div style="padding-top: 1rem; float: right">
-              <button nbStepperNext status="info" nbButton>Next</button>
-            </div>
-          </nb-step>
+        <app-form-field label="VPC ID" name="az" placeholder="An existing VPC ID to re-use"
+                        tooltipText="VPC Id to re-use, leave empty to create new"
+                        [(ngModel)]="awsClusterRequest.providedVPCId" required="false" [disabled]="cluster?.id"></app-form-field>
 
-          <nb-step label="Provider Configs">
+        <app-form-field label="IAM Role" name="role"  placeholder="IAM Role ARN"
+                        tooltipText="IAM Role created as per Documentation for provisioning cluster in your account"
+                        [(ngModel)]="awsClusterRequest.roleARN" required="true"  ></app-form-field>
 
-           <div class="form-group row">
-              <label class="label col-sm-3">Cloud</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [(ngModel)]="awsClusterRequest.cloud"
-                  [disabled]="cluster?.id"
-                  #cloud="ngModel"
-                  name="cloud"
-                  id="cloud"
-                  selected="AWS"
-                  fullWidth
-                  size="small"
-                >
-                  <nb-option value="AWS">AWS</nb-option>
-                </nb-select>
-              </div>
-            </div>
+        <app-form-field label="External Id" name="externalId"  placeholder="External Id"
+                        tooltipText="External ID you selected while creating above IAM Role"
+                        [(ngModel)]="awsClusterRequest.externalId" required="true"  ></app-form-field>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">CIDR</label>
-              <div class="col-sm-5">
-                <input
-                  [disabled]="cluster?.id"
-                  fieldSize="small"
-                  type="text"
-                  #vpcCIDR="ngModel"
-                  nbInput
-                  fullWidth
-                  name="vpcCIDR"
-                  id="vpcCIDR"
-                  [(ngModel)]="awsClusterRequest.vpcCIDR"
-                  placeholder="0.0.0.0/0"
-                  pattern="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/(3[0-1]|2[0-9]|1[0-9]|[4-9]))?(?!\/)\b"
-                />
-              </div>
-            </div>
+        <app-form-field *ngIf="isChinaRegion()" label="Access Key Id" name="accessKeyId"  placeholder="Access Key Id"
+                        tooltipText="Access Key Id for China region"
+                        [(ngModel)]="awsClusterRequest.accessKeyId"  ></app-form-field>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">AWS Region</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [disabled]="cluster?.id"
-                  [(ngModel)]="regionModelBound"
-                  #reg="ngModel"
-                  name="reg"
-                  id="reg"
-                  fullWidth
-                  size="small"
-                  placeholder="Please select"
-                >
-                  <nb-option
-                    #awsRegions
-                    *ngFor="let region of awsRegions"
-                    value="{{ region }}"
-                  >
-                    {{ region }}
-                  </nb-option>
-                </nb-select>
-              </div>
-            </div>
+        <app-form-field *ngIf="isChinaRegion()" label="Secret Access Key" name="accessKeyId"  placeholder="Secret Access Key"
+                        tooltipText="Secret Access Key for above Access Key Id"
+                        [(ngModel)]="awsClusterRequest.accessKeyId"  ></app-form-field>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">Availability zone</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [(ngModel)]="awsClusterRequest.azs"
-                  #region="ngModel"
-                  name="azs"
-                  id="azs"
-                  fullWidth
-                  size="small"
-                  multiple
-                  placeholder="Please select"
-                >
-                  <nb-option-group title="us-east-1">
-                    <nb-option value="us-east-1a"> us-east-1a </nb-option>
-                    <nb-option value="us-east-1b"> us-east-1b </nb-option>
-                    <nb-option value="us-east-1c"> us-east-1c </nb-option>
-                    <nb-option value="us-east-1d"> us-east-1d </nb-option>
-                    <nb-option value="us-east-1e"> us-east-1e </nb-option>
-                    <nb-option value="us-east-1f"> us-east-1f </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="us-west-2">
-                    <nb-option value="us-west-2a"> us-west-2a </nb-option>
-                    <nb-option value="us-west-2b"> us-west-2b </nb-option>
-                    <nb-option value="us-west-2c"> us-west-2c </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="us-west-1">
-                    <nb-option value="us-west-1a"> us-west-1a </nb-option>
-                    <nb-option value="us-west-1b"> us-west-1b </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="eu-west-1">
-                    <nb-option value="eu-west-1a"> eu-west-1a </nb-option>
-                    <nb-option value="eu-west-1b"> eu-west-1b </nb-option>
-                    <nb-option value="eu-west-1c"> eu-west-1c </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="eu-central-1">
-                    <nb-option value="eu-central-1a"> eu-central-1a </nb-option>
-                    <nb-option value="eu-central-1b"> eu-central-1b </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="ap-southeast-1">
-                    <nb-option value="ap-southeast-1a">
-                      ap-southeast-1a
-                    </nb-option>
-                    <nb-option value="ap-southeast-1b">
-                      ap-southeast-1b
-                    </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="ap-southeast-2">
-                    <nb-option value="ap-southeast-2a">
-                      ap-southeast-2a
-                    </nb-option>
-                    <nb-option value="ap-southeast-2b">
-                      ap-southeast-2b
-                    </nb-option>
-                    <nb-option value="ap-southeast-2c">
-                      ap-southeast-2c
-                    </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="ap-northeast-1">
-                    <nb-option value="ap-northeast-1a">
-                      ap-northeast-1a
-                    </nb-option>
-                    <nb-option value="ap-northeast-1c">
-                      ap-northeast-1c
-                    </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="sa-east-1">
-                    <nb-option value="sa-east-1a"> sa-east-1a </nb-option>
-                    <nb-option value="sa-east-1b"> sa-east-1b </nb-option>
-                    <nb-option value="sa-east-1c"> sa-east-1c </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="ap-south-1">
-                    <nb-option value="ap-south-1a"> ap-south-1a </nb-option>
-                    <nb-option value="ap-south-1b"> ap-south-1b </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="cn-north-1">
-                    <nb-option value="cn-north-1a"> cn-north-1a </nb-option>
-                    <nb-option value="cn-north-1b"> cn-north-1b </nb-option>
-                  </nb-option-group>
-                  <nb-option-group title="cn-northwest-1">
-                    <nb-option value="cn-northwest-1a">
-                      cn-northwest-1a
-                    </nb-option>
-                    <nb-option value="cn-northwest-1b">
-                      cn-northwest-1b
-                    </nb-option>
-                    <nb-option value="cn-northwest-1c">
-                      cn-northwest-1c
-                    </nb-option>
-                  </nb-option-group>
-                </nb-select>
-              </div>
-            </div>
+        <app-form-field label="Spot Instance Type" name="spotInstanceTypes"  placeholder="Comma separated spot instance types"
+                        tooltipText="The instances types you wish to use in your spot fleet"
+                        [(ngModel)]="spotInstanceTypes"  required="true" ></app-form-field>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">IAM Role</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #roleARN="ngModel"
-                  nbInput
-                  fullWidth
-                  name="roleARN"
-                  id="roleARN"
-                  [(ngModel)]="awsClusterRequest.roleARN"
-                  placeholder="arn:aws:iam::123:role/capillary-cloud-role"
-                />
-              </div>
-            </div>
+        <app-form-field label="CD Parent" name="cdPipelineParent" placeholder="Select Parent Cluster (Optional)"
+                        tooltipText="If this cluster needs to be placed in a Continuous Delivery pipeline, Select a parent cluster"
+                        select="true" [selectValues]="clusterListValues" optional="true"
+                        [(ngModel)]="awsClusterRequest.cdPipelineParent"></app-form-field>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">External ID</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #externalId="ngModel"
-                  nbInput
-                  fullWidth
-                  name="externalId"
-                  id="externalId"
-                  [(ngModel)]="awsClusterRequest.externalId"
-                  placeholder="External Id for IAM role"
-                />
-              </div>
-            </div>
+        <app-form-field label="Request Limit Ratio" name="k8sRequestsToLimitsRatio" placeholder="Enter Limit Ratio"
+                        tooltipText="This ratio will define packing density of k8s cluster, QA Cluster can have lower value"
+                        patternMatch="^0(\.[0-9][0-9]?)?$"
+                        [(ngModel)]="awsClusterRequest.k8sRequestsToLimitsRatio"></app-form-field>
 
-            <div class="form-group row" [hidden]="!isChinaRegion()">
-              <label class="label col-sm-3">Access Key Id</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #roleARN="ngModel"
-                  nbInput
-                  fullWidth
-                  name="accessKeyId"
-                  id="accessKeyId"
-                  [(ngModel)]="awsClusterRequest.accessKeyId"
-                  placeholder="1234"
-                />
-              </div>
-            </div>
+        <app-form-field label="Schedule" name="cron" placeholder="30 5 * * *"
+                        tooltipText="cron pattern to trigger regular releases"
+                        patternMatch="([0-6]?[0-9]|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*)"
+                        [(ngModel)]="cronScheduleModelBound" required="true" ></app-form-field>
 
-            <div class="form-group row" [hidden]="!isChinaRegion()">
-              <label class="label col-sm-3">Secret Access Key</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #roleARN="ngModel"
-                  nbInput
-                  fullWidth
-                  name="secretAccessKey"
-                  id="secretAccessKey"
-                  [(ngModel)]="awsClusterRequest.secretAccessKey"
-                  placeholder="1234"
-                />
-              </div>
-            </div>
+        <app-form-field label="Require Sign off" name="requireSignOff" placeholder="Yes or No"
+                        tooltipText="The provider for which you want to launch the cluster"
+                        [(ngModel)]="awsClusterRequest.requireSignOff" required="true"
+                        select=true
+                        [selectValues]='[{value:true, label:"Yes"},{value:false, label:"No"}]'></app-form-field>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">Spot Instance Types</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  [(ngModel)]="spotInstanceTypes"
-                  #types="ngModel"
-                  nbInput
-                  fullWidth
-                  name="types"
-                  id="types"
-                  placeholder="Comma separated spot instance types"
-                />
-              </div>
-            </div>
-            <div style="padding-top: 1rem; float: right">
-              <button nbStepperNext status="info" nbButton>Next</button>
-            </div>
-          </nb-step>
 
-          <nb-step label="Cluster Configs">
-            <div class="form-group row">
-              <label class="label col-sm-3">CD Parent</label>
-              <div class="col-sm-5">
-                <nb-select
-                  [(ngModel)]="awsClusterRequest.cdPipelineParent"
-                  #cdPipelineParent="ngModel"
-                  name="cdPipelineParent"
-                  id="cdPipelineParent"
-                  fullWidth
-                  size="small"
-                  placeholder="Please select"
-                >
-                  <nb-option
-                    #clusterObj
-                    *ngFor="let clusterObj of clusterList"
-                    value="{{ clusterObj.id }}"
-                  >
-                    {{ clusterObj.name }}
-                  </nb-option>
-                </nb-select>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label class="label col-sm-3">Request Limit Ratio</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #k8sRequestsToLimitsRatio="ngModel"
-                  nbInput
-                  fullWidth
-                  name="k8sRequestsToLimitsRatio"
-                  id="k8sRequestsToLimitsRatio"
-                  [(ngModel)]="awsClusterRequest.k8sRequestsToLimitsRatio"
-                  placeholder="0.5"
-                />
-              </div>
-            </div>
+        <nb-accordion multi class="col-md-12">
+          <nb-accordion-item expanded>
+            <nb-accordion-item-header>
+              Common Variables
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <app-form-field *ngFor="let variable of dataSourceForCommonVars" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
+                              tooltipText="Cluster variables are common variables defined in stack.json, used across applications in cluster"
+                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
 
-            <div class="form-group row">
-              <label class="label col-sm-3">Schedule</label>
-              <div class="col-sm-5">
-                <input
-                  fieldSize="small"
-                  type="text"
-                  #cron="ngModel"
-                  nbInput
-                  fullWidth
-                  name="cron"
-                  id="cron"
-                  [(ngModel)]="cronScheduleModelBound"
-                  placeholder="30 5 * * *"
-                />
-              </div>
-            </div>
-
-            <div class="form-group row">
-              <label for="requireSignOff" class="label col-sm-3"
-                >Require Sign off</label
-              >
-              <div class="col-sm-5">
-                <nb-toggle
-                  [(ngModel)]="awsClusterRequest.requireSignOff"
-                  name="requireSignOff"
-                  #requireSignOff="ngModel"
-                  id="requireSignOff"
-                ></nb-toggle>
-              </div>
-            </div>
-
-            <div style="padding-top: 1rem; float: right">
-              <button nbStepperNext status="info" nbButton>Next</button>
-            </div>
-          </nb-step>
-
-          <nb-step label="Cluster Variables">
-            <div style="margin-left:125px">
-              <div class="form-group row">
-                <label for="requireSignOff" class="label col-sm-3"
-                  >Common Variables</label
-                >
-              </div>
-              <div class="form-group row">
-                <div class="col-sm-9">
-                  <ng2-smart-table
-                    (createConfirm)="validateValue($event)"
-                    (editConfirm)="validateValue($event)"
-                    [settings]="settings"
-                    [source]="commonVariablesTable"
-                  >
-                  </ng2-smart-table>
-                </div>
-              </div>
-              <div class="form-group row">
-                <label for="requireSignOff" class="label col-sm-3"
-                  >Secrets</label
-                >
-              </div>
-
-              <div class="form-group row">
-                <div class="col-sm-9">
-                  <ng2-smart-table
-                    (createConfirm)="validateValue($event)"
-                    (editConfirm)="validateValue($event)"
-                    [settings]="settings"
-                    [source]="secretsTable"
-                  >
-                  </ng2-smart-table>
-                </div>
-              </div>
-            </div>
-            <div style="padding-top: 1rem; float: right">
-              <button
-                nbButton
-                *ngIf="!cluster?.id"
-                status="primary"
-                (click)="createCluster()"
-              >
-                Create
-              </button>
-              <button
-                nbButton
-                *ngIf="cluster?.id"
-                status="primary"
-                (click)="updateCluster()"
-              >
-                Update
-              </button>
-            </div>
-          </nb-step>
-        </nb-stepper>
-      </div>
+          <nb-accordion-item expanded>
+            <nb-accordion-item-header>
+              Secrets
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <app-form-field *ngFor="let variable of dataSourceForSecrets" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
+                              tooltipText="Secrets are common secrets defined in stack.json, used across applications in cluster"
+                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+        </nb-accordion>
+      </form>
     </nb-card-body>
+    <nb-card-footer *ngIf="!cluster?.id">
+      <button class=" cc-margin-right" nbButton status="primary" (click)='createCluster()'
+              [disabled]="test(form) && !form.valid"  *appUserRole="['cc-admin']">Create
+      </button>
+    </nb-card-footer>
+    <nb-card-footer *ngIf="cluster?.id">
+      <button class=" cc-margin-right" nbButton status="primary" (click)='updateCluster()'
+              [disabled]="!form.valid" *appUserRole="['cc-admin']" >Update
+      </button>
+      <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
+    </nb-card-footer>
   </nb-card>
 </app-layout-one-column>

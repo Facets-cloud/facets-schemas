@@ -1,5 +1,6 @@
 package com.capillary.ops.deployer;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -18,13 +19,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class ErrorPageConfiguration implements WebMvcConfigurer {
 
 
+    @Value("${facets_only:false}")
+    private Boolean isFacetsOnly;
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
 
         registry.addViewController("/notFound").setViewName("forward:/index.html");
         registry.addViewController("/pages").setViewName("forward:/index.html");
         registry.addViewController("/pages/**").setViewName("forward:/index.html");
-        registry.addViewController("/").setViewName("redirect:/index.html");
+        if(isFacetsOnly){
+            registry.addViewController("/").setViewName("redirect:/capc");
+        }else {
+            registry.addViewController("/").setViewName("redirect:/index.html");
+        }
         registry.addViewController("/capc").setViewName("forward:/capc/index.html");
         registry.addViewController("/capc/{spring:[^\\.]*}/**").setViewName("forward:/capc/index.html");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);

@@ -1,4 +1,4 @@
-FROM rastasheep/ubuntu-sshd:latest
+FROM rastasheep/ubuntu-sshd:18.04
 COPY setup.sh .
 RUN ls -l
 RUN /bin/bash setup.sh

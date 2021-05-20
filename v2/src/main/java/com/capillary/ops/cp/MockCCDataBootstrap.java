@@ -60,6 +60,9 @@ public class MockCCDataBootstrap {
     @Autowired
     SubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    ArtifactoryRepository artifactoryRepository;
+
     @PostConstruct
     private void init() {
         Stack stack = new Stack();
@@ -244,6 +247,27 @@ public class MockCCDataBootstrap {
         subscription.setChannelAddress("https://api.flock.com/hooks/sendMessage/9f986e4b-8e7f-462a-9479-f9f1b716cfb0");
         subscription.setNotificationSubject(Subscription.ALL);
         subscriptionRepository.save(subscription);
+
+
+        ECRArtifactory repo = new ECRArtifactory();
+        repo.setAwsAccountId("accountId");
+        repo.setAwsKey("key");
+        repo.setAwsRegion("region");
+        repo.setAwsSecret("secret");
+        repo.setId("id1");
+        repo.setName("name");
+        repo.setUri("uri");
+        artifactoryRepository.save(repo);
+
+        repo = new ECRArtifactory();
+        repo.setAwsAccountId("accountId2");
+        repo.setAwsKey("key2");
+        repo.setAwsRegion("region2");
+        repo.setAwsSecret("secret2");
+        repo.setId("id2");
+        repo.setName("name2");
+        repo.setUri("uri2");
+        artifactoryRepository.save(repo);
     }
 
 }

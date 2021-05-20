@@ -38,6 +38,8 @@ public class AwsCluster extends AbstractCluster {
 
     private String secretAccessKey;
 
+    private String providedVPCId;
+
     private List<String> instanceTypes = new ArrayList<String>(){
         {add(InstanceType.M5_2_XLARGE.toString());}
         {add(InstanceType.M4_2_XLARGE.toString());}
@@ -116,5 +118,13 @@ public class AwsCluster extends AbstractCluster {
             }
         }
         this.instanceTypes = instanceTypes;
+    }
+
+    public String getProvidedVPCId() {
+      return providedVPCId;
+    }
+
+    public void setProvidedVPCId(String providedVPCId) {
+      this.providedVPCId = providedVPCId;
     }
 }

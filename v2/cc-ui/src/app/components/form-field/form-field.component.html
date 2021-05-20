@@ -1,0 +1,95 @@
+<!--RelativePath-->
+<div *ngIf="!select">
+  <div class="form-group row" >
+    <label [for]="fieldId" class="col-md-{{labelSize}} offset-md-{{offset}}">
+      {{label}}
+      <nb-icon icon="star" *ngIf="required"
+               size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3">
+      </nb-icon>
+      &nbsp;
+      <nb-icon icon="info-outline"
+               size="tiny" [nbTooltip]="tooltipText">
+      </nb-icon>
+
+    </label>
+    <div class="col-md-{{inputSize}}">
+      <input
+        fieldSize="medium"
+        type="text"
+        nbInput
+        fullWidth
+        [name]="fieldId"
+        [id]="fieldId"
+        [(ngModel)]="innerValue"
+        [placeholder]="placeholder"
+        [pattern]="patternMatch"
+        #fieldIdModel="ngModel"
+        [required]="required"
+        (change)="onChange(innerValue)"
+        (blur)="onTouched()"
+        [disabled]="disabled"
+        minlength="{{minlength}}"
+        [status]="fieldIdModel.dirty ? (fieldIdModel.invalid ? 'danger' : 'success'):''"
+      />
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="fieldIdModel.invalid && fieldIdModel.touched" class="col-md-5 offset-md-5">
+<!--
+      {{fieldIdModel.errors | json}}
+-->
+      <p class="caption status-danger" *ngIf="fieldIdModel.errors?.required">
+        {{missingMsg}}
+      </p>
+      <p class="caption status-danger" *ngIf="fieldIdModel.errors?.pattern || fieldIdModel.errors?.minlength">
+        {{invalidMsg}}
+      </p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="select">
+  <div class="form-group row" >
+    <label [for]="fieldId" class="col-md-{{labelSize}} offset-md-{{offset}}">{{label}}
+      <nb-icon icon="star"
+               size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3" *ngIf="required">
+      </nb-icon>
+      &nbsp;
+      <nb-icon icon="info-outline"
+               size="tiny" [nbTooltip]="tooltipText">
+      </nb-icon>
+    </label>
+    <div class="col-md-{{inputSize}}">
+      <nb-select
+        fullWidth
+        #fieldIdModel2="ngModel"
+        [name]="fieldId"
+        [id]="fieldId"
+        [(ngModel)]="innerValue"
+        [placeholder]="placeholder"
+        [pattern]="patternMatch"
+        [required]="required"
+        (selectedChange)="onChange(innerValue)"
+        (blur)="onTouched()"
+        [disabled]="disabled"
+        [multiple]="multiple"
+        [status]="fieldIdModel2.dirty ? (fieldIdModel2.invalid ? 'danger' : 'success'):''">
+        <nb-option [value]="null" *ngIf="optional">Clear Selection</nb-option>
+        <nb-option *ngFor="let value of selectValues" value="{{value.value}}">{{value.label}}</nb-option>
+      </nb-select>
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="fieldIdModel2.invalid && fieldIdModel2.touched" class="col-md-5 offset-md-5">
+<!--
+      {{fieldIdModel2.errors | json}} -  {{fieldIdModel2.valid}}
+-->
+      <p class="caption status-danger" *ngIf="fieldIdModel2.errors?.required">
+        {{missingMsg}}
+      </p>
+      <p class="caption status-danger" *ngIf="fieldIdModel2.errors?.pattern || fieldIdModel2.errors?.minlength">
+        {{invalidMsg}}
+      </p>
+    </div>
+  </div>
+</div>
