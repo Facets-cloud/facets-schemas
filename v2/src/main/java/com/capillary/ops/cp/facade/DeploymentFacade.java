@@ -829,6 +829,23 @@ public class DeploymentFacade {
         return createDeployment(clusterId, deploymentRequest);
     }
 
+    public DeploymentLog validateCluster(String tfBranch, String clusterId) {
+        List<String> buildSteps = new ArrayList<>();
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        if(!StringUtils.isEmpty(tfBranch)) {
+            deploymentRequest.setOverrideCCVersion(tfBranch);
+        }
+        logger.info("Triggering Validation Suite for Cluster ID {}", clusterId);
+        buildSteps.add("cd ../../v2/cc-integration-tests");
+        buildSteps.add("mvn clean test");
+        buildSteps.add("cd ../../capillary-cloud-tf/$CLOUD_TF_PROVIDER/");
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(buildSteps);
+        deploymentRequest.setTag("Integration tests");
+        deploymentRequest.setTestDeployment(true);
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
     public List<String> getClusterCreateCommands() {
         List<String> commands = new ArrayList<>();
         commands.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
