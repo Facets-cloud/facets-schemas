@@ -8,6 +8,7 @@ import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
 import { ClusterTask } from '../models/cluster-task';
+import { AbstractCluster } from '../models/abstract-cluster';
 import { SnapshotInfo } from '../models/snapshot-info';
 import { OverrideObject } from '../models/override-object';
 import { OverrideRequest } from '../models/override-request';
@@ -24,6 +25,7 @@ import { SilenceAlarmRequest } from '../models/silence-alarm-request';
 class UiCommonClusterControllerService extends __BaseService {
   static readonly disableClusterTaskUsingPOSTPath = '/cc-ui/v1/clusters/clusterTask/disable';
   static readonly enableClusterTaskUsingPOSTPath = '/cc-ui/v1/clusters/clusterTask/enable';
+  static readonly getClusterCommonUsingGETPath = '/cc-ui/v1/clusters/{clusterId}';
   static readonly getAlertsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/alerts';
   static readonly getClusterTaskUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/clusterTask';
   static readonly listSnapshotsUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}';
@@ -120,6 +122,44 @@ class UiCommonClusterControllerService extends __BaseService {
   enableClusterTaskUsingPOST(taskId?: string): __Observable<ClusterTask> {
     return this.enableClusterTaskUsingPOSTResponse(taskId).pipe(
       __map(_r => _r.body as ClusterTask)
+    );
+  }
+
+  /**
+   * getClusterCommon
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getClusterCommonUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<AbstractCluster>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<AbstractCluster>;
+      })
+    );
+  }
+  /**
+   * getClusterCommon
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getClusterCommonUsingGET(clusterId: string): __Observable<AbstractCluster> {
+    return this.getClusterCommonUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as AbstractCluster)
     );
   }
 
