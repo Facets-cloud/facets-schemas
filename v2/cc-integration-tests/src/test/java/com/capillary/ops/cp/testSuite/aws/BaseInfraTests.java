@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Ignore
 @TestPropertySource(locations="classpath:test.properties")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {App.class})
