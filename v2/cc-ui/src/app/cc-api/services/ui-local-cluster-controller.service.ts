@@ -20,6 +20,7 @@ class UiLocalClusterControllerService extends __BaseService {
   static readonly createClusterUsingPOST3Path = '/cc-ui/v1/local/clusters';
   static readonly getClusterUsingGET3Path = '/cc-ui/v1/local/clusters/{clusterId}';
   static readonly updateClusterUsingPUT3Path = '/cc-ui/v1/local/clusters/{clusterId}';
+  static readonly getVagrantUsingGETPath = '/cc-ui/v1/local/clusters/{clusterId}/vagrant';
 
   constructor(
     config: __Configuration,
@@ -150,6 +151,44 @@ class UiLocalClusterControllerService extends __BaseService {
   updateClusterUsingPUT3(params: UiLocalClusterControllerService.UpdateClusterUsingPUT3Params): __Observable<LocalCluster> {
     return this.updateClusterUsingPUT3Response(params).pipe(
       __map(_r => _r.body as LocalCluster)
+    );
+  }
+
+  /**
+   * getVagrant
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getVagrantUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<string>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/local/clusters/${encodeURIComponent(clusterId)}/vagrant`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'text'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<string>;
+      })
+    );
+  }
+  /**
+   * getVagrant
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getVagrantUsingGET(clusterId: string): __Observable<string> {
+    return this.getVagrantUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as string)
     );
   }
 }

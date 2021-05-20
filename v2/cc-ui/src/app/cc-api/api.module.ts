@@ -9,7 +9,6 @@ import { ApplicationControllerService } from './services/application-controller.
 import { CallbackControllerService } from './services/callback-controller.service';
 import { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
 import { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
-import { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 import { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 import { UiLocalClusterControllerService } from './services/ui-local-cluster-controller.service';
@@ -47,7 +46,6 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     CallbackControllerService,
     UiArtifactoryControllerService,
     UiAwsClusterControllerService,
-    MockCallBackControllerService,
     UiCommonClusterControllerService,
     UiDeploymentControllerService,
     UiLocalClusterControllerService,
