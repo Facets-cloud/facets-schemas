@@ -1,15 +1,15 @@
 <app-layout-one-column>
-  <nb-card accent="info">
-    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack</nb-card-header>
+  <nb-card>
+    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack on AWS</nb-card-header>
     <nb-card-header *ngIf="cluster?.id">
-      Update Cluster ({{ awsClusterRequest?.clusterName }} of <b>{{stackName}}</b> stack)
+      Update Cluster ({{ cluster?.name }} of <b>{{stackName}}</b> stack)
     </nb-card-header>
     <nb-card-body>
       <form #form="ngForm">
 
         <app-form-field label="Cluster Name" name="clusterName" invalidMsg="Cluster Name is too Short or contains invalid characters (alphanumeric allowed)"
                         missingMsg="Cluster Name is required!" placeholder="Cluster Name"
-                        tooltipText="Name to uniquely identify your cluster" patternMatch="[a-z-]+"
+                        tooltipText="Name to uniquely identify your cluster" pattern="[a-z-]+"
                         [(ngModel)]="awsClusterRequest.clusterName" required="true"  minlength="5" [disabled]="cluster?.id"></app-form-field>
         <app-form-field label="Time Zone" name="tz" placeholder="Select Time Zone"
                         tooltipText="Timezone to be set in your kubernetes cluster and all resources"
@@ -29,7 +29,7 @@
                         [selectValues]='[{value:"AWS", label:"Amazon Web Services"},{value:"LOCAL", label:"Local Environment"},{value:"AZURE", label:"Azure"}]'></app-form-field>
 
         <app-form-field label="CIDR Range" name="cidr" placeholder="0.0.0.0/0"
-                        tooltipText="Specify an IPv4 CIDR block for the VPC. The allowed block size is between a /16 netmask (65,536 IP addresses) and /28 netmask (16 IP addresses)" patternMatch="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/(3[0-1]|2[0-9]|1[0-9]|[4-9]))?(?!\/)\b"
+                        tooltipText="Specify an IPv4 CIDR block for the VPC. The allowed block size is between a /16 netmask (65,536 IP addresses) and /28 netmask (16 IP addresses)" pattern="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/(3[0-1]|2[0-9]|1[0-9]|[4-9]))?(?!\/)\b"
                         [(ngModel)]="awsClusterRequest.vpcCIDR" required="true"   [disabled]="cluster?.id"></app-form-field>
 
         <app-form-field label="AWS Region" name="region" placeholder="Select Region"
@@ -73,12 +73,12 @@
 
         <app-form-field label="Request Limit Ratio" name="k8sRequestsToLimitsRatio" placeholder="Enter Limit Ratio"
                         tooltipText="This ratio will define packing density of k8s cluster, QA Cluster can have lower value"
-                        patternMatch="^0(\.[0-9][0-9]?)?$"
+                        pattern="^0(\.[0-9][0-9]?)?$"
                         [(ngModel)]="awsClusterRequest.k8sRequestsToLimitsRatio"></app-form-field>
 
         <app-form-field label="Schedule" name="cron" placeholder="30 5 * * *"
                         tooltipText="cron pattern to trigger regular releases"
-                        patternMatch="([0-6]?[0-9]|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*)"
+                        pattern="([0-6]?[0-9]|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*)"
                         [(ngModel)]="cronScheduleModelBound" required="true" ></app-form-field>
 
         <app-form-field label="Require Sign off" name="requireSignOff" placeholder="Yes or No"

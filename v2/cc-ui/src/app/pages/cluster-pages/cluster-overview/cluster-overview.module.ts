@@ -18,34 +18,37 @@ import { ComponentUpgradeDialogComponent } from './componentupgradedialog/compon
 
 
 @NgModule({
-  declarations: [ClusterOverviewComponent, ComponentUpgradeDialogComponent],
-  providers: [
-    AwsClusterControllerService,
-    NbToastrService,
-  ],
-  imports: [
-    CommonModule,
-    RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
-    NbLayoutModule,
-    NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
-    NbCardModule,
-    ComponentsModule,
-    HttpClientModule,
-    LayoutsModule,
-    NbAccordionModule,
-    Ng2SmartTableModule,
-    FormsModule,
-    NbInputModule,
-    NbButtonModule,
-    NbSpinnerModule,
-    NbIconModule,
-    NbEvaIconsModule,
-    NbListModule,
-    NbUserModule,
-    NbToggleModule,
-    NbSelectModule,
-    NbActionsModule
-  ]
+    declarations: [ClusterOverviewComponent, ComponentUpgradeDialogComponent],
+    providers: [
+        AwsClusterControllerService,
+        NbToastrService,
+    ],
+    exports: [
+        ClusterOverviewComponent
+    ],
+    imports: [
+        CommonModule,
+        RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
+        NbLayoutModule,
+        NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
+        NbCardModule,
+        ComponentsModule,
+        HttpClientModule,
+        LayoutsModule,
+        NbAccordionModule,
+        Ng2SmartTableModule,
+        FormsModule,
+        NbInputModule,
+        NbButtonModule,
+        NbSpinnerModule,
+        NbIconModule,
+        NbEvaIconsModule,
+        NbListModule,
+        NbUserModule,
+        NbToggleModule,
+        NbSelectModule,
+        NbActionsModule
+    ]
 })
 export class ClusterOverviewModule {
 }

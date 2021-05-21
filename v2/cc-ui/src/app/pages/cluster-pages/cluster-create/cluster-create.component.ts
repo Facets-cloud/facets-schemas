@@ -5,7 +5,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AwsCluster} from '../../../cc-api/models/aws-cluster';
 import {NbToastrService} from '@nebular/theme';
-import {AbstractCluster} from 'src/app/cc-api/models';
+import {ClusterCreateHelperService} from "../../../services/cluster-create-helper.service";
 
 @Component({
   selector: 'app-cluster-create',
@@ -16,15 +16,17 @@ export class ClusterCreateComponent implements OnInit {
   regionValues: { label: string; value: string }[];
   clusterListValues: { label: string; value: string }[];
   azsCsv: string;
+
   constructor(private clusterController: UiAwsClusterControllerService,
               private activatedRoute: ActivatedRoute,
               private router: Router,
               private toastrService: NbToastrService,
               private uiStackControllerService: UiStackControllerService,
-              private stackController: UiStackControllerService) { }
+              private stackController: UiStackControllerService,
+              private clusterCreateHelperService: ClusterCreateHelperService) {
+  }
 
 
-  clusterList: any;
   stackName: any;
   stack: Stack;
   cluster: AwsCluster = null;
@@ -44,15 +46,15 @@ export class ClusterCreateComponent implements OnInit {
   };
   spotInstanceTypes: string;
   extraEnvVars = ['TZ', 'CLUSTER', 'AWS_REGION', 'sv4', 'sv5'];
-  awsRegions = ['US_EAST_1' , 'US_EAST_2' , 'US_WEST_1' , 'US_WEST_2' ,
-   'EU_WEST_1' , 'EU_WEST_2' , 'EU_WEST_3' , 'EU_CENTRAL_1' , 'EU_NORTH_1' ,
-    'AP_EAST_1' , 'AP_SOUTH_1' , 'AP_SOUTHEAST_1' , 'AP_SOUTHEAST_2' , 'AP_NORTHEAST_1' ,
-     'AP_NORTHEAST_2' , 'SA_EAST_1' , 'CN_NORTH_1' , 'CN_NORTHWEST_1', 'CA_CENTRAL_1', 'GovCloud' ,
-      'US_GOV_EAST_1' ];
+  awsRegions = ['US_EAST_1', 'US_EAST_2', 'US_WEST_1', 'US_WEST_2',
+    'EU_WEST_1', 'EU_WEST_2', 'EU_WEST_3', 'EU_CENTRAL_1', 'EU_NORTH_1',
+    'AP_EAST_1', 'AP_SOUTH_1', 'AP_SOUTHEAST_1', 'AP_SOUTHEAST_2', 'AP_NORTHEAST_1',
+    'AP_NORTHEAST_2', 'SA_EAST_1', 'CN_NORTH_1', 'CN_NORTHWEST_1', 'CA_CENTRAL_1', 'GovCloud',
+    'US_GOV_EAST_1'];
 
 
-   dataSourceForSecrets: any = [];
-   dataSourceForCommonVars: any = [];
+  dataSourceForSecrets: any = [];
+  dataSourceForCommonVars: any = [];
 
   ngOnInit() {
     this.activatedRoute.params.subscribe(p => {
@@ -61,12 +63,12 @@ export class ClusterCreateComponent implements OnInit {
         this.clusterController.getClusterUsingGET2(p.clusterId).subscribe(clusterObj => {
           this.cluster = clusterObj;
           this.initAWSClusterRequestObject();
-          this.loadClusterVarsFromCluster(clusterObj);
+          this.clusterCreateHelperService.loadClusterVarsFromCluster(clusterObj, this.dataSourceForSecrets, this.dataSourceForCommonVars, this.extraEnvVars);
         });
-      }else {
+      } else {
         this.stackController.getStackUsingGET(this.stackName).subscribe(
           s => {
-            this.loadClusterVarsFromStack(s);
+            this.clusterCreateHelperService.loadClusterVarsFromStack(s, this.dataSourceForSecrets,this.dataSourceForCommonVars);
             this.stack = s;
             console.log(this.stack);
           });
@@ -74,49 +76,21 @@ export class ClusterCreateComponent implements OnInit {
       this.regionValues = this.awsRegions.map(x => {
         return {
           "value": x,
-          "label": x.replace("_"," ").replace("_"," ")
+          "label": x.replace("_", " ").replace("_", " ")
         }
       });
     });
 
     this.uiStackControllerService.getClustersUsingGET1(this.stackName).subscribe(
-      c => {
-        this.clusterList = c;
-        this.clusterListValues = this.clusterList.map(c=>{return {"value": c.id, "label": c.name}})
+      c1 => {
+        this.clusterListValues = c1.map(c => {
+          return {"value": c.id, "label": c.name}
+        })
       }
     );
   }
 
-
-  loadClusterVarsFromStack(stackObj: Stack) {
-    Object.keys(stackObj.clusterVariablesMeta).forEach(key => {
-      let element = stackObj.clusterVariablesMeta[key];
-      if (element.secret) {
-        this.dataSourceForSecrets.push({name: key, value: element.value, required: element.required});
-      } else {
-        this.dataSourceForCommonVars.push({name: key, value: element.value, required: element.required});
-      }
-    });
-  }
-
-  loadClusterVarsFromCluster(cluster: AbstractCluster){
-debugger;
-    Object.keys(cluster.commonEnvironmentVariables).forEach(element => {
-      if (!this.extraEnvVars.includes(element)) {
-      this.dataSourceForCommonVars.push({name: element, value: cluster.commonEnvironmentVariables[element]});
-      const clone = {name: element, value: cluster.commonEnvironmentVariables[element]};
-      this.originalClusterVariablesSource.push(clone);
-      }
-    });
-
-    Object.keys(cluster.secrets).forEach(element => {
-        this.dataSourceForSecrets.push({name: element, value: cluster.secrets[element]});
-        const clone = {name: element, value: cluster.secrets[element]};
-        this.originalClusterVariablesSource.push(clone);
-      });
-  }
   initAWSClusterRequestObject() {
-    debugger;
     this.awsClusterRequest.clusterName = this.cluster.name;
     this.awsClusterRequest.cloud = this.cluster.cloud;
     this.timeZoneModelBound = this.cluster.tz;
@@ -136,7 +110,7 @@ debugger;
     this.awsClusterRequest.componentVersions = this.cluster.componentVersions;
     this.regionModelBound = this.cluster.awsRegion.toUpperCase().replace('-', '_').replace('-', '_');
     this.spotInstanceTypes = this.cluster.instanceTypes.join(",");
-    this.azsCsv = this.cluster.azs ? this.cluster.azs.join(","):"";
+    this.azsCsv = this.cluster.azs ? this.cluster.azs.join(",") : "";
     this.cronScheduleModelBound = this.cluster.schedules.RELEASE;
   }
 
@@ -153,7 +127,7 @@ debugger;
     });
     const secretsDataSource = this.dataSourceForSecrets;
     secretsDataSource.forEach(element => {
-      if(element.value!="****") {
+      if (element.value != "****") {
         this.awsClusterRequest.clusterVars[element.name] = element.value;
       }
     });
@@ -161,13 +135,13 @@ debugger;
     try {
       debugger
       this.clusterController.createClusterUsingPOST2(this.awsClusterRequest)
-      .subscribe(cluster => {
-        this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
-    },
-    error => {
-      this.toastrService.danger('Cluster creation failed ' + error.statusText, 'Error', {duration: 8000});
-    });
-    }catch (err) {
+        .subscribe(cluster => {
+            this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);
+          },
+          error => {
+            this.toastrService.danger('Cluster creation failed ' + error.statusText, 'Error', {duration: 8000});
+          });
+    } catch (err) {
       console.log(err);
       this.toastrService.danger('Cluster creation failed', 'Error', {duration: 5000});
     }
@@ -199,7 +173,7 @@ debugger;
     return this.regionModelBound === 'CN_NORTH_1' || this.regionModelBound === 'CN_NORTHWEST_1';
   }
 
-  async updateCluster(){
+  async updateCluster() {
     this.awsClusterRequest.stackName = this.stackName;
     this.awsClusterRequest.schedules = {RELEASE: this.cronScheduleModelBound};
     this.awsClusterRequest.region = this.regionModelBound;
@@ -208,13 +182,13 @@ debugger;
 
     this.dataSourceForCommonVars.forEach(element => {
       if (this.hasClusterVariableChanged(this.dataSourceForCommonVars, element.name)) {
-      this.awsClusterRequest.clusterVars[element.name] = element.value;
+        this.awsClusterRequest.clusterVars[element.name] = element.value;
       }
     });
     const secretsDataSource = await this.dataSourceForSecrets;
     secretsDataSource.forEach(element => {
       if (this.hasClusterVariableChanged(secretsDataSource, element.name)) {
-      this.awsClusterRequest.clusterVars[element.name] = element.value;
+        this.awsClusterRequest.clusterVars[element.name] = element.value;
       }
     });
 
@@ -223,13 +197,13 @@ debugger;
         request: this.awsClusterRequest,
         clusterId: this.cluster.id
       }).subscribe(c => {
-        console.log(c);
-        this.router.navigate(['/capc/', this.stackName, 'cluster', this.cluster.id]);
-      },
-      error => {
-        this.toastrService.danger('Cluster update failed ' + error.statusText, 'Error', {duration: 8000});
-      });
-      } catch (err) {
+          console.log(c);
+          this.router.navigate(['/capc/', this.stackName, 'cluster', this.cluster.id]);
+        },
+        error => {
+          this.toastrService.danger('Cluster update failed ' + error.statusText, 'Error', {duration: 8000});
+        });
+    } catch (err) {
       console.log(err);
       this.toastrService.danger('Cluster update failed ' + err.statusText, 'Error', {duration: 8000});
     }

@@ -5,7 +5,7 @@ export interface AzureClusterRequest {
   cdPipelineParent?: string;
   clientId?: string;
   clientSecret?: string;
-  cloud?: 'AWS' | 'AZURE';
+  cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   clusterName?: string;
   clusterVars?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
