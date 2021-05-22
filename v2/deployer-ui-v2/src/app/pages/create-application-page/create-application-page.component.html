@@ -194,7 +194,7 @@
             </div>
           </form>
         </nb-step>
-        <nb-step *ngIf="(application?.applicationType !== 'SCHEDULED_JOB') && (registries.length > 0)" [stepControl]="additionalRegistries" label="AdditionalRegistries">
+        <nb-step *ngIf="(registries.length > 0)" [stepControl]="additionalRegistries" label="AdditionalRegistries">
           <form #additionalRegistries="ngForm">
             <div style="margin: auto; width: 70%; min-width: 300px;">
               <div class="form-group row">
