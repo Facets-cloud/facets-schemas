@@ -28,7 +28,7 @@ public class DeploymentRequest {
 
     private String triggeredBy;
 
-    private Boolean isTestDeployment = false;
+    private Boolean integrationTest;
 
     public String getId() {
         return id;
@@ -97,11 +97,14 @@ public class DeploymentRequest {
         this.preBuildSteps = preBuildSteps;
     }
 
-    public boolean isTestDeployment() {
-        return isTestDeployment;
+    public Boolean getIntegrationTest() {
+        if(integrationTest == null){
+            return false;
+        }
+        return integrationTest;
     }
 
-    public void setTestDeployment(Boolean testDeployment) {
-        isTestDeployment = testDeployment;
+    public void setIntegrationTest(Boolean integrationTest) {
+        this.integrationTest = integrationTest;
     }
 }

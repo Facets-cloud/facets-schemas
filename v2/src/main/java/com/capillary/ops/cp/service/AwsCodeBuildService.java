@@ -107,6 +107,7 @@ public class AwsCodeBuildService implements TFBuildService {
     private static final String CLUSTER_NAME = "CLUSTER_NAME";
     private static final String CLOUD_TF_PROVIDER = "CLOUD_TF_PROVIDER";
     private static final String CC_TF_DYNAMO_TABLE_LABEL = "TF_VAR_cc_tf_dynamo_table";
+    private static final String RELEASE_STREAM = "RELEASE_STREAM";
 
 
     @Value("${internalApiAuthToken}")
@@ -212,6 +213,7 @@ public class AwsCodeBuildService implements TFBuildService {
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
+        environmentVariables.add(EnvironmentVariable.builder().name(RELEASE_STREAM).value(abstractCluster.getReleaseStream().toString()).type(EnvironmentVariableType.PLAINTEXT).build());
 
         try {
             environmentVariables.add(EnvironmentVariable.builder().name(HOST).value(requestContext.getHeader("HOST"))
@@ -378,6 +380,7 @@ public class AwsCodeBuildService implements TFBuildService {
         log.setDeploymentContextVersion(deploymentContextVersion);
         log.setTriggeredBy(deploymentRequest.getTriggeredBy());
         log.setOverrideBuildSteps(deploymentRequest.getOverrideBuildSteps());
+        log.setIntegrationTest(deploymentRequest.getIntegrationTest());
         return log;
     }
 
