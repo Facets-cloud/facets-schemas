@@ -12,6 +12,8 @@ import io.fabric8.kubernetes.api.model.batch.JobTemplateSpec;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.volumesnapshot.client.DefaultVolumeSnapshotClient;
+import io.fabric8.volumesnapshot.client.VolumeSnapshotClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,13 @@ public class BaseAwsDRService extends BaseDRService {
         Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
         K8sCredentials k8sCredentials = credentialsO.get();
         return new DefaultKubernetesClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
+                .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
+    }
+
+    VolumeSnapshotClient getVolumeSnapshotClientForCluster(String clusterId) {
+        Optional<K8sCredentials> credentialsO = k8sCredentialsRepository.findOneByClusterId(clusterId);
+        K8sCredentials k8sCredentials = credentialsO.get();
+        return new DefaultVolumeSnapshotClient(new ConfigBuilder().withMasterUrl(k8sCredentials.getKubernetesApiEndpoint())
                 .withOauthToken(k8sCredentials.getKubernetesToken()).withTrustCerts(true).build());
     }
 

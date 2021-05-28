@@ -127,11 +127,4 @@ public class CCAdapterService {
 
         return new Environment(ccEnvironmentMeta.get(), ccEnvironmentConfiguration);
     }
-
-    //    public static void main(String[] args) throws ParseException {
-//        SimpleDateFormat sdfmt= new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-//        Date parse = sdfmt.parse("2020-12-31T23:55:55Z");
-//        System.out.println(parse);
-//    }
-
 }
