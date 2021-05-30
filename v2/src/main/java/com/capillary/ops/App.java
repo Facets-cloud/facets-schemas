@@ -6,13 +6,17 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.github.alturkovic.lock.configuration.EnableDistributedLock;
 import com.github.alturkovic.lock.redis.impl.SimpleRedisLock;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
+import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
+import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.ApplicationContext;
@@ -60,6 +64,18 @@ public class App {
 
   public static void main(String[] args) throws Exception {
     SpringApplication.run(App.class, args);
+  }
+
+  @Bean
+  public ConfigurableServletWebServerFactory webServerFactory() {
+    TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
+    factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+      @Override
+      public void customize(Connector connector) {
+        connector.setProperty("relaxedQueryChars", "|{}[]:");
+      }
+    });
+    return factory;
   }
 
   @Bean
