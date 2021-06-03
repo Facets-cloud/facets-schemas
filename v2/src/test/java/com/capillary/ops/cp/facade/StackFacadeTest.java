@@ -1,8 +1,14 @@
 package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.Stack;
+import com.capillary.ops.cp.repository.AuditLogRepository;
+import com.capillary.ops.cp.repository.ClusterTaskRepository;
 import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.repository.SubstackRepository;
 import com.capillary.ops.cp.service.GitService;
+import com.capillary.ops.cp.service.StackAutoCompleteService;
+import com.capillary.ops.cp.service.StackService;
+import com.capillary.ops.cp.service.notification.FlockNotifier;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Tested;
@@ -12,6 +18,7 @@ import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +35,34 @@ public class StackFacadeTest {
     StackRepository stackRepository;
 
     @Injectable
+    SubstackRepository substackRepository;
+
+    @Injectable
     GitService gitService;
+
+    @Injectable
+    StackAutoCompleteService stackAutoCompleteService;
+
+    @Injectable
+    private AuditLogRepository auditLogRepository;
+
+    @Injectable
+    private FlockNotifier flockNotifier;
+
+    @Injectable
+    private StackService stackService;
+
+    @Injectable
+    private ArtifactFacade artifactFacade;
+
+    @Injectable
+    private ClusterFacade clusterFacade;
+
+    @Injectable
+    private MetaFacade metaFacade;
+
+    @Injectable
+    private ClusterTaskRepository clusterTaskRepository;
 
    // @Test(expected = IllegalStateException.class)
     public void createStackNonUnique() {

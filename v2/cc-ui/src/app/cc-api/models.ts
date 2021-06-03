@@ -64,6 +64,8 @@ export { K8sLoggingConfiguration } from './models/k8s-logging-configuration';
 export { Kube2IamConfiguration } from './models/kube-2iam-configuration';
 export { Link } from './models/link';
 export { ListDeploymentsWrapper } from './models/list-deployments-wrapper';
+export { LocalCluster } from './models/local-cluster';
+export { LocalClusterRequest } from './models/local-cluster-request';
 export { LogEvent } from './models/log-event';
 export { MongoDRDeploymentRecipe } from './models/mongo-drdeployment-recipe';
 export { MongoVolumeResizeDeploymentRecipe } from './models/mongo-volume-resize-deployment-recipe';

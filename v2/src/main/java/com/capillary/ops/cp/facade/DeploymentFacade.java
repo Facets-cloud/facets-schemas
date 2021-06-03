@@ -578,6 +578,22 @@ public class DeploymentFacade {
         return deploymentLog;
     }
 
+    public DeploymentLog getLastSuccessfulDeployment(String clusterId) {
+        Optional<DeploymentLog> deploymentO = deploymentLogRepository
+                .findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(
+                        clusterId, StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
+        if (!deploymentO.isPresent()) {
+            throw new IllegalStateException("No Successful Regular build present for this cluster");
+        }
+        DeploymentLog deployment = deploymentO.get();
+        return deployment;
+    }
+
+    public String getSignedUrlVagrantArtifact(String clusterId, DeploymentLog deployment) {
+        String codebuildId = deployment.getCodebuildId();
+        return ((AwsCodeBuildService)tfBuildService).getArtifactZipForLocalCluster(codebuildId);
+    }
+
     public TokenPaginatedResponse getDeploymentLogs(String deploymentId, Optional<String> nextToken) {
         DeploymentLog deployment = deploymentLogRepository.findById(deploymentId).get();
         String codebuildId = deployment.getCodebuildId();
@@ -620,7 +636,7 @@ public class DeploymentFacade {
 
         clusterResourceRefreshService.saveClusterResourceDetails(callback.getCodebuidId(), deploymentLog.getStatus());
 
-        if (!deploymentLog.isTestDeployment() && deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
+        if(!deploymentLog.getIntegrationTest() && deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
             deploymentLog.getAppDeployments().stream().forEach(
                     x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
         }
@@ -808,18 +824,23 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setOverrideCCVersion(tfBranch);
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
-        DeploymentLog lastDeployment = deployments.stream().filter(d -> d.isTestDeployment()).findFirst().get();
+        Optional<DeploymentLog> lastDeployment = null;
+        if(deployments != null && deployments.size() > 0) {
+            lastDeployment = deployments.stream().filter(d -> d.getIntegrationTest().equals(true)).findFirst();
+        }
 
-        if (!lastDeployment.getStatus().equals(StatusType.SUCCEEDED)) {
+        if( lastDeployment != null && lastDeployment.isPresent() && !Objects.equals(lastDeployment.get().getStatus(), StatusType.SUCCEEDED)){
             logger.info("Destroying existing cluster");
             buildSteps.addAll(getClusterDestroyCommands());
             deploymentRequest.setTriggeredBy("deployer");
             deploymentRequest.setOverrideBuildSteps(buildSteps);
-        } else {
+        }else {
             logger.info("Triggering Launch -> Test -> Destroy flow");
             buildSteps.addAll(getClusterCreateCommands());
             buildSteps.add("cd ../../v2/cc-integration-tests");
             buildSteps.add("mvn clean test");
+            buildSteps.add("mvn surefire-report:report");
+            buildSteps.add("cd ../../capillary-cloud-tf/tfaws/");
             buildSteps.addAll(getClusterDestroyCommands());
             deploymentRequest.setReleaseType(ReleaseType.RELEASE);
             deploymentRequest.setOverrideBuildSteps(buildSteps);
@@ -829,22 +850,40 @@ public class DeploymentFacade {
         return createDeployment(clusterId, deploymentRequest);
     }
 
-    public List<String> getClusterCreateCommands() {
+    public DeploymentLog validateCluster(String tfBranch, String clusterId) {
+        List<String> buildSteps = new ArrayList<>();
+        DeploymentRequest deploymentRequest = new DeploymentRequest();
+        if(!StringUtils.isEmpty(tfBranch)) {
+            deploymentRequest.setOverrideCCVersion(tfBranch);
+        }
+        logger.info("Triggering Validation Suite for Cluster ID {}", clusterId);
+        buildSteps.add("cd ../../v2/cc-integration-tests");
+        buildSteps.add("mvn clean test");
+        buildSteps.add("cd ../../capillary-cloud-tf/$CLOUD_TF_PROVIDER/");
+        deploymentRequest.setReleaseType(ReleaseType.RELEASE);
+        deploymentRequest.setOverrideBuildSteps(buildSteps);
+        deploymentRequest.setTag("Integration tests");
+        deploymentRequest.setIntegrationTest(true);
+        return createDeployment(clusterId, deploymentRequest);
+    }
+
+    public List<String> getClusterCreateCommands(){
         List<String> commands = new ArrayList<>();
+        commands.add("grep -r \"prevent_destroy = true\" . | cut -d \":\" -f1 | xargs sed -i 's/prevent_destroy = true/prevent_destroy = false/g'");
         commands.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
         commands.add("terraform apply -target module.infra.module.baseinfra -auto-approve -no-color -parallelism=10");
         return commands;
     }
 
-    public List<String> getClusterDestroyCommands() {
+    public List<String> getClusterDestroyCommands(){
         List<String> commands = new ArrayList<>();
+        commands.add("grep -r \"prevent_destroy = true\" . | cut -d \":\" -f1 | xargs sed -i 's/prevent_destroy = true/prevent_destroy = false/g'");
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
         commands.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
-        commands.add("python3 -m pip install boto3");
-        commands.add("python3 scripts/testing_utils/testing_utils.py");
+        commands.add("python3 scripts/testing_utils/testing_utils.py --del_s3_bucket true");
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.vpc' -auto-approve");
-        commands.add("terraform destroy -target module.infra.module.baseinfra -auto-approve");
+        commands.add("python3 scripts/testing_utils/testing_utils.py --del_volumes true");
         return commands;
     }
 }

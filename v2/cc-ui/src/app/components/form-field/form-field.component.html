@@ -22,7 +22,7 @@
         [id]="fieldId"
         [(ngModel)]="innerValue"
         [placeholder]="placeholder"
-        [pattern]="patternMatch"
+        [pattern]="pattern||patternMatch"
         #fieldIdModel="ngModel"
         [required]="required"
         (change)="onChange(innerValue)"

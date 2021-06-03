@@ -2,7 +2,7 @@
 export interface AbstractCluster {
   autoSignOffSchedule?: string;
   cdPipelineParent?: string;
-  cloud?: 'AWS' | 'AZURE';
+  cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   commonEnvironmentVariables?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;

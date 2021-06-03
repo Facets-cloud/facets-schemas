@@ -1,6 +1,8 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.ClusterTask;
 import com.capillary.ops.cp.bo.QASuite;
 import com.capillary.ops.cp.bo.recipes.AuroraDRDeploymentRecipe;
 import com.capillary.ops.cp.bo.recipes.MongoDRDeploymentRecipe;
@@ -42,10 +44,16 @@ public class UiDeploymentController {
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
-        if (deploymentRequest.isTestDeployment()) {
+        if (deploymentRequest.getIntegrationTest()) {
             return deploymentFacade.triggerIntegrationSuite(deploymentRequest.getOverrideCCVersion(),clusterId);
         }
         return deploymentFacade.createDeployment(clusterId, deploymentRequest);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PostMapping("/validateCluster")
+    DeploymentLog validateCluster(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
+        return deploymentFacade.validateCluster(deploymentRequest.getOverrideCCVersion(), clusterId);
     }
 
     /**

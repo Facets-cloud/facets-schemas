@@ -4,7 +4,7 @@ export interface AzureCluster {
   cdPipelineParent?: string;
   clientId?: string;
   clientSecret?: string;
-  cloud?: 'AWS' | 'AZURE';
+  cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   commonEnvironmentVariables?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
