@@ -1,38 +1,38 @@
 {
   "/api": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/oauth2": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/login/oauth2/code/google": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/v2/api-docs": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/swagger": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/webjars": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/logout": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/perform_login": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   },
   "/perform_logout": {
-    "target": "http://control-plane.default:8080",
+    "target": "http://localhost:8080",
     "secure": false
   }
 }
