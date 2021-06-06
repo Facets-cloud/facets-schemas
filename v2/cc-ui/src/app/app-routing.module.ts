@@ -21,6 +21,7 @@ import {ArtifactoryManagementComponent} from "./pages/artifactory-management/art
 import {ClusterChooserComponent} from "./pages/cluster-pages/cluster-chooser/cluster-chooser.component";
 import {ClusterCreateLocalComponent} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.component";
 import {ClusterOverviewAssemblerComponent} from "./pages/cluster-pages/cluster-overview-assembler/cluster-overview-assembler.component";
+import {AzureClusterCreateComponent} from "./pages/cluster-pages/cluster-create-azure/cluster-create-azure.component";
 
 
 const routes: Routes = [
@@ -50,6 +51,9 @@ const routes: Routes = [
   },
   {
     path: 'capc/:stackName/clusterCreate/aws', component: ClusterCreateComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/:stackName/clusterCreate/azure', component: AzureClusterCreateComponent, canActivate: [AuthGuard]
   },
   {
     path: 'capc/:stackName/clusterCreate/local', component: ClusterCreateLocalComponent, canActivate: [AuthGuard]

@@ -1,6 +1,7 @@
 /* tslint:disable */
 export interface AzureCluster {
   autoSignOffSchedule?: string;
+  azs?: Array<string>;
   cdPipelineParent?: string;
   clientId?: string;
   clientSecret?: string;
@@ -9,8 +10,10 @@ export interface AzureCluster {
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
   id?: string;
+  instanceTypes?: Array<string>;
   k8sRequestsToLimitsRatio?: number;
   name?: string;
+  region?: string;
   releaseStream?: 'QA' | 'STAGING' | 'PROD';
   requireSignOff?: boolean;
   schedules?: {[key: string]: string};
@@ -19,4 +22,5 @@ export interface AzureCluster {
   subscriptionId?: string;
   tenantId?: string;
   tz?: string;
+  vpcCIDR?: string;
 }

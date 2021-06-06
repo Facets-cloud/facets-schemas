@@ -11,12 +11,12 @@ export interface DeploymentLog {
   description?: string;
   errorLogs?: Array<string>;
   id?: string;
+  integrationTest?: boolean;
   overrideBuildSteps?: Array<string>;
   releaseType?: 'HOTFIX' | 'RELEASE';
   signedOff?: boolean;
   stackVersion?: string;
   status?: 'SUCCEEDED' | 'FAILED' | 'FAULT' | 'TIMED_OUT' | 'IN_PROGRESS' | 'STOPPED' | 'null';
-  testDeployment?: boolean;
   tfVersion?: string;
   triggeredBy?: string;
 }

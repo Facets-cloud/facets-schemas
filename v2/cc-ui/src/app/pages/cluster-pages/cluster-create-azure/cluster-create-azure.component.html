@@ -1,0 +1,125 @@
+<app-layout-one-column>
+  <nb-card>
+    <nb-card-header *ngIf="!cluster?.id">Create Cluster for <b>{{stackName}}</b> stack on AWS</nb-card-header>
+    <nb-card-header *ngIf="cluster?.id">
+      Update Cluster ({{ cluster?.name }} of <b>{{stackName}}</b> stack)
+    </nb-card-header>
+    <nb-card-body>
+      <form #form="ngForm">
+
+        <app-form-field label="Cluster Name" name="clusterName" invalidMsg="Cluster Name is too Short or contains invalid characters (alphanumeric allowed)"
+                        missingMsg="Cluster Name is required!" placeholder="Cluster Name"
+                        tooltipText="Name to uniquely identify your cluster" pattern="[a-z-]+"
+                        [(ngModel)]="azureClusterRequest.clusterName" required="true"  minlength="5" [disabled]="cluster?.id"></app-form-field>
+        <app-form-field label="Time Zone" name="tz" placeholder="Select Time Zone"
+                        tooltipText="Timezone to be set in your kubernetes cluster and all resources"
+                        [(ngModel)]="timeZoneModelBound"  required="true"  [disabled]="cluster?.id"
+                        select = true
+                        [selectValues]='[{value:"GMT", label:"GMT/UTC"},{value:"Asia/Kolkata", label:"IST"}]'></app-form-field>
+        <app-form-field label="Release Stream" name="releaseStream" placeholder="Select Release Stream"
+                        tooltipText="This will determine the builds which are picked in this cluster"
+                        [(ngModel)]="azureClusterRequest.releaseStream" required="true"
+                        select=true
+                        [selectValues]='[{value:"QA", label:"QA"},{value:"STAGING", label:"Pre Production"},{value:"PROD", label:"Production"}]'></app-form-field>
+
+        <app-form-field label="Cloud Provider" name="cloud" placeholder="Select Cloud Provider"
+                        tooltipText="The provider for which you want to launch the cluster"
+                        [(ngModel)]="azureClusterRequest.cloud" required="true"
+                        select=true
+                        [selectValues]='[{value:"AWS", label:"Amazon Web Services"},{value:"LOCAL", label:"Local Environment"},{value:"AZURE", label:"Azure"}]'></app-form-field>
+
+        <app-form-field label="CIDR Range" name="cidr" placeholder="0.0.0.0/0"
+                        tooltipText="Specify an IPv4 CIDR block for the VPC. The allowed block size is between a /16 netmask (65,536 IP addresses) and /28 netmask (16 IP addresses)" pattern="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/(3[0-1]|2[0-9]|1[0-9]|[4-9]))?(?!\/)\b"
+                        [(ngModel)]="azureClusterRequest.vpcCIDR" required="true"   [disabled]="cluster?.id"></app-form-field>
+
+        <app-form-field label="AWS Region" name="region" placeholder="Select Region"
+                        tooltipText="Select the region where the cluster should be launched"
+                        select="true" [selectValues]="regionValues"
+                        [(ngModel)]="regionModelBound" required="true"  [disabled]="cluster?.id"></app-form-field>
+
+
+        <app-form-field label="Availability zone" name="az" placeholder="Availability zone(s)"
+                        tooltipText="Comma Separated value for at least two availability Zones"
+                        [(ngModel)]="azsCsv" required="true"  [disabled]="cluster?.id"></app-form-field>
+
+        <app-form-field label="Subscription Id" name="role"  placeholder="Azure Subscription Id"
+                        tooltipText="Azure Subscription Id to be used"
+                        [(ngModel)]="azureClusterRequest.subscriptionId" required="true"  ></app-form-field>
+
+
+        <app-form-field label="Tenant Id" name="role"  placeholder="Azure Tenant Id"
+                        tooltipText="Azure Tenant Id to be used"
+                        [(ngModel)]="azureClusterRequest.tenantId" required="true"  ></app-form-field>
+
+        <app-form-field label="Client Id" name="role"  placeholder="Azure Client Id"
+                        tooltipText="Azure Client Id to be used"
+                        [(ngModel)]="azureClusterRequest.clientId" required="true"  ></app-form-field>
+
+        <app-form-field label="Client Secret" name="role"  placeholder="Azure Client Secret"
+                        tooltipText="Azure Client Secret to be used"
+                        [(ngModel)]="azureClusterRequest.clientSecret" required="true"  ></app-form-field>
+
+        <app-form-field label="Spot Instance Type" name="spotInstanceTypes"  placeholder="Comma separated spot instance types"
+                        tooltipText="The instances types you wish to use in your spot fleet"
+                        [(ngModel)]="spotInstanceTypes"  required="true" ></app-form-field>
+
+        <app-form-field label="CD Parent" name="cdPipelineParent" placeholder="Select Parent Cluster (Optional)"
+                        tooltipText="If this cluster needs to be placed in a Continuous Delivery pipeline, Select a parent cluster"
+                        select="true" [selectValues]="clusterListValues" optional="true"
+                        [(ngModel)]="azureClusterRequest.cdPipelineParent"></app-form-field>
+
+        <app-form-field label="Request Limit Ratio" name="k8sRequestsToLimitsRatio" placeholder="Enter Limit Ratio"
+                        tooltipText="This ratio will define packing density of k8s cluster, QA Cluster can have lower value"
+                        pattern="^0(\.[0-9][0-9]?)?$"
+                        [(ngModel)]="azureClusterRequest.k8sRequestsToLimitsRatio"></app-form-field>
+
+        <app-form-field label="Schedule" name="cron" placeholder="30 5 * * *"
+                        tooltipText="cron pattern to trigger regular releases"
+                        pattern="([0-6]?[0-9]|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*)"
+                        [(ngModel)]="cronScheduleModelBound" required="true" ></app-form-field>
+
+        <app-form-field label="Require Sign off" name="requireSignOff" placeholder="Yes or No"
+                        tooltipText="The provider for which you want to launch the cluster"
+                        [(ngModel)]="azureClusterRequest.requireSignOff" required="true"
+                        select=true
+                        [selectValues]='[{value:true, label:"Yes"},{value:false, label:"No"}]'></app-form-field>
+
+
+        <nb-accordion multi class="col-md-12">
+          <nb-accordion-item expanded>
+            <nb-accordion-item-header>
+              Common Variables
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <app-form-field *ngFor="let variable of dataSourceForCommonVars" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
+                              tooltipText="Cluster variables are common variables defined in stack.json, used across applications in cluster"
+                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+
+          <nb-accordion-item expanded>
+            <nb-accordion-item-header>
+              Secrets
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <app-form-field *ngFor="let variable of dataSourceForSecrets" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
+                              tooltipText="Secrets are common secrets defined in stack.json, used across applications in cluster"
+                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+        </nb-accordion>
+      </form>
+    </nb-card-body>
+    <nb-card-footer *ngIf="!cluster?.id">
+      <button class=" cc-margin-right" nbButton status="primary" (click)='createCluster()'
+              [disabled]="test(form) && !form.valid"  *appUserRole="['cc-admin']">Create
+      </button>
+    </nb-card-footer>
+    <nb-card-footer *ngIf="cluster?.id">
+      <button class=" cc-margin-right" nbButton status="primary" (click)='updateCluster()'
+              [disabled]="!form.valid" *appUserRole="['cc-admin']" >Update
+      </button>
+      <!--button class=" cc-margin-right" status="basic" nbButton>Cancel</button-->
+    </nb-card-footer>
+  </nb-card>
+</app-layout-one-column>

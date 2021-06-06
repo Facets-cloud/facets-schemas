@@ -4,6 +4,7 @@ export { ApplicationControllerService } from './services/application-controller.
 export { CallbackControllerService } from './services/callback-controller.service';
 export { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
 export { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
+export { UiAzureClusterControllerService } from './services/ui-azure-cluster-controller.service';
 export { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 export { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 export { UiLocalClusterControllerService } from './services/ui-local-cluster-controller.service';

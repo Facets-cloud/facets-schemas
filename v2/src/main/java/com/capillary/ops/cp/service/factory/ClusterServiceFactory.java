@@ -3,7 +3,7 @@ package com.capillary.ops.cp.service.factory;
 import com.capillary.ops.cp.bo.requests.Cloud;
 import com.capillary.ops.cp.service.ClusterService;
 import com.capillary.ops.cp.service.aws.AwsClusterService;
-import com.capillary.ops.cp.service.azure.AzureClusterService;
+import com.capillary.ops.cp.service.aws.AzureClusterService;
 import com.capillary.ops.cp.service.local.LocalClusterService;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.jcabi.aspects.Loggable;
@@ -20,6 +20,9 @@ public class ClusterServiceFactory implements ServiceFactory<ClusterService> {
     @Autowired
     LocalClusterService localClusterService;
 
+    @Autowired
+    AzureClusterService azureClusterService;
+
     @Override
     public ClusterService getService(Cloud cloud) {
 
@@ -28,6 +31,8 @@ public class ClusterServiceFactory implements ServiceFactory<ClusterService> {
                 return awsClusterService;
             case LOCAL:
                 return localClusterService;
+            case AZURE:
+                return azureClusterService;
             default:
                 throw new NotImplementedException("This cloud is not yet implemented");
         }
