@@ -42,6 +42,11 @@ RUN apt-get update && \
     apt-get clean && \
     update-ca-certificates -f;
 
+RUN pip3 install --upgrade pip && \
+    pip3 install --upgrade setuptools && \
+    pip3 install setuptools-rust && \
+    pip3 install pyopenssl;
+
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 ENV MAVEN_HOME /opt/maven
 
