@@ -6,7 +6,7 @@ then
     SHARE_IP=`dig +short cp-nav-picklist-app-0.martjack.internal`
 
     echo -e "\nMounting CIFS share..."
-    echo $ADPASS | mount -t cifs //$SHARE_IP/bulkupload/ /mnt/bulkupload/ -o username=testuser,uid=mjuser
+    echo $ADPASS | mount -t cifs //$SHARE_IP/bulkupload/ /mnt/bulkupload/ -o username=mjad\testuser,uid=mjuser
 
 else
     echo "MOUNT_CIFS was false, not mounting"
