@@ -6,6 +6,6 @@ apt-get update && apt-get install -y -o Apt::Get::AllowUnauthenticated=true smbc
 
 echo -e "\nInstalling cifs-utils..."
 apt-get update && apt-get install -y cifs-utils dnsutils tzdata
+echo "installing newrelic"
 
-
-wget -q https://download.newrelic.com/dot_net_agent/latest_release/newrelic-netcore20-agent_8.17.438.0_amd64.deb && dpkg -i newrelic-netcore20-agent_8.17.438.0_amd64.deb
+wget -q https://download.newrelic.com/dot_net_agent/previous_releases/8.17.438.0/newrelic-netcore20-agent_8.17.438.0_amd64.deb && dpkg -i newrelic-netcore20-agent_8.17.438.0_amd64.deb
