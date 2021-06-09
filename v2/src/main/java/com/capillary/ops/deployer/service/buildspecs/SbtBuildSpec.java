@@ -11,12 +11,12 @@ import java.util.List;
 
 public class SbtBuildSpec extends BuildSpec {
 
-    public SbtBuildSpec(Application application) {
-        super(application);
+    public SbtBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public SbtBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public SbtBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

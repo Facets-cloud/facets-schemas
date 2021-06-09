@@ -15,12 +15,12 @@ public class NPMUIBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(NPMUIBuildSpec.class);
 
-    public NPMUIBuildSpec(Application application) {
-        super(application);
+    public NPMUIBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public NPMUIBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public NPMUIBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

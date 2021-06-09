@@ -4,18 +4,17 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 import com.google.common.collect.Lists;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 public class MavenBuildSpec extends BuildSpec {
 
-    public MavenBuildSpec(Application application) {
-        super(application);
+    public MavenBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public MavenBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public MavenBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

@@ -15,12 +15,12 @@ public class NPMBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(NPMBuildSpec.class);
 
-    public NPMBuildSpec(Application application) {
-        super(application);
+    public NPMBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public NPMBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public NPMBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override
