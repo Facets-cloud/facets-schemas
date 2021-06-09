@@ -46,13 +46,14 @@ public class NPMBuildSpec extends BuildSpec {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("npm install");
         buildCommands.add("npm test");
-        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
+        buildCommands.add("sonar-scanner -Dsonar.host.url=" + this.getSonarUrl() +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
                 " -D" + CallbackBody.APP_ID + "=$appId " +
                 " -D" + CallbackBody.APP_FAMILY+"=$appFamily " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.javascript.lcov.reportPaths=reports/coverage/lcov.info" +
                 " -Dsonar.exclusions=node_modules");
         return buildCommands;
     }

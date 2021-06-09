@@ -26,6 +26,8 @@ public abstract class BuildSpec {
 
     protected List<Registry> registries;
 
+    private static String sonarUrl;
+
     public BuildSpec(Application application) {
         this.application = application;
     }
@@ -234,5 +236,13 @@ public abstract class BuildSpec {
 
     protected void setTestBuild(boolean testBuild) {
         this.testBuild = testBuild;
+    }
+
+    protected final String getSonarUrl(){
+        return this.sonarUrl;
+    }
+
+    public static void setSonarUrl(String url){
+        sonarUrl = url;
     }
 }

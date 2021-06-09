@@ -40,7 +40,7 @@ public class MavenBuildSpec extends BuildSpec {
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("mvn clean test verify sonar:sonar -Dmaven.test.failure.ignore=true -U " +
-                " -Dsonar.host.url=http://sonar.capillary.in/ " +
+                " -Dsonar.host.url=" + this.getSonarUrl() + " " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +

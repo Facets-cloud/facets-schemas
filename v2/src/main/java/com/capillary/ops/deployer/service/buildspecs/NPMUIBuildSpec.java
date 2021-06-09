@@ -44,7 +44,7 @@ public class NPMUIBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
+        buildCommands.add("sonar-scanner -Dsonar.host.url=" + this.getSonarUrl() +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
