@@ -6,12 +6,12 @@ import com.capillary.ops.deployer.bo.Registry;
 import java.util.List;
 
 public class Dotnet3BuildSpec extends DotnetBuildSpec {
-    public Dotnet3BuildSpec(Application application) {
-        super(application);
+    public Dotnet3BuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public Dotnet3BuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public Dotnet3BuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

@@ -15,12 +15,12 @@ public class NPMUIBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(NPMUIBuildSpec.class);
 
-    public NPMUIBuildSpec(Application application) {
-        super(application);
+    public NPMUIBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public NPMUIBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public NPMUIBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class NPMUIBuildSpec extends BuildSpec {
     @Override
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
-        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
+        buildCommands.add("sonar-scanner -Dsonar.host.url=" + this.getSonarUrl() +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +

@@ -26,14 +26,18 @@ public abstract class BuildSpec {
 
     protected List<Registry> registries;
 
-    public BuildSpec(Application application) {
+    private String sonarUrl;
+
+    public BuildSpec(Application application, String sonarUrl) {
         this.application = application;
+        this.sonarUrl = sonarUrl;
     }
 
-    public BuildSpec(Application application, boolean testBuild, List<Registry> registries) {
+    public BuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
         this.application = application;
         this.testBuild = testBuild;
         this.registries = registries;
+        this.sonarUrl = sonarUrl;
     }
 
     public String getVersion() {
@@ -235,4 +239,9 @@ public abstract class BuildSpec {
     protected void setTestBuild(boolean testBuild) {
         this.testBuild = testBuild;
     }
+
+    protected final String getSonarUrl(){
+        return this.sonarUrl;
+    }
+
 }

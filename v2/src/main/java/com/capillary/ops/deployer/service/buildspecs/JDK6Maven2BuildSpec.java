@@ -9,12 +9,12 @@ import java.util.List;
 
 public class JDK6Maven2BuildSpec extends MavenBuildSpec {
 
-    public JDK6Maven2BuildSpec(Application application) {
-        super(application);
+    public JDK6Maven2BuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public JDK6Maven2BuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public JDK6Maven2BuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

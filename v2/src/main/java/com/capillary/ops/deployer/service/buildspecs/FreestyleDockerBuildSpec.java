@@ -5,7 +5,6 @@ import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
@@ -13,12 +12,12 @@ public class FreestyleDockerBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(FreestyleDockerBuildSpec.class);
 
-    public FreestyleDockerBuildSpec(Application application) {
-        super(application);
+    public FreestyleDockerBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public FreestyleDockerBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public FreestyleDockerBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

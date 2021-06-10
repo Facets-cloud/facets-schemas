@@ -2,7 +2,6 @@ package com.capillary.ops.deployer.service.buildspecs;
 
 import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Registry;
-import com.capillary.ops.deployer.exceptions.NotImplementedException;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +14,12 @@ public class DotnetBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(DotnetBuildSpec.class);
 
-    public DotnetBuildSpec(Application application) {
-        super(application);
+    public DotnetBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public DotnetBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public DotnetBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl );
     }
 
     private static final String TEST_COMMAND = "dotnet build && dotnet dotcover test --dcReportType=HTML --dcoutput=./UnitTestCoverageReport/UnitTestCoverageReport.HTML";

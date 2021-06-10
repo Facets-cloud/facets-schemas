@@ -10,12 +10,12 @@ import java.util.Map;
 
 public class JDK11Maven3BuildSpec extends MavenBuildSpec {
 
-    public JDK11Maven3BuildSpec(Application application) {
-        super(application);
+    public JDK11Maven3BuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public JDK11Maven3BuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public JDK11Maven3BuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

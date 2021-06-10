@@ -152,10 +152,6 @@ public class AwsCodeBuildService implements TFBuildService {
     @Autowired
     private BuildSpecService buildSpecService;
 
-    @PostConstruct
-    public void test() {
-        System.out.println("test");
-    }
 
     /**
      * Deploy the latest build in the specified clusterId

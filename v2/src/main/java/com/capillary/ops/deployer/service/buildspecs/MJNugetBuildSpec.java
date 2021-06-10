@@ -15,12 +15,12 @@ public class MJNugetBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(MJNugetBuildSpec.class);
 
-    public MJNugetBuildSpec(Application application) {
-        super(application);
+    public MJNugetBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public MJNugetBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public MJNugetBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override
