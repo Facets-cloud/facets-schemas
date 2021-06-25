@@ -545,4 +545,11 @@ public class ApplicationController {
         return registryFacade.getAllRegistries();
     }
 
+    @PostMapping("/applicationFamilies/{applicationFamily}/metadata")
+    public ApplicationFamilyMetadata upsertApplicationFamilyMetadata(
+            @PathVariable ApplicationFamily applicationFamily,
+            @RequestBody ApplicationFamilyMetadata applicationFamilyMetadata) {
+        applicationFamilyMetadata.setApplicationFamily(applicationFamily);
+        return applicationFacade.upsertApplicationFamilyMetadata(applicationFamilyMetadata);
+    }
 }

@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.deployer.bo.*;
 import com.capillary.ops.deployer.exceptions.NotFoundException;
+import com.capillary.ops.deployer.repository.ApplicationFamilyMetadataRepository;
 import com.capillary.ops.deployer.service.interfaces.IKubernetesService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -14,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +28,9 @@ public class CCAdapterService {
     @Autowired
     private IKubernetesService kubernetesService;
 
+    @Autowired
+    private ApplicationFamilyMetadataRepository applicationFamilyMetadataRepository;
+
     public Optional<EnvironmentMetaData> getCCEnvironmentMeta(ApplicationFamily applicationFamily,
         String environmentName){
         List<EnvironmentMetaData> ccEnvironmentMetaData = getCCEnvironmentMetaList(applicationFamily);
@@ -38,8 +40,22 @@ public class CCAdapterService {
     }
 
     public List<EnvironmentMetaData> getCCEnvironmentMetaList(ApplicationFamily applicationFamily) {
-        List<AbstractCluster> clustersByStackName =
-            clusterFacade.getClustersByStackName(applicationFamily.name().toLowerCase());
+        Optional<ApplicationFamilyMetadata> applicationFamilyMetadata
+                = applicationFamilyMetadataRepository.findOneByApplicationFamily(applicationFamily);
+        Set<String> stacks = new HashSet<>(Arrays.asList(applicationFamily.name().toLowerCase()));
+        if (applicationFamilyMetadata.isPresent()) {
+            stacks.addAll(applicationFamilyMetadata.get().getStacks());
+        }
+
+        List<AbstractCluster> clustersByStackName = stacks.stream().map(
+            x -> {
+                try {
+                    return clusterFacade.getClustersByStackName(x);
+                } catch (Throwable t) {
+                    return new ArrayList<AbstractCluster>();
+                }
+            }
+        ).flatMap(x -> x.stream()).collect(Collectors.toList());
 
         return clustersByStackName.stream().map(c -> {
             EnvironmentMetaData environmentMetaData = new EnvironmentMetaData();

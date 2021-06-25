@@ -113,6 +113,9 @@ public class ApplicationFacade {
     @Autowired
     private CCArtifactCallbackService ccArtifactCallbackService;
 
+    @Autowired
+    private ApplicationFamilyMetadataRepository applicationFamilyMetadataRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(ApplicationFacade.class);
 
     @Value("${ecr.registry}")
@@ -1301,5 +1304,15 @@ public class ApplicationFacade {
         EcrTokenMap c = new EcrTokenMap(authToken, awsAccountId);
 
         return c;
+    }
+
+    public ApplicationFamilyMetadata upsertApplicationFamilyMetadata(
+            ApplicationFamilyMetadata applicationFamilyMetadata) {
+        Optional<ApplicationFamilyMetadata> existing = applicationFamilyMetadataRepository
+                .findOneByApplicationFamily(applicationFamilyMetadata.getApplicationFamily());
+        if (existing.isPresent()) {
+            applicationFamilyMetadata.setId(existing.get().getId());
+        }
+        return applicationFamilyMetadataRepository.save(applicationFamilyMetadata);
     }
 }
