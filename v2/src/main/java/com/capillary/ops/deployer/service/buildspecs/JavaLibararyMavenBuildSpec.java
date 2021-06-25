@@ -10,12 +10,12 @@ import java.util.List;
 
 public class JavaLibararyMavenBuildSpec extends MavenBuildSpec {
 
-    public JavaLibararyMavenBuildSpec(Application application) {
-        super(application);
+    public JavaLibararyMavenBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public JavaLibararyMavenBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public JavaLibararyMavenBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

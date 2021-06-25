@@ -35,11 +35,15 @@ export class HeaderComponent implements OnInit {
   newNav = [];
   private stackName: string;
   userName: any;
+  logo: any;
 
 
   constructor(private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
               private router: Router, private uiStackControllerService: UiStackControllerService,
               private cookieService: CookieService, private nbMenuService: NbMenuService, protected http: HttpClient) {
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    };
   }
 
   initNav(): void {
@@ -95,6 +99,11 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.http.get("public/v1/logo", {responseType: 'text'}).subscribe(
+      x => {
+        this.logo = x
+      }
+    )
     this.route.params.subscribe(p => {
       this.stackName = p.stackName;
       if (!p.clusterId) {
@@ -150,8 +159,11 @@ export class HeaderComponent implements OnInit {
 
   navToPage(): void {
     let navParts = this.currentNav.split('/');
-    const url = this.BASE_URL + this.currentClusterURL + '/' + navParts[navParts.length-1];
+    const url = this.BASE_URL + this.currentClusterURL + '/' + navParts[navParts.length - 1];
     this.router.navigate([url]);
   }
 
+  navToPageLeft($event: any) {
+    this.router.navigate([$event]);
+  }
 }

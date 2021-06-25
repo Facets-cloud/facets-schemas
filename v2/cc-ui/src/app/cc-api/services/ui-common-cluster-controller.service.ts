@@ -32,7 +32,6 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly createSnapshotUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}';
   static readonly getPinnedSnapshotUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly pinSnapshotUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
-  static readonly downLoadVagrantZipUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/getVagrant';
   static readonly getKubeConfigUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/kubeconfig';
   static readonly refreshKubeConfigUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/kubeconfig/refresh';
   static readonly getOpenAlertsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/open-alerts';
@@ -458,42 +457,6 @@ class UiCommonClusterControllerService extends __BaseService {
   pinSnapshotUsingPOST1(params: UiCommonClusterControllerService.PinSnapshotUsingPOST1Params): __Observable<SnapshotInfo> {
     return this.pinSnapshotUsingPOST1Response(params).pipe(
       __map(_r => _r.body as SnapshotInfo)
-    );
-  }
-
-  /**
-   * downLoadVagrantZip
-   * @param clusterId clusterId
-   */
-  downLoadVagrantZipUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<null>> {
-    let __params = this.newParams();
-    let __headers = new HttpHeaders();
-    let __body: any = null;
-
-    let req = new HttpRequest<any>(
-      'GET',
-      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/getVagrant`,
-      __body,
-      {
-        headers: __headers,
-        params: __params,
-        responseType: 'json'
-      });
-
-    return this.http.request<any>(req).pipe(
-      __filter(_r => _r instanceof HttpResponse),
-      __map((_r) => {
-        return _r as __StrictHttpResponse<null>;
-      })
-    );
-  }
-  /**
-   * downLoadVagrantZip
-   * @param clusterId clusterId
-   */
-  downLoadVagrantZipUsingGET(clusterId: string): __Observable<null> {
-    return this.downLoadVagrantZipUsingGETResponse(clusterId).pipe(
-      __map(_r => _r.body as null)
     );
   }
 

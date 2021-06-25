@@ -33,6 +33,8 @@ import {DirectivesModule} from "./directives/directives.module";
 import {ClusterChooserModule} from "./pages/cluster-pages/cluster-chooser/cluster-chooser.module";
 import {ClusterCreateLocalModule} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.module";
 import {ClusterOverviewAssemblerModule} from "./pages/cluster-pages/cluster-overview-assembler/cluster-overview-assembler.module";
+import { AzureClusterCreateModule } from './pages/cluster-pages/cluster-create-azure/cluster-create-azure.module';
+import { ClusterOverviewAzureModule } from './pages/cluster-pages/cluster-overview-azure/cluster-overview-azure.module';
 
 
 @NgModule({
@@ -75,7 +77,9 @@ import {ClusterOverviewAssemblerModule} from "./pages/cluster-pages/cluster-over
     DirectivesModule,
     ClusterChooserModule,
     ClusterCreateLocalModule,
-    ClusterOverviewAssemblerModule
+    ClusterOverviewAssemblerModule,
+    AzureClusterCreateModule,
+    ClusterOverviewAzureModule,
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},

@@ -15,12 +15,12 @@ public class NPMBuildSpec extends BuildSpec {
 
     private static final Logger logger = LoggerFactory.getLogger(NPMBuildSpec.class);
 
-    public NPMBuildSpec(Application application) {
-        super(application);
+    public NPMBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public NPMBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public NPMBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override
@@ -46,13 +46,14 @@ public class NPMBuildSpec extends BuildSpec {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("npm install");
         buildCommands.add("npm test");
-        buildCommands.add("sonar-scanner -Dsonar.host.url=http://sonar.capillary.in" +
+        buildCommands.add("sonar-scanner -Dsonar.host.url=" + this.getSonarUrl() +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D" + CallbackBody.PR_NUMBER + "=$pullRequestNumber " +
                 " -D" + CallbackBody.DEPLOYER_BUILD_ID + "=$deployerBuildId " +
                 " -D" + CallbackBody.APP_ID + "=$appId " +
                 " -D" + CallbackBody.APP_FAMILY+"=$appFamily " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
+                " -Dsonar.javascript.lcov.reportPaths=reports/coverage/lcov.info" +
                 " -Dsonar.exclusions=node_modules");
         return buildCommands;
     }

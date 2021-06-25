@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,9 @@ public class CodeBuildService implements ICodeBuildService {
 
     @Autowired
     private RegistryService registryService;
+
+    @Value("${sonar.url}")
+    private String sonarUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(CodeBuildService.class);
 
@@ -182,31 +186,31 @@ public class CodeBuildService implements ICodeBuildService {
 
         switch (application.getBuildType()) {
             case MVN:
-                return new MavenBuildSpec(application, testBuild, registries);
+                return new MavenBuildSpec(application, testBuild, registries, sonarUrl);
             case FREESTYLE_DOCKER:
-                return new FreestyleDockerBuildSpec(application, testBuild, registries);
+                return new FreestyleDockerBuildSpec(application, testBuild, registries, sonarUrl);
             case DOTNET_CORE:
-                return new DotnetBuildSpec(application, testBuild, registries);
+                return new DotnetBuildSpec(application, testBuild, registries, sonarUrl);
             case MVN_IONIC:
-                return new MavenIonicBuildSpec(application, testBuild, registries);
+                return new MavenIonicBuildSpec(application, testBuild, registries, sonarUrl);
             case JDK6_MAVEN2:
-                return new JDK6Maven2BuildSpec(application, testBuild, registries);
+                return new JDK6Maven2BuildSpec(application, testBuild, registries, sonarUrl);
             case JDK11_MAVEN3:
-                return new JDK11Maven3BuildSpec(application, testBuild, registries);
+                return new JDK11Maven3BuildSpec(application, testBuild, registries, sonarUrl);
             case MJ_NUGET:
-                return new MJNugetBuildSpec(application, testBuild, registries);
+                return new MJNugetBuildSpec(application, testBuild, registries, sonarUrl);
             case DOTNET_CORE3:
-                return new Dotnet3BuildSpec(application, testBuild, registries);
+                return new Dotnet3BuildSpec(application, testBuild, registries, sonarUrl);
             case DOTNET_CORE22:
-                return new Dotnet22BuildSpec(application, testBuild, registries);
+                return new Dotnet22BuildSpec(application, testBuild, registries, sonarUrl);
             case SBT:
-                return new SbtBuildSpec(application, testBuild, registries);
+                return new SbtBuildSpec(application, testBuild, registries, sonarUrl);
             case NPM:
-                return new NPMBuildSpec(application, testBuild, registries);
+                return new NPMBuildSpec(application, testBuild, registries, sonarUrl);
             case NPM_UI:
-                return new NPMUIBuildSpec(application, testBuild, registries);
+                return new NPMUIBuildSpec(application, testBuild, registries, sonarUrl);
             case JAVA8_LIBRARY:
-                return new JavaLibararyMavenBuildSpec(application, testBuild, registries);
+                return new JavaLibararyMavenBuildSpec(application, testBuild, registries, sonarUrl);
             default:
                 throw new NotImplementedException("");
         }

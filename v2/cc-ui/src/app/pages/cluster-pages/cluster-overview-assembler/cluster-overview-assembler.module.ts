@@ -4,6 +4,8 @@ import { ClusterOverviewAssemblerComponent } from './cluster-overview-assembler.
 import {ClusterOverviewModule} from "../cluster-overview/cluster-overview.module";
 import {ClusterCreateLocalModule} from "../cluster-create-local/cluster-create-local.module";
 import {ClusterOverviewLocalModule} from "../cluster-overview-local/cluster-overview-local.module";
+import { AzureClusterCreateModule } from '../cluster-create-azure/cluster-create-azure.module';
+import { ClusterOverviewAzureModule } from '../cluster-overview-azure/cluster-overview-azure.module';
 
 
 
@@ -15,7 +17,9 @@ import {ClusterOverviewLocalModule} from "../cluster-overview-local/cluster-over
     CommonModule,
     ClusterOverviewModule,
     ClusterCreateLocalModule,
-    ClusterOverviewLocalModule
+    ClusterOverviewLocalModule,
+    AzureClusterCreateModule,
+    ClusterOverviewAzureModule,
   ]
 })
 export class ClusterOverviewAssemblerModule { }

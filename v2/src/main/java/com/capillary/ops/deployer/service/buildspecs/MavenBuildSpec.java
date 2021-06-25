@@ -4,18 +4,17 @@ import com.capillary.ops.deployer.bo.Application;
 import com.capillary.ops.deployer.bo.Registry;
 import com.capillary.ops.deployer.bo.webhook.sonar.CallbackBody;
 import com.google.common.collect.Lists;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 public class MavenBuildSpec extends BuildSpec {
 
-    public MavenBuildSpec(Application application) {
-        super(application);
+    public MavenBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public MavenBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public MavenBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class MavenBuildSpec extends BuildSpec {
     protected List<String> getBuildCommandsTest() {
         ArrayList<String> buildCommands = new ArrayList<>();
         buildCommands.add("mvn clean test verify sonar:sonar -Dmaven.test.failure.ignore=true -U " +
-                " -Dsonar.host.url=http://sonar.capillary.in/ " +
+                " -Dsonar.host.url=" + this.getSonarUrl() + " " +
                 " -Dsonar.projectVersion=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${pullRequestNumber}" +
                 " -Dsonar.branch.name=${CODEBUILD_SOURCE_VERSION}" +
                 " -D"+ CallbackBody.PR_NUMBER+"=$pullRequestNumber " +

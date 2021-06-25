@@ -7,12 +7,12 @@ import java.util.*;
 
 public class MavenIonicBuildSpec extends MavenBuildSpec {
 
-    public MavenIonicBuildSpec(Application application) {
-        super(application);
+    public MavenIonicBuildSpec(Application application, String sonarUrl) {
+        super(application, sonarUrl);
     }
 
-    public MavenIonicBuildSpec(Application application, boolean testBuild, List<Registry> registries) {
-        super(application, testBuild, registries);
+    public MavenIonicBuildSpec(Application application, boolean testBuild, List<Registry> registries, String sonarUrl) {
+        super(application, testBuild, registries, sonarUrl);
     }
 
     @Override

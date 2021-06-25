@@ -10,7 +10,7 @@
         </div>
       </nb-action>
       <nb-action>
-        <nb-select size="small" placeholder="Navigation" [(selected)]="currentNav" (selectedChange)="navToPage()">
+        <nb-select size="small" placeholder="Navigation" [(selected)]="currentNav" (selectedChange)="navToPageLeft($event)">
           <nb-option-group *ngFor="let nav of newNav" title="{{nav.groupName}}">
             <nb-option #cluster *ngFor="let page of nav.pages" value="{{page.url}}" size="small">
               {{page.title}}

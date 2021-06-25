@@ -34,6 +34,7 @@ class UiDeploymentControllerService extends __BaseService {
   static readonly runESDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/es/dr';
   static readonly runMongoDRRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/dr';
   static readonly runMongoResizeRecipeUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/recipes/mongo/resize';
+  static readonly validateClusterUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/validateCluster';
   static readonly getDeploymentUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}';
   static readonly getDeploymentLogsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/logs';
   static readonly signOffDeploymentUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/deployments/{deploymentId}/signoff';
@@ -472,6 +473,55 @@ class UiDeploymentControllerService extends __BaseService {
   }
 
   /**
+   * validateCluster
+   * @param params The `UiDeploymentControllerService.ValidateClusterUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRequest`: deploymentRequest
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  validateClusterUsingPOSTResponse(params: UiDeploymentControllerService.ValidateClusterUsingPOSTParams): __Observable<__StrictHttpResponse<DeploymentLog>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.deploymentRequest;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/deployments/validateCluster`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<DeploymentLog>;
+      })
+    );
+  }
+  /**
+   * validateCluster
+   * @param params The `UiDeploymentControllerService.ValidateClusterUsingPOSTParams` containing the following parameters:
+   *
+   * - `deploymentRequest`: deploymentRequest
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  validateClusterUsingPOST(params: UiDeploymentControllerService.ValidateClusterUsingPOSTParams): __Observable<DeploymentLog> {
+    return this.validateClusterUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as DeploymentLog)
+    );
+  }
+
+  /**
    * getDeployment
    * @param params The `UiDeploymentControllerService.GetDeploymentUsingGETParams` containing the following parameters:
    *
@@ -747,6 +797,22 @@ module UiDeploymentControllerService {
      * deploymentRecipe
      */
     deploymentRecipe: MongoVolumeResizeDeploymentRecipe;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for validateClusterUsingPOST
+   */
+  export interface ValidateClusterUsingPOSTParams {
+
+    /**
+     * deploymentRequest
+     */
+    deploymentRequest: DeploymentRequest;
 
     /**
      * clusterId
