@@ -4,7 +4,7 @@
 
     <groupId>com.capillary.ops</groupId>
     <artifactId>deployer</artifactId>
-    <version>1.28</version>
+    <version>1.29-SNAPSHOT</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
