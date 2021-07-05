@@ -4,7 +4,7 @@
 
     <groupId>com.capillary.ops</groupId>
     <artifactId>deployer</artifactId>
-    <version>1.28</version>
+    <version>1.29</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -94,6 +94,11 @@
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-client</artifactId>
             <version>4.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>volumesnapshot-client</artifactId>
+            <version>4.12.0</version>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
