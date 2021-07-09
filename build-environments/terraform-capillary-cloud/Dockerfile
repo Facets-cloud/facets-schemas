@@ -11,6 +11,22 @@ RUN unzip terraform_0.12.20_linux_amd64.zip
 RUN chmod +x terraform
 RUN mv ./terraform /usr/bin/
 
+RUN wget https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip -P terraform_1.0
+RUN cd terraform_1.0
+RUN unzip terraform_1.0.0_linux_amd64.zip
+RUN chmod +x terraform
+RUN mv terraform terraform_1.0
+RUN mv ./terraform_1.0 /usr/bin/
+RUN cd ..
+
+RUN wget https://releases.hashicorp.com/terraform/0.13.7/terraform_0.13.7_linux_amd64.zip -P terraform_0.13
+RUN cd terraform_0.13
+RUN unzip terraform_0.13.7_linux_amd64.zip
+RUN chmod +x terraform
+RUN terraform terraform_0.13
+RUN mv ./terraform_0.13 /usr/bin/
+RUN cd ..
+
 RUN apt-get update && apt-get install zip git -y
 
 RUN wget https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
