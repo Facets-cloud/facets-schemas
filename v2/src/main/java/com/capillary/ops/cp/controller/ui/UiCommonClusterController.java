@@ -23,6 +23,8 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -205,4 +207,22 @@ public class UiCommonClusterController {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         return cluster;
     }
+
+    @GetMapping("{clusterId}/tfDetails")
+    public TFDetails getClusterTFDetails(@PathVariable String clusterId) {
+        return clusterFacade.getTFDetails(clusterId);
+    }
+
+    @PostMapping("{clusterId}/tfDetails")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    public TFDetails createClusterTFDetails(@PathVariable String clusterId, @RequestBody TFDetails tfDetails) {
+        return clusterFacade.createTFDetails(tfDetails, clusterId);
+    }
+
+    @PutMapping("{clusterId}/tfDetails")
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    public TFDetails updateClusterTFDetails(@PathVariable String clusterId, @RequestBody TFDetails tfDetails){
+        return clusterFacade.updateTFDetails(tfDetails, clusterId);
+    }
+
 }

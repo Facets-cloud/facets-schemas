@@ -152,6 +152,9 @@ public class AwsCodeBuildService implements TFBuildService {
     @Autowired
     private BuildSpecService buildSpecService;
 
+    @Autowired
+    private TFService tfService;
+
 
     /**
      * Deploy the latest build in the specified clusterId
@@ -171,6 +174,10 @@ public class AwsCodeBuildService implements TFBuildService {
                                 .value(x.getValue())
                                 .type(EnvironmentVariableType.PLAINTEXT).build())
                 .collect(Collectors.toList());
+
+        List<EnvironmentVariable> tfExtraEnv = new ArrayList<>();
+        tfService.getTFDetails(abstractCluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
+
         Optional<Stack> stackO = stackRepository.findById(abstractCluster.getStackName());
         if (!stackO.isPresent()) {
             throw new NotFoundException("The Stack for this cluster does not exist NOW");
@@ -228,6 +235,10 @@ public class AwsCodeBuildService implements TFBuildService {
             environmentVariables.addAll(extraEnv);
         }
 
+        if (!tfExtraEnv.isEmpty()) {
+            environmentVariables.addAll(tfExtraEnv);
+        }
+
         String buildName = "";
         switch (abstractCluster.getCloud()) {
 
@@ -242,6 +253,12 @@ public class AwsCodeBuildService implements TFBuildService {
         }
 
         String primarySourceVersion = "master";
+
+        Optional<String> branchOverride = tfService.getTFDetails(abstractCluster.getId()).map(TFDetails::getBranchOverride);
+        if (branchOverride.isPresent() && !StringUtils.isEmpty(branchOverride)) {
+            primarySourceVersion = branchOverride.get();
+        }
+
         if (!StringUtils.isEmpty(deploymentRequest.getOverrideCCVersion()) &&
                 (abstractCluster.getStackName().equalsIgnoreCase("cc-stack-cctesting") || abstractCluster.getStackName().equalsIgnoreCase("cc-infra-testing"))) {
             primarySourceVersion = deploymentRequest.getOverrideCCVersion();

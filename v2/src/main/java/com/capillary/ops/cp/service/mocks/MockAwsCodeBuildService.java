@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.service.TFBuildService;
+import com.capillary.ops.cp.service.TFService;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -20,6 +21,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 import software.amazon.awssdk.services.codebuild.model.Build;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
+import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import java.io.FileNotFoundException;
@@ -38,12 +41,19 @@ public class MockAwsCodeBuildService implements TFBuildService {
     @Autowired
     private DeploymentLogRepository deploymentLogRepository;
 
+    @Autowired
+    private TFService tfService;
+
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public DeploymentLog deployLatest(AbstractCluster cluster,
                                       DeploymentRequest deploymentRequest,
                                       DeploymentContext deploymentContext) {
+
+        List<EnvironmentVariable> tfExtraEnv = new ArrayList<>();
+        tfService.getTFDetails(cluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
+        System.out.println("TF extra env variables are " + tfExtraEnv);
 
         DeploymentLog log = new DeploymentLog();
         String codeBuildId = "45kdfslsdlksf" + new Random().nextInt(100) + "iop";
