@@ -27,9 +27,12 @@ public class TFService {
     public TFDetails updateTFDetails(TFDetails tfDetails, String clusterId) {
         TFDetails tfDetails1 = getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
 
-        tfDetails1.setBranchOverride(tfDetails.getBranchOverride());
-        tfDetails1.setAdditionalEnvVars(tfDetails.getAdditionalEnvVars());
-
+        if (tfDetails.getBranchOverride() != null) {
+            tfDetails1.setBranchOverride(tfDetails.getBranchOverride());
+        }
+        if (!tfDetails.getAdditionalEnvVars().isEmpty()){
+            tfDetails1.setAdditionalEnvVars(tfDetails.getAdditionalEnvVars());
+        }
         return tfRepository.save(tfDetails1);
     }
 }
