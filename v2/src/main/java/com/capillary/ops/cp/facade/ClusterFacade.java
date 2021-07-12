@@ -454,4 +454,8 @@ public class ClusterFacade {
     public TFDetails updateTFDetails(TFDetails tfDetails, String clusterId) {
         return tfService.updateTFDetails(tfDetails, clusterId);
     }
+
+    public TFDetails deleteTFDetails(String clusterId) {
+        return tfService.deleteTFDetails(clusterId);
+    }
 }

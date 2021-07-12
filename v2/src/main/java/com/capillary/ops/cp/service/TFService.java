@@ -39,7 +39,7 @@ public class TFService {
     public TFDetails deleteTFDetails(String clusterId) {
         TFDetails tfDetails = getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
 
-        tfRepository.delete(tfDetails);
+        tfRepository.deleteByClusterId(clusterId);
         return tfDetails;
     }
 }
