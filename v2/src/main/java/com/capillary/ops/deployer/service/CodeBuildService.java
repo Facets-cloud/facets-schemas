@@ -280,27 +280,32 @@ public class CodeBuildService implements ICodeBuildService {
 
     @Override
     public software.amazon.awssdk.services.codebuild.model.Build getBuild(Region region, String codeBuildId) {
-        Future<BatchGetBuildsResponse> future = codebuildExecutor.submit(() ->
-                getCodeBuildClient(region).batchGetBuilds(BatchGetBuildsRequest.builder()
-                        .ids(codeBuildId)
-                        .build()));
-
         BatchGetBuildsResponse batchGetBuildsResponse = null;
         try {
-            batchGetBuildsResponse = future.get();
+            return _getBuild(region, codeBuildId);
         } catch (InterruptedException | ExecutionException e) {
             logger.error("error happened while getting codebuild details", e);
             logger.info("retrying once");
             try {
                 Thread.sleep(500);
-                return getBuild(region, codeBuildId);
-            } catch (InterruptedException ex) {
+                return _getBuild(region, codeBuildId);
+            } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             }
         }
+    }
 
+    private software.amazon.awssdk.services.codebuild.model.Build _getBuild(Region region, String codeBuildId) throws InterruptedException, ExecutionException {
+        BatchGetBuildsResponse batchGetBuildsResponse;
+        Future<BatchGetBuildsResponse> future = codebuildExecutor.submit(() ->
+                getCodeBuildClient(region).batchGetBuilds(BatchGetBuildsRequest.builder()
+                        .ids(codeBuildId)
+                        .build()));
+        batchGetBuildsResponse = future.get();
         List<software.amazon.awssdk.services.codebuild.model.Build> builds = batchGetBuildsResponse.builds();
-        if (builds.isEmpty()) return null;
+        if (builds.isEmpty()) {
+            return null;
+        }
         return builds.get(0);
     }
 
