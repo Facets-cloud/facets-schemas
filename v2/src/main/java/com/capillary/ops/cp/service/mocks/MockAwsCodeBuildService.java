@@ -5,7 +5,7 @@ import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.repository.DeploymentLogRepository;
 import com.capillary.ops.cp.service.TFBuildService;
-import com.capillary.ops.cp.service.TFService;
+import com.capillary.ops.cp.service.TFRunConfigurationsService;
 import com.capillary.ops.deployer.bo.LogEvent;
 import com.capillary.ops.deployer.bo.TokenPaginatedResponse;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -25,7 +25,6 @@ import software.amazon.awssdk.services.codebuild.model.EnvironmentVariable;
 import software.amazon.awssdk.services.codebuild.model.EnvironmentVariableType;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,7 +41,7 @@ public class MockAwsCodeBuildService implements TFBuildService {
     private DeploymentLogRepository deploymentLogRepository;
 
     @Autowired
-    private TFService tfService;
+    private TFRunConfigurationsService tfRunConfigurationsService;
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -52,7 +51,7 @@ public class MockAwsCodeBuildService implements TFBuildService {
                                       DeploymentContext deploymentContext) {
 
         List<EnvironmentVariable> tfExtraEnv = new ArrayList<>();
-        tfService.getTFDetails(cluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
+        tfRunConfigurationsService.getTFDetails(cluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
         System.out.println("TF extra env variables are " + tfExtraEnv);
 
         DeploymentLog log = new DeploymentLog();

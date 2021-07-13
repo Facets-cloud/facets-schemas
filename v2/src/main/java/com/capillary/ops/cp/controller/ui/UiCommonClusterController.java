@@ -1,6 +1,5 @@
 package com.capillary.ops.cp.controller.ui;
 
-import com.amazonaws.util.IOUtils;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
@@ -10,7 +9,6 @@ import com.capillary.ops.cp.facade.VagrantFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,20 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreFilter;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("cc-ui/v1/clusters")
@@ -207,25 +195,25 @@ public class UiCommonClusterController {
     }
 
     @GetMapping("{clusterId}/tfDetails")
-    public TFDetails getClusterTFDetails(@PathVariable String clusterId) {
+    public TFRunConfigurations getClusterTFDetails(@PathVariable String clusterId) {
         return clusterFacade.getTFDetails(clusterId);
     }
 
-    @PostMapping("{clusterId}/tfDetails")
+    @PostMapping("{clusterId}/tfRunConfigurations")
     @PreAuthorize("hasRole('CC-ADMIN')")
-    public TFDetails createClusterTFDetails(@PathVariable String clusterId, @RequestBody TFDetails tfDetails) {
-        return clusterFacade.createTFDetails(tfDetails, clusterId);
+    public TFRunConfigurations createClusterTFDetails(@PathVariable String clusterId, @RequestBody TFRunConfigurations tfRunConfigurations) {
+        return clusterFacade.createTFDetails(tfRunConfigurations, clusterId);
     }
 
-    @PutMapping("{clusterId}/tfDetails")
+    @PutMapping("{clusterId}/tfRunConfigurations")
     @PreAuthorize("hasRole('CC-ADMIN')")
-    public TFDetails updateClusterTFDetails(@PathVariable String clusterId, @RequestBody TFDetails tfDetails){
-        return clusterFacade.updateTFDetails(tfDetails, clusterId);
+    public TFRunConfigurations updateClusterTFDetails(@PathVariable String clusterId, @RequestBody TFRunConfigurations tfRunConfigurations){
+        return clusterFacade.updateTFDetails(tfRunConfigurations, clusterId);
     }
 
     @DeleteMapping("{clusterId}/tfDetails")
     @PreAuthorize("hasRole('CC-ADMIN')")
-    public TFDetails deleteClusterTFDetails(@PathVariable String clusterId) {
+    public TFRunConfigurations deleteClusterTFDetails(@PathVariable String clusterId) {
         return clusterFacade.deleteTFDetails(clusterId);
     }
 

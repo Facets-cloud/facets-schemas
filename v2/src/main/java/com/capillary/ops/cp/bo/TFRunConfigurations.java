@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Document
-public class TFDetails {
+public class TFRunConfigurations {
 
     @Id
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

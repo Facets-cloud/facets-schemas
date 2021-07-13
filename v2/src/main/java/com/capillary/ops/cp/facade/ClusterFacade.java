@@ -93,7 +93,7 @@ public class ClusterFacade {
     private NotificationService notificationService;
 
     @Autowired
-    private TFService tfService;
+    private TFRunConfigurationsService tfRunConfigurationsService;
 
     private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
 
@@ -443,19 +443,19 @@ public class ClusterFacade {
         return clusterTaskService.enableClusterTask(taskId);
     }
 
-    public TFDetails getTFDetails(String clusterId) {
-        return tfService.getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
+    public TFRunConfigurations getTFDetails(String clusterId) {
+        return tfRunConfigurationsService.getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
     }
 
-    public TFDetails createTFDetails(TFDetails tfDetails, String clusterId) {
-        return tfService.createTFDetails(tfDetails, clusterId);
+    public TFRunConfigurations createTFDetails(TFRunConfigurations tfRunConfigurations, String clusterId) {
+        return tfRunConfigurationsService.createTFDetails(tfRunConfigurations, clusterId);
     }
 
-    public TFDetails updateTFDetails(TFDetails tfDetails, String clusterId) {
-        return tfService.updateTFDetails(tfDetails, clusterId);
+    public TFRunConfigurations updateTFDetails(TFRunConfigurations tfRunConfigurations, String clusterId) {
+        return tfRunConfigurationsService.updateTFDetails(tfRunConfigurations, clusterId);
     }
 
-    public TFDetails deleteTFDetails(String clusterId) {
-        return tfService.deleteTFDetails(clusterId);
+    public TFRunConfigurations deleteTFDetails(String clusterId) {
+        return tfRunConfigurationsService.deleteTFDetails(clusterId);
     }
 }
