@@ -16,7 +16,8 @@ phases:
       - sed -i s/STATE_BUCKET/$TF_VAR_cc_tf_state_bucket/g backend.tf
       - sed -i s/STATE_REGION/$TF_VAR_cc_tf_state_region/g backend.tf
       - sed -i s/STATE_DYNAMO_TABLE/$TF_VAR_cc_tf_dynamo_table/g backend.tf
-      - terraform init
+      - if [ -z ${TF_BINARY_VERSION} ]; then echo "not upgrading"; else cp $TF_BINARY_VERSION $(which terraform); fi;
+      - terraform init $INIT_OPTIONS
       - if terraform workspace select $CLUSTER_ID; then echo "workspace exists"; else terraform workspace new $CLUSTER_ID; fi
   build:
     commands:

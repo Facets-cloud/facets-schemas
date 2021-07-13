@@ -92,6 +92,9 @@ public class ClusterFacade {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private TFRunConfigurationsService tfRunConfigurationsService;
+
     private static final Logger logger = LoggerFactory.getLogger(ClusterFacade.class);
 
     /**
@@ -438,5 +441,21 @@ public class ClusterFacade {
 
     public ClusterTask enableClusterTask(String taskId) throws Exception {
         return clusterTaskService.enableClusterTask(taskId);
+    }
+
+    public TFRunConfigurations getTFDetails(String clusterId) {
+        return tfRunConfigurationsService.getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
+    }
+
+    public TFRunConfigurations createTFDetails(TFRunConfigurations tfRunConfigurations, String clusterId) {
+        return tfRunConfigurationsService.createTFDetails(tfRunConfigurations, clusterId);
+    }
+
+    public TFRunConfigurations updateTFDetails(TFRunConfigurations tfRunConfigurations, String clusterId) {
+        return tfRunConfigurationsService.updateTFDetails(tfRunConfigurations, clusterId);
+    }
+
+    public TFRunConfigurations deleteTFDetails(String clusterId) {
+        return tfRunConfigurationsService.deleteTFDetails(clusterId);
     }
 }
