@@ -175,7 +175,7 @@ public class AwsCodeBuildService implements TFBuildService {
                 .collect(Collectors.toList());
 
         List<EnvironmentVariable> tfExtraEnv = new ArrayList<>();
-        tfRunConfigurationsService.getTFDetails(abstractCluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
+        tfRunConfigurationsService.getTFRunConfigurations(abstractCluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
 
         Optional<Stack> stackO = stackRepository.findById(abstractCluster.getStackName());
         if (!stackO.isPresent()) {
@@ -253,7 +253,7 @@ public class AwsCodeBuildService implements TFBuildService {
 
         String primarySourceVersion = "master";
 
-        Optional<String> branchOverride = tfRunConfigurationsService.getTFDetails(abstractCluster.getId()).map(TFRunConfigurations::getBranchOverride);
+        Optional<String> branchOverride = tfRunConfigurationsService.getTFRunConfigurations(abstractCluster.getId()).map(TFRunConfigurations::getBranchOverride);
         if (branchOverride.isPresent() && !StringUtils.isEmpty(branchOverride)) {
             primarySourceVersion = branchOverride.get();
         }

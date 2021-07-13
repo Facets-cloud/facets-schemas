@@ -194,9 +194,9 @@ public class UiCommonClusterController {
         return cluster;
     }
 
-    @GetMapping("{clusterId}/tfDetails")
+    @GetMapping("{clusterId}/tfRunConfigurations")
     public TFRunConfigurations getClusterTFDetails(@PathVariable String clusterId) {
-        return clusterFacade.getTFDetails(clusterId);
+        return clusterFacade.getTFRunConfigurations(clusterId);
     }
 
     @PostMapping("{clusterId}/tfRunConfigurations")
@@ -211,7 +211,7 @@ public class UiCommonClusterController {
         return clusterFacade.updateTFDetails(tfRunConfigurations, clusterId);
     }
 
-    @DeleteMapping("{clusterId}/tfDetails")
+    @DeleteMapping("{clusterId}/tfRunConfigurations")
     @PreAuthorize("hasRole('CC-ADMIN')")
     public TFRunConfigurations deleteClusterTFDetails(@PathVariable String clusterId) {
         return clusterFacade.deleteTFDetails(clusterId);

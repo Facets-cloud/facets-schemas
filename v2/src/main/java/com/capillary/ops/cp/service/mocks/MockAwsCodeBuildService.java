@@ -51,7 +51,7 @@ public class MockAwsCodeBuildService implements TFBuildService {
                                       DeploymentContext deploymentContext) {
 
         List<EnvironmentVariable> tfExtraEnv = new ArrayList<>();
-        tfRunConfigurationsService.getTFDetails(cluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
+        tfRunConfigurationsService.getTFRunConfigurations(cluster.getId()).ifPresent((tfDetails) -> tfDetails.getAdditionalEnvVars().forEach((key, value) -> tfExtraEnv.add(EnvironmentVariable.builder().name(key).value(value).type(EnvironmentVariableType.PLAINTEXT).build())));
         System.out.println("TF extra env variables are " + tfExtraEnv);
 
         DeploymentLog log = new DeploymentLog();

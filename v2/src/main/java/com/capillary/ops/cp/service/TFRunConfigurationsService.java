@@ -14,17 +14,17 @@ public class TFRunConfigurationsService {
     @Autowired
     private TFRunConfigurationsRepository tfRunConfigurationsRepository;
 
-    public Optional<TFRunConfigurations> getTFDetails(String clusterId) {
+    public Optional<TFRunConfigurations> getTFRunConfigurations(String clusterId) {
         return tfRunConfigurationsRepository.findOneByClusterId(clusterId);
     }
 
-    public TFRunConfigurations createTFDetails(TFRunConfigurations tfRunConfigurations, String clusterId) {
+    public TFRunConfigurations createTFRunConfigurations(TFRunConfigurations tfRunConfigurations, String clusterId) {
         tfRunConfigurations.setClusterId(clusterId);
         return tfRunConfigurationsRepository.save(tfRunConfigurations);
     }
 
-    public TFRunConfigurations updateTFDetails(TFRunConfigurations tfRunConfigurations, String clusterId) {
-        TFRunConfigurations tfRunConfigurations1 = getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
+    public TFRunConfigurations updateTFRunConfigurations(TFRunConfigurations tfRunConfigurations, String clusterId) {
+        TFRunConfigurations tfRunConfigurations1 = getTFRunConfigurations(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
 
         if (tfRunConfigurations.getBranchOverride() != null) {
             tfRunConfigurations1.setBranchOverride(tfRunConfigurations.getBranchOverride());
@@ -35,8 +35,8 @@ public class TFRunConfigurationsService {
         return tfRunConfigurationsRepository.save(tfRunConfigurations1);
     }
 
-    public TFRunConfigurations deleteTFDetails(String clusterId) {
-        TFRunConfigurations tfRunConfigurations = getTFDetails(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
+    public TFRunConfigurations deleteTFRunConfigurations(String clusterId) {
+        TFRunConfigurations tfRunConfigurations = getTFRunConfigurations(clusterId).orElseThrow(() -> new NotFoundException("No TF details found for the cluster id " + clusterId));
 
         tfRunConfigurationsRepository.deleteByClusterId(clusterId);
         return tfRunConfigurations;
