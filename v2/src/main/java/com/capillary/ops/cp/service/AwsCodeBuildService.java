@@ -512,7 +512,7 @@ public class AwsCodeBuildService implements TFBuildService {
         List<LogEvent> logEventList = logEvents.stream()
                 .map(x -> new LogEvent(x.timestamp(), x.message()))
                 .collect(Collectors.toList());
-        return new TokenPaginatedResponse(Lists.reverse(logEventList), cloudWatchResponse.nextBackwardToken(), build);
+        return new TokenPaginatedResponse(logEventList, cloudWatchResponse.nextBackwardToken(), build);
 
     }
 
