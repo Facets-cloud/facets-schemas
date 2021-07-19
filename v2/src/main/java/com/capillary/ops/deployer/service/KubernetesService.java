@@ -14,7 +14,6 @@ import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentList;
 import io.fabric8.kubernetes.api.model.apps.DeploymentStatus;
-import io.fabric8.kubernetes.api.model.autoscaling.v1.HorizontalPodAutoscaler;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
@@ -172,7 +171,6 @@ public class KubernetesService implements IKubernetesService {
     public HPADetails getHPADetails(String deploymentName, Environment environment) {
         KubernetesClient kubernetesClient = getKubernetesClient(environment);
         HorizontalPodAutoscaler hpa = kubernetesClient.autoscaling()
-                .v1()
                 .horizontalPodAutoscalers()
                 .inNamespace(NAMESPACE)
                 .withName(deploymentName)
@@ -293,7 +291,7 @@ public class KubernetesService implements IKubernetesService {
         }
 
         HorizontalPodAutoscaler horizontalPodAutoscaler =
-                kubernetesClient.autoscaling().v1().horizontalPodAutoscalers().inNamespace("default").withName(deploymentName).get();
+                kubernetesClient.autoscaling().horizontalPodAutoscalers().inNamespace("default").withName(deploymentName).get();
         Integer minReplicas = horizontalPodAutoscaler.getSpec().getMinReplicas();
         if(deployment.getSpec().getReplicas() == 0) {
             deployment.getSpec().setReplicas(minReplicas);
@@ -358,7 +356,6 @@ public class KubernetesService implements IKubernetesService {
 
         logger.info("getting HPA with name: {}", deploymentName);
         HorizontalPodAutoscaler hpa = kubernetesClient.autoscaling()
-                .v1()
                 .horizontalPodAutoscalers()
                 .inNamespace(NAMESPACE)
                 .withName(deploymentName)
