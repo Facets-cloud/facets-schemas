@@ -1,4 +1,6 @@
 <app-layout-one-column>
+  <span heading> Backup Center </span>
+  <span subheading>Explore & List all backups for the persistent stores and databases.</span>
   <div class="row">
     <div class="col-sm-6">
       <nb-card [nbSpinner]="fetchSnapshotsSpinner" nbSpinnerStatus="info" nbSpinnerSize="large"
@@ -34,8 +36,7 @@
                nbSpinnerSize="large">
         <nb-card-header>Backups</nb-card-header>
         <nb-card-body>
-          <ng2-smart-table class="cc-no-standard" [settings]="settings" [source]="drData"
-                           (custom)="pinSnapshot($event)">
+          <ng2-smart-table class="cc-no-standard" [settings]="settings" [source]="drData">
           </ng2-smart-table>
         </nb-card-body>
       </nb-card>

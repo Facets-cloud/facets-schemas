@@ -7,6 +7,7 @@ public enum Role {
     ADMIN("CC-ADMIN", "Gives Admin Access to all functionality", true),
     VIEWER("VIEWER", "View only access", true),
     GUEST("CC-GUEST", "Guest User role which is created on login", true),
+    CLUSTER_ADMIN("CLUSTER_ADMIN", "A user with cluster management privileges", true),
     K8S_READER("K8S_READER", "Read Credentials for Kubernetes", false),
     K8S_DEBUGGER("K8S_DEBUGGER", "Debugging credentials for Kubernetes", false);
 

@@ -121,7 +121,7 @@ export class ArtifactoryManagementComponent implements OnInit {
         )
       },
       error => {
-        debugger
+
         this.error = error.error.message || error.message
       }
     )
@@ -138,7 +138,7 @@ export class ArtifactoryManagementComponent implements OnInit {
         )
       },
       error => {
-        debugger
+
         this.error = error.error.message || error.message
       }
     )

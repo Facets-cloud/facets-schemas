@@ -103,7 +103,7 @@ export class ClusterOverridesComponent implements OnInit {
           });
           for (const appGroup in groupMap) {
             const applications = groupMap[appGroup].map(x => {
-              this.currentSelection = this.currentSelection ? this.currentSelection : x;
+              //this.currentSelection = this.currentSelection ? this.currentSelection : x;
               return {
                 title: x.resourceName,
                 resourceType: x.resourceType
@@ -121,6 +121,13 @@ export class ClusterOverridesComponent implements OnInit {
       );
 
       this.menuService.onItemClick().subscribe((event) => {
+        this.menuItems.forEach(
+          m => {
+            m.selected = false
+            m.children.forEach(y => y.selected = false);
+          }
+        )
+        event.item.selected = true
         this.selectApp(event.item.title, event.item["resourceType"]);
       });
     });

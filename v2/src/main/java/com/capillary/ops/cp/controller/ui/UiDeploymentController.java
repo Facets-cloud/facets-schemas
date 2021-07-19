@@ -41,7 +41,7 @@ public class UiDeploymentController {
      * @return The Deployment Log Object
      */
 
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping
     DeploymentLog createDeployment(@PathVariable String clusterId, @RequestBody DeploymentRequest deploymentRequest) {
         if (deploymentRequest.getIntegrationTest()) {
@@ -93,13 +93,13 @@ public class UiDeploymentController {
     }
 
     @GetMapping("/{deploymentId}/logs")
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
     TokenPaginatedResponse getDeploymentLogs(@PathVariable String clusterId, @PathVariable String deploymentId,
                                     @RequestParam Optional<String> nextToken) {
         return deploymentFacade.getDeploymentLogs(deploymentId, nextToken);
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
     @PutMapping("/{deploymentId}/signoff")
     DeploymentLog signOffDeployment(@PathVariable String clusterId, @PathVariable String deploymentId) {
         return deploymentFacade.signOff(clusterId, deploymentId);
@@ -133,7 +133,7 @@ public class UiDeploymentController {
         return deploymentFacade.runMongoResizeRecipe(clusterId, deploymentRecipe);
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PostMapping("/recipes/deployment/hotfix")
     DeploymentLog runHotfixDeploymentRecipe(@PathVariable String clusterId,
                                        @RequestBody HotfixDeploymentRecipe deploymentRecipe) {

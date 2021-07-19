@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,16 +15,26 @@ public interface DeploymentLogRepository extends MongoRepository<DeploymentLog, 
 
     List<DeploymentLog> findFirst50ByClusterIdOrderByCreatedOnDesc(String clusterId);
 
+    List<DeploymentLog> findFirst50ByClusterIdAndStatusNotInOrderByCreatedOnDesc(String clusterId,
+                                                                                 Collection<StatusType> status);
+
+    Integer countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(String clusterId,
+                                                                              DeploymentLog.DeploymentType deploymentType,
+                                                                              StatusType statusType,
+                                                                              Date date);
+
+
     Optional<DeploymentLog> findOneByCodebuildId(String runId);
 
     Optional<DeploymentLog> findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(String clusterId,
-                                                                         StatusType statusType,
-                                                                         DeploymentLog.DeploymentType deploymentType);
+                                                                                               StatusType statusType,
+                                                                                               DeploymentLog.DeploymentType deploymentType);
 
-    Optional<DeploymentLog> findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(String clusterId,
-                                                                                     StatusType statusType,
-                                                                                     DeploymentLog.DeploymentType deploymentType,
-                                                                                     boolean b);
+    Optional<DeploymentLog> findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
+            String clusterId,
+            StatusType statusType,
+            DeploymentLog.DeploymentType deploymentType,
+            boolean b);
 
     Optional<DeploymentLog> findFirstByClusterIdOrderByCreatedOnDesc(String clusterId);
 }

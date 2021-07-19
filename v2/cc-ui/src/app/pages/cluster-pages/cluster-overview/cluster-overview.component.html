@@ -1,207 +1,126 @@
 <app-layout-one-column>
-  <div class="row">
-    <div class="col-sm-12">
 
+  <span heading> Cluster Overview </span>
+  <span subheading>Overview for {{cluster?.name}} of {{cluster?.stackName}} stack. </span>
 
-      <nb-card [nbSpinner]="addOverrideSpinner"
-               nbSpinnerStatus="info"
-               nbSpinnerSize="large"
-               nbSpinnerMessage="Updating...">
-        <nb-card-body>
-          <div class="row">
-            <div class="col-sm-6 cc-head">Overview for {{cluster?.name}} of {{cluster?.stackName}} stack.</div>
-            <div class="col-sm-6" style="text-align: right">
-<!--              <nb-user name="AWS" title="Public Cloud" style="float: left; margin-right: 1rem"-->
-<!--                       picture="https://images.squarespace-cdn.com/content/v1/52ca3b73e4b04a45ef2c5cb6/1551884861331-C9U2RHJQLOPL9F332X5O/ke17ZwdGBToddI8pDm48kK6x8IOhzX_rTtQGKY1qp-hZw-zPPgdn4jUwVcJE1ZvWhcwhEtWJXoshNdA9f1qD7XaGPskfQtVutuSA2B-JW6wkqqV024XP-059DP6wRYqYVUGMzsBxTo2UlkZq10GTrg/AWS_blog_01.PNG?format=750w"></nb-user>-->
-              <button nbButton status="primary" (click)="refreshStack()" size="small">
-                <nb-icon icon="refresh-outline"></nb-icon>
-                Refresh Stack
-              </button>
+  <div [nbSpinner]="downloadingKubeConfig">
+    <div class="py-3">
+      <button nbButton status="primary" class="mr-3" nbTooltip="Download your personal kubeconfig file" size="small"
+              (click)="downloadKubeConfig()">
+        <nb-icon icon="arrow-downward-outline"></nb-icon>
+        K8s Credentials
+      </button>
+      <button nbButton status="control" class="mr-3" (click)="refreshKubeconfig()" size="small"
+              nbTooltip="Kubeconfif File Permissions expire in 24h, click here to renew ">
+        <nb-icon icon="refresh-outline"></nb-icon>
+        K8s Credentials
+      </button>
+      <button nbButton status="control" class="mr-3" (click)="refreshStack()" size="small"
+              nbTooltip="Not seeing a newly defined application on stack? Click here">
+        <nb-icon icon="sync-outline"></nb-icon>
+        Stack with Git
+      </button>
+
+    </div>
+    <div class="row" *ngIf="componentUpgradeSource.count() > 0">
+      <div class="col-md-12">
+        <nb-card size="tiny" class="">
+          <nb-card-header>Component Upgrade</nb-card-header>
+          <nb-card-body class="aws-back">
+            <div>
+              <ng2-smart-table class="componentUpgrade"
+                               [settings]="settingsComponentUpgrades"
+                               [source]="componentUpgradeSource"
+                               (custom)="upgradeComponent($event)">
+              </ng2-smart-table>
             </div>
-          </div>
-        </nb-card-body>
-      </nb-card>
-
+          </nb-card-body>
+        </nb-card>
+      </div>
     </div>
-  </div>
-  <div class="row" *ngIf="componentUpgradeSource.count() > 0">
-    <div class="col-md-12">
-      <nb-card size="tiny" class="cc-info">
-        <nb-card-header>Component Upgrade</nb-card-header>
-        <nb-card-body class="aws-back">
-          <div>
-            <ng2-smart-table class="componentUpgrade"
-                             [settings]="settingsComponentUpgrades"
-                             [source]="componentUpgradeSource"
-                             (custom)="upgradeComponent($event)"
-            >
-            </ng2-smart-table>
-          </div>
-        </nb-card-body>
-      </nb-card>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6">
-      <nb-card size="small" class="cc-info">
-        <nb-card-header>Cluster Information</nb-card-header>
-        <nb-card-body class="aws-back">
-          <div style="background: rgba(255, 255, 255, 0.8)" class="row">
-            <div class="col-md-10">
-              <div class="row">
-                <div class="col-sm-6 cc-key">Name</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.name }}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">Id</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.id }}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">ReleaseStream</div>
-                <div class="col-sm-6 cc-value">
-                  {{ cluster?.releaseStream }}
+    <div class="row">
+      <div class="col-md-6">
+        <nb-card size="small" class="cc-info">
+          <nb-card-header>Cluster Information</nb-card-header>
+          <nb-card-body class="aws-back">
+            <div style="background: rgba(255, 255, 255, 0.8)" class="row">
+              <div class="col-md-10">
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Name</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.name }}</div>
                 </div>
-              </div>
-              <div class="row" *ngIf="spotInstanceTypes != null">
-                <div class="col-sm-6 cc-key">SpotTypes</div>
-                <div class="col-sm-6 cc-value">
-                  {{ spotInstanceTypes }}
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Id</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.id }}</div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">Stack</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.stackName }}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">TimeZone</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.tz }}</div>
-              </div>
-              <div class="row" *ngIf="cluster?.schedules?.RELEASE">
-                <div class="col-sm-6 cc-key">Release Cron</div>
-                <div class="col-sm-6 cc-value">
-                  {{ cluster?.schedules?.RELEASE }}
+                <div class="row">
+                  <div class="col-sm-6 cc-key">ReleaseStream</div>
+                  <div class="col-sm-6 cc-value">
+                    {{ cluster?.releaseStream }}
+                  </div>
+                </div>
+                <div class="row" *ngIf="spotInstanceTypes != null">
+                  <div class="col-sm-6 cc-key">SpotTypes</div>
+                  <div class="col-sm-6 cc-value">
+                    {{ spotInstanceTypes }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Stack</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.stackName }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">TimeZone</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.tz }}</div>
+                </div>
+                <div class="row" *ngIf="cluster?.schedules?.RELEASE">
+                  <div class="col-sm-6 cc-key">Release Cron</div>
+                  <div class="col-sm-6 cc-value">
+                    {{ cluster?.schedules?.RELEASE }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </nb-card-body>
-      </nb-card>
-    </div>
-    <div class="col-md-6">
-      <nb-card size="small" class="cc-info">
-        <nb-card-header
-        >Network Information
-        </nb-card-header>
-        <nb-card-body>
-          <div style="background: rgba(255, 255, 255, 0.8)" class="row">
-            <div class="col-md-10">
-              <div class="row">
-                <div class="col-sm-6 cc-key">Region</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.awsRegion }}</div>
-              </div>
-              <div class="row" *ngIf="cluster?.azs && cluster?.azs.length > 1">
-                <div class="col-sm-6 cc-key">az1</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.azs[0] }}</div>
-              </div>
-              <div class="row" *ngIf="cluster?.azs && cluster?.azs.length > 2">
-                <div class="col-sm-6 cc-key">az2</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.azs[1] }}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">CIDR</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.vpcCIDR }}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">External Id</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.externalId }}</div>
-              </div>
-              <div class="row">
-                <div class="col-sm-6 cc-key">ARN</div>
-                <div class="col-sm-6 cc-value">{{ cluster?.roleARN }}</div>
+          </nb-card-body>
+        </nb-card>
+      </div>
+      <div class="col-md-6">
+        <nb-card size="small" class="cc-info">
+          <nb-card-header
+          >Network Information
+          </nb-card-header>
+          <nb-card-body>
+            <div style="background: rgba(255, 255, 255, 0.8)" class="row">
+              <div class="col-md-10">
+                <div class="row">
+                  <div class="col-sm-6 cc-key">Region</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.awsRegion }}</div>
+                </div>
+                <div class="row" *ngIf="cluster?.azs && cluster?.azs.length > 1">
+                  <div class="col-sm-6 cc-key">az1</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.azs[0] }}</div>
+                </div>
+                <div class="row" *ngIf="cluster?.azs && cluster?.azs.length > 2">
+                  <div class="col-sm-6 cc-key">az2</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.azs[1] }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">CIDR</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.vpcCIDR }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">External Id</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.externalId }}</div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-6 cc-key">ARN</div>
+                  <div class="col-sm-6 cc-value">{{ cluster?.roleARN }}</div>
+                </div>
               </div>
             </div>
-          </div>
-        </nb-card-body>
-      </nb-card>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6">
-      <nb-card>
-        <nb-card-header>Common Environment Variables</nb-card-header>
-        <nb-card-body>
-          <div>
-            <ng2-smart-table
-              (createConfirm)="validateValue($event)"
-              (editConfirm)="validateValue($event)"
-              [settings]="settings"
-              [source]="nonSensitiveClusterSource"
-            >
-            </ng2-smart-table>
-          </div>
-          <div style="margin: 1rem 0 1rem 0; ">
-
-            <button
-              nbButton
-              disabled="disabled"
-              *ngIf="!enableSubmitForClusterOverrides"
-            >
-              Invalid Content
-            </button>
-            <button
-              nbButton
-              status="primary"
-              *ngIf="enableSubmitForClusterOverrides"
-              (click)="submitClusterOverrides()"
-            >
-              Submit new Overrides
-            </button>
-          </div>
-        </nb-card-body>
-      </nb-card>
-    </div>
-    <div class="col-md-6">
-      <nb-card>
-        <nb-card-header>Secrets</nb-card-header>
-        <nb-card-body>
-          <div>
-            <ng2-smart-table
-              (createConfirm)="validateValue($event)"
-              (editConfirm)="validateValue($event)"
-              [settings]="settings"
-              [source]="sensitiveClusterSource"
-            >
-            </ng2-smart-table>
-          </div>
-          <div style="margin: 1rem 0 1rem 0;">
-            <button
-              nbButton
-              disabled="disabled"
-              *ngIf="!enableSubmitForClusterOverrides"
-            >
-              Invalid Content
-            </button>
-            <button
-              nbButton
-              status="primary"
-              *ngIf="enableSubmitForClusterOverrides"
-              (click)="submitClusterOverrides()"
-            >
-              Submit new Overrides
-            </button>
-          </div>
-        </nb-card-body>
-      </nb-card>
-    </div>
-    <div class="col-md-6">
-      <nb-card [nbSpinner]="downloadingKubeConfig">
-        <nb-card-header>Kubernetes Credentials</nb-card-header>
-        <nb-card-body>
-          Click <a style="cursor: pointer; color: blue;" (click)="downloadKubeConfig()">here</a> to download your
-          personal kubeconfig file. Your permissions expire in 24 hours. Permissions may be renewed by clicking <a
-          style="cursor: pointer; color: blue;" (click)="refreshKubeconfig()">here</a>.
-        </nb-card-body>
-      </nb-card>
+          </nb-card-body>
+        </nb-card>
+      </div>
     </div>
   </div>
 </app-layout-one-column>

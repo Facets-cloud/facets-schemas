@@ -41,7 +41,7 @@ export class ClusterAlertsComponent implements OnInit {
         this.aWSClusterService.getAlertsUsingGET(this.clusterId).subscribe(t => {
           if (t["status"] === "success") {
             this.isReachable = true;
-            debugger;
+
             let groups = t["data"]["groups"];
             groups.forEach(group => {
               let subRules = group["rules"];

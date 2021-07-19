@@ -82,7 +82,11 @@ public class CCKubernetesService {
     }
 
     public String getSaName() {
-        return DeployerUtil.getUser().getName().split("@")[0];
+      if (DeployerUtil.getAuthUserName().contains("@")) {
+        return DeployerUtil.getAuthUserName().split("@")[0];
+      } else {
+        return DeployerUtil.getAuthUserName();
+      }
     }
 
     public void attachRoles(String clusterId) {
@@ -170,8 +174,7 @@ public class CCKubernetesService {
     }
 
     private boolean hasRole(String role) {
-        return DeployerUtil.getUser()
-                .getAuthorities().stream().map(x -> ((GrantedAuthority) x)
+        return DeployerUtil.getUserAuthorities().stream().map(x -> ((GrantedAuthority) x)
                 .getAuthority()).anyMatch(x -> x.equalsIgnoreCase("ROLE_" + role));
     }
 

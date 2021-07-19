@@ -39,6 +39,8 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   disabled: boolean;
   @Input("minlength")
   minlength: number
+  @Input("maxlength")
+  maxlength: number
   @Input("select")
   select: boolean = false;
   @Input("selectValues")
@@ -48,6 +50,8 @@ export class FormFieldComponent implements OnInit, ControlValueAccessor {
   multiple: boolean = false;
   @Input("optional")
   optional: boolean;
+  @Input("type")
+  type: string = "text";
 
   @Input("full")
   full: boolean;

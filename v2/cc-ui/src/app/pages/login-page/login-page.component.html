@@ -11,14 +11,14 @@
             <div class="col-md-7">
               <div class="card-body">
                 <div class="brand-wrapper">
-                  <img src="https://www.capillarytech.com/img/CapillaryTech.svg" alt="logo" class="logo"
-                       style="max-width:100px">
+                  <img src="{{this.logo}}" alt="logo" class="kk"
+                       style="max-width:150px">
                 </div>
                 <p class="login-card-description">Sign into your account</p>
-                <div class="form-group" style="max-width:320px;">
-                  <button nbButton status="primary" (click)="googleLogin()"  style="width:100%">
+                <div class="form-group" style="max-width:320px;" *ngFor="let loginMethod of loginOptions">
+                  <button nbButton status="primary" (click)="googleLogin(loginMethod.registrationId)"  style="width:100%">
                     <nb-icon icon="google"></nb-icon>
-                    Google Login
+                    {{loginMethod.loginButtonText}}
                   </button>
                 </div>
                 <form (ngSubmit)="formLogin()">

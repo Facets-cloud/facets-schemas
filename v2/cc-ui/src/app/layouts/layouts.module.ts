@@ -1,19 +1,23 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {NbLayoutModule} from '@nebular/theme';
+import {NbIconModule, NbLayoutModule, NbSidebarModule} from '@nebular/theme';
 import {ComponentsModule} from '../components/components.module';
 import {LayoutOneColumnComponent} from './layout-one-column/layout-one-column.component';
+import { LayoutOneColumnSidebarComponent } from './layout-one-column-sidebar/layout-one-column-sidebar.component';
 
 
 @NgModule({
-  declarations: [LayoutOneColumnComponent],
+  declarations: [LayoutOneColumnComponent, LayoutOneColumnSidebarComponent],
   imports: [
     CommonModule,
     NbLayoutModule,
-    ComponentsModule
+    ComponentsModule,
+    NbSidebarModule,
+    NbIconModule
   ],
   exports: [
-    LayoutOneColumnComponent
+    LayoutOneColumnComponent,
+    LayoutOneColumnSidebarComponent
   ]
 })
 export class LayoutsModule {

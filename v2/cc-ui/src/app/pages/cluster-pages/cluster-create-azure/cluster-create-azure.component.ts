@@ -129,7 +129,7 @@ export class AzureClusterCreateComponent implements OnInit {
     });
 
     try {
-      debugger
+
       this.clusterController.createAzureClusterUsingPOST(this.azureClusterRequest)
         .subscribe(cluster => {
             this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);

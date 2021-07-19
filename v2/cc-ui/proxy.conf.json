@@ -42,5 +42,9 @@
   "/perform_login": {
     "target": "http://localhost:8080",
     "secure": false
+  },
+  "/public": {
+    "target": "http://localhost:8080",
+    "secure": false
   }
 }

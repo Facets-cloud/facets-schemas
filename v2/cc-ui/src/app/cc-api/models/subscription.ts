@@ -1,7 +1,8 @@
 /* tslint:disable */
 export interface Subscription {
   channelAddress?: string;
-  channelType?: 'FLOCK';
+  channelId?: string;
+  channelType?: 'FLOCK' | 'SLACK';
   filters?: {[key: string]: Array<string>};
   id?: string;
   notificationSubject?: string;

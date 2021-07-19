@@ -1,13 +1,13 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {SimpleOauth2User} from '../../cc-api/models/simple-oauth-2user';
 import {ApplicationControllerService} from '../../cc-api/services/application-controller.service';
 import {UiStackControllerService} from '../../cc-api/services/ui-stack-controller.service';
 import {AbstractCluster} from '../../cc-api/models/abstract-cluster';
 import {CookieService} from "ngx-cookie-service";
-import {NbMenuService} from "@nebular/theme";
-import {filter, map} from "rxjs/operators";
-import {HttpClient, HttpHeaders, HttpParams, HttpRequest} from "@angular/common/http";
+import {NbMenuService, NbSidebarService} from "@nebular/theme";
+import {filter} from "rxjs/operators";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-header',
@@ -27,9 +27,10 @@ export class HeaderComponent implements OnInit {
     {title: 'Log out'},
   ];
   settingsItems: any = [
-     {title: 'Manage Users', url: '/capc/users'},
-     {title: 'Manage Teams', url: '/capc/teams'},
-     {title: 'Manage Artifactories', url: '/capc/artifactories'},
+    {title: 'Users', url: '/capc/users'},
+    {title: 'Notifications', url: '/capc/notification-center'},
+    {title: 'Artifactories', url: '/capc/artifactories'},
+    {title: 'OAuth Integrations', url: '/capc/users/oauthClients'},
   ];
   stackClusters = {};
   newNav = [];
@@ -40,7 +41,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private applicationControllerService: ApplicationControllerService,
               private router: Router, private uiStackControllerService: UiStackControllerService,
-              private cookieService: CookieService, private nbMenuService: NbMenuService, protected http: HttpClient) {
+              private cookieService: CookieService, private nbMenuService: NbMenuService, protected http: HttpClient,
+              public sidebarService: NbSidebarService) {
     this.router.routeReuseStrategy.shouldReuseRoute = function () {
       return false;
     };
@@ -99,6 +101,7 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.http.get("public/v1/logo", {responseType: 'text'}).subscribe(
       x => {
         this.logo = x
@@ -160,6 +163,7 @@ export class HeaderComponent implements OnInit {
   navToPage(): void {
     let navParts = this.currentNav.split('/');
     const url = this.BASE_URL + this.currentClusterURL + '/' + navParts[navParts.length - 1];
+
     this.router.navigate([url]);
   }
 

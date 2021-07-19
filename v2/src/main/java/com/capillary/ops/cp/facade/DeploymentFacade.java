@@ -31,6 +31,7 @@ import io.fabric8.kubernetes.api.model.batch.*;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -553,14 +554,31 @@ public class DeploymentFacade {
                 .filter(x -> cluster.getId().equalsIgnoreCase(x.getCdPipelineParent()) && x.getRequireSignOff() == true)
                 .map(x -> x.getName())
                 .collect(Collectors.toList());
-        List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
+        List<DeploymentLog> deployments =
+                deploymentLogRepository.findFirst50ByClusterIdAndStatusNotInOrderByCreatedOnDesc(clusterId,
+                        Arrays.asList(StatusType.FAULT));
+        List<DeploymentLog> deploymentsFull =
+                deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
         deployments = deployments.stream()
                 .map(x -> tfBuildService.loadDeploymentStatus(x, false)).collect(Collectors.toList());
         Optional<DeploymentLog> signedOffDeploymentOptional =
                 deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
                         cluster.getId(), StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
-        return new ListDeploymentsWrapper(stack, clusterId, deployments, downStreamClusters,
-                signedOffDeploymentOptional.orElse(null));
+        Integer successReleases =
+                deploymentLogRepository.countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(clusterId,
+                DeploymentLog.DeploymentType.REGULAR,StatusType.SUCCEEDED, DateUtils.addDays(new Date(), -30));
+        Integer failedReleases =
+                deploymentLogRepository.countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(clusterId,
+                        DeploymentLog.DeploymentType.REGULAR,StatusType.FAILED, DateUtils.addDays(new Date(), -30));
+        Integer noChangeReleases =
+                deploymentLogRepository.countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(clusterId,
+                        DeploymentLog.DeploymentType.REGULAR,StatusType.FAULT, DateUtils.addDays(new Date(), -30));
+
+        ListDeploymentsWrapper.DeploymentsStats deploymentsStats = new ListDeploymentsWrapper.DeploymentsStats(
+                successReleases, failedReleases, noChangeReleases);
+
+        return new ListDeploymentsWrapper(stack, clusterId, deployments, deploymentsFull, downStreamClusters,
+                signedOffDeploymentOptional.orElse(null), deploymentsStats);
     }
 
     public DeploymentLog getDeployment(String deploymentId) {

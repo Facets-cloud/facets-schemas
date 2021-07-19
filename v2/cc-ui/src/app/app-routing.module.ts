@@ -22,6 +22,9 @@ import {ClusterChooserComponent} from "./pages/cluster-pages/cluster-chooser/clu
 import {ClusterCreateLocalComponent} from "./pages/cluster-pages/cluster-create-local/cluster-create-local.component";
 import {ClusterOverviewAssemblerComponent} from "./pages/cluster-pages/cluster-overview-assembler/cluster-overview-assembler.component";
 import {AzureClusterCreateComponent} from "./pages/cluster-pages/cluster-create-azure/cluster-create-azure.component";
+import {OauthClientsComponent} from "./pages/oauth-clients/oauth-clients.component";
+import {ClusterVarsComponent} from "./pages/cluster-pages/cluster-vars/cluster-vars.component";
+import {NotificationCenterComponent} from "./pages/notification-center/notification-center.component";
 
 
 const routes: Routes = [
@@ -32,10 +35,16 @@ const routes: Routes = [
     path: 'capc/home', component: HomeComponent, canActivate: [AuthGuard]
   },
   {
+    path: 'capc/notification-center', component: NotificationCenterComponent, canActivate: [AuthGuard]
+  },
+  {
     path: 'capc/createStack', component: StackCreateComponent, canActivate: [AuthGuard]
   },
   {
     path: 'capc/users', component: UserManagementComponent, canActivate: [AuthGuard]
+  },
+  {
+    path: 'capc/users/oauthClients', component: OauthClientsComponent, canActivate: [AuthGuard]
   },
   {
     path: 'capc/artifactories', component: ArtifactoryManagementComponent, canActivate: [AuthGuard]
@@ -74,6 +83,10 @@ const routes: Routes = [
       {
         path: 'releases',
         component: ClusterReleasesComponent,
+      },
+      {
+        path: 'variables',
+        component: ClusterVarsComponent,
       },
       {
         path: 'overrides',

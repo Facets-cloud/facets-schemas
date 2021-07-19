@@ -38,6 +38,7 @@ export class StackCreateComponent implements OnInit {
   private errorMessage: any;
   artifactories: any = [];
   isCreate: boolean = true;
+  dirty=false;
 
   constructor(private activatedRoute: ActivatedRoute,
               private router: Router,

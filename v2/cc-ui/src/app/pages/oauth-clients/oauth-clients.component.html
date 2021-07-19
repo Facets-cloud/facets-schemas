@@ -1,0 +1,103 @@
+<app-layout-one-column>
+  <span heading>OAuth Login</span>
+  <span subheading>Add more Google accounts to login to Facets Control plane</span>
+  <!--  Instructions to create a credential in GSuite for our web application <a href=""></a>-->
+  <nb-card>
+    <nb-card-header>
+      <div style="float:left;">Users</div>
+      <div style="float:right;">
+        <button
+          nbButton
+          fullWidth
+          *appUserRole="['cc-admin']"
+          status="primary"
+          (click)="openGoogleCreatePopup(googleIntegration)"
+        >
+
+          Add Google Integration
+        </button>
+      </div>
+    </nb-card-header>
+    <nb-card-body>
+      <ng2-smart-table class="cc-no-standard" [settings]="tableSettings" [source]="integrations"
+                       (custom)="customActionPressed($event, deleteIntegration, googleIntegration)"
+      ></ng2-smart-table>
+    </nb-card-body>
+  </nb-card>
+</app-layout-one-column>
+
+
+<ng-template #googleIntegration let-data let-ref="dialogRef">
+  <nb-card *appUserRole="['cc-admin']" style="min-width: 500px;">
+    <nb-card-header *ngIf="!data.edit">
+      Add Google OAuth Integration
+
+    </nb-card-header>
+    <nb-card-header *ngIf="data.edit">
+      Update Google OAuth Integration
+
+    </nb-card-header>
+    <nb-card-body>
+      <form #formGI="ngForm">
+        <app-form-field label="Registration Id"
+                        tooltipText="Unique name for this integrations (Alphanumeric)"
+                        [(ngModel)]="google.registrationId" name="registrationId"
+                        full="true" required="true" pattern="[a-zA-Z0-9 ]*" disabled="{{data.edit}}"></app-form-field>
+        <app-form-field label="Client Id"
+                        tooltipText="Client Id as per your Google Suite Generated Credentials"
+                        [(ngModel)]="google.clientId" name="clientId"
+                        required="true" full="true"></app-form-field>
+        <app-form-field label="Client Secret"
+                        tooltipText="Client Secret as per your Google Suite Generated Credentials"
+                        [(ngModel)]="google.clientSecret" name="clientSecret"
+                        required="true" full="true"></app-form-field>
+        <app-form-field label="Login Button Text"
+                        tooltipText="This will appear on the login screen please use identifiable Name (Max Length 20 chars Alphanumeric)"
+                        [(ngModel)]="google.loginButtonText" name="loginButton"
+                        full="true" maxlength=20 required="true" pattern="[a-zA-Z0-9 ]*"></app-form-field>
+        <div class="form-group">
+          <p class="text-danger">{{this.errorMsg}}</p>
+        </div>
+      </form>
+    </nb-card-body>
+    <nb-card-footer>
+      <button *ngIf="!data.edit" class=" cc-margin-right" nbButton status="primary" (click)="addIntegration(google, ref)"
+              [disabled]="!formGI.valid">Proceed
+      </button>
+      <button *ngIf="data.edit" class=" cc-margin-right" nbButton status="primary" (click)="editIntegration(google, ref)"
+              [disabled]="!formGI.valid">Proceed
+      </button>
+      <button class=" cc-margin-right" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #deleteIntegration let-data let-ref="dialogRef">
+  <nb-card *appUserRole="['cc-admin']" style="min-width: 500px;">
+    <nb-card-header *ngIf="!data.payload.systemConfigured">
+      Confirm Delete!
+
+    </nb-card-header>
+
+    <nb-card-header *ngIf="data.payload.systemConfigured">
+      <div class="text-danger">Error</div>
+
+    </nb-card-header>
+    <nb-card-body>
+      <div class="mb-3" *ngIf="!data.payload.systemConfigured"> Are you sure you want to delete the Integration <span
+        class="text-primary font-weight-bold">{{data.payload.registrationId}}</span>?
+      </div>
+      <div class="mb-3" *ngIf="data.payload.systemConfigured">  <span
+        class="text-primary font-weight-bold">{{data.payload.registrationId}}</span> is a System defined integration and
+        cant be deleted!
+      </div>
+      <p class="text-danger">{{this.errorMsgDelete}}</p>
+    </nb-card-body>
+    <nb-card-footer>
+      <button class="mr-3" nbButton status="primary" (click)="removeIntegration(data.payload.registrationId, ref)" *ngIf="!data.payload.systemConfigured">Proceed
+      </button>
+      <button class="mr-3" status="basic" nbButton (click)='ref.close(false)'>Cancel</button>
+    </nb-card-footer>
+
+  </nb-card>
+</ng-template>

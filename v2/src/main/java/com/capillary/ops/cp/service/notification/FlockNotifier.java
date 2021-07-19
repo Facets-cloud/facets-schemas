@@ -3,15 +3,17 @@ package com.capillary.ops.cp.service.notification;
 
 import com.capillary.ops.cp.bo.notifications.ChannelType;
 import com.capillary.ops.cp.bo.notifications.Notification;
-import com.capillary.ops.cp.bo.notifications.Subscription;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class FlockNotifier implements Notifier {
@@ -43,13 +45,20 @@ public class FlockNotifier implements Notifier {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Message> httpEntity = new HttpEntity<>(message, headers);
-        restTemplate.postForEntity(channelAddress, httpEntity, Object.class);
+        HttpEntity<Object> httpEntity = new HttpEntity<>(message, headers);
+        if(notification.isPayloadJson()){
+            JSONObject jsonObj = new JSONObject(message.text);
+            httpEntity = new HttpEntity<>(jsonObj.toMap(), headers);
+        }
+
+        ResponseEntity<String> stringResponseEntity = restTemplate
+                .postForEntity(channelAddress, httpEntity, String.class);
+
     }
 
     @Override
-    public ChannelType getChannelType() {
-        return ChannelType.FLOCK;
+    public List<ChannelType> getChannelTypes() {
+        return Arrays.asList(ChannelType.SLACK, ChannelType.FLOCK);
     }
 
     public void notify(String webHookUrl, String message) {

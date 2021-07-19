@@ -99,7 +99,7 @@ public class ClusterHelperTest {
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test()
     public void validateClusterVarsInvalidInput() {
         Map<String, String> stackVars = new HashMap<>();
         stackVars.put("Test1", "Val1");
@@ -112,10 +112,12 @@ public class ClusterHelperTest {
 
         Map<String, String> inputVars = new HashMap<>();
         inputVars.put("secret1", "secret1Val1");
+        inputVars.put("envVar1", "envVar1");
         inputVars.put("abc", "secret1Val1");
 
         Map<String, String> validatedInput = clusterHelper.validateClusterVars(inputVars, crm);
         System.out.println(validatedInput);
+        assert !validatedInput.containsKey("abc");
     }
 
     @Test(expected = IllegalArgumentException.class)

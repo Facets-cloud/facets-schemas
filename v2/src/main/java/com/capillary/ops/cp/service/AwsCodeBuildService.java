@@ -64,9 +64,9 @@ import java.util.zip.ZipOutputStream;
 @Profile("!dev")
 public class AwsCodeBuildService implements TFBuildService {
 
-    public static final String LOG_GROUP_NAME = "codebuild-test";
+    public static final String CC_VCS_URL = "https://bitbucket.org/capillarymartjack/deisdeployer.git";
 
-    @Value("${cc_deployment_bucket}")
+  @Value("${cc_deployment_bucket}")
     public String CC_STACK_SOURCE;
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -77,6 +77,8 @@ public class AwsCodeBuildService implements TFBuildService {
     public Region BUILD_REGION;
     @Value("${cc_codebuild_name}")
     public String BUILD_NAME;
+    @Value("${cc_codebuild_log_group}")
+    public String LOG_GROUP_NAME;
     @Value("${cc_vpc_id}")
     public String CC_VPC_ID;
     @Value("${cc_route_table_id}")
@@ -89,6 +91,8 @@ public class AwsCodeBuildService implements TFBuildService {
     private String CC_TF_DYNAMO_TABLE;
     @Value("${cc_tf_state_region}")
     private String CC_TF_STATE_REGION;
+    @Value("${default_hosted_zone}")
+    private String DEFAULT_HOSTED_ZONE;
 
     public static final String HOST = "TF_VAR_cc_host";
     public static final String RELEASE_TYPE = "TF_VAR_release_type";
@@ -99,6 +103,7 @@ public class AwsCodeBuildService implements TFBuildService {
     public static final String CC_REGION_LABEL = "TF_VAR_cc_region";
     public static final String CC_TF_STATE_BUCKET_LABEL = "TF_VAR_cc_tf_state_bucket";
     private static final String CC_TF_STATE_REGION_LABEL = "TF_VAR_cc_tf_state_region";
+    private static final String DEFAULT_HOSTED_ZONE_LABEL = "TF_VAR_tenant_base_domain";
 
     public static final String STACK_SUBDIRECTORY = "STACK_SUBDIRECTORY";
     public static final String SUBSTACK_SUBDIRECTORY_PREFIX = "SUBSTACK_SUBDIRECTORY_";
@@ -127,11 +132,14 @@ public class AwsCodeBuildService implements TFBuildService {
     @Value("${cc_artifact_s3bucket}")
     private String artifactS3Bucket;
 
-    @Value("${aws.s3bucket.testOutputBucket.region}")
+    @Value("${cc_artifact_s3bucket_region}")
     private String artifactS3BucketRegion;
 
-    @Value("${aws.s3bucket.ccSubstackBucket.name}")
+    @Value("${substackBucket}")
     private String substackS3Bucket;
+
+    @Value("${tfSourceVersion}")
+    private String tfSourceVersion;
 
     @Autowired
     private DeploymentLogRepository deploymentLogRepository;
@@ -212,6 +220,9 @@ public class AwsCodeBuildService implements TFBuildService {
                 .type(EnvironmentVariableType.PLAINTEXT).build());
         environmentVariables.add(EnvironmentVariable.builder().name(CLOUD_TF_PROVIDER).value(tfImplementationSelector.selectTFProvider(abstractCluster))
                 .type(EnvironmentVariableType.PLAINTEXT).build());
+        environmentVariables.add(EnvironmentVariable.builder().name(DEFAULT_HOSTED_ZONE_LABEL).value(DEFAULT_HOSTED_ZONE)
+                .type(EnvironmentVariableType.PLAINTEXT).build());
+
         environmentVariables.add(EnvironmentVariable.builder().name(STACK_SUBDIRECTORY)
                 .value(stack.getRelativePath()).type(EnvironmentVariableType.PLAINTEXT)
                 .build());
@@ -251,7 +262,7 @@ public class AwsCodeBuildService implements TFBuildService {
                 break;
         }
 
-        String primarySourceVersion = "master";
+        String primarySourceVersion = this.tfSourceVersion;
 
         Optional<String> branchOverride = tfRunConfigurationsService.getTFRunConfigurations(abstractCluster.getId()).map(TFRunConfigurations::getBranchOverride);
         if (branchOverride.isPresent() && !StringUtils.isEmpty(branchOverride)) {
@@ -264,7 +275,7 @@ public class AwsCodeBuildService implements TFBuildService {
         }
 
         try {
-            primarySourceVersion = gitService.getBranchHead("https://bitbucket.org/capillarymartjack/deisdeployer.git",
+            primarySourceVersion = gitService.getBranchHead(CC_VCS_URL,
                     System.getenv("BITBUCKET_USERNAME"), System.getenv("BITBUCKET_PASSWORD"), primarySourceVersion);
         } catch (GitAPIException e) {
             // pass
@@ -314,6 +325,11 @@ public class AwsCodeBuildService implements TFBuildService {
 
         // a regular trigger
         if (deploymentRequest.getOverrideBuildSteps() != null) {
+            Optional<DeploymentLog> lastRun = deploymentLogRepository.findFirstByClusterIdOrderByCreatedOnDesc(abstractCluster.getId());
+            if(lastRun.isPresent()) {
+                loadDeploymentStatus(lastRun.get(), true);
+            }
+
             Optional<DeploymentLog> lastDeploymentOptional =
                     deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeOrderByCreatedOnDesc(abstractCluster.getId(),
                             StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR);
@@ -321,7 +337,8 @@ public class AwsCodeBuildService implements TFBuildService {
                 DeploymentLog lastDeployment = lastDeploymentOptional.get();
                 if (secondarySourceVersion.sourceVersion().equalsIgnoreCase(lastDeployment.getStackVersion()) &&
                         deploymentContextVersion.equalsIgnoreCase(lastDeployment.getDeploymentContextVersion()) &&
-                        primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion()) &&
+                        (primarySourceVersion.equalsIgnoreCase(lastDeployment.getTfVersion())
+                                || primarySourceVersion.equalsIgnoreCase(this.tfSourceVersion)) &&
                         CollectionUtils.isEmpty(deploymentRequest.getOverrideBuildSteps())
                 ) {
                     DeploymentLog deploymentLog = getDeploymentLog(abstractCluster, deploymentRequest, secondarySourceVersion, deploymentContextVersion, UUID.randomUUID().toString(), primarySourceVersion);
@@ -346,14 +363,16 @@ public class AwsCodeBuildService implements TFBuildService {
                 .collect(Collectors.toList()));
 
         StartBuildRequest startBuildRequest =
-                StartBuildRequest.builder().projectName(buildName)
-                        .environmentVariablesOverride(environmentVariables)
-                        .computeTypeOverride(computeType)
-                        .secondarySourcesOverride(secondarySources)
-                        .secondarySourcesVersionOverride(secondarySourceVersion)
-                        .sourceVersion(primarySourceVersion)
-                        .buildspecOverride(getBuildSpec(deploymentRequest, abstractCluster.getCloud()))
-                        .build();
+            StartBuildRequest.builder().projectName(buildName)
+                    .environmentVariablesOverride(environmentVariables)
+                    .computeTypeOverride(computeType)
+                    .secondarySourcesOverride(secondarySources)
+                    .secondarySourcesVersionOverride(secondarySourceVersion)
+                    .sourceTypeOverride(SourceType.BITBUCKET)
+                    .sourceLocationOverride(CC_VCS_URL)
+                    .sourceVersion(primarySourceVersion)
+                    .buildspecOverride(getBuildSpec(deploymentRequest, abstractCluster.getCloud()))
+                    .build();
 
         List<Build> runningBuilds = getRunningBuilds(abstractCluster, buildName);
 
@@ -460,13 +479,14 @@ public class AwsCodeBuildService implements TFBuildService {
         }
     }
     private Map<String, Artifact> getDeploymentReport(String tfProvider, String runId) {
-        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.fromName(artifactS3BucketRegion)).build();
         try {
-            String reportKey = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/%s/artifacts.json", runId.split(":")[1], tfProvider);
+            String reportKey = String.format("%s/%s/capillary-cloud-tf/%s/artifacts.json", runId.split(":")[1], BUILD_NAME, tfProvider);
             String report = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, reportKey).getObjectContent(), StandardCharsets.UTF_8.name());
             return new Gson().fromJson(report, new TypeToken<Map<String, Artifact>>() {
             }.getType());
         } catch (Throwable e) {
+            e.printStackTrace();
             return new HashMap<>();
         }
     }

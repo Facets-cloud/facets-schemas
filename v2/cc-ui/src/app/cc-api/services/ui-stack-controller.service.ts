@@ -32,8 +32,8 @@ class UiStackControllerService extends __BaseService {
   static readonly updateStackUsingPUT1Path = '/cc-ui/v1/stacks/{stackName}';
   static readonly getClustersUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/clusters';
   static readonly getLocalDeploymentContextUsingGETPath = '/cc-ui/v1/stacks/{stackName}/localDeploymentContext';
-  static readonly getAllSubscriptionsUsingGETPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
-  static readonly createSubscriptionUsingPOSTPath = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
+  static readonly getAllSubscriptionsUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
+  static readonly createSubscriptionUsingPOST1Path = '/cc-ui/v1/stacks/{stackName}/notification/subscriptions';
   static readonly reloadStackUsingGET1Path = '/cc-ui/v1/stacks/{stackName}/reload';
   static readonly getResourceTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType';
   static readonly getResourcesByTypesUsingGETPath = '/cc-ui/v1/stacks/{stackName}/suggestions/resourceType/{resourceType}';
@@ -412,7 +412,7 @@ class UiStackControllerService extends __BaseService {
    * @param stackName stackName
    * @return OK
    */
-  getAllSubscriptionsUsingGETResponse(stackName: string): __Observable<__StrictHttpResponse<Array<Subscription>>> {
+  getAllSubscriptionsUsingGET1Response(stackName: string): __Observable<__StrictHttpResponse<Array<Subscription>>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -439,15 +439,15 @@ class UiStackControllerService extends __BaseService {
    * @param stackName stackName
    * @return OK
    */
-  getAllSubscriptionsUsingGET(stackName: string): __Observable<Array<Subscription>> {
-    return this.getAllSubscriptionsUsingGETResponse(stackName).pipe(
+  getAllSubscriptionsUsingGET1(stackName: string): __Observable<Array<Subscription>> {
+    return this.getAllSubscriptionsUsingGET1Response(stackName).pipe(
       __map(_r => _r.body as Array<Subscription>)
     );
   }
 
   /**
    * createSubscription
-   * @param params The `UiStackControllerService.CreateSubscriptionUsingPOSTParams` containing the following parameters:
+   * @param params The `UiStackControllerService.CreateSubscriptionUsingPOST1Params` containing the following parameters:
    *
    * - `subscription`: subscription
    *
@@ -455,7 +455,7 @@ class UiStackControllerService extends __BaseService {
    *
    * @return OK
    */
-  createSubscriptionUsingPOSTResponse(params: UiStackControllerService.CreateSubscriptionUsingPOSTParams): __Observable<__StrictHttpResponse<Subscription>> {
+  createSubscriptionUsingPOST1Response(params: UiStackControllerService.CreateSubscriptionUsingPOST1Params): __Observable<__StrictHttpResponse<Subscription>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
@@ -480,7 +480,7 @@ class UiStackControllerService extends __BaseService {
   }
   /**
    * createSubscription
-   * @param params The `UiStackControllerService.CreateSubscriptionUsingPOSTParams` containing the following parameters:
+   * @param params The `UiStackControllerService.CreateSubscriptionUsingPOST1Params` containing the following parameters:
    *
    * - `subscription`: subscription
    *
@@ -488,8 +488,8 @@ class UiStackControllerService extends __BaseService {
    *
    * @return OK
    */
-  createSubscriptionUsingPOST(params: UiStackControllerService.CreateSubscriptionUsingPOSTParams): __Observable<Subscription> {
-    return this.createSubscriptionUsingPOSTResponse(params).pipe(
+  createSubscriptionUsingPOST1(params: UiStackControllerService.CreateSubscriptionUsingPOST1Params): __Observable<Subscription> {
+    return this.createSubscriptionUsingPOST1Response(params).pipe(
       __map(_r => _r.body as Subscription)
     );
   }
@@ -704,9 +704,9 @@ module UiStackControllerService {
   }
 
   /**
-   * Parameters for createSubscriptionUsingPOST
+   * Parameters for createSubscriptionUsingPOST1
    */
-  export interface CreateSubscriptionUsingPOSTParams {
+  export interface CreateSubscriptionUsingPOST1Params {
 
     /**
      * subscription

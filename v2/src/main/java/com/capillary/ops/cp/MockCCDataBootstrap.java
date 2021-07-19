@@ -21,6 +21,7 @@ import com.capillary.ops.cp.bo.AutoCompleteObject;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Profile("dev")
@@ -72,17 +73,17 @@ public class MockCCDataBootstrap {
         stack.setRelativePath("/");
         stack.setVcs(VCS.GITHUB);
         stack.setVcsUrl("tmp");
-        StackFile.VariableDetails v1 = new StackFile.VariableDetails(false,"test1");
-        StackFile.VariableDetails v2 = new StackFile.VariableDetails(true,"test2");
-        StackFile.VariableDetails v3 = new StackFile.VariableDetails(true,"test2");
+        StackFile.VariableDetails v1 = new StackFile.VariableDetails(false, "test1");
+        StackFile.VariableDetails v2 = new StackFile.VariableDetails(true, "test2");
+        StackFile.VariableDetails v3 = new StackFile.VariableDetails(true, "test2");
         HashMap<String, StackFile.VariableDetails> vars = new HashMap<>();
-        vars.put("cv1",v1);
-        vars.put("cv2",v2);
-        vars.put("cv3",v3);
+        vars.put("cv1", v1);
+        vars.put("cv2", v2);
+        vars.put("cv3", v3);
         stack.setClusterVariablesMeta(vars);
-        HashMap<String,String> stackVars = new HashMap<>();
-        stackVars.put("sv4","v4");
-        stackVars.put("sv5","v5");
+        HashMap<String, String> stackVars = new HashMap<>();
+        stackVars.put("sv4", "v4");
+        stackVars.put("sv5", "v5");
         stack.setStackVars(stackVars);
         stack.setVcsUrl("https://github.com/Capillary/cc-stack-crm.git");
         Map<ComponentType, String> stackComponentVersion = new HashMap<>();
@@ -97,25 +98,25 @@ public class MockCCDataBootstrap {
         stackTesting.setRelativePath("/");
         stackTesting.setVcs(VCS.GITHUB);
         stackTesting.setVcsUrl("tmp");
-        StackFile.VariableDetails v1Testing = new StackFile.VariableDetails(false,"test1");
-        StackFile.VariableDetails v2Testing = new StackFile.VariableDetails(true,"test2");
-        StackFile.VariableDetails v3Testing = new StackFile.VariableDetails(true,"test2");
+        StackFile.VariableDetails v1Testing = new StackFile.VariableDetails(false, "test1");
+        StackFile.VariableDetails v2Testing = new StackFile.VariableDetails(true, "test2");
+        StackFile.VariableDetails v3Testing = new StackFile.VariableDetails(true, "test2");
         HashMap<String, StackFile.VariableDetails> varsTesting = new HashMap<>();
-        varsTesting.put("cv1",v1Testing);
-        varsTesting.put("cv2",v2Testing);
-        varsTesting.put("cv3",v3Testing);
+        varsTesting.put("cv1", v1Testing);
+        varsTesting.put("cv2", v2Testing);
+        varsTesting.put("cv3", v3Testing);
         stackTesting.setClusterVariablesMeta(varsTesting);
-        HashMap<String,String> stackVarsTesting = new HashMap<>();
-        stackVarsTesting.put("sv4","v4");
-        stackVarsTesting.put("sv5","v5");
+        HashMap<String, String> stackVarsTesting = new HashMap<>();
+        stackVarsTesting.put("sv4", "v4");
+        stackVarsTesting.put("sv5", "v5");
         stackTesting.setStackVars(stackVarsTesting);
         stackTesting.setVcsUrl("https://github.com/Capillary/cc-stack-cctesting.git");
         stackTesting.setComponentVersions(stackComponentVersion);
         stackRepository.save(stackTesting);
 
-        AutoCompleteObject apps = new AutoCompleteObject("crm","application");
-        AutoCompleteObject crons = new AutoCompleteObject("crm","cronjob");
-        AutoCompleteObject statefulsets = new AutoCompleteObject("crm","statefulsets");
+        AutoCompleteObject apps = new AutoCompleteObject("crm", "application");
+        AutoCompleteObject crons = new AutoCompleteObject("crm", "cronjob");
+        AutoCompleteObject statefulsets = new AutoCompleteObject("crm", "statefulsets");
         apps.setResourceNames(new HashSet<>(Arrays.asList("intouch-api", "emf")));
         crons.setResourceNames(new HashSet<>(Arrays.asList("crondemo-one", "crondemo-two")));
         statefulsets.setResourceNames(new HashSet<>(Arrays.asList("sts-demo", "sts-demo-two")));
@@ -125,9 +126,9 @@ public class MockCCDataBootstrap {
         autoCompleteObjects.add(statefulsets);
         autoCompleteObjectRepository.saveAll(autoCompleteObjects);
 
-        AutoCompleteObject appsTesting = new AutoCompleteObject("cc-stack-cctesting","application");
-        AutoCompleteObject cronsTesting = new AutoCompleteObject("cc-stack-cctesting","cronjob");
-        AutoCompleteObject statefulsetsTesting = new AutoCompleteObject("cc-stack-cctesting","statefulsets");
+        AutoCompleteObject appsTesting = new AutoCompleteObject("cc-stack-cctesting", "application");
+        AutoCompleteObject cronsTesting = new AutoCompleteObject("cc-stack-cctesting", "cronjob");
+        AutoCompleteObject statefulsetsTesting = new AutoCompleteObject("cc-stack-cctesting", "statefulsets");
         appsTesting.setResourceNames(new HashSet<>(Arrays.asList("intouch-api", "emf")));
         cronsTesting.setResourceNames(new HashSet<>(Arrays.asList("crondemo-one", "crondemo-two")));
         statefulsetsTesting.setResourceNames(new HashSet<>(Arrays.asList("sts-demo", "sts-demo-two")));
@@ -173,7 +174,8 @@ public class MockCCDataBootstrap {
         x.setClusterId(cluster.getName());
         x.setKubernetesApiEndpoint("https://BDFAE70546D35DF4713D053669C23B92.gr7.us-east-1.eks.amazonaws.com");
         x.setKubernetesToken(
-            "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InJlYWRvbmx5LXRva2VuLXRieGhrIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InJlYWRvbmx5Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYTQ1MzA3NDgtN2VlYi0xMWVhLTljMmYtMTIzOTk5YjQ2YTZiIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6cmVhZG9ubHkifQ.5Bg0l_KiLEy8cGl7CCk4fdIitqHBQ0g3-xiUv8VIDu34mh0Bz43us2epbigZGlxZW8GgCeQhyhdbGKvCFplTCZCJDYo9DFLFHAy8nImzlbOH7Wdy2PmPnKopgqjkqEUwt0Z9PzPmE7pOCZ7OB5K8rqcOf_Kwe486YJjzEtsPj3JPzcb2RC6mHg63t9Hvq058mD4QDUX4OtMwbG0MTa2XiMqZIU0teDrcqpL7xU8094Oh7OXsAIjQ8FkR0Q6nkf1y7FlM6a_9YGr3Z_zihazu3TV4_rlzp7CZlKcKHSHMbJ5bEN6YdNwEvjVZ5R-2GYngh9WjBIwLGqkw7Pb-LQ1NNg");
+                "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9" +
+                        ".eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InJlYWRvbmx5LXRva2VuLXRieGhrIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6InJlYWRvbmx5Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYTQ1MzA3NDgtN2VlYi0xMWVhLTljMmYtMTIzOTk5YjQ2YTZiIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRlZmF1bHQ6cmVhZG9ubHkifQ.5Bg0l_KiLEy8cGl7CCk4fdIitqHBQ0g3-xiUv8VIDu34mh0Bz43us2epbigZGlxZW8GgCeQhyhdbGKvCFplTCZCJDYo9DFLFHAy8nImzlbOH7Wdy2PmPnKopgqjkqEUwt0Z9PzPmE7pOCZ7OB5K8rqcOf_Kwe486YJjzEtsPj3JPzcb2RC6mHg63t9Hvq058mD4QDUX4OtMwbG0MTa2XiMqZIU0teDrcqpL7xU8094Oh7OXsAIjQ8FkR0Q6nkf1y7FlM6a_9YGr3Z_zihazu3TV4_rlzp7CZlKcKHSHMbJ5bEN6YdNwEvjVZ5R-2GYngh9WjBIwLGqkw7Pb-LQ1NNg");
         k8sCredentialsRepository.save(x);
 
         AwsCluster cluster2 = new AwsCluster("cluster2");
@@ -190,38 +192,81 @@ public class MockCCDataBootstrap {
         cpClusterRepository.save(cluster2);
 
         OverrideObject request = new OverrideObject();
-        request.setResourceType("application");
-        request.setClusterId("cluster1");
-        request.setResourceName("intouch-api");
-        request.setOverrides(new HashMap<String, Object>() {{
-            put("size", "XLARGE");
-        }});
-        overrideObjectRepository.save(request);
 
-        OverrideObject request2 = new OverrideObject();
-        request2.setResourceType("application");
-        request2.setClusterId("cluster1");
-        request2.setResourceName("emf");
-        request2.setOverrides(new HashMap<String, Object>() {{
-            put("size", "XLARGE");
-        }});
-        overrideObjectRepository.save(request2);
 
-        DeploymentLog deploymentLog = new DeploymentLog();
-        deploymentLog.setCodebuildId("cb007");
-        deploymentLog.setClusterId("cluster1");
-        deploymentLog.setCreatedOn(new Date());
-        deploymentLog.setReleaseType(ReleaseType.HOTFIX);
-        deploymentLog.setDescription("Hotfix for CAP-XYZ");
+        List<String> overridesList = new ArrayList<String>() {{
+            add("mongo:intouch-api");
+            add("application:intouch-api");
+            add("application:xyz");
+            add("aurora:emf");
+            add("application:emf");
+            add("aurora:api");
+            add("application:abc");
+
+        }};
+        for (String override : overridesList) {
+            OverrideObject request2 = new OverrideObject();
+            request2.setResourceType(override.split(":")[0]);
+            request2.setClusterId("cluster1");
+            request2.setResourceName(override.split(":")[1]);
+            request2.setOverrides(new HashMap<String, Object>() {{
+                put("size", "XLARGE");
+            }});
+            overrideObjectRepository.save(request2);
+        }
+
+
+        DeploymentLog deploymentLog =
+                DeploymentLog.builder().deploymentContextVersion("deploymentContextVersion").deploymentType(
+                        DeploymentLog.DeploymentType.REGULAR).clusterId("cluster1").codebuildId("codebuildId")
+                        .createdOn(new Date()).id("id1").releaseType(ReleaseType.RELEASE).overrideBuildSteps(
+                        Arrays.asList(
+                                "terraform apply -target 'module.application.helm_release" +
+                                        ".application[\"config-service-server\"]' -auto-approve",
+                                "terraform apply -target 'module.application.helm_release" +
+                                        ".application[\"config-service-server2\"]' -auto-approve"))
+                        .stackVersion("1-stackVersion").tfVersion("tfVersion").status(StatusType.IN_PROGRESS)
+                        .triggeredBy("Deployer").integrationTest(false).signedOff(true).build();
         deploymentLogRepository.save(deploymentLog);
+        for (int i = 2; i < 10; i++) {
+            deploymentLog =
+                    DeploymentLog.builder().deploymentContextVersion("deploymentContextVersion").deploymentType(
+                            DeploymentLog.DeploymentType.REGULAR).clusterId("cluster1").codebuildId("codebuildId" + i)
+                            .createdOn(new Date(System.currentTimeMillis() - (i * 60 * 60 * 1000))).id("id" + i)
+                            .releaseType(ReleaseType.RELEASE)
+                            .stackVersion("2-stackVersion").tfVersion("tfVersion").status(StatusType.FAULT)
+                            .triggeredBy("Deployer").integrationTest(false).signedOff(true).build();
+            deploymentLogRepository.save(deploymentLog);
+        }
 
-        DeploymentLog deploymentLog2 = new DeploymentLog();
-        deploymentLog2.setCodebuildId("cb008");
-        deploymentLog2.setClusterId("cluster1");
-        deploymentLog2.setCreatedOn(new Date());
-        deploymentLog2.setReleaseType(ReleaseType.RELEASE);
-        deploymentLog2.setDescription("Release for Sprint X");
-        deploymentLogRepository.save(deploymentLog2);
+        deploymentLog =
+                DeploymentLog.builder().deploymentContextVersion("deploymentContextVersion").deploymentType(
+                        DeploymentLog.DeploymentType.REGULAR).clusterId("cluster1").codebuildId("codebuildId10")
+                        .createdOn(new Date(System.currentTimeMillis() - (10 * 60 * 60 * 1000))).id("id10")
+                        .releaseType(ReleaseType.RELEASE)
+                        .stackVersion("2-stackVersion").tfVersion("tfVersion").status(StatusType.SUCCEEDED)
+                        .triggeredBy("Deployer").integrationTest(false).signedOff(true).build();
+        deploymentLogRepository.save(deploymentLog);
+        for (int i = 11; i < 20; i++) {
+            deploymentLog =
+                    DeploymentLog.builder().deploymentContextVersion("deploymentContextVersion").deploymentType(
+                            DeploymentLog.DeploymentType.REGULAR).clusterId("cluster1").codebuildId("codebuildId" + i)
+                            .createdOn(new Date(System.currentTimeMillis() - (i * 60 * 60 * 1000))).id("id" + i)
+                            .releaseType(ReleaseType.RELEASE)
+                            .stackVersion(i + "-stackVersion").tfVersion("tfVersion").status(StatusType.FAILED)
+                            .triggeredBy("Deployer").integrationTest(false).signedOff(true).build();
+            deploymentLogRepository.save(deploymentLog);
+        }
+        for (int i = 20; i < 50; i++) {
+            deploymentLog =
+                    DeploymentLog.builder().deploymentContextVersion("deploymentContextVersion").deploymentType(
+                            DeploymentLog.DeploymentType.REGULAR).clusterId("cluster1").codebuildId("codebuildId" + i)
+                            .createdOn(new Date(System.currentTimeMillis() - (i * 60 * 60 * 1000))).id("id" + i)
+                            .releaseType(ReleaseType.RELEASE)
+                            .stackVersion(i + "-stackVersion").tfVersion("tfVersion").status(StatusType.SUCCEEDED)
+                            .triggeredBy("Deployer").integrationTest(false).signedOff(true).build();
+            deploymentLogRepository.save(deploymentLog);
+        }
 
         User user = new User();
         String adminUser = System.getenv("ADMIN_USER");

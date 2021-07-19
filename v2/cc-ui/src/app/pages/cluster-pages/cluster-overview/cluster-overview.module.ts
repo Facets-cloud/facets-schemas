@@ -2,9 +2,9 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ClusterOverviewComponent} from './cluster-overview.component';
 import {
-  NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService,
-  NbInputModule, NbSpinnerModule, NbIconModule, NbListModule, NbUserModule, NbToggleModule,
-  NbSelectModule, NbActionsModule
+    NbButtonModule, NbCardModule, NbLayoutModule, NbSidebarModule, NbAccordionModule, NbToastrService,
+    NbInputModule, NbSpinnerModule, NbIconModule, NbListModule, NbUserModule, NbToggleModule,
+    NbSelectModule, NbActionsModule, NbTooltipModule
 } from '@nebular/theme';
 import {RouterModule} from '@angular/router';
 import {ComponentsModule} from '../../../components/components.module';
@@ -47,7 +47,8 @@ import { ComponentUpgradeDialogComponent } from './componentupgradedialog/compon
         NbUserModule,
         NbToggleModule,
         NbSelectModule,
-        NbActionsModule
+        NbActionsModule,
+        NbTooltipModule
     ]
 })
 export class ClusterOverviewModule {

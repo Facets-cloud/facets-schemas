@@ -1,41 +1,57 @@
 <app-layout-one-column>
-  <nb-card>
-    <nb-card-header>
-    <div style="float:left;">Stack Overview</div>
-    </nb-card-header>
-    <nb-card-body>
-      This is a manifestation of the blueprint definition for the stack <b>{{stack?.name}}</b>, its blueprint can be found
-      <a href={{stack?.vcsUrl}} target="_blank">
-        here
-        <nb-icon icon="external-link-outline" style="height: 0.8em">
+  <span heading> {{stack?.name | titlecase}} Stack</span>
+  <span subheading> List of all Clusters of {{stack?.name | titlecase}} Stack.
+    <a href={{stack?.vcsUrl}} target="_blank">
+            Repository
+            <nb-icon icon="external-link-outline" style="height: 0.8em">
 
-        </nb-icon>
-      </a>
-    </nb-card-body>
-  </nb-card>
+            </nb-icon>
+          </a></span>
+  <div class="row">
+    <div class="col-md-12">
+      <nb-card>
+        <nb-card-body>
+          <div class="row">
+            <div class="col-md-10">
+              <div class="alert alert-danger">
+                In case you find some problem with the ongoing releases, manually pause all scheduled releases to <span class="font-weight-bold">production by Facets
+                Bot</span>
+              </div>
+            </div>
 
-  <nb-card>
-    <nb-card-header>
-    <div style="float:left;">Clusters</div>
-    <div style="float:right;">
-      <button
-        *appUserRole="['cc-admin']"
-        nbButton
-        fullWidth
-        status="primary"
-        (click)="createCluster()"
-      >
-        Create Cluster
-      </button>
+            <div class="p-3 text-center col-md-2">
+              <nb-toggle [(ngModel)]="pauseReleases" labelPosition="end" (click)="newToggleClick(pauseReleases)"
+                         status="danger">
+                Pause/ Un-Pause
+              </nb-toggle>
+            </div>
+          </div>
+        </nb-card-body>
+      </nb-card>
     </div>
+  </div>
+
+
+  <nb-card>
+    <nb-card-header>
+      <div style="float:left;">Clusters</div>
+      <div style="float:right;">
+        <button
+          *appUserRole="['cc-admin']"
+          nbButton
+          fullWidth
+          status="primary"
+          (click)="createCluster()"
+        >
+          Create Cluster
+        </button>
+      </div>
     </nb-card-header>
     <nb-card-body>
-      <nb-toggle [(ngModel)]="pauseReleases" labelPosition="end" (click)="newToggleClick(pauseReleases)">
-        Pause Production Releases
-      </nb-toggle>
+
     </nb-card-body>
     <nb-card-body>
-      <ng2-smart-table class="cc-no-standard" [settings]="clusterSettings" [source]="tableData" ></ng2-smart-table>
+      <ng2-smart-table class="cc-no-standard" [settings]="clusterSettings" [source]="tableData"></ng2-smart-table>
     </nb-card-body>
   </nb-card>
 </app-layout-one-column>

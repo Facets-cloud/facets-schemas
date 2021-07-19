@@ -2,6 +2,9 @@ package com.capillary.ops.cp.bo;
 
 import com.capillary.ops.cp.bo.requests.ReleaseType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,6 +15,9 @@ import java.util.Date;
 import java.util.List;
 
 @Document
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class DeploymentLog {
 
     public static enum DeploymentType {

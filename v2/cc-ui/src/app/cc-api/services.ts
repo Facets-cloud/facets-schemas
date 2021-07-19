@@ -5,10 +5,13 @@ export { CallbackControllerService } from './services/callback-controller.servic
 export { UiArtifactoryControllerService } from './services/ui-artifactory-controller.service';
 export { UiAwsClusterControllerService } from './services/ui-aws-cluster-controller.service';
 export { UiAzureClusterControllerService } from './services/ui-azure-cluster-controller.service';
+export { MockCallBackControllerService } from './services/mock-call-back-controller.service';
 export { UiCommonClusterControllerService } from './services/ui-common-cluster-controller.service';
 export { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 export { UiLocalClusterControllerService } from './services/ui-local-cluster-controller.service';
 export { UiMetaControllerService } from './services/ui-meta-controller.service';
+export { UiNotificationControllerService } from './services/ui-notification-controller.service';
+export { UiOAuthControllerService } from './services/ui-oauth-controller.service';
 export { UiStackControllerService } from './services/ui-stack-controller.service';
 export { UiTeamControllerService } from './services/ui-team-controller.service';
 export { UiUserControllerService } from './services/ui-user-controller.service';
@@ -23,3 +26,4 @@ export { DeploymentControllerService } from './services/deployment-controller.se
 export { MetaControllerService } from './services/meta-controller.service';
 export { StackControllerService } from './services/stack-controller.service';
 export { BasicErrorControllerService } from './services/basic-error-controller.service';
+export { PublicApIsService } from './services/public-ap-is.service';

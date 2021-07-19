@@ -49,10 +49,10 @@ public class StackService {
     @Autowired
     GitService gitService;
 
-    @Value("${aws.s3bucket.ccSubstackBucket.name}")
+    @Value("${substackBucket}")
     private String substackS3Bucket;
 
-    @Value("${aws.s3bucket.ccSubstackBucket.region}")
+    @Value("${substackBucketRegion}")
     private String substackS3BucketRegion;
 
     @Value(("${kubernetes.version.default}"))
@@ -154,7 +154,7 @@ public class StackService {
         String relativePath = (StringUtils.isEmpty(substack.getRelativePath())) ? "" : substack.getRelativePath();
         ZipUtil.pack(Paths.get(location.toString() + "/" + relativePath + "/").toFile(), repositoryArchive);
         AmazonS3 amazonS3 =
-                AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(substackS3BucketRegion)).build();
+                AmazonS3ClientBuilder.standard().withRegion(Regions.fromName(substackS3BucketRegion)).build();
         amazonS3.putObject(substackS3Bucket, archivePath, repositoryArchive);
         repositoryArchive.delete();
         FileUtils.deleteDirectory(repositoryArchive);

@@ -39,7 +39,7 @@ export class ClusterOverviewLocalComponent implements OnInit {
         this.s3Url = x;
       },
       error =>{
-        debugger;
+
         this.s3Err = "Something went wrong, Download is not ready: " + JSON.parse(error.error).message || error.message;
       }
     );

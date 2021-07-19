@@ -11,12 +11,13 @@ import { ResourceDetails } from 'src/app/cc-api/models';
   styleUrls: ['./cluster-resource-details.component.scss']
 })
 export class ClusterResourceDetailsComponent implements OnInit {
-  
+
   resourceDetails: ResourceDetails[] = null;
   resourceTypes: Set<string> = new Set<string>();
   clusterDetailsMap: Map<string, LocalDataSource> = new Map<string, LocalDataSource>();
 
   resourceDetailsSettings = {
+    hideSubHeader: true,
     columns: {
       name: {
         title: 'Name',
@@ -43,7 +44,7 @@ export class ClusterResourceDetailsComponent implements OnInit {
       position: 'right',
     },
   };
-  
+
   constructor(private uiCommonClusterControllerService: UiCommonClusterControllerService,
               private activatedRoute: ActivatedRoute) { }
 

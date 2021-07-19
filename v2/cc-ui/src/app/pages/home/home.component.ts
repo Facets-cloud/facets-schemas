@@ -4,6 +4,7 @@ import {Stack} from '../../cc-api/models/stack';
 import {Router} from '@angular/router';
 import {SimpleOauth2User} from '../../cc-api/models/simple-oauth-2user';
 import {ApplicationControllerService} from '../../cc-api/services/application-controller.service';
+import {SmartTableRouterlink} from "../../components/smart-table-routerlink/smart-table-routerlink.component";
 
 @Component({
   selector: 'app-home',
@@ -16,9 +17,23 @@ export class HomeComponent implements OnInit {
     columns: {
       name: {
         title: 'Stack Name',
+        valuePrepareFunction: (value, row, cell) => {
+          // DATA FROM HERE GOES TO renderComponent
+          const displayVal = {
+            url: ["/","capc","stack",value],
+            display: value
+          };
+          return JSON.stringify(displayVal);
+        },
+        renderComponent: SmartTableRouterlink,
+        type: 'custom'
       },
       vcsUrl: {
         title: 'Repository',
+        valuePrepareFunction: (cell) => {
+          return "<a href='"+cell+"' target='_blank'>"+cell+"</a>"
+        },
+        type: 'html'
       },
       relativePath: {
         title: 'Path',
@@ -32,7 +47,7 @@ export class HomeComponent implements OnInit {
       delete: false,
       add: false,
       position: 'right',
-      custom: [{name: 'View', title: '<i class="eva-eye-outline eva"></i>', type: 'html'},
+      custom: [
         {name: 'Edit', title: '<i class="eva-edit-2-outline eva"></i>', type: 'html'}]
     },
     hideSubHeader: true,

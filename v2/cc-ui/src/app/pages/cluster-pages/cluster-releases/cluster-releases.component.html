@@ -1,94 +1,270 @@
 <app-layout-one-column>
-  <nb-card>
-    <nb-card-header>
-      <div style="float:left;"> Releases</div>
-      <div style="float:right;">
-        <button
-          nbButton
-          status="primary"
-          class="cc-margin-right"
-          (click)="openDeploymentPopupFull(deploymentUIFull)"
-        >
-          Release
-        </button>
-        <button
-          nbButton
-          status="basic"
-          (click)="openDeploymentPopup(deploymentUI)"
-        >
-          Hotfix Application
-        </button>
-      </div>
-    </nb-card-header>
-    <nb-card-body>
-      <div style="text-align: center;" class="table-responsive">
-        <table class="table table-bordered">
-          <thead>
-          <tr scope=row>
-            <th class="vert-center" scope="col">Id</th>
-            <th class="vert-center" scope="col">Start Time</th>
-            <th class="vert-center" scope="col">Release Type</th>
-            <th class="vert-center" scope="col">Status</th>
-            <th class="vert-center" scope="col">Stack Version</th>
-            <th class="vert-center" scope="col">CC Version</th>
-            <th class="vert-center" scope="col">Deployment Mode</th>
-            <th class="vert-center" scope="col">Triggered By</th>
-            <th class="vert-center" scope="col">Details</th>
-            <th *ngIf="downStreamClusters.length !== 0" class="vert-center" scope="col">Sign Off</th>
-          </tr>
-          <tr scope=row *ngFor="let deployment of deployments">
-            <td class="vert-center" scope="col">{{deployment.id}}</td>
-            <td class="vert-center" scope="col">{{deployment.createdOn | date:'medium'}}</td>
-            <td class="vert-center" scope="col">{{deployment.releaseType}}</td>
-            <td class="vert-center" scope="col" *ngIf="deployment.status != 'FAULT'">{{deployment.status}}</td>
-            <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'">NO CHANGE</td>
+  <span heading> Cluster Releases </span>
+  <span subheading>Explore Release history and frequency. </span>
 
-            <td class="vert-center" scope="col">
-              {{deployment.stackVersion | slice:0:7}}
-              <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
-                      nbTooltip="Compare with signed-off version" ghost status="primary">
-                <nb-icon icon="code-outline"></nb-icon>
-              </button>
-            </td>
-            <td class="vert-center" scope="col">{{deployment.tfVersion | slice:0:7}}</td>
-            <td class="vert-center" scope="col">{{deployment.deploymentType}}</td>
-            <td class="vert-center" scope="col">{{deployment.triggeredBy}}</td>
-            <td scope="col">
-              <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary">
-                <nb-icon icon="info"></nb-icon>
-              </button>
-            </td>
-            <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff}}
-              <button *ngIf="deployment.allowSignoff" (click)="confirmSignoff(signoff, deployment)" nbButton ghost
-                      status="primary">
-                <nb-icon icon="edit"></nb-icon>
-              </button>
-            </td>
-          </tr>
-          </thead>
-        </table>
-      </div>
-    </nb-card-body>
-  </nb-card>
+  <div class="row">
+    <div class="col-12">
+      <nb-card>
+        <nb-card-header>
+          Last 30 Days
+        </nb-card-header>
+        <nb-card-body>
+          <div class="row">
+            <div class=col-3>
+              <div class="card-subtitle mb-3">
+                Successful Releases
+              </div>
+              <h3 class="font-weight-light">{{this.stats?.successReleases}}</h3>
+            </div>
+            <div class=col-3>
+              <div class="card-subtitle mb-3">
+                Failed Releases
+              </div>
+              <h3 class="text-danger font-weight-light">{{stats?.failedReleases}}</h3>
+            </div>
+            <div class=col-3>
+              <div class="card-subtitle mb-3" nbTooltip="Deployment frequency looks at how often an you deploy code to this cluster">
+                Deployment Frequency  <nb-icon icon="info-outline"></nb-icon>
+              </div>
+              <h3 class="font-weight-light">{{this.stats?.successReleases / 30 | number : "1.2-2"}}</h3>
+
+            </div>
+            <div class=col-3>
+              <div class="card-subtitle mb-3" nbTooltip="Change failure rate is the percentage of changes that resulted in failed releases">
+                Change Failure Rate <nb-icon icon="info-outline"></nb-icon>
+              </div>
+              <h3 class="text-danger font-weight-light">{{stats?.failedReleases / (this.stats?.successReleases +stats?.failedReleases ) | percent}}</h3>
+            </div>
+          </div>
+
+        </nb-card-body>
+      </nb-card>
+    </div>
+
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <nb-card>
+        <nb-card-header>
+          <div style="float:left;"> Releases</div>
+          <div style="float:right;">
+            <button
+              nbButton
+              status="primary"
+              class="mr-3"
+              (click)="openDeploymentPopupFull(deploymentUIFull)"
+            >
+              Release
+            </button>
+            <button
+              nbButton
+              status="basic"
+              class="mr-3"
+              (click)="openDeploymentPopup(deploymentUI)"
+            >
+              Hotfix Application
+            </button>
+            <nb-toggle [(ngModel)]="this.hideNoChanges" labelPosition="end"
+                       status="primary"  class="align-middle">
+              Hide <span
+              class="badge badge-secondary">NO CHANGE</span>
+            </nb-toggle>
+          </div>
+        </nb-card-header>
+        <nb-card-body>
+          <div class="table-responsive">
+            <table class="table table-bordered text-left" *ngIf="this.hideNoChanges">
+              <thead>
+              <tr scope=row class="bg-light">
+                <th class="vert-center" scope="col">Started</th>
+                <th class="vert-center" scope="col">Status</th>
+                <th class="vert-center" scope="col">Last Commit
+                  <nb-icon icon="info-outline"
+                           nbTooltip="Last commit id in Stack, which is considered in this release"></nb-icon>
+                </th>
+                <th class="vert-center" scope="col">Release Type</th>
+                <th class="vert-center" scope="col">Triggered By</th>
+                <th *ngIf="downStreamClusters.length !== 0" class="vert-center" scope="col">Sign Off</th>
+                <th class="vert-center" scope="col">Actions</th>
+              </tr>
+              <tr scope=row *ngFor="let deployment of deployments">
+                <td class="vert-center" scope="col"
+                    nbTooltip="{{deployment.createdOn | date: 'medium'}}">{{deployment.createdOn | timeago}}</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'IN_PROGRESS'"><span
+                  class="badge badge-primary">IN PROGRESS</span></td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'"><span
+                  class="badge badge-secondary">NO CHANGE</span></td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'SUCCEEDED'"><span
+                  class="badge badge-success">SUCCESS</span></td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAILED'"><span
+                  class="badge badge-danger">FAIL</span>
+                </td>
+                <td class="vert-center" scope="col"
+                    *ngIf=" -1 == ['FAULT','FAILED','SUCCEEDED','IN_PROGRESS'].indexOf(deployment.status)"><span
+                  class="badge badge-dark">{{deployment.status}}</span></td>
+
+                <td class="vert-center" scope="col">
+                  <a href="{{deployment.stackUrl}}" target="_blank">{{deployment.stackVersion | slice:0:7}}</a>
+                  <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
+                          nbTooltip="Compare with signed-off version" ghost status="primary">
+                    <nb-icon icon="code-outline"></nb-icon>
+                  </button>
+                </td>
+                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'REGULAR'">Full Release</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'CUSTOM'">Hotfix Release</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy != 'Deployer'">
+                  <nb-icon icon="person-outline" class="mr-2"></nb-icon>
+                  {{deployment.triggeredBy}}</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy == 'Deployer'">
+                  <nb-icon icon="calendar-outline" class="mr-2"></nb-icon>
+                  Facets Bot
+                </td>
+
+                <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff?"Signed Off":deployment.allowSignoff?"Not Signed Off": "N/A"}}
+                </td>
+                <td scope="col" class="text-left">
+                  <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"
+                          nbTooltip="See Release Details" *ngIf="deployment.status != 'FAULT'">
+                    <nb-icon icon="info-outline" ></nb-icon>
+                  </button>
+                  <button (click)="showLogDetails(logsDialog, deployment.id, deployment.status)" nbButton ghost
+                          *ngIf="deployment.status != 'FAULT'"
+                          status="primary" nbTooltip="See Terraform Logs">
+                    <nb-icon icon="file-text-outline"></nb-icon>
+                  </button>
+
+                  <button *ngIf="downStreamClusters.length !== 0 && deployment.allowSignoff"
+                          (click)="confirmSignoff(signoff, deployment)" nbButton ghost
+                          status="primary" nbTooltip="Sign Off this Stack version?">
+                    <nb-icon icon="flag-outline"></nb-icon>
+                  </button>
+                </td>
+              </tr>
+              </thead>
+            </table>
+            <table class="table table-bordered text-left" *ngIf="!this.hideNoChanges">
+              <thead>
+              <tr scope=row class="bg-light">
+                <th class="vert-center" scope="col">Started</th>
+                <th class="vert-center" scope="col">Status</th>
+                <th class="vert-center" scope="col">Last Commit
+                  <nb-icon icon="info-outline"
+                           nbTooltip="Last commit id in Stack, which is considered in this release"></nb-icon>
+                </th>
+                <th class="vert-center" scope="col">Release Type</th>
+                <th class="vert-center" scope="col">Triggered By</th>
+                <th *ngIf="downStreamClusters.length !== 0" class="vert-center" scope="col">Sign Off</th>
+                <th class="vert-center" scope="col">Actions</th>
+              </tr>
+              <tr scope=row *ngFor="let deployment of deploymentsFull">
+                <td class="vert-center" scope="col"
+                    nbTooltip="{{deployment.createdOn | date: 'medium'}}">{{deployment.createdOn | timeago}}</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'IN_PROGRESS'"><span
+                  class="badge badge-primary">IN PROGRESS</span></td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'"><span
+                  class="badge badge-secondary">NO CHANGE</span></td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'SUCCEEDED'"><span
+                  class="badge badge-success">SUCCESS</span></td>
+                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAILED'"><span
+                  class="badge badge-danger">FAIL</span>
+                </td>
+                <td class="vert-center" scope="col"
+                    *ngIf=" -1 == ['FAULT','FAILED','SUCCEEDED','IN_PROGRESS'].indexOf(deployment.status)"><span
+                  class="badge badge-dark">{{deployment.status}}</span></td>
+
+                <td class="vert-center" scope="col">
+                  <a href="{{deployment.stackUrl}}" target="_blank">{{deployment.stackVersion | slice:0:7}}</a>
+                  <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
+                          nbTooltip="Compare with signed-off version" ghost status="primary">
+                    <nb-icon icon="code-outline"></nb-icon>
+                  </button>
+                </td>
+                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'REGULAR'">Full Release</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'CUSTOM'">Hotfix Release</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy != 'Deployer'">
+                  <nb-icon icon="person-outline" class="mr-2"></nb-icon>
+                  {{deployment.triggeredBy}}</td>
+                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy == 'Deployer'">
+                  <nb-icon icon="calendar-outline" class="mr-2"></nb-icon>
+                  Facets Bot
+                </td>
+
+                <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff?"Signed Off":deployment.allowSignoff?"Not Signed Off": "N/A"}}
+                </td>
+                <td scope="col" class="text-left">
+                  <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"
+                          nbTooltip="See Release Details" *ngIf="deployment.status != 'FAULT'">
+                    <nb-icon icon="info-outline" ></nb-icon>
+                  </button>
+                  <button (click)="showLogDetails(logsDialog, deployment.id, deployment.status)" nbButton ghost
+                          *ngIf="deployment.status != 'FAULT'"
+                          status="primary" nbTooltip="See Terraform Logs">
+                    <nb-icon icon="file-text-outline"></nb-icon>
+                  </button>
+
+                  <button *ngIf="downStreamClusters.length !== 0 && deployment.allowSignoff"
+                          (click)="confirmSignoff(signoff, deployment)" nbButton ghost
+                          status="primary" nbTooltip="Sign Off this Stack version?">
+                    <nb-icon icon="flag-outline"></nb-icon>
+                  </button>
+                </td>
+              </tr>
+              </thead>
+            </table>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+
 </app-layout-one-column>
 
+
+<ng-template #logsDialog let-data let-ref="dialogRef">
+  <nb-card size="giant" class="min-vw-100" [nbSpinner]="logLoading">
+    <nb-card-header>
+      <span *ngIf="!raw">Logs</span>
+      <span *ngIf="raw">Raw Logs</span>
+      <nb-checkbox [(ngModel)]="this.raw" class="mx-3 float-right mt-2">See Raw Logs</nb-checkbox>
+      <button nbButton status=primary nbTooltip="Fetch latest logs" ghost
+              (click)="this.getLogs(data.deploymentId, true)" *ngIf="data.status == 'IN_PROGRESS'" class="float-right">
+        <nb-icon icon="refresh"></nb-icon>
+        <span class="badge badge-primary" *ngIf="data.status == 'IN_PROGRESS'">IN PROGRESS</span>
+      </button>
+    </nb-card-header>
+    <nb-card-body class="bg-dark text-white">
+      <nb-list nbInfiniteList [threshold]="500">
+        <nb-list-item *ngFor="let log of this.logLines | keyvalue" class="bg-dark text-white border-0">
+          <span class="badge badge-dark text-light mr-3">{{log.value.timestamp | date: 'short'}} ></span>
+          <div [innerHTML]="convert.toHtml(log.value.message) | safeHtml" *ngIf="!this.raw"></div>
+          <span class="badge badge-dark text-white" *ngIf="this.raw"
+                >{{ log.value.message }}</span>
+        </nb-list-item>
+      </nb-list>
+      <button *ngIf="!logLoading" nbButton status=basic fullWidth (click)="this.getLogs(data.deploymentId, false)" class="ml-3">Load More
+      </button>
+    </nb-card-body>
+  </nb-card>
+</ng-template>
+
 <ng-template #signoff let-data let-ref="dialogRef">
-  <nb-card size=tiny>
-    <nb-card-header>Confirm Sign-off</nb-card-header>
+  <nb-card size=medium>
+    <nb-card-header>Sign-off stack version {{data.stackVersion | slice:0:7}}?</nb-card-header>
     <nb-card-body>
-      Sign-off stack version {{data.stackVersion | slice:0:7}}? This stack version will be deployed to the following
-      clusters in the next release cycle:
+      <div class="mb-3">
+        This stack version will be deployed to the following clusters in the next release cycle:
+      </div>
       <div>
-        <ul>
-          <li *ngFor="let item of downStreamClusters">
+        <nb-list>
+          <nb-list-item *ngFor="let item of downStreamClusters">
             {{item}}
-          </li>
-        </ul>
+          </nb-list-item>
+        </nb-list>
       </div>
     </nb-card-body>
     <nb-card-footer>
-      <button nbButton status=success (click)="ref.close(data)">Confirm</button>
-      <button style='margin-left: 0.5rem;' nbButton status=danger (click)="ref.close()">Cancel</button>
+      <button nbButton status=primary (click)="ref.close(data)">Confirm</button>
+      <button class='ml-3' nbButton status=basic (click)="ref.close()">Cancel</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>
@@ -99,34 +275,38 @@
     <nb-card-body>
       <nb-tabset>
         <nb-tab tabTitle="Applications Deployed">
-          <div style="text-align: center;" class="table-responsive">
+          <div class="table-responsive">
             <table class="table table-bordered">
-              <tr>
+              <tr class="bg-light">
                 <th class="vert-center" scope="col">Name</th>
                 <th class="vert-center" scope="col">Artifact</th>
                 <th class="vert-center" scope="col">Build Id</th>
               </tr>
-              <tr *ngFor="let item of data.appDeployments">
+              <tr *ngFor="let item of data.response.appDeployments">
                 <td class="vert-center" scope="col">{{item.appName}}</td>
-                <td class="vert-center" scope="col">{{item.artifact.artifactUri}}</td>
-                <td class="vert-center" scope="col">{{item.artifact.buildId}}</td>
+                <td class="vert-center" scope="col">{{item.artifact?.artifactUri}}</td>
+                <td class="vert-center" scope="col">{{item.artifact?.buildId}}</td>
               </tr>
             </table>
           </div>
         </nb-tab>
 
         <nb-tab tabTitle="All Changes">
-          <div style="text-align: center;" class="table-responsive">
+          <div  class="table-responsive">
             <table class="table table-bordered">
-              <tr>
+              <tr class="bg-light">
                 <th class="vert-center" scope="col">Resource Path</th>
                 <th class="vert-center" scope="col">Resource Key</th>
                 <th class="vert-center" scope="col">Change Type</th>
               </tr>
-              <tr *ngFor="let item of data.changes">
-                <td class="vert-center" scope="col">{{item.resourcePath}}</td>
+              <tr *ngFor="let item of data.response.changesApplied">
+                <td class="vert-center" scope="col">
+                  <div [innerHTML]="convert.toHtml(item.resourcePath) | safeHtml"></div>
+                </td>
                 <td class="vert-center" scope="col">{{item.resourceKey}}</td>
-                <td class="vert-center" scope="col">{{item.type}}</td>
+                <td class="vert-center bg-danger" scope="col" *ngIf="item.type=='Destruction'">{{item.type}}</td>
+                <td class="vert-center bg-warning" scope="col" *ngIf="item.type=='Modifications'">{{item.type}}</td>
+                <td class="vert-center bg-success" scope="col" *ngIf="item.type=='Creation'">{{item.type}}</td>
               </tr>
             </table>
           </div>
@@ -140,111 +320,11 @@
             </nb-list>
           </div>
         </nb-tab>
-        <nb-tab tabTitle="Errors">
-          <nb-list nbInfiniteList [threshold]="500">
-            <nb-list-item *ngFor="let log of data.errors">
-              {{ log }}
-            </nb-list-item>
-          </nb-list>
-        </nb-tab>
-        <!-- <nb-tab tabTitle="Statefulsets">
-          <div style="text-align: center;" class="table-responsive">
-            <table class="table table-bordered">
-              <tr>
-                <th class="vert-center" scope="col">Name</th>
-                <th class="vert-center" scope="col">Build Id</th>
-                <th class="vert-center" scope="col">Build Description</th>
-              </tr>
-              <tr *ngFor="let item of data.statefulset_builds | keyvalue">
-                <td class="vert-center" scope="col">{{item.key}}</td>
-                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
-                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
-              </tr>
-            </table>
-          </div>
-        </nb-tab>
-
-        <nb-tab tabTitle="CronJobs">
-          <div style="text-align: center;" class="table-responsive">
-            <table class="table table-bordered">
-              <tr>
-                <th class="vert-center" scope="col">Name</th>
-                <th class="vert-center" scope="col">Build Id</th>
-                <th class="vert-center" scope="col">Build Description</th>
-              </tr>
-              <tr *ngFor="let item of data.cronjob_builds | keyvalue">
-                <td class="vert-center" scope="col">{{item.key}}</td>
-                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
-                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
-              </tr>
-            </table>
-          </div>
-        </nb-tab>
-
-        <nb-tab tabTitle="BootstrapJobs">
-          <div style="text-align: center;" class="table-responsive">
-            <table class="table table-bordered">
-              <tr>
-                <th class="vert-center" scope="col">Name</th>
-                <th class="vert-center" scope="col">Build Id</th>
-                <th class="vert-center" scope="col">Build Description</th>
-              </tr>
-              <tr *ngFor="let item of data.bootstrap_job_builds | keyvalue">
-                <td class="vert-center" scope="col">{{item.key}}</td>
-                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
-                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
-              </tr>
-            </table>
-          </div>
-        </nb-tab>
-
-        <nb-tab tabTitle="Serverless">
-          <div style="text-align: center;" class="table-responsive">
-            <table class="table table-bordered">
-              <tr>
-                <th class="vert-center" scope="col">Name</th>
-                <th class="vert-center" scope="col">Build Id</th>
-                <th class="vert-center" scope="col">Build Description</th>
-              </tr>
-              <tr *ngFor="let item of data.serverless_builds | keyvalue">
-                <td class="vert-center" scope="col">{{item.key}}</td>
-                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
-                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
-              </tr>
-            </table>
-          </div>
-        </nb-tab>
-
-        <nb-tab tabTitle="QaSuites">
-          <div style="text-align: center;" class="table-responsive">
-            <table class="table table-bordered">
-              <tr>
-                <th class="vert-center" scope="col">Name</th>
-                <th class="vert-center" scope="col">Build Id</th>
-                <th class="vert-center" scope="col">Build Description</th>
-              </tr>
-              <tr *ngFor="let item of data.qasuite_builds | keyvalue">
-                <td class="vert-center" scope="col">{{item.key}}</td>
-                <td class="vert-center" scope="col">{{item.value["id"]}}</td>
-                <td class="vert-center" scope="col">{{item.value["description"]}}</td>
-              </tr>
-            </table>
-          </div>
-        </nb-tab> -->
-        <nb-tab tabTitle="Logs">
-          <nb-list nbInfiniteList [threshold]="500">
-            <nb-list-item *ngFor="let log of this.logLines">
-              {{ log }}
-            </nb-list-item>
-          </nb-list>
-          <div style='text-align: center; padding-top: 1rem '>
-          <button  nbButton status=basic (click)="this.getLogs(data.deploymentId)">Load More</button>
-          </div>
-        </nb-tab>
       </nb-tabset>
     </nb-card-body>
   </nb-card>
 </ng-template>
+
 
 <ng-template #deploymentUI let-data let-ref="dialogRef">
   <nb-card>
@@ -252,50 +332,50 @@
 
     <nb-card-body>
       <div style="background: rgba(255, 255, 255, 0.8);min-width:420px;padding:inherit;" class="row">
-        <div class="row" style="padding-bottom:inherit;" >
+        <div class="row" style="padding-bottom:inherit;">
           <div class="col-sm-6 cc-key" style="display:flex;align-items: center;width:140px;">Resource</div>
-          <div class="col-sm-6" style="display:flex;align-items: center;width:140px;" >
+          <div class="col-sm-6" style="display:flex;align-items: center;width:140px;">
             <nb-select
-               [(ngModel)]="resourceMap"
-                  name="resourceMap"
-                  id="resourceMap"
-                  size="small"
-                  fullWidth
-                  multiple
-                  placeholder="Please select"
+              [(ngModel)]="resourceMap"
+              name="resourceMap"
+              id="resourceMap"
+              size="small"
+              fullWidth
+              multiple
+              placeholder="Please select"
+            >
+              <nb-option-group title="Applications" value="Applications">
+                <nb-option
+                  #applicationNames
+                  *ngFor="let apps of applicationNameList"
+                  value="application:{{ apps }}"
                 >
-                  <nb-option-group title="Applications" value="Applications">
-                  <nb-option
-                    #applicationNames
-                    *ngFor="let apps of applicationNameList"
-                    value="application:{{ apps }}"
-                  >
-                    {{ apps }}
-                  </nb-option>
-                  </nb-option-group>
+                  {{ apps }}
+                </nb-option>
+              </nb-option-group>
 
-                  <nb-option-group title="Cronjobs" value="Cronjobs">
-                  <nb-option
-                    #applicationNames
-                    *ngFor="let crons of cronjobNameList"
-                    value="cronjob:{{ crons }}"
-                  >
-                    {{ crons }}
-                  </nb-option>
-                  </nb-option-group>
+              <nb-option-group title="Cronjobs" value="Cronjobs">
+                <nb-option
+                  #applicationNames
+                  *ngFor="let crons of cronjobNameList"
+                  value="cronjob:{{ crons }}"
+                >
+                  {{ crons }}
+                </nb-option>
+              </nb-option-group>
 
-                  <nb-option-group title="Statefulsets" value="Statefulsets">
-                  <nb-option
-                    #applicationNames
-                    *ngFor="let sts of statefulSetNameList"
-                    value="statefulsets:{{ sts }}"
-                  >
-                    {{ sts }}
-                  </nb-option>
-                  </nb-option-group>
+              <nb-option-group title="Statefulsets" value="Statefulsets">
+                <nb-option
+                  #applicationNames
+                  *ngFor="let sts of statefulSetNameList"
+                  value="statefulsets:{{ sts }}"
+                >
+                  {{ sts }}
+                </nb-option>
+              </nb-option-group>
             </nb-select>
           </div>
-         </div>
+        </div>
         <!--<div class="row" style="padding-bottom:inherit;" >
           <div class="col-sm-6 cc-key" style="display: flex;align-items: center;width:180px;">Cronjob  </div>
           <div class="col-sm-6">
@@ -308,27 +388,24 @@
             <app-resource-selector stackName="{{stackName}}" resourceTypeSelected="statefulsets" isClosed=true (onResourceSelect)="stsSelected($event)"></app-resource-selector>
           </div>
         </div> -->
-        </div>
+      </div>
     </nb-card-body>
     <nb-card-footer>
       <button nbButton status=primary (click)="ref.close(data)"
-               [disabled]="!resourceMap || resourceMap.length == 0" class="cc-margin-right">Confirm
+              [disabled]="!resourceMap || resourceMap.length == 0" class="cc-margin-right">Confirm
       </button>
-      <button  nbButton status=basic (click)="ref.close()" class="cc-margin-right">Cancel</button>
+      <button nbButton status=basic (click)="ref.close()" class="cc-margin-right">Cancel</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>
 
 <ng-template #deploymentUIFull let-data let-ref="dialogRef">
-  <nb-card>
+  <nb-card [nbSpinner]="serverRequest">
     <nb-card-header>Deployment</nb-card-header>
 
     <nb-card-body>
-      <div style="background: rgba(255, 255, 255, 0.8);min-width:420px;padding:inherit;" class="row">
-        <div class="row" style="padding-bottom:inherit;">
-          This will trigger the full deployment of your stack definition. Do you want to proceed?
-        </div>
-
+      <div class="mb-3 mt-3">
+        This will trigger the full deployment of your stack definition. Do you want to proceed?
       </div>
     </nb-card-body>
     <nb-card-footer>

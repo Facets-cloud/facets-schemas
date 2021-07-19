@@ -12,12 +12,21 @@
   @include nb-theme-global();
 }
 
+nb-layout-column{
+  padding: 1rem 0.5rem 0.5rem 0.5rem !important;
+}
+
+body {
+  //zoom: 0.95;
+}
+
 /**
 Smart Table Actions
  */
 .cc-no-standard ng2-st-tbody-edit-delete {
-  display: none!important;
+  display: none !important;
 }
+
 .nb-edit:before {
   content: "\e943";
 }
@@ -54,10 +63,12 @@ Smart Table Actions
   width: 100%;
   display: inline-block;
   border-radius: nb-theme(border-radius);
+
   .header {
     border-bottom: solid nb-theme(divider-width) nb-theme(color-basic-300);
     padding-bottom: 0.5rem;
   }
+
   .body {
     padding-top: 0.5rem;
   }
@@ -67,11 +78,11 @@ nav.fixed {
   padding-top: 0 !important;
 }
 
-nb-card-header{
-  color: nb-theme(color-primary-900);
-  font-weight: 400 !important;
+nb-card-header {
+  color: nb-theme(color-primary-600);
   font-size: 1.1rem !important;
 }
+
 .cc-key {
   color: nb-theme(color-primary-900);
   font-family: Open Sans, sans-serif;
@@ -80,29 +91,30 @@ nb-card-header{
   line-height: 1.5rem;
 }
 
-.cc-margin-bottom{
+.cc-margin-bottom {
   margin-bottom: 1rem;
 }
 
-.cc-margin{
+.cc-margin {
   margin-bottom: 1rem;
   margin-right: 1rem;
 
 }
 
-.cc-margin-right{
+.cc-margin-right {
   margin-right: 1rem;
 
 }
 
 .nb-theme-facets nb-option-list .option-list {
-  max-height: 35rem!important;
+  max-height: 35rem !important;
 }
 
 .nb-theme-facets app-header .select-button {
-  background: nb-theme(color-basic-100)!important;
-  border:none!important;
-  :hover{
-    background: nb-theme(color-basic-100)!important;
+  background: nb-theme(color-basic-100) !important;
+  border: none !important;
+
+  :hover {
+    background: nb-theme(color-basic-100) !important;
   }
 }

@@ -2,10 +2,16 @@
 @import '~@nebular/theme/styles/themes/default';
 
 $nb-themes: nb-register-theme((
-
   // add your variables here like:
-
-  // color-primary-100: #f2f6ff,
+  color-primary-100: #6AC3FF,
+  color-primary-200: #51AAF3,
+  color-primary-300: #3790D9,
+  color-primary-400: #1E77C0,
+  color-primary-500: #045DA6,
+  color-primary-600: #00448D,
+  color-primary-700: #002A73,
+  color-primary-800: #00115A,
+  color-primary-900: #000040,
   // color-primary-200: #d9e4ff,
   // color-primary-300: #a6c1ff,
   // color-primary-400: #598bff,
@@ -17,8 +23,15 @@ $nb-themes: nb-register-theme((
   smart-table-bg-even:#ffffff,
   smart-table-bg-active:#ffffff,
   smart-table-header-bg: #f0f1f2,
+  smart-table-separator:#DEE2E6,
   smart-table-header-font-size:1rem,
-  smart-table-header-font-weight:500,
+  smart-table-header-font-weight:800,
   smart-table-header-fg:#222b45,
-
+  menu-text-font-weight: 400,
+  select-small-text-font-color: #045DA6,
+  select-small-text-font-weight:700,
+  select-medium-text-font-weight:700,
+  select-small-text-font-size:0.9375rem,
+  select-medium-text-font-size:0.9375rem,
+  menu-text-font-size: 0.9375rem
 ), facets, default);

@@ -10,5 +10,6 @@ public interface Notification {
   Map<NotificationTag, String> getNotificationTags();
   String getNotificationSubject();
   String getStackName();
+  default Boolean isPayloadJson(){ return false;}
   default TeamResource getTeamResource() { return null; };
 }

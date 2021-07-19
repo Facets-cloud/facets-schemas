@@ -28,9 +28,20 @@ public class ApplicationDeploymentNotification implements Notification {
 
     @Override
     public String getNotificationMessage() {
-        return String.format("%s deployed in cluster %s of stack %s. Artifact deployed: %s (Build Id: %s)",
-                appDeployment.getAppName(), cluster.getName(), cluster.getStackName(),
-                appDeployment.getArtifact().getArtifactUri(), appDeployment.getArtifact().getBuildId());
+        /**
+         * https://app.slack.com/block-kit-builder/T01RKJ2FY3H#%7B%22blocks%22:%5B%7B%22type%22:%22header%22,%22text%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Application%20Deloyment%22,%22emoji%22:true%7D%7D,%7B%22type%22:%22section%22,%22fields%22:%5B%7B%22type%22:%22mrkdwn%22,%22text%22:%22*Stack:*%5Cncapillary-cloud%22%7D,%7B%22type%22:%22mrkdwn%22,%22text%22:%22*Cluster:*%5Cnroot%22%7D%5D%7D,%7B%22type%22:%22section%22,%22fields%22:%5B%7B%22type%22:%22mrkdwn%22,%22text%22:%22*Application:*%5Cn%20control-plane%22%7D,%7B%22type%22:%22mrkdwn%22,%22text%22:%22*Release%20Type:*%5Cn%20HOTFIX%20%22%7D%5D%7D,%7B%22type%22:%22section%22,%22text%22:%7B%22type%22:%22mrkdwn%22,%22text%22:%22*Artifact:*%5Cn313496281593.dkr.ecr.us-east-1.amazonaws.com/ops/deployer:cbd4a97-1273%22%7D%7D,%7B%22type%22:%22section%22,%22text%22:%7B%22type%22:%22mrkdwn%22,%22text%22:%22%3Chttps://root.console.facets.cloud/capc/capillary-cloud/cluster/6021170c9c2b8600066a11f3/releases%7CView%20releases%3E%22%7D%7D,%7B%22type%22:%22divider%22%7D%5D%7D
+         */
+        String template = "{\"blocks\":[{\"type\":\"header\",\"text\":{\"type\":\"plain_text\",\"text\":\"Application" +
+                " Deloyment\",\"emoji\":true}},{\"type\":\"section\",\"fields\":[{\"type\":\"mrkdwn\"," +
+                "\"text\":\"*Stack:*\\n%s\"},{\"type\":\"mrkdwn\",\"text\":\"*Cluster:*\\n%s\"}]}," +
+                "{\"type\":\"section\",\"fields\":[{\"type\":\"mrkdwn\",\"text\":\"*Application:*\\n " +
+                "%s\"},{\"type\":\"mrkdwn\",\"text\":\"*Release Type:*\\n %s \"}]}," +
+                "{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Artifact:*\\n%s\"}}," +
+                "{\"type\":\"divider\"}]}";
+
+        return String.format(template,cluster.getStackName(),cluster.getName(),
+                appDeployment.getAppName(), appDeployment.getArtifact().getReleaseType(),
+                appDeployment.getArtifact().getArtifactUri());
     }
 
     @Override

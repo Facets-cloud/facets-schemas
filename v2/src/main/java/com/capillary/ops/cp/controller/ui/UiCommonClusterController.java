@@ -61,8 +61,11 @@ public class UiCommonClusterController {
         return clusterFacade.silenceAlert(clusterId, request);
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
-    @PreFilter(value = "hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId).getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')", filterTarget = "request")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterMaintainerAccess" +
+            "(authentication, #clusterId)")
+    @PreFilter(value = "hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId)" +
+            ".getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')",
+            filterTarget = "request")
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
                                                @RequestBody List<OverrideRequest> request) {
@@ -71,13 +74,15 @@ public class UiCommonClusterController {
     }
 
     @GetMapping("{clusterId}/overrides")
-    @PostFilter("hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId).getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')")
+    @PostFilter("hasPermission(new com.capillary.ops.cp.bo.TeamResource(@clusterFacade.getCluster(#clusterId)" +
+            ".getStackName(), filterObject.resourceType, filterObject.resourceName), 'RESOURCE_NAME_READ')")
     public List<OverrideObject> getOverrides(@PathVariable String clusterId) {
         List<OverrideObject> overrides = clusterFacade.getOverrides(clusterId);
         return overrides;
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterMaintainerAccess" +
+            "(authentication, #clusterId)")
     @DeleteMapping("{clusterId}/overrides/{resourceType}/{resourceName}")
     public List<OverrideObject> deleteOverrides(@PathVariable String clusterId,
                                                 @PathVariable String resourceType,
@@ -171,7 +176,8 @@ public class UiCommonClusterController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
+    @PreAuthorize("hasRole('CC-ADMIN') or hasRole('CLUSTER_ADMIN') or @aclService.hasClusterWriteAccess" +
+            "(authentication, #clusterId)")
     @PostMapping("{clusterId}/refreshResource")
     DeploymentLog refreshResource(@PathVariable String clusterId) {
         return deploymentFacade.createClusterResourceDetails(clusterId);

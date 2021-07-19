@@ -179,7 +179,8 @@ public class ClusterFacade {
             throw new RuntimeException("Invalid Stack Specified");
         }
 
-        if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
+        if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent())
+                .isPresent()) {
             throw new RuntimeException("Invalid CD parent cluster");
         }
 
@@ -218,7 +219,8 @@ public class ClusterFacade {
         }
         AbstractCluster existingCluster = existing.get();
 
-        if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent()).isPresent()) {
+        if (request.getCdPipelineParent() != null && !cpClusterRepository.findById(request.getCdPipelineParent())
+                .isPresent()) {
             throw new RuntimeException("Invalid CD parent cluster");
         }
 
@@ -307,15 +309,18 @@ public class ClusterFacade {
                     deployment.getSpec().getTemplate().getSpec().getContainers(), deployment.getMetadata());
         }
 
-        logger.info("did not find deployment with key: {}, value: {}, in cluster: {}, checking for statefulsets", key, value, clusterId);
-        StatefulSetList statefulSets = kubernetesClient.inNamespace("").apps().statefulSets().withLabel(key, value).list();
+        logger.info("did not find deployment with key: {}, value: {}, in cluster: {}, checking for statefulsets", key,
+                value, clusterId);
+        StatefulSetList statefulSets = kubernetesClient.inNamespace("").apps().statefulSets().withLabel(key, value)
+                .list();
         if (!statefulSets.getItems().isEmpty()) {
             StatefulSet statefulSet = statefulSets.getItems().get(0);
             return new KubeApplicationDetails(KubeApplicationDetails.K8sResourceType.STATEFULSET,
                     statefulSet.getSpec().getTemplate().getSpec().getContainers(), statefulSet.getMetadata());
         }
 
-        logger.info("did not find statefulset with key: {}, value: {}, in cluster: {}, checking for cronjob", key, value, clusterId);
+        logger.info("did not find statefulset with key: {}, value: {}, in cluster: {}, checking for cronjob", key,
+                value, clusterId);
         CronJobList cronJobs = kubernetesClient.inNamespace("").batch().cronjobs().withLabel(key, value).list();
         if (!cronJobs.getItems().isEmpty()) {
             CronJob cronJob = cronJobs.getItems().get(0);
@@ -353,7 +358,12 @@ public class ClusterFacade {
         if (!cluster.isPresent()) {
             throw new NotFoundException("No such Cluster" + clusterId);
         }
-        return overrideService.findAllByClusterId(clusterId);
+        List<OverrideObject> allByClusterId = overrideService.findAllByClusterId(clusterId);
+        List<OverrideObject> collect = allByClusterId.stream()
+                .sorted(Comparator.comparing(
+                        overrideObject -> overrideObject.getResourceType() + overrideObject.getResourceName()))
+                .collect(Collectors.toList());
+        return collect;
     }
 
     public List<SnapshotInfo> listSnapshots(String clusterId, String resourceType, String instanceName) {
@@ -431,7 +441,7 @@ public class ClusterFacade {
         return true;
     }
 
-    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId){
+    public ClusterTask getQueuedClusterTaskForClusterId(String clusterId) {
         return clusterTaskService.getQueuedClusterTaskForClusterId(clusterId);
     }
 

@@ -1,4 +1,7 @@
 <app-layout-one-column>
+  <span heading> Alerts Center </span>
+  <span subheading>Explore all Alerts firing and defined for the cluster</span>
+
   <nb-card *ngIf="!isReachable" [nbSpinner]="loading"
            nbSpinnerStatus="danger"
            nbSpinnerSize="large">
@@ -18,8 +21,8 @@
       <nb-accordion>
         <nb-accordion-item *ngFor="let rule of rules">
           <nb-accordion-item-header *ngIf="rule['state'] != 'inactive'">
-            <nb-icon icon="bell-outline" status="danger" size="small" style="margin-right: 0.5rem"> </nb-icon>
-             {{rule["annotations"]["message"]}}
+            <nb-icon icon="bell-outline" status="danger" size="small" style="margin-right: 0.5rem"></nb-icon>
+            {{rule["annotations"]["message"]}}
             <nb-badge text='{{rule["alerts"].length}}' status="danger" position="top left"></nb-badge>
             <nb-badge text='{{rule["groupName"]}}' status="warning" position="bottom left"></nb-badge>
           </nb-accordion-item-header>
@@ -44,14 +47,8 @@
               </tr>
               <tr *ngFor="let alert of rule['alerts']">
                 <td>
-                  <div class="local-tag">
-                    <b>Entity:</b> {{alert["labels"]["entity"] ? alert["labels"]["entity"] : "No entity"}}</div>
-                  <div class="local-tag">
-                    <b>Deployment:</b> {{alert["labels"]["deployment"] ? alert["labels"]["deployment"] : "No Deployment"}}
-                  </div>
-                  <div class="local-tag">
-                    <b>Instance:</b> {{alert["labels"]["instance"] ? alert["labels"]["instance"] : "No Instance"}}</div>
-
+                  <div class="local-tag" *ngFor="let label of alert['labels']  | keyvalue">
+                    <b>{{label.key}}:</b> {{label.value}}</div>
                 </td>
                 <td>{{alert["status"]["state"]}}</td>
                 <td>
@@ -81,7 +78,8 @@
       <nb-accordion>
         <nb-accordion-item *ngFor="let rule of rules">
           <nb-accordion-item-header *ngIf="rule['state'] == 'inactive'">
-            <nb-icon icon="bell-outline" status="basic" size="small" style="margin-right: 0.5rem"> </nb-icon> {{rule["annotations"]["message"]}}
+            <nb-icon icon="bell-outline" status="basic" size="small" style="margin-right: 0.5rem"></nb-icon>
+            {{rule["annotations"]["message"]}}
             <nb-badge text='{{rule["groupName"]}}' status="warning" position="bottom left"></nb-badge>
           </nb-accordion-item-header>
 
@@ -115,13 +113,9 @@
             {{data["annotations"]["message"]}}
           </td>
           <td>
-            <div class="local-tag">
-              <b>Entity:</b> {{data["labels"]["entity"] ? data["labels"]["entity"] : "No entity"}}</div>
-            <div class="local-tag">
-              <b>Deployment:</b> {{data["labels"]["deployment"] ? data["labels"]["deployment"] : "No Deployment"}}
-            </div>
-            <div class="local-tag">
-              <b>Instance:</b> {{data["labels"]["instance"] ? data["labels"]["instance"] : "No Instance"}}</div>
+              <div class="local-tag" *ngFor="let label of data['labels']  | keyvalue">
+                <b>{{label.key}}:</b> {{label.value}}
+              </div>
           </td>
           <td>{{data["status"]["state"]}}</td>
           <td>
@@ -135,22 +129,26 @@
             Comments
           </div>
           <div class="col-sm-3">
-            <input *ngIf="!commentsEmpty" type="text" nbInput fullWidth fieldSize="small" placeholder="Comments" [(ngModel)]="comments" (ngModelChange)="changed()">
-            <input *ngIf="commentsEmpty" type="text" nbInput fullWidth fieldSize="small" placeholder="Comments" [(ngModel)]="comments" status="danger" (ngModelChange)="changed()">
+            <input *ngIf="!commentsEmpty" type="text" nbInput fullWidth fieldSize="small" placeholder="Comments"
+                   [(ngModel)]="comments" (ngModelChange)="changed()">
+            <input *ngIf="commentsEmpty" type="text" nbInput fullWidth fieldSize="small" placeholder="Comments"
+                   [(ngModel)]="comments" status="danger" (ngModelChange)="changed()">
 
           </div>
           <div class="col-sm-2 cc-key" style="display: flex;align-items: center;">
             Hours to Snooze
           </div>
           <div class="col-sm-3">
-            <input *ngIf="!hoursEmpty" type="number" nbInput fullWidth fieldSize="small" placeholder="Hours" [(ngModel)]="hours" (ngModelChange)="changed()">
-            <input *ngIf="hoursEmpty" type="number" nbInput fullWidth fieldSize="small" placeholder="Hours" [(ngModel)]="hours" status="danger" (ngModelChange)="changed()">
+            <input *ngIf="!hoursEmpty" type="number" nbInput fullWidth fieldSize="small" placeholder="Hours"
+                   [(ngModel)]="hours" (ngModelChange)="changed()">
+            <input *ngIf="hoursEmpty" type="number" nbInput fullWidth fieldSize="small" placeholder="Hours"
+                   [(ngModel)]="hours" status="danger" (ngModelChange)="changed()">
           </div>
 
         </div>
-        <div class="row" >
+        <div class="row">
           <div class="col-sm-12" *ngIf="commentsEmpty" style="color: red">
-              "Comments" cannot be empty
+            "Comments" cannot be empty
           </div>
           <div class="col-sm-12" *ngIf="hoursEmpty" style="color: red">
             "Hours to Snooze" cannot be empty

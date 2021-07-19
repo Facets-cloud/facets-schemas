@@ -9,6 +9,7 @@ import {ApplicationControllerService } from '../../cc-api/services/application-c
 import {SimpleOauth2User} from '../../cc-api/models/simple-oauth-2user';
 import {NbDialogService, NbToastrService} from '@nebular/theme';
 import {PauseReleaseDialogComponent} from '../stack-overview/pause-release-dialog/pause-release-dialog.component';
+import {SmartTableRouterlink} from "../../components/smart-table-routerlink/smart-table-routerlink.component";
 
 @Component({
   selector: 'app-stack-overview',
@@ -24,7 +25,17 @@ export class StackOverviewComponent implements OnInit {
   clusterSettings = {
     columns: {
       id: {
-        title: 'ClusterId',
+        title: 'Cluster Id',
+        valuePrepareFunction: (value, row, cell) => {
+          // DATA FROM HERE GOES TO renderComponent
+          const displayVal = {
+            url: ['/capc/', this.stack.name, 'cluster', value,'overview'],
+            display: value
+          };
+          return JSON.stringify(displayVal);
+        },
+        renderComponent: SmartTableRouterlink,
+        type: 'custom'
       },
       name: {
         title: 'Cluster Name',

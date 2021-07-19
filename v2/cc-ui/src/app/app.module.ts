@@ -35,6 +35,10 @@ import {ClusterCreateLocalModule} from "./pages/cluster-pages/cluster-create-loc
 import {ClusterOverviewAssemblerModule} from "./pages/cluster-pages/cluster-overview-assembler/cluster-overview-assembler.module";
 import { AzureClusterCreateModule } from './pages/cluster-pages/cluster-create-azure/cluster-create-azure.module';
 import { ClusterOverviewAzureModule } from './pages/cluster-pages/cluster-overview-azure/cluster-overview-azure.module';
+import {OauthClientsModule} from "./pages/oauth-clients/oauth-clients.module";
+import {TimeagoModule} from "ngx-timeago";
+import {ClusterVarsModule} from "./pages/cluster-pages/cluster-vars/cluster-vars.module";
+import {NotificationCenterModule} from "./pages/notification-center/notification-center.module";
 
 
 @NgModule({
@@ -80,6 +84,10 @@ import { ClusterOverviewAzureModule } from './pages/cluster-pages/cluster-overvi
     ClusterOverviewAssemblerModule,
     AzureClusterCreateModule,
     ClusterOverviewAzureModule,
+    OauthClientsModule,
+    ClusterVarsModule,
+    NotificationCenterModule,
+    TimeagoModule.forRoot()
   ],
   providers: [
     {provide: ErrorHandler, useClass: GlobalErrorHandler},

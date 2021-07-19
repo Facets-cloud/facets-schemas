@@ -32,11 +32,14 @@ public class ClusterResourceRefreshService {
     @Autowired
     private ClusterResourceDetailsRepository clusterResourceDetailsRepository;
 
-    @Value("${aws.s3bucket.testOutputBucket.name}")
+    @Value("${cc_artifact_s3bucket}")
     private String artifactS3Bucket;
 
-    @Value("${aws.s3bucket.testOutputBucket.region}")
+    @Value("${cc_artifact_s3bucket_region}")
     private String artifactS3BucketRegion;
+
+    @Value("${cc_codebuild_name}")
+    public String BUILD_NAME;
 
     private static final Logger logger = LoggerFactory.getLogger(ClusterResourceRefreshService.class);
 
@@ -84,9 +87,9 @@ public class ClusterResourceRefreshService {
     }
 
     private List<ResourceDetails> getResourceDetails(String codeBuildId) throws IOException, JsonSyntaxException {
-        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.valueOf(artifactS3BucketRegion)).build();
+        AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard().withRegion(Regions.fromName(artifactS3BucketRegion)).build();
 
-        String resource_path = String.format("%s/capillary-cloud-tf-apply/capillary-cloud-tf/tfaws/resource_values.json", codeBuildId.split(":")[1]);
+        String resource_path = String.format("%s/%s/capillary-cloud-tf/tfaws/resource_values.json", codeBuildId.split(":")[1], BUILD_NAME);
         String details = IOUtils.toString(amazonS3.getObject(artifactS3Bucket, resource_path).getObjectContent(), StandardCharsets.UTF_8.name());
         return new Gson().fromJson(details, new TypeToken<List<ResourceDetails>>(){}.getType());
     }

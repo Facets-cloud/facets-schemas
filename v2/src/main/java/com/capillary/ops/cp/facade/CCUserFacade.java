@@ -31,6 +31,7 @@ public class CCUserFacade {
                     List<String> filteredRoles = user.getRoles().stream().filter(r -> validRoles.contains(r)).collect(Collectors.toList());
                     if(filteredRoles.size() == 0){
                         filteredRoles.add(Role.GUEST.getId());
+                        user.getRoles().add(Role.GUEST.getId());
                         userRepository.save(user);
                     }
                     user.setRoles(filteredRoles);

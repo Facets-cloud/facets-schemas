@@ -12,27 +12,29 @@ import { FormsModule } from '@angular/forms';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { PopupAppOverrideComponent } from './popup-app-override/popup-app-override.component';
 import { DeleteOverrideDialogComponent } from './delete-override-dialog/delete-override-dialog.component';
+import {LayoutsModule} from "../../../layouts/layouts.module";
 
 
 @NgModule({
   declarations: [ClusterOverridesComponent, PopupAppOverrideComponent, DeleteOverrideDialogComponent],
-  imports: [
-    CommonModule,
-    RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
-    NbLayoutModule,
-    NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
-    NbCardModule,
-    ComponentsModule,
-    NbSidebarModule,
-    NbListModule,
-    NbMenuModule,
-    NgJsonEditorModule,
-    NbButtonModule,
-    FormsModule,
-    Ng2SmartTableModule,
-    NbIconModule,
-    NbInputModule
-  ],
+    imports: [
+        CommonModule,
+        RouterModule, // RouterModule.forRoot(routes, { useHash: true }), if this is your app.module
+        NbLayoutModule,
+        NbSidebarModule, // NbSidebarModule.forRoot(), //if this is your app.module
+        NbCardModule,
+        ComponentsModule,
+        NbSidebarModule,
+        NbListModule,
+        NbMenuModule,
+        NgJsonEditorModule,
+        NbButtonModule,
+        FormsModule,
+        Ng2SmartTableModule,
+        NbIconModule,
+        NbInputModule,
+        LayoutsModule
+    ],
   providers: [
     NbMenuService,
     NbToastrService,

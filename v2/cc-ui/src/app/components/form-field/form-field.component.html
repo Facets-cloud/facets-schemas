@@ -1,6 +1,6 @@
 <!--RelativePath-->
 <div *ngIf="!select">
-  <div class="form-group row" >
+  <div class="form-group row">
     <label [for]="fieldId" class="col-md-{{labelSize}} offset-md-{{offset}}">
       {{label}}
       <nb-icon icon="star" *ngIf="required"
@@ -15,7 +15,7 @@
     <div class="col-md-{{inputSize}}">
       <input
         fieldSize="medium"
-        type="text"
+        type="{{type}}"
         nbInput
         fullWidth
         [name]="fieldId"
@@ -29,19 +29,21 @@
         (blur)="onTouched()"
         [disabled]="disabled"
         minlength="{{minlength}}"
+        maxlength="{{maxlength}}"
         [status]="fieldIdModel.dirty ? (fieldIdModel.invalid ? 'danger' : 'success'):''"
       />
     </div>
   </div>
   <div class="row">
     <div *ngIf="fieldIdModel.invalid && fieldIdModel.touched" class="col-md-5 offset-md-5">
-<!--
-      {{fieldIdModel.errors | json}}
--->
+      <!--
+            {{fieldIdModel.errors | json}}
+      -->
       <p class="caption status-danger" *ngIf="fieldIdModel.errors?.required">
         {{missingMsg}}
       </p>
-      <p class="caption status-danger" *ngIf="fieldIdModel.errors?.pattern || fieldIdModel.errors?.minlength">
+      <p class="caption status-danger"
+         *ngIf="fieldIdModel.errors?.pattern || fieldIdModel.errors?.minlength">
         {{invalidMsg}}
       </p>
     </div>
@@ -49,7 +51,7 @@
 </div>
 
 <div *ngIf="select">
-  <div class="form-group row" >
+  <div class="form-group row">
     <label [for]="fieldId" class="col-md-{{labelSize}} offset-md-{{offset}}">{{label}}
       <nb-icon icon="star"
                size="tiny" nbTooltip="required" style="vertical-align: super; zoom: 0.3" *ngIf="required">
@@ -81,9 +83,9 @@
   </div>
   <div class="row">
     <div *ngIf="fieldIdModel2.invalid && fieldIdModel2.touched" class="col-md-5 offset-md-5">
-<!--
-      {{fieldIdModel2.errors | json}} -  {{fieldIdModel2.valid}}
--->
+      <!--
+            {{fieldIdModel2.errors | json}} -  {{fieldIdModel2.valid}}
+      -->
       <p class="caption status-danger" *ngIf="fieldIdModel2.errors?.required">
         {{missingMsg}}
       </p>

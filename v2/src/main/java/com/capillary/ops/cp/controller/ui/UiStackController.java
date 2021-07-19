@@ -1,22 +1,15 @@
 package com.capillary.ops.cp.controller.ui;
 
-import com.capillary.ops.cp.bo.AbstractCluster;
-import com.capillary.ops.cp.bo.Stack;
-import com.capillary.ops.cp.bo.StackFile;
-import com.capillary.ops.cp.bo.Substack;
-import com.capillary.ops.cp.bo.ToggleRelease;
 import com.capillary.ops.cp.bo.*;
 import com.capillary.ops.cp.bo.notifications.Subscription;
 import com.capillary.ops.cp.bo.requests.ClusterTaskRequest;
 import com.capillary.ops.cp.controller.StackController;
-import com.capillary.ops.cp.facade.DeploymentFacade;
 import com.capillary.ops.cp.facade.StackFacade;
 import com.capillary.ops.cp.facade.SubscriptionFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.capillary.ops.cp.service.StackAutoCompleteService;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

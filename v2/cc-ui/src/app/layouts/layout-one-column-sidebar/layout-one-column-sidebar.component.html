@@ -1,0 +1,25 @@
+<nb-layout class="cc">
+  <nb-layout-header fixed size="small">
+    <app-header></app-header>
+  </nb-layout-header>
+
+  <nb-sidebar tag="main" style="z-index: 10000">
+    <app-sidebar ></app-sidebar>
+  </nb-sidebar>
+  <nb-sidebar class="bg-light" tag="second">
+    <ng-content select="[side2]"></ng-content>
+  </nb-sidebar>
+  <nb-layout-column class="container-fluid">
+    <div class="mb-3">
+      <div class="col-12">
+        <div class="text-info"><ng-content select="[breadcrumb]"></ng-content></div>
+        <h4 class="text-muted mt-3">
+          <ng-content select="[heading]"></ng-content>
+          <!--          <nb-icon icon="star-outline" [options]="{ animation: { type: 'zoom' } }" class="mx-3"></nb-icon>-->
+        </h4>
+        <div class="text-muted"><ng-content select="[subheading]"></ng-content></div>
+      </div>
+    </div>
+    <ng-content></ng-content>
+  </nb-layout-column>
+</nb-layout>

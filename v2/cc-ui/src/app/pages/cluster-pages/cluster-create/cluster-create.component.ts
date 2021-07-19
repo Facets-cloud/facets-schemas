@@ -133,7 +133,7 @@ export class ClusterCreateComponent implements OnInit {
     });
 
     try {
-      debugger
+
       this.clusterController.createClusterUsingPOST2(this.awsClusterRequest)
         .subscribe(cluster => {
             this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);

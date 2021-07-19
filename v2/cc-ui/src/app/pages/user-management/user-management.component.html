@@ -1,4 +1,6 @@
 <app-layout-one-column>
+  <span heading> User Management</span>
+  <span subheading> Manage Users and their Permissions </span>
   <nb-card>
     <nb-card-header><div style="float:left;">Users</div>
       <div style="float:right;">
@@ -7,8 +9,7 @@
           fullWidth
           *appUserRole="['cc-admin']"
           status="primary"
-          (click)="openCreatePopup(createUser)"
-        >
+          (click)="openCreatePopup(createUser)">
 
           Create User
         </button>

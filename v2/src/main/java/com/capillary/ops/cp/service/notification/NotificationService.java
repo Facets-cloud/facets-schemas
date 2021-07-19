@@ -1,11 +1,11 @@
 package com.capillary.ops.cp.service.notification;
 
 
+import com.capillary.ops.cp.bo.AppDeployment;
+import com.capillary.ops.cp.bo.Artifact;
 import com.capillary.ops.cp.bo.Team;
-import com.capillary.ops.cp.bo.notifications.ChannelType;
-import com.capillary.ops.cp.bo.notifications.Notification;
-import com.capillary.ops.cp.bo.notifications.NotificationTag;
-import com.capillary.ops.cp.bo.notifications.Subscription;
+import com.capillary.ops.cp.bo.notifications.*;
+import com.capillary.ops.cp.repository.NotificationChannelRepository;
 import com.capillary.ops.cp.repository.SubscriptionRepository;
 import com.capillary.ops.cp.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,8 @@ public class NotificationService {
     private SubscriptionRepository subscriptionRepository;
 
     @Autowired
+    private NotificationChannelRepository notificationChannelRepository;
+    @Autowired
     private List<Notifier> notifiers;
 
     @Autowired
@@ -31,7 +33,7 @@ public class NotificationService {
 
     @PostConstruct
     public void init() {
-        notifiers.stream().forEach(x -> notifierMap.put(x.getChannelType(), x));
+        notifiers.stream().forEach(x -> x.getChannelTypes().forEach(ct -> notifierMap.put(ct, x)));
     }
 
     public void publish(Notification notification) {
@@ -40,9 +42,10 @@ public class NotificationService {
                         notification.getStackName(), notification.getNotificationType(),
                         notification.getNotificationSubject());
 
-        List<Subscription> blanketSubscriptions = subscriptionRepository.findByStackNameAndNotificationTypeAndNotificationSubject(
-                notification.getStackName(), notification.getNotificationType(),
-                Subscription.ALL);
+        List<Subscription> blanketSubscriptions = subscriptionRepository
+                .findByStackNameAndNotificationTypeAndNotificationSubject(
+                        notification.getStackName(), notification.getNotificationType(),
+                        Subscription.ALL);
         subscriptions.addAll(blanketSubscriptions);
         subscriptions.stream()
                 .filter(x -> {
@@ -56,7 +59,17 @@ public class NotificationService {
                 })
                 .forEach(x -> {
                     try {
-                        notifierMap.get(x.getChannelType()).notify(x.getChannelAddress(), notification);
+                        if (x.getChannelId() == null) {
+                            notifierMap.get(x.getChannelType()).notify(x.getChannelAddress(), notification);
+                        } else {
+                            Optional<NotificationChannel> byId = notificationChannelRepository
+                                    .findById(x.getChannelId());
+                            if (byId.isPresent()) {
+                                NotificationChannel notificationChannel = byId.get();
+                                notifierMap.get(notificationChannel.getChannelType())
+                                        .notify(notificationChannel.getChannelAddress(), notification);
+                            }
+                        }
                     } catch (Throwable t) {
                         // pass
                     }
@@ -82,5 +95,15 @@ public class NotificationService {
 
     public Subscription createSubscription(Subscription subscription) {
         return subscriptionRepository.save(subscription);
+    }
+
+    public List<Subscription> getAllSubscriptions() {
+        return subscriptionRepository.findAll();
+    }
+
+    public boolean sendTestNotification(NotificationChannel nc) {
+        notifierMap.get(nc.getChannelType())
+                .notify(nc.getChannelAddress(), new TestNotification());
+        return true;
     }
 }

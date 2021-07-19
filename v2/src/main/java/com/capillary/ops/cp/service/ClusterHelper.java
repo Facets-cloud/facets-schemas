@@ -5,6 +5,7 @@ import com.capillary.ops.cp.bo.Stack;
 import com.google.common.collect.Maps;
 import com.jcabi.aspects.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -17,8 +18,13 @@ import java.util.stream.Collectors;
 public class ClusterHelper {
 
     public static final String TOOLS_NAME_IN_RESOURCES = "Basic Authentication Password";
+    public static final String BASE_DOMAIN_KEY = "Base Domain";
     public static final String TOOLS_PASS_KEY_IN_RESOURCES = "tools";
     public static final String TOOLS_USER = "toolsuser";
+
+    @Value("${tools_base_url:cctools.capillarytech.com}")
+    String toolsBaseUrl;
+
     @Autowired
     private ClusterResourceRefreshService clusterResourceRefreshService;
 
@@ -78,12 +84,11 @@ public class ClusterHelper {
         if (!clusterVars.keySet().containsAll(requiredKeys)) {
             throw new IllegalArgumentException("Not all required keys are specified, Required keys: " + requiredKeys);
         }
+        // Do not set invalid keys.
+        Map<String, String> finalVars = clusterVars.entrySet().stream().filter(e -> allValidKeys.contains(e.getKey()))
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
-        if (!allValidKeys.containsAll(clusterVars.keySet())) {
-            throw new IllegalArgumentException("Unrecognised key specified, Recognized keys: " + allValidKeys);
-        }
-
-        return clusterVars;
+        return finalVars;
     }
 
     private Map<String, String> transformVars(Map<String, String> clusterVars,
@@ -101,7 +106,20 @@ public class ClusterHelper {
     }
 
     public String getToolsURL(AbstractCluster cluster) {
-        return cluster.getName() + ".cctools.capillarytech.com";
+        List<ResourceDetails> clusterResourceDetails;
+        String url = "";
+        try {
+            clusterResourceDetails = clusterResourceRefreshService.isSaveClusterResourceDetailsDone(cluster.getId());
+            Optional<ResourceDetails> resourceDetails = clusterResourceDetails.stream().filter((x) -> x.getName().equals(BASE_DOMAIN_KEY) && x.getKey().equals(TOOLS_PASS_KEY_IN_RESOURCES)).findAny();
+            url = resourceDetails.orElseGet(() -> {
+                ResourceDetails details = new ResourceDetails();
+                details.setValue(cluster.getName() + "." + toolsBaseUrl);
+                return details;
+            }).getValue();
+            return url;
+        } catch (Throwable t) {
+            return cluster.getName() + "." + toolsBaseUrl;
+        }
     }
 
     public String getToolsPws(AbstractCluster cluster) {

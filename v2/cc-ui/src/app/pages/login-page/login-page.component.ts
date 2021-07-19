@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
+import {PublicApIsService} from "../../cc-api/services/public-ap-is.service";
+import {CustomOAuth2ClientRegistration} from "../../cc-api/models/custom-oauth-2client-registration";
 
 @Component({
   selector: 'app-login-page',
@@ -11,22 +13,32 @@ export class LoginPageComponent implements OnInit {
   password: any;
   private nbToastrService: any;
   errorMsg: any;
+  logo: any;
+  loginOptions: Array<CustomOAuth2ClientRegistration>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private publicApIsService: PublicApIsService) {
   }
 
   ngOnInit(): void {
+    this.http.get("public/v1/logo", {responseType: 'text'}).subscribe(
+      x => {
+        this.logo = x
+      }
+    )
+    this.publicApIsService.getLoginOptionsUsingGET().subscribe(response => {
+      this.loginOptions = response;
+    })
   }
 
-  googleLogin() {
-    window.location.href = '/oauth2/authorization/google?state='+window.location.href;
+  googleLogin(registrationId: string) {
+    window.location.href = '/oauth2/authorization/' + registrationId + '?state=' + window.location.href;
   }
 
   formLogin() {
     let data = new FormData();
     data.append("username", this.username);
     data.append("password", this.password);
-    if(!(this.username && this.password)){
+    if (!(this.username && this.password)) {
       this.errorMsg = "Both username and password should be specified"
       return
     }
@@ -35,7 +47,7 @@ export class LoginPageComponent implements OnInit {
         window.location.href = '/capc/home'
       },
       (err) => {
-        if(err.status == 404){
+        if (err.status == 404) {
           window.location.href = '/capc/home'
           return;
         }

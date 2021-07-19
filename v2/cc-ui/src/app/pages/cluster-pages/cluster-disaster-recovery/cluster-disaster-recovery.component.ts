@@ -44,7 +44,7 @@ export class ClusterDisasterRecoveryComponent implements OnInit {
       delete: false,
       add: false,
       position: 'right',
-      custom: [{ name: 'Pin', title: '<i class="eva-pin-outline eva"></i>', type: 'html' }]
+      custom: []
     },
     hideSubHeader: true,
   };

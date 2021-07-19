@@ -15,6 +15,8 @@ import { UiCommonClusterControllerService } from './services/ui-common-cluster-c
 import { UiDeploymentControllerService } from './services/ui-deployment-controller.service';
 import { UiLocalClusterControllerService } from './services/ui-local-cluster-controller.service';
 import { UiMetaControllerService } from './services/ui-meta-controller.service';
+import { UiNotificationControllerService } from './services/ui-notification-controller.service';
+import { UiOAuthControllerService } from './services/ui-oauth-controller.service';
 import { UiStackControllerService } from './services/ui-stack-controller.service';
 import { UiTeamControllerService } from './services/ui-team-controller.service';
 import { UiUserControllerService } from './services/ui-user-controller.service';
@@ -29,6 +31,7 @@ import { DeploymentControllerService } from './services/deployment-controller.se
 import { MetaControllerService } from './services/meta-controller.service';
 import { StackControllerService } from './services/stack-controller.service';
 import { BasicErrorControllerService } from './services/basic-error-controller.service';
+import { PublicApIsService } from './services/public-ap-is.service';
 
 /**
  * Provider for all Api services, plus ApiConfiguration
@@ -55,6 +58,8 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     UiDeploymentControllerService,
     UiLocalClusterControllerService,
     UiMetaControllerService,
+    UiNotificationControllerService,
+    UiOAuthControllerService,
     UiStackControllerService,
     UiTeamControllerService,
     UiUserControllerService,
@@ -68,7 +73,8 @@ import { BasicErrorControllerService } from './services/basic-error-controller.s
     DeploymentControllerService,
     MetaControllerService,
     StackControllerService,
-    BasicErrorControllerService
+    BasicErrorControllerService,
+    PublicApIsService
   ],
 })
 export class ApiModule {

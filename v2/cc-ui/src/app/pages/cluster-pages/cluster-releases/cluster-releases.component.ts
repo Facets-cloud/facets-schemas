@@ -1,21 +1,16 @@
-import { Resource } from './../../../cc-api/models/resource';
-import { HotfixDeploymentRecipe } from './../../../cc-api/models/hotfix-deployment-recipe';
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {
-  UiDeploymentControllerService,
-  UiCommonClusterControllerService,
-  UiStackControllerService
-} from 'src/app/cc-api/services';
+import {Resource} from './../../../cc-api/models/resource';
+import {HotfixDeploymentRecipe} from './../../../cc-api/models/hotfix-deployment-recipe';
+import {Component, OnInit} from '@angular/core';
+import {UiDeploymentControllerService, UiStackControllerService} from 'src/app/cc-api/services';
 import {ActivatedRoute, Router} from '@angular/router';
-import {DeploymentLog, DeploymentRequest} from 'src/app/cc-api/models';
-import {NbDialogService, NbToastrService, NbSelectModule} from '@nebular/theme';
+import {DeploymentLog, DeploymentRequest, DeploymentsStats} from 'src/app/cc-api/models';
+import {NbDialogService, NbToastrService} from '@nebular/theme';
 import {ApplicationControllerService} from '../../../cc-api/services/application-controller.service';
 import {SimpleOauth2User} from '../../../cc-api/models/simple-oauth-2user';
-import {Observable, of} from "rxjs";
-import {map} from "rxjs/operators";
-import { ResourceSelectorComponent } from './../../../components/resource-selector/resource-selector.component';
-import { ResourceTypeSelectorComponent } from './../../../components/resource-type-selector/resource-type-selector.component';
-import { htmlAstToRender3Ast } from '@angular/compiler/src/render3/r3_template_transform';
+import {ResourceSelectorComponent} from './../../../components/resource-selector/resource-selector.component';
+import {ResourceTypeSelectorComponent} from './../../../components/resource-type-selector/resource-type-selector.component';
+// @ts-ignore
+import * as Convert from 'ansi-to-html';
 
 @Component({
   selector: 'app-cluster-releases',
@@ -38,8 +33,15 @@ export class ClusterReleasesComponent implements OnInit {
   applicationNameList: any;
   cronjobNameList: any = '';
   statefulSetNameList: any = '';
-  logLines: any[];
+  logLines: {};
   private nextToken: string;
+  stats: DeploymentsStats = {};
+  serverRequest = false
+  logLoading: boolean = false;
+  convert: any;
+  raw: any = false;
+  hideNoChanges: boolean = true;
+  deploymentsFull: any;
 
 
   constructor(private deploymentController: UiDeploymentControllerService,
@@ -50,6 +52,7 @@ export class ClusterReleasesComponent implements OnInit {
               private dialogService: NbDialogService,
               private deploymentService: UiDeploymentControllerService,
               private applicationController: ApplicationControllerService) {
+    this.convert = new Convert();
   }
 
   settings = {
@@ -88,7 +91,9 @@ export class ClusterReleasesComponent implements OnInit {
         this.clusterId = p.clusterId;
         this.deploymentController.getDeploymentsUsingGET1(this.clusterId).subscribe(
           t => {
+            this.stats = t.deploymentsStats
             this.currentSignedOffDeployment = t.currentSignedOffDeployment;
+            this.deploymentsFull = t["deploymentsFull"]
             t.deployments.forEach(deployment =>
               deployment['allowSignoff'] = deployment.status === 'SUCCEEDED' &&
                 deployment.stackVersion?.length > 0 &&
@@ -108,6 +113,8 @@ export class ClusterReleasesComponent implements OnInit {
                 } else {
                   x['compareUrl'] = null;
                 }
+                var commitPath = t.stack.vcs === 'GITHUB' ? "commit" : "commits";
+                x['stackUrl'] = t.stack.vcsUrl.replace('.git', '') + "/" + commitPath + "/" + x.stackVersion
               }
             );
             this.deployments = t.deployments;
@@ -147,21 +154,31 @@ export class ClusterReleasesComponent implements OnInit {
   }
 
 
-
   showDetails(dialog, deploymentId) {
-    this.logLines = [];
-    this.nextToken = undefined;
     this.deploymentController.getDeploymentUsingGET({deploymentId: deploymentId, clusterId: this.clusterId}).subscribe(
       d => this.dialogService.open(dialog, {
         context: {
-          deploymentId:deploymentId,
+          deploymentId: deploymentId,
           changes: d.changesApplied,
           appDeployments: d.appDeployments,
           errors: d.errorLogs,
-          overrideBuildSteps: d.overrideBuildSteps
+          overrideBuildSteps: d.overrideBuildSteps,
+          response: d
         }
       }),
     );
+  }
+
+  showLogDetails(dialog, deploymentId, status) {
+    this.logLines = {};
+    this.nextToken = undefined;
+    this.getLogs(deploymentId, false);
+    this.dialogService.open(dialog, {
+      context: {
+        deploymentId: deploymentId,
+        status: status
+      }
+    });
   }
 
   confirmSignoff(signoff, deployment) {
@@ -193,10 +210,10 @@ export class ClusterReleasesComponent implements OnInit {
 
   triggerFullRelease(ref: any) {
     this.loading = true;
+    this.serverRequest = true;
     let dr: DeploymentRequest = {
       releaseType: "RELEASE"
     }
-    ref.close();
     this.deploymentService.createDeploymentUsingPOST({
       clusterId: this.clusterId,
       deploymentRequest: dr
@@ -205,9 +222,12 @@ export class ClusterReleasesComponent implements OnInit {
         console.log(c);
         this.toastrService.success('Triggered Full deployment', 'Success');
         this.ngOnInit();
+        this.serverRequest = false
+        ref.close();
       },
       err => {
         this.errorHandler(err);
+        this.serverRequest = false
       }
     );
   }
@@ -251,17 +271,27 @@ export class ClusterReleasesComponent implements OnInit {
     );
   }
 
-  getLogs(deploymentId) {
+  getLogs(deploymentId, isReload: boolean) {
+    this.logLoading = true;
+    if(isReload){
+      this.logLines={}
+    }
     this.deploymentController.getDeploymentLogsUsingGET({
       clusterId: this.clusterId,
       deploymentId: deploymentId,
-      nextToken: this.nextToken
+      nextToken: !isReload ? this.nextToken : undefined
     })
       .subscribe(r => {
         r.logEventList.forEach(
-          le => this.logLines.push(le["message"])
+          le => {
+            if (le["message"].trim().length > 0) {
+              var key = le["timestamp"] + le["message"].trim().substr(0,200)
+              this.logLines[key] = le
+            }
+          }
         )
         this.nextToken = r.nextToken;
+        this.logLoading = false;
       })
   }
 }

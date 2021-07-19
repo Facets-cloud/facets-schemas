@@ -59,7 +59,7 @@ export class ClusterCreateLocalComponent implements OnInit {
   createCluster() {
     this.populateRequestObject();
     try {
-      debugger
+
       this.clusterController.createClusterUsingPOST3(this.awsClusterRequest)
         .subscribe(cluster => {
             this.router.navigate(['/capc/', this.stackName, 'cluster', cluster.id]);

@@ -7,7 +7,7 @@
         <app-form-field label="Stack Name" fieldId="stackName" invalidMsg="Stack Name is too Short or contains invalid characters (alphanumeric allowed)"
                         missingMsg="Stack Name is required!" placeholder="Stack Name"
                         tooltipText="Name to uniquely identify your stack" pattern="[a-z-]+"
-                        [(ngModel)]="stack.name" name="stackName" required="true"  minlength="5"></app-form-field>
+                        [(ngModel)]="stack.name" name="stackName" required="true"  minlength="3"></app-form-field>
         <!--VCS Field-->
         <app-form-field label="Git Provider" fieldId="vcs" invalidMsg="Git Provider is invalid"
                         missingMsg="Git Provider is required!" placeholder="Git Provider"
@@ -30,10 +30,10 @@
                         tooltipText="AppUser to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
                          pattern="[a-z-\.]+" required="true"  [(ngModel)]="stack.user" name="user"></app-form-field>
         <!--Password-->
-        <app-form-field label="Password" fieldId="appPassword" invalidMsg="Password is invalid"
+        <app-form-field label="Password" fieldId="appPassword" invalidMsg="Password is invalid" type="password"
                         missingMsg="Password is required to checkout the stack!" placeholder="Password"
                         tooltipText="AppUser's Password to checkout the repository. Checkout app passwords in Bitbucket or Gihub App"
-                         pattern="[a-z-]+" required="true"  [(ngModel)]="stack.appPassword" name="appPassword"></app-form-field>
+                        required="true"  [(ngModel)]="stack.appPassword" name="appPassword"></app-form-field>
         <app-form-field label="Artifactories" placeholder="Select Artifactories"
                         tooltipText="Artifactories to be used in this stack"
                         select="true" [selectValues]="artifactories" multiple="true"
