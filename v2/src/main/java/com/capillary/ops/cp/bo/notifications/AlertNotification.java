@@ -88,4 +88,9 @@ public class AlertNotification implements Notification {
     public TeamResource getTeamResource() {
         return new TeamResource(getStackName(), alert.getResourceType(), getNotificationSubject());
     }
+
+    @Override
+    public Boolean isPayloadJson(){
+        return true;
+    }
 }
