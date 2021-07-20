@@ -24,7 +24,7 @@ phases:
     commands:
       - terraform apply -target module.infra -auto-approve -no-color -parallelism=20
       - terraform apply -target module.iam -target module.application -target module.disaster-recovery -auto-approve -no-color -parallelism=20
-      - "curl -X POST 'https://${TF_VAR_cc_host}/cc/v1/callbacks/codebuild' -H 'accept: application/json' -H 'Content-Type: application/json' -H 'X-DEPLOYER-INTERNAL-AUTH-TOKEN: TF_VAR_cc_auth_token' -d '{ \"codebuidId\": \"$CODEBUILD_BUILD_ID\", \"status\": \"SUCCEEDED\"}'"
+      #- "curl -X POST 'https://${TF_VAR_cc_host}/cc/v1/callbacks/codebuild' -H 'accept: application/json' -H 'Content-Type: application/json' -H 'X-DEPLOYER-INTERNAL-AUTH-TOKEN: TF_VAR_cc_auth_token' -d '{ \"codebuidId\": \"$CODEBUILD_BUILD_ID\", \"status\": \"SUCCEEDED\"}'"
   post_build:
     commands:
       - python3 scripts/report.py
