@@ -16,7 +16,8 @@ public class AlertNotification implements Notification {
     private AbstractCluster cluster;
     private AlertManagerPayload.Alert alert;
 
-    List<String> labelIgnoreList = Arrays.asList("severity", "job","service");
+    List<String> labelIgnoreList = Arrays.asList("severity", "job","service", "cluster","endpoint", "namespace",
+            "prometheus","team");
 
 
 
