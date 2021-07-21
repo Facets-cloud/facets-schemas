@@ -33,7 +33,7 @@ export class ClusterReleasesComponent implements OnInit {
   applicationNameList: any;
   cronjobNameList: any = '';
   statefulSetNameList: any = '';
-  logLines: {};
+  logLines = [];
   private nextToken: string;
   stats: DeploymentsStats = {};
   serverRequest = false
@@ -172,7 +172,7 @@ export class ClusterReleasesComponent implements OnInit {
   }
 
   showLogDetails(dialog, deploymentId, status) {
-    this.logLines = {};
+    this.logLines = [];
     this.nextToken = undefined;
     this.getLogs(deploymentId, false);
     this.dialogService.open(dialog, {
@@ -275,8 +275,8 @@ export class ClusterReleasesComponent implements OnInit {
 
   getLogs(deploymentId, isReload: boolean) {
     this.logLoading = true;
-    if(isReload){
-      this.logLines={}
+    if(isReload) {
+      this.logLines = []
     }
     this.deploymentController.getDeploymentLogsUsingGET({
       clusterId: this.clusterId,
@@ -287,8 +287,8 @@ export class ClusterReleasesComponent implements OnInit {
         r.logEventList.forEach(
           le => {
             if (le["message"].trim().length > 0) {
-              var key = le["timestamp"] + le["message"].trim().substr(0,200)
-              this.logLines[key] = le
+              var msg = {"timestamp": le["timestamp"], "message": le["message"]}
+              this.logLines.push(msg)
             }
           }
         )

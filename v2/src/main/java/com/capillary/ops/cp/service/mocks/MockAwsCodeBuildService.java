@@ -86,8 +86,14 @@ public class MockAwsCodeBuildService implements TFBuildService {
 
         TokenPaginatedResponse<LogEvent> tokenPaginatedResponse = new TokenPaginatedResponse<LogEvent>();
 
+        if(nextToken.isPresent()){
+            tokenPaginatedResponse.setLogEventList(Arrays.asList(new LogEvent(500000L, "Log2"), new LogEvent(100000L,
+                    "Log1")));
+            return tokenPaginatedResponse;
+        }
         tokenPaginatedResponse.setNextToken("xyz");
-        tokenPaginatedResponse.setLogEventList(Arrays.asList(new LogEvent(0L, "Log1"), new LogEvent(10L, "Log2")));
+        tokenPaginatedResponse.setLogEventList(Arrays.asList(new LogEvent(2000000L, "Log4"), new LogEvent(1000000L,
+                "Log3")));
         return tokenPaginatedResponse;
     }
 

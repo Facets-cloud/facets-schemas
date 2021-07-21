@@ -230,9 +230,9 @@
     </nb-card-header>
     <nb-card-body class="bg-dark text-white">
       <nb-list nbInfiniteList [threshold]="500">
-        <nb-list-item *ngFor="let log of this.logLines | keyvalue" class="bg-dark text-white border-0">
-          <span class="badge badge-dark text-light mr-3">{{log.value.timestamp | date: 'short'}} ></span>
-          <div [innerHTML]="convert.toHtml(log.value.message) | safeHtml" *ngIf="!this.raw"></div>
+        <nb-list-item *ngFor="let log of this.logLines" class="bg-dark text-white border-0">
+          <span class="badge badge-dark text-light mr-3">{{log.timestamp | date: 'short'}} ></span>
+          <div [innerHTML]="convert.toHtml(log.message) | safeHtml" *ngIf="!this.raw"></div>
           <span class="badge badge-dark text-white" *ngIf="this.raw"
           >{{ log.value.message }}</span>
         </nb-list-item>
