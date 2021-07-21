@@ -5,7 +5,7 @@ apt-get update
 apt-get install -y --no-install-recommends less jq python2.7 curl python-dateutil gnupg2 telnet openjdk-11-jre-headless
 
 #######Additional installs
-apt-get install -y vim libcurl4 mysql-client-5.7 redis-tools
+apt-get install -y vim libcurl4 mysql-client-5.7 redis-tools acl
 
 ###### mongo clients and tools #######
 wget  https://repo.mongodb.org/apt/ubuntu/dists/bionic/mongodb-org/4.2/multiverse/binary-amd64/mongodb-org-tools_4.2.3_amd64.deb
@@ -40,6 +40,11 @@ chown capk8s -R /home/capk8s
 ls -lrth /home
 echo "cd /var/log/efs" >> /home/capk8s/.bashrc
 source /home/capk8s/.bashrc
+
+setfacl -m u:capk8s:---  /bin/gunzip
+setfacl -m u:capk8s:---  /bin/gzip
+setfacl -m u:capk8s:---  /bin/uncompress
+setfacl -m u:capk8s:---  /bin/setfacl
 #######capk8s user
 
 ######SSH configs
