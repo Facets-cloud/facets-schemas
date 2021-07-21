@@ -546,8 +546,8 @@ public class AwsCodeBuildService implements TFBuildService {
                 if (build.buildStatus().equals(StatusType.FAILED)) {
                     deploymentLog.setErrorLogs(getErrorLogs(streamName));
                 }
-                deploymentLogRepository.save(deploymentLog);
             }
+            deploymentLogRepository.save(deploymentLog);
         }
 
         if (!loadBuildDetails) {

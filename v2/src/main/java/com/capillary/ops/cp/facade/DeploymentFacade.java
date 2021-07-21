@@ -118,7 +118,8 @@ public class DeploymentFacade {
             AbstractCluster cluster = clusterFacade.getCluster(clusterId);
             Stack stack = stackFacade.getStackByName(cluster.getStackName());
             ClusterTask clusterTask = clusterFacade.getQueuedClusterTaskForClusterId(clusterId);
-            if (deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps().isEmpty()) {
+            if (deploymentRequest.getOverrideBuildSteps() == null || deploymentRequest.getOverrideBuildSteps()
+                    .isEmpty()) {
                 if (clusterTask != null && clusterTask.getTasks() != null && !clusterTask.getTasks().isEmpty()) {
                     deploymentRequest.setPreBuildSteps(clusterTask.getTasks());
                     clusterTask.setTaskStatus(TaskStatus.EXECUTED);
@@ -162,13 +163,9 @@ public class DeploymentFacade {
     /**
      * Trigger job for automation suite
      * <p>
-     * Strategy:
-     * --------
-     * Get the existing cronjob in the kubernetes cluster with the same name as the module
-     * Get the jobTemplate spec from the cronjob
-     * Set the new environment variables in the container of the spec that was fetched above
-     * Create a new Job object using the jobSpec
-     * Save the qaSuite in the repository and
+     * Strategy: -------- Get the existing cronjob in the kubernetes cluster with the same name as the module Get the
+     * jobTemplate spec from the cronjob Set the new environment variables in the container of the spec that was fetched
+     * above Create a new Job object using the jobSpec Save the qaSuite in the repository and
      *
      * @param clusterId Id of the Cluster
      * @param qaSuite   qaSuite definition
@@ -251,10 +248,8 @@ public class DeploymentFacade {
     /**
      * Trigger job for automation suite
      * <p>
-     * Strategy:
-     * --------
-     * Get the existing cronjob in the kubernetes cluster with the given executionId
-     * Delete the existing job for the automation suite
+     * Strategy: -------- Get the existing cronjob in the kubernetes cluster with the given executionId Delete the
+     * existing job for the automation suite
      *
      * @param clusterId   ID of the Cluster
      * @param executionId automation suite execution ID
@@ -398,7 +393,8 @@ public class DeploymentFacade {
      */
     synchronized public void validateSanityResult(String clusterId, QASuiteResult qaSuiteResult) throws Exception {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
-        Optional<QASuiteResult> existingResult = qaSuiteResultRepository.findOneByDeploymentId(qaSuiteResult.getDeploymentId());
+        Optional<QASuiteResult> existingResult = qaSuiteResultRepository
+                .findOneByDeploymentId(qaSuiteResult.getDeploymentId());
         existingResult.ifPresent(suiteResult -> qaSuiteResult.setId(suiteResult.getId()));
         if (shouldValidateSanityResult(qaSuiteResult)) {
             logger.info("validating sanity failure for: {}, for modules: {}", qaSuiteResult.getDeploymentId(),
@@ -441,7 +437,8 @@ public class DeploymentFacade {
         createDeployment(clusterId, deploymentRequest);
     }
 
-    public void handleNewDeploymentFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult, List<String> automationFailures) {
+    public void handleNewDeploymentFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult,
+                                           List<String> automationFailures) {
         logger.info("handling new deployment failure for cluster: {}, qa suite: {}", cluster.getId(), qaSuiteResult);
 
         String clusterId = cluster.getId();
@@ -451,7 +448,8 @@ public class DeploymentFacade {
 
             Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
             String applicationId = application.getMetadata().getLabels().get("deployerid");
-            String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels().get("deployerBuildId");
+            String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels()
+                    .get("deployerBuildId");
 //            buildService.unPromoteBuild(applicationId, deployerBuildId);
 
             Map<String, Object> logParameters = ImmutableMap.of("applicationId", applicationId,
@@ -473,7 +471,8 @@ public class DeploymentFacade {
         publishSanityFailures(cluster, qaSuiteResult, failedBuilds);
     }
 
-    public void handleRedeploymentFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult, List<String> automationFailures) {
+    public void handleRedeploymentFailure(AbstractCluster cluster, QASuiteResult qaSuiteResult,
+                                          List<String> automationFailures) {
         logger.info("handling redeployment failure for cluster: {}, qa suite: {}", cluster.getId(), qaSuiteResult);
 
         String clusterId = cluster.getId();
@@ -482,7 +481,8 @@ public class DeploymentFacade {
             logger.info("automation failure, unpormoting build for module: {}", moduleName);
 
             Deployment application = clusterFacade.getApplicationData(clusterId, "app", moduleName);
-            String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels().get("deployerBuildId");
+            String deployerBuildId = application.getSpec().getTemplate().getMetadata().getLabels()
+                    .get("deployerBuildId");
 
             qaSuiteResult.getModuleStatusMap().put(moduleName, K8sJobStatus.FAILURE);
             qaSuiteResultRepository.save(qaSuiteResult);
@@ -492,7 +492,8 @@ public class DeploymentFacade {
         publishSanityFailures(cluster, qaSuiteResult, failedBuilds);
     }
 
-    private void publishSanityFailures(AbstractCluster cluster, QASuiteResult qaSuiteResult, Map<String, String> failedBuilds) {
+    private void publishSanityFailures(AbstractCluster cluster, QASuiteResult qaSuiteResult,
+                                       Map<String, String> failedBuilds) {
         logger.info("publishing sanity suite results for cluster: {}, deployment: {}, modules: {}", cluster.getName(),
                 qaSuiteResult.getDeploymentId(), failedBuilds);
         failedBuilds.forEach((k, v) -> {
@@ -503,13 +504,15 @@ public class DeploymentFacade {
         });
     }
 
-    private String constructSanityFailureNotificationMessage(AbstractCluster cluster, Map<String, String> failedBuilds) {
+    private String constructSanityFailureNotificationMessage(AbstractCluster cluster,
+                                                             Map<String, String> failedBuilds) {
         if (failedBuilds.size() == 0) {
             return null;
         }
 
         StringJoiner moduleJoiner = new StringJoiner("\n");
-        moduleJoiner.add(String.format("%s (%s) - Sanity FAILED for the following modules", cluster.getName(), cluster.getId()));
+        moduleJoiner.add(String
+                .format("%s (%s) - Sanity FAILED for the following modules", cluster.getName(), cluster.getId()));
         failedBuilds.forEach((moduleName, buildId) -> {
             moduleJoiner.add(String.format("%s: %s", moduleName, buildId));
         });
@@ -526,7 +529,8 @@ public class DeploymentFacade {
     }
 
     private List<String> getFailedModules(QASuiteResult qaSuiteResult) {
-        Map<String, K8sJobStatus> failedAutomationSuites = getPreviouslyFailedModulesForDeployment(qaSuiteResult.getDeploymentId());
+        Map<String, K8sJobStatus> failedAutomationSuites = getPreviouslyFailedModulesForDeployment(
+                qaSuiteResult.getDeploymentId());
         return qaSuiteResult.getModuleStatusMap().entrySet().stream()
                 .filter(m -> (K8sJobStatus.FAILURE.equals(m.getValue())))
                 .filter(m -> !failedAutomationSuites.containsKey(m.getKey()))
@@ -561,18 +565,20 @@ public class DeploymentFacade {
                 deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
         deployments = deployments.stream()
                 .map(x -> tfBuildService.loadDeploymentStatus(x, false)).collect(Collectors.toList());
+        deploymentsFull = deploymentsFull.stream().map(x -> tfBuildService.loadDeploymentStatus(x, false))
+                .collect(Collectors.toList());
         Optional<DeploymentLog> signedOffDeploymentOptional =
                 deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
                         cluster.getId(), StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
         Integer successReleases =
                 deploymentLogRepository.countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(clusterId,
-                DeploymentLog.DeploymentType.REGULAR,StatusType.SUCCEEDED, DateUtils.addDays(new Date(), -30));
+                        DeploymentLog.DeploymentType.REGULAR, StatusType.SUCCEEDED, DateUtils.addDays(new Date(), -30));
         Integer failedReleases =
                 deploymentLogRepository.countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(clusterId,
-                        DeploymentLog.DeploymentType.REGULAR,StatusType.FAILED, DateUtils.addDays(new Date(), -30));
+                        DeploymentLog.DeploymentType.REGULAR, StatusType.FAILED, DateUtils.addDays(new Date(), -30));
         Integer noChangeReleases =
                 deploymentLogRepository.countByClusterIdAndDeploymentTypeAndStatusAndCreatedOnGreaterThan(clusterId,
-                        DeploymentLog.DeploymentType.REGULAR,StatusType.FAULT, DateUtils.addDays(new Date(), -30));
+                        DeploymentLog.DeploymentType.REGULAR, StatusType.FAULT, DateUtils.addDays(new Date(), -30));
 
         ListDeploymentsWrapper.DeploymentsStats deploymentsStats = new ListDeploymentsWrapper.DeploymentsStats(
                 successReleases, failedReleases, noChangeReleases);
@@ -588,7 +594,7 @@ public class DeploymentFacade {
         if (build != null &&
                 (build.buildStatus().equals(StatusType.FAILED)
                         || build.buildStatus().equals(StatusType.SUCCEEDED))) {
-            if(clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, build.buildStatus())) {
+            if (clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, build.buildStatus())) {
                 handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, build.buildStatus()));
             }
         }
@@ -609,7 +615,7 @@ public class DeploymentFacade {
 
     public String getSignedUrlVagrantArtifact(String clusterId, DeploymentLog deployment) {
         String codebuildId = deployment.getCodebuildId();
-        return ((AwsCodeBuildService)tfBuildService).getArtifactZipForLocalCluster(codebuildId);
+        return ((AwsCodeBuildService) tfBuildService).getArtifactZipForLocalCluster(codebuildId);
     }
 
     public TokenPaginatedResponse getDeploymentLogs(String deploymentId, Optional<String> nextToken) {
@@ -619,7 +625,8 @@ public class DeploymentFacade {
         if (buildLogs.getBuild() != null &&
                 (buildLogs.getBuild().buildStatus().equals(StatusType.FAILED)
                         || buildLogs.getBuild().buildStatus().equals(StatusType.SUCCEEDED))) {
-            if(clusterResourceRefreshService.isSaveClusterResourceDetailsDone(codebuildId, buildLogs.getBuild().buildStatus())) {
+            if (clusterResourceRefreshService
+                    .isSaveClusterResourceDetailsDone(codebuildId, buildLogs.getBuild().buildStatus())) {
                 handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, buildLogs.getBuild().buildStatus()));
             }
         }
@@ -630,7 +637,8 @@ public class DeploymentFacade {
         AbstractCluster cluster = clusterFacade.getCluster(clusterId);
         List<String> artifactories = stackFacade.getStackByName(cluster.getStackName()).getArtifactories();
 
-        Map<String, Map<String, Artifact>> allArtifacts = artifactFacade.getAllArtifacts(artifactories, cluster.getReleaseStream(), deploymentRequest.getReleaseType());
+        Map<String, Map<String, Artifact>> allArtifacts = artifactFacade
+                .getAllArtifacts(artifactories, cluster.getReleaseStream(), deploymentRequest.getReleaseType());
         List<Artifactory> artifactoryList = artifactFacade.getArtifactoriesByName(artifactories);
         Map<String, Map<String, SnapshotInfo>> pinnedSnapshots = baseDRService.getAllPinnedSnapshots(cluster.getId())
                 .stream().collect(Collectors.groupingBy(x -> x.getResourceType())).entrySet().stream()
@@ -654,7 +662,8 @@ public class DeploymentFacade {
 
         clusterResourceRefreshService.saveClusterResourceDetails(callback.getCodebuidId(), deploymentLog.getStatus());
 
-        if(!deploymentLog.getIntegrationTest() && deploymentLog.getAppDeployments() != null && !deploymentLog.getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
+        if (!deploymentLog.getIntegrationTest() && deploymentLog.getAppDeployments() != null && !deploymentLog
+                .getAppDeployments().isEmpty() && deploymentLog.getAppDeployments().size() < 50) {
             deploymentLog.getAppDeployments().stream().forEach(
                     x -> notificationService.publish(new ApplicationDeploymentNotification(x, cluster)));
         }
@@ -666,18 +675,21 @@ public class DeploymentFacade {
         DeploymentLog deploymentLog = deploymentLogRepository.findById(deploymentId).get();
         if (deploymentLog.getStatus().equals(StatusType.SUCCEEDED)) {
             Optional<DeploymentLog> currentSignedOffDeploymentOptional =
-                    deploymentLogRepository.findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
-                            cluster.getId(), StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
+                    deploymentLogRepository
+                            .findFirstByClusterIdAndStatusAndDeploymentTypeAndSignedOffOrderByCreatedOnDesc(
+                                    cluster.getId(), StatusType.SUCCEEDED, DeploymentLog.DeploymentType.REGULAR, true);
             DeploymentLog currentSignedOffDeployment = null;
             if (currentSignedOffDeploymentOptional.isPresent()) {
                 currentSignedOffDeployment = currentSignedOffDeploymentOptional.get();
                 if (deploymentLog.getCreatedOn().getTime() < currentSignedOffDeployment.getCreatedOn().getTime() ||
-                        deploymentLog.getStackVersion().equalsIgnoreCase(currentSignedOffDeployment.getStackVersion())) {
+                        deploymentLog.getStackVersion()
+                                .equalsIgnoreCase(currentSignedOffDeployment.getStackVersion())) {
                     throw new RuntimeException("Cannot signoff older deployment");
                 }
             }
             deploymentLog.setSignedOff(true);
-            notificationService.publish(new SignOffNotification(stack, cluster, deploymentLog, currentSignedOffDeployment));
+            notificationService
+                    .publish(new SignOffNotification(stack, cluster, deploymentLog, currentSignedOffDeployment));
             return deploymentLogRepository.save(deploymentLog);
         } else {
             throw new RuntimeException("Cannot signoff failed deployment");
@@ -708,9 +720,18 @@ public class DeploymentFacade {
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
                 "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/aurora/main.tf",
-                "terraform state rm module.application.mysql_user.mysql_user_sibling module.application.mysql_user.mysql_user",
-                "terraform state rm module.application.mysql_grant.mysql_grants_sibling module.application.mysql_grant.mysql_grants",
-                "terraform apply -auto-approve -target 'module.infra.module.aurora.aws_rds_cluster.clusters[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.infra.module.aurora.mysql_user.mysql_readonly_user[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.infra.module.aurora.mysql_grant.mysql_readonly_grants[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.application.mysql_user.mysql_user_sibling' -target 'module.application.mysql_user.mysql_user' -target 'module.application.mysql_grant.mysql_grants_sibling' -target 'module.application.mysql_grant.mysql_grants'"
+                "terraform state rm module.application.mysql_user.mysql_user_sibling module.application.mysql_user" +
+                        ".mysql_user",
+                "terraform state rm module.application.mysql_grant.mysql_grants_sibling module.application" +
+                        ".mysql_grant.mysql_grants",
+                "terraform apply -auto-approve -target 'module.infra.module.aurora.aws_rds_cluster.clusters[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.infra.module.aurora.mysql_user" +
+                        ".mysql_readonly_user[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.infra.module.aurora.mysql_grant" +
+                        ".mysql_readonly_grants[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.application.mysql_user.mysql_user_sibling' " +
+                        "-target 'module.application.mysql_user.mysql_user' -target 'module.application.mysql_grant" +
+                        ".mysql_grants_sibling' -target 'module.application.mysql_grant.mysql_grants'"
         ));
         return createDeployment(clusterId, deploymentRequest);
     }
@@ -739,13 +760,29 @@ public class DeploymentFacade {
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
                 "sed -i '/prevent_destroy = true/c    prevent_destroy = false' infra/mongo/pvc-primary.tf",
-                "terraform taint 'module.infra.module.mongo.aws_ebs_volume.ebs_volume_secondary[\"" + deploymentRecipe.getDbInstanceName() + "\"]'",
-                "terraform taint 'module.infra.module.mongo.helm_release.mongo[\"" + deploymentRecipe.getDbInstanceName() + "\"]'",
-                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\"" + deploymentRecipe.getDbInstanceName() + "\"]'",
-                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\"" + deploymentRecipe.getDbInstanceName() + "\"]'",
-                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\"" + deploymentRecipe.getDbInstanceName() + "\"]'",
-                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\"" + deploymentRecipe.getDbInstanceName() + "\"]'",
-                "terraform apply -auto-approve -target 'module.infra.module.mongo.helm_release.mongo[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.secondary_static_pvc[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\"" + deploymentRecipe.getDbInstanceName() + "\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\"" + deploymentRecipe.getDbInstanceName() + "\"]'"
+                "terraform taint 'module.infra.module.mongo.aws_ebs_volume.ebs_volume_secondary[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'",
+                "terraform taint 'module.infra.module.mongo.helm_release.mongo[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim" +
+                        ".secondary_static_pvc[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume_claim.primary_static_pvc[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.primary_static_pv[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'",
+                "terraform taint 'module.infra.module.mongo.kubernetes_persistent_volume.secondary_static_pv[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'",
+                "terraform apply -auto-approve -target 'module.infra.module.mongo.helm_release.mongo[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.infra.module.mongo" +
+                        ".kubernetes_persistent_volume_claim.secondary_static_pvc[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.infra.module.mongo" +
+                        ".kubernetes_persistent_volume_claim.primary_static_pvc[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume" +
+                        ".primary_static_pv[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]' -target 'module.infra.module.mongo.kubernetes_persistent_volume" +
+                        ".secondary_static_pv[\"" + deploymentRecipe
+                        .getDbInstanceName() + "\"]'"
         ));
         return createDeployment(clusterId, deploymentRequest);
     }
@@ -755,7 +792,8 @@ public class DeploymentFacade {
         DeploymentRequest deploymentRequest = new DeploymentRequest();
         deploymentRequest.setReleaseType(ReleaseType.RELEASE);
         deploymentRequest.setOverrideBuildSteps(Arrays.asList(
-                "/bin/bash scripts/es_restore.sh -e " + deploymentRecipe.getEsInstanceName() + "-s " + deploymentRecipe.getSnapshotName() + "-i \"all\""
+                "/bin/bash scripts/es_restore.sh -e " + deploymentRecipe.getEsInstanceName() + "-s " + deploymentRecipe
+                        .getSnapshotName() + "-i \"all\""
         ));
         return createDeployment(clusterId, deploymentRequest);
     }
@@ -843,16 +881,17 @@ public class DeploymentFacade {
         deploymentRequest.setOverrideCCVersion(tfBranch);
         List<DeploymentLog> deployments = deploymentLogRepository.findFirst50ByClusterIdOrderByCreatedOnDesc(clusterId);
         Optional<DeploymentLog> lastDeployment = null;
-        if(deployments != null && deployments.size() > 0) {
+        if (deployments != null && deployments.size() > 0) {
             lastDeployment = deployments.stream().filter(d -> d.getIntegrationTest().equals(true)).findFirst();
         }
 
-        if( lastDeployment != null && lastDeployment.isPresent() && !Objects.equals(lastDeployment.get().getStatus(), StatusType.SUCCEEDED)){
+        if (lastDeployment != null && lastDeployment.isPresent() && !Objects
+                .equals(lastDeployment.get().getStatus(), StatusType.SUCCEEDED)) {
             logger.info("Destroying existing cluster");
             buildSteps.addAll(getClusterDestroyCommands());
             deploymentRequest.setTriggeredBy("deployer");
             deploymentRequest.setOverrideBuildSteps(buildSteps);
-        }else {
+        } else {
             logger.info("Triggering Launch -> Test -> Destroy flow");
             buildSteps.addAll(getClusterCreateCommands());
             buildSteps.add("cd ../../v2/cc-integration-tests");
@@ -871,7 +910,7 @@ public class DeploymentFacade {
     public DeploymentLog validateCluster(String tfBranch, String clusterId) {
         List<String> buildSteps = new ArrayList<>();
         DeploymentRequest deploymentRequest = new DeploymentRequest();
-        if(!StringUtils.isEmpty(tfBranch)) {
+        if (!StringUtils.isEmpty(tfBranch)) {
             deploymentRequest.setOverrideCCVersion(tfBranch);
         }
         logger.info("Triggering Validation Suite for Cluster ID {}", clusterId);
@@ -885,18 +924,24 @@ public class DeploymentFacade {
         return createDeployment(clusterId, deploymentRequest);
     }
 
-    public List<String> getClusterCreateCommands(){
+    public List<String> getClusterCreateCommands() {
         List<String> commands = new ArrayList<>();
-        commands.add("grep -r \"prevent_destroy = true\" . | cut -d \":\" -f1 | xargs sed -i 's/prevent_destroy = true/prevent_destroy = false/g'");
-        commands.add("terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color -parallelism=10");
+        commands.add(
+                "grep -r \"prevent_destroy = true\" . | cut -d \":\" -f1 | xargs sed -i 's/prevent_destroy = " +
+                        "true/prevent_destroy = false/g'");
+        commands.add(
+                "terraform apply -target module.infra.module.baseinfra.module.vpc -auto-approve -no-color " +
+                        "-parallelism=10");
         commands.add("terraform apply -target module.infra.module.baseinfra -auto-approve -no-color -parallelism=10");
         return commands;
     }
 
-    public List<String> getClusterDestroyCommands(){
+    public List<String> getClusterDestroyCommands() {
         List<String> commands = new ArrayList<>();
-        commands.add("grep -r \"prevent_destroy = true\" . | cut -d \":\" -f1 | xargs sed -i 's/prevent_destroy = true/prevent_destroy = false/g'");
-        commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
+        commands.add(
+                "grep -r \"prevent_destroy = true\" . | cut -d \":\" -f1 | xargs sed -i 's/prevent_destroy = true/prevent_destroy = false/g'");
+        commands.add(
+                "terraform destroy -target 'module.infra.module.baseinfra.module.pmm' -target 'module.infra.module.baseinfra.module.cc-loki' -target 'module.infra.module.baseinfra.module.capillary_storage' -target 'module.infra.module.baseinfra.module.peering' -auto-approve");
         commands.add("terraform state rm 'module.infra.module.baseinfra.module.k8scluster.helm_release.istio'");
         commands.add("python3 scripts/testing_utils/testing_utils.py --del_s3_bucket true");
         commands.add("terraform destroy -target 'module.infra.module.baseinfra.module.k8scluster' -auto-approve");
