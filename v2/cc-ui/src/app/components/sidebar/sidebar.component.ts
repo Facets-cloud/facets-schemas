@@ -37,23 +37,25 @@ export class SidebarComponent implements OnInit {
         console.log(p);
         this.isClusterContext = false;
       } else {
-        this.currentClusterURL = "/"+p.stackName + "/cluster/" + p.clusterId;
+        this.currentClusterURL = "/" + p.stackName + "/cluster/" + p.clusterId;
       }
     });
     this.uiStackControllerService.getStacksUsingGET1().subscribe(
       s => {
         this.stacks = s;
-        s.forEach(stack => {
+        if (!this.currentClusterURL) {
+          var stack = this.stacks[0]
           this.uiStackControllerService.getClustersUsingGET1(stack.name).subscribe(
             c => {
               this.stackClusters[stack.name] = c;
-              if (!this.currentClusterURL) {
-                this.currentClusterURL = "/"+c[0].stackName + "/cluster/" + c[0].id
-              }
+              this.currentClusterURL = "/" + c[0].stackName + "/cluster/" + c[0].id
               this.initNav()
             }
           );
-        })
+        } else {
+          this.initNav()
+        }
+
       }
     );
   }
@@ -63,8 +65,8 @@ export class SidebarComponent implements OnInit {
     this.stacks.forEach(stack => {
       stacksMenu.push({
         title: stack.name,
-        link: this.BASE_URL +"/stack/" + stack.name,
-        icon:'cloud-download-outline'
+        link: this.BASE_URL + "/stack/" + stack.name,
+        icon: 'cloud-download-outline'
       })
     });
 
@@ -74,14 +76,14 @@ export class SidebarComponent implements OnInit {
         icon: 'home-outline',
         home: true,
         link: this.BASE_URL + "/home",
-        pathMatch : 'prefix'
+        pathMatch: 'prefix'
       },
       {
         title: 'Stack Overview',
         icon: 'layers-outline',
         expanded: false,
         link: this.BASE_URL + "/home",
-        children:stacksMenu
+        children: stacksMenu
       },
       {
         title: 'Cluster Pages',
@@ -92,19 +94,19 @@ export class SidebarComponent implements OnInit {
             title: 'Overview',
             icon: 'clipboard-outline',
             link: this.BASE_URL + this.currentClusterURL + "/overview",
-            pathMatch : 'full'
+            pathMatch: 'full'
           },
           {
             title: 'Secrets & Variables',
             icon: 'options-outline',
             link: this.BASE_URL + this.currentClusterURL + "/variables",
-            pathMatch : 'full'
+            pathMatch: 'full'
           },
           {
             title: 'Releases',
             icon: 'sync-outline',
             link: this.BASE_URL + this.currentClusterURL + "/releases",
-            pathMatch : 'full'
+            pathMatch: 'full'
           },
           {
             title: 'Tools',

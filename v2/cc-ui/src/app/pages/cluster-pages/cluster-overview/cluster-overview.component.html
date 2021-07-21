@@ -2,26 +2,26 @@
 
   <span heading> Cluster Overview </span>
   <span subheading>Overview for {{cluster?.name}} of {{cluster?.stackName}} stack. </span>
+  <div buttons>
+    <button nbButton status="primary" class="mr-3 mb-3" nbTooltip="Download your personal kubeconfig file" size="small"
+            (click)="downloadKubeConfig()">
+      <nb-icon icon="arrow-downward-outline"></nb-icon>
+      K8s Credentials
+    </button>
+    <button nbButton status="control" class="mr-3 mb-3" (click)="refreshKubeconfig()" size="small"
+            nbTooltip="Kubeconfif File Permissions expire in 24h, click here to renew ">
+      <nb-icon icon="refresh-outline"></nb-icon>
+      K8s Credentials
+    </button>
+    <button nbButton status="control" (click)="refreshStack()" size="small" class="mr-3 mb-3"
+            nbTooltip="Not seeing a newly defined application on stack? Click here">
+      <nb-icon icon="sync-outline"></nb-icon>
+      Stack with Git
+    </button>
 
+  </div>
   <div [nbSpinner]="downloadingKubeConfig">
-    <div class="py-3">
-      <button nbButton status="primary" class="mr-3" nbTooltip="Download your personal kubeconfig file" size="small"
-              (click)="downloadKubeConfig()">
-        <nb-icon icon="arrow-downward-outline"></nb-icon>
-        K8s Credentials
-      </button>
-      <button nbButton status="control" class="mr-3" (click)="refreshKubeconfig()" size="small"
-              nbTooltip="Kubeconfif File Permissions expire in 24h, click here to renew ">
-        <nb-icon icon="refresh-outline"></nb-icon>
-        K8s Credentials
-      </button>
-      <button nbButton status="control" class="mr-3" (click)="refreshStack()" size="small"
-              nbTooltip="Not seeing a newly defined application on stack? Click here">
-        <nb-icon icon="sync-outline"></nb-icon>
-        Stack with Git
-      </button>
 
-    </div>
     <div class="row" *ngIf="componentUpgradeSource.count() > 0">
       <div class="col-md-12">
         <nb-card size="tiny" class="">

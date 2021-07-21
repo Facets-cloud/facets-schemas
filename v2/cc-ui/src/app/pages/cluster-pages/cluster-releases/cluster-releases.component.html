@@ -1,6 +1,27 @@
 <app-layout-one-column>
   <span heading> Cluster Releases </span>
   <span subheading>Explore Release history and frequency. </span>
+  <div buttons>
+    <button
+      nbButton
+      status="primary"
+      class="mr-3 mb-3"
+      size="small"
+      (click)="openDeploymentPopupFull(deploymentUIFull)"
+    >
+      Release
+    </button>
+    <button
+      nbButton
+      status="control"
+      class="mr-3 mb-3"
+      size="small"
+      (click)="openDeploymentPopup(deploymentUI)"
+    >
+      Hotfix Application
+    </button>
+
+  </div>
 
   <div class="row">
     <div class="col-12">
@@ -23,17 +44,22 @@
               <h3 class="text-danger font-weight-light">{{stats?.failedReleases}}</h3>
             </div>
             <div class=col-3>
-              <div class="card-subtitle mb-3" nbTooltip="Deployment frequency looks at how often an you deploy code to this cluster">
-                Deployment Frequency  <nb-icon icon="info-outline"></nb-icon>
+              <div class="card-subtitle mb-3"
+                   nbTooltip="Deployment frequency looks at how often an you deploy code to this cluster">
+                Deployment Frequency
+                <nb-icon icon="info-outline"></nb-icon>
               </div>
               <h3 class="font-weight-light">{{this.stats?.successReleases / 30 | number : "1.2-2"}}</h3>
 
             </div>
             <div class=col-3>
-              <div class="card-subtitle mb-3" nbTooltip="Change failure rate is the percentage of changes that resulted in failed releases">
-                Change Failure Rate <nb-icon icon="info-outline"></nb-icon>
+              <div class="card-subtitle mb-3"
+                   nbTooltip="Change failure rate is the percentage of changes that resulted in failed releases">
+                Change Failure Rate
+                <nb-icon icon="info-outline"></nb-icon>
               </div>
-              <h3 class="text-danger font-weight-light">{{stats?.failedReleases / (this.stats?.successReleases +stats?.failedReleases ) | percent}}</h3>
+              <h3
+                class="text-danger font-weight-light">{{stats?.failedReleases / (this.stats?.successReleases + stats?.failedReleases) | percent}}</h3>
             </div>
           </div>
 
@@ -46,34 +72,49 @@
     <div class="col-12">
       <nb-card>
         <nb-card-header>
-          <div style="float:left;"> Releases</div>
+          <div> Latest Release</div>
+        </nb-card-header>
+        <nb-card-body>
+          <table class="table table-bordered text-left">
+            <thead>
+            <tr scope=row class="bg-light">
+              <th class="vert-center" scope="col">Started</th>
+              <th class="vert-center" scope="col">Status</th>
+              <th class="vert-center" scope="col">Last Commit
+                <nb-icon icon="info-outline"
+                         nbTooltip="Last commit id in Stack, which is considered in this release"></nb-icon>
+              </th>
+              <th class="vert-center" scope="col">Release Type</th>
+              <th class="vert-center" scope="col">Triggered By</th>
+              <th *ngIf="downStreamClusters.length !== 0" class="vert-center" scope="col">Sign Off</th>
+              <th class="vert-center" scope="col">Actions</th>
+            </tr>
+            <tr scope=row *ngIf="latestRelease">
+              <ng-template *ngTemplateOutlet="releaseRow; context: {$implicit: latestRelease}"></ng-template>
+            </tr>
+            </thead>
+          </table>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <nb-card>
+        <nb-card-header>
+          <div style="float:left;"> Release History</div>
           <div style="float:right;">
-            <button
-              nbButton
-              status="primary"
-              class="mr-3"
-              (click)="openDeploymentPopupFull(deploymentUIFull)"
-            >
-              Release
-            </button>
-            <button
-              nbButton
-              status="basic"
-              class="mr-3"
-              (click)="openDeploymentPopup(deploymentUI)"
-            >
-              Hotfix Application
-            </button>
-            <nb-toggle [(ngModel)]="this.hideNoChanges" labelPosition="end"
-                       status="primary"  class="align-middle">
-              Hide <span
+
+            <nb-toggle [(ngModel)]="this.showNoChanges" labelPosition="end"
+                       status="primary" class="align-middle">
+              Show <span
               class="badge badge-secondary">NO CHANGE</span>
             </nb-toggle>
           </div>
         </nb-card-header>
         <nb-card-body>
           <div class="table-responsive">
-            <table class="table table-bordered text-left" *ngIf="this.hideNoChanges">
+            <table class="table table-bordered text-left" *ngIf="!this.showNoChanges">
               <thead>
               <tr scope=row class="bg-light">
                 <th class="vert-center" scope="col">Started</th>
@@ -88,61 +129,11 @@
                 <th class="vert-center" scope="col">Actions</th>
               </tr>
               <tr scope=row *ngFor="let deployment of deployments">
-                <td class="vert-center" scope="col"
-                    nbTooltip="{{deployment.createdOn | date: 'medium'}}">{{deployment.createdOn | timeago}}</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'IN_PROGRESS'"><span
-                  class="badge badge-primary">IN PROGRESS</span></td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'"><span
-                  class="badge badge-secondary">NO CHANGE</span></td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'SUCCEEDED'"><span
-                  class="badge badge-success">SUCCESS</span></td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAILED'"><span
-                  class="badge badge-danger">FAIL</span>
-                </td>
-                <td class="vert-center" scope="col"
-                    *ngIf=" -1 == ['FAULT','FAILED','SUCCEEDED','IN_PROGRESS'].indexOf(deployment.status)"><span
-                  class="badge badge-dark">{{deployment.status}}</span></td>
-
-                <td class="vert-center" scope="col">
-                  <a href="{{deployment.stackUrl}}" target="_blank">{{deployment.stackVersion | slice:0:7}}</a>
-                  <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
-                          nbTooltip="Compare with signed-off version" ghost status="primary">
-                    <nb-icon icon="code-outline"></nb-icon>
-                  </button>
-                </td>
-                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'REGULAR'">Full Release</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'CUSTOM'">Hotfix Release</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy != 'Deployer'">
-                  <nb-icon icon="person-outline" class="mr-2"></nb-icon>
-                  {{deployment.triggeredBy}}</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy == 'Deployer'">
-                  <nb-icon icon="calendar-outline" class="mr-2"></nb-icon>
-                  Facets Bot
-                </td>
-
-                <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff?"Signed Off":deployment.allowSignoff?"Not Signed Off": "N/A"}}
-                </td>
-                <td scope="col" class="text-left">
-                  <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"
-                          nbTooltip="See Release Details" *ngIf="deployment.status != 'FAULT'">
-                    <nb-icon icon="info-outline" ></nb-icon>
-                  </button>
-                  <button (click)="showLogDetails(logsDialog, deployment.id, deployment.status)" nbButton ghost
-                          *ngIf="deployment.status != 'FAULT'"
-                          status="primary" nbTooltip="See Terraform Logs">
-                    <nb-icon icon="file-text-outline"></nb-icon>
-                  </button>
-
-                  <button *ngIf="downStreamClusters.length !== 0 && deployment.allowSignoff"
-                          (click)="confirmSignoff(signoff, deployment)" nbButton ghost
-                          status="primary" nbTooltip="Sign Off this Stack version?">
-                    <nb-icon icon="flag-outline"></nb-icon>
-                  </button>
-                </td>
+                <ng-template *ngTemplateOutlet="releaseRow; context: {$implicit: deployment}"></ng-template>
               </tr>
               </thead>
             </table>
-            <table class="table table-bordered text-left" *ngIf="!this.hideNoChanges">
+            <table class="table table-bordered text-left" *ngIf="this.showNoChanges">
               <thead>
               <tr scope=row class="bg-light">
                 <th class="vert-center" scope="col">Started</th>
@@ -157,57 +148,7 @@
                 <th class="vert-center" scope="col">Actions</th>
               </tr>
               <tr scope=row *ngFor="let deployment of deploymentsFull">
-                <td class="vert-center" scope="col"
-                    nbTooltip="{{deployment.createdOn | date: 'medium'}}">{{deployment.createdOn | timeago}}</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'IN_PROGRESS'"><span
-                  class="badge badge-primary">IN PROGRESS</span></td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'"><span
-                  class="badge badge-secondary">NO CHANGE</span></td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'SUCCEEDED'"><span
-                  class="badge badge-success">SUCCESS</span></td>
-                <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAILED'"><span
-                  class="badge badge-danger">FAIL</span>
-                </td>
-                <td class="vert-center" scope="col"
-                    *ngIf=" -1 == ['FAULT','FAILED','SUCCEEDED','IN_PROGRESS'].indexOf(deployment.status)"><span
-                  class="badge badge-dark">{{deployment.status}}</span></td>
-
-                <td class="vert-center" scope="col">
-                  <a href="{{deployment.stackUrl}}" target="_blank">{{deployment.stackVersion | slice:0:7}}</a>
-                  <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
-                          nbTooltip="Compare with signed-off version" ghost status="primary">
-                    <nb-icon icon="code-outline"></nb-icon>
-                  </button>
-                </td>
-                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'REGULAR'">Full Release</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'CUSTOM'">Hotfix Release</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy != 'Deployer'">
-                  <nb-icon icon="person-outline" class="mr-2"></nb-icon>
-                  {{deployment.triggeredBy}}</td>
-                <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy == 'Deployer'">
-                  <nb-icon icon="calendar-outline" class="mr-2"></nb-icon>
-                  Facets Bot
-                </td>
-
-                <td *ngIf="downStreamClusters.length !== 0" scope="col" class="vert-center">{{deployment.signedOff?"Signed Off":deployment.allowSignoff?"Not Signed Off": "N/A"}}
-                </td>
-                <td scope="col" class="text-left">
-                  <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"
-                          nbTooltip="See Release Details" *ngIf="deployment.status != 'FAULT'">
-                    <nb-icon icon="info-outline" ></nb-icon>
-                  </button>
-                  <button (click)="showLogDetails(logsDialog, deployment.id, deployment.status)" nbButton ghost
-                          *ngIf="deployment.status != 'FAULT'"
-                          status="primary" nbTooltip="See Terraform Logs">
-                    <nb-icon icon="file-text-outline"></nb-icon>
-                  </button>
-
-                  <button *ngIf="downStreamClusters.length !== 0 && deployment.allowSignoff"
-                          (click)="confirmSignoff(signoff, deployment)" nbButton ghost
-                          status="primary" nbTooltip="Sign Off this Stack version?">
-                    <nb-icon icon="flag-outline"></nb-icon>
-                  </button>
-                </td>
+                <ng-template *ngTemplateOutlet="releaseRow; context: {$implicit: deployment}"></ng-template>
               </tr>
               </thead>
             </table>
@@ -219,6 +160,61 @@
 
 </app-layout-one-column>
 
+<ng-template #releaseRow let-deployment>
+  <td class="vert-center" scope="col"
+  >{{deployment.createdOn | timeago}} <br/>
+    <span class="text-muted">{{deployment.createdOn | date: 'short'}}</span></td>
+  <td class="vert-center" scope="col" *ngIf="deployment.status == 'IN_PROGRESS'"><span
+    class="badge badge-primary">IN PROGRESS</span></td>
+  <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAULT'"><span
+    class="badge badge-secondary">NO CHANGE</span></td>
+  <td class="vert-center" scope="col" *ngIf="deployment.status == 'SUCCEEDED'"><span
+    class="badge badge-success">SUCCESS</span></td>
+  <td class="vert-center" scope="col" *ngIf="deployment.status == 'FAILED'"><span
+    class="badge badge-danger">FAIL</span>
+  </td>
+  <td class="vert-center" scope="col"
+      *ngIf=" -1 == ['FAULT','FAILED','SUCCEEDED','IN_PROGRESS'].indexOf(deployment.status)"><span
+    class="badge badge-dark">{{deployment.status}}</span></td>
+
+  <td class="vert-center" scope="col">
+    <a href="{{deployment.stackUrl}}" target="_blank">{{deployment.stackVersion | slice:0:7}}</a>
+    <button *ngIf="deployment.allowSignoff" (click)="openTab(deployment.compareUrl)" nbButton
+            nbTooltip="Compare with signed-off version" ghost status="primary">
+      <nb-icon icon="code-outline"></nb-icon>
+    </button>
+  </td>
+  <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'REGULAR'">Full Release</td>
+  <td class="vert-center" scope="col" *ngIf="deployment.deploymentType == 'CUSTOM'">Hotfix Release</td>
+  <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy != 'Deployer'">
+    <nb-icon icon="person-outline" class="mr-2"></nb-icon>
+    {{deployment.triggeredBy}}</td>
+  <td class="vert-center" scope="col" *ngIf="deployment.triggeredBy == 'Deployer'">
+    <nb-icon icon="calendar-outline" class="mr-2"></nb-icon>
+    Facets Bot
+  </td>
+
+  <td *ngIf="downStreamClusters.length !== 0" scope="col"
+      class="vert-center">{{deployment.signedOff ? "Signed Off" : deployment.allowSignoff ? "Not Signed Off" : "N/A"}}
+  </td>
+  <td scope="col" class="text-left">
+    <button (click)="showDetails(dialog, deployment.id)" nbButton ghost status="primary"
+            nbTooltip="See Release Details" *ngIf="deployment.status != 'FAULT'">
+      <nb-icon icon="info-outline"></nb-icon>
+    </button>
+    <button (click)="showLogDetails(logsDialog, deployment.id, deployment.status)" nbButton ghost
+            *ngIf="deployment.status != 'FAULT'"
+            status="primary" nbTooltip="See Terraform Logs">
+      <nb-icon icon="file-text-outline"></nb-icon>
+    </button>
+
+    <button *ngIf="downStreamClusters.length !== 0 && deployment.allowSignoff"
+            (click)="confirmSignoff(signoff, deployment)" nbButton ghost
+            status="primary" nbTooltip="Sign Off this Stack version?">
+      <nb-icon icon="flag-outline"></nb-icon>
+    </button>
+  </td>
+</ng-template>
 
 <ng-template #logsDialog let-data let-ref="dialogRef">
   <nb-card size="giant" class="min-vw-100" [nbSpinner]="logLoading">
@@ -238,10 +234,11 @@
           <span class="badge badge-dark text-light mr-3">{{log.value.timestamp | date: 'short'}} ></span>
           <div [innerHTML]="convert.toHtml(log.value.message) | safeHtml" *ngIf="!this.raw"></div>
           <span class="badge badge-dark text-white" *ngIf="this.raw"
-                >{{ log.value.message }}</span>
+          >{{ log.value.message }}</span>
         </nb-list-item>
       </nb-list>
-      <button *ngIf="!logLoading" nbButton status=basic fullWidth (click)="this.getLogs(data.deploymentId, false)" class="ml-3">Load More
+      <button *ngIf="!logLoading" nbButton status=basic fullWidth (click)="this.getLogs(data.deploymentId, false)"
+              class="ml-3">Load More
       </button>
     </nb-card-body>
   </nb-card>
@@ -292,7 +289,7 @@
         </nb-tab>
 
         <nb-tab tabTitle="All Changes">
-          <div  class="table-responsive">
+          <div class="table-responsive">
             <table class="table table-bordered">
               <tr class="bg-light">
                 <th class="vert-center" scope="col">Resource Path</th>

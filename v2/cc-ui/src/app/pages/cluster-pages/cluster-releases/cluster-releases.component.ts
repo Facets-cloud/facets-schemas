@@ -40,8 +40,8 @@ export class ClusterReleasesComponent implements OnInit {
   logLoading: boolean = false;
   convert: any;
   raw: any = false;
-  hideNoChanges: boolean = true;
-  deploymentsFull: any;
+  showNoChanges: boolean = false;
+  deploymentsFull: DeploymentLog[];
 
 
   constructor(private deploymentController: UiDeploymentControllerService,
@@ -84,6 +84,7 @@ export class ClusterReleasesComponent implements OnInit {
       confirmSave: false,
     },
   };
+  latestRelease: DeploymentLog;
 
   ngOnInit(): void {
     this.route.params.subscribe(p => {
@@ -94,6 +95,7 @@ export class ClusterReleasesComponent implements OnInit {
             this.stats = t.deploymentsStats
             this.currentSignedOffDeployment = t.currentSignedOffDeployment;
             this.deploymentsFull = t["deploymentsFull"]
+            this.latestRelease = this.deploymentsFull[0];
             t.deployments.forEach(deployment =>
               deployment['allowSignoff'] = deployment.status === 'SUCCEEDED' &&
                 deployment.stackVersion?.length > 0 &&
