@@ -1,10 +1,11 @@
 FROM node:12.18-alpine as builder
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
-COPY . /app/
+COPY package.json /app/
 RUN apk add git
 RUN npm install
 RUN npm rebuild node-sass
+COPY . /app/
 RUN /app/node_modules/@angular/cli/bin/ng build --prod
 
 FROM nginx:alpine
