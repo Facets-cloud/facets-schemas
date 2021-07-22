@@ -29,7 +29,7 @@ export class StackOverviewComponent implements OnInit {
         valuePrepareFunction: (value, row, cell) => {
           // DATA FROM HERE GOES TO renderComponent
           const displayVal = {
-            url: ['/capc/', this.stack.name, 'cluster', value,'overview'],
+            url: ['/capc/', this.stack?.name, 'cluster', value,'overview'],
             display: value
           };
           return JSON.stringify(displayVal);
@@ -82,28 +82,21 @@ export class StackOverviewComponent implements OnInit {
         s => {
           this.stack = s;
           this.pauseReleases = s.pauseReleases;
-        }
-      );
-      this.uiStackControllerService.getClustersUsingGET1(p.stackName).subscribe(
-        c => {
-          this.tableData = c;
+          this.uiStackControllerService.getClustersUsingGET1(p.stackName).subscribe(
+            c => {
+              this.tableData = c;
+            }
+          );
         }
       );
     });
-    this.applicationController.meUsingGET().subscribe(
-      (x: SimpleOauth2User) => {
-        this.user = x;
-        this.isUserAdmin = (this.user.authorities.map(x => x.authority).includes('ROLE_ADMIN'))
-        || this.user.authorities.map(x => x.authority).includes('ROLE_CC-ADMIN');
-      }
-    );
+
   }
 
 
   createCluster(): void {
-    if (this.isUserAdmin){
     this.router.navigate(['/capc/', this.stack.name , 'chooseClusterCreate']);
-    }
+
   }
 
   errorHandler(error) {
