@@ -41,10 +41,6 @@ ls -lrth /home
 echo "cd /var/log/efs" >> /home/capk8s/.bashrc
 source /home/capk8s/.bashrc
 
-setfacl -m u:capk8s:---  /bin/gunzip
-setfacl -m u:capk8s:---  /bin/gzip
-setfacl -m u:capk8s:---  /bin/uncompress
-setfacl -m u:capk8s:---  /bin/setfacl
 #######capk8s user
 
 ######SSH configs
