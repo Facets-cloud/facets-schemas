@@ -120,20 +120,20 @@ public class ClusterHelperTest {
         assert !validatedInput.containsKey("abc");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void validateClusterVarsIncompleteInput() {
-        Map<String, String> stackVars = new HashMap<>();
-        stackVars.put("Test1", "Val1");
-        Stack crm = new Stack();
-        crm.setStackVars(stackVars);
-        Map<String, StackFile.VariableDetails> setClusterVariables = new HashMap<>();
-        setClusterVariables.put("secret1", new StackFile.VariableDetails(true, null));
-        setClusterVariables.put("envVar1", new StackFile.VariableDetails(false, "envVal"));
-        crm.setClusterVariablesMeta(setClusterVariables);
-
-        Map<String, String> inputVars = new HashMap<>();
-        inputVars.put("envVar1", "envVar1Val1");
-
-        Map<String, String> validatedInput = clusterHelper.validateClusterVars(inputVars, crm);
-    }
+//    @Test(expected = IllegalArgumentException.class)
+//    public void validateClusterVarsIncompleteInput() {
+//        Map<String, String> stackVars = new HashMap<>();
+//        stackVars.put("Test1", "Val1");
+//        Stack crm = new Stack();
+//        crm.setStackVars(stackVars);
+//        Map<String, StackFile.VariableDetails> setClusterVariables = new HashMap<>();
+//        setClusterVariables.put("secret1", new StackFile.VariableDetails(true, null));
+//        setClusterVariables.put("envVar1", new StackFile.VariableDetails(false, "envVal"));
+//        crm.setClusterVariablesMeta(setClusterVariables);
+//
+//        Map<String, String> inputVars = new HashMap<>();
+//        inputVars.put("envVar1", "envVar1Val1");
+//
+//        Map<String, String> validatedInput = clusterHelper.validateClusterVars(inputVars, crm);
+//    }
 }

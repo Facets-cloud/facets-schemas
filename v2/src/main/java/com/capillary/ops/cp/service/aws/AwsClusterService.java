@@ -167,6 +167,9 @@ public class AwsClusterService implements ClusterService<AwsCluster, AwsClusterR
         if (checkChanged(existing.getRequireSignOff(), request.getRequireSignOff())) {
             existing.setRequireSignOff(request.getRequireSignOff());
         }
+        if (checkChanged(existing.getReleaseStream(), request.getReleaseStream())) {
+            existing.setReleaseStream(request.getReleaseStream());
+        }
         componentVersionService.syncComponentsVersion(request, existing);
         return existing;
     }

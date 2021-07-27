@@ -10,7 +10,7 @@
         <app-form-field label="Cluster Name" name="clusterName" invalidMsg="Cluster Name is too Short or contains invalid characters (alphanumeric allowed)"
                         missingMsg="Cluster Name is required!" placeholder="Cluster Name"
                         tooltipText="Name to uniquely identify your cluster" pattern="[a-z-]+"
-                        [(ngModel)]="azureClusterRequest.clusterName" required="true"  minlength="5" [disabled]="cluster?.id"></app-form-field>
+                        [(ngModel)]="azureClusterRequest.clusterName" required="true" [disabled]="cluster?.id"></app-form-field>
         <app-form-field label="Time Zone" name="tz" placeholder="Select Time Zone"
                         tooltipText="Timezone to be set in your kubernetes cluster and all resources"
                         [(ngModel)]="timeZoneModelBound"  required="true"  [disabled]="cluster?.id"
@@ -25,7 +25,7 @@
         <app-form-field label="Cloud Provider" name="cloud" placeholder="Select Cloud Provider"
                         tooltipText="The provider for which you want to launch the cluster"
                         [(ngModel)]="azureClusterRequest.cloud" required="true"
-                        select=true
+                        select=true disabled="true"
                         [selectValues]='[{value:"AWS", label:"Amazon Web Services"},{value:"LOCAL", label:"Local Environment"},{value:"AZURE", label:"Azure"}]'></app-form-field>
 
         <app-form-field label="CIDR Range" name="cidr" placeholder="0.0.0.0/0"
@@ -84,30 +84,6 @@
                         select=true
                         [selectValues]='[{value:true, label:"Yes"},{value:false, label:"No"}]'></app-form-field>
 
-
-        <nb-accordion multi class="col-md-12">
-          <nb-accordion-item expanded>
-            <nb-accordion-item-header>
-              Common Variables
-            </nb-accordion-item-header>
-            <nb-accordion-item-body>
-              <app-form-field *ngFor="let variable of dataSourceForCommonVars" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
-                              tooltipText="Cluster variables are common variables defined in stack.json, used across applications in cluster"
-                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
-            </nb-accordion-item-body>
-          </nb-accordion-item>
-
-          <nb-accordion-item expanded>
-            <nb-accordion-item-header>
-              Secrets
-            </nb-accordion-item-header>
-            <nb-accordion-item-body>
-              <app-form-field *ngFor="let variable of dataSourceForSecrets" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
-                              tooltipText="Secrets are common secrets defined in stack.json, used across applications in cluster"
-                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
-            </nb-accordion-item-body>
-          </nb-accordion-item>
-        </nb-accordion>
       </form>
     </nb-card-body>
     <nb-card-footer *ngIf="!cluster?.id">

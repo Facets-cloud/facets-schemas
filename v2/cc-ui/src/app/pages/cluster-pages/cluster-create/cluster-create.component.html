@@ -9,8 +9,8 @@
 
         <app-form-field label="Cluster Name" name="clusterName" invalidMsg="Cluster Name is too Short or contains invalid characters (alphanumeric allowed)"
                         missingMsg="Cluster Name is required!" placeholder="Cluster Name"
-                        tooltipText="Name to uniquely identify your cluster" pattern="[a-z-]+"
-                        [(ngModel)]="awsClusterRequest.clusterName" required="true"  minlength="5" [disabled]="cluster?.id"></app-form-field>
+                        tooltipText="Name to uniquely identify your cluster" pattern="[a-z,A-Z,-]+"
+                        [(ngModel)]="awsClusterRequest.clusterName" required="true" [disabled]="cluster?.id"></app-form-field>
         <app-form-field label="Time Zone" name="tz" placeholder="Select Time Zone"
                         tooltipText="Timezone to be set in your kubernetes cluster and all resources"
                         [(ngModel)]="timeZoneModelBound"  required="true"  [disabled]="cluster?.id"
@@ -25,7 +25,7 @@
         <app-form-field label="Cloud Provider" name="cloud" placeholder="Select Cloud Provider"
                         tooltipText="The provider for which you want to launch the cluster"
                         [(ngModel)]="awsClusterRequest.cloud" required="true"
-                        select=true
+                        select=true disabled="true"
                         [selectValues]='[{value:"AWS", label:"Amazon Web Services"},{value:"LOCAL", label:"Local Environment"},{value:"AZURE", label:"Azure"}]'></app-form-field>
 
         <app-form-field label="CIDR Range" name="cidr" placeholder="0.0.0.0/0"
@@ -42,9 +42,9 @@
                         tooltipText="Comma Separated value for at least two availability Zones"
                         [(ngModel)]="azsCsv" required="true"  [disabled]="cluster?.id"></app-form-field>
 
-        <app-form-field label="VPC ID" name="az" placeholder="An existing VPC ID to re-use"
+        <app-form-field label="VPC ID" name="vpc" placeholder="An existing VPC ID to re-use"
                         tooltipText="VPC Id to re-use, leave empty to create new"
-                        [(ngModel)]="awsClusterRequest.providedVPCId" required="false" [disabled]="cluster?.id"></app-form-field>
+                        [(ngModel)]="awsClusterRequest.providedVPCId" [disabled]="cluster?.id"></app-form-field>
 
         <app-form-field label="IAM Role" name="role"  placeholder="IAM Role ARN"
                         tooltipText="IAM Role created as per Documentation for provisioning cluster in your account"
@@ -68,49 +68,25 @@
 
         <app-form-field label="CD Parent" name="cdPipelineParent" placeholder="Select Parent Cluster (Optional)"
                         tooltipText="If this cluster needs to be placed in a Continuous Delivery pipeline, Select a parent cluster"
-                        select="true" [selectValues]="clusterListValues" optional="true"
-                        [(ngModel)]="awsClusterRequest.cdPipelineParent"></app-form-field>
+                        select="true"
+                        [(ngModel)]="awsClusterRequest.cdPipelineParent"  [selectValues]="clusterListValues" ></app-form-field>
 
         <app-form-field label="Request Limit Ratio" name="k8sRequestsToLimitsRatio" placeholder="Enter Limit Ratio"
                         tooltipText="This ratio will define packing density of k8s cluster, QA Cluster can have lower value"
-                        pattern="^0(\.[0-9][0-9]?)?$"
+                        pattern="^[0,1](\.[0-9][0-9]?)?$"
                         [(ngModel)]="awsClusterRequest.k8sRequestsToLimitsRatio"></app-form-field>
 
         <app-form-field label="Schedule" name="cron" placeholder="30 5 * * *"
                         tooltipText="cron pattern to trigger regular releases"
                         pattern="([0-6]?[0-9]|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*) ([0-9][0-9]?|\*)"
-                        [(ngModel)]="cronScheduleModelBound" required="true" ></app-form-field>
+                        [(ngModel)]="cronScheduleModelBound"></app-form-field>
 
         <app-form-field label="Require Sign off" name="requireSignOff" placeholder="Yes or No"
                         tooltipText="The provider for which you want to launch the cluster"
                         [(ngModel)]="awsClusterRequest.requireSignOff" required="true"
                         select=true
-                        [selectValues]='[{value:true, label:"Yes"},{value:false, label:"No"}]'></app-form-field>
+                        [selectValues]='[{value:"true", label:"Yes"},{value:"false", label:"No"}]'></app-form-field>
 
-
-        <nb-accordion multi class="col-md-12">
-          <nb-accordion-item expanded>
-            <nb-accordion-item-header>
-              Common Variables
-            </nb-accordion-item-header>
-            <nb-accordion-item-body>
-              <app-form-field *ngFor="let variable of dataSourceForCommonVars" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
-                              tooltipText="Cluster variables are common variables defined in stack.json, used across applications in cluster"
-                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
-            </nb-accordion-item-body>
-          </nb-accordion-item>
-
-          <nb-accordion-item expanded>
-            <nb-accordion-item-header>
-              Secrets
-            </nb-accordion-item-header>
-            <nb-accordion-item-body>
-              <app-form-field *ngFor="let variable of dataSourceForSecrets" [label]="variable.name" [name]="variable.name" placeholder="Enter Value"
-                              tooltipText="Secrets are common secrets defined in stack.json, used across applications in cluster"
-                              [(ngModel)]="variable.value" [required]="variable.required"></app-form-field>
-            </nb-accordion-item-body>
-          </nb-accordion-item>
-        </nb-accordion>
       </form>
     </nb-card-body>
     <nb-card-footer *ngIf="!cluster?.id">

@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import com.capillary.ops.cp.bo.AutoCompleteObject;
 import software.amazon.awssdk.services.codebuild.model.StatusType;
+import software.amazon.awssdk.services.ec2.model.InstanceType;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -159,8 +160,16 @@ public class MockCCDataBootstrap {
         Map<ComponentType, String> componentVersion = new HashMap<>();
         componentVersion.put(ComponentType.KUBERNETES, "1.15");
         cluster.setComponentVersions(componentVersion);
+        cluster.setAzs(Arrays.asList("us-east-1a","us-east-1b"));
+        cluster.setInstanceTypes( new ArrayList<String>(){
+            {add(InstanceType.M5_2_XLARGE.toString());}
+            {add(InstanceType.M4_2_XLARGE.toString());}
+            {add(InstanceType.R4_2_XLARGE.toString());}
+        });
+        cluster.setRoleARN("arn::sample");
+        cluster.setExternalId("externalId");
+        cluster.setVpcCIDR("10.0.0.1/16");
         cpClusterRepository.save(cluster);
-
         AwsCluster clusterEksUpgrade = new AwsCluster("eks-upgrade");
         clusterEksUpgrade.setId("eks-upgrade");
         clusterEksUpgrade.setTz(TimeZone.getDefault());

@@ -74,16 +74,9 @@ public class ClusterHelper {
     public Map<String, String> validateClusterVars(Map<String, String> clusterVars, Stack stackObj) {
         Map<String, StackFile.VariableDetails> stackClusterVariables = stackObj.getClusterVariablesMeta();
 
-        List<String> requiredKeys =
-                stackClusterVariables.entrySet().stream().filter(e -> e.getValue().isRequired())
-                        .map(Map.Entry::getKey).collect(Collectors.toList());
-
         List<String> allValidKeys =
                 new ArrayList<>(stackClusterVariables.keySet());
 
-        if (!clusterVars.keySet().containsAll(requiredKeys)) {
-            throw new IllegalArgumentException("Not all required keys are specified, Required keys: " + requiredKeys);
-        }
         // Do not set invalid keys.
         Map<String, String> finalVars = clusterVars.entrySet().stream().filter(e -> allValidKeys.contains(e.getKey()))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));

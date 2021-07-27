@@ -53,9 +53,6 @@ export class ClusterCreateComponent implements OnInit {
     'US_GOV_EAST_1'];
 
 
-  dataSourceForSecrets: any = [];
-  dataSourceForCommonVars: any = [];
-
   ngOnInit() {
     this.activatedRoute.params.subscribe(p => {
       this.stackName = p.stackName;
@@ -63,12 +60,10 @@ export class ClusterCreateComponent implements OnInit {
         this.clusterController.getClusterUsingGET2(p.clusterId).subscribe(clusterObj => {
           this.cluster = clusterObj;
           this.initAWSClusterRequestObject();
-          this.clusterCreateHelperService.loadClusterVarsFromCluster(clusterObj, this.dataSourceForSecrets, this.dataSourceForCommonVars, this.extraEnvVars);
         });
       } else {
         this.stackController.getStackUsingGET(this.stackName).subscribe(
           s => {
-            this.clusterCreateHelperService.loadClusterVarsFromStack(s, this.dataSourceForSecrets,this.dataSourceForCommonVars);
             this.stack = s;
             console.log(this.stack);
           });
@@ -122,16 +117,6 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
     this.awsClusterRequest.azs = this.azsCsv.split(",")
 
-    this.dataSourceForCommonVars.forEach(element => {
-      this.awsClusterRequest.clusterVars[element.name] = element.value;
-    });
-    const secretsDataSource = this.dataSourceForSecrets;
-    secretsDataSource.forEach(element => {
-      if (element.value != "****") {
-        this.awsClusterRequest.clusterVars[element.name] = element.value;
-      }
-    });
-
     try {
 
       this.clusterController.createClusterUsingPOST2(this.awsClusterRequest)
@@ -180,25 +165,14 @@ export class ClusterCreateComponent implements OnInit {
     this.awsClusterRequest.tz = this.timeZoneModelBound;
     this.awsClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
 
-    this.dataSourceForCommonVars.forEach(element => {
-      if (this.hasClusterVariableChanged(this.dataSourceForCommonVars, element.name)) {
-        this.awsClusterRequest.clusterVars[element.name] = element.value;
-      }
-    });
-    const secretsDataSource = await this.dataSourceForSecrets;
-    secretsDataSource.forEach(element => {
-      if (this.hasClusterVariableChanged(secretsDataSource, element.name)) {
-        this.awsClusterRequest.clusterVars[element.name] = element.value;
-      }
-    });
-
     try {
       this.clusterController.updateClusterUsingPUT2({
         request: this.awsClusterRequest,
         clusterId: this.cluster.id
       }).subscribe(c => {
-          console.log(c);
-          this.router.navigate(['/capc/', this.stackName, 'cluster', this.cluster.id]);
+          this.cluster = c
+          this.initAWSClusterRequestObject()
+          this.toastrService.success('Cluster updated successfully', 'Success', {duration: 10000});
         },
         error => {
           this.toastrService.danger('Cluster update failed ' + error.statusText, 'Error', {duration: 8000});
