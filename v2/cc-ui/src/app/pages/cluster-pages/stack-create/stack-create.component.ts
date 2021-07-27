@@ -85,7 +85,7 @@ export class StackCreateComponent implements OnInit {
         .subscribe(cluster => {
             this.toastrService.success('Stack change success!! ', 'Success', {duration: 2000});
             setTimeout(() => {
-              this.router.navigate(['/capc/', 'home'])
+              location.reload();
             }, 2000);
           },
           error => {

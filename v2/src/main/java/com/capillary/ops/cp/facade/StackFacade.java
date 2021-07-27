@@ -221,6 +221,11 @@ public class StackFacade {
         Optional<Stack> optionalStack = stackRepository.findById(stackName);
         if (optionalStack.isPresent()){
             Stack stack1 = optionalStack.get();
+            stack1.setVcsUrl(stack.getVcsUrl());
+            stack1.setVcs(stack.getVcs());
+            stack1.setUser(stack.getUser());
+            stack1.setAppPassword(stack.getAppPassword());
+            stack1.setRelativePath(stack.getRelativePath());
             stack1.setArtifactories(stack.getArtifactories());
             return stackRepository.save(stack1);
         }else{
