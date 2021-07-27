@@ -32,7 +32,48 @@ export class ClusterVarsComponent implements OnInit {
         filter: false,
         width: '70%',
         editable: true,
-        editor: {type: 'text'},
+        editor: {type: 'password'},
+      }
+    },
+    noDataMessage: '',
+    pager: {
+      display: true,
+      perPage: 10,
+    },
+    actions: {
+      add: false,
+      edit: true,
+      delete: false,
+      position: 'right',
+    },
+    edit: {
+      inputClass: '',
+      editButtonContent: '<i class="eva-edit-outline eva"></i>',
+      saveButtonContent: '<i class="eva-checkmark-outline eva"></i>',
+      cancelButtonContent: '<i class="eva-close-outline eva"></i>',
+      confirmSave: true,
+    },
+  };
+  settingsSecrets = {
+    columns: {
+      name: {
+        title: 'Name',
+        filter: true,
+        width: '30%',
+        editable: false,
+      },
+      value: {
+        title: 'Value',
+        filter: false,
+        width: '50%',
+        editable: true,
+        editor: {type: 'password'},
+      },
+      status: {
+        title: 'Status',
+        filter: false,
+        width: '20%',
+        editable: false,
       }
     },
     noDataMessage: '',
@@ -123,7 +164,7 @@ export class ClusterVarsComponent implements OnInit {
 
     dataSource = [];
     Object.keys(cluster.secrets).forEach(element => {
-      dataSource.push({name: element, value: "*"});
+      dataSource.push({name: element, status: cluster.secrets[element], value: "*"});
       this.originalData[element] = cluster.commonEnvironmentVariables[element];
     });
     this.sensitiveClusterSource.load(dataSource);
