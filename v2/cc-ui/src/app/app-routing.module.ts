@@ -25,6 +25,7 @@ import {AzureClusterCreateComponent} from "./pages/cluster-pages/cluster-create-
 import {OauthClientsComponent} from "./pages/oauth-clients/oauth-clients.component";
 import {ClusterVarsComponent} from "./pages/cluster-pages/cluster-vars/cluster-vars.component";
 import {NotificationCenterComponent} from "./pages/notification-center/notification-center.component";
+import { ProvidedResourcesComponent } from './pages/cluster-pages/provided-resources/provided-resources.component';
 
 
 const routes: Routes = [
@@ -115,6 +116,10 @@ const routes: Routes = [
       {
         path: 'tools',
         component: ClusterTunnelComponent,
+      },
+      {
+        path: 'provided',
+        component: ProvidedResourcesComponent,
       },
       {path: '', redirectTo: 'overview', pathMatch: 'full'},
       {path: '**', redirectTo: 'overview', pathMatch: 'full'},
