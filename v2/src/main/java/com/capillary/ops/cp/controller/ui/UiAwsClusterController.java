@@ -13,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * All calls which can be made by the "Cluster Managers"
@@ -44,14 +43,14 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping()
     public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
-        return (awsClusterController.createCluster(request));
+        return hideSecrets(awsClusterController.createCluster(request));
     }
 
     @Override
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PutMapping("{clusterId}")
     public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
-        return (awsClusterController.updateCluster(request, clusterId));
+        return hideSecrets(awsClusterController.updateCluster(request, clusterId));
     }
 
     /**
@@ -64,9 +63,7 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     @GetMapping("{clusterId}")
     public AwsCluster getCluster(@PathVariable String clusterId) {
         AwsCluster cluster = awsClusterController.getCluster(clusterId);
-        Map<String, String> secrets =
-                cluster.getSecrets().keySet().stream().collect(Collectors.toMap(Function.identity(), x -> "****"));
-        cluster.setSecrets(secrets);
+        hideSecrets(cluster);
         return cluster;
     }
 
@@ -75,14 +72,18 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
         Stack stackByName = stackFacade.getStackByName(stackName);
         Map<String, StackFile.VariableDetails> clusterVariablesMeta = stackByName.getClusterVariablesMeta();
         Map<String, String> secrets = cluster.getSecrets();
+        if (secrets == null || clusterVariablesMeta == null) {
+            cluster.setSecrets(new HashMap<>());
+            return cluster;
+        }
         clusterVariablesMeta.forEach(
                 (key, cvm) -> {
                     if (cvm.isSecret()) {
-                        if (!secrets.containsKey(key) || secrets.get(key)==null || secrets.get(key).isEmpty()) {
+                        if (!secrets.containsKey(key) || secrets.get(key) == null || secrets.get(key).isEmpty()) {
                             secrets.put(key, "Not Set");
-                        } else if (cvm.getValue().equals(secrets.get(key))) {
+                        } else if (cvm.getValue() != null && cvm.getValue().equals(secrets.get(key))) {
                             secrets.put(key, "Stack Default");
-                        } else{
+                        } else {
                             secrets.put(key, "Set");
                         }
                     }

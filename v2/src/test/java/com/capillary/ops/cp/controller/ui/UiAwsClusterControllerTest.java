@@ -32,6 +32,17 @@ public class UiAwsClusterControllerTest extends TestCase {
     private StackFacade stackFacade;
 
     @Test
+    public void testHideSecretsNull() {
+        Stack stack = new Stack();
+        AwsCluster cluster = new AwsCluster("name");
+        when(awsClusterController.getCluster(any())).thenReturn(
+                cluster
+        );
+        when(stackFacade.getStackByName(any())).thenReturn(stack);
+        AwsCluster cluster1 = uiAwsClusterController.hideSecrets(cluster);
+    }
+
+    @Test
     public void testHideSecrets() {
         Stack stack = new Stack();
         stack.setClusterVariablesMeta(new HashMap<String, com.capillary.ops.cp.bo.StackFile.VariableDetails>(){{
@@ -39,12 +50,16 @@ public class UiAwsClusterControllerTest extends TestCase {
             put("secret2", new StackFile.VariableDetails(true,"secret2"));
             put("secret3", new StackFile.VariableDetails(true,"secret3"));
             put("secret4", new StackFile.VariableDetails(true,"secret4"));
+            put("secret5", new StackFile.VariableDetails(true,null));
+            put("secret6", new StackFile.VariableDetails(true,null));
         }});
         AwsCluster cluster = new AwsCluster("name");
         cluster.setSecrets(new HashMap<String, String>(){{
             put("secret1","secret1");
             put("secret2","different");
             put("secret3","");
+            put("secret5","test");
+            put("secret6","");
         }});
 
         when(awsClusterController.getCluster(any())).thenReturn(
@@ -56,7 +71,8 @@ public class UiAwsClusterControllerTest extends TestCase {
         assert cluster1.getSecrets().get("secret2").equals("Set");
         assert cluster1.getSecrets().get("secret3").equals("Not Set");
         assert cluster1.getSecrets().get("secret4").equals("Not Set");
-
+        assert cluster1.getSecrets().get("secret5").equals("Set");
+        assert cluster1.getSecrets().get("secret6").equals("Not Set");
         System.out.println(cluster1);
     }
 }
