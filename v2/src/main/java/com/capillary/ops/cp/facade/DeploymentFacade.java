@@ -602,7 +602,9 @@ public class DeploymentFacade {
             }
         }
         // Force update
-        deployment.setStatus(null);
+        if (deployment.getChangesApplied() == null || deployment.getChangesApplied().size() == 0) {
+            deployment.setStatus(null);
+        }
         DeploymentLog deploymentLog = tfBuildService.loadDeploymentStatus(deployment, true);
         return deploymentLog;
     }
