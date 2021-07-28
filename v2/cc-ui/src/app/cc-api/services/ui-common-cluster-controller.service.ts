@@ -12,6 +12,7 @@ import { AbstractCluster } from '../models/abstract-cluster';
 import { SnapshotInfo } from '../models/snapshot-info';
 import { OverrideObject } from '../models/override-object';
 import { OverrideRequest } from '../models/override-request';
+import { ProvidedResources } from '../models/provided-resources';
 import { DeploymentLog } from '../models/deployment-log';
 import { ResourceDetails } from '../models/resource-details';
 import { SilenceAlarmRequest } from '../models/silence-alarm-request';
@@ -38,6 +39,8 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly getOverridesUsingGET1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/overrides';
   static readonly deleteOverridesUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/overrides/{resourceType}/{resourceName}';
+  static readonly getProvidedResourcesUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/providedResources';
+  static readonly upsertProvidedResourcesUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/providedResources';
   static readonly refreshResourceUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/refreshResource';
   static readonly resourceDetailsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/resourceDetails';
   static readonly silenceAlertsUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/silence-alerts';
@@ -716,6 +719,93 @@ class UiCommonClusterControllerService extends __BaseService {
   }
 
   /**
+   * getProvidedResources
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getProvidedResourcesUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<ProvidedResources>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/providedResources`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ProvidedResources>;
+      })
+    );
+  }
+  /**
+   * getProvidedResources
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getProvidedResourcesUsingGET(clusterId: string): __Observable<ProvidedResources> {
+    return this.getProvidedResourcesUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as ProvidedResources)
+    );
+  }
+
+  /**
+   * upsertProvidedResources
+   * @param params The `UiCommonClusterControllerService.UpsertProvidedResourcesUsingPOSTParams` containing the following parameters:
+   *
+   * - `providedResources`: providedResources
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  upsertProvidedResourcesUsingPOSTResponse(params: UiCommonClusterControllerService.UpsertProvidedResourcesUsingPOSTParams): __Observable<__StrictHttpResponse<ProvidedResources>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.providedResources;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/providedResources`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ProvidedResources>;
+      })
+    );
+  }
+  /**
+   * upsertProvidedResources
+   * @param params The `UiCommonClusterControllerService.UpsertProvidedResourcesUsingPOSTParams` containing the following parameters:
+   *
+   * - `providedResources`: providedResources
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  upsertProvidedResourcesUsingPOST(params: UiCommonClusterControllerService.UpsertProvidedResourcesUsingPOSTParams): __Observable<ProvidedResources> {
+    return this.upsertProvidedResourcesUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as ProvidedResources)
+    );
+  }
+
+  /**
    * refreshResource
    * @param clusterId clusterId
    * @return OK
@@ -962,6 +1052,22 @@ module UiCommonClusterControllerService {
      * resourceName
      */
     resourceName: string;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for upsertProvidedResourcesUsingPOST
+   */
+  export interface UpsertProvidedResourcesUsingPOSTParams {
+
+    /**
+     * providedResources
+     */
+    providedResources: ProvidedResources;
 
     /**
      * clusterId

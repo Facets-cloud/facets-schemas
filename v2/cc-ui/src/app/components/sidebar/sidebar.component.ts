@@ -129,6 +129,11 @@ export class SidebarComponent implements OnInit {
             link: this.BASE_URL + this.currentClusterURL + "/disaster-recovery",
           },
           {
+            title: 'Provided Resources',
+            icon: 'cube-outline',
+            link: this.BASE_URL + this.currentClusterURL + "/provided",
+          },
+          {
             title: 'Information',
             icon: 'info-outline',
             link: this.BASE_URL + this.currentClusterURL + "/resource-details",

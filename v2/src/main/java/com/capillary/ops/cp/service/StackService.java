@@ -3,6 +3,7 @@ package com.capillary.ops.cp.service;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.capillary.ops.cp.bo.Resource;
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.StackFile;
 import com.capillary.ops.cp.bo.Substack;
@@ -25,8 +26,9 @@ import org.zeroturnaround.zip.ZipUtil;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,8 +113,54 @@ public class StackService {
             throw new IllegalArgumentException(
                     "Invalid Stack Definition in given Directory " + stack.getVcsUrl() + "" + stack.getRelativePath(), e);
         }
-
+        stack.setProvidedResources(getProvidedResources(location));
         return stack;
+    }
+
+    private Set<Resource> getProvidedResources(Path location) {
+
+      Set<Resource> result = new HashSet<Resource>();
+      try {
+        Files.walkFileTree(location, new FileVisitor<Path>() {
+          @Override
+          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if(dir.getFileName().toString().equalsIgnoreCase("schema") ||
+              dir.getFileName().toString().equalsIgnoreCase("seed_data") ||
+              dir.getFileName().toString().equalsIgnoreCase("views") ||
+              dir.getFileName().toString().equalsIgnoreCase(".git") ||
+              dir.getFileName().toString().equalsIgnoreCase("database_views") ||
+              dir.getFileName().toString().equalsIgnoreCase("application") ||
+              dir.getFileName().toString().equalsIgnoreCase(".github")
+            ) {
+              return FileVisitResult.SKIP_SUBTREE;
+            } else {
+              return FileVisitResult.CONTINUE;
+            }
+          }
+
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            if(file.getFileName().toString().contains(".json") &&
+              file.getParent().getFileName().toString().equalsIgnoreCase("provided")) {
+              result.add(new Resource(file.getParent().getParent().getFileName().toString(), file.getFileName().toString().replace(".json", "")));
+            }
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            return FileVisitResult.CONTINUE;
+          }
+        });
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return result;
     }
 
     private Map<ComponentType, String> getStackComponentVersions(Stack stack, StackFile stackFile) {

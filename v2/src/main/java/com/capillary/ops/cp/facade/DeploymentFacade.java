@@ -6,6 +6,7 @@ import com.capillary.ops.cp.bo.notifications.ApplicationDeploymentNotification;
 import com.capillary.ops.cp.bo.notifications.DRResultNotification;
 import com.capillary.ops.cp.bo.notifications.QASanityNotification;
 import com.capillary.ops.cp.bo.notifications.SignOffNotification;
+import com.capillary.ops.cp.bo.providedresources.ProvidedResources;
 import com.capillary.ops.cp.bo.recipes.*;
 import com.capillary.ops.cp.bo.requests.DeploymentRequest;
 import com.capillary.ops.cp.bo.requests.ReleaseType;
@@ -106,6 +107,8 @@ public class DeploymentFacade {
     @Value("${flock.notification.cc.endpoint}")
     private String flockCCNotificationEndpoint;
 
+    @Autowired
+    private ProvidedResourcesRepository providedResourcesRepository;
     /**
      * Create a new Deployment
      *
@@ -646,8 +649,10 @@ public class DeploymentFacade {
                         x -> x.getValue().stream().collect(
                                 Collectors.toMap((SnapshotInfo y) -> y.getInstanceName(), (SnapshotInfo y) -> y))));
         List<OverrideObject> overrides = overrideObjectRepository.findAllByClusterId(cluster.getId());
+
+        ProvidedResources providedResources = clusterFacade.getProvidedResources(clusterId);
         return new DeploymentContext(cluster, allArtifacts, artifactoryList, overrides, pinnedSnapshots,
-                deploymentRequest.getExtraEnv());
+                deploymentRequest.getExtraEnv(), providedResources);
     }
 
     public void handleCodeBuildCallback(CodeBuildStatusCallback callback) {

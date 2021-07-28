@@ -1,5 +1,6 @@
 /* tslint:disable */
 import { VariableDetails } from './variable-details';
+import { Resource } from './resource';
 export interface Substack {
   appPassword?: string;
   artifactPath?: string;
@@ -9,6 +10,7 @@ export interface Substack {
   componentVersions?: {[key: string]: string};
   name?: string;
   pauseReleases?: boolean;
+  providedResources?: Array<Resource>;
   relativePath?: string;
   stackVars?: {[key: string]: string};
   user?: string;

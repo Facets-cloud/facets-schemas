@@ -2,15 +2,13 @@ package com.capillary.ops.cp.facade;
 
 import com.capillary.ops.cp.bo.Stack;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.providedresources.ProvidedResources;
 import com.capillary.ops.cp.bo.notifications.AlertNotification;
 import com.capillary.ops.cp.bo.requests.ClusterRequest;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.exceptions.UnsupportedComponentVersionException;
-import com.capillary.ops.cp.repository.CpClusterRepository;
-import com.capillary.ops.cp.repository.K8sCredentialsRepository;
-import com.capillary.ops.cp.repository.SnapshotInfoRepository;
-import com.capillary.ops.cp.repository.StackRepository;
+import com.capillary.ops.cp.repository.*;
 import com.capillary.ops.cp.service.*;
 import com.capillary.ops.cp.service.factory.ClusterServiceFactory;
 import com.capillary.ops.cp.service.factory.DRCloudFactorySelector;
@@ -82,6 +80,12 @@ public class ClusterFacade {
 
     @Autowired
     private CCKubernetesService ccKubernetesService;
+
+    @Autowired
+    private ProvidedResourcesRepository providedResourcesRepository;
+
+    @Autowired
+    private ProvidedResourcesService providedResourcesService;
 
     @Autowired
     private MetaService metaService;
@@ -468,4 +472,22 @@ public class ClusterFacade {
     public TFRunConfigurations deleteTFDetails(String clusterId) {
         return tfRunConfigurationsService.deleteTFRunConfigurations(clusterId);
     }
+
+    public ProvidedResources upsertProvidedResources(String clusterId, ProvidedResources providedResources) {
+        AbstractCluster abstractCluster = cpClusterRepository.findById(clusterId).get();
+        Stack stack = stackRepository.findById(abstractCluster.getStackName()).get();
+        providedResources.setClusterId(abstractCluster.getId());
+        providedResourcesService.validateProvidedResources(stack, providedResources);
+        Optional<ProvidedResources> exiting = providedResourcesRepository.findOneByClusterId(clusterId);
+        if (exiting.isPresent()) {
+            providedResources.setId(exiting.get().getId());
+        }
+        return providedResourcesRepository.save(providedResources);
+    }
+
+    public ProvidedResources getProvidedResources(String clusterId) {
+        AbstractCluster abstractCluster = cpClusterRepository.findById(clusterId).get();
+        return providedResourcesRepository.findOneByClusterId(clusterId).orElseGet(() -> new ProvidedResources(clusterId));
+    }
+
 }

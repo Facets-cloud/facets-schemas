@@ -93,6 +93,10 @@ export class HeaderComponent implements OnInit {
           {
             title: "Grafana",
             url: this.BASE_URL + this.currentClusterURL + "/tools"
+          },
+          {
+            title: "Provided Resources",
+            url: this.BASE_URL + this.currentClusterURL + "/provided"
           }
 
         ]

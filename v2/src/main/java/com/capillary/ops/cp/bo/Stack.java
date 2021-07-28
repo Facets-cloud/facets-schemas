@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Document
 public class Stack {
@@ -39,6 +36,8 @@ public class Stack {
     private List<String> childStacks = new ArrayList<>();
 
     private List<String> artifactories = new ArrayList<>();
+
+    private Set<Resource> providedResources = new HashSet<>();
 
     public String getName() {
         return name;
@@ -135,4 +134,12 @@ public class Stack {
     public void setArtifactories(List<String> artifactories) {
         this.artifactories = artifactories;
     }
+
+  public Set<Resource> getProvidedResources() {
+    return providedResources;
+  }
+
+  public void setProvidedResources(Set<Resource> providedResources) {
+    this.providedResources = providedResources;
+  }
 }

@@ -1,6 +1,12 @@
 package com.capillary.ops.cp.controller.ui;
 
+import com.capillary.ops.cp.bo.ClusterTask;
+import com.capillary.ops.cp.bo.DeploymentLog;
+import com.capillary.ops.cp.bo.OverrideObject;
+import com.capillary.ops.cp.bo.ResourceDetails;
+import com.capillary.ops.cp.bo.SnapshotInfo;
 import com.capillary.ops.cp.bo.*;
+import com.capillary.ops.cp.bo.providedresources.ProvidedResources;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
@@ -71,6 +77,20 @@ public class UiCommonClusterController {
                                                @RequestBody List<OverrideRequest> request) {
 
         return clusterFacade.override(clusterId, request);
+    }
+
+    @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterMaintainerAccess(authentication, #clusterId)")
+    @PostMapping("{clusterId}/providedResources")
+    public ProvidedResources upsertProvidedResources(@PathVariable String clusterId,
+                                                     @RequestBody ProvidedResources providedResources) {
+
+        return clusterFacade.upsertProvidedResources(clusterId, providedResources);
+    }
+
+    @GetMapping("{clusterId}/providedResources")
+    public ProvidedResources getProvidedResources(@PathVariable String clusterId) {
+
+        return clusterFacade.getProvidedResources(clusterId);
     }
 
     @GetMapping("{clusterId}/overrides")

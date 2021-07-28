@@ -1,5 +1,6 @@
 package com.capillary.ops.cp.bo;
 
+import com.capillary.ops.cp.bo.providedresources.ProvidedResources;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
@@ -15,13 +16,14 @@ public class DeploymentContext {
                              List<Artifactory> artifactoryDetails,
                              List<OverrideObject> overrides,
                              Map<String, Map<String, SnapshotInfo>> snapshots,
-                             Map<String, String> extraEnv) {
+                             Map<String, String> extraEnv, ProvidedResources providedResources) {
         this.cluster = cluster;
         this.artifacts = artifacts;
         this.artifactoryDetails = artifactoryDetails;
         this.overrides = overrides;
         this.snapshots = snapshots;
         this.extraEnv = extraEnv;
+        this.providedResources = providedResources;
     }
 
     @JsonIgnore
@@ -31,6 +33,7 @@ public class DeploymentContext {
     private List<OverrideObject> overrides;
     private Map<String, Map<String, SnapshotInfo>> snapshots;
     private Map<String, String> extraEnv;
+    private ProvidedResources providedResources;
 
     public AbstractCluster getCluster() {
         return cluster;
@@ -79,4 +82,12 @@ public class DeploymentContext {
     public void setExtraEnv(Map<String, String> extraEnv) {
         this.extraEnv = extraEnv;
     }
+
+  public ProvidedResources getProvidedResources() {
+    return providedResources;
+  }
+
+  public void setProvidedResources(ProvidedResources providedResources) {
+    this.providedResources = providedResources;
+  }
 }

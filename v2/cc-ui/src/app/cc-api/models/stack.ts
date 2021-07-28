@@ -1,5 +1,6 @@
 /* tslint:disable */
 import { VariableDetails } from './variable-details';
+import { Resource } from './resource';
 export interface Stack {
   appPassword?: string;
   artifactories?: Array<string>;
@@ -8,6 +9,7 @@ export interface Stack {
   componentVersions?: {[key: string]: string};
   name?: string;
   pauseReleases?: boolean;
+  providedResources?: Array<Resource>;
   relativePath?: string;
   stackVars?: {[key: string]: string};
   user?: string;
