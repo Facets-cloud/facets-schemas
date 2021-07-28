@@ -66,4 +66,9 @@ public class ApplicationDeploymentNotification implements Notification {
     public TeamResource getTeamResource() {
       return new TeamResource(getStackName(), "application", getNotificationSubject());
     }
+
+    @Override
+    public Boolean isPayloadJson() {
+        return true;
+    }
 }
