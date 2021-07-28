@@ -29,7 +29,6 @@ phases:
       - python3 scripts/report.py
       - >
         curl -X POST "https://${TF_VAR_cc_host}/cc/v1/callbacks/codebuild" -H "accept: application/json" -H "Content-Type: application/json" -H "X-DEPLOYER-INTERNAL-AUTH-TOKEN: $TF_VAR_cc_auth_token" -d "{ \"codebuidId\": \"$CODEBUILD_BUILD_ID\", \"status\": \"SUCCEEDED\"}"
-artifacts:
   files:
     - capillary-cloud-tf/$CLOUD_TF_PROVIDER/fetched_builds/**/*
     - capillary-cloud-tf/$CLOUD_TF_PROVIDER/*.json
