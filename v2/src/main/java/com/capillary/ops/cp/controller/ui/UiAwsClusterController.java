@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * All calls which can be made by the "Cluster Managers"
@@ -42,14 +44,14 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     @PreAuthorize("hasRole('CC-ADMIN')")
     @PostMapping()
     public AwsCluster createCluster(@RequestBody AwsClusterRequest request) {
-        return hideSecrets(awsClusterController.createCluster(request));
+        return (awsClusterController.createCluster(request));
     }
 
     @Override
     @PreAuthorize("hasRole('CC-ADMIN') or @aclService.hasClusterWriteAccess(authentication, #clusterId)")
     @PutMapping("{clusterId}")
     public AwsCluster updateCluster(@RequestBody AwsClusterRequest request, @PathVariable String clusterId) {
-        return hideSecrets(awsClusterController.updateCluster(request, clusterId));
+        return (awsClusterController.updateCluster(request, clusterId));
     }
 
     /**
@@ -62,7 +64,9 @@ public class UiAwsClusterController implements ClusterController<AwsCluster, Aws
     @GetMapping("{clusterId}")
     public AwsCluster getCluster(@PathVariable String clusterId) {
         AwsCluster cluster = awsClusterController.getCluster(clusterId);
-        hideSecrets(cluster);
+        Map<String, String> secrets =
+                cluster.getSecrets().keySet().stream().collect(Collectors.toMap(Function.identity(), x -> "****"));
+        cluster.setSecrets(secrets);
         return cluster;
     }
 
