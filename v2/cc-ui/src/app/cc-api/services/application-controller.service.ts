@@ -7,6 +7,7 @@ import { StrictHttpResponse as __StrictHttpResponse } from '../strict-http-respo
 import { Observable as __Observable } from 'rxjs';
 import { map as __map, filter as __filter } from 'rxjs/operators';
 
+import { ApplicationFamilyMetadata } from '../models/application-family-metadata';
 import { ApplicationAction } from '../models/application-action';
 import { EnvironmentMetaData } from '../models/environment-meta-data';
 import { ECRRegistry } from '../models/ecrregistry';
@@ -43,6 +44,7 @@ import { ApplicationSecret } from '../models/application-secret';
 })
 class ApplicationControllerService extends __BaseService {
   static readonly getApplicationFamiliesUsingGETPath = '/api/applicationFamilies';
+  static readonly upsertApplicationFamilyMetadataUsingPOSTPath = '/api/applicationFamilies/{applicationFamily}/metadata';
   static readonly getApplicationTypesUsingGETPath = '/api/applicationTypes';
   static readonly createGenericActionUsingPOSTPath = '/api/buildType/{buildType}/actions';
   static readonly getCCEnvironmentMetaDataUsingGETPath = '/api/cc/{applicationFamily}/environmentMetaData';
@@ -149,6 +151,55 @@ class ApplicationControllerService extends __BaseService {
   getApplicationFamiliesUsingGET(): __Observable<Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>> {
     return this.getApplicationFamiliesUsingGETResponse().pipe(
       __map(_r => _r.body as Array<'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS'>)
+    );
+  }
+
+  /**
+   * upsertApplicationFamilyMetadata
+   * @param params The `ApplicationControllerService.UpsertApplicationFamilyMetadataUsingPOSTParams` containing the following parameters:
+   *
+   * - `applicationFamilyMetadata`: applicationFamilyMetadata
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  upsertApplicationFamilyMetadataUsingPOSTResponse(params: ApplicationControllerService.UpsertApplicationFamilyMetadataUsingPOSTParams): __Observable<__StrictHttpResponse<ApplicationFamilyMetadata>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.applicationFamilyMetadata;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/api/applicationFamilies/${encodeURIComponent(params.applicationFamily)}/metadata`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<ApplicationFamilyMetadata>;
+      })
+    );
+  }
+  /**
+   * upsertApplicationFamilyMetadata
+   * @param params The `ApplicationControllerService.UpsertApplicationFamilyMetadataUsingPOSTParams` containing the following parameters:
+   *
+   * - `applicationFamilyMetadata`: applicationFamilyMetadata
+   *
+   * - `applicationFamily`: applicationFamily
+   *
+   * @return OK
+   */
+  upsertApplicationFamilyMetadataUsingPOST(params: ApplicationControllerService.UpsertApplicationFamilyMetadataUsingPOSTParams): __Observable<ApplicationFamilyMetadata> {
+    return this.upsertApplicationFamilyMetadataUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as ApplicationFamilyMetadata)
     );
   }
 
@@ -3323,6 +3374,22 @@ class ApplicationControllerService extends __BaseService {
 }
 
 module ApplicationControllerService {
+
+  /**
+   * Parameters for upsertApplicationFamilyMetadataUsingPOST
+   */
+  export interface UpsertApplicationFamilyMetadataUsingPOSTParams {
+
+    /**
+     * applicationFamilyMetadata
+     */
+    applicationFamilyMetadata: ApplicationFamilyMetadata;
+
+    /**
+     * applicationFamily
+     */
+    applicationFamily: 'CRM' | 'ECOMMERCE' | 'INTEGRATIONS' | 'OPS';
+  }
 
   /**
    * Parameters for createGenericActionUsingPOST

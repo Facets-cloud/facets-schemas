@@ -90,7 +90,7 @@ module BuildControllerService {
     /**
      * strategy
      */
-    strategy: 'QA' | 'STAGING' | 'PROD';
+    strategy: 'QA' | 'STAGING' | 'PROD' | 'QA2';
 
     /**
      * applicationId

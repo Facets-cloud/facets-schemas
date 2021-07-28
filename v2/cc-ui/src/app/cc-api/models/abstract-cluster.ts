@@ -9,7 +9,7 @@ export interface AbstractCluster {
   id?: string;
   k8sRequestsToLimitsRatio?: number;
   name?: string;
-  releaseStream?: 'QA' | 'STAGING' | 'PROD';
+  releaseStream?: 'QA' | 'STAGING' | 'PROD' | 'QA2';
   requireSignOff?: boolean;
   schedules?: {[key: string]: string};
   secrets?: {[key: string]: string};

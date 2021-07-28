@@ -9,7 +9,7 @@ export interface LocalClusterRequest {
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
   k8sRequestsToLimitsRatio?: number;
-  releaseStream?: 'QA' | 'STAGING' | 'PROD';
+  releaseStream?: 'QA' | 'STAGING' | 'PROD' | 'QA2';
   requireSignOff?: boolean;
   schedules?: {[key: string]: string};
   stackName?: string;

@@ -16,6 +16,7 @@ import { ProvidedResources } from '../models/provided-resources';
 import { DeploymentLog } from '../models/deployment-log';
 import { ResourceDetails } from '../models/resource-details';
 import { SilenceAlarmRequest } from '../models/silence-alarm-request';
+import { TFRunConfigurations } from '../models/tfrun-configurations';
 
 /**
  * Ui Common Cluster Controller
@@ -44,6 +45,10 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly refreshResourceUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/refreshResource';
   static readonly resourceDetailsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/resourceDetails';
   static readonly silenceAlertsUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/silence-alerts';
+  static readonly getClusterTFDetailsUsingGETPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
+  static readonly createClusterTFDetailsUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
+  static readonly updateClusterTFDetailsUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
+  static readonly deleteClusterTFDetailsUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
 
   constructor(
     config: __Configuration,
@@ -929,6 +934,180 @@ class UiCommonClusterControllerService extends __BaseService {
       __map(_r => _r.body as {[key: string]: {}})
     );
   }
+
+  /**
+   * getClusterTFDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getClusterTFDetailsUsingGETResponse(clusterId: string): __Observable<__StrictHttpResponse<TFRunConfigurations>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/tfRunConfigurations`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<TFRunConfigurations>;
+      })
+    );
+  }
+  /**
+   * getClusterTFDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  getClusterTFDetailsUsingGET(clusterId: string): __Observable<TFRunConfigurations> {
+    return this.getClusterTFDetailsUsingGETResponse(clusterId).pipe(
+      __map(_r => _r.body as TFRunConfigurations)
+    );
+  }
+
+  /**
+   * createClusterTFDetails
+   * @param params The `UiCommonClusterControllerService.CreateClusterTFDetailsUsingPOSTParams` containing the following parameters:
+   *
+   * - `tfRunConfigurations`: tfRunConfigurations
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  createClusterTFDetailsUsingPOSTResponse(params: UiCommonClusterControllerService.CreateClusterTFDetailsUsingPOSTParams): __Observable<__StrictHttpResponse<TFRunConfigurations>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.tfRunConfigurations;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/tfRunConfigurations`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<TFRunConfigurations>;
+      })
+    );
+  }
+  /**
+   * createClusterTFDetails
+   * @param params The `UiCommonClusterControllerService.CreateClusterTFDetailsUsingPOSTParams` containing the following parameters:
+   *
+   * - `tfRunConfigurations`: tfRunConfigurations
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  createClusterTFDetailsUsingPOST(params: UiCommonClusterControllerService.CreateClusterTFDetailsUsingPOSTParams): __Observable<TFRunConfigurations> {
+    return this.createClusterTFDetailsUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as TFRunConfigurations)
+    );
+  }
+
+  /**
+   * updateClusterTFDetails
+   * @param params The `UiCommonClusterControllerService.UpdateClusterTFDetailsUsingPUTParams` containing the following parameters:
+   *
+   * - `tfRunConfigurations`: tfRunConfigurations
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  updateClusterTFDetailsUsingPUTResponse(params: UiCommonClusterControllerService.UpdateClusterTFDetailsUsingPUTParams): __Observable<__StrictHttpResponse<TFRunConfigurations>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.tfRunConfigurations;
+
+    let req = new HttpRequest<any>(
+      'PUT',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/tfRunConfigurations`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<TFRunConfigurations>;
+      })
+    );
+  }
+  /**
+   * updateClusterTFDetails
+   * @param params The `UiCommonClusterControllerService.UpdateClusterTFDetailsUsingPUTParams` containing the following parameters:
+   *
+   * - `tfRunConfigurations`: tfRunConfigurations
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  updateClusterTFDetailsUsingPUT(params: UiCommonClusterControllerService.UpdateClusterTFDetailsUsingPUTParams): __Observable<TFRunConfigurations> {
+    return this.updateClusterTFDetailsUsingPUTResponse(params).pipe(
+      __map(_r => _r.body as TFRunConfigurations)
+    );
+  }
+
+  /**
+   * deleteClusterTFDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  deleteClusterTFDetailsUsingDELETEResponse(clusterId: string): __Observable<__StrictHttpResponse<TFRunConfigurations>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'DELETE',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(clusterId)}/tfRunConfigurations`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<TFRunConfigurations>;
+      })
+    );
+  }
+  /**
+   * deleteClusterTFDetails
+   * @param clusterId clusterId
+   * @return OK
+   */
+  deleteClusterTFDetailsUsingDELETE(clusterId: string): __Observable<TFRunConfigurations> {
+    return this.deleteClusterTFDetailsUsingDELETEResponse(clusterId).pipe(
+      __map(_r => _r.body as TFRunConfigurations)
+    );
+  }
 }
 
 module UiCommonClusterControllerService {
@@ -1084,6 +1263,38 @@ module UiCommonClusterControllerService {
      * request
      */
     request: SilenceAlarmRequest;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for createClusterTFDetailsUsingPOST
+   */
+  export interface CreateClusterTFDetailsUsingPOSTParams {
+
+    /**
+     * tfRunConfigurations
+     */
+    tfRunConfigurations: TFRunConfigurations;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for updateClusterTFDetailsUsingPUT
+   */
+  export interface UpdateClusterTFDetailsUsingPUTParams {
+
+    /**
+     * tfRunConfigurations
+     */
+    tfRunConfigurations: TFRunConfigurations;
 
     /**
      * clusterId

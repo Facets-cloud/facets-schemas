@@ -14,7 +14,7 @@ export interface AzureClusterRequest {
   instanceTypes?: Array<string>;
   k8sRequestsToLimitsRatio?: number;
   region?: string;
-  releaseStream?: 'QA' | 'STAGING' | 'PROD';
+  releaseStream?: 'QA' | 'STAGING' | 'PROD' | 'QA2';
   requireSignOff?: boolean;
   schedules?: {[key: string]: string};
   stackName?: string;

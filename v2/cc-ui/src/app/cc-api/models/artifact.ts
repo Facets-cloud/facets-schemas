@@ -6,6 +6,6 @@ export interface Artifact {
   buildDescription?: string;
   buildId?: string;
   id?: string;
-  releaseStream?: 'QA' | 'STAGING' | 'PROD';
+  releaseStream?: 'QA' | 'STAGING' | 'PROD' | 'QA2';
   releaseType?: 'HOTFIX' | 'RELEASE';
 }

@@ -15,7 +15,7 @@ export interface AwsCluster {
   k8sRequestsToLimitsRatio?: number;
   name?: string;
   providedVPCId?: string;
-  releaseStream?: 'QA' | 'STAGING' | 'PROD';
+  releaseStream?: 'QA' | 'STAGING' | 'PROD' | 'QA2';
   requireSignOff?: boolean;
   roleARN?: string;
   schedules?: {[key: string]: string};
