@@ -601,6 +601,8 @@ public class DeploymentFacade {
                 handleCodeBuildCallback(new CodeBuildStatusCallback(codebuildId, build.buildStatus()));
             }
         }
+        // Force update
+        deployment.setStatus(null);
         DeploymentLog deploymentLog = tfBuildService.loadDeploymentStatus(deployment, true);
         return deploymentLog;
     }
