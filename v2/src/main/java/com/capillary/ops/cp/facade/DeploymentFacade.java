@@ -663,6 +663,8 @@ public class DeploymentFacade {
         }
         DeploymentLog deploymentLog = deploymentLogOptional.get();
         AbstractCluster cluster = clusterFacade.getCluster(deploymentLog.getClusterId());
+        // force lookup
+        deploymentLog.setStatus(null);
         deploymentLog = tfBuildService.loadDeploymentStatus(deploymentLog, true);
 
         clusterResourceRefreshService.saveClusterResourceDetails(callback.getCodebuidId(), deploymentLog.getStatus());
