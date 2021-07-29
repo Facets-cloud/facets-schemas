@@ -20,7 +20,7 @@
                         tooltipText="This will determine the builds which are picked in this cluster"
                         [(ngModel)]="awsClusterRequest.releaseStream" required="true"
                         select=true
-                        [selectValues]='[{value:"QA", label:"QA"},{value:"STAGING", label:"Pre Production"},{value:"PROD", label:"Production"}]'></app-form-field>
+                        [selectValues]='[{value:"QA", label:"QA"},{value:"QA2", label:"QA2"},{value:"STAGING", label:"Pre Production"},{value:"PROD", label:"Production"}]'></app-form-field>
 
         <app-form-field label="Cloud Provider" name="cloud" placeholder="Select Cloud Provider"
                         tooltipText="The provider for which you want to launch the cluster"
