@@ -276,6 +276,10 @@ public class ClusterFacade {
     }
 
     public Boolean addClusterK8sCredentials(K8sCredentials request) {
+        Optional<K8sCredentials> current = k8sCredentialsRepository.findOneByClusterId(request.getClusterId());
+        if (current.isPresent()) {
+            request.setId(current.get().getId());
+        }
         k8sCredentialsRepository.save(request);
         return true;
     }
