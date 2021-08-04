@@ -1128,7 +1128,7 @@ public class ApplicationFacade {
 
         Calendar calendar = Calendar.getInstance();
         calendar.add(-25, Calendar.HOUR);
-        Date startTime = calendar.getTime();
+        Long startTime = calendar.getTime().getTime();
         // build for all ci enabled projects
         applications.parallelStream().forEach(application -> {
             // check if any build done in last 24Hours
@@ -1315,4 +1315,5 @@ public class ApplicationFacade {
         }
         return applicationFamilyMetadataRepository.save(applicationFamilyMetadata);
     }
+
 }

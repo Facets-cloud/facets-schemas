@@ -66,6 +66,6 @@ import java.util.Optional;
 
     List<Build> findFirst50ByApplicationIdOrderByTimestampDesc(String id);
 
-    Integer countByApplicationIdAndTimestampGreaterThanAndTestBuildIsFalse(String applicationId, Date timestamp);
+    Integer countByApplicationIdAndTimestampGreaterThanAndTestBuildIsFalse(String applicationId, Long timestamp);
 
 }
