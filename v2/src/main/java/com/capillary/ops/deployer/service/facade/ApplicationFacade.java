@@ -1127,7 +1127,7 @@ public class ApplicationFacade {
         List<Application> applications = applicationRepository.findAll();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(-25, Calendar.HOUR);
+        calendar.add(Calendar.HOUR, -25);
         Long startTime = calendar.getTime().getTime();
         // build for all ci enabled projects
         applications.parallelStream().forEach(application -> {
@@ -1137,6 +1137,7 @@ public class ApplicationFacade {
             if(application.isCiEnabled() && countOfBuildInLast24Hours > 0 ) {
                 try {
                     String defaultBranch = getDefaultBranch(application);
+                    logger.info("Triggering test build for {}", application.getName());
                     triggerTestBuild(application, defaultBranch, 0);
                 }catch (IOException exception){
                     logger.error("Failed to trigger daily run");
