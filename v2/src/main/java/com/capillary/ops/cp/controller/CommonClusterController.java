@@ -4,10 +4,8 @@ import com.capillary.ops.cp.bo.AlertManagerPayload;
 import com.capillary.ops.cp.bo.K8sCredentials;
 import com.capillary.ops.cp.bo.OverrideObject;
 import com.capillary.ops.cp.bo.SnapshotInfo;
-import com.capillary.ops.cp.bo.components.ComponentType;
 import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
-import com.google.common.collect.Lists;
 import com.jcabi.aspects.Loggable;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.Map;
 
 @RestController
@@ -35,13 +31,13 @@ public class CommonClusterController {
 
     //@GetMapping("{clusterId}/deployments/{value}")
     public Deployment getDeploymentInCluster(@PathVariable String clusterId, @PathVariable String value,
-        @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
+                                             @RequestParam(value = "lookup", defaultValue = "deployerid") String lookupKey) {
         return clusterFacade.getApplicationData(clusterId, lookupKey, value);
     }
 
     @PostMapping("{clusterId}/overrides")
     public List<OverrideObject> overrideSizing(@PathVariable String clusterId,
-        @RequestBody List<OverrideRequest> request) {
+                                               @RequestBody List<OverrideRequest> request) {
 
         return clusterFacade.override(clusterId, request);
     }
@@ -55,9 +51,9 @@ public class CommonClusterController {
     /**
      * List snapshots for a particular resource inside a given cluster
      *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
-     * @param resourceType  Resource type -> e.g. aurora
-     * @param instanceName  Instance name -> e.g. billdump
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
+     * @param resourceType Resource type -> e.g. aurora
+     * @param instanceName Instance name -> e.g. billdump
      * @return List of SnapshotInfo
      */
     @GetMapping("{clusterId}/dr/{resourceType}/snapshots/{instanceName}")
@@ -67,8 +63,7 @@ public class CommonClusterController {
     }
 
     /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
      * @param resourceType Resource type -> e.g. aurora
      * @param instanceName Instance name -> e.g. billdump
      * @param snapshotInfo Information about snapshot to be pinned
@@ -82,8 +77,7 @@ public class CommonClusterController {
     }
 
     /**
-     *
-     * @param clusterId Cluster Id -> cluster id of nightly cluster
+     * @param clusterId    Cluster Id -> cluster id of nightly cluster
      * @param resourceType Resource type -> e.g. aurora
      * @param instanceName Instance name -> e.g. billdump
      * @return SnapshotInfo
@@ -95,8 +89,13 @@ public class CommonClusterController {
     }
 
     @PostMapping("{clusterId}/alerts")
-    public boolean notifyAlerts(@PathVariable String clusterId, @RequestBody AlertManagerPayload.Response alerts){
+    public boolean notifyAlerts(@PathVariable String clusterId, @RequestBody AlertManagerPayload.Response alerts) {
         return clusterFacade.receiveAlerts(clusterId, alerts);
     }
 
+    @PostMapping("{clusterId}/vars/upsert")
+    public Map<String, String> upsertVars(@PathVariable String clusterId,
+                                          @RequestBody Map<String, String> clusterVars){
+        return clusterFacade.upsertClusterVars(clusterId, clusterVars);
+    }
 }

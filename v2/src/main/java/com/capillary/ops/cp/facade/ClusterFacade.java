@@ -237,6 +237,23 @@ public class ClusterFacade {
         return upsertCommonTasks(request, stack, cluster);
     }
 
+    public Map<String, String> upsertClusterVars(String clusterId, Map<String, String> clusterVars) {
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException(
+                    "No such cluster with name: " + clusterId + " present ");
+        }
+        AbstractCluster cluster = existing.get();
+        Optional<Stack> stack = stackRepository.findById(cluster.getStackName());
+        if (!stack.isPresent()) {
+            throw new RuntimeException("Invalid Stack Specified");
+        }
+        Stack stackObj = stack.get();
+        Map<String, String> validatedClusterVars = clusterHelper.validateClusterVars(clusterVars, stackObj);
+        cluster.getUserInputVars().putAll(validatedClusterVars);
+        AbstractCluster save = cpClusterRepository.save(cluster);
+        return save.getUserInputVars();
+    }
 
     private AbstractCluster upsertCommonTasks(ClusterRequest request, Optional<Stack> stack,
                                               AbstractCluster cluster) {
