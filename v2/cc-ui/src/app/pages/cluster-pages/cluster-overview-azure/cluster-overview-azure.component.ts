@@ -227,11 +227,6 @@ export class ClusterOverviewAzureComponent implements OnInit {
     this.enableSubmitForClusterOverrides = true;
     const awsClusterRequest: AzureClusterRequest = await this.constructUpdateClusterRequest();
     try {
-      if (this.isEmptyObject(awsClusterRequest.clusterVars)) {
-        this.toastrService.danger('No variables have changed, cannot update', 'Error');
-        this.addOverrideSpinner = false;
-        return;
-      }
       this.updateCluster(awsClusterRequest);
     } catch (err) {
       console.log(err);
@@ -325,21 +320,6 @@ export class ClusterOverviewAzureComponent implements OnInit {
     awsClusterRequest.clusterName = this.cluster.name;
     awsClusterRequest.stackName = this.cluster.stackName;
     awsClusterRequest.componentVersions = this.cluster.componentVersions;
-    awsClusterRequest.clusterVars = {};
-
-    const nonSensitiveSource = await this.nonSensitiveClusterSource.getAll();
-    nonSensitiveSource.forEach(element => {
-      if (this.hasClusterVariableChanged(nonSensitiveSource, element.name)) {
-        awsClusterRequest.clusterVars[element.name] = element.value;
-      }
-    });
-
-    const sensitiveSource = await this.sensitiveClusterSource.getAll();
-    sensitiveSource.forEach(element => {
-      if (this.hasClusterVariableChanged(sensitiveSource, element.name)) {
-        awsClusterRequest.clusterVars[element.name] = element.value;
-      }
-    });
 
     return awsClusterRequest;
   }

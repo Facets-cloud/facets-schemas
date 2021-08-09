@@ -27,6 +27,7 @@ class CommonClusterControllerService extends __BaseService {
   static readonly pinSnapshotUsingPOSTPath = '/cc/v1/clusters/{clusterId}/dr/{resourceType}/snapshots/{instanceName}/pinnedSnapshot';
   static readonly getOverridesUsingGETPath = '/cc/v1/clusters/{clusterId}/overrides';
   static readonly overrideSizingUsingPOSTPath = '/cc/v1/clusters/{clusterId}/overrides';
+  static readonly upsertVarsUsingPOSTPath = '/cc/v1/clusters/{clusterId}/vars/upsert';
 
   constructor(
     config: __Configuration,
@@ -386,6 +387,55 @@ class CommonClusterControllerService extends __BaseService {
       __map(_r => _r.body as Array<OverrideObject>)
     );
   }
+
+  /**
+   * upsertVars
+   * @param params The `CommonClusterControllerService.UpsertVarsUsingPOSTParams` containing the following parameters:
+   *
+   * - `clusterVars`: clusterVars
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  upsertVarsUsingPOSTResponse(params: CommonClusterControllerService.UpsertVarsUsingPOSTParams): __Observable<__StrictHttpResponse<{[key: string]: string}>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.clusterVars;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc/v1/clusters/${encodeURIComponent(params.clusterId)}/vars/upsert`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<{[key: string]: string}>;
+      })
+    );
+  }
+  /**
+   * upsertVars
+   * @param params The `CommonClusterControllerService.UpsertVarsUsingPOSTParams` containing the following parameters:
+   *
+   * - `clusterVars`: clusterVars
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  upsertVarsUsingPOST(params: CommonClusterControllerService.UpsertVarsUsingPOSTParams): __Observable<{[key: string]: string}> {
+    return this.upsertVarsUsingPOSTResponse(params).pipe(
+      __map(_r => _r.body as {[key: string]: string})
+    );
+  }
 }
 
 module CommonClusterControllerService {
@@ -499,6 +549,22 @@ module CommonClusterControllerService {
      * request
      */
     request: Array<OverrideRequest>;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for upsertVarsUsingPOST
+   */
+  export interface UpsertVarsUsingPOSTParams {
+
+    /**
+     * clusterVars
+     */
+    clusterVars: {[key: string]: string};
 
     /**
      * clusterId

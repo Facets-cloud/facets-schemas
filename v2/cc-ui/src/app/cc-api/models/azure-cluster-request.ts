@@ -8,7 +8,6 @@ export interface AzureClusterRequest {
   clientSecret?: string;
   cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   clusterName?: string;
-  clusterVars?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
   instanceTypes?: Array<string>;

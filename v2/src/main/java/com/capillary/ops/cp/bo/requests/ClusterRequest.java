@@ -20,7 +20,6 @@ public abstract class ClusterRequest {
     private TimeZone tz;
 
     private BuildStrategy releaseStream;
-    private Map<String, String> clusterVars = new HashMap<>();
     private Double k8sRequestsToLimitsRatio;
     private Map<ReleaseType, String> schedules;
     private String autoSignOffSchedule;
@@ -67,14 +66,6 @@ public abstract class ClusterRequest {
 
     public void setReleaseStream(BuildStrategy releaseStream) {
         this.releaseStream = releaseStream;
-    }
-
-    public Map<String, String> getClusterVars() {
-        return clusterVars;
-    }
-
-    public void setClusterVars(Map<String, String> clusterVars) {
-        this.clusterVars = clusterVars;
     }
 
     public Double getK8sRequestsToLimitsRatio() {

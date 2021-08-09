@@ -11,6 +11,7 @@ import com.capillary.ops.cp.bo.requests.OverrideRequest;
 import com.capillary.ops.cp.bo.requests.SilenceAlarmRequest;
 import com.capillary.ops.cp.facade.ClusterFacade;
 import com.capillary.ops.cp.facade.DeploymentFacade;
+import com.capillary.ops.cp.facade.StackFacade;
 import com.capillary.ops.cp.facade.VagrantFacade;
 import com.capillary.ops.cp.service.AclService;
 import com.jcabi.aspects.Loggable;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("cc-ui/v1/clusters")
@@ -41,6 +43,9 @@ public class UiCommonClusterController {
 
     @Autowired
     VagrantFacade vagrantFacade;
+
+    @Autowired
+    private StackFacade stackFacade;
 
     @Autowired
     private AclService aclService;
@@ -241,6 +246,39 @@ public class UiCommonClusterController {
     @PreAuthorize("hasRole('CC-ADMIN')")
     public TFRunConfigurations deleteClusterTFDetails(@PathVariable String clusterId) {
         return clusterFacade.deleteTFDetails(clusterId);
+    }
+
+    @PostMapping("{clusterId}/vars/upsert")
+    public AbstractCluster upsertVars(@PathVariable String clusterId,
+                                          @RequestBody Map<String, String> clusterVars){
+        clusterFacade.upsertClusterVars(clusterId, clusterVars);
+        return hideSecrets(clusterFacade.getCluster(clusterId));
+    }
+
+    public AbstractCluster hideSecrets(AbstractCluster cluster) {
+        String stackName = cluster.getStackName();
+        Stack stackByName = stackFacade.getStackByName(stackName);
+        Map<String, StackFile.VariableDetails> clusterVariablesMeta = stackByName.getClusterVariablesMeta();
+        Map<String, String> secrets = cluster.getSecrets();
+        if (secrets == null || clusterVariablesMeta == null) {
+            cluster.setSecrets(new HashMap<>());
+            return cluster;
+        }
+        clusterVariablesMeta.forEach(
+                (key, cvm) -> {
+                    if (cvm.isSecret()) {
+                        if (!secrets.containsKey(key) || secrets.get(key) == null || secrets.get(key).isEmpty()) {
+                            secrets.put(key, "Not Set");
+                        } else if (cvm.getValue() != null && cvm.getValue().equals(secrets.get(key))) {
+                            secrets.put(key, "Stack Default");
+                        } else {
+                            secrets.put(key, "Set");
+                        }
+                    }
+                }
+        );
+        cluster.setSecrets(secrets);
+        return cluster;
     }
 
 }

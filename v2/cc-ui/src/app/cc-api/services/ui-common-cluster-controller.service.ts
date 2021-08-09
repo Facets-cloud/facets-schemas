@@ -49,6 +49,7 @@ class UiCommonClusterControllerService extends __BaseService {
   static readonly createClusterTFDetailsUsingPOSTPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
   static readonly updateClusterTFDetailsUsingPUTPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
   static readonly deleteClusterTFDetailsUsingDELETEPath = '/cc-ui/v1/clusters/{clusterId}/tfRunConfigurations';
+  static readonly upsertVarsUsingPOST1Path = '/cc-ui/v1/clusters/{clusterId}/vars/upsert';
 
   constructor(
     config: __Configuration,
@@ -1108,6 +1109,55 @@ class UiCommonClusterControllerService extends __BaseService {
       __map(_r => _r.body as TFRunConfigurations)
     );
   }
+
+  /**
+   * upsertVars
+   * @param params The `UiCommonClusterControllerService.UpsertVarsUsingPOST1Params` containing the following parameters:
+   *
+   * - `clusterVars`: clusterVars
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  upsertVarsUsingPOST1Response(params: UiCommonClusterControllerService.UpsertVarsUsingPOST1Params): __Observable<__StrictHttpResponse<AbstractCluster>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+    __body = params.clusterVars;
+
+    let req = new HttpRequest<any>(
+      'POST',
+      this.rootUrl + `/cc-ui/v1/clusters/${encodeURIComponent(params.clusterId)}/vars/upsert`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<AbstractCluster>;
+      })
+    );
+  }
+  /**
+   * upsertVars
+   * @param params The `UiCommonClusterControllerService.UpsertVarsUsingPOST1Params` containing the following parameters:
+   *
+   * - `clusterVars`: clusterVars
+   *
+   * - `clusterId`: clusterId
+   *
+   * @return OK
+   */
+  upsertVarsUsingPOST1(params: UiCommonClusterControllerService.UpsertVarsUsingPOST1Params): __Observable<AbstractCluster> {
+    return this.upsertVarsUsingPOST1Response(params).pipe(
+      __map(_r => _r.body as AbstractCluster)
+    );
+  }
 }
 
 module UiCommonClusterControllerService {
@@ -1295,6 +1345,22 @@ module UiCommonClusterControllerService {
      * tfRunConfigurations
      */
     tfRunConfigurations: TFRunConfigurations;
+
+    /**
+     * clusterId
+     */
+    clusterId: string;
+  }
+
+  /**
+   * Parameters for upsertVarsUsingPOST1
+   */
+  export interface UpsertVarsUsingPOST1Params {
+
+    /**
+     * clusterVars
+     */
+    clusterVars: {[key: string]: string};
 
     /**
      * clusterId

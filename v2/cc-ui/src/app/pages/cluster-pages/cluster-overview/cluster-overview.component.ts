@@ -216,7 +216,6 @@ export class ClusterOverviewComponent implements OnInit {
     awsClusterRequest.clusterName = this.cluster.name;
     awsClusterRequest.stackName = this.cluster.stackName;
     awsClusterRequest.componentVersions = this.cluster.componentVersions;
-    awsClusterRequest.clusterVars = {...this.cluster.secrets, ...this.cluster.commonEnvironmentVariables}
 
     return awsClusterRequest;
   }

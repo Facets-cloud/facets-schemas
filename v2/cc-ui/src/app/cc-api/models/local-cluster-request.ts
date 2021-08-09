@@ -5,7 +5,6 @@ export interface LocalClusterRequest {
   cdPipelineParent?: string;
   cloud?: 'AWS' | 'AZURE' | 'LOCAL';
   clusterName?: string;
-  clusterVars?: {[key: string]: string};
   componentVersions?: {[key: string]: string};
   enableAutoSignOff?: boolean;
   k8sRequestsToLimitsRatio?: number;

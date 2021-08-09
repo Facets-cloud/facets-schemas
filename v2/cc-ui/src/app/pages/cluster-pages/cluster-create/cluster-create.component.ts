@@ -38,7 +38,6 @@ export class ClusterCreateComponent implements OnInit {
     clusterName: '',
     cloud: 'AWS',
     azs: [],
-    clusterVars: {},
     tz: {},
     region: null,
     instanceTypes: null,
@@ -130,28 +129,6 @@ export class ClusterCreateComponent implements OnInit {
       console.log(err);
       this.toastrService.danger('Cluster creation failed', 'Error', {duration: 5000});
     }
-  }
-
-  private hasClusterVariableChanged(source, variableName: string) {
-    let originalValue = null;
-    this.originalClusterVariablesSource.forEach(element => {
-      if (element.name === variableName) {
-        originalValue = element.value;
-      }
-    });
-
-    let newValue = null;
-    source.forEach(element => {
-      if (element.name === variableName) {
-        newValue = element.value;
-      }
-    });
-
-    if (originalValue && newValue != originalValue) {
-      return true;
-    }
-
-    return false;
   }
 
   isChinaRegion() {

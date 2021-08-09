@@ -38,7 +38,6 @@ export class AzureClusterCreateComponent implements OnInit {
     clusterName: '',
     cloud: 'AZURE',
     azs: [],
-    clusterVars: {},
     tz: {},
     region: null,
     instanceTypes: null,
@@ -160,7 +159,7 @@ export class AzureClusterCreateComponent implements OnInit {
     this.azureClusterRequest.region = this.regionModelBound;
     this.azureClusterRequest.tz = this.timeZoneModelBound;
     this.azureClusterRequest.instanceTypes = this.spotInstanceTypes.split(",");
-    
+
 
     try {
       this.clusterController.updateAzureClusterUsingPUT({

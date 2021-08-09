@@ -24,7 +24,6 @@ export class ClusterCreateLocalComponent implements OnInit {
   awsClusterRequest: LocalClusterRequest = {
     cloud: "LOCAL",
     clusterName: "",
-    clusterVars: {},
     releaseStream: "QA",
     schedules: {}
   };
@@ -94,14 +93,6 @@ export class ClusterCreateLocalComponent implements OnInit {
 
   private populateRequestObject() {
     this.awsClusterRequest.stackName = this.stackName;
-    this.dataSourceForCommonVars.forEach(element => {
-      this.awsClusterRequest.clusterVars[element.name] = element.value;
-    });
     const secretsDataSource = this.dataSourceForSecrets;
-    secretsDataSource.forEach(element => {
-      if (element.value != "****") {
-        this.awsClusterRequest.clusterVars[element.name] = element.value;
-      }
-    });
   }
 }

@@ -230,11 +230,17 @@ public class ClusterFacade {
 
         ClusterService service = factory.getService(request.getCloud());
         AbstractCluster cluster = service.updateCluster(request, existingCluster);
-        Map<String, String> mergedClusterVars = new HashMap<>();
-        mergedClusterVars.putAll(existingCluster.getUserInputVars());
-        mergedClusterVars.putAll(request.getClusterVars());
-        request.setClusterVars(mergedClusterVars);
         return upsertCommonTasks(request, stack, cluster);
+    }
+
+    public Map<String, String> getClusterVars(String clusterId) {
+        Optional<AbstractCluster> existing = cpClusterRepository.findById(clusterId);
+        if (!existing.isPresent()) {
+            throw new InvalidActionException(
+                    "No such cluster with name: " + clusterId + " present ");
+        }
+        AbstractCluster cluster = existing.get();
+        return cluster.getUserInputVars();
     }
 
     public Map<String, String> upsertClusterVars(String clusterId, Map<String, String> clusterVars) {
@@ -257,8 +263,6 @@ public class ClusterFacade {
 
     private AbstractCluster upsertCommonTasks(ClusterRequest request, Optional<Stack> stack,
                                               AbstractCluster cluster) {
-        Map<String, String> secrets = clusterHelper.validateClusterVars(request.getClusterVars(), stack.get());
-        cluster.setUserInputVars(secrets);
         cluster.setSchedules(request.getSchedules());
         cluster.setEnableAutoSignOff(request.getEnableAutoSignOff());
         cluster.setAutoSignOffSchedule(request.getAutoSignOffSchedule());

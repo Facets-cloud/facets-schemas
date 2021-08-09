@@ -7,6 +7,7 @@ import {ActivatedRoute} from "@angular/router";
 import {AwsCluster} from "../../../cc-api/models/aws-cluster";
 import {AbstractCluster} from "../../../cc-api/models/abstract-cluster";
 import {UiStackControllerService} from "../../../cc-api/services/ui-stack-controller.service";
+import {UiCommonClusterControllerService} from "../../../cc-api/services/ui-common-cluster-controller.service";
 
 @Component({
   selector: 'app-cluster-vars',
@@ -105,7 +106,8 @@ export class ClusterVarsComponent implements OnInit {
   private stackVars: any;
 
   constructor(private toastrService: NbToastrService, private aWSClusterService: UiAwsClusterControllerService,
-              private route: ActivatedRoute, private dialogService: NbDialogService, private uiStackControllerService: UiStackControllerService) {
+              private route: ActivatedRoute, private dialogService: NbDialogService,
+              private uiStackControllerService: UiStackControllerService, private uiCommonClusterControllerService: UiCommonClusterControllerService) {
   }
 
   ngOnInit(): void {
@@ -171,15 +173,18 @@ export class ClusterVarsComponent implements OnInit {
   }
 
   async submitClusterOverrides(ref: any) {
-    const awsClusterRequest: AwsClusterRequest = await this.constructUpdateClusterRequest();
-    this.aWSClusterService.updateClusterUsingPUT2({
-      request: awsClusterRequest,
-      clusterId: this.cluster.id
-    }).subscribe(c => {
+    this.uiCommonClusterControllerService.upsertVarsUsingPOST1(
+      {
+        clusterId: this.cluster.id,
+        clusterVars: {...this.secretsChanged, ...this.varsChanged}
+      }
+    ).subscribe(c => {
         console.log(c);
         this.loadDataInTables(c, this.stackVars);
         this.cluster = c;
         this.addOverrideSpinner = false;
+        this.secretsChanged = {}
+        this.varsChanged = {} 
         this.toastrService.success('Updated cluster variables', 'Success');
         ref.close();
       },
@@ -192,16 +197,6 @@ export class ClusterVarsComponent implements OnInit {
 
   }
 
-  private async constructUpdateClusterRequest() {
-    let awsClusterRequest: AwsClusterRequest = {};
-    awsClusterRequest = {};
-    awsClusterRequest.cloud = this.cluster.cloud;
-    awsClusterRequest.clusterName = this.cluster.name;
-    awsClusterRequest.stackName = this.cluster.stackName;
-    awsClusterRequest.componentVersions = this.cluster.componentVersions;
-    awsClusterRequest.clusterVars = {...this.secretsChanged, ...this.varsChanged};
-    return awsClusterRequest;
-  }
 
 
   openConfirmation(confirmation) {
@@ -209,8 +204,6 @@ export class ClusterVarsComponent implements OnInit {
   }
 
   clearValue($event: any) {
-    debugger
     console.log($event)
-
   }
 }
