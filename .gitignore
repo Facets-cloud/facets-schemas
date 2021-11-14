@@ -50,3 +50,6 @@ capillary-cloud-tf/seed_data
 key.pem
 deploymentcontext.json
 artifacts.json
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
