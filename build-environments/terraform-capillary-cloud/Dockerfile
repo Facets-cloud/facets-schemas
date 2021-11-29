@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 RUN apt-get update 
 RUN apt-get install -y wget unzip curl
 
-RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.14.1/bin/linux/amd64/kubectl
+RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.22.0/bin/linux/amd64/kubectl
 RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/bin/
 
