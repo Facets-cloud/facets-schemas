@@ -43,6 +43,10 @@ source /home/capk8s/.bashrc
 
 #######capk8s user
 
+#######mysql connector for python
+apt-get install python3-mysql.connector
+#######mysql connector for python
+
 ######SSH configs
 sed -ri 's/#MaxStartups 10:30:100/MaxStartups 50:30:100/g' /etc/ssh/sshd_config
 sed -ri 's/#ClientAliveInterval 0/ClientAliveInterval 60/g' /etc/ssh/sshd_config
