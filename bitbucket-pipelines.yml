@@ -5,4 +5,4 @@ pipelines:
          script:
           - apt-get update && apt-get install git -y
           - git remote add github git@github.com:Facets-cloud/facets-iac.git
-          - git push github:tf_0.13_upgradenew
+          - git push github tf_0.13_upgradenew
