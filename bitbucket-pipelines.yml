@@ -4,3 +4,6 @@ pipelines:
       - step:
          script:
           - echo "hi"
+          - apt-get update && apt-get install git
+          - ls -a
+          - git status
