@@ -4,6 +4,8 @@ pipelines:
       - step:
          script:
           - echo "hi"
-          - apt-get update && apt-get install git
+          - apt-get update && apt-get install git git-filter-repo -y
           - ls -a
-          - git status
+          - git filter-repo --force --path capillary-cloud-tf
+          - git remote add github git@github.com:Facets-cloud/facets-iac.git
+          - git push github:tf_0.13_upgradenew
