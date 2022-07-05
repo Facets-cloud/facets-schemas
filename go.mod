@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/Jeffail/gabs v1.4.0
 	github.com/gruntwork-io/terratest v0.40.15
+	github.com/stretchr/testify v1.7.0
 )
 
 require (
@@ -36,7 +37,6 @@ require (
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tmccombs/hcl2json v0.3.3 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/zclconf/go-cty v1.9.1 // indirect

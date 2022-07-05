@@ -24,5 +24,17 @@ def createHelmProvider() {
     """
 }
 
+def createAWSProvider(region) {
+    sh """ 
+    echo ''' 
+    provider "aws" {
+        alias  = "tooling"
+        region = "$region"
+        access_key = "$AWS_ACCESS_KEY_ID"
+        secret_key = "$AWS_SECRET_ACCESS_KEY"
+    }
+    ''' >> ${WORKSPACE}/capillary-cloud-tf/modules/provider.tf
+    """
+}
 
 return this
