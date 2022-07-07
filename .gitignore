@@ -1,6 +1,6 @@
 # Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
-
+/capillary-cloud-tf/tfmain/level2/*.tf.json
 *~
 *.sw[mnpcod]
 *.log
@@ -55,5 +55,4 @@ terraform.tfstate
 terraform.tfstate.backup
 capillary-cloud-tf/tfmain/infra/main.tf
 *.backup
-capillary-cloud-tf/stacks
 *.lock.info
