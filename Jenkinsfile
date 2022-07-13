@@ -38,7 +38,7 @@ pipeline{
                             echo "========formatting the tf provider code created by jenkins========"
                             terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/provider.tf
                             echo "========Intitaing the go test suite inside branch = tf-dev========"
-                            go test ./... -v 
+                            go test ./... -v -timeout 30m 
                             '''
                             }
                         }
@@ -58,7 +58,7 @@ pipeline{
                                 echo "========formatting the tf provider code created by jenkins========"
                                 terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/provider.tf
                                 echo "========Intitaing the go test suite inside branch = tf-dev========"
-                                go test ./... -v 
+                                go test ./... -v -timeout 30m 
                                 '''
                             }
                         }
@@ -78,7 +78,7 @@ pipeline{
                                 echo "========formatting the tf provider code created by jenkins========"
                                 terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/provider.tf
                                 echo "========Intitaing the go test suite inside branch = tf-dev========"
-                                go test ./... -v 
+                                go test ./... -v -timeout 30m 
                                 '''
                             }
                         }
