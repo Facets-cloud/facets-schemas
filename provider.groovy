@@ -19,9 +19,6 @@ def createAWSProvider(awsregion) {
     provider "acme" {
         server_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
     }
-    provider "kubectl" {
-        config_path    = "$AWS_KUBECONFIG"
-    }
     terraform {
         required_providers {
             helm = {
@@ -36,10 +33,6 @@ def createAWSProvider(awsregion) {
             aws = {
                 source                = "hashicorp/aws"
                 configuration_aliases = [aws.tooling]
-            }
-            kubectl = {
-                source  = "gavinbunney/kubectl"
-                version = ">= 1.13.0"
             }
         }
     required_version = ">= 1.0"
@@ -63,9 +56,6 @@ def createGCPProvider(awsregion, project, gcpregion) {
             load_config_file = false
         }
         version = "1.3.2"
-    }
-    provider "kubectl" {
-        config_path    = "$GCP_KUBECONFIG"
     }
     provider "google" {
         credentials = "$CREDENTIALS"
@@ -95,10 +85,6 @@ def createGCPProvider(awsregion, project, gcpregion) {
             aws = {
                 source                = "hashicorp/aws"
                 configuration_aliases = [aws.tooling]
-            }
-            kubectl = {
-                source  = "gavinbunney/kubectl"
-                version = ">= 1.13.0"
             }
         }
         required_version = ">= 1.0"
