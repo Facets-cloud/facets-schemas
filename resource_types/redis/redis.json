@@ -1,0 +1,31 @@
+{
+    "kind": "redis",
+    "flavor": "default",
+    "version": "latest",
+    "lifecycle": "ENVIRONMENT<default specified in module, need not be overriden>",
+    "disabled": false,
+    "provided": false,
+    "metadata": {
+        "name": ""
+    },
+    "spec": {
+        "tier": "<Standalone or Clustered>",
+        "redis_version": "",
+        "properties": {
+            "timeout": "",
+            "maxmemory-gb": "",
+            "maxmemory-policy": ""
+        },
+        "size": "REDIS_STANDARD",
+        "authentication": {
+            "enabled": true,
+            "username": "",
+            "password": ""
+          },
+        "maintenance": {
+            "maintenance_configuration": {
+
+            }
+        }
+    }
+}
