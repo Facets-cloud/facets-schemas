@@ -1,0 +1,44 @@
+{
+    "kind": "postgres",
+    "flavor": "default",
+    "version": "latest",
+    "lifecycle": "ENVIRONMENT<default specified in module, need not be overriden>",
+    "disabled": false,
+    "provided": false,
+    "metadata": {
+      "name": ""
+  },
+  "spec": {
+    "database_version": "",
+    "databases": {
+      "default_database": "",
+      "additional_databases": []
+    },
+    "properties": {
+      "max_connections": "",
+      "shared_buffer": "",
+      "autovacuum": ""
+    },
+    "size": "POSTGRES_STANDARD",
+    "authentication": {
+      "master_username": "",
+      "master_password": ""
+    },
+    "backup": {
+      "enabled": "",
+      "backup_configuration": {}
+    }
+    
+  },
+  "out": {
+    "comment": "Will be generated, or can be provided",
+    "interface": {
+      "default": {
+        "port": 5432,
+        "host": "writer service name",
+        "username": "user",
+        "password": "password"
+      }
+    }
+  }
+}
