@@ -27,5 +27,16 @@
 
             }
         }
-    }
+    },
+    "out": {
+        "comment": "Will be generated, or can be provided",
+        "interface": {
+          "default": {
+            "port": 6379,
+            "host": "redis cluster url",
+            "username": "user",
+            "password": "password"
+          }
+        }
+      }
 }
