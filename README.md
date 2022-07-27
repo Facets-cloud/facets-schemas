@@ -3,6 +3,7 @@
 ## General guidelines
 
 - All multi-word keys should be snake case.
+- Avoid arrays wherever possible
 
 ## Terms
 
