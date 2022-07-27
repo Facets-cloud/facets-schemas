@@ -4,6 +4,9 @@
 
 - All multi-word keys should be snake case.
 - Avoid arrays wherever possible
+- All cloud tags/labels should be PascalCase
+- If there is length restriction in names. Use given name if < desired length else use hashed name of desired length. ALso add the tag/ label for the resource
+
 
 ## Terms
 
