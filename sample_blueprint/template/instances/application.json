@@ -2,7 +2,7 @@
   "kind": "template",
   "flavor": "default",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT<default specified in module, need not be overriden>",
+
   "disabled": false,
   "provided": true,
   "metadata": {

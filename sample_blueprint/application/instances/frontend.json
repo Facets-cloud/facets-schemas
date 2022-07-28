@@ -2,12 +2,12 @@
   "kind": "application",
   "flavor": "default",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT<default specified in module, need not be overriden>",
+
   "disabled": false,
   "provided": true,
-  "depends_on": ["application.app2","redis.main"],
+  "depends_on": ["application.backend"],
   "metadata": {
-    "name": "app1",
+    "name": "frontend",
     "labels": {
       "sidecar.istio.io/inject": "true"
     },
@@ -20,7 +20,7 @@
       "strategy": "RollingUpdate",
       "build": {
         "artifactory": "default",
-        "name": "alpha-stack-app1"
+        "name": "frontend"
       }
     },
     "runtime": {
@@ -39,12 +39,9 @@
           "path": "/"
         }
       },
-      "size": "${template.application.out.sizing.GENERAL_PURPOSE.SMALL} <Complex object example - check feasibility>"
+      "size": "${template.application.out.sizing.GENERAL_PURPOSE.SMALL}"
     },
     "env": {
-      "LOG_LEVEL": "INFO",
-      "NEWRELIC_KEY": "${stack.out.variables.NEW_RELIC_KEY}",
-      "REGION": "${stack.out.variables.REGION}"
     },
     "permission": []
   },

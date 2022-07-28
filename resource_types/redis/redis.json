@@ -6,27 +6,11 @@
   "disabled": false,
   "provided": false,
   "metadata": {
+    "name": "redis"
   },
   "spec": {
-    "internal": true,
-    "authenticated": true,
     "size": {
-      "cpu": 1,
-      "memory": 1
-    },
-    "domains": {
-      "mpl-main": {
-        "certificateRef": "Secret Name",
-        "url": "mpl.com"
-      }
-    },
-    "rules": {
-      "api-routing": {
-        "path": "/",
-        "prefix": "app1",
-        "service": "${application.app1.out.interfaces.grpc.host}",
-        "port": "${application.app1.out.interfaces.grpc.port}"
-      }
+
     }
   },
   "out": {

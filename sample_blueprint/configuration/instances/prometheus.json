@@ -2,7 +2,7 @@
   "kind": "configuration",
   "for": "prometheus",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP<default specified in module, need not be overriden>",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
   "provided": true,
   "spec": {

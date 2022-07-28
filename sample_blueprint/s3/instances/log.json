@@ -1,0 +1,16 @@
+{
+  "kind": "s3",
+  "flavor": "default",
+  "version": "latest",
+  "disabled": false,
+  "provided": false,
+  "metadata": {
+  },
+  "spec": {
+    "acl": "private"
+  },
+  "out": {
+    "comment": "Will be generated, or can be provided",
+    "bucket_name": "bucket"
+  }
+}
