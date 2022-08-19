@@ -71,4 +71,5 @@ capillary-cloud-tf/tfazure/level2/versions.tf
 capillary-cloud-tf/tfazure/level3/main.tf
 capillary-cloud-tf/tfazure/level3/main.tf.mustache
 capillary-cloud-tf/tfazure/level3/variables.tf
+capillary-cloud-tf/modules/redis/redis
 
