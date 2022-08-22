@@ -3,7 +3,7 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base-schema.json"
+      "$ref": "../../traits/base.schema.json"
     },
     {
       "$ref": "#/$defs/spec"
@@ -58,10 +58,10 @@
               "type": "object",
               "properties": {
                 "master": {
-                  "$ref": "../../traits/size-schema.json"
+                  "$ref": "../../traits/size.schema.json"
                 },
                 "replica": {
-                  "$ref": "../../traits/size-schema.json"
+                  "$ref": "../../traits/size.schema.json"
                 }
               },
               "required": [
@@ -90,52 +90,10 @@
               "type": "object",
               "properties": {
                 "master": {
-                  "type": "object",
-                  "definition": "Connection details for master",
-                  "properties": {
-                    "username": {
-                      "type": "string"
-                    },
-                    "password": {
-                      "type": "string"
-                    },
-                    "host": {
-                      "type": "string"
-                    },
-                    "port": {
-                      "type": "integer"
-                    }
-                  },
-                  "required": [
-                    "username",
-                    "password",
-                    "host",
-                    "port"
-                  ]
+                  "$ref": "../../traits/interface.schema.json"
                 },
                 "replica": {
-                  "type": "object",
-                  "definition": "Connection details for replicas",
-                  "properties": {
-                    "username": {
-                      "type": "string"
-                    },
-                    "password": {
-                      "type": "string"
-                    },
-                    "host": {
-                      "type": "string"
-                    },
-                    "port": {
-                      "type": "integer"
-                    }
-                  },
-                  "required": [
-                    "username",
-                    "password",
-                    "host",
-                    "port"
-                  ]
+                  "$ref": "../../traits/interface.schema.json"
                 }
               },
               "required": [

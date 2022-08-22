@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definition": "Any Interface",
+  "properties": {
+    "username": {
+      "type": "string",
+      "description": "Username to connect (if any)"
+    },
+    "password": {
+      "type": "string",
+      "description": "Password to connect (if any)"
+    },
+    "host": {
+      "type": "string",
+      "description": "Host for service discovery"
+    },
+    "port": {
+      "type": "integer",
+      "description": "Port for service discovery"
+    }
+  },
+  "required": [
+    "host",
+    "port"
+  ]
+}
