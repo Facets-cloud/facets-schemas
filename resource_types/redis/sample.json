@@ -1,5 +1,5 @@
 {
-  "kind": "redis",
+  "$schema": "schema.json",
   "flavor": "k8s",
   "version": "latest",
   "lifecycle": "ENVIRONMENT",

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "cpu": {
+      "type": "integer",
+      "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+    },
+    "memory": {
+      "type": "integer",
+      "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+    },
+    "instance": {
+      "type": "string",
+      "description": "Instance name in certain cases"
+    }
+  },
+  "required": [
+  ]
+}

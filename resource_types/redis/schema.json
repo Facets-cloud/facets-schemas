@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base-schema.json"
+    },
+    {
+      "$ref": "#/$defs/spec"
+    },
+    {
+      "$ref": "#/$defs/out"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "spec": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "authenticated": {
+              "type": "boolean",
+              "definition": "Make this redis Password protected"
+            },
+            "redis_version": {
+              "type": "string",
+              "definition": "Version of redis e.g. 6.3"
+            },
+            "persistence": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "definition": "Enable Persistence for this redis"
+                },
+                "volume": {
+                  "type": "string",
+                  "definition": "Volume size to be mounted for persistence"
+                }
+              },
+              "required": [
+                "enabled"
+              ]
+            },
+            "replica_count": {
+              "type": "integer",
+              "definitions": "Number of read replicas for the redis"
+            },
+            "size": {
+              "type": "object",
+              "properties": {
+                "master": {
+                  "$ref": "../../traits/size-schema.json"
+                },
+                "replica": {
+                  "$ref": "../../traits/size-schema.json"
+                }
+              },
+              "required": [
+                "master",
+                "replica"
+              ]
+            }
+          },
+          "required": [
+            "authenticated",
+            "redis_version",
+            "persistence",
+            "replica_count",
+            "size"
+          ]
+        }
+      }
+    },
+    "out": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "properties": {
+            "interfaces": {
+              "type": "object",
+              "properties": {
+                "master": {
+                  "type": "object",
+                  "definition": "Connection details for master",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password",
+                    "host",
+                    "port"
+                  ]
+                },
+                "replica": {
+                  "type": "object",
+                  "definition": "Connection details for replicas",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "host": {
+                      "type": "string"
+                    },
+                    "port": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password",
+                    "host",
+                    "port"
+                  ]
+                }
+              },
+              "required": [
+                "master",
+                "replica"
+              ]
+            }
+          },
+          "required": [
+          ]
+        }
+      }
+    }
+  }
+}
