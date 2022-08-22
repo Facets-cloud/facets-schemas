@@ -1,0 +1,48 @@
+{
+  "kind": "redis",
+  "flavor": "k8s",
+  "version": "latest",
+  "lifecycle": "ENVIRONMENT",
+  "disabled": false,
+  "provided": false,
+  "depends_on": [
+  ],
+  "metadata": {
+    "name": "test-redis"
+  },
+  "spec": {
+    "authenticated": true,
+    "redis_version": "6.2",
+    "persistence": {
+      "enabled": true,
+      "volume": "10Gi"
+    },
+    "replica_count": 1,
+    "size": {
+      "master": {
+        "cpu": "1",
+        "memory": "512M"
+      },
+      "replica": {
+        "cpu": "1",
+        "memory": "512M"
+      }
+    }
+  },
+  "out": {
+    "interfaces": {
+      "master": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      },
+      "replica": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      }
+    }
+  }
+}
