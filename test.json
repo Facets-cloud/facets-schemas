@@ -1,9 +1,18 @@
 {
+  "kind": "",
+  "flavor": "",
+  "metadata": {
+  },
+  "version": "",
   "$schema": "resource_types/redis/redis.schema.json",
   "spec": {
     "authenticated": false,
     "redis_version": "6.3",
-    "replica_count": 2,
+    "persistence": {
+      "enabled": true,
+      "volume": "7G"
+    },
+    "replica_count": 0,
     "size": {
       "master": {
         "cpu": "2",
@@ -15,13 +24,16 @@
     "interfaces": {
       "master": {
         "host": "",
-        "password": ""
+        "port": 0
+      },
+      "replica": {
+        "host": "",
+        "port": 0
       }
     }
   },
   "advanced": {
     "k8s": {
-
     }
   }
 }

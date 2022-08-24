@@ -38,6 +38,18 @@
       "properties": {
         "spec": {
           "type": "object",
+          "if": {
+            "properties": {
+              "replica_count": {
+                "minimum": 1
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "size.replica"
+            ]
+          },
           "properties": {
             "authenticated": {
               "type": "boolean",
@@ -59,6 +71,18 @@
                   "definition": "Volume size to be mounted for persistence"
                 }
               },
+              "if": {
+                "properties": {
+                  "enabled": {
+                    "const": true
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "volume"
+                ]
+              },
               "required": [
                 "enabled"
               ]
@@ -78,8 +102,7 @@
                 }
               },
               "required": [
-                "master",
-                "replica"
+                "master"
               ]
             }
           },
@@ -101,6 +124,12 @@
           "properties": {
             "interfaces": {
               "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(replica_[0-9]+)$": {
+                  "$ref": "../../traits/interface.schema.json"
+                }
+              },
               "properties": {
                 "master": {
                   "$ref": "../../traits/interface.schema.json"
