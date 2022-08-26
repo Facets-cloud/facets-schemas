@@ -72,4 +72,4 @@ capillary-cloud-tf/tfazure/level3/main.tf
 capillary-cloud-tf/tfazure/level3/main.tf.mustache
 capillary-cloud-tf/tfazure/level3/variables.tf
 capillary-cloud-tf/modules/1_input_instance/redis/redis
-
+capillary-cloud-tf/modules/0_input_config/redis_exporter/prometheus-redis-exporter
