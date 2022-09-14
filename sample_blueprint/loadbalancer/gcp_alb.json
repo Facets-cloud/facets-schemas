@@ -1,0 +1,33 @@
+{
+    "$schema": "../../resource_types/loadbalancer/loadbalancer.schema.json",
+    "kind": "ingress",
+    "flavor": "gcp_alb",
+    "disabled": false,
+    "version": "0.1",
+    "metadata": {
+        "name": "gcp_alb"
+    },
+    "spec": {
+        "private": false,
+        "domains": {
+            "domaintest1": {
+                "domain": "asdasd",
+                "alias": "asdasd",
+                "certificate_reference": "certificate name"
+            }
+        },
+        "rules": {
+            "rules1":  {
+                "domain_prefix": "fp",
+                "service_name": "k8s-service",
+                "path": "/",
+                "port_name": "http"
+            }
+        },
+        "force_ssl_redirection": true
+
+    },
+    "advanced": {
+        "gcp_alb": {}
+    }
+}
