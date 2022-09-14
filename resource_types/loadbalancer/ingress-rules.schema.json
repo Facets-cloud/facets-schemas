@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "minProperties": 1,
+    "patternProperties": {
+      "^[a-zA-Z0-9_.-]*$": {
+        "description": "This is the name of the ingress object that you are creating, it can be of any name",
+        "properties": {
+          "service_name": {
+            "type": "string",
+            "definition": "The Kubernetes service name of the application"
+          },
+          "path": {
+            "type": "string",
+            "definition": "path of the application "
+          },
+          "port_name": {
+            "type": "string",
+            "definition": "Port name of the service"
+          },
+          "port": {
+            "type": "integer",
+            "definition": "Port number of the service"
+          },
+          "domain_prefix": {
+            "type": "string",
+            "definition": "Subdomain prefix for the service "
+          }
+        },
+        "allOf": [
+            {
+              "required": [
+                "service_name",
+                "domain_prefix",
+                "path"
+              ]
+            },
+            {
+              "anyOf": [
+                {
+                  "required": [
+                    "port_name"
+                  ]
+                },
+                {
+                  "required": [
+                    "port"
+                  ]
+                }
+              ]
+            }
+          ]
+      }
+    }
+  }

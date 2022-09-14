@@ -1,0 +1,112 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+      {
+        "$ref": "../../traits/base.schema.json"
+      },
+      {
+        "$ref": "#/$defs/specDef"
+      },
+      {
+        "$ref": "#/$defs/outDef"
+      }
+    ],
+    "required": [
+      "kind",
+      "flavor",
+      "version",
+      "metadata",
+      "spec"
+    ],
+    "$defs": {
+      "specDef": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "basicAuth": {
+                "type": "boolean",
+                "description": "Enable or disable basic auth"
+              },
+              "grpc": {
+                "type": "boolean",
+                "description": "Enable or Disable grpc support in nginx_ingress_controller"
+              },
+              "private": {
+                "type": "boolean",
+                "description": "Make this load balancer private"
+              },
+              "domains": {
+                "$ref": "./domains.schema.json",
+                "description": "The map of domain key to rules"
+              },
+              "rules": {
+                "$ref": "./ingress-rules.schema.json",
+                "description": "Objects of all ingress rules"
+              },
+              "force_ssl_redirection": {
+                "type": "boolean",
+                "description": "Force SSL redirection from http to https"
+              },
+              "ipv6_enabled": {
+                "type": "boolean",
+                "description": "Enable/disable ipv6, this is a cloud specific check if your vpc has ipv6 support enabled"
+              }
+            },
+            "required": [
+              "private",
+              "rules",
+              "force_ssl_redirection"
+            ]
+          },
+          "advanced": {
+            "anyOf": [
+              {
+                "$ref": "./flavor-aws-alb.schema.json"
+              },
+              {
+                "$ref": "./flavor-gcp-alb.schema.json"
+              },
+              {
+                "$ref": "./flavor-nginx.schema.json"
+              }
+            ]
+          }
+        }
+      },
+      "outDef": {
+        "type": "object",
+        "properties": {
+          "out": {
+            "type": "object",
+            "properties": {
+              "interfaces": {
+                "type": "object",
+                "additionalProperties": false,
+                "patternProperties": {
+                  "^(replica_[0-9]+)$": {
+                    "$ref": "../../traits/interface.schema.json"
+                  }
+                },
+                "properties": {
+                  "master": {
+                    "$ref": "../../traits/interface.schema.json"
+                  },
+                  "replica": {
+                    "$ref": "../../traits/interface.schema.json"
+                  }
+                },
+                "required": [
+                  "master",
+                  "replica"
+                ]
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    }
+  }

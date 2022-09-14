@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "aws_alb": {
+          "type": "object",
+          "description": "Advanced section of the aws_alb",
+          "properties": {
+            "waf_arn": {
+              "type": "string",
+              "description": "ARN of WAF that you can hook into ALB"
+            },
+            "waf_acl_id": {
+              "type": "string",
+              "description": "ACL id of the WAF"
+            },
+            "shield": {
+              "type": "boolean",
+              "description": "Enable/Disable shield in AWS"
+            },
+            "target_type": {
+              "type": "string",
+              "description": "backend target type of service in kubernetes eg: instance/ip"
+            }
+          }
+        }
+      }
+  }

@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "nginx_ingress_controller": {
+          "type": "object",
+          "description": "Advanced section of the nginx_ingress_controller",
+          "properties": {
+            "acm": {
+              "type": "string",
+              "description": "The ARN of the ACM certificate created for that domain"
+            }
+          }
+        }
+      }
+  }
