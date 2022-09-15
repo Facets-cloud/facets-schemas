@@ -9,6 +9,9 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
       "$ref": "#/$defs/outDef"
     }
   ],
@@ -33,8 +36,7 @@
             "size": {
               "type": "object",
               "$ref": "../../traits/reader-writer.schema.json",
-              "required": [
-              ]
+              "required": []
             }
           }
         },
@@ -42,46 +44,50 @@
           "mysql_version",
           "size"
         ]
-      },
-      "advanced": {
-        "anyOf": [
-          {
-            "$ref": "./flavor-aurora.schema.json"
-          }
-        ]
       }
-    }
-  },
-  "outDef": {
-    "type": "object",
-    "properties": {
-      "out": {
-        "type": "object",
-        "properties": {
-          "interfaces": {
-            "type": "object",
-            "additionalProperties": false,
-            "patternProperties": {
-              "^(replica_[0-9]+)$": {
-                "$ref": "../../traits/interface.schema.json"
-              }
-            },
-            "properties": {
-              "writer": {
-                "$ref": "../../traits/interface.schema.json"
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "anyOf": [
+            {
+              "$ref": "./flavor-aurora.schema.json"
+            }
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "properties": {
+            "interfaces": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(replica_[0-9]+)$": {
+                  "$ref": "../../traits/interface.schema.json"
+                }
               },
-              "reader": {
-                "$ref": "../../traits/interface.schema.json"
-              }
-            },
-            "required": [
-              "writer",
-              "reader"
-            ]
-          }
-        },
-        "required": []
+              "properties": {
+                "writer": {
+                  "$ref": "../../traits/interface.schema.json"
+                },
+                "reader": {
+                  "$ref": "../../traits/interface.schema.json"
+                }
+              },
+              "required": [
+                "writer",
+                "reader"
+              ]
+            }
+          },
+          "required": []
+        }
       }
     }
   }
-}

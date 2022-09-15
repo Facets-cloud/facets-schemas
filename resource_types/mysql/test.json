@@ -1,0 +1,61 @@
+{
+  "$schema": "mysql.schema.json",
+  "kind": "mysql",
+  "flavor": "aurora",
+  "version": "0.1",
+  "disabled": false,
+  "provided": false,
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+  "depends_on": [],
+  "metadata": {},
+  "spec": {
+    "mysql_version": "5.7.mysql_aurora.2.10.1",
+    "size": {
+      "writer": {
+        "instance": "db.t4g.medium",
+        "replica_count": 1
+      },
+      "reader": {
+        "instance": "db.t4g.medium",
+        "replica_count": 0
+      }
+    }
+  },
+  "advanced": {
+    "aurora": {
+      "mysql": {
+        "db_cluster_parameters": {
+          "max_connections":{
+            "apply_method": "pending-reboot",
+            "value": "2000"
+          },
+          "slow_launch_time":{
+            "apply_method": "pending-reboot",
+            "value": "2"
+          }
+        },
+        "db_instance_parameters": {
+          "net_read_timeout": {
+            "value": "3600"
+          },
+          "net_write_timeout": {
+            "value": "3600"
+          }
+        },
+        "monitoring_interval": 0,
+        "restore_from": {
+          "snapshot_identifier": ""
+        },
+        "preferred_maintenance_window": {
+          "day": "Wed",
+          "start_hour": "22",
+          "end_hour": "23"
+        },
+        "preferred_backup_window": {
+          "start_hour": "00",
+          "end_hour": "01"
+        }
+      }
+    }
+  }
+}
