@@ -10,7 +10,10 @@
         "apply_method": {
           "type": "string",
           "description": "(Optional) `immediate` (default), or `pending-reboot`. Some engines can't apply some parameters without a reboot, and you will need to specify `pending-reboot` here",
-          "enum": ["pending-reboot", "immediate"]
+          "enum": [
+            "pending-reboot",
+            "immediate"
+          ]
         },
         "value": {
           "type": "string",

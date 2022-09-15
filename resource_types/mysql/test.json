@@ -25,11 +25,11 @@
     "aurora": {
       "mysql": {
         "db_cluster_parameters": {
-          "max_connections":{
+          "max_connections": {
             "apply_method": "pending-reboot",
             "value": "2000"
           },
-          "slow_launch_time":{
+          "slow_launch_time": {
             "apply_method": "pending-reboot",
             "value": "2"
           }
