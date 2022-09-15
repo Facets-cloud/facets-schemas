@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definition": "Aurora Schema",
+  "properties": {
+    "aurora": {
+      "type": "object",
+      "description": "Advanced section of the aurora",
+      "properties": {
+        "mysql": {
+          "type": "object",
+          "description": "Advanced values as per Terraform AWS RDS Module https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/latest?tab=inputs",
+          "properties": {
+            "db_cluster_parameters": {
+              "type": "object",
+              "description": "Map of DB cluster parameters to apply"
+            },
+            "db_instance_parameters": {
+              "type": "object",
+              "description": "Map of DB instance parameters to apply"
+            },
+            "monitoring_interval": {
+              "type": "integer",
+              "description": "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for instances. Set to 0  to disable"
+            },
+            "restore_from": {
+              "type": "object",
+              "properties": {
+                "snapshot_identifier": {
+                  "type": "string",
+                  "description": "Specifies whether or not to create this cluster from a snapshot. You can use either the name or ARN when specifying a DB cluster snapshot, or the ARN when specifying a DB snapshot"
+                }
+              }
+            },
+            "preferred_maintenance_window": {
+              "type": "object",
+              "description": "The weekly time range during which system maintenance can occur, in (UTC)",
+              "properties": {
+                "day": {
+                  "type": "string"
+                },
+                "start_hour": {
+                  "type": "string"
+                },
+                "end_hour": {
+                  "type": "string"
+                }
+              }
+            },
+            "preferred_backup_window": {
+              "type": "object",
+              "description": "The daily time range during which automated backups are created",
+              "properties": {
+                "start_hour": {
+                  "type": "string"
+                },
+                "end_hour": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": []
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "mysql_version": {
+              "type": "string",
+              "description": "Aurora compatible MySQL version (eg: 5.7.mysql_aurora.2.10.1)"
+            },
+            "size": {
+              "type": "object",
+              "$ref": "../../traits/reader-writer.schema.json",
+              "required": [
+              ]
+            }
+          }
+        },
+        "required": [
+          "mysql_version",
+          "size"
+        ]
+      },
+      "advanced": {
+        "anyOf": [
+          {
+            "$ref": "./flavor-aurora.schema.json"
+          }
+        ]
+      }
+    }
+  },
+  "outDef": {
+    "type": "object",
+    "properties": {
+      "out": {
+        "type": "object",
+        "properties": {
+          "interfaces": {
+            "type": "object",
+            "additionalProperties": false,
+            "patternProperties": {
+              "^(replica_[0-9]+)$": {
+                "$ref": "../../traits/interface.schema.json"
+              }
+            },
+            "properties": {
+              "writer": {
+                "$ref": "../../traits/interface.schema.json"
+              },
+              "reader": {
+                "$ref": "../../traits/interface.schema.json"
+              }
+            },
+            "required": [
+              "writer",
+              "reader"
+            ]
+          }
+        },
+        "required": []
+      }
+    }
+  }
+}

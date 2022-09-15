@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "reader": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "size.schema.json"
+        },
+        {
+          "replica_count": {
+            "type": "integer",
+            "description": "Number of reader instances needs to be deployed"
+          }
+        }
+      ]
+    },
+    "writer": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "size.schema.json"
+        },
+        {
+          "replica_count": {
+            "type": "integer",
+            "description": "Number of writer instances needs to be deployed"
+          }
+        }
+      ]
+    }
+  },
+  "required": [
+    "writer",
+    "reader"
+  ]
+}
