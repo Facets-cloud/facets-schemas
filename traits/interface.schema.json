@@ -18,6 +18,10 @@
     "port": {
       "type": "integer",
       "description": "Port for service discovery"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of interface, same as key"
     }
   },
   "required": [
