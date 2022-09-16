@@ -1,4 +1,5 @@
 {
+  "$schema": "postgres.schema.json",
   "kind": "postgres",
   "flavor": "aurora",
   "version": "0.2",
@@ -9,8 +10,8 @@
   ],
   "metadata": {
     "name": "test-aurora-postgres",
-    "tags" : {
-      "name" : "something"
+    "tags": {
+      "name": "something"
     }
   },
   "spec": {
@@ -18,7 +19,7 @@
     "size": {
       "writer": {
         "instance": "db.t3.medium",
-        "replica_count":  1
+        "replica_count": 1
       },
       "reader": {
         "instance": "db.t3.medium",
@@ -28,51 +29,53 @@
   },
   "advanced": {
     "aurora": {
-      "rds-aurora" : {
-        "engine_mode" : null,
-        "allowed_cidr_blocks" : [],
-        "apply_immediately" : true,
-        "autoscaling_enabled" : true,
-        "autoscaling_min_capacity" : 2,
-        "autoscaling_max_capacity" : 4,
-        "autoscaling_scale_in_cooldown" : 300,
-        "autoscaling_scale_out_cooldown" : 300,
-        "autoscaling_target_cpu" : 70,
-        "autoscaling_target_connections" : 700,
-        "cluster_timeouts" : {},
-        "performance_insights_enabled" : true,
-        "performance_insights_retention_period" : 7,
-        "deletion_protection" : false,
-        "preferred_maintenance_window" : "sun:05:00-sun:06:00",
-        "preferred_backup_window" : "02:00-03:00",
-        "skip_final_snapshot" : null,
-        "snapshot_identifier" : null,
-        "monitoring_interval" : 0,
-        "monitoring_role_arn" : "",
-        "create_db_parameter_group" : true,
-        "db_parameter_group_name" : "testing",
-        "db_parameter_group_description" : "testing",
-        "db_parameter_group_parameters" : [],
-        "create_db_cluster_parameter_group" : true,
-        "db_cluster_parameter_group_name" : "testing",
-        "db_cluster_parameter_group_description" : "testing",
-        "db_cluster_parameter_group_parameters" : [{
-          "name" : "apg_enable_batch_mode_function_execution",
-          "value" : true
-        }],
-        "create_monitoring_role" : false,
-        "enable_global_write_forwarding" : false,
-        "enabled_cloudwatch_logs_exports" : [],
-        "endpoints" : {},
-        "replication_source_identifier" : null,
-        "predefined_metric_type" : "RDSReaderAverageCPUUtilization",
-        "instance_timeouts" : {},
-        "iam_roles" : {}
+      "rds-aurora": {
+        "engine_mode": null,
+        "allowed_cidr_blocks": [],
+        "apply_immediately": true,
+        "autoscaling_enabled": true,
+        "autoscaling_min_capacity": 2,
+        "autoscaling_max_capacity": 4,
+        "autoscaling_scale_in_cooldown": 300,
+        "autoscaling_scale_out_cooldown": 300,
+        "autoscaling_target_cpu": 70,
+        "autoscaling_target_connections": 700,
+        "cluster_timeouts": {},
+        "performance_insights_enabled": true,
+        "performance_insights_retention_period": 7,
+        "deletion_protection": false,
+        "preferred_maintenance_window": "sun:05:00-sun:06:00",
+        "preferred_backup_window": "02:00-03:00",
+        "skip_final_snapshot": null,
+        "snapshot_identifier": null,
+        "monitoring_interval": 0,
+        "monitoring_role_arn": "",
+        "create_db_parameter_group": true,
+        "db_parameter_group_name": "testing",
+        "db_parameter_group_description": "testing",
+        "db_parameter_group_parameters": [],
+        "create_db_cluster_parameter_group": true,
+        "db_cluster_parameter_group_name": "testing",
+        "db_cluster_parameter_group_description": "testing",
+        "db_cluster_parameter_group_parameters": [
+          {
+            "name": "apg_enable_batch_mode_function_execution",
+            "value": true
+          }
+        ],
+        "create_monitoring_role": false,
+        "enable_global_write_forwarding": false,
+        "enabled_cloudwatch_logs_exports": [],
+        "endpoints": {},
+        "replication_source_identifier": null,
+        "predefined_metric_type": "RDSReaderAverageCPUUtilization",
+        "instance_timeouts": {},
+        "iam_roles": {}
       },
-      "aws_db_parameter_group" : {
-        "name" : "facetscloud",
-        "description" : "something",
-        "parameters" : []
+      "aws_db_parameter_group": {
+        "name": "facetscloud",
+        "description": "something",
+        "parameters": []
       }
     }
   }

@@ -16,9 +16,9 @@
       "properties": {
         "advanced": {
           "type": "object",
-          "allOf": [
+          "anyOf": [
             {
-              "$ref": "flavor-aurora.schema.json"
+              "$ref": "./flavor-aurora.schema.json"
             }
           ]
         }
