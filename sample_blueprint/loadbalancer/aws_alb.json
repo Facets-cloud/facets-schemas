@@ -28,6 +28,8 @@
         }
     },
     "advanced": {
-        "aws_alb": {}
+        "aws_alb": {
+            "disable_facets_host_rules": false
+        }
     }
 }
