@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "reader": {
+      "type": "object",
+      "description": "The reader details",
+      "$ref": "interface.schema.json"
+    },
+    "writer": {
+      "type": "object",
+      "description": "The reader details",
+      "$ref": "interface.schema.json"
+    }
+  },
+  "required": [
+    "writer"
+  ]
+}

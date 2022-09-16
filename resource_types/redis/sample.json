@@ -1,8 +1,8 @@
 {
   "$schema": "redis.schema.json",
   "flavor": "k8s",
+  "kind": "redis",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT",
   "disabled": false,
   "provided": false,
   "depends_on": [
@@ -13,35 +13,63 @@
   "spec": {
     "authenticated": true,
     "redis_version": "6.2",
-    "persistence": {
-      "enabled": true,
-      "volume": "10Gi"
-    },
-    "replica_count": 1,
+    "persistence_enabled": true,
     "size": {
-      "master": {
+      "writer": {
         "cpu": "1",
         "memory": "512M"
       },
-      "replica": {
+      "reader": {
         "cpu": "1",
         "memory": "512M"
       }
     }
   },
   "out": {
+    "spec": {
+      "authenticated": true,
+      "redis_version": "6.2",
+      "persistence_enabled": true,
+      "size": {
+        "writer": {
+          "cpu": "1",
+          "memory": "512M"
+        },
+        "reader": {
+          "cpu": "1",
+          "memory": "512M"
+        }
+      }
+    },
+    "instances": {
+      "fsfdf-0": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      }
+    },
     "interfaces": {
-      "master": {
+      "reader": {
         "username": "",
         "password": "",
         "host": "",
         "port": 6379
       },
-      "replica": {
+      "writer": {
         "username": "",
         "password": "",
         "host": "",
         "port": 6379
+      }
+    }
+  },
+  "advanced": {
+    "k8s": {
+      "redis": {
+        "values": {
+
+        }
       }
     }
   }

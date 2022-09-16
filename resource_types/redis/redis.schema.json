@@ -38,18 +38,7 @@
       "properties": {
         "spec": {
           "type": "object",
-          "if": {
-            "properties": {
-              "replica_count": {
-                "minimum": 1
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "size.replica"
-            ]
-          },
+          "additionalProperties": false,
           "properties": {
             "authenticated": {
               "type": "boolean",
@@ -59,58 +48,19 @@
               "type": "string",
               "definition": "Version of redis e.g. 6.3"
             },
-            "persistence": {
-              "type": "object",
-              "properties": {
-                "enabled": {
-                  "type": "boolean",
-                  "definition": "Enable Persistence for this redis"
-                },
-                "volume": {
-                  "type": "string",
-                  "definition": "Volume size to be mounted for persistence"
-                }
-              },
-              "if": {
-                "properties": {
-                  "enabled": {
-                    "const": true
-                  }
-                }
-              },
-              "then": {
-                "required": [
-                  "volume"
-                ]
-              },
-              "required": [
-                "enabled"
-              ]
-            },
-            "replica_count": {
-              "type": "integer",
-              "definitions": "Number of read replicas for the redis"
+            "persistence_enabled": {
+              "type": "boolean",
+              "definition": "Enable Persistence for this redis"
             },
             "size": {
               "type": "object",
-              "properties": {
-                "master": {
-                  "$ref": "../../traits/size.schema.json"
-                },
-                "replica": {
-                  "$ref": "../../traits/size.schema.json"
-                }
-              },
-              "required": [
-                "master"
-              ]
+              "$ref": "../../traits/reader-writer.schema.json"
             }
           },
           "required": [
             "authenticated",
             "redis_version",
-            "persistence",
-            "replica_count",
+            "persistence_enabled",
             "size"
           ]
         }
@@ -121,30 +71,30 @@
       "properties": {
         "out": {
           "type": "object",
-          "properties": {
-            "interfaces": {
-              "type": "object",
-              "additionalProperties": false,
-              "patternProperties": {
-                "^(replica_[0-9]+)$": {
-                  "$ref": "../../traits/interface.schema.json"
-                }
-              },
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
               "properties": {
-                "master": {
-                  "$ref": "../../traits/interface.schema.json"
+                "interfaces": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "$ref": "../../traits/reader-writer-interfaces.schema.json"
                 },
-                "replica": {
-                  "$ref": "../../traits/interface.schema.json"
+                "instances": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^([a-z]*-[0-9]+)$": {
+                      "$ref": "../../traits/interface.schema.json"
+                    }
+                  }
                 }
               },
               "required": [
-                "master",
-                "replica"
               ]
             }
-          },
-          "required": [
           ]
         }
       }

@@ -4,6 +4,7 @@
   "properties": {
     "reader": {
       "type": "object",
+      "additionalProperties": false,
       "description": "The reader details",
       "allOf": [
         {
@@ -40,7 +41,6 @@
     }
   },
   "required": [
-    "writer",
-    "reader"
+    "writer"
   ]
 }
