@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "definition": "Elasticache Schema",
+    "properties": {
+      "aurora": {
+        "type": "object",
+        "properties": {
+          "rds-aurora": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "description": "Resource values as per the terraform resouce documentation https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/latest"
+              }
+            }
+          },
+          "aws_db_parameter_group": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group"
+              }
+            }
+          }
+        }
+        }
+      }
+    },
+    "required": [
+    ]
+  }

@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "flavor-aurora.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "postgres_version": {
+              "type": "string",
+              "definition": "Version of postgres e.g. 12.11"
+            },
+            "size": {
+              "type": "object",
+              "$ref": "../../traits/reader-writer.schema.json"
+            }
+          },
+          "required": [
+            "postgres_version",
+            "size"
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
+              "properties": {
+                "interfaces": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "$ref": "../../traits/reader-writer-interfaces.schema.json"
+                },
+                "instances": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^([a-z]*-[0-9]+)$": {
+                      "$ref": "../../traits/interface.schema.json"
+                    }
+                  }
+                },
+                "postgresVersion": {
+                  "type": "string",
+                  "definition": "Version of postgres e.g. 12.11"
+                },
+                "excludedDatabases": {
+                  "type": "list",
+                  "definition": "List of databases to be excluded for prometheus-postgres-exporter"
+                },
+                "defaultDatabase": {
+                  "type": "string",
+                  "definition": "Default database for the connection string of prometheus-postgres-exporter"
+                }
+              },
+              "required": [
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
