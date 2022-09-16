@@ -20,7 +20,11 @@
             },
             "target_type": {
               "type": "string",
-              "description": "backend target type of service in kubernetes eg: instance/ip"
+              "description": "backend target type of service in kubernetes eg: instance/ip : default is ip"
+            },
+            "disable_facets_host_rules": {
+              "type": "boolean",
+              "description": "Boolean flag to enable or disable facets host rules in alb, in order to incorporate more rules. Since there is a hard limit of 100 rules in alb: default is false"
             }
           }
         }
