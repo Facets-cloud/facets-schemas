@@ -75,6 +75,45 @@
 
         }
       }
+    },
+    "elasticache": {
+      "aws_elasticache_replication_group": {
+        "apply_immediately": true,
+        "at_rest_encryption_enabled": true,
+        "auto_minor_version_upgrade": false,
+        "multi_az_enabled": false,
+        "kms_key_id": null,
+        "log_delivery_configuration": [],
+        "maintenance_window": "sun:05:00-sun:09:00",
+        "notification_topic_arn": null,
+        "snapshot_name": null,
+        "snapshot_arns": [],
+        "snapshot_retention_limit": null,
+        "snapshot_window": null,
+        "security_group_ids": null,
+        "data_tiering_enabled": false,
+        "final_snapshot_identifier": null,
+        "global_replication_group_id": null
+      },
+      "aws_elasticache_parameter_group": {
+        "parameters": [
+          {
+            "name": "maxmemory-policy",
+            "value": "noeviction"
+          }
+        ],
+        "name" : "something",
+        "description" : "something"
+      },
+      "aws_security_group": {
+        "description" : "something",
+        "ingress": {
+          "cidr_blocks": [
+            "10.0.0.0/16",
+            "11.0.0.0/16"
+          ]
+        }
+      }
     }
   }
 }

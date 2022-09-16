@@ -19,6 +19,9 @@
           "allOf": [
             {
               "$ref": "flavor-k8s.schema.json"
+            },
+            {
+              "$ref": "flavor-elasticache.schema.json"
             }
           ]
         }

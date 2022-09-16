@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "definition": "Elasticache Schema",
+    "properties": {
+      "elasticache": {
+        "type": "object",
+        "properties": {
+          "aws_elasticache_replication_group": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "description": "Resource values as per the terraform resouce documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_replication_group"
+              }
+            }
+          },
+          "aws_elasticache_parameter_group": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_parameter_group"
+              }
+            }
+          },
+          "aws_security_group": {
+            "type": "object",
+            "properties": {
+              "values": {
+                "type": "object",
+                "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group"
+              }
+            }
+          }
+        }
+        }
+      }
+    },
+    "required": [
+    ]
+  }
