@@ -71,6 +71,7 @@
       "properties": {
         "out": {
           "type": "object",
+          "additionalProperties": false,
           "allOf": [
             {
               "$ref": "#/$defs/specDef"

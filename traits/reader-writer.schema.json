@@ -19,6 +19,9 @@
             }
           }
         }
+      ],
+      "required": [
+        "replica_count"
       ]
     },
     "writer": {
@@ -37,6 +40,9 @@
             }
           }
         }
+      ],
+      "required": [
+        "replica_count"
       ]
     }
   },

@@ -57,5 +57,36 @@
         }
       }
     }
+  },
+  "out": {
+    "spec": {
+      "mysql_version": "5.7.mysql_aurora.2.10.1",
+      "size": {
+        "writer": {
+          "instance": "db.t4g.medium",
+          "replica_count": 1
+        },
+        "reader": {
+          "instance": "db.t4g.medium",
+          "replica_count": 0
+        }
+      }
+    },
+    "instances": {
+    },
+    "interfaces": {
+      "reader": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      },
+      "writer": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      }
+    }
   }
 }

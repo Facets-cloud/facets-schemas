@@ -63,30 +63,32 @@
       "properties": {
         "out": {
           "type": "object",
-          "properties": {
-            "interfaces": {
-              "type": "object",
-              "additionalProperties": false,
-              "patternProperties": {
-                "^(replica_[0-9]+)$": {
-                  "$ref": "../../traits/interface.schema.json"
-                }
-              },
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
               "properties": {
-                "writer": {
-                  "$ref": "../../traits/interface.schema.json"
+                "interfaces": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "$ref": "../../traits/reader-writer-interfaces.schema.json"
                 },
-                "reader": {
-                  "$ref": "../../traits/interface.schema.json"
+                "instances": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^([a-z]*-[0-9]+)$": {
+                      "$ref": "../../traits/interface.schema.json"
+                    }
+                  }
                 }
               },
               "required": [
-                "writer",
-                "reader"
               ]
             }
-          },
-          "required": []
+          ]
         }
       }
     }

@@ -17,11 +17,13 @@
     "size": {
       "writer": {
         "cpu": "1",
-        "memory": "512M"
+        "memory": "512M",
+        "replica_count": 1
       },
       "reader": {
         "cpu": "1",
-        "memory": "512M"
+        "memory": "512M",
+        "replica_count": 0
       }
     }
   },
@@ -33,11 +35,13 @@
       "size": {
         "writer": {
           "cpu": "1",
-          "memory": "512M"
+          "memory": "512M",
+          "replica_count": 0
         },
         "reader": {
           "cpu": "1",
-          "memory": "512M"
+          "memory": "512M",
+          "replica_count": 0
         }
       }
     },
