@@ -53,7 +53,7 @@ def createGCPProvider(awsregion, project, gcpregion) {
     provider "helm" {
         kubernetes {
             config_path = "$GCP_KUBECONFIG"
-            load_config_file = false
+            #load_config_file = false
         }
         version = "1.3.2"
     }
