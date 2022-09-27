@@ -5,7 +5,12 @@
         "gcp_alb": {
           "type": "object",
           "description": "Advanced section of the gcp_alb",
-          "properties": {}
+          "properties": {
+            "enable_managed_certificates": {
+              "type": "boolean",
+              "description": "Boolean flag to enable and disable the creation of managed certificates in GCP"
+            }
+          }
         }
       }
   }

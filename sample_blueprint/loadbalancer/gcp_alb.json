@@ -28,6 +28,8 @@
 
     },
     "advanced": {
-        "gcp_alb": {}
+        "gcp_alb": {
+            "enable_managed_certificates": false
+        }
     }
 }
