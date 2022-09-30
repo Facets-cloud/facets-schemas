@@ -19,7 +19,11 @@
   },
   "advanced" : {
     "k8s": {
-      "rabbitmq": {}
+      "rabbitmq": {
+        "values": {
+
+        }
+      }
     }
   }
 }
