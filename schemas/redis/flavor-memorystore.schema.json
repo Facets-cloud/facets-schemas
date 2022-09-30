@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Memorystore Schema",
+  "properties": {
+    "memorystore": {
+      "type": "object",
+      "description": "Advanced values for GCP memorystore",
+      "properties": {
+        "google_redis_instance": {
+          "type": "object",
+          "description": "Resource values as per the terraform resource documentation  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/redis_instance"
+        }
+      }
+    }
+  }
+}
