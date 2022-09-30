@@ -13,6 +13,10 @@
     "instance": {
       "type": "string",
       "description": "Instance name in certain cases"
+    },
+    "volume": {
+      "type": "string",
+      "description": "Volume request in kubernetes persistent volumes"
     }
   },
   "required": [
