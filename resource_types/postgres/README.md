@@ -1,4 +1,5 @@
-# Redis
+# Postgres
+
 
 A Postgres Instance in master/slave or reader/writer mode.
 
