@@ -9,7 +9,7 @@
       "properties": {
         "google_redis_instance": {
           "type": "object",
-          "description": "Resource values as per the terraform resource documentation  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/redis_instance"
+          "description": "Resource values as per the terraform resource documentation for redis instance creation  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/redis_instance"
         }
       }
     }
