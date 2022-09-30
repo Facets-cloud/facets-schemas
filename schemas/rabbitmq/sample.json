@@ -1,0 +1,25 @@
+{
+  "$schema": "rabbitmq.schema.json",
+  "flavor": "k8s",
+  "kind": "rabbitmq",
+  "version": "latest",
+  "depends_on": [],
+  "disabled": false,
+  "metadata": {
+    "name": "rabbitmq"
+  },
+  "spec": {
+    "rabbitmq_version" : "3.10.7",
+    "size" : {
+      "cpu": "1000m",
+      "memory": "3Gi",
+      "volume": "1Gi",
+      "replica_count": 3
+    }
+  },
+  "advanced" : {
+    "k8s": {
+      "rabbitmq": {}
+    }
+  }
+}

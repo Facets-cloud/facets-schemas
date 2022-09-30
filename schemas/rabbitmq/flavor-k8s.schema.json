@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Values for RabbitMQ K8s",
+  "properties": {
+    "k8s": {
+      "type": "object",
+      "properties": {
+        "rabbitmq": {
+          "type": "object",
+          "description": "Helm values as per bitnami rabbitMq helm chart https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq"
+          }
+        }
+      }
+    }
+  }
+}
