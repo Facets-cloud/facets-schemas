@@ -6,6 +6,7 @@ A Redis Instance in master/slave or reader/writer mode.
 
 - Kubernetes
 - Elasticache
+- Memorystore
 
 ## Provide
 
