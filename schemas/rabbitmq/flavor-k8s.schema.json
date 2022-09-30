@@ -8,7 +8,11 @@
       "properties": {
         "rabbitmq": {
           "type": "object",
-          "description": "Helm values as per bitnami rabbitMq helm chart https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq"
+          "properties": {
+            "values" : {
+              "type": "object",
+              "description": "Helm values as per bitnami rabbitMq helm chart https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq"
+          }
           }
         }
       }
