@@ -22,6 +22,9 @@
             },
             {
               "$ref": "flavor-elasticache.schema.json"
+            },
+            {
+              "$ref": "flavor-memorystore.schema.json"
             }
           ]
         }

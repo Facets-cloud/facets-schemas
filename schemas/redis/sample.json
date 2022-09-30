@@ -114,6 +114,29 @@
           ]
         }
       }
+    },
+    "memorystore": {
+      "display_name" : null,
+      "tier" : "STANDARD_HA",
+      "authorized_network" : null,
+      "transit_encryption_mode": "DISABLED",
+      "alternative_location_id": "asia-south1-c",
+      "connect_mode": "PRIVATE_SERVICE_ACCESS",
+      "read_replicas_mode": "READ_REPLICAS_ENABLED",
+      "redis_configs": {
+        "name": "redis",
+        "count": "2"
+      },
+      "labels": {},
+      "reserved_ip_range": null,
+      "maintenance_policy" : {
+        "weekly_maintenance_window" : {
+          "day" : "THURSDAY",
+          "start_time" : {
+            "hours" : 12
+          }
+        }
+      }
     }
   }
 }
