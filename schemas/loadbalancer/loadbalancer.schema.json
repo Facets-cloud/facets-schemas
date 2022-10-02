@@ -85,23 +85,12 @@
               "interfaces": {
                 "type": "object",
                 "additionalProperties": false,
+                "minProperties": 1,
                 "patternProperties": {
-                  "^(replica_[0-9]+)$": {
+                  "^[a-zA-Z0-9_.-]*$": {
                     "$ref": "../../traits/interface.schema.json"
                   }
-                },
-                "properties": {
-                  "master": {
-                    "$ref": "../../traits/interface.schema.json"
-                  },
-                  "replica": {
-                    "$ref": "../../traits/interface.schema.json"
-                  }
-                },
-                "required": [
-                  "master",
-                  "replica"
-                ]
+                }
               }
             },
             "required": []
