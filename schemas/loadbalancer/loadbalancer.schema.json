@@ -86,8 +86,10 @@
                 "type": "object",
                 "additionalProperties": false,
                 "minProperties": 1,
+                "description": "The output for your ingress module, this can be generated or provided",
                 "patternProperties": {
                   "^[a-zA-Z0-9_.-]*$": {
+                    "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
                     "$ref": "../../traits/interface.schema.json"
                   }
                 }

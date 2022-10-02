@@ -1,0 +1,11 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "aws_vpc_peering": {
+          "type": "object",
+          "description": "Advanced section of the aws vpc peering module",
+          "properties": {}
+        }
+    }
+}

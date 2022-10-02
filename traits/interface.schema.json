@@ -23,9 +23,5 @@
       "type": "string",
       "description": "Name of interface, same as key"
     }
-  },
-  "required": [
-    "host",
-    "port"
-  ]
+  }
 }

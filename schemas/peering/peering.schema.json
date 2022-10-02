@@ -1,0 +1,79 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+      {
+        "$ref": "../../traits/base.schema.json"
+      },
+      {
+        "$ref": "#/$defs/specDef"
+      },
+      {
+        "$ref": "#/$defs/outDef"
+      }
+    ],
+    "required": [
+      "kind",
+      "flavor",
+      "version",
+      "metadata",
+      "spec"
+    ],
+    "$defs": {
+      "specDef": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "account_id": {
+                "type": "string",
+                "description": "The account id of the cloud that you want to peer vpc with"
+              },
+              "vpc_id": {
+                "type": "string",
+                "description": "The accepter vpc id of the account id"
+              },
+              "cidr": {
+                "type": "string",
+                "description": "The CIDR range of the vpc that you want to peered"
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the vpc exists in your account"
+              }
+            },
+            "required": [
+              "account_id",
+              "vpc_id",
+              "cidr",
+              "region"
+            ]
+          },
+          "advanced": {
+            "anyOf": [
+              {
+                "$ref": "./flavor-aws-vpc-peering.schema.json"
+              }
+            ]
+          }
+        }
+      },
+      "outDef": {
+        "type": "object",
+        "properties": {
+          "out": {
+            "type": "object",
+            "properties": {
+              "interfaces": {
+                "type": "object",
+                "description": "The output for your peering module, can be generated or provided",
+                "$ref": "../../traits/interface.schema.json"
+            },
+            "required": []
+          }
+        }
+      }
+    }
+  }
+}
