@@ -1,6 +1,6 @@
 pipelines:
   branches:
-    tf_0.13_upgradenew:
+    tf_0.13_upgradenewdd:
       - step:
          script:
           - apt-get update && apt-get install git -y
