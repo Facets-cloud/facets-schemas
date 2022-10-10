@@ -176,25 +176,25 @@
               "description": "Comma separated list of links"
             }
           }
-        }
-      },
-      "required": [
-        "title",
-        "editable",
-        "time",
-        "panels",
-        "annotations",
-        "templating",
-        "style",
-        "tags",
-        "timepicker",
-        "timezone",
-        "graphTooltip",
-        "refresh",
-        "schemaVersion",
-        "version",
-        "links"
-      ]
+        },
+        "required": [
+          "title",
+          "editable",
+          "time",
+          "panels",
+          "annotations",
+          "templating",
+          "style",
+          "tags",
+          "timepicker",
+          "timezone",
+          "graphTooltip",
+          "refresh",
+          "schemaVersion",
+          "version",
+          "links"
+        ]
+      }
     }
   }
 }
