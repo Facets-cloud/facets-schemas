@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of dashboard"
+            },
+            "editable": {
+              "type": "boolean",
+              "description": "Whether a dashboard is editable or not",
+              "default": true
+            },
+            "time": {
+              "type": "object",
+              "description": "Time range for dashboard, i.e. last 6 hours, last 7 days, etc",
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "default": "now-6h"
+                },
+                "to": {
+                  "type": "string",
+                  "default": "now"
+                }
+              },
+              "default": {
+                "from": "now-6h",
+                "to": "now"
+              }
+            },
+            "panels": {
+              "type": "object",
+              "description": "Map of Panels for Grafana dashboard",
+              "patternProperties": {
+                "^[a-zA-Z0-9_]*$": {
+                  "type": "object",
+                  "description": "The panel object. For more info, refer this url - https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/view-dashboard-json-model/#panels"
+                }
+              }
+            },
+            "annotations": {
+              "type": "object",
+              "description": "Map of Annotations for Grafana dashboard",
+              "patternProperties": {
+                "^[a-zA-Z0-9_]*$": {
+                  "type": "object",
+                  "description": "The annotation object",
+                  "properties": {
+                    "builtIn": {
+                      "type": "integer",
+                      "default": 0,
+                      "readOnly": true
+                    },
+                    "datasource": {
+                      "type": "string",
+                      "default": "default"
+                    },
+                    "enable": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "hide": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "iconColor": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "rawQuery": {
+                      "type": "string"
+                    },
+                    "showIn": {
+                      "type": "integer",
+                      "default": 0
+                    }
+                  }
+                }
+              }
+            },
+            "templating": {
+              "type": "object",
+              "description": "Map of Templates for Grafana dashboard",
+              "patternProperties": {
+                "^[a-zA-Z0-9_]*$": {
+                  "type": "object",
+                  "description": "The template object. For more info, refer this url - https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/view-dashboard-json-model/#templating"
+                }
+              }
+            },
+            "style": {
+              "type": "string",
+              "description": "Theme of dashboard, i.e. dark or light",
+              "default": "dark",
+              "enum": [
+                "dark",
+                "light"
+              ]
+            },
+            "tags": {
+              "type": "string",
+              "description": "Comma separated list of tags. Eg: facets,cloud,hello_world",
+              "pattern": "^[0-9a-zA-Z-_]+(,[0-9a-zA-Z-_]+)*$"
+            },
+            "timepicker": {
+              "type": "object",
+              "properties": {
+                "refresh_intervals": {
+                  "type": "string",
+                  "description": "Comma separated list of refresh intervals. Eg: 5s,10s,30s",
+                  "pattern": "^\\d+[a-z]+(,\\d+[a-z]+)*$"
+                },
+                "time_options": {
+                  "type": "string",
+                  "description": "Comma separated list of time options. Eg: 5m,15m,1h",
+                  "pattern": "^\\d+[a-z]+(,\\d+[a-z]+)*$"
+                }
+              }
+            },
+            "timezone": {
+              "type": "string",
+              "description": "Timezone of dashboard, i.e. utc or browser",
+              "default": "browser"
+            },
+            "graphTooltip": {
+              "type": "integer",
+              "description": "0 for no shared crosshair or tooltip (default), 1 for shared crosshair, 2 for shared crosshair AND shared tooltip",
+              "default": 0,
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "refresh": {
+              "type": "string",
+              "description": "The auto-refresh interval",
+              "pattern": "^\\d+[a-z]$"
+            },
+            "schemaVersion": {
+              "type": "integer",
+              "description": "Version of the JSON schema (integer), incremented each time a Grafana update brings changes to said schema",
+              "default": 25
+            },
+            "version": {
+              "type": "string",
+              "description": "Version of the dashboard (integer), incremented each time the dashboard is updated",
+              "readOnly": true
+            },
+            "links": {
+              "type": "string",
+              "description": "Comma separated list of links"
+            }
+          }
+        }
+      },
+      "required": [
+        "title",
+        "editable",
+        "time",
+        "panels",
+        "annotations",
+        "templating",
+        "style",
+        "tags",
+        "timepicker",
+        "timezone",
+        "graphTooltip",
+        "refresh",
+        "schemaVersion",
+        "version",
+        "links"
+      ]
+    }
+  }
+}
