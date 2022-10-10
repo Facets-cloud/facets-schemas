@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Values for AKS nodepool",
+  "properties": {
+    "aks": {
+      "type": "object",
+      "properties": {
+        "nodepool": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "object",
+              "description": "aks values as per the documentation  https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster_node_pool",
+              "properties": {
+                "upgrade_settings": {
+                  "type": "object",
+                  "properties": {
+                    "max_surge": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "max_surge"
+                  ]
+                },
+                "kubelet_config": {
+                  "type": "object",
+                  "description": "Block for all Linux configuration"
+                },
+                "linux_os_config": {
+                  "type": "object",
+                  "description": "Block for all Linux configuration",
+                  "properties": {
+                    "sysctl_config": {
+                      "type": "object",
+                      "description": "Block for all System control configurations which should be under linux_os_config"
+                    }
+                  }
+                },
+                "tags": {
+                  "type": "object",
+                  "description": "Tags required for the nodes created",
+                  "properties": {
+                    "test": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

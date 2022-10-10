@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Description of the Aks-nodepool Schema",
+  "allOf": [
+    {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced values to be used by different flavours of AKS-nodepool",
+          "anyOf": [
+            {
+              "$ref": "flavor-AKS.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "description": "Required specifications for RabbitMQ instances",
+          "additionalProperties": false,
+          "properties": {
+            "min_node_count": {
+              "type": "integer",
+              "description": "minimum number of nodes to exist"
+            },
+            "max_node_count": {
+              "type": "integer",
+              "description": "maximum number of nodes to exist"
+            },
+            "taints": {
+              "type": "object",
+              "description": "Map containing necessary information for taints",
+              "patternProperties" : {
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "effect": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "effect",
+                    "key",
+                    "value"
+                  ]
+              }
+
+            },
+            "zones": {
+              "type": "object",
+              "description": "Map containing necessary information for zones"
+            },
+            "labels": {
+              "type": "object",
+              "description": "Map containing necessary information for labels"
+            },
+            "on_demand": {
+              "type": "string",
+              "description": "Scale Set that powers this Node Pool. Possible values are Regular and Spot"
+            },
+            "disk_size": {
+              "type": "integer",
+              "description": "disk size of os in GB"
+            },
+            "instance_type": {
+              "type": "String",
+              "description": "SKU to be used for the Virtual Machines "
+            }
+          },
+          "required": [
+            "instance_type",
+            "min_node_count",
+            "max_node_count",
+            "disk_size",
+            "labels",
+            "taints"
+          ]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "anyOf": [
+            {
+              "$ref": "./flavor-AKS.schema.json"
+            }
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "description": "Map containing necessary information for labels"
+                },
+                "taints": {
+                  "type": "list",
+                  "additionalProperties": false,
+                  "patternProperties": ["key=value:effect"]
+                }
+              },
+              "required": [
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
