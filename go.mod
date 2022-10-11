@@ -6,6 +6,7 @@ require (
 	github.com/Jeffail/gabs v1.4.0
 	github.com/gruntwork-io/terratest v0.40.15
 	github.com/stretchr/testify v1.7.0
+	github.com/tailscale/hujson v0.0.0-20220630195928-54599719472f
 )
 
 require (
