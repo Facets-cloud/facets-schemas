@@ -9,7 +9,7 @@
     },
     "writer": {
       "type": "object",
-      "description": "The reader details",
+      "description": "The writer details",
       "$ref": "interface.schema.json"
     }
   },
