@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "minProperties": 1,
+    "patternProperties": {
+      "^[a-zA-Z0-9_.-]*$": {
+        "description" : "This key is the name of the claim that you want to create, this can be any name",
+        "properties": {
+          "access_mode": {
+            "type": "string",
+            "description": "This will define the read and write access of the the pvc , this can be of type ReadWriteOnce or ReadWriteMany"
+          },
+          "storage_size": {
+            "type": "string",
+            "description": "The storage size of the pvc , it should be specified like `10Gi` "
+          },
+          "path": {
+            "type": "string",
+            "description": "The path where you want to mount the pvc"
+          }
+        },
+        "required": [
+          "access_mode",
+          "storage_size",
+          "path"
+        ]
+      }
+    }
+  }

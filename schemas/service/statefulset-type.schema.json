@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "type": {
+            "type": "string",
+            "default": "statefulset"
+        },
+        "persistent_volume_claims": {
+            "$ref": "./pvc.schema.json",
+            "description": "these are the maps of pvc that you will create and mount to your statefulset"
+        }
+    },
+    "required": ["persistent_volume_claims", "type"]
+}

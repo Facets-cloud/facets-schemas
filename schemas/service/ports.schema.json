@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "minProperties": 1,
+    "patternProperties": {
+      "^[a-zA-Z0-9_.-]*$": {
+        "description" : "This is the name of the port that you have to specify",
+        "properties": {
+          "protocol": {
+            "type": "string",
+            "description": "the protocol of the port , either tcp or udp",
+            "enum": ["tcp", "udp"]
+          },
+          "port": {
+            "type": "integer",
+            "description": "the port number where the pod is exposed"
+          }
+        },
+        "required": [
+          "protocol",
+          "port"
+        ]
+      }
+    }
+  }

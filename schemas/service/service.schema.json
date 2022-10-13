@@ -1,0 +1,123 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+      {
+        "$ref": "../../traits/base.schema.json"
+      },
+      {
+        "$ref": "#/$defs/specDef"
+      },
+      {
+        "$ref": "#/$defs/outDef"
+      }
+    ],
+    "required": [
+      "kind",
+      "flavor",
+      "version",
+      "metadata",
+      "spec"
+    ],
+    "$defs": {
+      "specDef": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "release": {
+                "$ref": "./release.schema.json",
+                "description": "Map of all release keys"
+              },
+              "type": {
+                "type": "string",
+                "description": "This will specify the type of service you want to create. eg: application, statefulset,cronjob etc",
+                "enum": ["application", "statefulset", "cronjob", "job"]
+              },
+              "enable_host_anti_affinity": {
+                "type": "boolean",
+                "description": "boolean to enable or disable host anti affinity"
+              },
+              "env": {
+                "type": "object",
+                "description": "The key value pairs of all the environment variables that needs to be passed to the pod"
+              },
+              "runtime": {
+                "$ref": "./runtime.schema.json",
+                "description": "Map of all runtime keys"
+              },
+              "restart_policy": {
+                "type": "string",
+                "description": "Can be of type Always , OnFailure or Never",
+                "enum": ["Always", "OnFailure", "Never"]
+              }
+            },
+            "required": [
+              "release",
+              "type",
+              "enable_host_anti_affinity",
+              "runtime"
+            ],
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                          "type": { "enum": ["application"] }
+                        }
+                    },
+                    "then": { "$ref": "./application-type.schema.json" }
+                },
+                {
+                    "if": {
+                        "properties": {
+                          "type": { "enum": ["statefulset"] }
+                        }
+                    },
+                    "then": { "$ref": "./statefulset-type.schema.json" }
+                },
+                {
+                    "if": {
+                        "properties": {
+                          "type": { "enum": ["cronjob"] }
+                        }
+                    },
+                    "then": { "$ref": "./cronjob-type.schema.json" }
+                },
+                {
+                    "if": {
+                        "properties": {
+                          "type": { "enum": ["job"] }
+                        }
+                    },
+                    "then": { "$ref": "./job-type.schema.json" }
+                }
+            ]
+          }
+        }
+      },
+      "outDef": {
+        "type": "object",
+        "properties": {
+          "out": {
+            "type": "object",
+            "properties": {
+              "interfaces": {
+                "type": "object",
+                "additionalProperties": false,
+                "minProperties": 1,
+                "description": "The output for your ingress module, this can be generated or provided",
+                "patternProperties": {
+                  "^[a-zA-Z0-9_.-]*$": {
+                    "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
+                    "$ref": "../../traits/interface.schema.json"
+                  }
+                }
+              }
+            },
+            "required": []
+          }
+        }
+      }
+    }
+  }

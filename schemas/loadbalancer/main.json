@@ -37,7 +37,7 @@
      "interfaces":{
         "app1":{
            "host":"hostname with domain prefix of domains",
-           "port":443
+           "port":"443"
         }
      }
   }

@@ -1,0 +1,43 @@
+{
+    "$schema": "./service.schema.json",
+    "disabled": false,
+    "version": "0.1",
+    "metadata": {},
+    "flavor": "default",
+    "kind": "service",
+    "spec": {
+        "type": "application",
+        "enable_host_anti_affinity": true,
+        "release": {
+            "image": "",
+            "strategy": {
+                "type": "Recreate"
+            }
+        },
+        "runtime": {
+            "ports": {
+                "http": {
+                    "port": 80,
+                    "protocol": "tcp"
+                }
+            },
+            "size": {
+                "cpu": "100m",
+                "memory": "100m"
+            },
+            "health_checks": {
+                "readiness_exec_command": [],
+                "liveness_exec_command": [],
+                "start_up_time": 10,
+                "timeout": 100,
+                "period": 10,
+                "port": 80
+            },
+            "autoscaling": {
+                "ram_threshold": 90,
+                "max": 10,
+                "min": 10
+            }
+        }
+    }
+}

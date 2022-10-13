@@ -1,0 +1,150 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "properties": {
+        "command": {
+            "type": "array",
+            "description": "The list of commands you want to perform before starting the container"
+        },
+        "args": {
+            "type": "array",
+            "description": "The list of arguments you want to pass for the above mentioned command"
+        },
+        "ports": {
+            "$ref": "./ports.schema.json",
+            "description": "Maps of all the ports that you want to expose in the service"
+        },
+        "metrics": {
+            "$ref": "./metrics.schema.json",
+            "description": "Maps of all the metrics port that you want to expose to prometheus"
+        },
+        "size": {
+            "$ref": "../../traits/size.schema.json",
+            "description": "Size of the deployment pods"
+        },
+        "health_checks": {
+            "type": "object",
+            "description": "All the health check related key value pairs",
+            "properties": {
+                "start_up_time": {
+                    "type": "integer",
+                    "description": "The time kubernetes api needs to wait until the application is ready"
+                },
+                "timeout": {
+                    "type": "integer",
+                    "description": "Timeout for the health check"
+                },
+                "period": {
+                    "type": "integer",
+                    "description": "This is the repeated interval in which kubelet does a health check"
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "Specify the port in which the health checks should be made"
+                },
+                "liveness_url": {
+                    "type": "string",
+                    "description": "URL to make the liveness check"
+                },
+                "readiness_url": {
+                    "type": "string",
+                    "description": "URL to make the readiness check"
+                },
+                "liveness_exec_command": {
+                    "type": "array",
+                    "description": "The list of commands to make liveness check "
+                },
+                "readiness_exec_command": {
+                    "type": "array",
+                    "description": "The list of commands to make readiness check"
+                }
+            },
+            "anyOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "liveness_url": {},
+                            "readiness_url": {}
+                        }
+                    },
+                    "then": { "required": ["liveness_url", "readiness_url", "start_up_time","timeout","port","period"] }
+                },
+                {
+                    "if": {
+                        "properties": {
+                          "liveness_exec_command": {},
+                          "readiness_exec_command": {}
+                        }
+                    },
+                    "then": { "required": ["liveness_exec_command","readiness_exec_command", "start_up_time","timeout","port","period"] }
+                }
+            ]
+        },
+        "autoscaling": {
+            "type": "object",
+            "properties": {
+                "min": {
+                    "type": "integer",
+                    "description": "This is the min replicas where the hpa downscales to"
+                },
+                "max": {
+                    "type": "integer",
+                    "description": "This is the max replicas where the hpa upscales to "
+                },
+                "cpu_threshold": {
+                    "type": "integer",
+                    "description": "The max cpu threshold that the hpa waits until it upscales"
+                },
+                "ram_threshold": {
+                    "type": "integer",
+                    "description": "The max ram threshold that the hpa waits until it upscales"
+                },
+                "packets_per_second": {
+                    "type": "string",
+                    "description": "The max number of packets that can be sent to the pod, once exceeded it autoscales. eg: 10k"
+                },
+                "requests_per_second": {
+                    "type": "object",
+                    "description": "RPS object",
+                    "properties": {
+                        "threshold": {
+                            "type": "string",
+                            "description": "The rps threshold that hpa looks for , once exceeds it autoscales eg: 10k"
+                        },
+                        "ingress_name": {
+                            "type": "string",
+                            "description": "Name of the ingress object that the hpa should watch for autoscaling"
+                        }
+                    },
+                    "required": [
+                        "threshold",
+                        "ingress_name"
+                    ]
+                }
+            },
+            "oneOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "cpu_threshold": {}
+                        }
+                    },
+                    "then": { "required": ["cpu_threshold","min","max"] }
+                },
+                {
+                    "if": {
+                        "properties": {
+                          "ram_threshold": {}
+                        }
+                    },
+                    "then": { "required": ["ram_threshold","min","max"] }
+                }
+            ]
+        }
+    },
+    "required": [
+        "ports",
+        "size",
+        "health_checks"
+    ]
+  }
