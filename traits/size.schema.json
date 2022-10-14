@@ -18,7 +18,5 @@
       "type": "string",
       "description": "Volume request in kubernetes persistent volumes"
     }
-  },
-  "required": [
-  ]
+  }
 }

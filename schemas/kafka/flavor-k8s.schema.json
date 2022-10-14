@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "definition": "Kubernetes Schema",
+    "description": "Helm values for kafka",
+    "properties": {
+      "k8s": {
+        "type": "object",
+        "description": "Advanced k8s values for kafka",
+        "properties": {
+          "kafka": {
+            "type": "object",
+            "description": "Advanced values for kafka",
+            "properties": {
+              "values": {
+                "type": "object",
+                "description": "Helm values as per the Bitnami kafka chart https://github.com/bitnami/charts/tree/master/bitnami/kafka"
+              }
+            }
+          }
+        }
+      }
+    }
+  }

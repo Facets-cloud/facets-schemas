@@ -1,0 +1,58 @@
+{
+    "$schema": "./kafka.schema.json",
+    "kind": "kafka",
+    "version": "0.1",
+    "flavor": "k8s",
+    "metadata": {},
+    "spec": {
+        "authenticated": true,
+        "kafka_version": "3.2.3",
+        "persistence_enabled": true,
+        "size": {
+            "kafka": {
+                "cpu": "100m",
+                "replica_count": 1
+            },
+            "zookeeper": {
+                "replica_count": 1,
+                "cpu": "100m"
+            }
+        }
+    },
+    "advanced": {
+        "k8s": {
+            "kafka": {
+                "values": {
+                    "metrics.kafka.enabled": true,
+                    "metrics.jmx.enabled": true,
+                    "metrics.serviceMonitor.enabled": true,
+                    "metrics.prometheusRule.enabled": true
+                }
+            }
+        }
+    },
+    "out": {
+        "interfaces": {
+            "host": "",
+            "name": "",
+            "password": "",
+            "port": "",
+            "username": ""
+        },
+        "extra_settings": {
+            "kafka": {
+                "sasl_mechanism": "SCRAM-SHA-256",
+                "security_protocol": "PLAINTEXT"
+            }
+        },
+        "instances": {
+            "kafka_1":{
+                "host": "",
+                "name": "",
+                "password": "",
+                "port": "",
+                "username": ""
+            }
+        }
+    }
+}
