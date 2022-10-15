@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "description": "Description of the RabbitMQ Schema",
+  "description": "Schema for RabbitMQ",
   "allOf": [
     {
       "$ref": "../../traits/base.schema.json"

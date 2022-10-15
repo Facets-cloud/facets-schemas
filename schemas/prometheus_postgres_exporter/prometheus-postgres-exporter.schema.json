@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for Prometheus postgres exporter",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "version"
+  ],
+  "$defs": {
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced section of the module",
+          "properties": {
+            "prometheus_postgres_exporter": {
+              "type": "object",
+              "description": "Advanced values for the exporter",
+              "properties": {
+                "helm_values": {
+                  "type": "object",
+                  "description": "Helm values as per the chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-postgres-exporter"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
