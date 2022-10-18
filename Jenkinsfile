@@ -4,14 +4,14 @@ pipeline{
             yamlFile 'go-test.yaml'
         }
     }
+    environment {
+        AWS_REGION = "us-east-1"
+        PROFILE = "default"
+        GCP_PROJECT_REGION = "asia-south1"
+        GCP_PROJECT_NAME = "facets-cp-test"
+    }
     parameters {
-        choice(name: 'Env', choices: ['dev', 'qa', 'prod'], description: 'Choose the environment you want to deploy')
-        choice(name: 'AWS_REGION', choices: ['us-east-1', 'us-west-1', 'ap-south-1'], description: 'Choose the region you want to deploy in AWS')
-        string( defaultValue: 'facets-cp-test', name: 'gcp_project_name', trim: true)
-        string( defaultValue: 'asia-south1', name: 'gcp_project_region', trim: true)
-        credentials(name: 'aws_kubeconfig', credentialType: 'org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl', defaultValue: '', description: 'This is the aws kubeconfig you pass if you have to test in another cluster', required: true)
-        credentials(name: 'gcp_kubeconfig', credentialType: 'org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl', defaultValue: '', description: 'This is the gcp kubeconfig you pass if you have to test in another cluster', required: true)
-        credentials(name: 'gcp_json', credentialType: 'org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl', defaultValue: '', description: 'This is the json credentials for gcp', required: true)
+        string(name: "go_test_path", trim: true)
 
     }
     stages{
@@ -22,94 +22,69 @@ pipeline{
                 }
             }
         }
-        stage("Terratest unit test in tfdev branch"){
+        stage("Terratest unit test in PR"){
             when {
                 expression {
-                    env.BRANCH_NAME == 'feature/GCP-ALB'
+                    env.BRANCH_NAME.startsWith('PR')
                 }
             }
             steps{
                 script {
-                    if (params.Env == 'dev') {
-                        echo 'Using the dev configurations from incluster'
-                        withCredentials([[
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: "facets-jenkins-aws-creds",
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                        ],file(credentialsId: 'aws_kubeconfig', variable: 'AWS_KUBECONFIG'),
-                        file(credentialsId: 'gcp_kubeconfig', variable: 'GCP_KUBECONFIG'),
-                        file(credentialsId: 'gcp_json', variable: 'CREDENTIALS')]) {
-                            // AWS provider updates
-                            gv.createAWSProvider(params.AWS_REGION)
-                            // GCP provider updates
-                            gv.createGCPProvider(params.AWS_REGION, params.gcp_project_name, params.gcp_project_region)
-                            container('go-test'){
-                            sh '''
-                            echo "========formatting the tf provider code created by jenkins========"
-                            terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/aws-provider.tf
-                            terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/gcp-provider.tf
-                            terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/azure-provider.tf
-                            echo "========Intitaing the go test suite inside branch = tf-dev========"
-                            go test ./... -v -timeout 30m 
-                            '''
-                            }
+                    echo 'Using the configurations from incluster'
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: "facets-jenkins-aws-creds",
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ],file(credentialsId: 'aws_kubeconfig', variable: 'AWS_KUBECONFIG'),
+                    file(credentialsId: 'gcp_kubeconfig', variable: 'GCP_KUBECONFIG'),
+                    file(credentialsId: 'gcp_json', variable: 'GCP_CREDENTIALS'),
+                    string(credentialsId: 'azure_client_id', variable: 'AZURE_CLIENT_ID'),string(credentialsId: 'azure_tenant_id', variable: 'AZURE_TENANT_ID'),
+                    string(credentialsId: 'azure_subscription_id', variable: 'AZURE_SUBSCRIPTION_ID'),file(credentialsId: 'azure_kubeconfig', variable: 'AZURE_KUBECONFIG')]){
+                        container('go-test'){
+                        sh """
+                        echo "========Intitaing the go test suite inside PR========"
+                        aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                        aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                        aws configure set default.region ${AWS_REGION}
+                        aws configure set default.output json
+                        AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_KUBECONFIG=${AWS_KUBECONFIG} AWS_REGION=${AWS_REGION} PROFILE=${PROFILE} GCP_KUBECONFIG=${GCP_KUBECONFIG} GCP_CREDENTIALS=${GCP_CREDENTIALS} AZURE_CLIENT_ID=${AZURE_CLIENT_ID} AZURE_TENANT_ID=${AZURE_TENANT_ID} AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} AZURE_KUBECONFIG=${AZURE_KUBECONFIG} go test ${go_test_path} -v -timeout 120m 
+                        """
                         }
-                        
-                    } else if (params.Env == 'qa') {
-                        echo 'Using the qa configurations from secrets'
-                        withCredentials([[
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: "facets-jenkins-aws-creds",
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                        ], file(credentialsId: 'aws_kubeconfig', variable: 'AWS_KUBECONFIG'),
-                        file(credentialsId: 'gcp_kubeconfig', variable: 'GCP_KUBECONFIG'),
-                        file(credentialsId: 'gcp_json', variable: 'CREDENTIALS')]){
-                             // AWS provider updates
-                            gv.createAWSProvider(params.AWS_REGION)
-                            // GCP provider updates
-                            gv.createGCPProvider(params.AWS_REGION, params.gcp_project_name, params.gcp_project_region)
-                            container('go-test'){
-                                sh '''
-                                echo "========formatting the tf provider code created by jenkins========"
-                                terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/aws-provider.tf
-                                terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/gcp-provider.tf
-                                terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/azure-provider.tf
-                                echo "========Intitaing the go test suite inside branch = tf-dev========"
-                                go test ./... -v -timeout 30m 
-                                '''
-                            }
+                    } 
+                }
+            }
+        }
+        stage("Terratest unit test in TFDEV"){
+            when {
+                expression {
+                    env.BRANCH_NAME == "tfdev"
+                }
+            }
+            steps{
+                script {
+                    echo 'Using the configurations from incluster'
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: "facets-jenkins-aws-creds",
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ],file(credentialsId: 'aws_kubeconfig', variable: 'AWS_KUBECONFIG'),
+                    file(credentialsId: 'gcp_kubeconfig', variable: 'GCP_KUBECONFIG'),
+                    file(credentialsId: 'gcp_json', variable: 'GCP_CREDENTIALS'),
+                    string(credentialsId: 'azure_client_id', variable: 'AZURE_CLIENT_ID'),string(credentialsId: 'azure_tenant_id', variable: 'AZURE_TENANT_ID'),
+                    string(credentialsId: 'azure_subscription_id', variable: 'AZURE_SUBSCRIPTION_ID'),file(credentialsId: 'azure_kubeconfig', variable: 'AZURE_KUBECONFIG')]){
+                        container('go-test'){
+                        sh """
+                        echo "========Intitaing the go test suite inside PR========"
+                        aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
+                        aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
+                        aws configure set default.region ${AWS_REGION}
+                        aws configure set default.output json
+                        AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_KUBECONFIG=${AWS_KUBECONFIG} AWS_REGION=${AWS_REGION} PROFILE=${PROFILE} GCP_KUBECONFIG=${GCP_KUBECONFIG} GCP_CREDENTIALS=${GCP_CREDENTIALS} AZURE_CLIENT_ID=${AZURE_CLIENT_ID} AZURE_TENANT_ID=${AZURE_TENANT_ID} AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID} AZURE_KUBECONFIG=${AZURE_KUBECONFIG} go test ${go_test_path} -v -timeout 120m 
+                        """
                         }
-                        
-                    } else if (params.Env == 'prod') {
-                        echo 'Using the production configurations from secrets'
-                        withCredentials([[
-                            $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: "facets-jenkins-aws-creds",
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                        ], file(credentialsId: 'aws_kubeconfig', variable: 'AWS_KUBECONFIG'),
-                        file(credentialsId: 'gcp_kubeconfig', variable: 'GCP_KUBECONFIG'),
-                        file(credentialsId: 'gcp_json', variable: 'CREDENTIALS')]){
-                             // AWS provider updates
-                            gv.createAWSProvider(params.AWS_REGION)
-                            // GCP provider updates
-                            gv.createGCPProvider(params.AWS_REGION, params.gcp_project_name, params.gcp_project_region)
-                            container('go-test'){
-                                sh '''
-                                echo "========formatting the tf provider code created by jenkins========"
-                                terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/aws-provider.tf
-                                terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/gcp-provider.tf
-                                terraform fmt ${WORKSPACE}/capillary-cloud-tf/modules/azure-provider.tf
-                                echo "========Intitaing the go test suite inside branch = tf-dev========"
-                                go test ./... -v -timeout 30m 
-                                '''
-                            }
-                        }
-                        
-                        
-                    }
+                    } 
                 }
             }
         }
