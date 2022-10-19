@@ -23,38 +23,45 @@
   },
   "advanced": {
     "aurora": {
-      "mysql": {
-        "db_cluster_parameters": {
-          "max_connections": {
-            "apply_method": "pending-reboot",
-            "value": "2000"
-          },
-          "slow_launch_time": {
-            "apply_method": "pending-reboot",
-            "value": "2"
-          }
-        },
-        "db_instance_parameters": {
-          "net_read_timeout": {
-            "value": "3600"
-          },
-          "net_write_timeout": {
-            "value": "3600"
-          }
-        },
+      "rds-aurora": {
+        "engine_mode": null,
+        "allowed_cidr_blocks": [],
+        "apply_immediately": true,
+        "autoscaling_enabled": true,
+        "autoscaling_min_capacity": 2,
+        "autoscaling_max_capacity": 4,
+        "autoscaling_scale_in_cooldown": 300,
+        "autoscaling_scale_out_cooldown": 300,
+        "autoscaling_target_cpu": 70,
+        "autoscaling_target_connections": 700,
+        "cluster_timeouts": {},
+        "performance_insights_enabled": true,
+        "performance_insights_retention_period": 7,
+        "deletion_protection": false,
+        "preferred_maintenance_window": "sun:05:00-sun:06:00",
+        "preferred_backup_window": "02:00-03:00",
+        "skip_final_snapshot": null,
+        "snapshot_identifier": null,
         "monitoring_interval": 0,
-        "restore_from": {
-          "snapshot_identifier": ""
-        },
-        "preferred_maintenance_window": {
-          "day": "Wed",
-          "start_hour": "22",
-          "end_hour": "23"
-        },
-        "preferred_backup_window": {
-          "start_hour": "00",
-          "end_hour": "01"
-        }
+        "monitoring_role_arn": "",
+        "create_db_parameter_group": true,
+        "db_parameter_group_use_name_prefix": true,
+        "db_parameter_group_name": "test",
+        "db_parameter_group_description": "test desc",
+        "db_parameter_group_parameters": [],
+        "create_db_cluster_parameter_group": true,
+        "db_cluster_parameter_group_use_name_prefix": true,
+        "db_cluster_parameter_group_name": "test",
+        "db_cluster_parameter_group_description": "test desc",
+        "db_cluster_parameter_group_parameters": [],
+        "create_monitoring_role": false,
+        "enable_global_write_forwarding": false,
+        "enabled_cloudwatch_logs_exports": [],
+        "endpoints": {},
+        "replication_source_identifier": null,
+        "predefined_metric_type": "RDSReaderAverageCPUUtilization",
+        "instance_timeouts": {},
+        "iam_roles": {}
       }
     }
   },
