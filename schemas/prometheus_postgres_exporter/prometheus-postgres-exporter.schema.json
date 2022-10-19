@@ -26,7 +26,7 @@
               "type": "object",
               "description": "Advanced values for the exporter",
               "properties": {
-                "helm_values": {
+                "values": {
                   "type": "object",
                   "description": "Helm values as per the chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-postgres-exporter"
                 }

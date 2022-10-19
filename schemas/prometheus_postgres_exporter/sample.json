@@ -1,12 +1,11 @@
 {
   "$schema": "prometheus-postgres-exporter.schema.json",
   "kind" : "configuration",
-  "for"  : "cluster-autoscaler",
+  "for"  : "prometheus-postgres-exporter",
   "version" : "0.1",
   "advanced": {
     "prometheus_postgres_exporter": {
-      "helm_values": {
-
+      "values": {
       }
     }
   }
