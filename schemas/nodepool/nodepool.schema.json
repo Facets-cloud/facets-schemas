@@ -40,7 +40,7 @@
       "properties": {
         "spec": {
           "type": "object",
-          "description": "Required specifications for RabbitMQ instances",
+          "description": "Required specifications for Aks-nodepool instances",
           "additionalProperties": false,
           "properties": {
             "min_node_count": {
@@ -73,8 +73,8 @@
                     "key",
                     "value"
                   ]
+                }
               }
-
             },
             "zones": {
               "type": "object",
@@ -95,8 +95,7 @@
             "instance_type": {
               "type": "String",
               "description": "SKU to be used for the Virtual Machines "
-            }
-          },
+            },
           "required": [
             "instance_type",
             "min_node_count",
@@ -155,4 +154,4 @@
       }
     }
   }
-}
+}}
