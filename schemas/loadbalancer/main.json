@@ -9,10 +9,17 @@
   "metadata":{
      
   },
+  "advanced": {
+   "aws_alb": {
+      "maintain_rule_order": false,
+      "target_type": "ip",
+      "shield": false,
+      "disable_facets_host_rules": false
+   }
+  },
   "spec":{
      "private":true,
      "force_ssl_redirection":true,
-     "authenticated":true,
      "size":{
         "cpu":1,
         "memory":1
@@ -29,7 +36,8 @@
            "path":"/",
            "domain_prefix":"app1",
            "service_name":"${application.app1.out.interfaces.grpc.host}",
-           "port":80
+           "port":80,
+           "priority": 1
         }
      }
   },

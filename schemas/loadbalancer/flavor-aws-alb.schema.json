@@ -20,6 +20,7 @@
             },
             "target_type": {
               "type": "string",
+              "enum":["instance","ip"],
               "description": "backend target type of service in kubernetes eg: instance/ip : default is ip"
             },
             "disable_facets_host_rules": {
