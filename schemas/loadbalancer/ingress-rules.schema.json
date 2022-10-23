@@ -28,7 +28,7 @@
             "definition": "Subdomain prefix for the service "
           },
           "priority": {
-            "type": "string",
+            "type": "integer",
             "definition": "Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule"
           }
         },
@@ -37,7 +37,8 @@
               "required": [
                 "service_name",
                 "domain_prefix",
-                "path"
+                "path",
+                "priority"
               ]
             },
             {
