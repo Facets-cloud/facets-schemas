@@ -37,8 +37,7 @@
               "required": [
                 "service_name",
                 "domain_prefix",
-                "path",
-                "priority"
+                "path"
               ]
             },
             {
