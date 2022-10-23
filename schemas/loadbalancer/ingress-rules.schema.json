@@ -26,6 +26,10 @@
           "domain_prefix": {
             "type": "string",
             "definition": "Subdomain prefix for the service "
+          },
+          "priority": {
+            "type": "string",
+            "definition": "Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule"
           }
         },
         "allOf": [

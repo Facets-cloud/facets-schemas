@@ -25,6 +25,10 @@
             "disable_facets_host_rules": {
               "type": "boolean",
               "description": "Boolean flag to enable or disable facets host rules in alb, in order to incorporate more rules. Since there is a hard limit of 100 rules in alb: default is false"
+            },
+            "maintain_rule_order": {
+              "type": "boolean",
+              "description": "Boolean flag to maintain the order of rules specified in json using priority numbers inside rules"
             }
           }
         }
