@@ -9,7 +9,7 @@
       "properties": {
         "rds-aurora": {
           "type": "object",
-          "description": "Advanced values as per Terraform AWS RDS Module https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/latest?tab=inputs",
+          "description": "Advanced values as per Terraform AWS RDS Module https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/latest?tab=inputs"
         }
       }
     }

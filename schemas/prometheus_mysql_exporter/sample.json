@@ -1,0 +1,38 @@
+{
+  "$schema": "prometheus-mysql-exporter.schema.json",
+  "kind": "mysql_exporter",
+  "flavor": "default",
+  "version": "0.1",
+  "disabled": false,
+  "provided": false,
+  "depends_on": [],
+  "metadata": {
+    "name": "test-mysql",
+    "tags": {}
+  },
+  "spec": {},
+  "out": {},
+  "advanced": {
+    "k8s": {
+      "prometheus_mysql_exporter": {
+        "resources": {
+          "limits": {
+            "cpu": "100m",
+            "memory": "128Mi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "memory": "128Mi"
+          }
+        },
+        "serviceMonitor": {
+          "enabled": true,
+          "interval": "30s",
+          "additionalLabels": {
+            "release": "test-prometheus-operator"
+          }
+        }
+      }
+    }
+  }
+}

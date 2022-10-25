@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for Prometheus MySQL exporter",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "version"
+  ],
+  "$defs": {
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "anyOf": [
+            {
+              "$ref": "./flavor-k8s.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

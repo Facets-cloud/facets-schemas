@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definition": "k8s Schema",
+  "properties": {
+    "k8s": {
+      "type": "object",
+      "description": "Advanced section of k8s",
+      "properties": {
+        "prometheus_mysql_exporter": {
+          "type": "object",
+          "description": "Advanced values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-mysql-exporter \nCustomized defaults other than chart defaults,\n - serviceMonitor.enabled = true\n  - serviceMonitor.interval = 60s\n - serviceMonitor.additionalLabels.release = prometheus-operator\n - collectors.info_schema.tables = false"
+        }
+      }
+    }
+  },
+  "required": []
+}
