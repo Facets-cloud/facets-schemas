@@ -6,8 +6,7 @@
   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
   "provided": false,
-  "depends_on": [
-  ],
+  "depends_on": [],
   "metadata": {
     "name": "test-dynamodb"
   },
@@ -22,7 +21,7 @@
   },
   "advanced": {
     "aws_dynamodb": {
-      "global_secondary_indexes" : [],
+      "global_secondary_indexes": [],
       "billing_mode": "PROVISIONED",
       "read_capacity": 1,
       "write_capacity": 1,
