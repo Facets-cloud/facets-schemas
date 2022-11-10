@@ -13,7 +13,7 @@
                 "properties":{
                     "role":{
                         "type":"string",
-                        "definition":"The id of the role that you want to attach to the deployment"
+                        "description":"The id of the role that you want to attach to the deployment, you can check out this link on how to create roles in gcp https://cloud.google.com/iam/docs/creating-custom-roles#iam-custom-roles-get-metadata-console"
                     }
                 },
                 "required": ["role"]
