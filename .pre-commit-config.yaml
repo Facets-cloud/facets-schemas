@@ -44,4 +44,5 @@ repos:
     - id: terraform_fmt
       args:
         - --args=-recursive
-    # - id: terraform_validate
+    - id: terraform_validate
+      exclude: '^[^/]+$'
