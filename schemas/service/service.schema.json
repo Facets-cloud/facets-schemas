@@ -108,7 +108,11 @@
                 "type": "object",
                 "description": "Map of all gcp advanced keys",
                 "$ref": "./gcp-advanced.schema.json"
-                
+              },
+              "chart": {
+                "type": "object",
+                "description": "Map of all chart advanced keys",
+                "$ref": "./chart-advanced.schema.json"
               }
             },
             "anyOf": [

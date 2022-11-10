@@ -48,6 +48,9 @@
                 }
             }
         },
-        "application": {}
+        "chart": {
+            "image_pull_secrets": [],
+            "node_selector": {}
+        }
     }
 }
