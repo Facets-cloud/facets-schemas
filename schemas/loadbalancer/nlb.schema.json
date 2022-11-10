@@ -73,7 +73,7 @@
           "advanced": {
             "anyOf": [
               {
-                "$ref": "./flavor-k8s-tcp.schema.json"
+                "$ref": "./flavor-tcp-nlb.schema.json"
               }
             ]
           }

@@ -3,7 +3,7 @@
     "disabled": false,
     "version": "0.1",
     "metadata": {},
-    "flavor": "default",
+    "flavor": "gcp",
     "kind": "service",
     "spec": {
         "type": "application",
@@ -39,5 +39,15 @@
                 "min": 10
             }
         }
+    },
+    "advanced": {
+        "gcp": {
+            "iam": {
+                "bucket_list": {
+                    "role": "roles/xxxxxxxxxxxx"
+                }
+            }
+        },
+        "application": {}
     }
 }

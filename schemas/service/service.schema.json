@@ -93,6 +93,56 @@
                     "then": { "$ref": "./job-type.schema.json" }
                 }
             ]
+          },
+          "advanced": {
+            "type": "object",
+            "description": "Advanced section of kind service",
+            "properties": {
+              "aws": {
+                "type": "object",
+                "description": "Map of all aws advanced keys", 
+                "$ref": "./aws-advanced.schema.json"
+                
+              },
+              "gcp": {
+                "type": "object",
+                "description": "Map of all gcp advanced keys",
+                "$ref": "./gcp-advanced.schema.json"
+                
+              }
+            },
+            "anyOf": [
+              {
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "flavor": { "enum": ["aws"] }
+                      }
+                  },
+                  "then": { "required": ["aws"]}
+                  },
+                  {
+                    "not" : { "required" : ["gcp"] }
+                  }
+                ]                   
+              },
+              {
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "flavor": { "enum": ["gcp"] }
+                      }
+                  },
+                  "then": { "required": ["gcp"]}
+                  },
+                  {
+                    "not" : { "required" : ["aws"] }
+                  }
+                ] 
+              }
+            ]
           }
         }
       },
