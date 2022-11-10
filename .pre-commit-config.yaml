@@ -45,3 +45,4 @@ repos:
       args:
         - --args=-recursive
     - id: terraform_validate
+      exclude: '^[^/]+$'
