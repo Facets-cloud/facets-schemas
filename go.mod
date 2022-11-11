@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/Jeffail/gabs v1.4.0
 	github.com/anthhub/forwarder v1.1.0
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gruntwork-io/terratest v0.40.22
 	github.com/hashicorp/hcl/v2 v2.9.1
 	github.com/julienschmidt/httprouter v1.2.0
