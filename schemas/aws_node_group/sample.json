@@ -1,0 +1,45 @@
+{
+  "$schema": "node_group.schema.json",
+  "kind": "kubernetes_node_pool",
+  "flavor": "eks",
+  "metadata": {
+    "name": "test-node-group",
+    "tags": {
+      "Name": "test-node-group"
+    },
+    "annotations": {}
+  },
+  "spec": {
+    "instance_types": "t3.medium,t3.medium",
+    "min_node_count": 1,
+    "max_node_count": 5,
+    "disk_size": 20,
+    "capacity_type": "ON_DEMAND",
+    "taints": {
+      "taint1": {
+        "key": "CriticalAddonsOnly",
+        "value": "true",
+        "effect": "NO_EXECUTE"
+      },
+      "taint2": {
+        "effect": "PREFER_NO_SCHEDULE",
+        "key": "special",
+        "value": "true"
+      }
+    },
+    "labels": {
+      "MyNodeType": "MyAppNodes"
+    }
+  },
+  "advanced": {
+    "eks": {
+      "node_group": {
+        "desired_size": 2,
+        "ami_id": "",
+        "tags": {
+          "Purpose": "test"
+        }
+      }
+    }
+  }
+}
