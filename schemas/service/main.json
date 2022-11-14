@@ -26,8 +26,6 @@
                 "memory": "100m"
             },
             "health_checks": {
-                "readiness_exec_command": [],
-                "liveness_exec_command": [],
                 "start_up_time": 10,
                 "timeout": 100,
                 "period": 10,
