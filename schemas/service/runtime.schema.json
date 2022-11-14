@@ -59,29 +59,7 @@
                     "description": "The list of commands to make readiness check"
                 }
             },
-            "anyOf": [
-                {
-                    "if": {
-                        "properties": {
-                            "liveness_url": {},
-                            "readiness_url": {}
-                        }
-                    },
-                    "then": { "required": ["liveness_url", "readiness_url", "start_up_time","timeout","port","period"] }
-                },
-                {
-                    "if": {
-                        "properties": {
-                          "liveness_exec_command": {},
-                          "readiness_exec_command": {}
-                        }
-                    },
-                    "then": { "required": ["liveness_exec_command","readiness_exec_command", "start_up_time","timeout","port","period"] }
-                },
-                {
-                    "required": ["start_up_time","timeout","port","period"]
-                }
-            ]
+            "required": ["start_up_time","timeout","port","period"]
         },
         "autoscaling": {
             "type": "object",
