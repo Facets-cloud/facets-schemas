@@ -2,7 +2,7 @@
   "$schema":"./loadbalancer.schema.json",
   "kind":"loadbalancer",
   "flavor":"default",
-  "version":"latest",
+  "version":"0.2",
   "lifecycle":"ENVIRONMENT_BOOTSTRAP",
   "disabled":false,
   "provided":false,
@@ -36,8 +36,7 @@
            "path":"/",
            "domain_prefix":"app1",
            "service_name":"${application.app1.out.interfaces.grpc.host}",
-           "port":80,
-           "priority": 1
+           "port":80
         }
      }
   },

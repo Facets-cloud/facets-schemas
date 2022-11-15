@@ -9,27 +9,27 @@
         "properties": {
           "service_name": {
             "type": "string",
-            "definition": "The Kubernetes service name of the application"
+            "description": "The Kubernetes service name of the application"
           },
           "path": {
             "type": "string",
-            "definition": "path of the application "
+            "description": "path of the application "
           },
           "port_name": {
             "type": "string",
-            "definition": "Port name of the service"
+            "description": "Port name of the service"
           },
           "port": {
             "type": "integer",
-            "definition": "Port number of the service"
+            "description": "Port number of the service"
           },
           "domain_prefix": {
             "type": "string",
-            "definition": "Subdomain prefix for the service "
+            "description": "Subdomain prefix for the service "
           },
           "priority": {
             "type": "integer",
-            "definition": "Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule"
+            "description": "Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule"
           }
         },
         "allOf": [
