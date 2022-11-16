@@ -1,0 +1,36 @@
+{
+  "$schema": "mongodb.schema.json",
+  "flavor": "k8s",
+  "kind": "mongodb",
+  "provides": "mongo",
+  "metadata": {
+    "name": "mongo"
+  },
+  "spec": {
+    "authenticated": true,
+    "mongodb_version" : "6.0.2",
+    "size" : {
+      "writer": {
+        "cpu": "2001m",
+        "memory": "900M",
+        "volume": "8Gi",
+        "replica_count": 3
+      },
+      "reader": {
+        "cpu": "2001m",
+        "memory": "900M",
+        "volume": "8Gi",
+        "replica_count": 3
+      }
+    }
+  },
+  "advanced" : {
+    "k8s": {
+      "mongodb": {
+        "values": {
+        }
+      }
+    }
+  },
+  "version": ""
+}

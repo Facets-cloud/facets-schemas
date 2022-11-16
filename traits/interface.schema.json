@@ -22,6 +22,10 @@
     "name": {
       "type": "string",
       "description": "Name of interface, same as key"
+    },
+    "connection_string": {
+      "type": "string",
+      "description": "Connection string to connect"
     }
   }
 }
