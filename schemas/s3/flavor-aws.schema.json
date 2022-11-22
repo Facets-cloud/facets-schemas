@@ -12,15 +12,15 @@
             "policy": {
               "type": "object",
               "description": "Policy definition of the bucket."
-            },
-            "tags": {
+            }
+          }
+        },
+        "tags": {
+          "type": "object",
+          "properties": {
+            "values": {
               "type": "object",
-              "properties": {
-                "values": {
-                  "type": "object",
-                  "description": "Extra tags required for tagging resources"
-                }
-              }
+              "description": "Extra tags required for tagging resources"
             }
           }
         }
