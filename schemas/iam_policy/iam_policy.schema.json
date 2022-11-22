@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    }
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "flavor": {
+      "type": "string"
+    },
+    "lifecycle": {
+      "type": "string"
+    },
+    "disabled": {
+      "type": "boolean"
+    },
+    "provided": {
+      "type": "boolean"
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {}
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "annotations"
+      ]
+    }
+  },
+  "required": [
+    "kind",
+    "flavor",
+    "lifecycle",
+    "disabled",
+    "provided",
+    "depends_on",
+    "metadata",
+    "spec",
+    "advanced"
+  ],
+  "$defs" : {
+    "specDef" : {
+      "type" : "object",
+      "properties" : {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "policy": {
+              "type": "object",
+              "properties": {
+                "Version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "Version",
+                "Statement"
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "policy"
+          ]
+        }
+      }
+    },
+    "advancedDef" : {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "anyOf": [
+            {
+              "$ref": "./flavor-aws-iam-policy.schema.json"
+            }
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "arn": {
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "arn"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

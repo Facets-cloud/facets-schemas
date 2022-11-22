@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definition": "AWS Iam policy",
+  "properties": {
+    "iam_policy": {
+      "type": "object",
+      "description": "Advanced section of the EKS",
+      "properties": {
+        "aws_iam_policy": {
+          "type": "object",
+          "description": "Advanced values as per Terraform AWS Iam policy resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy"
+        }
+      }
+    }
+  },
+  "required": []
+}
