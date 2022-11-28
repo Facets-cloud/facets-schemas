@@ -39,7 +39,7 @@ pipeline{
                     ],file(credentialsId: 'aws_kubeconfig', variable: 'AWS_KUBECONFIG'),
                     file(credentialsId: 'gcp_kubeconfig', variable: 'GCP_KUBECONFIG'),
                     file(credentialsId: 'gcp_json', variable: 'GCP_CREDENTIALS'),
-                    string(credentialsId: 'azure_client_id', variable: 'AZURE_CLIENT_ID'),string(credentialsId: 'azure_tenant_id', variable: 'AZURE_TENANT_ID'),
+                    string(credentialsId: 'azure_client_id', variable: 'AZURE_CLIENT_ID'),string(credentialsId: 'azure_tenant_id', variable: 'AZURE_TENANT_ID'), string(credentialsId: 'azure_client_secret', variable: 'AZURE_CLIENT_SECRET'),
                     string(credentialsId: 'azure_subscription_id', variable: 'AZURE_SUBSCRIPTION_ID'),file(credentialsId: 'azure_kubeconfig', variable: 'AZURE_KUBECONFIG')]){
                         container('go-test'){
                         sh """
