@@ -15,6 +15,14 @@
             }
         },
         "runtime": {
+            "volumes": {
+                "configs": {
+                    "ssl-certificate-1": {
+                        "mount_name": "test-configmap-ssl",
+                        "mount_path": "/var/data/"
+                    }
+                }
+            },
             "ports": {
                 "http": {
                     "port": 80,
