@@ -7,9 +7,9 @@
       "type": "object",
       "description": "Advanced section of the EKS",
       "properties": {
-        "node_group": {
+        "managed_node_group": {
           "type": "object",
-          "description": "Advanced values as per Terraform AWS EKS Node Group resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group"
+          "description": "Advanced values as per Terraform AWS EKS Managed Node Group resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group"
         }
       }
     }

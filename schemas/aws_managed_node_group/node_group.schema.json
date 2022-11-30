@@ -114,7 +114,7 @@
         "advanced": {
           "anyOf": [
             {
-              "$ref": "./flavor-eks.schema.json"
+              "$ref": "./flavor-eks-managed.schema.json"
             }
           ]
         }
