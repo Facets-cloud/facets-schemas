@@ -1,7 +1,8 @@
 {
   "$schema": "node_group.schema.json",
   "kind": "kubernetes_node_pool",
-  "flavor": "eks",
+  "flavor": "eks_managed",
+  "version": "latest",
   "metadata": {
     "name": "test-node-group",
     "tags": {
@@ -10,7 +11,7 @@
     "annotations": {}
   },
   "spec": {
-    "instance_types": "t3.medium,t3.medium",
+    "instance_types": "t3.medium,t3.large",
     "min_node_count": 1,
     "max_node_count": 5,
     "disk_size": 20,
@@ -33,7 +34,7 @@
   },
   "advanced": {
     "eks": {
-      "node_group": {
+      "managed_node_group": {
         "desired_size": 2,
         "ami_id": "",
         "tags": {
