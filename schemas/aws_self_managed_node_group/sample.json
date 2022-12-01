@@ -13,10 +13,12 @@
   "spec": {
     "instance_type": "t3.medium",
     "is_public": true,
+    "azs": "us-east-1a",
     "min_node_count": 0,
     "max_node_count": 5,
+    "disk_size": 20,
     "taints": {
-      "taint3": {
+      "taint1": {
         "effect": "NoSchedule",
         "key": "dedicated",
         "value": "windowsnode"

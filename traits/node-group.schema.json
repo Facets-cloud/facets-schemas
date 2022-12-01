@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "instance_type": {
+      "type": "string",
+      "description": "Instance type associated with the EKS Node Group"
+    },
+    "min_node_count": {
+      "type": "number",
+      "description": "Minimum number of worker nodes"
+    },
+    "max_node_count": {
+      "type": "number",
+      "description": "Maximum number of worker nodes"
+    },
+    "disk_size": {
+      "type": "number",
+      "description": "Disk size in GiB for worker nodes"
+    },
+    "azs": {
+      "type": "string",
+      "description": "Comma separated string of one or more availability zones for the node group"
+    },
+    "is_public": {
+      "type": "boolean",
+      "description": "Whether to launch nodes in Public or Private network"
+    },
+    "taints": {
+      "type": "object",
+      "description": "The Kubernetes taints to be applied to the nodes in the node group. Maximum of 50 taints per node group",
+      "patternProperties": {
+        "^[a-zA-Z]+\\d+$": {
+          "type": "object",
+          "description": "Specify taint",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "The key of the taint",
+              "minLength": 2,
+              "maxLength": 63
+            },
+            "value": {
+              "type": "string",
+              "description": "The value of the taint",
+              "minLength": 2,
+              "maxLength": 63
+            },
+            "effect": {
+              "type": "string",
+              "description": "The effect of the taint",
+              "enum": [
+                "NoSchedule",
+                "NoExecute",
+                "PreferNoSchedule"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "labels": {
+      "type": "object",
+      "description": "Key-value map of Kubernetes labels. Only labels that are applied with the EKS API are managed by this argument. Other Kubernetes labels applied to the EKS Node Group will not be managed"
+    }
+  },
+  "required": [
+    "instance_type",
+    "min_node_count",
+    "max_node_count",
+    "is_public",
+    "disk_size",
+    "azs",
+    "taints",
+    "labels"
+  ]
+}
