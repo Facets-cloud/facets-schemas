@@ -7,7 +7,7 @@
     },
     "version": "0.1",
     "spec": {
-        "mode": "per_instance",
+        "mode": "loadbalancing",
         "instances": 1,
         "ports": {
             "ports1": {

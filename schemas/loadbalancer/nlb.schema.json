@@ -42,6 +42,10 @@
                 "type": "object",
                 "description": "Map of all the kubernetes selectors that are required to map the loadbalancer service to applications in the backend"
               },
+              "pod_prefix": {
+                "type": "string",
+                "description": "The pod prefix to which the loadbalancer routes requests to"
+              },
               "mode": {
                 "type": "string",
                 "description": "Mode can be either loadbalancing or per_instance. loadbalancing is for a single instance loadbalancing for backend applications and per_instance is for targeting a specific backend application",
@@ -58,7 +62,7 @@
                           "mode": { "enum": ["per_instance"] }
                         }
                     },
-                    "then": { "required": ["private", "mode", "selector","ports","instances"] }
+                    "then": { "required": ["private", "mode", "selector","ports","instances", "pod_prefix"] }
                 },
                 {
                     "if": {
