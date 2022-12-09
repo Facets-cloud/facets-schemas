@@ -169,13 +169,6 @@ Output given by the resource for others to refer.
 | `min_node_count` | number            | **Yes**  | Minimum number of worker nodes                                                                        |
 | `taints`         | [object](#taints) | **Yes**  | The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool |
 
-#### labels
-
-Key-value map of Kubernetes labels
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-
 #### taints
 
 The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool
@@ -202,13 +195,6 @@ Specification as per resource types schema
 | `max_node_count` | number            | **Yes**  | Maximum number of worker nodes                                                                        |
 | `min_node_count` | number            | **Yes**  | Minimum number of worker nodes                                                                        |
 | `taints`         | [object](#taints) | **Yes**  | The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool |
-
-### labels
-
-Key-value map of Kubernetes labels
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
 
 ### taints
 
