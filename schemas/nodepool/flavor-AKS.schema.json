@@ -5,13 +5,14 @@
   "properties": {
     "aks": {
       "type": "object",
+      "description": "Advanced Values for AKS nodepool",
       "properties": {
-        "nodepool": {
+        "node_pool": {
           "type": "object",
+          "description": "aks values as per the documentation  https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster_node_pool",
           "properties": {
             "values": {
               "type": "object",
-              "description": "aks values as per the documentation  https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster_node_pool",
               "properties": {
                 "upgrade_settings": {
                   "type": "object",
