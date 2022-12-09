@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definition": "EKS Schema",
+  "properties": {
+    "eks": {
+      "type": "object",
+      "description": "Advanced section of the EKS Self Managed",
+      "properties": {
+        "self_managed_node_group": {
+          "type": "object",
+          "description": "Advanced values as per Terraform AWS EKS Self Managed Node Group module https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest/submodules/self-managed-node-group?tab=inputs"
+        }
+      }
+    }
+  },
+  "required": []
+}
