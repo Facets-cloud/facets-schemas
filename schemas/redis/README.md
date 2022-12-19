@@ -22,3 +22,6 @@ A Redis Instance in master/slave or reader/writer mode.
 
 ## Flavors
 
+- k8s
+- elasticache
+- memorystore
