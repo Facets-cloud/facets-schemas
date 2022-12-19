@@ -8,7 +8,7 @@
           "properties": {
             "enable_managed_certificates": {
               "type": "boolean",
-              "description": "Boolean flag to enable and disable the creation of managed certificates in GCP"
+              "description": "Boolean flag to enable or disable the creation of managed certificates in GCP"
             }
           }
         }
