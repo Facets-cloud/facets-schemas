@@ -15,8 +15,8 @@ A Redis Instance in master/slave or reader/writer mode.
 
 | Property     | Type                  | Required | Description |
 |--------------|-----------------------|----------|-------------|
-| `instances`  | [object](#instances)  | No       |             |
-| `interfaces` | [object](#interfaces) | No       |             |
+| `instances`  | Map<string,[interface](../../traits/interface.schema.md)>  | No       |             |
+| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.md) | No       |             |
 | `spec`       | [object](#spec)       | No       |             |
 
 
