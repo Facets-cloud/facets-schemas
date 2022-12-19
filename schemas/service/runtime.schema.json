@@ -117,7 +117,7 @@
              },
              "requests_per_second":{
                 "type":"object",
-                "description":"RPS object",
+                "description":"Requests per second RPS object keys",
                 "properties":{
                    "threshold":{
                       "type":"string",

@@ -26,6 +26,7 @@
         },
         "strategy": {
             "type": "object",
+            "description": "The type of upgrade strategy to be followed by this service",
             "properties": {
                 "type": {
                     "type": "string",
@@ -62,6 +63,7 @@
         },
         "disruption_policy": {
             "type": "object",
+            "description": "The disruption policy for the service",
             "properties": {
                 "min_available": {
                     "type": "integer",

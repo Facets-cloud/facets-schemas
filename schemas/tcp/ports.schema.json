@@ -9,7 +9,8 @@
         "properties": {
           "protocol": {
             "type": "string",
-            "description": "The host name of the domain"
+            "description": "the protocol of the port , either tcp or udp",
+            "enum": ["tcp", "udp"]
           },
           "port": {
             "type": "string",
