@@ -1,0 +1,26 @@
+{
+  "$schema": "elasticsearch.schema.json",
+  "version": "0.1",
+  "flavor": "k8s",
+  "kind": "elasticsearch",
+  "metadata": {
+    "name": "elasticsearch"
+  },
+  "spec": {
+    "elasticsearch_version" : "8.5.1",
+    "size" : {
+      "cpu": "2001m",
+      "memory": "2Gi",
+      "volume": "8Gi",
+      "replica_count": 2
+    }
+  },
+  "advanced": {
+    "k8s": {
+      "elasticsearch": {
+        "values": {
+        }
+      }
+    }
+  }
+}

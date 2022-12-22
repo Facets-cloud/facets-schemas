@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for Elasticsearch",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced values to be used by different flavours of Elasticsearch",
+          "anyOf": [
+            {
+              "$ref": "./flavor-k8s.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "description": "Required specifications for Elasticsearch instances",
+          "additionalProperties": false,
+          "properties": {
+            "elasticsearch_version": {
+              "type": "string",
+              "description": "Version of Elasticsearch e.g. 8.5.1"
+            },
+            "size": {
+              "type": "object",
+              "description": "Map containing necessary information for instance size",
+              "$ref": "../../traits/size.schema.json"
+            }
+          },
+          "required": [
+            "elasticsearch_version",
+            "size"
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
+              "properties": {
+                "interfaces": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "connection_string": {
+                      "type": "string",
+                      "description": "Connection string to connect"
+                    },
+                    "host": {
+                      "type": "string",
+                      "description": "Host for service discovery"
+                    },
+                    "port": {
+                      "type": "string",
+                      "description": "Port for service discovery"
+                    }
+                  }
+                }
+              },
+              "required": [
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

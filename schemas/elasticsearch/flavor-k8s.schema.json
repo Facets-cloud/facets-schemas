@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Values for Elasticsearch K8s",
+  "properties": {
+    "k8s": {
+      "type": "object",
+      "properties": {
+        "elasticsearch": {
+          "type": "object",
+          "properties": {
+            "values" : {
+              "type": "object",
+              "description": "Helm values as per elasticsearch helm chart https://artifacthub.io/packages/helm/elastic/elasticsearch"
+            }
+          }
+        }
+      }
+    }
+  }
+}
