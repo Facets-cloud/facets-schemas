@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced section of Loki Schema",
+  "properties": {
+    "k8s": {
+      "type": "object",
+      "description": "Advanced values for k8s",
+      "properties": {
+        "log_collector": {
+          "type": "object",
+          "description": "Advanced values for log_collector module",
+          "properties": {
+            "loki":{
+              "type": "object",
+              "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/loki-distributed\n Note: By default `loki.structuredConfig.storage_config` is configured to use minio storage backend"
+            },
+            "minio":{
+              "type": "object",
+              "description": "Helm values as per the chart https://artifacthub.io/packages/helm/bitnami/minio"
+            },
+            "promtail": {
+              "type": "object",
+              "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/promtail\n Note: By default, loki push endpoint will be configured automatically to send log entries to Loki"
+            }
+          }
+        }
+      }
+    }
+  }
+}
