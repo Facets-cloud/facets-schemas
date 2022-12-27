@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Values for S3",
+  "properties": {
+    "default": {
+      "type": "object",
+      "properties": {
+        "aws_s3_bucket_policy": {
+          "type": "object",
+          "properties": {
+            "policy": {
+              "type": "object",
+              "description": "Policy definition of the bucket.",
+              "properties": {
+                "Statement": {
+                  "type": "array",
+                  "description": "Statement of the s3 bucket",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Principal": {
+                        "type": "array",
+                        "description": "List of the arn"
+                      },
+                      "Action": {
+                        "type": "string",
+                        "description": "Action of the s3 bucket statement"
+                      },
+                      "Effect": {
+                        "type": "string",
+                        "description": "Effect of the s3 bucket statement"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "object",
+              "description": "Extra tags required for tagging resources"
+            }
+          }
+        }
+      }
+    }
+  }
+}
