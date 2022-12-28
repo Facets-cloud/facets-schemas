@@ -63,9 +63,9 @@
         "disruption_policy": {
             "type": "object",
             "properties": {
-                "max_available": {
+                "min_available": {
                     "type": "integer",
-                    "description": "This is the max number of pods should be available in case of failures"
+                    "description": "This is the min number of pods should be available in case of failures"
                 },
                 "max_unavailable": {
                     "type": "integer",
