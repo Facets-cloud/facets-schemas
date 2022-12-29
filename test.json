@@ -9,7 +9,8 @@
     "authenticated": false,
     "mongodb_version": "6.0",
     "size": {
-      "instance": ""
+      "instance": "",
+      "replica_count": 6
     }
   },
   "out": {

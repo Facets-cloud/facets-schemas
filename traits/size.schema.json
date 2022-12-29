@@ -18,8 +18,7 @@
         "description": "Volume request in kubernetes persistent volumes"
       }
     },
-    "required":["cpu","memory"],
-    "additionalProperties":false
+    "required":["cpu","memory"]
    }, 
    {
      "type" : "object",
@@ -29,8 +28,7 @@
         "description": "Instance name in certain cases"
       }
      },
-     "required":["instance"],
-     "additionalProperties":false
+     "required":["instance"]
   }
 ]
 }
