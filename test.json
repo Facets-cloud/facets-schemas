@@ -4,33 +4,16 @@
   "metadata": {
   },
   "version": "",
-  "$schema": "resource_types/redis/redis.schema.json",
+  "$schema": "schemas/mongodb/mongodb.schema.json",
   "spec": {
     "authenticated": false,
-    "redis_version": "6.3",
-    "persistence": {
-      "enabled": true,
-      "volume": "7G"
-    },
-    "replica_count": 0,
+    "mongodb_version": "6.0",
     "size": {
-      "master": {
-        "cpu": "2",
-        "memory": "30M"
-      }
+      "instance": ""
     }
   },
   "out": {
-    "interfaces": {
-      "master": {
-        "host": "",
-        "port": 0
-      },
-      "replica": {
-        "host": "",
-        "port": 0
-      }
-    }
+   
   },
   "advanced": {
     "k8s": {
