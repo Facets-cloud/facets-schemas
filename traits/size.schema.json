@@ -25,7 +25,8 @@
      "properties" : {
       "instance": {
         "type": "string",
-        "description": "Instance name in certain cases"
+        "description": "Instance name in certain cases",
+        "minLength":1
       }
      },
      "required":["instance"]

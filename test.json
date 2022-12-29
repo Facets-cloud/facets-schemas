@@ -1,16 +1,16 @@
 {
-  "kind": "",
-  "flavor": "",
+  "kind": "mongo",
+  "flavor": "k8s",
   "metadata": {
   },
-  "version": "",
+  "version": "0.2",
   "$schema": "schemas/mongodb/mongodb.schema.json",
   "spec": {
     "authenticated": false,
-    "mongodb_version": "6.0",
+    "mongodb_version": "",
     "size": {
       "instance": "",
-      "replica_count": 6
+      "replica_count": 2
     }
   },
   "out": {

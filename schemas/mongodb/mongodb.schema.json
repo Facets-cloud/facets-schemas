@@ -6,6 +6,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["mongo"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["k8s"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.2"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/specDef"
     },
     {
@@ -46,7 +63,8 @@
             },
             "mongodb_version": {
               "type": "string",
-              "definition": "Version of mongodb e.g. 6.0.2"
+              "definition": "Version of mongodb e.g. 6.0.2",
+              "minLength":1
             },
             "size": {
               "allOf": [
@@ -59,7 +77,8 @@
                   "properties": {
                     "replica_count": {
                       "type": "integer",
-                      "description": "Number of reader instances needs to be deployed"
+                      "description": "Number of reader instances needs to be deployed",
+                      "minLength":1
                     }
                   },
                   "required":["replica_count"]
