@@ -20,7 +20,7 @@
             "description": "Port name of the service"
           },
           "port": {
-            "type": "integer",
+            "type": "string",
             "description": "Port number of the service"
           },
           "domain_prefix": {
