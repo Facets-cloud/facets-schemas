@@ -12,7 +12,7 @@
             "description": "The host name of the domain"
           },
           "port": {
-            "type": "integer",
+            "type": "string",
             "description": "Port number where the service needs to be accessible via the loadbalancer its the same port that will be exposed via the loadbalancer"
           }
         },
