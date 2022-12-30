@@ -9,7 +9,25 @@
       "properties": {
         "aws_iam_policy": {
           "type": "object",
-          "description": "Advanced values as per Terraform AWS Iam policy resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy"
+          "description": "Advanced values as per Terraform AWS Iam policy resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description about the AWS IAM policy resource"
+            },
+            "name_prefix": {
+              "type": "string",
+              "description": "Name prefix for the IAM policy resource"
+            },
+            "path": {
+              "type": "string",
+              "description": "Path to save IAM policy resource"
+            },
+            "tags": {
+              "type": "object",
+              "description": "Tags for the IAM policy resource"
+            }
+          }
         }
       }
     }
