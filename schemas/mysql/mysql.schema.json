@@ -38,21 +38,21 @@
               "$ref": "../../traits/reader-writer.schema.json",
               "required": []
             }
-          }
-        },
-        "required": [
-          "mysql_version",
-          "size"
-        ]
+          },
+          "required": [
+            "mysql_version",
+            "size"
+          ]
+        }
       }
     },
     "advancedDef": {
       "type": "object",
       "properties": {
         "advanced": {
-          "anyOf": [
+          "allOf": [
             {
-              "$ref": "./flavor-aurora.schema.json"
+              "$ref": "flavor-aurora.schema.json"
             }
           ]
         }

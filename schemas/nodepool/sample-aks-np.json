@@ -1,4 +1,5 @@
 {
+  "$schema": "nodepool.schema.json",
   "flavor": "aks",
   "metadata": {
     "name": "testaks",
@@ -37,9 +38,6 @@
   "advanced": {
     "aks": {
       "node_pool": {
-        "upgrade_settings": {
-          "max_surge": "4"
-        },
         "tags": {
           "test": "PRD",
           "test2": "QA"
