@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "cpu": {
+      "type": "string",
+      "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+    },
+    "memory": {
+      "type": "string",
+      "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+    },
+    "volume": {
+      "type": "string",
+      "description": "Volume request in kubernetes persistent volumes"
+    }
+  },
+  "required": [
+    "cpu",
+    "memory"
+  ]
+}

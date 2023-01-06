@@ -7,7 +7,7 @@
         "description": "The zookeeper details",
         "allOf": [
           {
-            "$ref": "size.schema.json"
+            "$ref": "../../traits/size-k8s.schema.json"
           },
           {
             "type": "object",
@@ -28,7 +28,7 @@
         "description": "The kafka details",
         "allOf": [
           {
-            "$ref": "size.schema.json"
+            "$ref": "../../traits/size-k8s.schema.json"
           },
           {
             "type": "object",

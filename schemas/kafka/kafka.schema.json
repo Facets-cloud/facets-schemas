@@ -6,6 +6,23 @@
           "$ref":"../../traits/base.schema.json"
        },
        {
+         "type": "object",
+         "properties": {
+           "kind":{
+             "type":"string",
+             "enum": ["kafka"]
+           },
+           "flavor":{
+             "type":"string",
+             "enum": ["k8s"]
+           },
+           "version":{
+             "type":"string",
+             "enum": ["0.2"]
+           }
+         }
+       },
+       {
           "$ref":"#/$defs/specDef"
        },
        {
@@ -46,7 +63,8 @@
                    },
                    "kafka_version":{
                       "type":"string",
-                      "description":"Version of kafka e.g. 3.2.3"
+                      "description":"Version of kafka e.g. 3.2.3",
+                      "minLength":"3"
                    },
                    "persistence_enabled":{
                       "type":"boolean",
@@ -54,7 +72,7 @@
                    },
                    "size":{
                       "type":"object",
-                      "$ref":"../../traits/zookeeper-kafka.schema.json"
+                      "$ref":"./zookeeper-kafka.schema.json"
                    }
                 },
                 "required":[
@@ -116,12 +134,7 @@
                         }
                     }
                 }
-            },
-                "required":[
-                    "interfaces",
-                    "instances",
-                    "extra_settings"
-                 ]
+            }
              }
           }
        }

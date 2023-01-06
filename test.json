@@ -1,21 +1,26 @@
 {
-  "kind": "rabbitmq",
+  "kind": "kafka",
   "flavor": "k8s",
-  "metadata": {
-  },
-  "version": "0.1",
-  "$schema": "schemas/rabbitmq/rabbitmq.schema.json",
+  "metadata": {},
+  "version": "0.2",
+  "$schema": "schemas/kafka/kafka.schema.json",
   "spec": {
-    "rabbitmq_version": "4.0",
+    "authenticated": false,
+    "kafka_version": "4.0",
+    "persistence_enabled": true,
     "size": {
-      "replica_count": 2,
-      "instance": "dghjssd"
+      "kafka": {
+        "cpu": "30",
+        "memory": "3Gi",
+        "replica_count": 3
+      },
+      "zookeeper": {
+        "cpu": "3",
+        "memory": "3Gi",
+        "replica_count": 3
+      }
     }
   },
-  "out": {
-    
-  },
-  "advanced": {
-
-  }
+  "out": {},
+  "advanced": {}
 }
