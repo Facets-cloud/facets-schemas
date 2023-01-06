@@ -1,23 +1,21 @@
 {
-  "kind": "mongo",
+  "kind": "rabbitmq",
   "flavor": "k8s",
   "metadata": {
   },
-  "version": "0.2",
-  "$schema": "schemas/mongodb/mongodb.schema.json",
+  "version": "0.1",
+  "$schema": "schemas/rabbitmq/rabbitmq.schema.json",
   "spec": {
-    "authenticated": false,
-    "mongodb_version": "",
+    "rabbitmq_version": "4.0",
     "size": {
-      "instance": "",
-      "replica_count": 2
+      "replica_count": 2,
+      "instance": "dghjssd"
     }
   },
   "out": {
-   
+    
   },
   "advanced": {
-    "k8s": {
-    }
+
   }
 }

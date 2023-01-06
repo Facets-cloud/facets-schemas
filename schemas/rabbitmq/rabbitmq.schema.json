@@ -7,6 +7,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["rabbitmq"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["k8s"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/specDef"
     },
     {
@@ -45,12 +62,28 @@
           "properties": {
             "rabbitmq_version": {
               "type": "string",
-              "description": "Version of RabbitMQ e.g. 3.9.23"
+              "description": "Version of RabbitMQ e.g. 3.9.23",
+              "minLength": 3
             },
             "size": {
-              "type": "object",
-              "description": "Map containing necessary information for instance size",
-              "$ref": "../../traits/size.schema.json"
+              "allOf": [
+                {
+                  "type": "object",
+                  "$ref": "../../traits/size.schema.json",
+                  "required":["volume"]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "replica_count": {
+                      "type": "integer",
+                      "description": "Number of reader instances needs to be deployed",
+                      "minLength":1
+                    }
+                  },
+                  "required":["replica_count"]
+                }              
+              ]
             }
           },
           "required": [
@@ -68,9 +101,6 @@
           "additionalProperties": false,
           "description": "Output from the RabbitMQ module",
           "allOf": [
-            {
-              "$ref": "#/$defs/specDef"
-            },
             {
               "properties": {
                 "interfaces": {
