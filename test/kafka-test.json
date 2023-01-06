@@ -1,0 +1,26 @@
+{
+  "kind": "kafka",
+  "flavor": "k8s",
+  "metadata": {},
+  "version": "0.2",
+  "$schema": "../schemas/kafka/kafka.schema.json",
+  "spec": {
+    "authenticated": false,
+    "kafka_version": "4.0",
+    "persistence_enabled": true,
+    "size": {
+      "kafka": {
+        "cpu": "30",
+        "memory": "3Gi",
+        "replica_count": 3
+      },
+      "zookeeper": {
+        "cpu": "3",
+        "memory": "3Gi",
+        "replica_count": 3
+      }
+    }
+  },
+  "out": {},
+  "advanced": {}
+}
