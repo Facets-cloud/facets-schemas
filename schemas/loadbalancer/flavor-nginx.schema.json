@@ -6,6 +6,10 @@
           "type": "object",
           "description": "Advanced section of the nginx_ingress_controller",
           "properties": {
+            "domain_prefix_override": {
+              "type": "string",
+              "description": "The domain prefix you want to override for your facets subdomain. eg: `<your-override-value>.console.facets.cloud`"
+            },
             "acm": {
               "type": "string",
               "description": "The ARN of the ACM certificate created for that domain"
