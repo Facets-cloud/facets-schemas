@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "definition": "Aurora Schema",
+    "properties": {
+      "rds": {
+        "type": "object",
+        "description": "Advanced section of the aurora",
+        "properties": {
+          "rds-mysql": {
+            "type": "object",
+            "description": "Advanced values as per Terraform AWS RDS Module https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/latest#inputs"
+          }
+        }
+      }
+    },
+    "required": []
+  }
+  

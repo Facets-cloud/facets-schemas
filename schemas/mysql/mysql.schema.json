@@ -53,6 +53,9 @@
           "allOf": [
             {
               "$ref": "flavor-aurora.schema.json"
+            },
+            {
+              "$ref": "flavor-rds.schema.json"
             }
           ]
         }
