@@ -28,7 +28,6 @@ Specification as per resource types schema
 | ------------------ | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `retentation_days` | number | **Yes**  | The number of days to retain an object after being created. Specify the number of days as an integer, e.g. 30 for 30 days                                                                                                                |
 | `storage_size`     | string | **Yes**  | Storage capacity to store logs. You can express storage size as a plain integer or as a fixed-point number using one of these quantity suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki |
-| `namespace`        | string | No       | The namespace where Loki related components will be deployed                                                                                                                                                                             |
 
 
 ## out
@@ -49,4 +48,3 @@ Output given by the resource for others to refer.
 | ------------------ | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `retentation_days` | number | **Yes**  | The number of days to retain an object after being created. Specify the number of days as an integer, e.g. 30 for 30 days                                                                                                                |
 | `storage_size`     | string | **Yes**  | Storage capacity to store logs. You can express storage size as a plain integer or as a fixed-point number using one of these quantity suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki |
-| `namespace`        | string | No       | The namespace where Loki related components will be deployed                                                                                                                                                                             |
