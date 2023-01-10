@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "description": "Advanced values for sqs",
+    "properties": {
+        "visibility_timeout_seconds": {
+        "type": "number"
+        },
+        "message_retention_seconds": {
+        "type": "number"
+        },
+        "max_message_size": {
+        "type": "number"
+        },
+        "delay_seconds": {
+        "type": "number"
+        },
+        "receive_wait_time_seconds": {
+        "type": "number"
+        },
+        "policy": {
+        "type": "string"
+        },
+        "redrive_policy": {
+        "type": "string"
+        },
+        "fifo_queue": {
+        "type": "boolean"
+        },
+        "content_based_deduplication": {
+        "type": "boolean"
+        },
+        "kms_master_key_id": {
+        "type": "string"
+        },
+        "kms_data_key_reuse_period_seconds": {
+        "type": "number"
+        },
+        "tags": {
+        "type": "object"
+        }
+    }
+}
+    
