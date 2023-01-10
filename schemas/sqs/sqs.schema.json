@@ -1,0 +1,81 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "description": "Schema for SQS",
+    "allOf": [
+        {
+          "$ref": "../../traits/base.schema.json"
+        },
+        {
+          "$ref": "#/$defs/outDef"
+        },
+        {
+            "type": "object",
+            "properties": {
+              "advanced": {
+                "type": "object",
+                "description": "Advanced values for SQS",
+                "anyOf": [
+                    {
+                      "$ref": "./flavor-sqs.schema.json"
+                    }
+                  ]
+            }
+          }
+        }
+      ],
+      "required": [
+        "kind",
+        "flavor",
+        "version",
+        "metadata"
+      ],
+      "$defs": {
+        "specDef": {
+          "type": "object",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+              ]
+            },
+            "advanced": {
+                "anyOf": [
+                  {
+                    "$ref": "./flavor-sqs.schema.json"
+                  }
+                ]
+              }
+          }
+        },
+        "outDef": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "Output from the RabbitMQ module",
+            "allOf": [
+              {
+                "$ref": "#/$defs/specDef"
+              },
+              {
+                "properties": {
+                    "sqs_queue_name": {
+                        "type": "string",
+                        "description": "Name of the SQS"
+                      },
+                      "sqs_queue_arn": {
+                        "type": "string",
+                        "description": "ARN of the SQS"
+                      },
+                      "sqs_queue_url": {
+                        "type": "string",
+                        "description": "URL of the SQS"
+                      }
+                    },
+                    "required": [
+                    ]
+                }
+            ]
+        }
+    }
+}
