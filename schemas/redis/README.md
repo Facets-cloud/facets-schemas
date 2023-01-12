@@ -30,5 +30,6 @@ A Redis Instance in master/slave or reader/writer mode.
 
 | Alert Name | Impact                | Mitigation                                           |
 |------------|-----------------------|------------------------------------------------------|
-| RedisDown  | Redis is inaccessible | Debug the instance health via metrics & logs         |
- | RedisOutOfConfiguredMaxmemory | Redis is running out of memory | Debug using redis dashboards in Facets control plane | 
+| `RedisDown`  | Redis is inaccessible | Debug the instance health via metrics & logs         |
+ | `RedisOutOfConfiguredMaxmemory` | Redis is running out of memory | Debug using redis dashboards in Facets control plane |
+|`RedisTooManyConnections` | Redis has too many connections | Refer to client title pane in redis dashboard |
