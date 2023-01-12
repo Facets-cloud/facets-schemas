@@ -1,0 +1,19 @@
+{
+  "kind": "kafka",
+  "flavor": "k8s",
+  "metadata": {},
+  "version": "0.2",
+  "$schema": "../schemas/mongodb/mongodb.schema.json",
+  "spec": {
+    "authenticated": false,
+    "mongodb_version": "5.12.34",
+    "size": {
+     "cpu": "500m",
+     "memory": "2Gi",
+     "replica_count": 1,
+     "volume": "20Gi"
+    }
+  },
+  "out": {},
+  "advanced": {}
+}

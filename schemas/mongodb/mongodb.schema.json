@@ -64,7 +64,8 @@
             "mongodb_version": {
               "type": "string",
               "definition": "Version of mongodb e.g. 6.0.2",
-              "minLength":1
+              "minLength":3,
+              "pattern" : "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
             },
             "size": {
               "allOf": [
@@ -77,8 +78,10 @@
                   "properties": {
                     "replica_count": {
                       "type": "integer",
-                      "description": "Number of reader instances needs to be deployed",
-                      "minLength":1
+                      "description": "Number of replicas for this Mongo, Min 1",
+                      "multipleOf":1,
+                      "minimum": 1,
+                      "maximum":4
                     }
                   },
                   "required":["replica_count"]
