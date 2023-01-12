@@ -36,9 +36,9 @@ Output given by the resource for others to refer.
 
 ### Properties
 
-| Property | Type            | Required | Description |
-| -------- | --------------- | -------- | ----------- |
-| `spec`   | [object](#spec) | No       |             |
+| Property | Type              | Required | Description |
+| -------- | ----------------- | -------- | ----------- |
+| `spec`   | [object](#spec-1) | No       |             |
 
 ### spec
 
