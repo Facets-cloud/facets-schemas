@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "advanced": {
+      "type": "object",
+      "properties": {
+        "cloudsql": {
+          "type": "object",
+          "properties": {
+            "postgres": {
+              "type": "object",
+              "properties": {
+                "reader_zone": {
+                  "type": "object",
+                  "properties": {
+                    "reader-0": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "reader-0"
+                  ]
+                },
+                "writer_zone": {
+                  "type": "string"
+                },
+                "activation_policy": {
+                  "type": "string"
+                },
+                "availability_type": {
+                  "type": "string"
+                },
+                "read_replica_deletion_protection": {
+                  "type": "string"
+                },
+                "read_replica_name_suffix": {
+                  "type": "string"
+                },
+                "db_charset": {
+                  "type": "string"
+                },
+                "db_collation": {
+                  "type": "string"
+                },
+                "db_name": {
+                  "type": "string"
+                },
+                "delete_timeout": {
+                  "type": "string"
+                },
+                "deletion_protection": {
+                  "type": "string"
+                },
+                "disk_autoresize": {
+                  "type": "string"
+                },
+                "disk_autoresize_limit": {
+                  "type": "string"
+                },
+                "disk_type": {
+                  "type": "string"
+                },
+                "enable_default_db": {
+                  "type": "string"
+                },
+                "enable_default_user": {
+                  "type": "string"
+                },
+                "encryption_key_name": {
+                  "type": "string"
+                },
+                "iam_user_emails": {
+                  "type": "object"
+                },
+                "maintenance_window_day": {
+                  "type": "string"
+                },
+                "maintenance_window_hour": {
+                  "type": "string"
+                },
+                "maintenance_window_update_track": {
+                  "type": "string"
+                },
+                "random_instance_name": {
+                  "type": "string"
+                },
+                "user_name": {
+                  "type": "string"
+                },
+                "secondary_zone": {
+                  "type": "string"
+                },
+                "module_depends_on": {
+                  "type": "array",
+                  "items": {}
+                },
+                "database_flags": {
+                  "type": "object",
+                  "properties": {
+                    "flag1": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "value"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "backup_configuration": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean"
+                    },
+                    "retained_backups": {
+                      "type": "integer"
+                    },
+                    "point_in_time_recovery_enabled": {
+                      "type": "boolean"
+                    },
+                    "start_time": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "string"
+                    },
+                    "transaction_log_retention_days": {
+                      "type": "string"
+                    },
+                    "retention_unit": {
+                      "type": "string"
+                    }
+                  },
+                  "required": []
+                },
+                "ip_configuration": {
+                  "type": "object",
+                  "properties": {
+                    "authorized_networks": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "ipv4_enabled": {
+                      "type": "boolean"
+                    },
+                    "private_network": {
+                      "type": "string"
+                    },
+                    "require_ssl": {
+                      "type": "boolean"
+                    },
+                    "allocated_ip_range": {
+                      "type": "string"
+                    }
+                  },
+                  "required": []
+                },
+                "insights_config": {
+                  "type": "object",
+                  "properties": {
+                    "query_string_length": {
+                      "type": "integer"
+                    },
+                    "record_application_tags": {
+                      "type": "boolean"
+                    },
+                    "record_client_address": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": []
+                },
+                "additional_users": {
+                  "type": "object",
+                  "properties": {
+                    "user1": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "password": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "password"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "additional_databases": {
+                  "type": "object",
+                  "properties": {
+                    "db1": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ]
+                    }
+                  },
+                  "required": []
+                },
+                "user_labels": {
+                  "type": "object"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      },
+      "required": []
+    }
+  },
+  "required": []
+}
