@@ -25,3 +25,10 @@ A Redis Instance in master/slave or reader/writer mode.
 - k8s
 - elasticache
 - memorystore
+
+## Alerts
+
+| Alert Name | Impact                | Mitigation                                           |
+|------------|-----------------------|------------------------------------------------------|
+| RedisDown  | Redis is inaccessible | Debug the instance health via metrics & logs         |
+ | RedisOutOfConfiguredMaxmemory | Redis is running out of memory | Debug using redis dashboards in Facets control plane | 
