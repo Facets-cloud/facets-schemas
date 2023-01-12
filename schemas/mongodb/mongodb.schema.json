@@ -71,7 +71,8 @@
               "allOf": [
                 {
                   "type": "object",
-                  "$ref": "../../traits/size.schema.json"
+                  "$ref": "../../traits/size.schema.json",
+                  "required":["volume"]
                 },
                 {
                   "type": "object",

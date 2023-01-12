@@ -11,8 +11,8 @@
      "cpu": "500m",
      "memory": "2Gi",
      "replica_count": 1,
-     "volume": "20Gi"
-    }
+     "volume": "200Gi"
+        }
   },
   "out": {},
   "advanced": {}
