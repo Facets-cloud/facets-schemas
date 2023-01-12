@@ -1,5 +1,5 @@
 {
-  "kind": "kafka",
+  "kind": "mongo",
   "flavor": "k8s",
   "metadata": {},
   "version": "0.2",
