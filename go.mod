@@ -6,13 +6,14 @@ require (
 	github.com/Jeffail/gabs v1.4.0
 	github.com/anthhub/forwarder v1.1.0
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/gruntwork-io/terratest v0.40.22
+	github.com/gruntwork-io/terratest v0.41.7
 	github.com/hashicorp/hcl/v2 v2.9.1
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
 	github.com/zclconf/go-cty v1.9.1
+	k8s.io/api v0.21.3
 	k8s.io/apimachinery v0.21.3
 )
 
@@ -76,7 +77,6 @@ require (
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/api v0.21.3 // indirect
 	k8s.io/cli-runtime v0.21.3 // indirect
 	k8s.io/client-go v0.21.3 // indirect
 	k8s.io/klog/v2 v2.8.0 // indirect
