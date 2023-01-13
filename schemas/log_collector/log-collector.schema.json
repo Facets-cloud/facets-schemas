@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "retentation_days": {
+              "type": "number",
+              "description": "The number of days to retain an object after being created. Specify the number of days as an integer, e.g. 30 for 30 days"
+            },
+            "storage_size": {
+              "type": "string",
+              "description": "Storage capacity to store logs. You can express storage size as a plain integer or as a fixed-point number using one of these quantity suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki"
+            },
+            "namespace": {
+              "type": "string",
+              "description": "The namespace where Loki related components will be deployed"
+            }
+          },
+          "required": [
+            "retentation_days",
+            "storage_size"
+          ]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "allOf": [
+            {
+              "$ref": "flavor-loki.schema.json"
+            }
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

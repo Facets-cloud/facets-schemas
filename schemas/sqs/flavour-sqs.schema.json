@@ -37,8 +37,13 @@
         "type": "number"
         },
         "tags": {
-        "type": "object"
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "object",
+              "description": "Extra tags required for tagging resources"
+            }
+          }
         }
     }
 }
-    
