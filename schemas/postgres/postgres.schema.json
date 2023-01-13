@@ -21,6 +21,9 @@
           "anyOf": [
             {
               "$ref": "./flavor-aurora.schema.json"
+            },
+            {
+              "$ref": "./flavor-cloudsql.schema.json"
             }
           ]
         }

@@ -1,8 +1,9 @@
 {
     "$schema": "sqs.schema.json",
-    "flavor": "default",
     "version": "0.2",
-    "disabled": true,
+    "flavor": "default",
+    "kind": "sqs",
+    "provides": "sqs",
     "metadata": {
         "name": "test-aws-sqs-queue"
     },
@@ -23,4 +24,3 @@
     }
   
  }
- 
