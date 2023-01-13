@@ -13,11 +13,11 @@ A Redis Instance in master/slave or reader/writer mode.
 
 ## Outputs
 
-| Property     | Type                  | Required | Description |
-|--------------|-----------------------|----------|-------------|
-| `instances`  | Map<string, [interface](../../traits/interface.md)>  | No       |             |
-| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.md) | No       |             |
-| `spec`       | [object](#spec)       | No       |             |
+| Property     | Type                  | Required | Description                             |
+|--------------|-----------------------|----------|-----------------------------------------|
+| `instances`  | Map<string, [interface](../../traits/interface.md)>  | No       | List of all instances                   |
+| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.md) | No       | Master SD details                       |
+| `spec`       | [object](#spec)       | No       | Details of the sizing for all instances |
 
 
 ## Flavors
