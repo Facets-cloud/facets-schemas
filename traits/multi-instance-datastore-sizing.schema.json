@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "instance_count"
+    ],
+    "properties": {
+        "instance_count": {
+            "type": "integer",
+            "description": "The number of instances to create.",
+            "minimum": 1
+        }
+    },
+    "allOf": [
+        {
+            "$ref":"https://facets-cloud.github.io/facets-schemas/traits/datastore-sizing.schema.json"
+        }
+    ]
+}
