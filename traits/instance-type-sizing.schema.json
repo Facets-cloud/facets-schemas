@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "instance_type"
+    ],
+    "properties": {
+        "instance_type": {
+            "type": "string",
+            "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "examples": ["t2.micro", "Standard_DS1_v2", "n1-standard-2", "db.m5.large", "db.r5.large", "db.t3.medium", "db-n1-standard-1", "db-f1-micro"]
+        }
+    }
+}
