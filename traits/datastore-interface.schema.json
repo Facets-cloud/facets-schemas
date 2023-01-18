@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "host",
+        "port"
+    ],
+    "properties": {
+        "host": {
+            "type": "string",
+            "description": "The hostname or IP address of the database or cache server."
+        },
+        "port": {
+            "type": "integer",
+            "description": "The port number to use for connecting to the database or cache server.",
+            "minimum": 1,
+            "maximum": 65535
+        },
+        "username": {
+            "type": "string",
+            "description": "The username to use for authentication when connecting to the database or cache server."
+        },
+        "password": {
+            "type": "string",
+            "description": "The password to use for authentication when connecting to the database or cache server."
+        }
+    }
+}
