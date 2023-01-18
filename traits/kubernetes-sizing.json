@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "cpu",
+        "memory"
+    ],
+    "properties": {
+        "cpu": {
+            "type": "string",
+            "description": "The number of CPU cores required, e.g '1' or '1000m'",
+            "minLength": 1,
+            "pattern": "^[0-9]+[m]?$",
+            "examples": ["1", "1000m"]
+        },
+        "memory": {
+            "type": "string",
+            "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+            "minLength": 1,
+            "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?B$",
+            "examples": ["800Mi", "1.5Gi"]
+        }
+    }
+}
