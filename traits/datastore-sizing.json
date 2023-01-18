@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "oneOf": [
+        {
+            "$ref": "https://facets-cloud.github.io/facets-schemas/traits/kubernetes-sizing.schema.json"
+        },
+        {
+            "$ref": "https://facets-cloud.github.io/facets-schemas/traits/instance-type-sizing.schema.json"
+        }
+    ],
+    "properties": {
+        "volume": {
+            "type": "string",
+            "description": "The size of the volume. e.g '10G' or '5Gi'",
+            "minLength": 1,
+            "pattern": "^[0-9]+[a-zA-Z]$",
+            "examples": ["10G", "5Gi"]
+        }
+    }
+}
