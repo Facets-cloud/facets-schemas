@@ -9,7 +9,7 @@
       "properties": {
         "bucket_name": {
           "type": "string",
-          "description": "AWS S3 bucket name to distribute chunks. \nNote: You can use AWS S3 module to create bucket and map the name using `${s3.<name-of-your-resource>.bucket_name}`"
+          "description": "AWS S3 bucket name to distribute chunks. \nNote: You can use AWS S3 module (https://facets-cloud.github.io/facets-schemas/schemas/s3/s3.schema.json) to create bucket and map the name using `${s3.<name-of-your-resource>.bucket_name}`"
         },
         "loki": {
           "type": "object",
