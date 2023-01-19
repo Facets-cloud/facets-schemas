@@ -36,10 +36,6 @@
             "storage_size": {
               "type": "string",
               "description": "Storage capacity to store logs. You can express storage size as a plain integer or as a fixed-point number using one of these quantity suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki"
-            },
-            "namespace": {
-              "type": "string",
-              "description": "The namespace where Loki related components will be deployed"
             }
           },
           "required": [
@@ -56,6 +52,9 @@
           "allOf": [
             {
               "$ref": "flavor-loki.schema.json"
+            },
+            {
+              "$ref": "flavor-loki-s3.schema.json"
             }
           ]
         }
