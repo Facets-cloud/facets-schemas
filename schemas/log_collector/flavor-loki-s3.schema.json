@@ -3,10 +3,14 @@
   "type": "object",
   "description": "Advanced section of Loki Schema",
   "properties": {
-    "loki": {
+    "loki_s3": {
       "type": "object",
-      "description": "Advanced values for loki flavor",
+      "description": "Advanced values for Loki S3 flavor",
       "properties": {
+        "bucket_name": {
+          "type": "string",
+          "description": "AWS S3 bucket name to distribute chunks. \nNote: You can use AWS S3 module (https://facets-cloud.github.io/facets-schemas/schemas/s3/s3.schema.json) to create bucket and map the name using `${s3.<name-of-your-resource>.bucket_name}`"
+        },
         "loki": {
           "type": "object",
           "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/loki-distributed\n Note: By default `loki.structuredConfig.storage_config` is configured to use minio storage backend"
@@ -21,7 +25,7 @@
         },
         "loki_canary": {
           "type": "object",
-          "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/loki-canary\n Note: By default, `lokiAddress` will be set with loki endpoint",
+          "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/loki-canary\n Note: By default, `lokiAddress` will be set with loki endpoint and `serviceMonitor` is enabled",
           "properties": {
             "enable_loki_canary": {
               "type": "boolean",
