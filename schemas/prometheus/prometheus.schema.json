@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for Prometheus",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "alertmanager",
+            "grafana",
+            "prometheus-operator",
+            "pushgateway",
+            "prometheus"
+          ],
+          "properties": {
+            "diskSize": {
+              "type": "string",
+              "description": "Size of the prometheus PV"
+            },
+            "alertmanager": {
+              "type": "object",
+              "description": "Alertmanager specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of alertmanager pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                },
+                "receivers": {
+                  "type": "object",
+                  "description": "Receivers for alertmanager",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" },
+                        "send_resolved": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "grafana": {
+              "type": "object",
+              "description": "Grafana specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of alertmanager pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                },
+                "additionalDataSources": {
+                  "type": "object",
+                  "description": "Additional data sources",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "access": { "type": "string" },
+                        "editable": { "type": "bool" },
+                        "jsonData": { "type": "object" },
+                        "orgId": { "type": "integer" },
+                        "type": { "type": "string" },
+                        "url": { "type": "string" },
+                        "version": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "prometheus": {
+              "type": "object",
+              "description": "Prometheus specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of alertmanager pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "prometheus-operator": {
+              "type": "object",
+              "description": "Prometheus Operator specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of alertmanager pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "pushgateway": {
+              "type": "object",
+              "description": "Pushgateway specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of alertmanager pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced block of the Prometheus configuration",
+          "properties": {
+            "kube-prometheus-stack": {
+              "type": "object",
+              "description": "Advanced values of kube-prometheus-stack",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack"
+                }
+              }
+            },
+            "pushgateway": {
+              "type": "object",
+              "description": "Advanced values of pushgateway",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-pushgateway"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

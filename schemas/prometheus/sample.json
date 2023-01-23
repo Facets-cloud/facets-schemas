@@ -1,0 +1,74 @@
+{
+  "$schema": "./prometheus.schema.json",
+  "kind": "configuration",
+  "provided": true,
+  "for": "prometheus",
+  "disabled": false,
+  "version": "latest",
+  "metadata": {
+    "name": "prometheus"
+  },
+  "spec": {
+    "diskSize": "100G",
+    "alertmanager": {
+      "size": {
+        "cpu": "500m",
+        "memory": "1Gi"
+      },
+      "receivers": {
+        "web-hook-1": {
+          "url": "https://webhook.site/17de0dd2-b427-4645-bca0-82e97a04c6f4",
+          "send_resolved": false
+        }
+      }
+    },
+    "grafana": {
+      "size": {
+        "cpu": "1000m",
+        "memory": "1Gi"
+      },
+      "additionalDataSources": {
+        "data-source-1": {
+          "name": "scope-sample",
+          "access": "proxy",
+          "editable": false,
+          "jsonData": {
+            "tlsSkipVerify": true
+          },
+          "orgId": 1,
+          "type": "scope",
+          "url": "https://dummy.com",
+          "version": 1
+        }
+      }
+    },
+    "prometheus": {
+      "size": {
+        "cpu": "1000m",
+        "memory": "1Gi"
+      }
+    },
+    "prometheus-operator": {
+      "size": {
+        "cpu": "500m",
+        "memory": "1Gi"
+      }
+    },
+    "pushgateway": {
+      "size": {
+        "cpu": "100m",
+        "memory": "1Gi"
+      }
+    }
+  },
+  "advanced": {
+    "kube-prometheus-stack": {
+      "values": {
+      }
+    },
+    "pushgateway": {
+      "values": {
+      }
+    }
+  }
+}
