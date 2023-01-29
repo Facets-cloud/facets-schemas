@@ -77,7 +77,7 @@
                 {
                   "type": "object",
                   "properties": {
-                    "replica_count": {
+                    "instance_count": {
                       "type": "integer",
                       "description": "Number of replicas for this Mongo, Min 1",
                       "multipleOf":1,
@@ -85,7 +85,7 @@
                       "maximum":4
                     }
                   },
-                  "required":["replica_count"]
+                  "required":["instance_count"]
                 }              
               ]
             }
