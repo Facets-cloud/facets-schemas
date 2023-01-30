@@ -6,16 +6,160 @@
     "aurora": {
       "type": "object",
       "properties": {
-        "rds-aurora": {
-          "type": "object",
-          "description": "Resource values as per the module documentation https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/latest"
-        },
         "aws_db_parameter_group": {
           "type": "object",
-          "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group"
-          }
+          "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": []
+        },
+        "rds-aurora": {
+          "type": "object",
+          "description": "Resource values as per the module documentation https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/latest",
+          "properties": {
+            "allowed_cidr_blocks": {
+              "type": "array",
+              "items": {}
+            },
+            "apply_immediately": {
+              "type": "boolean"
+            },
+            "autoscaling_enabled": {
+              "type": "boolean"
+            },
+            "autoscaling_max_capacity": {
+              "type": "integer"
+            },
+            "autoscaling_min_capacity": {
+              "type": "integer"
+            },
+            "autoscaling_scale_in_cooldown": {
+              "type": "integer"
+            },
+            "autoscaling_scale_out_cooldown": {
+              "type": "integer"
+            },
+            "autoscaling_target_connections": {
+              "type": "integer"
+            },
+            "autoscaling_target_cpu": {
+              "type": "integer"
+            },
+            "cluster_timeouts": {
+              "type": "object"
+            },
+            "create_db_cluster_parameter_group": {
+              "type": "boolean"
+            },
+            "create_db_parameter_group": {
+              "type": "boolean"
+            },
+            "create_monitoring_role": {
+              "type": "boolean"
+            },
+            "db_cluster_parameter_group_description": {
+              "type": "string"
+            },
+            "db_cluster_parameter_group_name": {
+              "type": "string"
+            },
+            "db_cluster_parameter_group_parameters": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "db_parameter_group_description": {
+              "type": "string"
+            },
+            "db_parameter_group_name": {
+              "type": "string"
+            },
+            "db_parameter_group_parameters": {
+              "type": "array",
+              "items": {}
+            },
+            "deletion_protection": {
+              "type": "boolean"
+            },
+            "enable_global_write_forwarding": {
+              "type": "boolean"
+            },
+            "enabled_cloudwatch_logs_exports": {
+              "type": "array",
+              "items": {}
+            },
+            "endpoints": {
+              "type": "object"
+            },
+            "engine_mode": {
+              "type": "null"
+            },
+            "iam_roles": {
+              "type": "object"
+            },
+            "instance_timeouts": {
+              "type": "object"
+            },
+            "monitoring_interval": {
+              "type": "integer"
+            },
+            "monitoring_role_arn": {
+              "type": "string"
+            },
+            "performance_insights_enabled": {
+              "type": "boolean"
+            },
+            "performance_insights_retention_period": {
+              "type": "integer"
+            },
+            "predefined_metric_type": {
+              "type": "string"
+            },
+            "preferred_backup_window": {
+              "type": "string"
+            },
+            "preferred_maintenance_window": {
+              "type": "string"
+            },
+            "replication_source_identifier": {
+              "type": "null"
+            },
+            "skip_final_snapshot": {
+              "type": "null"
+            },
+            "snapshot_identifier": {
+              "type": "null"
+            }
+          },
+          "required": []
         }
-      }
+      },
+      "required": []
     }
   }
 }
