@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "writer-reader-datastore-sizing",
+  "type": "object",
+  "required": [
+    "writer"
+  ],
+  "properties": {
+    "writer": {
+      "$ref": "https://facets-cloud.github.io/facets-schemas/traits/datastore-sizing.schema.json"
+    },
+    "reader": {
+      "$ref": "https://facets-cloud.github.io/facets-schemas/traits/multi-instance-datastore-sizing.schema.json"
+    }
+  }
+}
