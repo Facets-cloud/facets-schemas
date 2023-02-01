@@ -10,7 +10,7 @@
   "spec": {
   },
   "advanced" : {
-    "default": {
+    "s3": {
       "aws_s3_bucket_policy" : {
         "policy": {
           "Statement": [

@@ -3,7 +3,7 @@
   "type": "object",
   "description": "Advanced Values for S3",
   "properties": {
-    "default": {
+    "s3": {
       "type": "object",
       "properties": {
         "aws_s3_bucket_policy": {
@@ -37,17 +37,9 @@
               }
             }
           }
-        },
-        "tags": {
-          "type": "object",
-          "properties": {
-            "values": {
-              "type": "object",
-              "description": "Extra tags required for tagging resources"
-            }
-          }
         }
-      }
+      },
+      "description": "Advance values of s3 as per the resource documentation https://registry.terraform.io/providers/hashicorp/aws/3.74.0/docs/resources/s3_bucket along with \"aws_s3_bucket_policy\" object for custom bucket policy"
     }
   }
 }
