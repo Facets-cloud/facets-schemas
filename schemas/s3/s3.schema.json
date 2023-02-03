@@ -17,7 +17,7 @@
           "description": "Advanced values for s3",
           "anyOf": [
             {
-              "$ref": "./flavor-default.schema.json"
+              "$ref": "./flavor-s3.schema.json"
             }
           ]
         }
