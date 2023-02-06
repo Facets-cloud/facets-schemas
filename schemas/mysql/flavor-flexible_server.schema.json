@@ -1,0 +1,87 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "definition": "Azure Mysql flexible server Schema",
+    "properties": {
+      "azure": {
+        "type": "object",
+        "description": "Advanced section of the aurora",
+        "properties": {
+          "flexible_server": {
+            "type": "object",
+            "description": "Advanced values for Azure Mysql flexible server",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "The Administrator username for the MYSQL server"
+                },
+                "zone": {
+                    "type": "string",
+                    "description": "The Zone where you want to raise the Mysql servers"
+                },
+                "geo_redundant_backup_enabled": {
+                    "type": "boolean",
+                    "description": "Should geo redundant backup enabled?"
+                },
+                "backup_retention_days": {
+                    "type": "boolean",
+                    "description": "The backup retention days for the MySQL Flexible Server. Possible values are between 1 and 35 days"
+                },
+                "create_mode": {
+                    "type": "boolean",
+                    "description": "The creation mode which can be used to restore or replicate existing servers. Possible values are Default, PointInTimeRestore, GeoRestore, and Replica. Changing this forces a new MySQL Flexible Server to be created."
+                },
+                "point_in_time_restore_time_in_utc": {
+                    "type": "string",
+                    "description": "The point in time to restore from creation_source_server_id when create_mode is PointInTimeRestore. Changing this forces a new MySQL Flexible Server to be created."
+                },
+                "ha_mode": {
+                    "type": "array",
+                    "description": "The high availability mode for the MySQL Flexible Server. Possibles values are SameZone and ZoneRedundant",
+                    "enum": ["SameZone", "ZoneRedundant"]
+                },
+                "standby_availability_zone": {
+                    "type": "array",
+                    "description": "Specifies the Availability Zone in which the standby Flexible Server should be located. Possible values are 1, 2 and 3",
+                    "enum": ["1", "2", "3"]
+                },
+                "identity": {
+                    "type": "boolean",
+                    "description": "Enable/Disable identity for the Mysql server for type SystemAssigned"
+                },
+                "private_dns_zone_id": {
+                    "type": "string",
+                    "description": "The ID of the private DNS zone to create the MySQL Flexible Server. Changing this forces a new MySQL Flexible Server to be created."
+                },
+                "auto_grow_enabled": {
+                    "type": "boolean",
+                    "description": "Should Storage Auto Grow be enabled?"
+                },
+                "iops": {
+                    "type": "integer",
+                    "description": "The storage IOPS for the MySQL Flexible Server. Possible values are between 360 and 20000"
+                },
+                "size": {
+                    "type": "integer",
+                    "description": "The max storage allowed for the MySQL Flexible Server. Possible values are between 20 and 16384"
+                },
+                "day_of_week": {
+                    "type": "integer",
+                    "description": "The day of week for maintenance window"
+                },
+                "start_hour": {
+                    "type": "integer",
+                    "description": "The start hour for maintenance window."
+                },
+                "start_minute": {
+                    "type": "integer",
+                    "description": "The start minute for maintenance window"
+                }
+            }
+          }
+        }
+      }
+    },
+    "required": []
+  }
+  

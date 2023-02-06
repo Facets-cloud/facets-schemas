@@ -56,6 +56,9 @@
             },
             {
               "$ref": "flavor-rds.schema.json"
+            },
+            {
+              "$ref": "flavor-flexible_server.schema.json"
             }
           ]
         }
