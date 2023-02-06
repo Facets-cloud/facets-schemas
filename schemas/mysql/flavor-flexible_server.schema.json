@@ -24,7 +24,7 @@
                     "description": "Should geo redundant backup enabled?"
                 },
                 "backup_retention_days": {
-                    "type": "boolean",
+                    "type": "string",
                     "description": "The backup retention days for the MySQL Flexible Server. Possible values are between 1 and 35 days"
                 },
                 "create_mode": {
