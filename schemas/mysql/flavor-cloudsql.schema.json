@@ -52,15 +52,6 @@
             "deletion_protection": {
               "type": "string"
             },
-            "deletion_protection_enabled": {
-              "type": "string"
-            },
-            "disk_autoresize": {
-              "type": "string"
-            },
-            "disk_autoresize_limit": {
-              "type": "string"
-            },
             "disk_type": {
               "type": "string"
             },
