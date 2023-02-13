@@ -2,10 +2,10 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": [
-        "replica_count"
+        "instance_count"
     ],
     "properties": {
-        "replica_count": {
+        "instance_count": {
             "type": "integer",
             "description": "The number of instances to create.",
             "minimum": 1
