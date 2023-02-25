@@ -1,13 +1,5 @@
 # Intent Schema Guidelines
 
-## General guidelines
-
-- All multi-word keys should be snake case.
-- Avoid arrays wherever possible
-- All cloud tags/labels should be PascalCase
-- If there is length restriction in names. Use given name if < desired length else use hashed name of desired length. ALso add the tag/ label for the resource
-
-
 ## Terms
 
 | Term | Description |
@@ -20,234 +12,55 @@
 |**User**|Developer or ops person who is creating the blueprint|
 
 ## Basic Schema for a resource type/ intent
+Anatomy of a Facets Resource JSON
 
-- **kind**: Describes the type of resource
-    - e.g. ingress, application, mysql etc.
-    - if not specified, fallback is the `folder_name`/instances
-- **flavor**: Implementation selector for the resource
-    - e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.
-- **version**: In case of multiple versions of a resource implementation, this field can be used to pin to a particular
-  version
-    - default version is `latest`
-- **lifecycle**: There are multiple phases in lifecycle of an environment launch, this field describes the phase in
-  which the resource has to be invoked
-    - `ENVIRONMENT_BOOTSTRAP`
-    - `ENVIRONMENT_NORMAL` (default)
-- **disabled**: Flag to disable the resource
-    - boolean
-- **provided**: Flag to tell if the resource should not be provisioned by facets
-    - A MySQL can be provisioned outside the facets but can exist in the blueprint for other to refer the url, username
-      etc.
-    - the out _section_ has to be populated by the user
-- **depends_on**: any dependencies on other resources
-    - application x may depend on mysql y
-    - `depends_on: ["mysql.y"]`
-- **metadata**: Metadata related to the resource
-    - name: Name of the resource
-    - if not specified, _fallback is the `file name`_
-- **spec**: Specification for the resource
-    - Specification as per resource types schema
-- **out**: Output given by the resource for others to refer.
-    - Outputs as per resource types schema
-- **advanced**: Additional fields if any for a particular implementation of a resource, to make it more configurable
-  along with the standard fields
+### Introduction
+In Facets, a resource is described using a JSON file that follows a specific schema. This schema defines the different properties of a resource and how it should be provisioned within an environment. In this document, we will outline the anatomy of a resource JSON file in Facets and explain the various properties it contains.
 
-## Intent Schema
+#### Kind:
+The kind property specifies the type of resource that the JSON file represents. For example, it could be an ingress, an application, a MySQL database, etc. If this property is not specified, the default value is the folder name/instances.
 
-Each Intent or Resource type should have defined schema which should inherit from the base schema. These schemas should
-be published in this git repository in `schema` folder for all to consume and refer. Along with the schema each resource
-type should have a sample implementation in the same repository. Both of these should not be particular to any
-implementation
+#### Flavor:
+The flavor property is used to select a specific implementation of the resource type. For example, for a resource type of ingress, a flavor of default, aws_alb, or gcp_alb could be specified. This property allows for flexibility in choosing the implementation that best fits the needs of the environment.
 
-Format: `intent.schema`
+#### Version:
+The version property is used to specify a particular version of the resource implementation. This is useful when there are multiple versions of an implementation available, and you want to pin the resource to a specific version. The default version is the latest version available.
 
-## Traits
+#### Disabled:
+The disabled property is a boolean flag that allows the user to disable the resource. This is useful when a resource is not needed or is temporarily unavailable.
 
-There are many traits which may be common across resource types, like there can be multiple resources which expose their
-endpoints or which take sizing, all such common features should be extracted in traits and everyone should inherit these
-traits to avoid seamless experience to the user
+#### Provided:
+The provided property is a boolean flag that specifies whether the resource should be provisioned by Facets or not. For example, a MySQL database may be provisioned outside of Facets, but can still exist within the blueprint for other resources to refer to its URL, username, etc. In this case, the provided property would be set to true, and the out section would be populated by the user.
 
-e.g. Size trait
+#### Depends On:
+The depends_on property lists any dependencies that the resource has on other resources. For example, an application may depend on a MySQL database. The depends_on property would be set to ["mysql.y"].
 
-```json
-{
-  "size": {
-    "cpu": 2,
-    "memory": 4,
-    "instance": "r4.xlarge"
-  }
-}
-```
+#### Metadata:
+The metadata property contains metadata related to the resource. This includes the name of the resource and any other relevant information. If the name property is not specified, the default value is the file name.
 
-All traits should be documented and a sample file should be committed in the `traits` directory of this repository
+#### Spec:
+The spec property contains the specification for the resource. This is where the specific details of the resource are defined, and it follows the schema for the specific resource type.
 
-## Out block
+#### Out:
+The out property contains the output given by the resource for others to refer. This includes any relevant information that other resources may need to use, such as URLs, usernames, and passwords. The out section follows the schema for the specific resource type.
 
-`Out` block is introduced so that the user may know what outputs are there in a resource type to refer in other
-resources. This is very essential in wiring. For example an application may want to know other applications url or mysql
-username etc.
+#### Advanced:
+The advanced property is an optional field that contains additional fields that are specific to a particular implementation of a resource. This allows for greater customization and configuration of the resource beyond the standard fields.
 
-Any field in this block can be referenced in other json by following convention
+# Supported Services
 
-```json
-{
-  "format": "${resource_type.resource_name.out.fieldname}",
-  "example": "${mysql.omsdb.out.interfaces.master.host}"
-}
-```
+| Kind  | Flavor         | Version | Schema                                                                                            | Sample                                                         | Readme                                                              |
+|-------|----------------|---------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------------------|
+| mysql | cloudsql       |         | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/sample.json)                           | [Readme](schemas/mysql/mysql.schema.md)                            |
+| mysql | rds            |         | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/sample.json)                           | [Readme](schemas/mysql/mysql.schema.md)                            |
+| mysql | aurora         |         | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/sample.json)                           | [Readme](schemas/mysql/mysql.schema.md)                            |
+| redis | elasticcache  |         | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                  | [Sample](schemas/redis/sample.json)                            | [Readme](schemas/redis/redis.schema.md)                             |
+| redis | memorystore   |         | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                  | [Sample](schemas/redis/sample.json)                            | [Readme](schemas/redis/redis.schema.md)                             |
+| redis | k8s           |         | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json              | [Sample](schemas/redis/sample.json)                        | [Readme](schemas/redis/redis.schema.md)                    |
+| mongo | k8s           |         | https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json              | [Sample](schemas/mongo/sample.json)                        | [Readme](schemas/mongo/mongo.schema.md)                    |
+| elasticsearch | k8s   |         | https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json   | [Sample](schemas/elasticsearch/sample.json)                  | [Readme](schemas/elasticsearch/elasticsearch.schema.md)           |
+| loadbalancer | nlb_nginx  |  | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json | [Sample](schemas/loadbalancer/sample.json)                    | [Readme](schemas/loadbalancer/loadbalancer.schema.md)             |
+| loadbalancer | gcp_alb     |  | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json | [Sample](schemas/loadbalancer/sample.json)                    | [Readme](schemas/loadbalancer/loadbalancer.schema.md)             |
+| loadbalancer | aws_alb     |  | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json | [Sample](schemas/loadbalancer/sample.json)                    | [Readme](schemas/loadbalancer/loadbalancer.schema.md)             |
+| service | default        |         | https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json             | [Sample](schemas/service/sample.json)                          | [Readme](schemas/service/service.schema.md)                        |
 
-## Advanced Schema
-
-Every implementation is free to inherit the resource type schema and add additional fields in `advanced` section. In
-case of facets implementation these schemas can be added in the schema directory, external contributors can host this
-schema anywhere. They will have to specify the schema while registering there module <Still to be implemented>
-
-Format: `implementation.intent.schema`
-
-# Intent Implementations Guidelines
-
-Every module will have to contain a module.json file describing few aspects of that module.
-
-Modules are broadly of two types:
-
-- **Configurable**: These modules are invoked once and no user input is required to invoke them. However there can be an
-  optional configuration file to configure the same -e.g. Prometheus, ecr_token_refresher
-- **Instantiable**: These modules are invoked when there is a intent expressed by a user in his blueprint. This will be
-  invoked once per json
-
-## Module.json
-
-- **provides**: Resource type or intent this module is implementing
-- **flavors**: Keys for flavor for which this module will be invoked
-- **supported_clouds**: This module is valid for which clouds
-    - AWS, AZURE or GCP
-- **version**: version of the implementation
-- **depends_on**: any module this module depends on
-- **lifecycle**: There are multiple phases in lifecycle of an environment launch, this field describes the phase in
-  which the module has to be invoked
-    - `ENVIRONMENT_BOOTSTRAP`
-    - `ENVIRONMENT_NORMAL` (default)
-- **input_type**: Configurable or instantiable
-- **composition**: TBD
-- **schema**: Schema location for this implementation if any
-
-```json
-{
-  "provides": "kubernetes_node_pool",
-  "flavors": [
-    "default",
-    "gke_node_pool"
-  ],
-  "supported_clouds": [
-    "gcp"
-  ],
-  "version": "0.1",
-  "depends_on": [
-  ],
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
-  "input_type": "instance",
-  "composition": {
-  }
-}
-```
-
-## Location
-
-Until the module registry is made modules are picked from the modules' directory of the infra code, they can be
-organised in any folder structure
-
-## Special Modules
-
-Base Infra modules provisioning the Networking and Kubernetes infrastructure are special, and they do not follow thie
-below working. They are invoked once as per the environments cloud.
-`baseinfra_aws` `baseinfra_gcp` `baseinfra_azure`
-
-## The Working
-
-- A module is invoked only if it is applicable to that blueprint
-- A module is invoked only if it supports the cloud where terraform is running. supported_cloud attribute is used to
-  determine the same
-- A module is invoked only if the declared flavor specified in intent json matches one of the ones in the module.
-- Instantiable modules are named `module.resource_type_name` e.g. module.ingress_aws_alb
-- There are some standard variables passed to the modules
-
-```hcl
-variable "cluster" {
-  type        = any
-  description = "Passed for legacy reasons, all details about the environment as configured by the user"
-}
-
-variable "baseinfra" {
-  type        = any
-  description = "VPC, Kubernetes, Subnet and SG details"
-}
-
-variable "cc_metadata" {
-  type        = any
-  description = "details of the control plane used"
-}
-
-variable "instance" {
-  type        = any
-  default     = {}
-  description = "Intent/ Configuration Object"
-}
-
-variable "instance_name" {
-  type        = string
-  default     = ""
-  description = "name of the resource as specified by the user"
-}
-
-variable "inputs" {
-  type        = any
-  default     = []
-  description = "all outputs of the modules this one depends on"
-
-}
-
-variable "environment" {
-  type        = any
-  default     = {}
-  description = "all environment related fields"
-
-}
-```
-
-## Files
-
-Following files are recommended while implementing a module
-
-## General guidelines
-
-- all multi-word directories and literals should be snake cased.
-- **No providers should be specified in the implementation**
-- try and reuse facets modules where ever possible to avoid code duplication
-
-### output.tf
-
-All outputs should be defined here as specified in the out schema of the intent/ resource type
-
-each key will be output separately
-
-```hcl
-output "metadata" {
-  value = helm_release.external_helm_charts.metadata
-}
-output "status" {
-  value = helm_release.external_helm_charts.status
-}
-```
-
-### versions.tf
-
-all provider versions required by this module
-
-### variables.tf
-
-subset of the variables out of the ones required by this module. Please note that this file is replaced in runtime with
-the standard variables so no default values are picked from here
-
-### main.tf
-
-Implementation of the module. More tf files can be created for code organization

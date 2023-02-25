@@ -6,7 +6,7 @@
   "$schema": "../schemas/mongodb/mongodb.schema.json",
   "spec": {
     "authenticated": false,
-    "mongodb_version": "5.12.34",
+    "mongodb_version": "7.0.0",
     "size": {
      "cpu": "500m",
      "memory": "2Gi",
