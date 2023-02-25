@@ -11,8 +11,7 @@
 |**Environment**|Manifestation of this blueprint in any cloud|
 |**User**|Developer or ops person who is creating the blueprint|
 
-## Basic Schema for a resource type/ intent
-Anatomy of a Facets Resource JSON
+## Anatomy of a Facets Resource JSON
 
 ### Introduction
 In Facets, a resource is described using a JSON file that follows a specific schema. This schema defines the different properties of a resource and how it should be provisioned within an environment. In this document, we will outline the anatomy of a resource JSON file in Facets and explain the various properties it contains.
