@@ -5,12 +5,12 @@
     "reader": {
       "type": "object",
       "description": "The reader details",
-      "$ref": "interface.schema.json"
+      "$ref": "datastore-interface.schema.json"
     },
     "writer": {
       "type": "object",
       "description": "The writer details",
-      "$ref": "interface.schema.json"
+      "$ref": "datastore-interface.schema.json"
     }
   },
   "required": [
