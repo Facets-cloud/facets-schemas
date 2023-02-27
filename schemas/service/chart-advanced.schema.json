@@ -5,8 +5,8 @@
           "description": "Advanced section of the chart service",
           "properties": {
             "image_pull_secrets": {
-              "type": "array",
-              "description": "list of all the image pull secrets for the docker image to be pulled from the repository"
+              "type": "object",
+              "description": "Map of all the image pull secrets for the container image to be pulled from the repository. Each map should have name specified within it. For more information refer to: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-pod-that-uses-your-secret"
             },
             "node_selector": {
               "type": "object",
