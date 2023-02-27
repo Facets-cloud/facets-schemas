@@ -1,68 +1,104 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
-  "properties": {
-    "kind": {
-      "type": "string",
-      "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
-    },
-    "flavor": {
-      "type": "string",
-      "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
-    },
-    "version": {
-      "type": "string",
-      "description": "This field can be used to pin to a particular version"
-    },
-    "lifecycle": {
-      "type": "string",
-      "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
-      "enum": [
-        "ENVIRONMENT_BOOTSTRAP"
-      ]
-    },
-    "disabled": {
-      "type": "boolean",
-      "description": "Flag to disable the resource"
-    },
-    "provided": {
-      "type": "boolean",
-      "description": "Flag to tell if the resource should not be provisioned by facets"
-    },
-    "depends_on": {
-      "type": "array",
-      "items": {},
-      "description": "Dependencies on other resources. e.g. application x may depend on mysql"
-    },
-    "metadata": {
+  "allOf": [
+    {
       "type": "object",
-      "description": "Metadata related to the resource",
       "properties": {
-        "name": {
+        "kind": {
           "type": "string",
-          "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+        },
+        "version": {
+          "type": "string",
+          "description": "This field can be used to pin to a particular version"
+        },
+        "lifecycle": {
+          "type": "string",
+          "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+          "enum": [
+            "ENVIRONMENT_BOOTSTRAP"
+          ]
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Flag to disable the resource"
+        },
+        "provided": {
+          "type": "boolean",
+          "description": "Flag to tell if the resource should not be provisioned by facets",
+          "default": false
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {},
+          "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Metadata related to the resource",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+            }
+          },
+          "required": [
+          ]
+        },
+        "spec": {
+          "type": "object",
+          "description": "Specification as per resource types schema"
+        },
+        "out": {
+          "type": "object",
+          "description": "Output given by the resource for others to refer."
+        },
+        "advanced": {
+          "type": "object",
+          "description": "Additional fields if any for a particular implementation of a resource"
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provided": {
+            "const": true
+          }
         }
       },
-      "required": [
-      ]
+      "then": {
+        "required": [
+          "kind",
+          "flavor",
+          "version",
+          "metadata",
+          "out"
+        ]
+      }
     },
-    "spec": {
-      "type": "object",
-      "description": "Specification as per resource types schema"
-    },
-    "out": {
-      "type": "object",
-      "description": "Output given by the resource for others to refer."
-    },
-    "advanced": {
-      "type": "object",
-      "description": "Additional fields if any for a particular implementation of a resource"
+    {
+      "if": {
+        "properties": {
+          "provided": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kind",
+          "flavor",
+          "version",
+          "metadata",
+          "spec"
+        ]
+      }
     }
-  },
-  "required": [
-    "kind",
-    "version",
-    "metadata",
-    "spec"
   ]
 }

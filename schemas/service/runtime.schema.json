@@ -19,7 +19,7 @@
           "description":"Maps of all the metrics port that you want to expose to prometheus"
        },
        "size":{
-          "$ref":"../../traits/size.schema.json",
+          "$ref":"../../traits/kubernetes-sizing.schema.json",
           "description":"Size of the deployment pods"
        },
        "volumes":{
