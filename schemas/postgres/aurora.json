@@ -1,0 +1,24 @@
+{
+  "$schema": "postgres.schema.json",
+  "provided": false,
+  "kind" : "postgres",
+  "version": "0.1",
+  "depends_on": [],
+  "metadata": {
+    "name": "daw"
+  },
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+  "flavor": "aurora",
+  "spec": {
+    "postgres_version": "",
+    "size": {
+      "reader": {
+        "instance_type": "123daw",
+        "instance_count": 2
+      },
+      "writer": {
+        "instance_type": "213dawd"
+      }
+    }
+  }
+}

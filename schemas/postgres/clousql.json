@@ -1,0 +1,29 @@
+{
+  "$schema": "postgres.schema.json",
+  "provided": true,
+  "kind" : "postgres",
+  "version": "0.1",
+  "depends_on": [],
+  "metadata": {
+    "name": "daw"
+  },
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+  "flavor": "cloudsql",
+  "out": {
+    "postgresVersion": ""
+  },
+  "spec": {
+    "postgres_version": "",
+    "size": {
+      "reader": {
+        "instance_type": "123daw",
+        "instance_count": 2,
+        "volume": "10G"
+      },
+      "writer": {
+        "instance_type": "213dawd",
+        "volume": "20G"
+      }
+    }
+  }
+}
