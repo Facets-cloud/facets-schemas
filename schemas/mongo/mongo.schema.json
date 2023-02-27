@@ -61,7 +61,7 @@
               "type": "boolean",
               "description": "Make this mongodb instance Password protected"
             },
-            "mongodb_version": {
+            "mongo_version": {
               "type": "string",
               "description": "Version of mongodb e.g. 6.0, see valid tags here: https://hub.docker.com/_/mongo/tags?page=1",
               "minLength":3,
@@ -71,7 +71,7 @@
               "allOf": [
                 {
                   "type": "object",
-                  "$ref": "../../traits/size.schema.json",
+                  "$ref": "../../traits/multi-instance-datastore-sizing.schema.json",
                   "required":["volume"]
                 },
                 {
@@ -79,20 +79,20 @@
                   "properties": {
                     "replica_count": {
                       "type": "integer",
-                      "description": "Number of replicas for this Mongo, Min 1",
+                      "description": "Number of instances for this Mongo, Min 1",
                       "multipleOf":1,
                       "minimum": 1,
                       "maximum":4
                     }
                   },
-                  "required":["replica_count"]
+                  "required":["instance_count"]
                 }              
               ]
             }
           },
           "required": [
             "authenticated",
-            "mongodb_version",
+            "mongo_version",
             "size"
           ]
         }
