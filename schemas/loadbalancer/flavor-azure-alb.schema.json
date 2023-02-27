@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "azure_agic": {
+    "azure_alb": {
       "type": "object",
       "description": "Advanced section of the Azure Application Gateway Ingress Controller",
       "properties": {
