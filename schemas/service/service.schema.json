@@ -22,51 +22,13 @@
           "flavor": {
             "type": "string",
             "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-            "enum": [
-              "default"
-            ]
+            "enum": ["default"]
           },
           "version": {
             "type": "string",
             "description": "This field can be used to pin to a particular version",
             "enum": ["0.1"]
           }
-        }
-      },
-      {
-        "if": {
-          "properties": {
-            "provided": {
-              "const": true
-            }
-          }
-        },
-        "then": {
-          "required": [
-            "kind",
-            "flavor",
-            "version",
-            "metadata",
-            "out"
-          ]
-        }
-      },
-      {
-        "if": {
-          "properties": {
-            "provided": {
-              "const": false
-            }
-          }
-        },
-        "then": {
-          "required": [
-            "kind",
-            "flavor",
-            "version",
-            "metadata",
-            "spec"
-          ]
         }
       }
     ],
