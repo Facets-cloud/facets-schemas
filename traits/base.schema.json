@@ -27,7 +27,8 @@
     },
     "provided": {
       "type": "boolean",
-      "description": "Flag to tell if the resource should not be provisioned by facets"
+      "description": "Flag to tell if the resource should not be provisioned by facets",
+      "default": false
     },
     "depends_on": {
       "type": "array",
