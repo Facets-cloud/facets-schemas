@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": [
-        "endpoint"
+        "endpoint", "connection_string"
     ],
     "properties": {
         "endpoint": {
@@ -17,6 +17,10 @@
         "password": {
             "type": "string",
             "description": "The password to use for authentication when connecting to the datastore."
+        },
+        "connection_string": {
+            "type": "string",
+            "description": "The connection_string to use when connecting to the datastore."
         }
     }
 }
