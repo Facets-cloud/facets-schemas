@@ -9,6 +9,11 @@
             "type": "integer",
             "description": "The number of instances to create.",
             "minimum": 1
+        },
+        "replica_count": {
+            "type": "integer",
+            "description": "[Deprecated] The number of instances to create.",
+            "minimum": 1
         }
     },
     "allOf": [
