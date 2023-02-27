@@ -3,7 +3,8 @@
     "type": "object",
     "required": [
         "host",
-        "port"
+        "port",
+        "connection_string"
     ],
     "properties": {
         "host": {
@@ -23,6 +24,10 @@
         "password": {
             "type": "string",
             "description": "The password to use for authentication when connecting to the database or cache server."
+        },
+        "connection_string": {
+            "type": "string",
+            "description": "The connection_string to use when connecting to the datastore."
         }
     }
 }
