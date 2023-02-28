@@ -92,6 +92,7 @@
             "size": {
               "type": "object",
               "$ref": "../../traits/reader-writer-datastore-sizing.schema.json",
+              "description": "For flavour Cloudsql the replica data disk size(Volume) should not be less tha 10Gi",
               "required": []
             }
           },
