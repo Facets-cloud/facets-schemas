@@ -14,7 +14,7 @@
             "type": "string",
             "description": "The size of the volume. e.g '10G' or '5Gi'",
             "minLength": 1,
-            "pattern": "^[0-9]+[a-zA-Z]$",
+            "pattern": "^[0-9]+[a-zA-Z]?i$",
             "examples": ["10G", "5Gi"]
         }
     }
