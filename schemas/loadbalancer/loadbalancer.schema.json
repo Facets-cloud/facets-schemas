@@ -73,7 +73,7 @@
           "then": {
             "properties": {
               "version": {
-                "const": "0.2"
+                "const": "0.3"
               }
             }
           },
