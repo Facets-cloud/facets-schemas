@@ -61,7 +61,7 @@
                 },
                 "primary_key": {
                   "type": "array",
-                  "description": "List of column names as the primary key of table",
+                  "description": "List of column names as the primary key of the table",
                   "minItems": 1
                 },
                 "indexes": {
