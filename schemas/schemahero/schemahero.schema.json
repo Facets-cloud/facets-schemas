@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for Schemahero",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "object",
+              "description": "Kubernetes sizing of the resource",
+              "allOf": [{"$ref": "../../traits/kubernetes-sizing.schema.json"}]
+            }
+          },
+          "required": ["size"]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced block of the schemahero configuration",
+          "properties": {
+            "default": {
+              "type": "object",
+              "description": "Advanced values of schemaehro",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Helm values as per the helm chart https://artifacthub.io/packages/helm/schemahero/schemahero"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
