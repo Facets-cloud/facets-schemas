@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "enum": ["0.1"],
+          "description": "This field can be used to pin to a particular version"
+        },
+        "flavor": {
+          "type": "string",
+          "enum": ["default"],
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+        }
+      }
+    }
+  ],
+  "required": ["kind","flavor","spec","version"],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "description": "Spec block of the resource",
+          "properties": {
+            "type": "object",
+            "connection": {
+              "type": "string",
+              "description": "Database connection type",
+              "enum": ["mysql"]
+            },
+            "uri": {
+              "type": "string",
+              "description": "Connection uri of the database."
+            }
+          },
+          "required": ["connection","uri"]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced block of schemahero database",
+          "properties": {
+            "default": {
+              "type": "object",
+              "description": "Spec values as per the API reference https://schemahero.io/reference/v1alpha4/database/"
+            }
+          }
+        }
+      }
+    }
+  }
+}

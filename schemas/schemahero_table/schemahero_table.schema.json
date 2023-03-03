@@ -24,6 +24,16 @@
             }
           },
           "required": ["name"]
+        },
+        "version": {
+          "type": "string",
+          "enum": ["0.1"],
+          "description": "This field can be used to pin to a particular version"
+        },
+        "flavor": {
+          "type": "string",
+          "enum": ["default"],
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
         }
       }
     }
@@ -34,7 +44,7 @@
       "type": "object",
       "properties": {
         "spec": {
-          "type": "Object",
+          "type": "object",
           "description": "Spec block of the resource",
           "allOf": [
             {
