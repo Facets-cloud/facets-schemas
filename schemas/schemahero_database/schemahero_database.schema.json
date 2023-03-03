@@ -12,6 +12,9 @@
       "$ref": "#/$defs/advancedDef"
     },
     {
+      "$ref": "#/$defs/outDef"
+    },
+    {
       "type": "object",
       "properties": {
         "version": {
@@ -61,6 +64,20 @@
             "default": {
               "type": "object",
               "description": "Spec values as per the API reference https://schemahero.io/reference/v1alpha4/database/"
+            }
+          }
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the schemahero resource"
             }
           }
         }
