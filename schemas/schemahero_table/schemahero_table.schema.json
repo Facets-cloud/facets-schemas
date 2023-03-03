@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "description": "Metadata related to the resource",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the resource"
+            }
+          },
+          "required": ["name"]
+        }
+      }
+    }
+  ],
+  "required": ["kind","flavor","metadata","spec","version"],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "connection": {
+                  "type": "string",
+                  "description": "Database connection type",
+                  "enum": ["mysql"]
+                },
+                "database": {
+                  "type": "string",
+                  "description": "Name of the schemahero database object"
+                },
+                "primary_key": {
+                  "type": "array",
+                  "description": "List of column names as the primary key of table",
+                  "minItems": 1
+                },
+                "indexes": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "patternProperties": {
+                    ".*": {
+                      "type": "object",
+                      "properties": {
+                        "columns": {
+                          "type": "array",
+                          "description": "Define columns in the index"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the index"
+                        },
+                        "is_unique": {
+                          "type": "boolean",
+                          "description": "Bool indicating a unique index"
+                        }
+                      },
+                      "required": ["columns","name","is_unique"]
+                    }
+                  }
+                },
+                "foreign_keys": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "patternProperties": {
+                    ".*": {
+                      "type": "object",
+                      "properties": {
+                        "columns": {
+                          "type": "array",
+                          "description": "Columns in the foreign key"
+                        },
+                        "references": {
+                          "type": "object",
+                          "properties": {
+                            "table": {
+                              "type": "string",
+                              "description": "Table name of the reference table"
+                            },
+                            "columns": {
+                              "type": "array",
+                              "description": "Foreign table columns"
+                            }
+                          },
+                          "description": "Other side of the reference"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+             "$ref": "./columns-mysql.schema.json"
+            },
+            {
+              "if": {
+                "properties": {
+                  "connection": { "enum": ["postgres"] }
+                }
+              },
+              "then": { "$ref": "./columns-postgres.schema.json"}
+            },
+            {
+              "required": ["connection","database","columns","primary_key"]
+            }
+          ]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced block of schemahero table",
+          "properties": {
+            "default": {
+              "type": "object",
+              "description": "Spec values as per the API reference https://schemahero.io/reference/v1alpha4/table/"
+            }
+          }
+        }
+      }
+    }
+  }
+}

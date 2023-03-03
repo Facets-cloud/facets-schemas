@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "columns": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Columns of the table",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "description": "Table column",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the column"
+            },
+            "type": {
+              "type": "string",
+              "description": "Data type of the column"
+            },
+            "constraints": {
+              "type": "object",
+              "description": "Adding constraints to the table"
+            },
+            "attributes": {
+              "type": "object",
+              "description": "Adding attributes to the column"
+            }
+          },
+          "required": ["name","type"]
+        }
+      }
+    }
+  }
+}
