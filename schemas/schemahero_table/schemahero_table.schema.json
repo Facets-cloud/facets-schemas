@@ -65,7 +65,8 @@
                       "properties": {
                         "columns": {
                           "type": "array",
-                          "description": "Define columns in the index"
+                          "description": "Define columns in the index",
+                          "minItems": 1
                         },
                         "name": {
                           "type": "string",
@@ -91,7 +92,8 @@
                       "properties": {
                         "columns": {
                           "type": "array",
-                          "description": "Columns in the foreign key"
+                          "description": "Columns in the foreign key",
+                          "minItems": 1
                         },
                         "references": {
                           "type": "object",
@@ -102,12 +104,15 @@
                             },
                             "columns": {
                               "type": "array",
-                              "description": "Foreign table columns"
+                              "description": "Foreign table columns",
+                              "minItems": 1
                             }
                           },
-                          "description": "Other side of the reference"
+                          "description": "Other side of the reference",
+                          "required": ["table","columns"]
                         }
-                      }
+                      },
+                      "required": ["columns","references"]
                     }
                   }
                 }
