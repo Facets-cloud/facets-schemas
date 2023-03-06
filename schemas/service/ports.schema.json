@@ -13,7 +13,7 @@
             "enum": ["tcp", "udp"]
           },
           "port": {
-            "type": "integer",
+            "type": "string",
             "description": "the port number where the pod is exposed"
           }
         },

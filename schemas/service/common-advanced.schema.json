@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced section of the chart service",
+  "properties": {
+    "app_chart": {
+      "type": "object",
+      "description": "Map of all advanced sections that we want to pass to the helm release",
+      "properties": {
+        "timeout": {
+          "type": "integer",
+          "description": "Time in seconds to wait for any individual kubernetes operation (like Jobs for hooks). Defaults to 300 seconds."
+        },
+        "wait": {
+          "type": "boolean",
+          "description": "Will wait until all resources are in a ready state before marking the release as successful. It will wait for as long as timeout. Defaults to false"
+        },
+        "atomic": {
+          "type": "boolean",
+          "description": "If set, installation process purges chart on fail. The wait flag will be set automatically if atomic is used. Defaults to false"
+        },
+        "cleanup_on_fail": {
+          "type": "boolean",
+          "description": "Allow deletion of new resources created in this upgrade when upgrade fails. Defaults to true"
+        },
+        "values": {
+          "type": "object",
+          "description": "Map of all advanced sections that we want to pass to the helm release",
+          "properties": {
+            "enable_service_links": {
+              "type": "boolean",
+              "description": "Enable / Disable service links in deployment"
+            },
+            "image_pull_secrets": {
+              "type": "array",
+              "description": "list of all the image pull secrets for the docker image to be pulled from the repository"
+            },
+            "node_selector": {
+              "type": "object",
+              "description": "Map of all node selectors for the application"
+            },
+            "keda": {
+              "$ref":"./keda.schema.json",
+              "description":"Map containing all the configurations of keda"
+            },
+            "hpa": {
+              "type": "object",
+              "description": "Map containing all the HPA related configs",
+              "properties": {
+                "behaviour": {
+                  "type": "object",
+                  "description": "Pass the behaviour block of the kubernetes as it is below in json format"
+                }
+              }
+            },
+            "pod": {
+              "type": "object",
+              "description": "Map containing all the pod related configs",
+              "properties": {
+                "affinity": {
+                  "type": "object",
+                  "description": "the map containing all the pod affinity configs",
+                  "properties": {
+                    "preferred": {
+                      "type": "object",
+                      "description": "the map containing all the pod affinity preferred configs",
+                      "additionalProperties":false,
+                      "minProperties":1,
+                      "patternProperties":{
+                          "^[a-zA-Z0-9_.-]*$":{
+                              "properties": {
+                                  "weight": {
+                                      "type": "string",
+                                      "description": "A weight is a numerical value assigned to a resource or a node in a cluster to indicate its importance or preference. In the context of affinity and anti-affinity, weights are used to indicate how strongly a pod or a group of pods should be attracted to or repelled from each other"
+                                  },
+                                  "key": {
+                                      "type": "string",
+                                      "description": "key is a label assigned to a pod or a group of pods that is used to identify them as belonging to a certain category or group. In the context of affinity and anti-affinity, keys are used to match pods or groups of pods that have the same labels"
+                                  },
+                                  "operator": {
+                                    "type": "string",
+                                    "description": "An operator is a logical operator used to define the relationship between the pods or groups of pods that are being targeted for affinity or anti-affinity. There are two operators commonly used in Kubernetes: 'In' and 'NotIn'. The 'In' operator is used to select pods that have labels matching a certain key, while the 'NotIn' operator is used to select pods that do not have labels matching a certain key",
+                                    "enum": ["NotIn", "In"]
+                                  },
+                                  "values": {
+                                    "type": "array",
+                                    "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
+                                  },
+                                  "topology_key": {
+                                    "type": "string",
+                                    "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
+                                  }
+                              },
+                              "required": ["weight", "key", "operator", "values", "topology_key"]
+                          }
+                      }
+                    },
+                    "required": {
+                      "type": "object",
+                      "description": "the map containing all the pod affinity required configs",
+                      "additionalProperties":false,
+                      "minProperties":1,
+                      "patternProperties":{
+                          "^[a-zA-Z0-9_.-]*$":{
+                              "properties": {
+                                "key": {
+                                  "type": "string",
+                                  "description": "key is a label assigned to a pod or a group of pods that is used to identify them as belonging to a certain category or group. In the context of affinity and anti-affinity, keys are used to match pods or groups of pods that have the same labels"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "description": "An operator is a logical operator used to define the relationship between the pods or groups of pods that are being targeted for affinity or anti-affinity. There are two operators commonly used in Kubernetes: 'In' and 'NotIn'. The 'In' operator is used to select pods that have labels matching a certain key, while the 'NotIn' operator is used to select pods that do not have labels matching a certain key",
+                                  "enum": ["NotIn", "In"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
+                                },
+                                "topology_key": {
+                                  "type": "string",
+                                  "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
+                                }
+                              },
+                              "required": ["key", "operator", "values", "topology_key"]
+                          }
+                      }
+                    }
+                  }
+                },
+                "anti_affinity": {
+                  "type": "object",
+                  "description": "the map containing all the pod anti_affinity configs",
+                  "properties": {
+                    "preferred": {
+                      "type": "object",
+                      "description": "the map containing all the pod anti_affinity preferred configs",
+                      "additionalProperties":false,
+                      "minProperties":1,
+                      "patternProperties":{
+                          "^[a-zA-Z0-9_.-]*$":{
+                              "properties": {
+                                  "weight": {
+                                      "type": "string",
+                                      "description": "A weight is a numerical value assigned to a resource or a node in a cluster to indicate its importance or preference. In the context of affinity and anti-affinity, weights are used to indicate how strongly a pod or a group of pods should be attracted to or repelled from each other"
+                                  },
+                                  "key": {
+                                      "type": "string",
+                                      "description": "key is a label assigned to a pod or a group of pods that is used to identify them as belonging to a certain category or group. In the context of affinity and anti-affinity, keys are used to match pods or groups of pods that have the same labels"
+                                  },
+                                  "operator": {
+                                    "type": "string",
+                                    "description": "An operator is a logical operator used to define the relationship between the pods or groups of pods that are being targeted for affinity or anti-affinity. There are two operators commonly used in Kubernetes: 'In' and 'NotIn'. The 'In' operator is used to select pods that have labels matching a certain key, while the 'NotIn' operator is used to select pods that do not have labels matching a certain key",
+                                    "enum": ["NotIn", "In"]
+                                  },
+                                  "values": {
+                                    "type": "array",
+                                    "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
+                                  },
+                                  "topology_key": {
+                                    "type": "string",
+                                    "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
+                                  }
+                              },
+                              "required": ["weight", "key", "operator", "values", "topology_key"]
+                          }
+                      }
+                    },
+                    "required": {
+                      "type": "object",
+                      "description": "the map containing all the pod anti_affinity required configs",
+                      "additionalProperties":false,
+                      "minProperties":1,
+                      "patternProperties":{
+                          "^[a-zA-Z0-9_.-]*$":{
+                              "properties": {
+                                "key": {
+                                  "type": "string",
+                                  "description": "key is a label assigned to a pod or a group of pods that is used to identify them as belonging to a certain category or group. In the context of affinity and anti-affinity, keys are used to match pods or groups of pods that have the same labels"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "description": "An operator is a logical operator used to define the relationship between the pods or groups of pods that are being targeted for affinity or anti-affinity. There are two operators commonly used in Kubernetes: 'In' and 'NotIn'. The 'In' operator is used to select pods that have labels matching a certain key, while the 'NotIn' operator is used to select pods that do not have labels matching a certain key",
+                                  "enum": ["NotIn", "In"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
+                                },
+                                "topology_key": {
+                                  "type": "string",
+                                  "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
+                                }
+                              },
+                              "required": ["key", "operator", "values", "topology_key"]
+                          }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "node": {
+              "type": "object",
+              "description": "Map containing all the node related configs",
+              "properties": {
+                "affinity": {
+                  "type": "object",
+                  "description": "the map containing all the node affinity configs",
+                  "properties": {
+                    "preferred": {
+                      "type": "object",
+                      "description": "the map containing all the node affinity preferred configs",
+                      "additionalProperties":false,
+                      "minProperties":1,
+                      "patternProperties":{
+                          "^[a-zA-Z0-9_.-]*$":{
+                              "properties": {
+                                  "weight": {
+                                      "type": "string",
+                                      "description": "A weight is a numerical value assigned to a resource or a node in a cluster to indicate its importance or preference. In the context of affinity and anti-affinity, weights are used to indicate how strongly a pod or a group of pods should be attracted to or repelled from each other"
+                                  },
+                                  "key": {
+                                      "type": "string",
+                                      "description": "key is a label assigned to a pod or a group of pods that is used to identify them as belonging to a certain category or group. In the context of affinity and anti-affinity, keys are used to match pods or groups of pods that have the same labels"
+                                  },
+                                  "operator": {
+                                    "type": "string",
+                                    "description": "An operator is a logical operator used to define the relationship between the pods or groups of pods that are being targeted for affinity or anti-affinity. There are two operators commonly used in Kubernetes: 'In' and 'NotIn'. The 'In' operator is used to select pods that have labels matching a certain key, while the 'NotIn' operator is used to select pods that do not have labels matching a certain key",
+                                    "enum": ["NotIn", "In"]
+                                  },
+                                  "values": {
+                                    "type": "array",
+                                    "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
+                                  },
+                                  "topology_key": {
+                                    "type": "string",
+                                    "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
+                                  }
+                              },
+                              "required": ["weight", "key", "operator", "values", "topology_key"]
+                          }
+                      }
+                    },
+                    "required": {
+                      "type": "object",
+                      "description": "the map containing all the node affinity required configs",
+                      "additionalProperties":false,
+                      "minProperties":1,
+                      "patternProperties":{
+                          "^[a-zA-Z0-9_.-]*$":{
+                              "properties": {
+                                "key": {
+                                  "type": "string",
+                                  "description": "key is a label assigned to a pod or a group of pods that is used to identify them as belonging to a certain category or group. In the context of affinity and anti-affinity, keys are used to match pods or groups of pods that have the same labels"
+                                },
+                                "operator": {
+                                  "type": "string",
+                                  "description": "An operator is a logical operator used to define the relationship between the pods or groups of pods that are being targeted for affinity or anti-affinity. There are two operators commonly used in Kubernetes: 'In' and 'NotIn'. The 'In' operator is used to select pods that have labels matching a certain key, while the 'NotIn' operator is used to select pods that do not have labels matching a certain key",
+                                  "enum": ["NotIn", "In"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
+                                },
+                                "topology_key": {
+                                  "type": "string",
+                                  "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
+                                }
+                              },
+                              "required": ["key", "operator", "values", "topology_key"]
+                          }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "include_common_env_variables": {
+      "type": "boolean",
+      "description": "Enable / Disable to pass common environment variables"
+    }
+  }
+}

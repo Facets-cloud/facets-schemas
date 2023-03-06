@@ -25,7 +25,7 @@
             },
             "ports": {
                 "http": {
-                    "port": 80,
+                    "port": "80",
                     "protocol": "tcp"
                 }
             },
@@ -37,7 +37,7 @@
                 "start_up_time": 10,
                 "timeout": 100,
                 "period": 10,
-                "port": 80
+                "port": "80"
             },
             "autoscaling": {
                 "ram_threshold": 90,
@@ -54,9 +54,38 @@
                 }
             }
         },
-        "chart": {
-            "image_pull_secrets": [],
-            "node_selector": {}
+        "common": {
+           "include_common_env_variables": true,
+           "app_chart": {
+            "values": {
+                "hpa": {
+                    "behaviour": {}
+                },
+                "node": {
+                    "affinity": {
+                        "preferred": {
+                            "key": {
+                                "key": "",
+                                "operator": "In",
+                                "topology_key": "",
+                                "values": [],
+                                "weight": ""
+                            }
+                        }
+                    }
+                },
+                "enable_service_links": false,
+                "keda": {
+                    "triggers": {
+                        "random-key": {
+                            "type": "",
+                            "metadata": {}
+                        }
+                    }
+                }
+            }
+           }
         }
+
     }
 }

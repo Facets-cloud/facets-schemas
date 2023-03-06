@@ -59,7 +59,7 @@
               "enable_host_anti_affinity",
               "runtime"
             ],
-            "allOf": [
+            "anyOf": [
                 {
                     "if": {
                         "properties": {
@@ -109,10 +109,10 @@
                 "description": "Map of all gcp advanced keys",
                 "$ref": "./gcp-advanced.schema.json"
               },
-              "chart": {
+              "common": {
                 "type": "object",
                 "description": "Map of all chart advanced keys",
-                "$ref": "./chart-advanced.schema.json"
+                "$ref": "./common-advanced.schema.json"
               }
             },
             "anyOf": [

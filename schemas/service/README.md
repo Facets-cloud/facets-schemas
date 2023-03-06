@@ -99,18 +99,8 @@ Map of all runtime keys
 | `cpu_threshold`       | integer                        | No       | The max cpu threshold that the hpa waits until it upscales                                  |
 | `max`                 | integer                        | No       | This is the max replicas where the hpa upscales to                                          |
 | `min`                 | integer                        | No       | This is the min replicas where the hpa downscales to                                        |
-| `packets_per_second`  | string                         | No       | The max number of packets that can be sent to the pod, once exceeded it autoscales. eg: 10k |
 | `ram_threshold`       | integer                        | No       | The max ram threshold that the hpa waits until it upscales                                  |
-| `requests_per_second` | [object](#requests_per_second) | No       | Requests per second RPS object keys                                                                                 |
 
-##### requests_per_second
-
-Requests per second RPS object keys
-
-| Property       | Type   | Required | Description                                                               |
-|----------------|--------|----------|---------------------------------------------------------------------------|
-| `ingress_name` | string | **Yes**  | Name of the ingress object that the hpa should watch for autoscaling      |
-| `threshold`    | string | **Yes**  | The rps threshold that hpa looks for , once exceeds it autoscales eg: 10k |
 
 #### health_checks
 
@@ -121,7 +111,7 @@ All the health check related key value pairs
 | Property                 | Type    | Required | Description                                                          |
 |--------------------------|---------|----------|----------------------------------------------------------------------|
 | `period`                 | integer | **Yes**  | This is the repeated interval in which kubelet does a health check   |
-| `port`                   | integer | **Yes**  | Specify the port in which the health checks should be made           |
+| `port`                   | string | **Yes**  | Specify the port in which the health checks should be made           |
 | `start_up_time`          | integer | **Yes**  | The time kubernetes api needs to wait until the application is ready |
 | `timeout`                | integer | **Yes**  | Timeout for the health check                                         |
 | `liveness_exec_command`  | array   | No       | The list of commands to make liveness check                          |
@@ -157,7 +147,7 @@ This is the name of the port that you have to specify
 |----------|------|----------|-------------|
 | `protocol`   | string | **Yes**       | The protocol of the port , 
 | `type`            | string  | No       | Your kubernetes rollout type , Possible values are: `tcp`, `udp`                                                                                  |
-| `port`   | integer | **Yes**        | The port number where the pod is exposed                                                                                     |
+| `port`   | string | **Yes**        | The port number where the pod is exposed                                                                                     |
 
 #### size
 

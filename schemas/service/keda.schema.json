@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "description": "Map containing all the configurations of keda",
+    "properties": {
+        "triggers": {
+            "type": "object",
+            "description": "the map containing all the required triggers for keda",
+            "additionalProperties":false,
+            "minProperties":1,
+            "patternProperties":{
+                "^[a-zA-Z0-9_.-]*$":{
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Name of all the scalers that keda support"
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "description": "pass the metadata block of the scalers as it is"
+                        }
+                    },
+                    "required": ["type", "metadata"]
+                }
+            }
+        }
+    }
+}
