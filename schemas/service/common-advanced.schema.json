@@ -231,13 +231,9 @@
                                   "values": {
                                     "type": "array",
                                     "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
-                                  },
-                                  "topology_key": {
-                                    "type": "string",
-                                    "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
                                   }
                               },
-                              "required": ["weight", "key", "operator", "values", "topology_key"]
+                              "required": ["weight", "key", "operator", "values"]
                           }
                       }
                     },
@@ -261,13 +257,9 @@
                                 "values": {
                                   "type": "array",
                                   "description": "Values are the actual values associated with the keys. In the context of affinity and anti-affinity, values are used to match the labels of pods or groups of pods"
-                                },
-                                "topology_key": {
-                                  "type": "string",
-                                  "description": "Topology key is a label key that specifies the topology domain that the affinity or anti-affinity rule should be enforced upon. Topology domains can be nodes, zones, regions, etc. Topology key is used to ensure that pods are scheduled on different nodes in the same topology domain or spread across different topology domains."
                                 }
                               },
-                              "required": ["key", "operator", "values", "topology_key"]
+                              "required": ["key", "operator", "values"]
                           }
                       }
                     }
