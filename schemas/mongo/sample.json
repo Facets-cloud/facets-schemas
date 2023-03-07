@@ -1,6 +1,6 @@
 {
-  "$schema": "mongodb.schema.json",
-  "version": "0.1",
+  "$schema": "./mongo.schema.json",
+  "version": "0.2",
   "flavor": "k8s",
   "kind": "mongo",
   "metadata": {
@@ -8,12 +8,12 @@
   },
   "spec": {
     "authenticated": true,
-    "mongodb_version" : "6.0.2",
+    "mongo_version" : "6.0.2",
     "size" : {
       "cpu": "2001m",
-      "memory": "900M",
-      "volume": "8Gi",
-      "replica_count": 3
+      "memory": "900MiB",
+      "volume": "8G",
+      "instance_count": 3
     }
   },
   "advanced" : {
