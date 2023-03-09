@@ -2,10 +2,12 @@
   "$schema": "postgres.schema.json",
   "kind": "postgres",
   "flavor": "aurora",
-  "version": "0.2",
-  "lifecycle": "ENVIRONMENT",
+  "version": "0.1",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
-  "provided": false,
+  "provided": true,
+  "out": {
+  },
   "depends_on": [
   ],
   "metadata": {
@@ -18,12 +20,11 @@
     "postgres_version": "12.11",
     "size": {
       "writer": {
-        "instance": "db.t3.medium",
-        "replica_count": 1
+        "instance": "db.t3.medium"
       },
       "reader": {
         "instance": "db.t3.medium",
-        "replica_count": 1
+        "instance_count": 1
       }
     }
   },
