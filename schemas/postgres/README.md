@@ -1,6 +1,6 @@
 ## Introduction
 
-A Postgres Instance in master/slave or reader/writer mode.
+A Postgres Instance in reader/writer datastore mode.
 
 ## Spec
 
