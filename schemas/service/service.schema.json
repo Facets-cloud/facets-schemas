@@ -102,7 +102,6 @@
                 "type": "object",
                 "description": "Map of all aws advanced keys", 
                 "$ref": "./aws-advanced.schema.json"
-                
               },
               "gcp": {
                 "type": "object",
@@ -114,39 +113,7 @@
                 "description": "Map of all chart advanced keys",
                 "$ref": "./common-advanced.schema.json"
               }
-            },
-            "anyOf": [
-              {
-                "allOf": [
-                  {
-                    "if": {
-                      "properties": {
-                        "flavor": { "enum": ["aws"] }
-                      }
-                  },
-                  "then": { "required": ["aws"]}
-                  },
-                  {
-                    "not" : { "required" : ["gcp"] }
-                  }
-                ]                   
-              },
-              {
-                "allOf": [
-                  {
-                    "if": {
-                      "properties": {
-                        "flavor": { "enum": ["gcp"] }
-                      }
-                  },
-                  "then": { "required": ["gcp"]}
-                  },
-                  {
-                    "not" : { "required" : ["aws"] }
-                  }
-                ] 
-              }
-            ]
+            }
           }
         }
       },
