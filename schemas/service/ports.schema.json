@@ -15,7 +15,11 @@
           "port": {
             "type": "string",
             "description": "the port number where the pod is exposed"
-          }
+          },
+          "service_port": {
+            "type": "string",
+            "description": "the port number where the service is exposed, this is optional"
+          }  
         },
         "required": [
           "protocol",
