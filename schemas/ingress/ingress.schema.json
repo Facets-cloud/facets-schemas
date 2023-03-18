@@ -9,6 +9,23 @@
         "$ref": "#/$defs/specDef"
       },
       {
+        "type": "object",
+        "properties": {
+          "kind":{
+            "type":"string",
+            "enum": ["ingress"]
+          },
+          "flavor":{
+            "type":"string",
+            "enum": ["alb","aws_alb", "gcp_alb", "nlb_nginx", "nginx_ingress_controller" ]
+          },
+          "version":{
+            "type":"string",
+            "enum": ["0.1", "0.2", "latest"]
+          }
+        }
+      },
+      {
         "$ref": "#/$defs/outDef"
       }
     ],
@@ -70,7 +87,7 @@
                 "$ref": "./flavor-gcp-alb.schema.json"
               },
               {
-                "$ref": "./flavor-nginx.schema.json"
+                "$ref": "./flavor-nginx-ingress-controller.schema.json"
               },
               {
                 "$ref": "./flavor-azure-agic.schema.json"

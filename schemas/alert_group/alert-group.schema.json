@@ -6,6 +6,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["alert_group"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["default"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/specDef"
     }
   ],

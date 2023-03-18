@@ -6,6 +6,23 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["iam_policy"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["aws"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.2", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/advancedDef"
     },
     {
@@ -94,7 +111,7 @@
         "advanced": {
           "anyOf": [
             {
-              "$ref": "./flavor-aws-iam-policy.schema.json"
+              "$ref": "./flavor-aws.schema.json"
             }
           ]
         }

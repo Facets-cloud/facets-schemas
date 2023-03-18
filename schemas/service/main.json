@@ -3,7 +3,7 @@
     "disabled": false,
     "version": "0.1",
     "metadata": {},
-    "flavor": "gcp",
+    "flavor": "default",
     "kind": "service",
     "spec": {
         "type": "application",

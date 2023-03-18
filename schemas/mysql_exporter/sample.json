@@ -1,7 +1,7 @@
 {
-  "$schema": "prometheus-mysql-exporter.schema.json",
+  "$schema": "mysql-exporter.schema.json",
   "kind": "mysql_exporter",
-  "flavor": "default",
+  "flavor": "k8s",
   "version": "0.1",
   "disabled": false,
   "provided": false,

@@ -19,7 +19,7 @@
         },
         "version":{
           "type":"string",
-          "enum": ["0.1"]
+          "enum": ["0.1", "latest"]
         }
       }
     },

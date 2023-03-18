@@ -15,6 +15,23 @@
     {
       "type": "object",
       "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["elasticsearch"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["k8s"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
         "advanced": {
           "type": "object",
           "description": "Advanced values to be used by different flavours of Elasticsearch",
