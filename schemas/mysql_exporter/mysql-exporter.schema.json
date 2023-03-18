@@ -7,6 +7,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["mysql_exporter"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["k8s"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/advancedDef"
     }
   ],

@@ -1,6 +1,6 @@
 {
   "$schema": "./schemahero.schema.json",
-  "for": "schemaHero",
+  "for": "schemahero",
   "kind": "configuration",
   "version": "0.1",
   "metadata": {
@@ -9,7 +9,7 @@
   "spec": {
     "size" : {
       "cpu": "1",
-      "memory": "150Mi"
+      "memory": "1.5GiB"
     }
   },
   "advanced" : {

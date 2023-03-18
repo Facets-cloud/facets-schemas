@@ -17,15 +17,17 @@
     {
       "type": "object",
       "properties": {
-        "version": {
-          "type": "string",
-          "enum": ["0.1"],
-          "description": "This field can be used to pin to a particular version"
+        "kind":{
+          "type":"string",
+          "enum": ["schemahero_database"]
         },
-        "flavor": {
-          "type": "string",
-          "enum": ["default"],
-          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+        "flavor":{
+          "type":"string",
+          "enum": ["default"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
         }
       }
     }

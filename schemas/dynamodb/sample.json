@@ -1,5 +1,5 @@
 {
-  "$schema": "aws-dynamodb.schema.json",
+  "$schema": "dynamodb.schema.json",
   "kind": "dynamodb",
   "flavor": "default",
   "version": "latest",

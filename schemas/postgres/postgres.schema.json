@@ -10,6 +10,23 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["postgres"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["aurora", "cloudsql"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "0.2", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/outDef"
     },
     {

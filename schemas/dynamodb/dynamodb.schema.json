@@ -11,6 +11,23 @@
     {
       "type": "object",
       "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["dynamodb"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["default"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.2", "latest"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
         "advanced": {
           "type": "object",
           "allOf": [

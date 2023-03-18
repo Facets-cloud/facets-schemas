@@ -1,8 +1,8 @@
 {
-  "$schema":"./loadbalancer.schema.json",
-  "kind":"loadbalancer",
-  "flavor":"default",
-  "version":"0.2",
+  "$schema":"./ingress.schema.json",
+  "kind":"ingress",
+  "flavor":"alb",
+  "version":"0.1",
   "lifecycle":"ENVIRONMENT_BOOTSTRAP",
   "disabled":false,
   "provided":false,
@@ -20,10 +20,6 @@
   "spec":{
      "private":true,
      "force_ssl_redirection":true,
-     "size":{
-        "cpu":1,
-        "memory":1
-     },
      "domains":{
         "mpl-main":{
            "certificate_reference":"Secret Name",
@@ -36,7 +32,7 @@
            "path":"/",
            "domain_prefix":"app1",
            "service_name":"${application.app1.out.interfaces.grpc.host}",
-           "port":80
+           "port":"80"
         }
      }
   },

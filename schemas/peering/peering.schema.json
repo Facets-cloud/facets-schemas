@@ -6,6 +6,23 @@
         "$ref": "../../traits/base.schema.json"
       },
       {
+        "type": "object",
+        "properties": {
+          "kind":{
+            "type":"string",
+            "enum": ["peering"]
+          },
+          "flavor":{
+            "type":"string",
+            "enum": ["aws_vpc_peering"]
+          },
+          "version":{
+            "type":"string",
+            "enum": ["0.1", "latest"]
+          }
+        }
+      },
+      {
         "$ref": "#/$defs/specDef"
       },
       {
