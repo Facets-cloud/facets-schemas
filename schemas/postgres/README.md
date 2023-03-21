@@ -6,7 +6,7 @@ A Postgres Instance in reader/writer datastore mode.
 
 | Property           | Type                                                              | Required | Description                                              |
 |--------------------|-------------------------------------------------------------------|----------|----------------------------------------------------------|
-| `postgres_version` | string                                                            | **Yes**  | Version of Postgres e.g.POSTGRES_12                      |
+| `postgres_version` | string                                                            | **Yes**  | Version of Postgres e.g. 12.11                           |
 | `size`             | [object](../../traits/reader-writer-datastore-sizing.schema.json) | **Yes**  | Sizing attribute for postgres writer and reader instance |
 
 ## Outputs
