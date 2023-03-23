@@ -4,7 +4,7 @@
 
 # Advanced Configuration
 
-Use [link](https://github.com/terraform-google-modules/terraform-google-sql-db/tree/v13.0.1/modules/mysql) module variables within advanced section to configure other options. e.g. `database_flags` input variable can be used to configure list of cloudsql flags to be applied tp DB server.
+Use the module [INPUT](https://github.com/terraform-google-modules/terraform-google-sql-db/tree/v13.0.1/modules/mysql) variables within advanced section to configure other options. e.g. `database_flags` input variable can be used to configure list of cloudsql flags to be applied tp DB server.
 
 # Considerations
 

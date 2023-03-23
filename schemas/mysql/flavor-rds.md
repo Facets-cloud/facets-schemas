@@ -4,7 +4,7 @@
 
 # Advanced Configuration
 
-use [link](https://github.com/terraform-aws-modules/terraform-aws-rds#inputs) module variables within advanced section to configure other options. e.g. `username` input variable can be used to configure the username for master DB user.
+use the module [INPUT](https://github.com/terraform-aws-modules/terraform-aws-rds#inputs) variables within advanced section to configure other options. e.g. `username` input variable can be used to configure the username for master DB user.
 
 # Considerations
 
