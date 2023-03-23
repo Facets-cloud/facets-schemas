@@ -32,14 +32,14 @@ Specification as per resource types schema
 Output given by the resource for others to refer.
 
 | Property     | Type       | Required | Description                                                    |
-|--------------|------------| -------- |----------------------------------------------------------------|
-| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.json) | **Yes**  |  |
+|--------------|------------|----------|----------------------------------------------------------------|
+| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.json) | **No**   |  |
 
 ## Flavor
 
-- Aurora
-- RDS
-- Cloudsql
+- [Aurora](flavor-aurora.md)
+- [RDS](flavor-rds.md)
+- [Cloudsql](flavor-cloudsql.md)
 
 ## Alerts
 
