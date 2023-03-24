@@ -14,6 +14,15 @@ A Postgres Instance in reader/writer datastore mode for cloudsql postgres.
 ## Advanced Configuration
 
 Use the following [link](https://github.com/terraform-google-modules/terraform-google-sql-db/tree/v13.0.1/modules/postgresql) to configure the advanced configuration for the Postgres Cloudsql module to invoke additional feature.
+- All the advanced configuration can be configured that are mentioned in the above link and can be filled with desired parameter in the skeleton given below.
+  ```
+  "advanced": {
+    "cloudsql": {
+      "postgres": {
+      }
+    }
+  }
+  ```
 
 
 ## Consideration 
