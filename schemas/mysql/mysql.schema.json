@@ -9,6 +9,45 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "Describes the type of resource mysql. If not specified, fallback is the `folder_name`/instances",
+          "enum": [
+            "mysql"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type mysql.",
+          "enum": [
+            "aurora",
+            "cloudsql",
+            "rds"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "This field can be used to pin to a particular version"
+        }
+      },
+      "if": {
+        "properties": {
+          "flavor": {
+            "const": "aurora"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "version": {
+            "const": "0.1"
+          }
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/advancedDef"
     },
     {
@@ -91,8 +130,7 @@
                   }
                 }
               },
-              "required": [
-              ]
+              "required": []
             }
           ]
         }
