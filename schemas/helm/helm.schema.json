@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema for deploying a Helm chart in a facets environment",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "description": "Kind of the intent, always set to 'helm'",
+      "const": "helm"
+    },
+    "flavor": {
+      "description": "Flavor for the Helm chart implementation, always set to 'default'",
+      "const": "default"
+    },
+    "spec": {
+      "description": "Specification of the Helm chart intent",
+      "type": "object",
+      "properties": {
+        "helm": {
+          "description": "Configuration for the Helm chart",
+          "type": "object",
+          "properties": {
+            "chart": {
+              "description": "URL or local path to the Helm chart package",
+              "type": "string"
+            },
+            "namespace": {
+              "description": "Namespace to deploy the Helm chart in",
+              "type": "string"
+            },
+            "wait": {
+              "description": "Whether to wait for the Helm chart deployment to complete",
+              "type": "boolean"
+            }
+          },
+          "required": ["chart", "namespace", "wait"]
+        },
+        "env": {
+          "description": "List of dynamic values to be passed to the chart, i.e to reference a variable/secret",
+          "type": "array",
+          "items": {
+            "description": "List of dynamic values to be passed to the chart, equivalent to --set parameters in helm cli",
+            "type": "object",
+            "properties": {
+              "name": {
+                "description": "Name of the property to be passed to the helm chart",
+                "type": "string"
+              },
+              "type": {
+                "description": "Type of dynamic variable",
+                "type": "string",
+                "enum": ["static", "secret"]
+              },
+              "attribute": {
+                "description": "Name of the secret (only applicable for 'secret' type)",
+                "type": "string"
+              },
+              "default": {
+                "description": "Default value for the helm variable (only applicable for 'static' type)",
+                "type": "string"
+              }
+            },
+            "required": ["name", "type"],
+            "anyOf": [
+              { "required": ["default"] },
+              { "required": ["attribute"] }
+            ]
+          }
+        },
+        "values": {
+          "description": "The values to be passed on to the chart in the form of a json object",
+          "type": "object"
+        }
+      },
+      "required": ["helm", "env", "values"]
+    }
+  },
+  "required": ["kind", "flavor", "spec"]
+}
