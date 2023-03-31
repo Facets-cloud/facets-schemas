@@ -10,6 +10,23 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["configuration"]
+        },
+        "for":{
+          "type":"string",
+          "enum": ["cluster-autoscaler"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/advancedDef"
     }
   ],

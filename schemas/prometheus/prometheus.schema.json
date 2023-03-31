@@ -7,6 +7,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["configuration"]
+        },
+        "for":{
+          "type":"string",
+          "enum": ["prometheus"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/specDef"
     },
     {

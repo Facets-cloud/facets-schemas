@@ -9,6 +9,23 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["mysql"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["aurora", "cloudsql", "flexible_server", "rds"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "0.2", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/advancedDef"
     },
     {
@@ -59,6 +76,9 @@
             },
             {
               "$ref": "flavor-cloudsql.schema.json"
+            },
+            {
+              "$ref": "./flavor-flexible-server.schema.json"
             }
           ]
         }

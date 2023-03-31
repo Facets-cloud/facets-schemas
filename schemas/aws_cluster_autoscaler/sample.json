@@ -1,12 +1,12 @@
 {
   "$schema": "aws-clusterautoscaler.schema.json",
-  "lifecycle": "",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "metadata": {
     "name": "cluster-autoscaler"
   },
   "kind" : "configuration",
   "for"  : "cluster-autoscaler",
-  "version" : "0.1",
+  "version" : "latest",
   "spec": {
     "size": {
       "cpu": "",

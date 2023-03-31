@@ -9,6 +9,23 @@
         "$ref": "#/$defs/specDef"
       },
       {
+        "type": "object",
+        "properties": {
+          "kind":{
+            "type":"string",
+            "enum": ["service"]
+          },
+          "flavor":{
+            "type":"string",
+            "enum": ["default"]
+          },
+          "version":{
+            "type":"string",
+            "enum": ["0.1", "latest"]
+          }
+        }
+      },
+      {
         "$ref": "#/$defs/outDef"
       }
     ],
