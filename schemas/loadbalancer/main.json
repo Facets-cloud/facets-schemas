@@ -1,7 +1,7 @@
 {
-  "$schema":"./loadbalancer.schema.json",
-  "kind":"loadbalancer",
-  "flavor":"default",
+  "$schema": "loadbalancer.schema.json",
+  "kind":"ingress",
+  "flavor":"aws_alb",
   "version":"0.2",
   "lifecycle":"ENVIRONMENT_BOOTSTRAP",
   "disabled":false,
@@ -36,15 +36,7 @@
            "path":"/",
            "domain_prefix":"app1",
            "service_name":"${application.app1.out.interfaces.grpc.host}",
-           "port":80
-        }
-     }
-  },
-  "out":{
-     "interfaces":{
-        "app1":{
-           "host":"hostname with domain prefix of domains",
-           "port":"443"
+           "port": 80
         }
      }
   }

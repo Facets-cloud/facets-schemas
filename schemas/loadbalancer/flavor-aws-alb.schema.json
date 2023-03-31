@@ -1,37 +1,40 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "aws_alb": {
-          "type": "object",
-          "description": "Advanced section of the aws_alb",
-          "properties": {
-            "waf_arn": {
-              "type": "string",
-              "description": "ARN of WAF that you can hook into ALB"
-            },
-            "waf_acl_id": {
-              "type": "string",
-              "description": "ACL id of the WAF"
-            },
-            "shield": {
-              "type": "boolean",
-              "description": "Enable/Disable shield in AWS"
-            },
-            "target_type": {
-              "type": "string",
-              "enum":["instance","ip"],
-              "description": "backend target type of service in kubernetes eg: instance/ip : default is ip"
-            },
-            "disable_facets_host_rules": {
-              "type": "boolean",
-              "description": "Boolean flag to enable or disable facets host rules in alb, in order to incorporate more rules. Since there is a hard limit of 100 rules in alb: default is false"
-            },
-            "maintain_rule_order": {
-              "type": "boolean",
-              "description": "Boolean flag to maintain the order of rules specified in json using priority numbers inside rules"
-            }
-          }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "aws_alb": {
+      "type": "object",
+      "description": "Advanced section of the aws_alb",
+      "properties": {
+        "waf_arn": {
+          "type": "string",
+          "description": "ARN of WAF that you can hook into ALB"
+        },
+        "waf_acl_id": {
+          "type": "string",
+          "description": "ACL id of the WAF"
+        },
+        "shield": {
+          "type": "boolean",
+          "description": "Enable/Disable shield in AWS"
+        },
+        "target_type": {
+          "type": "string",
+          "enum": [
+            "instance",
+            "ip"
+          ],
+          "description": "backend target type of service in kubernetes eg: instance/ip : default is ip"
+        },
+        "disable_facets_host_rules": {
+          "type": "boolean",
+          "description": "Boolean flag to enable or disable facets host rules in alb, in order to incorporate more rules. Since there is a hard limit of 100 rules in alb: default is false"
+        },
+        "maintain_rule_order": {
+          "type": "boolean",
+          "description": "Boolean flag to maintain the order of rules specified in json using priority numbers inside rules"
         }
       }
+    }
   }
+}
