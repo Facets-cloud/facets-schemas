@@ -1,5 +1,5 @@
 ## Introduction
-A loadbalancer level intent which can be used to create an application or network loadbalancer which can be exposed to the internet / an internal loadblancer in a specific cloud
+A ingress level intent which can be used to create an application or network loadbalancer which can be exposed to the internet / an internal loadblancer in a specific cloud
 
 ## Properties
 
@@ -126,6 +126,6 @@ Output given by the resource for others to refer.
 * `aws_alb`
 * `gcp_alb`
 * `nginx_ingress_controller`
-* `azure_agic`
+
 
 

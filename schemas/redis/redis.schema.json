@@ -6,6 +6,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["redis"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["k8s", "memorystore", "elasticache"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "0.2", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/specDef"
     },
     {

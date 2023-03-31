@@ -1,7 +1,7 @@
 {
     "$schema": "./kafka.schema.json",
     "kind": "kafka",
-    "version": "0.1",
+    "version": "0.2",
     "flavor": "k8s",
     "metadata": {},
     "spec": {
@@ -10,12 +10,16 @@
         "persistence_enabled": true,
         "size": {
             "kafka": {
-                "cpu": "100m",
-                "replica_count": 1
+                "cpu": "1",
+                "memory": "1G",
+                "replica_count": 1,
+                "volume": "10Gi"
             },
             "zookeeper": {
+                "cpu": "1",
+                "memory": "1G",
                 "replica_count": 1,
-                "cpu": "100m"
+                "volume": "10Gi"
             }
         }
     },
