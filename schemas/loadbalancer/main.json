@@ -1,6 +1,6 @@
 {
-  "$schema":"./loadbalancer.schema.json",
-  "kind":"loadbalancer",
+  "$schema":"./ingress.schema.json",
+  "kind":"ingress",
   "flavor":"default",
   "version":"0.2",
   "lifecycle":"ENVIRONMENT_BOOTSTRAP",

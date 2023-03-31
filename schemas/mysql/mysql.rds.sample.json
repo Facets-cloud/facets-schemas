@@ -1,0 +1,22 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
+  "kind": "mysql",
+  "flavor": "rds",
+  "version": "0.1",
+  "disabled": true,
+  "metadata": {
+    "name": "test-rds"
+  },
+  "spec": {
+    "mysql_version": "8.0",
+    "size": {
+      "writer": {
+        "replica_count": 1,
+        "instance": "db.t2.small"
+      }
+    }
+  },
+  "advanced": {
+    "rds": {}
+  }
+}

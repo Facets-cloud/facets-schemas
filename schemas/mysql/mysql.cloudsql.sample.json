@@ -19,12 +19,12 @@
     "size": {
       "writer": {
         "instance": "db-f1-micro",
-        "volume": "10Gi"
+        "volume": "10G"
       },
       "reader": {
         "instance": "db-g1-small",
-        "replica_count": 2,
-        "volume": "10G"
+        "volume": "10G",
+        "instance_count":1
       }
     }
   },
