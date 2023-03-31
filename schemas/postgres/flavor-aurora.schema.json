@@ -8,12 +8,11 @@
       "properties": {
         "rds-aurora": {
           "type": "object",
-          "description": "Resource values as per the module documentation https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/latest"
+          "description": "Resource values as per the module documentation https://registry.terraform.io/modules/terraform-aws-modules/rds-aurora/aws/7.3.0#inputs"
         },
         "aws_db_parameter_group": {
           "type": "object",
           "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group"
-          }
         }
       }
     }
