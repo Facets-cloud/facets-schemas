@@ -10,15 +10,18 @@
       "properties": {
         "kind":{
           "type":"string",
-          "enum": ["mongo"]
+          "enum": ["mongo"],
+          "description": "Describes the type of resource."
         },
         "flavor":{
           "type":"string",
-          "enum": ["k8s"]
+          "enum": ["k8s"],
+          "description": "Implementation selector for the Mongo resource. e.g. for a resource type k8s"
         },
         "version":{
           "type":"string",
-          "enum": ["0.2"]
+          "enum": ["0.2", "latest"],
+          "description": "This field can be used to pin to a particular version"
         }
       }
     },
@@ -49,6 +52,21 @@
     "metadata",
     "spec"
   ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": ["out"]
+  },
+  "else": {
+    "not": {
+      "required": ["out"]
+    }
+  },
   "$defs": {
     "specDef": {
       "type": "object",

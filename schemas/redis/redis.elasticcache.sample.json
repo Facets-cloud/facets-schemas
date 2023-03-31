@@ -1,0 +1,35 @@
+{
+  "$schema": "redis.schema.json",
+  "flavor": "elasticache",
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {
+    "name": "something",
+    "tags": {
+      "name": "something"
+    }
+  },
+  "depends_on": [],
+  "advanced": {
+    "elasticache": {
+    }
+  },
+  "kind": "redis",
+  "provided": false,
+  "disabled": true,
+  "version": "0.1",
+  "spec": {
+    "authenticated": true,
+    "redis_version": "6.x",
+    "persistence_enabled": false,
+    "size": {
+      "reader": {
+        "replica_count": 1,
+        "instance": "cache.t3.micro"
+      },
+      "writer": {
+        "instance": "cache.t3.micro",
+        "replica_count": 1
+      }
+    }
+  }
+}
