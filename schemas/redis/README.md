@@ -13,11 +13,11 @@ A Redis Instance in master/slave or reader/writer mode.
 
 ## Outputs
 
-| Property     | Type                  | Required | Description |
-|--------------|-----------------------|----------|-------------|
-| `instances`  | Map<string, [interface](../../traits/interface.md)>  | No       |             |
-| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.md) | No       |             |
-| `spec`       | [object](#spec)       | No       |             |
+| Property     | Type                  | Required | Description                             |
+|--------------|-----------------------|----------|-----------------------------------------|
+| `instances`  | Map<string, [interface](../../traits/interface.md)>  | No       | List of all instances                   |
+| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.md) | No       | Master SD details                       |
+| `spec`       | [object](#spec)       | No       | Details of the sizing for all instances |
 
 
 ## Flavors
@@ -28,7 +28,8 @@ A Redis Instance in master/slave or reader/writer mode.
 
 ## Alerts
 
-| Alert Name | Impact                | Mitigation                                           |
-|------------|-----------------------|------------------------------------------------------|
-| RedisDown  | Redis is inaccessible | Debug the instance health via metrics & logs         |
- | RedisOutOfConfiguredMaxmemory | Redis is running out of memory | Debug using redis dashboards in Facets control plane | 
+| Alert Name | Impact                | Mitigation                                                                        |
+|------------|-----------------------|-----------------------------------------------------------------------------------|
+| `RedisDown`  | Redis is inaccessible | Debug the instance health via metrics & logs                                      |
+ | `RedisOutOfConfiguredMaxmemory` | Redis is running out of memory | Debug using redis dashboards by refering to "memory usage" , "Clients" title pane |
+|`RedisTooManyConnections` | Redis has too many connections | Refer to "client","Network I/O" title pane in redis dashboard                     |
