@@ -45,7 +45,40 @@
             "const": "0.1"
           }
         }
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "flavor": {
+              "const": "cloudsql"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "version": {
+              "const": "0.1"
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "flavor": {
+                "const": "rds"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "version": {
+                "const": "0.1"
+              }
+            }
+          }
+        }
       }
+
     },
     {
       "$ref": "#/$defs/advancedDef"
@@ -70,7 +103,7 @@
           "properties": {
             "mysql_version": {
               "type": "string",
-              "description": "Aurora compatible MySQL version (eg: 5.7.mysql_aurora.2.10.1)"
+              "description": "Aurora/CloudSql/Rds compatible MySQL version (eg: 8.0.mysql_aurora.3.02.0, 8.0.31, 8.0)"
             },
             "size": {
               "type": "object",
