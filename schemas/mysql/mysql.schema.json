@@ -121,7 +121,7 @@
       "type": "object",
       "properties": {
         "advanced": {
-          "allOf": [
+          "anyOf": [
             {
               "$ref": "flavor-aurora.schema.json"
             },

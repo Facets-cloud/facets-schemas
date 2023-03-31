@@ -1,6 +1,8 @@
 {
   "$schema": "nodepool.schema.json",
   "flavor": "aks",
+  "kind": "nodepool",
+  "version": "latest",
   "metadata": {
     "name": "testaks",
     "tags": {
@@ -10,9 +12,9 @@
   },
   "spec": {
     "instance_type": "Standard_D4a_v4",
-    "min_node_count": "1",
-    "max_node_count": "50",
-    "disk_size": "100G",
+    "min_node_count": 1,
+    "max_node_count": 50,
+    "disk_size": 100,
     "on_demand" : "Regular",
     "zones": {
       "zone1": "1",

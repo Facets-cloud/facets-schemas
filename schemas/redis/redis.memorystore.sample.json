@@ -1,0 +1,31 @@
+{
+  "$schema": "redis.schema.json",
+  "flavor": "memorystore",
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {
+    "name": "redis-memorystore"
+  },
+  "depends_on": [],
+  "advanced": {
+    "memorystore": {}
+  },
+  "kind": "redis",
+  "provided": false,
+  "disabled": true,
+  "version": "0.2",
+  "spec": {
+    "authenticated": true,
+    "redis_version": "5.0",
+    "persistence_enabled": false,
+    "size": {
+      "reader": {
+        "replica_count": 1,
+        "volume": "6"
+      },
+      "writer": {
+        "replica_count": 1,
+        "volume": "6"
+      }
+    }
+  }
+}
