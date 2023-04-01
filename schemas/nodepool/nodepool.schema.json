@@ -12,6 +12,23 @@
       "$ref": "#/$defs/advancedDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["kubernetes_node_pool"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["eks_self_managed", "aks", "eks_managed"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "0.2", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/outDef"
     }
   ],
