@@ -19,7 +19,7 @@
           "description":"Maps of all the metrics port that you want to expose to prometheus"
        },
        "size":{
-          "$ref":"../../traits/size.schema.json",
+          "$ref":"../../traits/kubernetes-sizing.schema.json",
           "description":"Size of the deployment pods"
        },
        "volumes":{
@@ -65,7 +65,7 @@
                 "description":"This is the repeated interval in which kubelet does a health check"
              },
              "port":{
-                "type":"string",
+                "type":"integer",
                 "description":"Specify the port in which the health checks should be made"
              },
              "liveness_url":{
@@ -110,6 +110,28 @@
              "ram_threshold":{
                 "type":"integer",
                 "description":"The max ram threshold that the hpa waits until it upscales"
+             },
+             "packets_per_second":{
+                "type":"string",
+                "description":"The max number of packets that can be sent to the pod, once exceeded it autoscales. eg: 10k"
+             },
+             "requests_per_second":{
+                "type":"object",
+                "description":"Requests per second RPS object keys",
+                "properties":{
+                   "threshold":{
+                      "type":"string",
+                      "description":"The rps threshold that hpa looks for , once exceeds it autoscales eg: 10k"
+                   },
+                   "ingress_name":{
+                      "type":"string",
+                      "description":"Name of the ingress object that the hpa should watch for autoscaling"
+                   }
+                },
+                "required":[
+                   "threshold",
+                   "ingress_name"
+                ]
              }
           },
           "oneOf":[
