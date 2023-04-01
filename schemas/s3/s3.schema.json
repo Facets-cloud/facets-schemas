@@ -15,11 +15,11 @@
         },
         "flavor":{
           "type":"string",
-          "enum": ["s3"]
+          "enum": ["default"]
         },
         "version":{
           "type":"string",
-          "enum": ["0.1", "latest"]
+          "enum": ["0.1","0.2","latest"]
         }
       }
     },
