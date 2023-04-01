@@ -4,7 +4,7 @@ A loadbalancer level intent which can be used to create an application or networ
 ## Properties
 
 | Property     | Type                | Required | Description                                                                                                                                    |
-|--------------|---------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------ | ------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `flavor`     | string              | **Yes**  | Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.                                     |
 | `kind`       | string              | **Yes**  | Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances                |
 | `metadata`   | [object](#metadata) | **Yes**  | Metadata related to the resource                                                                                                               |
@@ -17,12 +17,12 @@ A loadbalancer level intent which can be used to create an application or networ
 | `out`        | [object](#out)      | No       | Output given by the resource for others to refer.                                                                                              |
 | `provided`   | boolean             | No       | Flag to tell if the resource should not be provisioned by facets                                                                               |
 
-## spec
+## Spec
 
 Specification as per resource types schema
 
 | Property                | Type               | Required | Description                                                                              |
-|-------------------------|--------------------|----------|------------------------------------------------------------------------------------------|
+| ----------------------- | ------------------ | -------- | ---------------------------------------------------------------------------------------- |
 | `force_ssl_redirection` | boolean            | **Yes**  | Force SSL redirection from http to https                                                 |
 | `private`               | boolean            | **Yes**  | Make this load balancer private                                                          |
 | `rules`                 | [object](#rules)   | **Yes**  | Objects of all ingress rules                                                             |
@@ -66,66 +66,25 @@ This is the name of the ingress object that you are creating, it can be of any n
 | `domain_prefix`   | string | **Yes**        | Subdomain prefix for the service
 | `priority`   | string | **Yes**        | Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule - applicable only for `aws_alb` version `0.2`
 
-
-## advanced
-
-Additional fields if any for a particular implementation of a resource
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `aws_alb`   | [object](#aws_alb)  | No       | Advanced section of the aws_alb
-| `gcp_alb`   | [object](#gcp_alb)  | No       | Advanced section of the gcp_alb
-| `nginx_ingress_controller`   | [object](#nginx_ingress_controller)  | No       | Advanced section of the nginx_ingress_controller
-| `azure_agic`   | [object](#azure_agic)  | No       | Advanced section of the Azure Application Gateway Ingress Controller
-
-## aws_alb
-
-Advanced section of the aws_alb
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `waf_arn`   | string | No       | ARN of WAF that you can hook into ALB
-| `waf_acl_id`   | string | No       | ACL id of the WAF
-| `shield`   | string | No       | Enable/Disable shield in AWS
-| `target_type`   | string | No       | backend target type of service in kubernetes Possible values : `ip` and `instance` : default is `ip`
-| `disable_facets_host_rules`   | boolean | No       | Boolean flag to enable or disable facets host rules in alb, in order to incorporate more rules. Since there is a hard limit of 100 rules in alb: default is `false`
-| `maintain_rule_order`   | boolean | No       | Boolean flag to maintain the order of rules specified in json using priority numbers inside rules
-
-## gcp_alb
-
-Advanced section of the gcp_alb
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `enable_managed_certificates`   | boolean | No       | Boolean flag to enable or disable the creation of managed certificates in GCP
-
-## nginx_ingress_controller
-
-Advanced section of the nginx_ingress_controller
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `acm`   | string | No       | The ARN of the ACM certificate created for that domain
-
-## azure_agic
-
-Advanced section of the Azure Application Gateway Ingress Controller
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `values`   | string | No       | Helm Values as per the [helm chart](https://github.com/Azure/application-gateway-kubernetes-ingress/tree/master/helm/ingress-azure) 
-
-## out
+## Out
 
 Output given by the resource for others to refer.
 
 ### Properties
 
 | Property     | Type                  | Required | Description                                                           |
-|--------------|-----------------------|----------|-----------------------------------------------------------------------|
+| ------------ | --------------------- | -------- | --------------------------------------------------------------------- |
 | `interfaces` | [object](#interfaces) | No       | The output for your ingress module, this can be generated or provided |
 
-### Flavors
+## Flavors
 
-* `aws_alb`
-* `gcp_alb`
-* `nginx_ingress_controller`
-* `azure_agic`
+- [aws_alb](flavor-aws-alb.md)
+- [gcp_alb](flavor-gcp-alb.md)
+- [nginx_ingress_controller](flavor-nginx.md)
+- [azure_agic](flavor-azure-agic.md)
 
+## Alerts
 
+| Alert Name         | Description                                                    |
+| ------------------ | -------------------------------------------------------------- |
+| `IngressOutOfSync` | Invalid ingress configuration will block load balancer updates |
