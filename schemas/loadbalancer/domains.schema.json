@@ -5,7 +5,7 @@
   "minProperties": 1,
   "patternProperties": {
     "^[a-zA-Z0-9_.-]*$": {
-      "description" : "This is the name of the domain object that you are creating, it can be of any name",
+      "description": "This is the name of the domain object that you are creating, it can be of any name",
       "properties": {
         "domain": {
           "type": "string",
