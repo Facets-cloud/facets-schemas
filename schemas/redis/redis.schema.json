@@ -8,17 +8,27 @@
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["redis"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "redis"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["k8s", "memorystore", "elasticache"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s",
+            "memorystore",
+            "elasticache"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1", "0.2", "latest"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "0.2",
+            "latest"
+          ]
         }
       }
     },
