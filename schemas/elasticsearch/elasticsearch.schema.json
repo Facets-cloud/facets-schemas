@@ -15,19 +15,27 @@
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["elasticsearch"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "elasticsearch"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["k8s"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1", "latest"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
         }
-      },
+      }
+    },
     {
       "type": "object",
       "properties": {
@@ -107,8 +115,7 @@
                   }
                 }
               },
-              "required": [
-              ]
+              "required": []
             }
           ]
         }
