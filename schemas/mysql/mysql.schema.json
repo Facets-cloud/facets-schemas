@@ -30,7 +30,7 @@
         "version": {
           "type": "string",
           "description": "This field can be used to pin to a particular version",
-          "enum": ["0.1"]
+          "enum": ["0.1", "latest"]
         }
       },
       "if": {
