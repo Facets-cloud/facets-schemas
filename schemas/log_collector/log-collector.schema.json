@@ -11,17 +11,25 @@
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["log_collector"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "log_collector"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["loki", "loki_s3"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "loki",
+            "loki_s3"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1", "latest"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
         }
       }
     },
