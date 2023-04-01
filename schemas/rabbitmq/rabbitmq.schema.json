@@ -9,17 +9,24 @@
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["rabbitmq"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "rabbitmq"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["k8s"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1", "latest"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
         }
       }
     },
@@ -70,7 +77,9 @@
                 {
                   "type": "object",
                   "$ref": "../../traits/size.schema.json",
-                  "required":["volume"]
+                  "required": [
+                    "volume"
+                  ]
                 },
                 {
                   "type": "object",
@@ -78,11 +87,13 @@
                     "replica_count": {
                       "type": "integer",
                       "description": "Number of reader instances needs to be deployed",
-                      "minLength":1
+                      "minLength": 1
                     }
                   },
-                  "required":["replica_count"]
-                }              
+                  "required": [
+                    "replica_count"
+                  ]
+                }
               ]
             }
           },
@@ -106,7 +117,7 @@
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "properties":  {
+                  "properties": {
                     "tcp": {
                       "type": "object",
                       "description": "Map of type interface for tcp port of RabbitMQ",

@@ -8,19 +8,26 @@
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["mongo"],
+        "kind": {
+          "type": "string",
+          "enum": [
+            "mongo"
+          ],
           "description": "Describes the type of resource."
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["k8s"],
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s"
+          ],
           "description": "Implementation selector for the Mongo resource. e.g. for a resource type k8s"
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.2", "latest"],
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.2",
+            "latest"
+          ],
           "description": "This field can be used to pin to a particular version"
         }
       }
@@ -60,11 +67,15 @@
     }
   },
   "then": {
-    "required": ["out"]
+    "required": [
+      "out"
+    ]
   },
   "else": {
     "not": {
-      "required": ["out"]
+      "required": [
+        "out"
+      ]
     }
   },
   "$defs": {
@@ -82,29 +93,33 @@
             "mongo_version": {
               "type": "string",
               "description": "Version of mongodb e.g. 6.0, see valid tags here: https://hub.docker.com/_/mongo/tags?page=1",
-              "minLength":3,
-              "pattern" : "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+              "minLength": 3,
+              "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
             },
             "size": {
               "allOf": [
                 {
                   "type": "object",
                   "$ref": "../../traits/multi-instance-datastore-sizing.schema.json",
-                  "required":["volume"]
+                  "required": [
+                    "volume"
+                  ]
                 },
                 {
                   "type": "object",
                   "properties": {
                     "replica_count": {
                       "type": "integer",
-                      "description": "Number of instances for this Mongo, Min 1 [DEPRECATED]" ,
-                      "multipleOf":1,
+                      "description": "Number of instances for this Mongo, Min 1 [DEPRECATED]",
+                      "multipleOf": 1,
                       "minimum": 1,
-                      "maximum":4
+                      "maximum": 4
                     }
                   },
-                  "required":["instance_count"]
-                }              
+                  "required": [
+                    "instance_count"
+                  ]
+                }
               ]
             }
           },
