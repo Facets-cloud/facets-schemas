@@ -24,7 +24,7 @@
         },
         "version":{
           "type":"string",
-          "enum": ["0.1", "0.2", "latest"]
+          "enum": ["0.1", "latest"]
         }
       }
     },
