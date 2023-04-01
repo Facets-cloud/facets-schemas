@@ -7,6 +7,26 @@
           "$ref": "../../traits/base.schema.json"
         },
         {
+          "type": "object",
+          "properties": {
+            "kind":{
+              "type":"string",
+              "enum": ["sqs"]
+            },
+            "flavor":{
+              "type":"string",
+              "enum": ["default"]
+            },
+            "version":{
+              "type":"string",
+              "enum": ["0.2"]
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/specDef"
+        },
+        {
           "$ref": "#/$defs/outDef"
         },
         {
