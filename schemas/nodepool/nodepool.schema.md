@@ -82,3 +82,10 @@ The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50
 | `effect` | string | No       | The effect of the taint Possible values are: `NoSchedule`, `NoExecute`, `PreferNoSchedule`. |
 | `key`    | string | No       | The key of the taint                                                                        |
 | `value`  | string | No       | The value of the taint                                                                      |
+
+
+### flavor
+
+- aks_nodepool
+- [eks-managed](nodepool.eks-managed.schema.md)
+- [eks-self-managed](nodepool.eks-self-managed.schema.md)
