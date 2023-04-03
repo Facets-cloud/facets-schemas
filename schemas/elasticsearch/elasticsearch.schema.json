@@ -74,7 +74,7 @@
             "size": {
               "type": "object",
               "description": "Map containing necessary information for instance size",
-              "$ref": "../../traits/size.schema.json"
+              "$ref": "../../traits/multi-instance-datastore-sizing.schema.json"
             }
           },
           "required": [
@@ -99,23 +99,9 @@
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "properties": {
-                    "connection_string": {
-                      "type": "string",
-                      "description": "Connection string to connect"
-                    },
-                    "host": {
-                      "type": "string",
-                      "description": "Host for service discovery"
-                    },
-                    "port": {
-                      "type": "string",
-                      "description": "Port for service discovery"
-                    }
-                  }
+                  "$ref": "../../traits/datastore-interface.schema.json"
                 }
-              },
-              "required": []
+              }
             }
           ]
         }

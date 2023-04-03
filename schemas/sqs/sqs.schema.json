@@ -37,7 +37,7 @@
                 "description": "Advanced values for SQS",
                 "anyOf": [
                     {
-                      "$ref": "./flavor-sqs.schema.json"
+                      "$ref": "./flavour-sqs.schema.json"
                     }
                   ]
             }
@@ -63,7 +63,7 @@
             "advanced": {
                 "anyOf": [
                   {
-                    "$ref": "./flavor-sqs.schema.json"
+                    "$ref": "./flavour-sqs.schema.json"
                   }
                 ]
               }
