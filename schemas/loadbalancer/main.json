@@ -1,5 +1,5 @@
 {
-   "$schema": "./loadbalancer.schema.json",
+   "$schema": "ingress.schema.json",
    "kind": "ingress",
    "flavor": "aws_alb",
    "version": "0.2",

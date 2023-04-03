@@ -1,6 +1,6 @@
 {
   "kind": "ingress",
-  "$schema": "./loadbalancer.schema.json",
+  "$schema": "ingress.schema.json",
   "flavor": "aws_alb",
   "disabled": true,
   "version": "0.2",
