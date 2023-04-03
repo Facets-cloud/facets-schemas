@@ -115,7 +115,7 @@
                 "type": "object",
                 "description": "Map of all aws advanced keys", 
                 "$ref": "./aws-advanced.schema.json"
-`              },
+              },
               "gcp": {
                 "type": "object",
                 "description": "Map of all gcp advanced keys",
