@@ -59,31 +59,6 @@ Output given by the resource for others to refer.
 | `spec`   | [object](#spec) | No       |             |
 | `taints` | list            | No       |             |
 
-### spec
-
-#### Properties
-
-| Property         | Type              | Required | Description                                                                                           |
-|------------------|-------------------|----------|-------------------------------------------------------------------------------------------------------|
-| `azs`            | string            | **Yes**  | Comma separated string of one or more availability zones for the Node Pool                            |
-| `disk_size`      | number            | **Yes**  | Disk size in GiB for worker nodes                                                                     |
-| `instance_type`  | string            | **Yes**  | Instance type associated with the Node Pool                                                           |
-| `is_public`      | boolean           | **Yes**  | Whether to launch nodes in Public or Private network                                                  |
-| `labels`         | object            | **Yes**  | Key-value map of Kubernetes labels                                                                    |
-| `max_node_count` | number            | **Yes**  | Maximum number of worker nodes                                                                        |
-| `min_node_count` | number            | **Yes**  | Minimum number of worker nodes                                                                        |
-| `taints`         | [object](#taints) | **Yes**  | The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool |
-
-#### taints
-
-The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool
-
-| Property | Type   | Required | Description                                                                                 |
-|----------|--------|----------|---------------------------------------------------------------------------------------------|
-| `effect` | string | No       | The effect of the taint Possible values are: `NoSchedule`, `NoExecute`, `PreferNoSchedule`. |
-| `key`    | string | No       | The key of the taint                                                                        |
-| `value`  | string | No       | The value of the taint                                                                      |
-
 
 ### flavor
 
