@@ -9,6 +9,31 @@
       "$ref": "#/$defs/specDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "log_collector"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "loki",
+            "loki_s3"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/advancedDef"
     },
     {

@@ -42,7 +42,24 @@
                     "description": "If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas"
                 }
             },
-            "required": ["type"]
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "type": { "enum": ["RollingUpdate"] }
+                        }
+                    },
+                    "then": { "required": ["max_available", "max_unavailable", "type"] }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "type": { "enum": ["Recreate"] }
+                        }
+                    },
+                    "then": { "required": ["type"] }
+                }
+            ]
         },
         "disruption_policy": {
             "type": "object",

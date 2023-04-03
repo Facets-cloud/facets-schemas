@@ -1,51 +1,49 @@
 {
-  "$schema":"./loadbalancer.schema.json",
-  "kind":"loadbalancer",
-  "flavor":"default",
-  "version":"0.2",
-  "lifecycle":"ENVIRONMENT_BOOTSTRAP",
-  "disabled":false,
-  "provided":false,
-  "metadata":{
-     
-  },
-  "advanced": {
-   "aws_alb": {
-      "maintain_rule_order": false,
-      "target_type": "ip",
-      "shield": false,
-      "disable_facets_host_rules": false
+   "$schema": "ingress.schema.json",
+   "kind": "ingress",
+   "flavor": "aws_alb",
+   "version": "0.2",
+   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+   "disabled": false,
+   "provided": false,
+   "metadata": {},
+   "advanced": {
+      "aws_alb": {
+         "maintain_rule_order": false,
+         "target_type": "ip",
+         "shield": false,
+         "disable_facets_host_rules": false
+      }
+   },
+   "spec": {
+      "private": true,
+      "force_ssl_redirection": true,
+      "size": {
+         "cpu": 1,
+         "memory": 1
+      },
+      "domains": {
+         "mpl-main": {
+            "certificate_reference": "Secret Name",
+            "domain": "mpl.com",
+            "alias": "somealias"
+         }
+      },
+      "rules": {
+         "api-routing": {
+            "path": "/",
+            "domain_prefix": "app1",
+            "service_name": "${application.app1.out.interfaces.grpc.host}",
+            "port": "80"
+         }
+      }
+   },
+   "out": {
+      "interfaces": {
+         "app1": {
+            "host": "hostname with domain prefix of domains",
+            "port": "443"
+         }
+      }
    }
-  },
-  "spec":{
-     "private":true,
-     "force_ssl_redirection":true,
-     "size":{
-        "cpu":1,
-        "memory":1
-     },
-     "domains":{
-        "mpl-main":{
-           "certificate_reference":"Secret Name",
-           "domain":"mpl.com",
-           "alias":"somealias"
-        }
-     },
-     "rules":{
-        "api-routing":{
-           "path":"/",
-           "domain_prefix":"app1",
-           "service_name":"${application.app1.out.interfaces.grpc.host}",
-           "port":80
-        }
-     }
-  },
-  "out":{
-     "interfaces":{
-        "app1":{
-           "host":"hostname with domain prefix of domains",
-           "port":"443"
-        }
-     }
-  }
 }

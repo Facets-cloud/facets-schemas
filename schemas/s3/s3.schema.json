@@ -7,6 +7,23 @@
       "$ref": "../../traits/base.schema.json"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["s3"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["default"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1","0.2","latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/outDef"
     },
     {
@@ -30,6 +47,25 @@
     "version",
     "metadata"
   ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
+    }
+  },
   "$defs": {
     "specDef": {
       "type": "object",

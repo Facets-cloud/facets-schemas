@@ -2,14 +2,14 @@
 
 ## Terms
 
-| Term | Description |
-|------|-------------|
-|**Resource**| An entity declared in facets|
-|**Type of Resource** or **Intent**|A resource expressible in facets JSON representation having a defined schema|
-|**Implementation of Resource** or **Flavor**|A specific way of implementing a resource, for example redis can be implemented as a stateful set in kubernetes and elasticcache in AWS.|
-|**Blueprint**|Collection of resource to create a functional product|
-|**Environment**|Manifestation of this blueprint in any cloud|
-|**User**|Developer or ops person who is creating the blueprint|
+| Term                                         | Description                                                                                                                              |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| **Resource**                                 | An entity declared in facets                                                                                                             |
+| **Type of Resource** or **Intent**           | A resource expressible in facets JSON representation having a defined schema                                                             |
+| **Implementation of Resource** or **Flavor** | A specific way of implementing a resource, for example redis can be implemented as a stateful set in kubernetes and elasticcache in AWS. |
+| **Blueprint**                                | Collection of resource to create a functional product                                                                                    |
+| **Environment**                              | Manifestation of this blueprint in any cloud                                                                                             |
+| **User**                                     | Developer or ops person who is creating the blueprint                                                                                    |
 
 ## Anatomy of a Facets Resource JSON
 
@@ -48,18 +48,27 @@ The advanced property is an optional field that contains additional fields that 
 
 # Supported Services
 
-| Kind  | Flavor         | Version | Schema                                                                                            | Sample                                                         | Readme                                                              |
-|-------|----------------|---------|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------------------|
-| mysql | cloudsql       |         | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/sample.json)                           | [Readme](schemas/mysql/mysql.schema.md)                            |
-| mysql | rds            |         | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/sample.json)                           | [Readme](schemas/mysql/mysql.schema.md)                            |
-| mysql | aurora         |         | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/sample.json)                           | [Readme](schemas/mysql/mysql.schema.md)                            |
-| redis | elasticcache  |         | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                  | [Sample](schemas/redis/sample.json)                            | [Readme](schemas/redis/redis.schema.md)                             |
-| redis | memorystore   |         | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                  | [Sample](schemas/redis/sample.json)                            | [Readme](schemas/redis/redis.schema.md)                             |
-| redis | k8s           |         | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json              | [Sample](schemas/redis/sample.json)                        | [Readme](schemas/redis/redis.schema.md)                    |
-| mongo | k8s           |         | https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json              | [Sample](schemas/mongo/sample.json)                        | [Readme](schemas/mongo/mongo.schema.md)                    |
-| elasticsearch | k8s   |         | https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json   | [Sample](schemas/elasticsearch/sample.json)                  | [Readme](schemas/elasticsearch/elasticsearch.schema.md)           |
-| loadbalancer | nlb_nginx  |  | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json | [Sample](schemas/loadbalancer/sample.json)                    | [Readme](schemas/loadbalancer/loadbalancer.schema.md)             |
-| loadbalancer | gcp_alb     |  | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json | [Sample](schemas/loadbalancer/sample.json)                    | [Readme](schemas/loadbalancer/loadbalancer.schema.md)             |
-| loadbalancer | aws_alb     |  | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json | [Sample](schemas/loadbalancer/sample.json)                    | [Readme](schemas/loadbalancer/loadbalancer.schema.md)             |
-| service | default        |         | https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json             | [Sample](schemas/service/sample.json)                          | [Readme](schemas/service/service.schema.md)                        |
-
+| Kind               | Flavor           | Version | Schema                                                                                        | Sample                                                       | Readme                                                  |
+|--------------------|------------------|---------|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------|---------------------------------------------------------|
+| mysql              | cloudsql         | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/mysql.cloudsql.sample.json)           | [Readme](schemas/mysql/mysql.cloudsql.schema.md)        |
+| mysql              | rds              | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/mysql.aurora.sample.json)             | [Readme](schemas/mysql/mysql.aurora.schema.md)          |
+| mysql              | aurora           | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json                 | [Sample](schemas/mysql/mysql.rds.sample.json)                | [Readme](schemas/mysql/mysql.rds.schema.md)             |
+| redis              | elasticache      | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                 | [Sample](schemas/redis/sample.json)                          | [Readme](schemas/redis/README.md)                       |
+| redis              | memorystore      | 0.2     | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                 | [Sample](schemas/redis/sample.json)                          | [Readme](schemas/redis/README.md)                       |
+| redis              | k8s              | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json                 | [Sample](schemas/redis/sample.json)                          | [Readme](schemas/redis/README.md)                       |
+| ingress            | nlb_nginx        | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json        | [Sample](schemas/loadbalancer/ingress.nlb_nginx.sample.json) | [Readme](schemas/loadbalancer/ingress.schema.md)        |
+| ingress            | gcp_alb          | 0.2     | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json        | [Sample](schemas/loadbalancer/ingress.gcp_alb.sample.json)   | [Readme](schemas/loadbalancer/ingress.schema.md)        |
+| ingress            | aws_alb          | 0.2     | https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json        | [Sample](schemas/loadbalancer/ingress.aws_alb.sample.json)   | [Readme](schemas/loadbalancer/ingress.schema.md)        |
+| service            | default          | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json             | [Sample](schemas/service/main.json)                          | [Readme](schemas/service/service.schema.md)             |
+| postgres           | aurora           | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json           | [Sample](schemas/postgres/postgres.aurora.sample.json)       | [Readme](schemas/postgres/postgres.aurora.md)           |
+| postgres           | cloudsql         | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json           | [Sample](schemas/postgres/postgres.cloudsql.sample.json)     | [Readme](schemas/postgres/postgres.cloudsql.md)         |
+| kubernetesNodePool | aks              | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json           | [Sample](schemas/nodepool/nodepool.aks.sample.json)          | [Readme](schemas/nodepool/nodepool.schema.md)           |
+| kubernetesNodePool | eks managed      | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json           | [Sample](schemas/nodepool/nodepool.eks-managed.sample.json)  | [Readme](schemas/nodepool/nodepool.schema.md)           |
+| kubernetesNodePool | eks self-managed | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json           | [Sample](schemas/nodepool/nodepool.self-managed.sample.json) | [Readme](schemas/nodepool/nodepool.schema.md)           |
+| k8s_resource       | default          | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.json   | [Sample](schemas/k8s_resource/sample.json)                   | [Readme](schemas/k8s_resource/README.md)                |
+| s3                 | default          | 0.2     | https://facets-cloud.github.io/facets-schemas/schemas/s3/s3.schema.json                       | [Sample](schemas/s3/s3.sample.json)                          | [Readme](schemas/s3/s3.schema.md)                       |
+| alert_group        | default          | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert-group.schema.json     | [Sample](schemas/alert_group/sample.json)                    | [Readme](schemas/alert_group/README.md)                 |
+| log_collector      | loki             | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log-collector.schema.json | [Sample](schemas/log_collector/loki-sample.json)             | [Readme](schemas/log_collector/README.md)               |
+| log_collector      | loki_s3          | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log-collector.schema.json | [Sample](schemas/log_collector/loki-s3-sample.json)          | [Readme](schemas/log_collector/README.md)               |
+| sqs                | default          | 0.2     | https://facets-cloud.github.io/facets-schemas/schemas/sqs/sqs.schema.json                     | [Sample](schemas/sqs/sqs.sample.json)                        | [Readme](schemas/sqs/README.md)                         |
+| helm               | default          | 0.1     | https://facets-cloud.github.io/facets-schemas/schemas/helm/helm.schema.json                   | [Sample](schemas/helm/sample.json)                           | [Readme](schemas/helm/README.md)                        |

@@ -1,0 +1,20 @@
+{
+  "$schema": "nodepool.schema.json",
+"flavor": "aks",
+  "metadata": {
+    "name": "spot",
+    "tags": {},
+    "annotations": {}
+  },
+  "advanced": {},
+  "disabled": true,
+  "version": "0.1",
+  "spec": {
+    "instance_type": "Standard_F8",
+    "min_node_count": 0,
+    "max_node_count": 100,
+    "disk_size": "50G",
+    "taints": {},
+    "node_labels": {}
+  }
+}

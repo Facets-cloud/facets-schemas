@@ -1,142 +1,148 @@
 {
-    "$schema":"http://json-schema.org/draft-04/schema#",
-    "type":"object",
-    "allOf":[
-       {
-          "$ref":"../../traits/base.schema.json"
-       },
-       {
-         "type": "object",
-         "properties": {
-           "kind":{
-             "type":"string",
-             "enum": ["kafka"]
-           },
-           "flavor":{
-             "type":"string",
-             "enum": ["k8s"]
-           },
-           "version":{
-             "type":"string",
-             "enum": ["0.2"]
-           }
-         }
-       },
-       {
-          "$ref":"#/$defs/specDef"
-       },
-       {
-          "$ref":"#/$defs/outDef"
-       },
-       {
-          "type":"object",
-          "properties":{
-             "advanced":{
-                "type":"object",
-                "allOf":[
-                   {
-                      "$ref":"flavor-k8s.schema.json"
-                   }
-                ]
-             }
-          }
-       }
-    ],
-    "required":[
-       "kind",
-       "flavor",
-       "version",
-       "metadata",
-       "spec"
-    ],
-    "$defs":{
-       "specDef":{
-          "type":"object",
-          "properties":{
-             "spec":{
-                "type":"object",
-                "additionalProperties":false,
-                "properties":{
-                   "authenticated":{
-                      "type":"boolean",
-                      "description":"Make this kafka is Password protected"
-                   },
-                   "kafka_version":{
-                      "type":"string",
-                      "description":"Version of kafka e.g. 3.2.3",
-                      "minLength":"3"
-                   },
-                   "persistence_enabled":{
-                      "type":"boolean",
-                      "description":"Enable Persistence for this redis"
-                   },
-                   "size":{
-                      "type":"object",
-                      "$ref":"./zookeeper-kafka.schema.json"
-                   }
-                },
-                "required":[
-                   "authenticated",
-                   "kafka_version",
-                   "persistence_enabled",
-                   "size"
-                ]
-             }
-          }
-       },
-       "outDef":{
-          "type":"object",
-          "properties":{
-             "out":{
-                "type":"object",
-                "properties":{
-                    "interfaces":{
-                        "type":"object",
-                        "$ref":"../../traits/interface.schema.json",
-                        "description": "Kafka broker details"
-                    },
-                    "instances":{
-                        "type":"object",
-                        "additionalProperties":false,
-                        "description": "map of all kafka broker in the cluster with interface",
-                        "patternProperties":{
-                            "^(kafka_[0-9]+)$":{
-                                "description": "map of kafka broker starting `kafka_[0-9]*`",
-                                "$ref":"../../traits/interface.schema.json"
-                            }
-                        }
-                    },
-                    "extra_settings":{
-                        "type":"object",
-                        "description": "The extra setting required for kafka brokers connection",
-                        "properties":{
-                            "kafka":{
-                                "type":"object",
-                                "description": "Kafka extra settings for connection",
-                                "properties":{
-                                    "security_protocol":{
-                                    "type":"string",
-                                    "description":"The security protocol required to connect to the kafka broker",
-                                    "enum":[
-                                        "SASL_PLAINTEXT",
-                                        "PLAINTEXT"
-                                    ]
-                                    },
-                                    "sasl_mechanism":{
-                                    "type":"string",
-                                    "description":"The sasl mechanism required to connect to the kafka broker",
-                                    "enum":[
-                                        "SCRAM-SHA-256",
-                                        "PLAIN"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "kafka"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.2"
+          ]
+        }
+      }
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "flavor-k8s.schema.json"
             }
-             }
-          }
-       }
+          ]
+        }
+      }
     }
- }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "authenticated": {
+              "type": "boolean",
+              "description": "Make this kafka is Password protected"
+            },
+            "kafka_version": {
+              "type": "string",
+              "description": "Version of kafka e.g. 3.2.3",
+              "minLength": "3"
+            },
+            "persistence_enabled": {
+              "type": "boolean",
+              "description": "Enable Persistence for this redis"
+            },
+            "size": {
+              "type": "object",
+              "$ref": "./zookeeper-kafka.schema.json"
+            }
+          },
+          "required": [
+            "authenticated",
+            "kafka_version",
+            "persistence_enabled",
+            "size"
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "properties": {
+            "interfaces": {
+              "type": "object",
+              "$ref": "../../traits/datastore-interface.schema.json",
+              "description": "Kafka broker details"
+            },
+            "instances": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "map of all kafka broker in the cluster with interface",
+              "patternProperties": {
+                "^(kafka_[0-9]+)$": {
+                  "description": "map of kafka broker starting `kafka_[0-9]*`",
+                  "$ref": "../../traits/datastore-interface.schema.json"
+                }
+              }
+            },
+            "extra_settings": {
+              "type": "object",
+              "description": "The extra setting required for kafka brokers connection",
+              "properties": {
+                "kafka": {
+                  "type": "object",
+                  "description": "Kafka extra settings for connection",
+                  "properties": {
+                    "security_protocol": {
+                      "type": "string",
+                      "description": "The security protocol required to connect to the kafka broker",
+                      "enum": [
+                        "SASL_PLAINTEXT",
+                        "PLAINTEXT"
+                      ]
+                    },
+                    "sasl_mechanism": {
+                      "type": "string",
+                      "description": "The sasl mechanism required to connect to the kafka broker",
+                      "enum": [
+                        "SCRAM-SHA-256",
+                        "PLAIN"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

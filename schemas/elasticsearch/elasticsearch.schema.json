@@ -15,6 +15,30 @@
     {
       "type": "object",
       "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "elasticsearch"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
         "advanced": {
           "type": "object",
           "description": "Advanced values to be used by different flavours of Elasticsearch",
@@ -50,7 +74,7 @@
             "size": {
               "type": "object",
               "description": "Map containing necessary information for instance size",
-              "$ref": "../../traits/size.schema.json"
+              "$ref": "../../traits/multi-instance-datastore-sizing.schema.json"
             }
           },
           "required": [
@@ -75,24 +99,9 @@
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "properties": {
-                    "connection_string": {
-                      "type": "string",
-                      "description": "Connection string to connect"
-                    },
-                    "host": {
-                      "type": "string",
-                      "description": "Host for service discovery"
-                    },
-                    "port": {
-                      "type": "string",
-                      "description": "Port for service discovery"
-                    }
-                  }
+                  "$ref": "../../traits/datastore-interface.schema.json"
                 }
-              },
-              "required": [
-              ]
+              }
             }
           ]
         }

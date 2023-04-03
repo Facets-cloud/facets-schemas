@@ -9,17 +9,24 @@
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["rabbitmq"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "rabbitmq"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["k8s"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
         }
       }
     },
@@ -69,20 +76,8 @@
               "allOf": [
                 {
                   "type": "object",
-                  "$ref": "../../traits/size.schema.json",
-                  "required":["volume"]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "replica_count": {
-                      "type": "integer",
-                      "description": "Number of reader instances needs to be deployed",
-                      "minLength":1
-                    }
-                  },
-                  "required":["replica_count"]
-                }              
+                  "$ref": "../../traits/datastore-sizing.schema.json",
+                }
               ]
             }
           },
@@ -106,13 +101,13 @@
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "properties":  {
+                  "properties": {
                     "tcp": {
                       "type": "object",
                       "description": "Map of type interface for tcp port of RabbitMQ",
                       "allOf": [
                         {
-                          "$ref": "../../traits/interface.schema.json"
+                          "$ref": "../../traits/datastore-interface.schema.json"
                         }
                       ]
                     },
@@ -121,7 +116,7 @@
                       "description": "Map of type interface for http port of RabbitMQ",
                       "allOf": [
                         {
-                          "$ref": "../../traits/interface.schema.json"
+                          "$ref": "../../traits/datastore-interface.schema.json"
                         }
                       ]
                     }

@@ -17,7 +17,7 @@
             "type": "string",
             "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
             "minLength": 1,
-            "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?B$",
+            "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
             "examples": ["800Mi", "1.5Gi"]
         }
     }

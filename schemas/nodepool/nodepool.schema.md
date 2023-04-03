@@ -5,7 +5,7 @@ Nodepool intent to deploy nodepools for kubernetes cluster. It supports all thre
 ## Properties
 
 | Property     | Type            | Required | Description                                                                                                                                    |
-| ------------ | --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------|-----------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | `flavor`     | string          | **Yes**  | Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.                                     |
 | `kind`       | string          | **Yes**  | Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances                |
 | `metadata`   | object          | **Yes**  | Metadata related to the resource                                                                                                               |
@@ -40,10 +40,11 @@ Specification as per resource types schema
 The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool
 
 | Property | Type   | Required | Description                                                                                 |
-| -------- | ------ | -------- | ------------------------------------------------------------------------------------------- |
+|----------|--------|----------|---------------------------------------------------------------------------------------------|
 | `effect` | string | No       | The effect of the taint Possible values are: `NoSchedule`, `NoExecute`, `PreferNoSchedule`. |
 | `key`    | string | No       | The key of the taint                                                                        |
 | `value`  | string | No       | The value of the taint                                                                      |
+
 
 ## out
 
@@ -52,7 +53,7 @@ Output given by the resource for others to refer.
 ### Properties
 
 | Property | Type            | Required | Description |
-| -------- | --------------- | -------- | ----------- |
+|----------|-----------------|----------|-------------|
 | `labels` | object          | No       |             |
 | `name`   | string          | No       |             |
 | `spec`   | [object](#spec) | No       |             |
@@ -63,7 +64,7 @@ Output given by the resource for others to refer.
 #### Properties
 
 | Property         | Type              | Required | Description                                                                                           |
-| ---------------- | ----------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+|------------------|-------------------|----------|-------------------------------------------------------------------------------------------------------|
 | `azs`            | string            | **Yes**  | Comma separated string of one or more availability zones for the Node Pool                            |
 | `disk_size`      | number            | **Yes**  | Disk size in GiB for worker nodes                                                                     |
 | `instance_type`  | string            | **Yes**  | Instance type associated with the Node Pool                                                           |
@@ -78,7 +79,14 @@ Output given by the resource for others to refer.
 The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool
 
 | Property | Type   | Required | Description                                                                                 |
-| -------- | ------ | -------- | ------------------------------------------------------------------------------------------- |
+|----------|--------|----------|---------------------------------------------------------------------------------------------|
 | `effect` | string | No       | The effect of the taint Possible values are: `NoSchedule`, `NoExecute`, `PreferNoSchedule`. |
 | `key`    | string | No       | The key of the taint                                                                        |
 | `value`  | string | No       | The value of the taint                                                                      |
+
+
+### flavor
+
+- [aks_nodepool](nodepool.aks.schema.md)
+- [eks-managed](nodepool.eks-managed.schema.md)
+- [eks-self-managed](nodepool.eks-self-managed.schema.md)

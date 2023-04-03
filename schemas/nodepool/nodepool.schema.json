@@ -12,6 +12,23 @@
       "$ref": "#/$defs/advancedDef"
     },
     {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["kubernetes_node_pool"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["eks_self_managed", "aks", "eks_managed"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
       "$ref": "#/$defs/outDef"
     }
   ],
@@ -110,7 +127,7 @@
         "advanced": {
           "allOf": [
             {
-              "$ref": "./flavor-AKS.schema.json"
+              "$ref": "./flavor-aks.schema.json"
             },
             {
               "$ref": "./flavor-eks-managed.schema.json"

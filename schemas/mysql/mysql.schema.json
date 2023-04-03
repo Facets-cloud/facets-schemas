@@ -29,7 +29,8 @@
         },
         "version": {
           "type": "string",
-          "description": "This field can be used to pin to a particular version"
+          "description": "This field can be used to pin to a particular version",
+          "enum": ["0.1", "latest"]
         }
       },
       "if": {
@@ -121,7 +122,7 @@
       "type": "object",
       "properties": {
         "advanced": {
-          "allOf": [
+          "anyOf": [
             {
               "$ref": "flavor-aurora.schema.json"
             },
