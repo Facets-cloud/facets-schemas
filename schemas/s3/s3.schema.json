@@ -47,6 +47,25 @@
     "version",
     "metadata"
   ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
+    }
+  },
   "$defs": {
     "specDef": {
       "type": "object",

@@ -76,23 +76,7 @@
               "allOf": [
                 {
                   "type": "object",
-                  "$ref": "../../traits/size.schema.json",
-                  "required": [
-                    "volume"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "replica_count": {
-                      "type": "integer",
-                      "description": "Number of reader instances needs to be deployed",
-                      "minLength": 1
-                    }
-                  },
-                  "required": [
-                    "replica_count"
-                  ]
+                  "$ref": "../../traits/datastore-sizing.schema.json",
                 }
               ]
             }
@@ -123,7 +107,7 @@
                       "description": "Map of type interface for tcp port of RabbitMQ",
                       "allOf": [
                         {
-                          "$ref": "../../traits/interface.schema.json"
+                          "$ref": "../../traits/datastore-interface.schema.json"
                         }
                       ]
                     },
@@ -132,7 +116,7 @@
                       "description": "Map of type interface for http port of RabbitMQ",
                       "allOf": [
                         {
-                          "$ref": "../../traits/interface.schema.json"
+                          "$ref": "../../traits/datastore-interface.schema.json"
                         }
                       ]
                     }
