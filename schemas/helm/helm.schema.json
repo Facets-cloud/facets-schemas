@@ -72,7 +72,44 @@
         }
       },
       "required": ["helm", "env", "values"]
+    },
+    "version": {
+      "type": "string",
+      "enum": [
+        "0.1",
+        "latest"
+      ]
+    },
+    "disabled": {
+      "type": "boolean",
+      "description": "Flag to disable the resource"
+    },
+    "provided": {
+      "type": "boolean",
+      "description": "Flag to tell if the resource should not be provisioned by facets",
+      "default": false
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {},
+      "description": "Dependencies on other resources. e.g. application x may depend on y"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata related to the resource",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+        }
+      }
     }
   },
-  "required": ["kind", "flavor", "spec"]
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }
