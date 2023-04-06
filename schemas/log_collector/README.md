@@ -34,13 +34,6 @@ Specification as per resource types schema
 
 Output given by the resource for others to refer.
 
-### Properties
-
-| Property | Type              | Required | Description |
-| -------- | ----------------- | -------- | ----------- |
-| `spec`   | [object](#spec-1) | No       |             |
-
-
 #### Properties
 
 | Property           | Type   | Required | Description                                                                                                                                                                                                                              |

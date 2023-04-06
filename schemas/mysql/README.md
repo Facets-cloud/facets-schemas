@@ -31,9 +31,9 @@ Specification as per resource types schema
 
 Output given by the resource for others to refer.
 
-| Property     | Type       | Required | Description                                                    |
-|--------------|------------|----------|----------------------------------------------------------------|
-| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.json) | **No**   |  |
+| Property     | Type                                                        | Required | Description                                                          |
+|--------------|-------------------------------------------------------------|----------|----------------------------------------------------------------------|
+| `interfaces` | [object](../../traits/reader-writer-interfaces.schema.json) | **No**   | The output for your module, this can be generated or provided |
 
 #### Property  interfaces
 
@@ -83,7 +83,7 @@ The writer details
 
 ## Alerts
 
-| Alert Name   | Description                                                | 
-|--------------|------------------------------------------------------------|
-| `CCMysqlDown` | MySQL server down | 
+| Alert Name                  | Description                                                         | 
+|-----------------------------|---------------------------------------------------------------------|
+| `CCMysqlDown`               | MySQL server down                                                   | 
 | `CCMysqlTooManyConnections` | MySQL connections has crossed 80% of its max connections configured | 
