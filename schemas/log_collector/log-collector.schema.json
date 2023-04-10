@@ -21,7 +21,8 @@
           "type": "string",
           "enum": [
             "loki",
-            "loki_s3"
+            "loki_s3",
+            "loki_blob"
           ]
         },
         "version": {
@@ -80,6 +81,9 @@
             },
             {
               "$ref": "flavor-loki-s3.schema.json"
+            },
+            {
+              "$ref": "flavor-loki-blob.schema.json"
             }
           ]
         }
