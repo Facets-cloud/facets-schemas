@@ -6,6 +6,29 @@
        "$ref": "../../traits/base.schema.json"
      },
      {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "config_map"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1", "latest"
+          ]
+        }
+      }
+    },
+     {
        "$ref": "#/$defs/specDef"
      },
      {
