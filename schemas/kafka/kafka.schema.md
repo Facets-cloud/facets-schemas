@@ -93,7 +93,6 @@ Output given by the resource for others to refer.
 | Property         | Type                      | Required | Description                                             |
 |------------------|---------------------------|----------|---------------------------------------------------------|
 | `extra_settings` | [object](#extra_settings) | **Yes**  | The extra setting required for kafka brokers connection |
-| `instances`      | Map<string, [object](#interfaces)>      | **Yes**  | map of all kafka broker in the cluster with interface   |
 | `interfaces`     | [object](#interfaces)     | **Yes**  | Kafka broker details                                    |
 
 ### extra_settings
