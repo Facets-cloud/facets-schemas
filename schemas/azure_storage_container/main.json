@@ -1,5 +1,5 @@
 {
-   "$schema": "./azure_storage_container.schema.json",
+   "$schema": "./azure-storage-container.schema.json",
    "disabled": false,
    "flavor": "default",
    "kind": "azure_storage_container",

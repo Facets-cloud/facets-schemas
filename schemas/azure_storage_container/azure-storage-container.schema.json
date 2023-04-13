@@ -84,7 +84,7 @@
                                 "properties":{
                                    "prefix_match":{
                                       "type":"array",
-                                      "description":" An array of strings for prefixes to be matched."
+                                      "description":"An array of strings for prefixes to be matched."
                                    },
                                    "tier_to_cool_after_days":{
                                       "type":"integer",

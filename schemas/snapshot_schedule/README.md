@@ -25,7 +25,21 @@ Specification as per resource types schema
 
 | Property | Type            | Required | Description                                |
 |----------|-----------------|----------|--------------------------------------------|
-| `data`   | [object](#data) | **Yes**  | the map of all filename and their contents |
+| `schedule`   | string | **Yes**  | The cronspec (https://en.wikipedia.org/wiki/Cron#Overview) that defines the schedule. It is interpreted with respect to the UTC timezone. The following pre-defined shortcuts are also supported: @hourly, @daily, @weekly, @monthly, and @yearly |
+| `resource_name`   | string | **Yes**  | The name of the resource that you want to create a volume snapshot backup, if this is left blank, it will create volume backups for all resource name in the resource type |
+| `resource_type`   | string | **Yes**  | The name of the resource type which you need to create volume snapshot backup |
+| `retention_policy`   | [object](#data) | **Yes**  | The retention policy for your backup snapshot |
+
+## retention policy
+
+The retention policy for your backup snapshot
+
+### Properties
+
+| Property | Type            | Required | Description                                |
+|----------|-----------------|----------|--------------------------------------------|
+| `expiry`   | string | **Yes**  | The length of time a given snapshot should be retained, specified in hours. (168h = 1 week) |
+| `count`   | string | **Yes**  | The maximum number of snapshots per PVC to keep |
 
 
 
@@ -37,38 +51,7 @@ Additional fields if any for a particular implementation of a resource
 
 | Property | Type           | Required | Description                                           |
 |----------|----------------|----------|-------------------------------------------------------|
-| `azure_storage_container`    | [object](#azure_storage_container) | No       | The advanced section of all the azure storage container module |
-
-### azure_storage_container
-
-The advanced section of all the azure_storage_container module
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `az_storage_account_name`    | string | No       | The name of the storage account which you want this container to be added |
-| `az_storage_account_id`    | string | No       | The id of the storage account which you want this container to be added |
-| `access_type`    | string | No       | The Access Level configured for this Container. Possible values are blob, container or private. Defaults to private |
-| `lifecycles`    | [object](#lifecycles) | No       | The lifecycle map that you can give to the container blobs |
-
-# lifecycles
-
-The lifecycle map that you can give to the container blobs
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `^[a-zA-Z0-9_.-]*$`    | [object](#lifecycles) | No       | This can be a random name to specify a lifecycle rule |
-
-#### ^[a-zA-Z0-9_.-]*$
-
-The lifecycle map that you can give to the container blobs
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `prefix_match`    | string | No       | An array of strings for prefixes to be matched |
-| `tier_to_cool_after_days`    | integer | No       | The age in days after last modification to tier blobs to cool storage. Supports blob currently at Hot tier. Must be between 0 and 99999. Defaults to -1 |
-| `tier_to_archive_after_days`    | integer | No       | The age in days after last modification to tier blobs to archive storage. Supports blob currently at Hot or Cool tier. Must be between 0 and 99999. Defaults to -1 |
-| `delete_after_days`    | integer | No       | The age in days after last modification to delete the blob. Must be between 0 and 99999. Defaults to -1 |
-| `snapshot_delete_after_days`    | integer | No       | The age in days after creation to delete the blob snapshot. Must be between 0 and 99999. Defaults to -1 |
+| `snapshot_schedule`    | [object](#snapshot_schedule) | No       | The advanced section of snapshot schedule module |
 
 
 ## out
