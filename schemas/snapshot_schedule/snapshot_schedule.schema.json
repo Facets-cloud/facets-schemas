@@ -75,7 +75,8 @@
                              }
                         }
                      }
-                }
+                },
+                "required": ["schedule", "resource_name", "retention_policy", "resource_type"]
              },
              "advanced":{
                 "type":"object",
