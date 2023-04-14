@@ -1,6 +1,30 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
+  "properties": {
+    "conditional_on_intent": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "grafana_dashboard"
+      ]
+    },
+    "flavor": {
+      "type": "string",
+      "enum": [
+        "default"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "enum": [
+        "0.1",
+        "latest"
+      ]
+    }
+  },
   "allOf": [
     {
       "$ref": "../../traits/base.schema.json"
@@ -14,7 +38,8 @@
     "flavor",
     "version",
     "metadata",
-    "spec"
+    "spec",
+    "conditional_on_intent"
   ],
   "$defs": {
     "specDef": {
