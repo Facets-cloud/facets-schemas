@@ -5,10 +5,14 @@
   "version": "latest",
   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
+  "conditional_on_intent": "kind",
   "provided": false,
   "depends_on": [],
   "metadata": {
     "name": "kubernetes-api-server-dashboard"
+  },
+  "advanced": {
+
   },
   "spec": {
     "dashboard": {
