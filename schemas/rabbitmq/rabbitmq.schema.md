@@ -19,3 +19,12 @@ A rabbitmq Instance in reader/writer datastore mode.
 ## Flavors
 
 - k8s
+
+
+## Alerts
+
+| Alert Name         | Impact                                      | Mitigation                                                                                                         |
+|--------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| RabbitMQServerDown    | RabbitMQ is inaccessible                    | Debug the instance health via metrics & logs                                                                       |
+| RabbitMqClusterNotAllNodesRunning | RabbitMQ has very low node count accessible | Check the cluster's node count and trail node's inacitivty from dashboard                                          | 
+| RabbitMqMemoryUsageHigh   | RabbitMQ memory usage is high               | Trail the memory usage of the rabbitmq server from the dashboard for all the instances as memory usage spiked <90% |

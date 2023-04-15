@@ -92,3 +92,12 @@ mongo broker details
 ### Flavors
 
 - `k8s`
+
+
+## Alerts
+
+| Alert Name         | Impact                                 | Mitigation                                                                          |
+|--------------------|----------------------------------------|-------------------------------------------------------------------------------------|
+| MongoServerDown    | Mongo is inaccessible                  | Debug the instance health via metrics & logs                                        |
+| MongoConnectionLow | Mongodb has very low connections count | Check the host server if it is accessible from dashboard                            | 
+| mongoMemoryLimit   | MongoDB memory usage is high           | Trail the memory usage of the mongo server from the dashboard for all the instances |
