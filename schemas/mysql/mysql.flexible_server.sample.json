@@ -1,0 +1,30 @@
+{
+  "flavor": "flexible_server",
+  "metadata": {
+    "name": "azure-mysql",
+    "tags": {}
+  },
+  "advanced": {
+    "azure": {
+      "flexible_server": {
+        "zone": null
+      }
+    }
+  },
+  "kind": "mysql",
+  "disabled": false,
+  "version": "0.1",
+  "spec": {
+    "mysql_version": "8.0.21",
+    "size": {
+      "writer": {
+        "replica_count": 1,
+        "instance": "GP_Standard_D2ds_v4"
+      },
+      "reader": {
+        "replica_count": 1,
+        "instance": "GP_Standard_D2ds_v4"
+      }
+    }
+  }
+}
