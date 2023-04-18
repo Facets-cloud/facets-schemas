@@ -24,7 +24,8 @@
           "enum": [
             "aurora",
             "cloudsql",
-            "rds"
+            "rds",
+            "flexible_server"
           ]
         },
         "version": {
