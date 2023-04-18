@@ -131,7 +131,35 @@
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "$ref": "../../traits/multi-node-datastore-interface.schema.json"
+                  "properties": {
+                    "cluster" : {
+                      "type" : "object",
+                      "description" :"Map of type interface for cluster endpoint & port of MongoDB",
+                      "allOf": [
+                        {
+                          "$ref": "../../traits/multi-node-datastore-interface.schema.json"
+                        }
+                      ]
+                    },
+                    "writer" : {
+                      "type" : "object",
+                      "description" :"Map of type interface for writer endpoint & port of MongoDB",
+                      "allOf": [
+                        {
+                          "$ref": "../../traits/datastore-interface.schema.json"
+                        }
+                      ]
+                    },
+                    "reader" : {
+                      "type" : "object",
+                      "description" :"Map of type interface for reader endpoint & port of MongoDB",
+                      "allOf": [
+                        {
+                          "$ref": "../../traits/datastore-interface.schema.json"
+                        }
+                      ]
+                    }
+                  }
                 },
                 "instances": {
                   "type": "object",
