@@ -11,9 +11,18 @@ A rabbitmq Instance in reader/writer datastore mode.
 
 ## Outputs
 
-| Property            | Type                                                   | Required | Description                                                                |
-|---------------------|--------------------------------------------------------|----------|----------------------------------------------------------------------------|
-| `interfaces`        | [object](../../traits/datastore-interface.schema.json) | No       | Master SD details                                                          |
+| Property     | Type   | value               | Required | Description       |
+|--------------|--------|---------------------|----------|-------------------|
+| `interfaces` | object | [cluster](#cluster) | No       | Master SD details |
+
+### cluster
+
+| Name              | Description                                                                                                                                | Type   | Required |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| endpoint          | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | string | no       |
+| username          | The username to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
 
 
 ## Flavors

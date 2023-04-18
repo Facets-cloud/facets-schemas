@@ -128,6 +128,16 @@ Kafka broker details
 | `username`          | string | No       | Username to connect (if any)   |
 
 
+### cluster
+
+| Name              | Description                                                                                                                                | Type   | Required |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| endpoint          | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | string | Yes      |
+| username          | The username to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
+
+
 ### Flavors
 
 * `k8s`

@@ -72,9 +72,19 @@ Advanced values for mongo
 
 Output given by the resource for others to refer.
 
-| Property     | Type                  | Required | Description          |
-| ------------ | --------------------- | -------- | -------------------- |
-| `interfaces` | [object](#interfaces) | **Yes**  | mongo broker details |
+| Property     | Type   | value               | Required | Description          |
+|--------------|--------|---------------------|----------|----------------------|
+| `interfaces` | object | [cluster](#cluster) | **Yes**  | mongo broker details |
+
+### cluster
+
+| Name              | Description                                                                                                                                | Type   | Required |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| endpoint          | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | string | Yes      |
+| username          | The username to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
+
 
 ### interfaces
 
