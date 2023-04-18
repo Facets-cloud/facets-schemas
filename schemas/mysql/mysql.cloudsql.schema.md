@@ -8,7 +8,6 @@ Use the module [INPUT](https://github.com/terraform-google-modules/terraform-goo
 
 # Considerations
 
-- Mysql DB instance with gcp cloudsql flavor should be configured with both `Writer` as well as `Reader`.
 - For cloudsql `disk_autoresize` is set to true by default so disk storage will be expanded automatically. 
 - Users can add more tags/labels through advanced section e.g.
 ```

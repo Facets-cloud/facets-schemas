@@ -80,6 +80,7 @@ The writer details
 - [Aurora](mysql.aurora.schema.md)
 - [RDS](mysql.rds.schema.md)
 - [Cloudsql](mysql.cloudsql.schema.md)
+- [Flexible Server](mysql.flexible_server.schema.md)
 
 ## Alerts
 
