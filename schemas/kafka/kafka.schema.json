@@ -98,7 +98,7 @@
           "properties": {
             "interfaces": {
               "type": "object",
-              "$ref": "../../traits/datastore-interface.schema.json",
+              "$ref": "../../traits/multi-node-datastore-interface.schema.json",
               "description": "Kafka broker details"
             },
             "instances": {
