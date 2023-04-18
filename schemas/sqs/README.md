@@ -19,8 +19,15 @@ SQS is a service where one service sends messages to the queue and another servi
 | `tags`                             | object          | **No**  |  tagging resources
 
 ## Flavor
+
 - default
 
 
-## out 
- 
+## Output 
+
+| Name           | Type     | Description     |
+|----------------|----------|-----------------|
+| sqs_queue_name | `string` | Name of the SQS |
+| sqs_queue_arn  | `string` | ARN of the SQS  |
+| sqs_queue_url  | `string` | URL of the SQS  |
+
