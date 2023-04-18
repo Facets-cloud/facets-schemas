@@ -24,7 +24,8 @@
           "enum": [
             "aurora",
             "cloudsql",
-            "rds"
+            "rds",
+            "flexible_server"
           ]
         },
         "version": {
@@ -131,6 +132,9 @@
             },
             {
               "$ref": "flavor-cloudsql.schema.json"
+            },
+            {
+              "$ref": "flavor-flexible_server.schema.json"
             }
           ]
         }
