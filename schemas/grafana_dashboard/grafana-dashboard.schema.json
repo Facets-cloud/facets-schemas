@@ -2,9 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
-    "conditional_on_intent": {
-      "type": "string"
-    },
     "kind": {
       "type": "string",
       "enum": [
