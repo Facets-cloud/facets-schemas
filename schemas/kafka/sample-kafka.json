@@ -8,6 +8,7 @@
         "authenticated": true,
         "kafka_version": "3.2.3",
         "persistence_enabled": true,
+        "zookeeper_version": "3.8.0",
         "size": {
             "kafka": {
                 "cpu": "1",

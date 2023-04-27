@@ -26,6 +26,7 @@ Specification as per resource types schema
 |-----------------------|-----------------|----------|---------------------------------------|
 | `authenticated`       | boolean         | **Yes**  | Make this kafka is Password protected |
 | `kafka_version`       | string          | **Yes**  | Version of kafka e.g. 3.2.3           |
+| `zookeeper_version`   | string          | **Yes**  | Version of kafka e.g. 3.2.3           |
 | `persistence_enabled` | boolean         | **Yes**  | Enable Persistence for this redis     |
 | `size`                | [object](#size) | **Yes**  |                                       |
 
