@@ -76,7 +76,7 @@
               "allOf": [
                 {
                   "type": "object",
-                  "$ref": "../../traits/datastore-sizing.schema.json",
+                  "$ref": "../../traits/datastore-sizing.schema.json"
                 }
               ]
             }

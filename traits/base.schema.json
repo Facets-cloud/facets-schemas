@@ -28,6 +28,10 @@
           "type": "boolean",
           "description": "Flag to disable the resource"
         },
+        "conditional_on_intent": {
+          "type": "string",
+          "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+        },
         "provided": {
           "type": "boolean",
           "description": "Flag to tell if the resource should not be provisioned by facets",

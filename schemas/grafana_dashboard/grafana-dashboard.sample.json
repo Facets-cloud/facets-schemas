@@ -10,6 +10,9 @@
   "metadata": {
     "name": "kubernetes-api-server-dashboard"
   },
+  "advanced": {
+
+  },
   "spec": {
     "dashboard": {
       "annotations": {
