@@ -5,7 +5,7 @@
     "version": "0.1",
     "metadata": {},
     "spec": {
-        "account_id": "xxxxx",
+        "account_id": "yyyyyy",
         "cidr": "10.0.0.0/16",
         "region": "us-east-1",
         "vpc_id": "xxxxxxxxx"
