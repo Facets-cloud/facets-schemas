@@ -30,5 +30,6 @@ RUN rm -rf /usr/bin/python3.6m  /usr/bin/python2.7 usr/local/lib/python2.7 /usr/
 RUN rm -rf /usr/lib/jvm /usr/lib/python2.7 /usr/lib/python3.8 /usr/lib/python3.7 
 
 RUN rm -rf terraform_0.13 terraform_0.12.20_linux_amd64.zip terraform_1.0 terraform_1.0.11
+RUN ln -s /usr/lib/python3.6 /usr/local/bin/python
 
 
