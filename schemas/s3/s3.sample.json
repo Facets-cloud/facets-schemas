@@ -1,5 +1,5 @@
 {
-  "$schema": "s3.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/s3/s3.schema.json",
   "version": "0.1",
   "flavor": "default",
   "kind": "s3",

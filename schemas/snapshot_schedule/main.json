@@ -1,5 +1,5 @@
 {
-    "$schema": "./snapshot_schedule.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/snapshot_schedule/snapshot_schedule.schema.json",
     "kind": "snapshot_schedule",
     "conditional_on_intent": "kafka",
     "flavor": "default",

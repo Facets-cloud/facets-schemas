@@ -1,5 +1,5 @@
 {
-  "$schema": "./mongo.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json",
   "version": "0.2",
   "flavor": "k8s",
   "kind": "mongo",

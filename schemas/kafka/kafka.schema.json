@@ -72,11 +72,6 @@
               "description": "Version of kafka e.g. 3.2.3",
               "minLength": "3"
             },
-            "zookeeper_version": {
-              "type": "string",
-              "description": "Version of zookeeper e.g. 3.8.0",
-              "minLength": "3"
-            },
             "persistence_enabled": {
               "type": "boolean",
               "description": "Enable Persistence for this redis"
@@ -89,7 +84,6 @@
           "required": [
             "authenticated",
             "kafka_version",
-            "zookeeper_version",
             "persistence_enabled",
             "size"
           ]
@@ -104,7 +98,7 @@
           "properties": {
             "interfaces": {
               "type": "object",
-              "$ref": "../../traits/datastore-interface.schema.json",
+              "$ref": "../../traits/multi-node-datastore-interface.schema.json",
               "description": "Kafka broker details"
             },
             "instances": {

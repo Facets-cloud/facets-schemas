@@ -1,5 +1,5 @@
 {
-  "$schema": "redis.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas//redis/redis.schema.json",
   "flavor": "memorystore",
   "lifecycle": "ENVIRONMENT",
   "metadata": {

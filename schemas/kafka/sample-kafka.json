@@ -1,5 +1,5 @@
 {
-    "$schema": "./kafka.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/kafka/kafka.schema.json",
     "kind": "kafka",
     "version": "0.2",
     "flavor": "k8s",

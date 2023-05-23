@@ -1,5 +1,5 @@
 {
-  "$schema": "aws-clusterautoscaler.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_cluster_autoscaler/aws-clusterautoscaler.schema.json",
   "lifecycle": "",
   "metadata": {
     "name": "cluster-autoscaler"

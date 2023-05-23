@@ -1,5 +1,5 @@
 {
-  "$schema": "rabbitmq.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/rabbitmq/rabbitmq.schema.json",
   "flavor": "k8s",
   "kind": "rabbitmq",
   "version": "latest",

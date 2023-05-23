@@ -5,7 +5,7 @@
   "version": "0.1",
   "depends_on": [],
   "disabled": false,
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+  "lifecycle": "ENVIRONMENT",
   "metadata": {
     "name": "daw"
   },
@@ -14,11 +14,12 @@
     "postgres_version": "12.11",
     "size": {
       "writer": {
-        "instance": "n1-standard-2"
+        "instance": "db.t3.medium",
+        "instance_count": 1
       },
       "reader": {
         "instance": "db.t3.medium",
-        "instance_count": 2
+        "instance_count": 1
       }
     }
   },

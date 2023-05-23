@@ -1,5 +1,5 @@
 {
-    "$schema": "./configmap.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/configmap/configmap.schema.json",
     "kind":"config_map",
     "flavor":"default",
     "version":"0.1",

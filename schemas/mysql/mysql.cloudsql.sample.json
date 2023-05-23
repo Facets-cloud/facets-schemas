@@ -1,5 +1,5 @@
 {
-  "$schema": "mysql.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
   "kind": "mysql",
   "flavor": "cloudsql",
   "version": "0.1",

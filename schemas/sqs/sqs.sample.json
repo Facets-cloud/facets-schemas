@@ -1,9 +1,9 @@
 {
-    "$schema": "sqs.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/sqs/sqs.schema.json",
     "version": "0.2",
     "flavor": "default",
     "kind": "sqs",
-    "provides": "sqs",
+    "provided": false,
     "metadata": {
         "name": "test-aws-sqs-queue"
     },

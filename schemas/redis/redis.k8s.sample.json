@@ -23,7 +23,7 @@
       "reader": {
         "cpu": "1",
         "memory": "512M",
-        "replica_count": 0
+        "replica_count": 1
       }
     }
   },

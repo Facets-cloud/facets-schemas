@@ -1,5 +1,5 @@
 {
-  "$schema": "nodepool.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
 "flavor": "aks",
   "metadata": {
     "name": "spot",
@@ -15,6 +15,6 @@
     "max_node_count": 100,
     "disk_size": "50G",
     "taints": {},
-    "node_labels": {}
+    "labels": {}
   }
 }

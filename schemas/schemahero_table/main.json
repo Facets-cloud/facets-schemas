@@ -1,5 +1,5 @@
 {
-  "$schema": "./schemahero_table.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.schema.json",
   "flavor": "default",
   "kind": "schemahero_table",
   "version": "0.1",

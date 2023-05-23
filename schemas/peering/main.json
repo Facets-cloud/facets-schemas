@@ -1,5 +1,5 @@
 {
-    "$schema": "./peering.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/peering/peering.schema.json",
     "flavor": "aws_vpc_peering",
     "kind": "peering",
     "version": "0.1",
