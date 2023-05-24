@@ -23,6 +23,7 @@ A Redis Instance in master/slave or reader/writer mode.
 - k8s
 - elasticache
 - memorystore
+- rediscache
 
 ## Alerts
 
