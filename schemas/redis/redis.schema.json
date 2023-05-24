@@ -19,7 +19,8 @@
           "enum": [
             "k8s",
             "memorystore",
-            "elasticache"
+            "elasticache",
+            "rediscache"
           ]
         },
         "version": {
@@ -52,6 +53,9 @@
             },
             {
               "$ref": "flavor-memorystore.schema.json"
+            },
+            {
+              "$ref": "flavor-rediscache.schema.json"
             }
           ]
         }
