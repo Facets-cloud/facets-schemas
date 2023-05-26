@@ -52,6 +52,11 @@ def versioning(directory_path):
 if __name__ == '__main__':
     
     full_data = {}
+    # Map to handle current folder naming discrepancies
+    provides_mapping = {
+        "ingress": "loadbalancer/loadbalancer",
+        "kubernetes_node_pool": "nodepool/nodepool"
+    }
     directory_path = 'capillary-cloud-tf/modules/'
     version_data = versioning(directory_path)
     for provides, versions in version_data.items():
@@ -60,16 +65,40 @@ if __name__ == '__main__':
             data["intent"] = provides
             data["displayName"] = provides.capitalize()
             data["description"] = "Some random description"
-            data["schemaUrl"] = f"https://facets-cloud.github.io/facets-schemas/schemas/{provides}/{provides}.schema.json"
+            # Check if provides value exists in the provides_mapping
+            if provides in provides_mapping:
+                url_value = provides_mapping[provides]
+            else:
+                url_value = f"{provides}/{provides}"
+            # Build the schemaUrl
+            data["schemaUrl"] = f"https://facets-cloud.github.io/facets-schemas/schemas/{url_value}.schema.json"
             data["documentation"] = "Documentation link"
             data["flavors"] = []
-            print(json.dumps( module_data["flavors"], indent=4))
+            print(json.dumps(module_data["flavors"], indent=4))
             for flavor in module_data["flavors"]:
                 for f in flavor["versions"]:
+                    transformed_clouds = []
+                    transformed_flavors = f['flavor'][:]
+                    if len(f['flavor']) > 1 and 'default' in f['flavor']:
+                        transformed_flavors.remove('default')
+                    for cloud in flavor["clouds"]:
+                        # To handle cloud inconsistencies
+                        if cloud == "all" or cloud == "any":
+                            transformed_clouds = ["gcp", "aws", "azure"]
+                            break
+                        # Since we have 2 folder for nginx with same flavor
+                        elif "nginx_ingress_controller" in transformed_flavors:
+                            transformed_clouds = ["gcp", "aws", "azure"]
+                            url_value = "loadbalancer/ingress"
+                            break
+                        else:
+                            transformed_clouds.append(cloud.lower())
                     flavors = {
                         "name": f["flavor"],
-                        "clouds": flavor["clouds"], 
-                        "versions": [f["version"]]
+                        "clouds": list(set(transformed_clouds)),
+                        "versions": [f["version"]],
+                        "flavorSampleUrl" : f"https://facets-cloud.github.io/facets-schemas/schemas/{url_value}.{transformed_flavors[0]}.sample.json"
+
                     }
                     data["flavors"].append(flavors)
             
