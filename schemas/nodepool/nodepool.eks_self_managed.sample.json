@@ -3,6 +3,9 @@
   "kind": "kubernetes_node_pool",
   "flavor": "eks_self_managed",
   "version": "latest",
+  "disabled": true,
+  "lifecycle": "ENVIRONMENT",
+  "provided": false,
   "metadata": {
     "name": "test-node-group",
     "tags": {
@@ -26,33 +29,6 @@
     },
     "labels": {
       "service": "rendering-service"
-    }
-  },
-  "advanced": {
-    "eks": {
-      "self_managed_node_group": {
-        "desired_size": 1,
-        "ami_id": "ami-02c870f56e3617314",
-        "create_security_group": false,
-        "block_device_mappings": {
-          "sda1": {
-            "device_name": "/dev/sda1",
-            "ebs": [
-              {
-                "volume_size": 100,
-                "delete_on_termination": "true",
-                "volume_type": "gp3"
-              }
-            ]
-          }
-        },
-        "ebs_optimized": true,
-        "instance_initiated_shutdown_behavior": "terminate",
-        "platform": "windows",
-        "tags": {
-          "Purpose": "test"
-        }
-      }
     }
   }
 }

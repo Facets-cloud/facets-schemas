@@ -46,18 +46,5 @@
                 "min": 10
             }
         }
-    },
-    "advanced": {
-        "gcp": {
-            "iam": {
-                "bucket_list": {
-                    "role": "roles/xxxxxxxxxxxx"
-                }
-            }
-        },
-        "chart": {
-            "image_pull_secrets": {},
-            "node_selector": {}
-        }
     }
 }

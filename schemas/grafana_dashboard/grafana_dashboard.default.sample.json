@@ -1,5 +1,5 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana-dashboard.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.schema.json",
   "kind": "grafana_dashboard",
   "flavor": "default",
   "version": "latest",

@@ -20,8 +20,5 @@
         "replica_count": 1
       }
     }
-  },
-  "advanced": {
-    "rds": {}
   }
 }

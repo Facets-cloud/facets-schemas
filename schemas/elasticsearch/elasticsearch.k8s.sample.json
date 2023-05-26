@@ -15,13 +15,5 @@
       "volume": "8Gi",
       "replica_count": 2
     }
-  },
-  "advanced": {
-    "k8s": {
-      "elasticsearch": {
-        "values": {
-        }
-      }
-    }
   }
 }

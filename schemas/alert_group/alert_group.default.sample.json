@@ -1,5 +1,5 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert-group.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.schema.json",
   "kind": "alert_group",
   "flavor": "default",
   "version": "latest",

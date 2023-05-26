@@ -6,15 +6,6 @@
     "tags": {}
   },
   "provided": false,
-  "out": {
-  },
-  "advanced": {
-    "azure": {
-      "flexible_server": {
-        "username": ""
-      }
-    }
-  },
   "kind": "mysql",
   "disabled": false,
   "version": "0.1",

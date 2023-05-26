@@ -21,8 +21,8 @@ A Postgres Instance in reader/writer datastore mode.
 
 ## Flavors
 
-- [Aurora](postgres.aurora.md)
-- [Cloudsql](postgres.cloudsql.md)
+- [Aurora](postgres.aurora.schema.md)
+- [Cloudsql](postgres.cloudsql.schema.md)
 
 ## Alerts
 

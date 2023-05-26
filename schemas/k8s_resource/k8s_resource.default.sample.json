@@ -4,6 +4,9 @@
     "metadata": {},
     "flavor": "default",
     "version": "latest",
+    "disabled": true,
+    "provided": false,
+    "lifecycle": "ENVIRONMENT",
     "advanced": {
         "k8s_resource": {
             "cleanup_on_fail": true,

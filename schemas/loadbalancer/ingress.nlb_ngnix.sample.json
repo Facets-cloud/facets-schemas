@@ -29,8 +29,5 @@
       }
     },
     "force_ssl_redirection": true
-  },
-  "advanced": {
-    "nginx_ingress_controller": {}
   }
 }

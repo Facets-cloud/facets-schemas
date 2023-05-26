@@ -3,6 +3,8 @@
   "kind": "kubernetes_node_pool",
   "flavor": "eks_managed",
   "version": "latest",
+  "provided": false,
+  "lifecycle": "ENVIRONMENT",
   "metadata": {
     "name": "test-node-group",
     "tags": {
@@ -31,18 +33,6 @@
     },
     "labels": {
       "MyNodeType": "MyAppNodes"
-    }
-  },
-  "advanced": {
-    "eks": {
-      "managed_node_group": {
-        "desired_size": 2,
-        "capacity_type": "ON_DEMAND",
-        "ami_id": "",
-        "tags": {
-          "Purpose": "test"
-        }
-      }
     }
   }
 }

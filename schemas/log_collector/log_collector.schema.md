@@ -42,5 +42,5 @@ Output given by the resource for others to refer.
 | `storage_size`     | string | **Yes**  | Storage capacity to store logs. You can express storage size as a plain integer or as a fixed-point number using one of these quantity suffixes: E, P, T, G, M, k. You can also use the power-of-two equivalents: Ei, Pi, Ti, Gi, Mi, Ki |
 
 ### flavors
-- [loki](log-collector.loki.schema.md)
-- [loki_s3](log-collector.loki-s3.schema.md)
+- [loki](log_collector.loki.schema.md)
+- [loki_s3](log_collector.loki_s3.schema.md)

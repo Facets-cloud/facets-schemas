@@ -3,6 +3,8 @@
   "version": "0.2",
   "flavor": "k8s",
   "kind": "mongo",
+  "lifecycle": "ENVIRONMENT",
+  "disabled": false,
   "provided": false,
   "metadata": {
     "name": "mongo"
@@ -15,14 +17,6 @@
       "memory": "900MiB",
       "volume": "8G",
       "instance_count": 3
-    }
-  },
-  "advanced" : {
-    "k8s": {
-      "mongodb": {
-        "values": {
-        }
-      }
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_dynamodb/aws-dynamodb.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_dynamodb/aws_dynamodb.schema.json",
   "kind": "dynamodb",
   "flavor": "default",
   "version": "latest",

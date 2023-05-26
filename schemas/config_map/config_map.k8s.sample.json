@@ -1,7 +1,7 @@
 {
-    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/configmap/configmap.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.schema.json",
     "kind":"config_map",
-    "flavor":"default",
+    "flavor":"k8s",
     "version":"0.1",
     "disabled":false,
     "provided":true,
