@@ -26,7 +26,7 @@
           "type":"object",
           "description":"All the volumes you want to attach to the service",
           "properties":{
-             "configs":{
+             "config_maps":{
                 "type":"object",
                 "description":"The map of all the config maps that you want to mount",
                 "additionalProperties":false,
@@ -34,9 +34,9 @@
                 "patternProperties":{
                    "^[a-zA-Z0-9_.-]*$":{
                       "properties":{
-                         "mount_name":{
+                         "name":{
                             "type":"string",
-                            "description":"The mount name for the config map"
+                            "description":"The name of the config map that has been created in the kubernetes cluster"
                          },
                          "mount_path":{
                             "type":"string",
