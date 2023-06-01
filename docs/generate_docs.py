@@ -113,9 +113,7 @@ def flatten_schemanew(schema, path='', required_props=None):
     return properties
 
 def generate_reference(row):
-    if row['Type'] != 'object':
-        return f"${{{intent_name}.RESOURCE_NAME.{row.name}}}"
-    return ""
+    return f"${{{intent_name}.RESOURCE_NAME.{row.name}}}"
 
 # Define a function to manipulate the string
 def manipulate_property_name(property_name):
@@ -167,7 +165,7 @@ for schema_info in metadata:
     df_outputs.index = df_outputs.index.map(manipulate_property_name)
     df_schema_properties.index = df_schema_properties.index.map(manipulate_property_name)
     intent_name = schema_info['intent']
-    df_outputs['Referencing'] = ""
+    #df_outputs['Referencing'] = ""
     df_outputs['Referencing'] = df_outputs.apply(generate_reference, axis=1)
 
     # Write the DataFrames to a Markdown file
