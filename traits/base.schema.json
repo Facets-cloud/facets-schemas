@@ -19,9 +19,8 @@
         },
         "lifecycle": {
           "type": "string",
-          "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT` or `ENVIRONMENT_BOOTSTRAP`)",
+          "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
           "enum": [
-            "ENVIRONMENT",
             "ENVIRONMENT_BOOTSTRAP"
           ]
         },
