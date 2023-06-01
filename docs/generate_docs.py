@@ -2,7 +2,8 @@ import requests
 import json
 from jsonschema import RefResolver
 import pandas as pd
-
+from inflection import singularize
+import re
 # Function to resolve references in a schema
 def resolve_refs(schema):
     if isinstance(schema, dict):
@@ -111,6 +112,20 @@ def flatten_schemanew(schema, path='', required_props=None):
             properties.update(flatten_schema(subschema, path, required_props))
     return properties
 
+def generate_reference(row):
+    if row['Type'] != 'object':
+        return f"${{{intent_name}.RESOURCE_NAME.{row.name}}}"
+    return None
+
+# Define a function to manipulate the string
+def manipulate_property_name(property_name):
+    segments = property_name.split('.')
+    for i, segment in enumerate(segments):
+        if re.search(r'[^a-zA-Z0-9_-]', segment):
+            singular_form = singularize(segments[i - 1]).upper() + "_NAME"
+            segments[i] = singular_form
+    return '.'.join(segments)
+
 # Load the schema metadata
 metadata_url = 'https://facets-cloud.github.io/facets-schemas/schema-metadata.json'
 metadata = requests.get(metadata_url).json()
@@ -148,6 +163,11 @@ for schema_info in metadata:
     # Convert the schema properties and outputs to DataFrames
     df_schema_properties = pd.DataFrame(schema_properties.values(), index=schema_properties.keys(), columns=['Type', 'Description', 'Required'])
     df_outputs = pd.DataFrame(outputs.values(), index=outputs.keys(), columns=['Type', 'Description', 'Required'])
+
+    df_outputs.index = df_outputs.index.map(manipulate_property_name)
+    df_schema_properties.index = df_schema_properties.index.map(manipulate_property_name)
+    intent_name = schema_info['intent']
+    df_outputs['Referencing'] = df_outputs.apply(generate_reference, axis=1)
 
     # Write the DataFrames to a Markdown file
     filename = schema_info['intent'] + '.md'
