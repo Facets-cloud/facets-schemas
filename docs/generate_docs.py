@@ -167,6 +167,7 @@ for schema_info in metadata:
     df_outputs.index = df_outputs.index.map(manipulate_property_name)
     df_schema_properties.index = df_schema_properties.index.map(manipulate_property_name)
     intent_name = schema_info['intent']
+    df_outputs['Referencing'] = ""
     df_outputs['Referencing'] = df_outputs.apply(generate_reference, axis=1)
 
     # Write the DataFrames to a Markdown file
