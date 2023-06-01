@@ -115,7 +115,7 @@ def flatten_schemanew(schema, path='', required_props=None):
 def generate_reference(row):
     if row['Type'] != 'object':
         return f"${{{intent_name}.RESOURCE_NAME.{row.name}}}"
-    return None
+    return ""
 
 # Define a function to manipulate the string
 def manipulate_property_name(property_name):
