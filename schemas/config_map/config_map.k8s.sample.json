@@ -4,7 +4,7 @@
     "flavor":"k8s",
     "version":"0.1",
     "disabled":false,
-    "provided":true,
+    "provided":false,
     "metadata":{
        "name":"test-config"
     },

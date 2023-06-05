@@ -5,14 +5,11 @@
   "metadata": {
     "name": "schemahero"
   },
+  "advanced" : {},
   "spec": {
-    "connection": "mysql",
-    "uri": "root:test12345@tcp(schemahero-mysql.default.svc.cluster.local:3306)/schemahero"
+    "connection": "postgres",
+    "uri": "postgresql://postgres:test12345@schemahero-postgres-postgresql.default.svc.cluster.local:5432/schemahero"
   },
-  "advanced" : {
-    "default": {
-      "immediateDeploy": true
-    }
-  },
-  "version": "0.1"
+  "version": "0.1",
+  "out": {}
 }

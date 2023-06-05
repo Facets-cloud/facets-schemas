@@ -24,31 +24,7 @@
         "name": "dummy2",
         "type": "varchar(100)",
       }
-    },
-    "indexes": {
-      "1": {
-        "columns": ["name"],
-        "name": "dummy",
-        "is_unique": false
-      }
-    },
-    "foreign_keys": {
-      "1": {
-        "columns": ["name"],
-        "references": {
-          "table": "table2",
-          "columns": ["name2"]
-        }
-      }
     }
   },
-  "advanced" : {
-    "default": {
-      "schema" : {
-        "mysql": {
-          "isDeleted": false
-        }
-      }
-    }
-  }
+  "advanced" : {}
 }
