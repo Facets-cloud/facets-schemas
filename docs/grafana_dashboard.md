@@ -4,8 +4,8 @@
 
 |         | Type                    | Description   | Required   |
 |:--------|:------------------------|:--------------|:-----------|
-| kind    | enum: grafana_dashboard |               | Yes        |
 | flavor  | enum: default           |               | Yes        |
+| kind    | enum: grafana_dashboard |               | Yes        |
 | version | enum: 0.1, latest       |               | Yes        |
 
 ## Outputs

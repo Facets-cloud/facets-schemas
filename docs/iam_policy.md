@@ -4,14 +4,14 @@
 
 |                      | Type    | Description   | Required   |
 |:---------------------|:--------|:--------------|:-----------|
-| $SCHEMA_NAME         | string  |               | No         |
-| kind                 | string  |               | Yes        |
-| flavor               | string  |               | Yes        |
-| lifecycle            | string  |               | Yes        |
-| disabled             | boolean |               | Yes        |
-| provided             | boolean |               | Yes        |
+| KEY                  | string  |               | No         |
 | depends_on           | array   |               | Yes        |
-| metadata.annotations | object  |               | No         |
+| disabled             | boolean |               | Yes        |
+| flavor               | string  |               | Yes        |
+| kind                 | string  |               | Yes        |
+| lifecycle            | string  |               | Yes        |
+| provided             | boolean |               | Yes        |
+| metadata.annotations | object  |               | Yes        |
 
 ## Outputs
 
