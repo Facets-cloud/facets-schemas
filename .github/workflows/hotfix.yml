@@ -1,0 +1,60 @@
+name: Cherry-pick Merged PRs
+
+on: 
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull Request Number' 
+        required: true
+
+jobs:
+  cherry-pick:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: 'tfdev' # Make sure we checkout the branch where PR gets merged
+
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
+
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< ${{ secrets.GH_TOKEN }}
+      
+      - name: Check if PR is merged
+        id: check
+        run: |
+          PR_MERGED=$(gh pr view ${{ github.event.inputs.pr_number }} --json merged -q '.merged')
+          echo "::set-output name=merged::$PR_MERGED"
+
+      - name: Get squash merge commit ID
+        id: commit_id
+        run: |
+          if [[ "${{ steps.check.outputs.merged }}" == "true" ]]; then
+            COMMIT_ID=$(gh pr view ${{ github.event.inputs.pr_number }} --json mergeCommit -q '.mergeCommit.oid')
+            echo "::set-output name=id::$COMMIT_ID"
+          else
+            echo "PR not merged"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout test-prod branch
+        run: git checkout test-prod
+
+      - name: Cherry-pick commit
+        run: git cherry-pick ${{ steps.commit_id.outputs.id }}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: 'test-prod'
