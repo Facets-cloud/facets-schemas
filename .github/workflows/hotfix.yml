@@ -16,6 +16,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check team membership
+        uses: tspascoal/get-user-teams-membership@v2
+        id: actorTeams
+        with:
+          username: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Check if user belongs to team
+        run: |
+          if [[ "${{ steps.actorTeams.outputs.teams }}" == *"infra-release-managers"* ]]; then
+            echo "User belongs to team"
+          else
+            echo "User does not belong to team"
+          fi
       - name: Checkout code
         uses: actions/checkout@v2
         with:
