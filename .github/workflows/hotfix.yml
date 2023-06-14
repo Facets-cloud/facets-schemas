@@ -67,3 +67,32 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: 'test-prod'
+          
+      - name: Increment version patch and push tag
+        run: |
+          # Fetch all tags from remote
+          git fetch --tags
+
+          # Get the latest tag name
+          latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+
+          # Extract major, minor, and patch versions
+          majorVersion=$(echo $latestTag | cut -d. -f1)
+          minorVersion=$(echo $latestTag | cut -d. -f2)
+          patchVersion=$(echo $latestTag | cut -d. -f3)
+
+          # Increment the patch version
+          newPatchVersion=$((patchVersion + 1))
+
+          # Construct the new tag name
+          newTag="$majorVersion.$minorVersion.$newPatchVersion"
+
+          # Set the new tag
+          git tag $newTag
+
+          # Push the new tag to remote
+          git push origin $newTag
+        env:
+          GIT_COMMITTER_NAME: ${{ github.actor }}
+          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+
