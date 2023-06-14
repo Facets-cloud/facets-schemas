@@ -81,6 +81,7 @@ jobs:
           branch: 'production'
           
       - name: Increment version patch and push tag
+        id: tag
         run: |
           # Fetch all tags from remote
           git fetch --tags
@@ -115,7 +116,7 @@ jobs:
       - name: Trigger Jenkins job
         run: |
           curl -X POST "https://jenkins.root.console.facets.cloud/job/tf/buildWithParameters?ref=${{ steps.tag.outputs.newTag }}" \
-            --user "username:${{ secrets.JENKINS_TOKEN }}"
+            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}"
 
       - name: Add comment to PR
         uses: actions/github-script@v3
