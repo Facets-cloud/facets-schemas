@@ -20,7 +20,10 @@ jobs:
 
       - name: Install GitHub CLI
         run: |
-          curl -sSL https://github.com/cli/cli/releases/download/v2.3.0/gh_2.3.0_linux_amd64.tar.gz | sudo tar xz -C /usr/local/bin --strip-components=1 gh_2.3.0_linux_amd64/gh
+          curl -sSL https://github.com/cli/cli/releases/download/v2.3.0/gh_2.3.0_linux_amd64.tar.gz -o ghcli.tar.gz
+          tar xvf ghcli.tar.gz
+          sudo mv gh_*/bin/gh /usr/local/bin/
+          rm -rf ghcli.tar.gz gh_*
 
       - name: Authenticate GH CLI
         run: gh auth login --with-token <<< ${{ secrets.GH_TOKEN }}
