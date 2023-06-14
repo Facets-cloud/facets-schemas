@@ -16,6 +16,7 @@
 |                       |                             |     - if not specified, fallback is the `filename`                                                                                                                             |            |
 | spec                  | object                      | Specification as per resource types schema                                                                                                                                     | Yes        |
 | spec.data.KEY         | string                      | The contents of the file                                                                                                                                                       | No         |
+| spec.json_data.KEY    | object                      | The object to be json encoded                                                                                                                                                  | No         |
 
 ## Outputs
 

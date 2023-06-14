@@ -98,7 +98,14 @@
           "properties": {
             "interfaces": {
               "type": "object",
-              "$ref": "../../traits/multi-node-datastore-interface.schema.json",
+              "properties": {
+                "cluster": {
+                  "type": "object",
+                  "$ref": "../../traits/multi-node-datastore-interface.schema.json"
+                }
+              },
+              "required": ["cluster"],
+              "additionalProperties": false,
               "description": "Kafka broker details"
             },
             "instances": {

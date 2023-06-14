@@ -14,18 +14,6 @@
       "namespace": "test-namespace",
       "wait": false
     },
-    "env": [
-      {
-        "name": "datadog.apiKey",
-        "type": "secret",
-        "attribute": "DATADOG_API_KEY"
-      },
-      {
-        "name": "datadog.clusterName",
-        "type": "static",
-        "default": "some_value"
-      }
-    ],
     "values": {
       "datadog": {
         "service": {

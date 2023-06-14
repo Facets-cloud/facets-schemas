@@ -52,7 +52,6 @@
              "data": {
                "type": "object",
                "additionalProperties": false,
-               "minProperties": 1,
                "description": "the map of all filename and their contents",
                "patternProperties": {
                   "^[a-zA-Z0-9_.-]*$": { 
@@ -60,9 +59,21 @@
                      "description": "The contents of the file"
                   }
                }
+             },
+             "json_data": {
+               "type": "object",
+               "additionalProperties": false,
+               "description": "the map of all filename and their contents as json objects",
+               "patternProperties": {
+                 "^[a-zA-Z0-9_.-]*$": {
+                   "type": "object",
+                   "description": "The object to be json encoded"
+                 }
+               }
              }
+
            },
-         "required": ["data"]
+         "required": []
          },
          "advanced": {
             "type": "object",

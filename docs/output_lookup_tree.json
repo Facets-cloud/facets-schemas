@@ -117,10 +117,12 @@
     "kafka": {
         "out": {
             "interfaces": {
-                "endpoint": {},
-                "username": {},
-                "password": {},
-                "connection_string": {}
+                "cluster": {
+                    "endpoint": {},
+                    "username": {},
+                    "password": {},
+                    "connection_string": {}
+                }
             }
         }
     },

@@ -29,10 +29,10 @@
 
 ## Outputs
 
-|                                  | Type   | Description                                                                                                                                | Required   | Referencing                                             |
-|:---------------------------------|:-------|:-------------------------------------------------------------------------------------------------------------------------------------------|:-----------|:--------------------------------------------------------|
-| out.interfaces.endpoint          | string | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | Yes        | ${kafka.RESOURCE_NAME.out.interfaces.endpoint}          |
-| out.interfaces.username          | string | The username to use for authentication when connecting to the datastore.                                                                   | No         | ${kafka.RESOURCE_NAME.out.interfaces.username}          |
-| out.interfaces.password          | string | The password to use for authentication when connecting to the datastore.                                                                   | No         | ${kafka.RESOURCE_NAME.out.interfaces.password}          |
-| out.interfaces.connection_string | string | The connection_string to use when connecting to the datastore.                                                                             | Yes        | ${kafka.RESOURCE_NAME.out.interfaces.connection_string} |
+|                                          | Type   | Description                                                                                                                                | Required   | Referencing                                                     |
+|:-----------------------------------------|:-------|:-------------------------------------------------------------------------------------------------------------------------------------------|:-----------|:----------------------------------------------------------------|
+| out.interfaces.cluster.endpoint          | string | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | Yes        | ${kafka.RESOURCE_NAME.out.interfaces.cluster.endpoint}          |
+| out.interfaces.cluster.username          | string | The username to use for authentication when connecting to the datastore.                                                                   | No         | ${kafka.RESOURCE_NAME.out.interfaces.cluster.username}          |
+| out.interfaces.cluster.password          | string | The password to use for authentication when connecting to the datastore.                                                                   | No         | ${kafka.RESOURCE_NAME.out.interfaces.cluster.password}          |
+| out.interfaces.cluster.connection_string | string | The connection_string to use when connecting to the datastore.                                                                             | Yes        | ${kafka.RESOURCE_NAME.out.interfaces.cluster.connection_string} |
 
