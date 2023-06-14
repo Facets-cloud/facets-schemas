@@ -35,13 +35,13 @@ jobs:
       - name: Check if PR is merged
         id: check
         run: |
-          PR_MERGED=$(gh pr view ${{ github.event.inputs.pr_number }} --json merged -q '.merged')
+          PR_MERGED=$(gh pr view 250 --json state -q '.state')
           echo "::set-output name=merged::$PR_MERGED"
 
       - name: Get squash merge commit ID
         id: commit_id
         run: |
-          if [[ "${{ steps.check.outputs.merged }}" == "true" ]]; then
+          if [[ "${{ steps.check.outputs.merged }}" == "MERGED" ]]; then
             COMMIT_ID=$(gh pr view ${{ github.event.inputs.pr_number }} --json mergeCommit -q '.mergeCommit.oid')
             echo "::set-output name=id::$COMMIT_ID"
           else
