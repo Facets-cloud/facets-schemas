@@ -1,11 +1,8 @@
 name: Cherry-pick Merged PRs
 
-on: 
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'Pull Request Number' 
-        required: true
+on:
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: write
@@ -13,6 +10,7 @@ permissions:
 
 jobs:
   cherry-pick:
+    if: github.event.issue.pull_request && github.event.comment.body == '/perform-hotfix'
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +26,7 @@ jobs:
             echo "User belongs to team"
           else
             echo "User does not belong to team"
+            exit 1
           fi
       - name: Checkout code
         uses: actions/checkout@v2
@@ -69,8 +68,8 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Checkout test-prod branch
-        run: git checkout test-prod
+      - name: Checkout production branch
+        run: git checkout production
 
       - name: Cherry-pick commit
         run: git cherry-pick ${{ steps.commit_id.outputs.id }}
@@ -79,7 +78,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: 'test-prod'
+          branch: 'production'
           
       - name: Increment version patch and push tag
         run: |
