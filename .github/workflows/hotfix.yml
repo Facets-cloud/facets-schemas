@@ -104,7 +104,28 @@ jobs:
 
           # Push the new tag to remote
           git push origin $newTag
+          
+          # Output the new tag for use in later steps
+          echo "::set-output name=newTag::$newTag"
+
         env:
           GIT_COMMITTER_NAME: ${{ github.actor }}
           GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
 
+      - name: Trigger Jenkins job
+        run: |
+          curl -X POST "https://jenkins.root.console.facets.cloud/job/tf/buildWithParameters?ref=${{ steps.tag.outputs.newTag }}" \
+            --user "username:${{ secrets.JENKINS_TOKEN }}"
+
+      - name: Add comment to PR
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const issueComment = `The new tag [${{ steps.tag.outputs.newTag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.newTag }}) has been created and the Jenkins job has been triggered.`
+            github.issues.createComment({
+              issue_number: ${{ github.event.issue.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: issueComment
+            })
