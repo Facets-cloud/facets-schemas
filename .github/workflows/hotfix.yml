@@ -114,16 +114,23 @@ jobs:
           GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
 
       - name: Trigger Jenkins job
+        id: trigger
         run: |
-          curl -X POST "https://jenkins.root.console.facets.cloud/job/tf/buildWithParameters?ref=${{ steps.tag.outputs.newTag }}" \
-            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}"
+          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/tf/buildWithParameters?ref=${{ steps.tag.outputs.newTag }}" \
+            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" \
+            -o /dev/null -w '%{http_code}\n' -L -s)
+          queue_id=$(echo $response | jq -r .id)
+          sleep 5
+          build_number=$(curl -s "https://jenkins.root.console.facets.cloud/job/tf/api/json?tree=builds[number,queueId]{,10}" \
+            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" | jq "[.builds[] | select(.queueId==$queue_id)] | .[0].number")
+          echo "::set-output name=build_number::$build_number"
 
       - name: Add comment to PR
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const issueComment = `The new tag [${{ steps.tag.outputs.newTag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.newTag }}) has been created and the Jenkins job has been triggered.`
+            const issueComment = `The new tag [${{ steps.tag.outputs.newTag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.newTag }}) has been created, the Jenkins job has been triggered and can be seen [here](https://jenkins.root.console.facets.cloud/job/tf/${{ steps.trigger.outputs.build_number }}/console).`
             github.issues.createComment({
               issue_number: ${{ github.event.issue.number }},
               owner: context.repo.owner,
