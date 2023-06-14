@@ -30,7 +30,7 @@ jobs:
           rm -rf ghcli.tar.gz gh_*
 
       - name: Authenticate GH CLI
-        run: gh auth login --with-token <<< ${{ secrets.GH_TOKEN }}
+        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
       
       - name: Check if PR is merged
         id: check
