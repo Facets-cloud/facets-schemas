@@ -1,50 +1,54 @@
 {
-    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json",
-    "provided": false,
-    "disabled": false,
-    "version": "0.1",
-    "metadata": {},
-    "flavor": "default",
-    "kind": "service",
-    "spec": {
-        "type": "application",
-        "enable_host_anti_affinity": true,
-        "release": {
-            "image": "",
-            "strategy": {
-                "type": "Recreate"
-            }
-        },
-        "runtime": {
-            "volumes": {
-                "configs": {
-                    "ssl-certificate-1": {
-                        "mount_name": "test-configmap-ssl",
-                        "mount_path": "/var/data/"
-                    }
-                }
-            },
-            "ports": {
-                "http": {
-                    "port": 80,
-                    "protocol": "tcp"
-                }
-            },
-            "size": {
-                "cpu": "100m",
-                "memory": "800Mi"
-            },
-            "health_checks": {
-                "start_up_time": 10,
-                "timeout": 100,
-                "period": 10,
-                "port": 80
-            },
-            "autoscaling": {
-                "ram_threshold": 90,
-                "max": 10,
-                "min": 10
-            }
-        }
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json",
+  "flavor": "default",
+  "metadata": {
+    "labels": {
     }
+  },
+  "kind": "service",
+  "disabled": false,
+  "provided": false,
+  "version": "0.1",
+  "spec": {
+    "enable_host_anti_affinity": false,
+    "type": "application",
+    "release": {
+      "strategy": {
+        "type": "RollingUpdate"
+      },
+      "build": {
+        "artifactory": "default",
+        "name": "replace-with-app-name"
+      }
+    },
+    "runtime": {
+      "autoscaling": {
+        "min": 1,
+        "max": 1,
+        "cpu_threshold": 50
+      },
+      "ports": {
+        "http": {
+          "port": 8080,
+          "protocol": "tcp"
+        }
+      },
+      "size": {
+        "cpu": "300m",
+        "memory": "1Gi",
+        "cpu_limit": "1000m"
+      },
+      "health_checks": {
+        "timeout": 10,
+        "period": 30,
+        "port": 8080,
+        "start_up_time": 15
+      },
+      "volumes": {
+      }
+    },
+    "env": {
+      "LOG_LEVEL": "INFO"
+    }
+  }
 }
