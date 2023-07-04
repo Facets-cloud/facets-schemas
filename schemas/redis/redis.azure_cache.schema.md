@@ -12,7 +12,7 @@ Use the module [INPUT](https://registry.terraform.io/providers/hashicorp/azurerm
 ```json
 {
     "advanced": {
-        "rediscache": {
+        "azure_cache": {
             "public_network_access_enabled": true
         }
     }
