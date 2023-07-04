@@ -1,0 +1,38 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
+  "kind": "kubernetes_node_pool",
+  "flavor": "eks_managed",
+  "version": "latest",
+  "provided": false,
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {
+    "name": "test-node-group",
+    "tags": {
+      "Name": "test-node-group"
+    },
+    "annotations": {}
+  },
+  "spec": {
+    "instance_type": "t3.medium",
+    "min_node_count": 1,
+    "max_node_count": 5,
+    "is_public": true,
+    "disk_size": 20,
+    "azs": "us-east-1a",
+    "taints": {
+      "taint1": {
+        "key": "CriticalAddonsOnly",
+        "value": "true",
+        "effect": "NoSchedule"
+      },
+      "taint2": {
+        "effect": "PreferNoSchedule",
+        "key": "special",
+        "value": "true"
+      }
+    },
+    "labels": {
+      "MyNodeType": "MyAppNodes"
+    }
+  }
+}
