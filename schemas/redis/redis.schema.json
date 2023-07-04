@@ -20,7 +20,7 @@
             "k8s",
             "memorystore",
             "elasticache",
-            "rediscache"
+            "azure_cache"
           ]
         },
         "version": {
@@ -55,7 +55,7 @@
               "$ref": "flavor-memorystore.schema.json"
             },
             {
-              "$ref": "flavor-rediscache.schema.json"
+              "$ref": "flavor-azure_cache.schema.json"
             }
           ]
         }
@@ -130,8 +130,7 @@
                   }
                 }
               },
-              "required": [
-              ]
+              "required": []
             }
           ]
         }
