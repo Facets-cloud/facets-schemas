@@ -22,11 +22,5 @@
       }
     },
     "postgres_version": "12.11"
-  },
-  "advanced": {
-    "cloudsql": {
-      "postgres": {
-      }
-    }
   }
 }
