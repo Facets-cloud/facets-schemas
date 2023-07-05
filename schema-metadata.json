@@ -638,7 +638,7 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.gcp_alb.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.gcp_alb.sample.json"
             },
             {
                 "name": [
