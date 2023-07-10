@@ -86,11 +86,6 @@ if __name__ == '__main__':
                         if cloud == "all" or cloud == "any":
                             transformed_clouds = ["gcp", "aws", "azure"]
                             break
-                        # Since we have 2 folder for nginx with same flavor
-                        elif "nginx_ingress_controller" in transformed_flavors:
-                            transformed_clouds = ["gcp", "aws", "azure"]
-                            url_value = "loadbalancer/ingress"
-                            break
                         else:
                             transformed_clouds.append(cloud.lower())
                     flavors = {
@@ -113,7 +108,9 @@ if __name__ == '__main__':
                         existing_data["flavors"].append(flavor)
                     else:
                         print(flavor)
-                        existing_flavor["versions"].extend(flavor["versions"])
+                        existing_flavor["versions"].extend(cloud for cloud in flavor["versions"] if cloud not in existing_flavor["versions"])
+                        existing_flavor["clouds"].extend(cloud for cloud in flavor["clouds"] if cloud not in existing_flavor["clouds"])
+
 
     full_data_list = [v for _,v in full_data.items()]
     # print(json.dumps(full_data_list, indent=4))
