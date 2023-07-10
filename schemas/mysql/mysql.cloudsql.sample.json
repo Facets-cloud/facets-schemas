@@ -3,7 +3,6 @@
   "kind": "mysql",
   "flavor": "cloudsql",
   "version": "0.1",
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": true,
   "provided": false,
   "depends_on": [

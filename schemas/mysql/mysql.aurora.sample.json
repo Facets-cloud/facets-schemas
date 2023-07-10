@@ -5,7 +5,6 @@
   "version": "0.1",
   "disabled": false,
   "provided": false,
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "depends_on": [],
   "metadata": {},
   "spec": {
