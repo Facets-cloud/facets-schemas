@@ -3,6 +3,7 @@
 /capillary-cloud-tf/tfmain/level2/*.tf.json
 *~
 *.sw[mnpcod]
+*.pyc
 *.log
 *.tmp
 *.tmp.*
