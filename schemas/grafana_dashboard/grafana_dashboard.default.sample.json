@@ -3,6 +3,7 @@
   "kind": "grafana_dashboard",
   "flavor": "default",
   "version": "latest",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
   "provided": false,
   "depends_on": [],

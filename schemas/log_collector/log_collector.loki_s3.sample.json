@@ -3,6 +3,7 @@
   "kind": "log_collector",
   "flavor": "loki_s3",
   "version": "latest",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": true,
   "provided": false,
   "depends_on": [],

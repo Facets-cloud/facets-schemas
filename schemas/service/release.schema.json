@@ -17,6 +17,11 @@
                 "name": {
                     "type": "string",
                     "description": "Name of the artifactory"
+                },
+                "pull_policy": {
+                    "type": "string",
+                    "description": "ImagePullPolicy",
+                    "enum": ["IfNotPresent","Always","Never"]
                 }
             },
             "required": [

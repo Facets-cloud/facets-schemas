@@ -3,6 +3,7 @@
   "kind": "postgres",
   "flavor": "aurora",
   "version": "0.1",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
   "provided": true,
   "out": {

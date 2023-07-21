@@ -3,6 +3,7 @@
   "kind": "alert_group",
   "flavor": "default",
   "version": "latest",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": false,
   "provided": false,
   "depends_on": [
