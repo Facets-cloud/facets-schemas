@@ -44,3 +44,4 @@ Output given by the resource for others to refer.
 ### flavors
 - [loki](log_collector.loki.schema.md)
 - [loki_s3](log_collector.loki_s3.schema.md)
+- [loki_blob](log_collector.loki_blob.schema.md)
