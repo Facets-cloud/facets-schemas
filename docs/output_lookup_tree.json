@@ -114,6 +114,28 @@
             }
         }
     },
+    "postgres": {
+        "out": {
+            "interfaces": {
+                "reader": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "name": {},
+                    "connection_string": {}
+                },
+                "writer": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "name": {},
+                    "connection_string": {}
+                }
+            }
+        }
+    },
     "kafka": {
         "out": {
             "interfaces": {
@@ -154,6 +176,8 @@
             }
         }
     },
+    "postgres_user": {},
+    "mysql_user": {},
     "azure_storage_container": {
         "out": {
             "attributes": {
@@ -161,28 +185,6 @@
                 "storage_account_id": {},
                 "primary_access_key": {},
                 "container_name": {}
-            }
-        }
-    },
-    "postgres": {
-        "out": {
-            "interfaces": {
-                "reader": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "name": {},
-                    "connection_string": {}
-                },
-                "writer": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "name": {},
-                    "connection_string": {}
-                }
             }
         }
     },

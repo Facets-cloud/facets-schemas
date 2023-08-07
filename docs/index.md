@@ -24,6 +24,8 @@
 
 [Mongo](./mongo.md)
 
+[Postgres](./postgres.md)
+
 [Kafka](./kafka.md)
 
 [Grafana Dashboard](./grafana_dashboard.md)
@@ -34,9 +36,11 @@
 
 [Peering](./peering.md)
 
-[Azure Storage Container](./azure_storage_container.md)
+[Postgres User](./postgres_user.md)
 
-[Postgres](./postgres.md)
+[Mysql User](./mysql_user.md)
+
+[Azure Storage Container](./azure_storage_container.md)
 
 [Elasticsearch](./elasticsearch.md)
 
