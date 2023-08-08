@@ -23,11 +23,11 @@
     "size": {
       "reader": {
         "replica_count": 1,
-        "capacity": 1
+        "instance": 1
       },
       "writer": {
         "replica_count": 1,
-        "capacity": 1
+        "instance": 1
       }
     }
   }
