@@ -29,6 +29,7 @@ Specification as per resource types schema
 | `resource_name`   | string | **Yes**  | The name of the resource that you want to create a volume snapshot backup, if this is left blank, it will create volume backups for all resource name in the resource type |
 | `resource_type`   | string | **Yes**  | The name of the resource type which you need to create volume snapshot backup |
 | `retention_policy`   | [object](#data) | **Yes**  | The retention policy for your backup snapshot |
+| `additional_claim_selector_labels`   | [object](#data) | **No**  | The additional tags to be added to snapshot scheduler |
 
 ## retention policy
 
