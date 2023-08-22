@@ -75,3 +75,5 @@ capillary-cloud-tf/tfazure/level3/variables.tf
 capillary-cloud-tf/modules/1_input_instance/redis/redis
 capillary-cloud-tf/modules/0_input_config/redis_exporter/prometheus-redis-exporter
 tests/integration/tfwrapper/report
+capillary-cloud-tf/tfmain/scripts/local-testing/hotfix.json
+capillary-cloud-tf/tfmain/scripts/local-testing/custom.txt
