@@ -30,7 +30,8 @@ def versioning(directory_path):
         clouds = module_data.get("supported_clouds")
         lifecycle = module_data.get("lifecycle")
         input_type = module_data.get("input_type")
-        if input_type == "config" :
+        disabled = module_data.get("disabled")
+        if input_type == "config" or disabled is True:
             continue
         if provides not in version_data:
             version_data[provides] = {}
