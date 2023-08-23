@@ -49,6 +49,7 @@ Additional fields if any for a particular implementation of a resource
 | Property | Type           | Required | Description                           |
 |----------|----------------|----------|---------------------------------------|
 | `k8s`    | [object](#k8s) | No       | Advanced k8s values for elasticsearch |
+| `aws`    | [object](#aws) | No       | Advanced aws values for elasticsearch |
 
 ### k8s
 
@@ -57,6 +58,15 @@ Advanced k8s values for elasticsearch
 | Property        | Type                     | Required | Description                       |
 |-----------------|--------------------------|----------|-----------------------------------|
 | `elasticsearch` | [object](#elasticsearch) | No       | Advanced values for elasticsearch |
+
+
+### aws
+
+Advanced aws values for elasticsearch
+
+| Property                   | Type                                                                                                       | Required | Description                                                     |
+|----------------------------|------------------------------------------------------------------------------------------------------------|----------|-----------------------------------------------------------------|
+| `aws_elasticsearch_domain` | [object](https://registry.terraform.io/providers/hashicorp/aws/3.74.0/docs/resources/elasticsearch_domain) | No       | Advanced values for terraform resource aws_elasticsearch_domain |
 
 #### elasticsearch
 

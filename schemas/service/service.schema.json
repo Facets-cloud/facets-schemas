@@ -70,7 +70,8 @@
               "release",
               "type",
               "enable_host_anti_affinity",
-              "runtime"
+              "runtime",
+              "env"
             ],
             "allOf": [
                 {

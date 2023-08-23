@@ -54,7 +54,7 @@
                             "type": { "enum": ["RollingUpdate"] }
                         }
                     },
-                    "then": { "required": ["max_available", "max_unavailable", "type"] }
+                    "then": { "required": ["type"] }
                 },
                 {
                     "if": {

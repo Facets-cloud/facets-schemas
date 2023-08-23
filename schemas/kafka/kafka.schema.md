@@ -113,24 +113,23 @@ Kafka extra settings for connection
 | `sasl_mechanism`    | string | No       | The sasl mechanism required to connect to the kafka broker Possible values are: `SCRAM-SHA-256`, `PLAIN`.         |
 | `security_protocol` | string | No       | The security protocol required to connect to the kafka broker Possible values are: `SASL_PLAINTEXT`, `PLAINTEXT`. |
 
+### cluster
 
-### interfaces
+Kafka cluster configuration
 
-Kafka broker details
+| Name              | Description                                                                                                                                | Type   | Required |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
+| endpoint          | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | string | Yes      |
+| username          | The username to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
+| connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
 
-| Property            | Type   | Required | Description                    |
-|---------------------|--------|----------|--------------------------------|
-| `connection_string` | string | No       | Connection string to connect   |
-| `host`              | string | No       | Host for service discovery     |
-| `name`              | string | No       | Name of interface, same as key |
-| `password`          | string | No       | Password to connect (if any)   |
-| `port`              | string | No       | Port for service discovery     |
-| `username`          | string | No       | Username to connect (if any)   |
 
 
 ### Flavors
 
-* `k8s`
+* k8s
+* [msk](kafka.msk.schema.md)
 
 ### Alerts
 

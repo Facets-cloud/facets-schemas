@@ -34,7 +34,7 @@ Specification as per resource types schema
 | `release`                   | [object](#release) | **Yes**  | Map of all release keys                                                                                                                                                 |
 | `runtime`                   | [object](#runtime) | **Yes**  | Map of all runtime keys                                                                                                                                                 |
 | `type`                      | string             | **Yes**  | This will specify the type of service you want to create. Possible values are: `application`, `statefulset`, `cronjob`, `job`. |
-| `env`                       | [object](#env)     | No       | The key value pairs of all the environment variables that needs to be passed to the pod                                                                                 |
+| `env`                       | [object](#env)     | **Yes**       | The key value pairs of all the environment variables that needs to be passed to the pod                                                                                 |
 | `restart_policy`            | string             | No       | Possible values are: `Always`, `OnFailure`, `Never`.                                                                         |
 
 ### release
@@ -73,7 +73,7 @@ The type of upgrade strategy to be followed by this service
 |-------------------|---------|----------|--------------------------------------------------------------------------------------------------------------|
 | `max_available`   | integer | No       | If type RollingUpdate , this is the max number of pods that can be created from the default replicas         |
 | `max_unavailable` | integer | No       | If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas     |
-| `type`            | string  | No       | Your kubernetes rollout type , Possible values are: `RollingUpdate`, `Recreate`. |
+| `type`            | string  | **Yes**       | Your kubernetes rollout type , Possible values are: `RollingUpdate`, `Recreate`. |
 
 ### runtime
 

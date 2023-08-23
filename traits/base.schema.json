@@ -81,8 +81,7 @@
           "kind",
           "flavor",
           "version",
-          "metadata",
-          "out"
+          "metadata"
         ]
       }
     },

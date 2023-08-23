@@ -24,7 +24,7 @@
         "flavor": {
           "type": "string",
           "enum": [
-            "k8s"
+            "k8s","aws"
           ]
         },
         "version": {
