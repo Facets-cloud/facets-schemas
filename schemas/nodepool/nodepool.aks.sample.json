@@ -10,6 +10,7 @@
   "disabled": true,
   "version": "0.1",
   "spec": {
+    "instance": "Spot",
     "instance_type": "Standard_F8",
     "min_node_count": 0,
     "max_node_count": 100,

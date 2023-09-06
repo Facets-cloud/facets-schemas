@@ -14,7 +14,7 @@
         },
         "flavor":{
           "type":"string",
-          "enum": ["default"]
+          "enum": ["default", "loki"]
         },
         "version":{
           "type":"string",
