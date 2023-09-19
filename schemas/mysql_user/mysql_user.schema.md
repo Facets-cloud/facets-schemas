@@ -56,6 +56,8 @@ The advanced options for PostgreSQL User
 | Property           | Type   | Required | Description                                                                                                                                                                                                                         |
 | ------------------ | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `resource_options` | object | No       | The resource options for MySQL User. You can refer to this doc for more information - https://doc.crds.dev/github.com/crossplane-contrib/provider-sql/mysql.sql.crossplane.io/User/v1alpha1@v0.7.0#spec-forProvider-resourceOptions |
+| `user_name` | string | No       | User defined name for mysql shard user |
+| `user_password` | string | No       | User Defined password for mysql shard user |
 
 ## Out
 
@@ -71,3 +73,4 @@ Output given by the resource for others to refer.
 ## Flavor
 
 - default
+- sharded_user
