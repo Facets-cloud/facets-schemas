@@ -56,7 +56,8 @@
                     "port": {},
                     "username": {},
                     "password": {},
-                    "connection_string": {}
+                    "connection_string": {},
+                    "name": {}
                 }
             }
         }
