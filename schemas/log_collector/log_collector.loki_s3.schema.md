@@ -16,6 +16,7 @@ Log collector of flavor loki_s3 implementation
 | loki_s3.loki_canary.enable_loki_canary | Whether to enable loki canary or not                                                                                                                                                         | boolean            | no       | 0.1, 0.2        |
 | loki_s3.loki.ingester_pvc_size         | Expand the volume size of ingester PVC                                                                                                                                                           | string             | no       |  0.2        |
 | loki_s3.loki.querier_pvc_size          | Expand the volume size of querier PVC                                                                                                                                                            | string             | no       |  0.2        |
+| loki_s3.query_timeout                  | Update the query timeout of loki as grafana datasource                                                                                                                                         | string                  | no       | 0.2    |
 
 ## Example usage
 ```json
@@ -34,7 +35,8 @@ Log collector of flavor loki_s3 implementation
         "loki_canary": {
             "enable_loki_canary": true,
             "values": {}
-            }
+            },
+        "query_timeout": 90
         }
   }
 ```
