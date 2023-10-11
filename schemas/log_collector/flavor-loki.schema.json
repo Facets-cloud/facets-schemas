@@ -36,6 +36,10 @@
             "values": {
               "type": "object",
               "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/promtail\n Note: By default, loki push endpoint will be configured automatically to send log entries to Loki"
+            },
+            "enable_default_pack": {
+              "type": "boolean",
+              "description": "Setting to enable or disable default packing within promtail pipeline stage. Defaults to true"
             }
           },
           "required": ["values"]
