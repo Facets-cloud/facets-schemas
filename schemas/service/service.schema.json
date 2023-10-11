@@ -176,8 +176,22 @@
                 "description": "The output for your service module, this can be generated or provided",
                 "patternProperties": {
                   "^[a-zA-Z0-9_.-]*$": {
+                    "type": "object",
                     "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
-                    "$ref": "../../traits/datastore-interface.schema.json"
+                    "allOf": [
+                      {
+                        "$ref": "../../traits/datastore-interface.schema.json"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the service which we want to reference"
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }

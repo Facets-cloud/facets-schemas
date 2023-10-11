@@ -6,7 +6,7 @@
         }
     },
     "kind": "service",
-    "disabled": false,
+    "disabled": true,
     "provided": false,
     "version": "0.1",
     "spec": {

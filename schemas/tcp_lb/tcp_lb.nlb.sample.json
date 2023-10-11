@@ -1,5 +1,5 @@
 {
-    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/tcp/nlb.schema.json",
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/nlb.schema.json",
     "kind": "tcp_lb",
     "flavor": "nlb",
     "metadata": {
