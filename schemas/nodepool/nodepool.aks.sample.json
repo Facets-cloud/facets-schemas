@@ -1,6 +1,7 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
-"flavor": "aks",
+  "flavor": "aks",
+  "kind": "kubernetes_node_pool",
   "metadata": {
     "name": "spot",
     "tags": {},
