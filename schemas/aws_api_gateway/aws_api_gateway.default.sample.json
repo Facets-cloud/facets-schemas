@@ -2,7 +2,7 @@
     "$schema": "./aws_api_gateway.schema.json",
     "kind": "aws_api_gateway",
     "flavor": "default",
-    "disabled": true,
+    "disabled": false,
     "metadata": {"description": "some desc"},
     "provided": false ,
     "version": "0.1",

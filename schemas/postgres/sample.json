@@ -4,7 +4,7 @@
   "flavor": "aurora",
   "version": "0.1",
   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
-  "disabled": true,
+  "disabled": false,
   "provided": true,
   "out": {
   },

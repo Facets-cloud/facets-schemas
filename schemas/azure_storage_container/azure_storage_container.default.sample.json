@@ -1,6 +1,6 @@
 {
    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/azure_storage_container/azure_storage_container.schema.json",
-   "disabled": true,
+   "disabled": false,
    "flavor": "default",
    "kind": "azure_storage_container",
    "metadata": {},
@@ -17,10 +17,7 @@
          "lifecycles": {
             "lf1":{
                "prefix_match": ["test"],
-               "delete_after_days": 90,
-               "tier_to_cool_after_days": 0,
-               "tier_to_archive_after_days": 50,
-               "snapshot_delete_after_days": 30
+               "delete_after_days": 50
             }
          }
       }
