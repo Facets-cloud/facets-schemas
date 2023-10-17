@@ -2,7 +2,7 @@
     "$schema": "./aws_lambda.schema.json",
     "kind": "aws_lambda",
     "flavor": "default",
-    "disabled": false,
+    "disabled": true,
     "metadata": {"description": "some desc"},
     "provided": false ,
     "version": "0.1",
