@@ -22,7 +22,7 @@
       },
       "3": {
         "name": "dummy2",
-        "type": "varchar(100)"
+        "type": "varchar(100)",
       }
     }
   },

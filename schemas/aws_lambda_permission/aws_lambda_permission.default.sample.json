@@ -2,7 +2,7 @@
     "$schema": "./aws_api_gateway.schema.json",
     "kind": "aws_lambda_permission",
     "flavor": "default",
-    "disabled": true,
+    "disabled": false,
     "metadata": {},
     "provided": false ,
     "version": "0.1",

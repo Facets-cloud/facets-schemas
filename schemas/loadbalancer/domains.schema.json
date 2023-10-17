@@ -22,6 +22,10 @@
         "rules": {
           "$ref": "./ingress-rules.schema.json",
           "description": "Objects of all ingress rules"
+        },
+        "equivalent_prefixes": {
+          "type": "array",
+          "description": "The list of domain_prefix's to auto populate rules that matches from .spec.rules"
         }
       },
       "required": [
