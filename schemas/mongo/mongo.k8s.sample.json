@@ -4,14 +4,14 @@
   "flavor": "k8s",
   "kind": "mongo",
   "lifecycle": "ENVIRONMENT",
-  "disabled": true,
+  "disabled": false,
   "provided": false,
   "metadata": {
     "name": "mongo"
   },
   "spec": {
     "authenticated": true,
-    "mongodb_version" : "6.0.2",
+    "mongo_version" : "6.0.2",
     "size" : {
       "cpu": "2001m",
       "memory": "900MiB",
