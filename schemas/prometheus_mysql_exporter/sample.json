@@ -3,7 +3,7 @@
   "kind": "mysql_exporter",
   "flavor": "default",
   "version": "0.1",
-  "disabled": false,
+  "disabled": true,
   "provided": false,
   "depends_on": [],
   "metadata": {

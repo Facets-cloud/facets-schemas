@@ -4,7 +4,7 @@
    "flavor": "aws_alb",
    "version": "0.2",
    "lifecycle": "ENVIRONMENT_BOOTSTRAP",
-   "disabled": false,
+   "disabled": true,
    "provided": false,
    "metadata": {},
    "advanced": {
