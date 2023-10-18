@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "azure_agic": {
+      "type": "object",
+      "description": "Advanced section of the Azure Application Gateway Ingress Controller",
+      "properties": {
+        "values": {
+          "type": "string",
+          "description": "Helm Values as per the helm chart https://github.com/Azure/application-gateway-kubernetes-ingress/tree/master/helm/ingress-azure"
+        }
+      }
+    }
+  }
+}

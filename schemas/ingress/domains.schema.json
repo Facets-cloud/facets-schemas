@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "minProperties": 1,
+  "patternProperties": {
+    "^[a-zA-Z0-9_.-]*$": {
+      "description": "This is the name of the domain object that you are creating, it can be of any name",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "The host name of the domain"
+        },
+        "alias": {
+          "type": "string",
+          "description": "Alias naming for the domain"
+        },
+        "certificate_reference": {
+          "type": "string",
+          "description": "Certificate reference name, if flavor is `aws_alb` then its the ACM ARN certificate reference else `gcp_alb` its the name of the managed certificate that you want facets to create in gcp. In case of `nginx_ingress_controller` its the uploaded k8s certificate referenced as secret. In case of `azure_agic` it is the secret key id of the secret in azure key vault"
+        },
+        "rules": {
+          "$ref": "./ingress-rules.schema.json",
+          "description": "Objects of all ingress rules"
+        }
+      },
+      "required": [
+        "domain",
+        "alias",
+        "certificate_reference"
+      ]
+    }
+  }
+}
