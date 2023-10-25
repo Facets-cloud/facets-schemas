@@ -12,9 +12,10 @@ MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 
+
 class FacetsRun:
     def __init__(self):
-        self.s3 = boto3.client('s3') if not USE_MINIO else boto3.client('s3', 
+        self.s3 = boto3.client('s3') if not bool(USE_MINIO) else boto3.client('s3', 
         endpoint_url=MINIO_ENDPOINT, aws_access_key_id=MINIO_ACCESS_KEY, aws_secret_access_key=MINIO_SECRET_KEY)
         self.gitsources = json.loads(open("/configs/gitsources.json").read())
         self.s3sources = json.loads(open("/configs/s3sources.json").read())
@@ -33,7 +34,7 @@ class FacetsRun:
                                 aws_secret_access_key=s3source["secret"],
                                 region_name=s3source["region"])
         else:
-            if USE_MINIO:
+            if bool(USE_MINIO):
                 return boto3.client('s3',
                                     endpoint_url = MINIO_ENDPOINT,
                                     aws_access_key_id=MINIO_ACCESS_KEY,
