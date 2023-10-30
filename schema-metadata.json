@@ -410,8 +410,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "providedk8s",
-                    "azure"
+                    "azure",
+                    "providedk8s"
                 ],
                 "versions": [
                     {
