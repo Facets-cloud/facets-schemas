@@ -129,8 +129,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -211,8 +211,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -312,8 +312,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -353,11 +353,17 @@
                     "nginx_ingress_controller"
                 ],
                 "clouds": [
-                    "aws"
+                    "aws",
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
                         "number": "0.1",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.2",
                         "documentation": "NA"
                     }
                 ],
@@ -409,9 +415,9 @@
                     "nginx_ingress_controller"
                 ],
                 "clouds": [
+                    "azure",
                     "providedk8s",
-                    "gcp",
-                    "azure"
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -451,8 +457,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -650,8 +656,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -705,8 +711,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -731,8 +737,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -795,8 +801,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -839,9 +845,9 @@
                     "default"
                 ],
                 "clouds": [
-                    "gcp",
                     "aws",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -942,8 +948,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -969,8 +975,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1019,8 +1025,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1036,8 +1042,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1062,8 +1068,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1136,8 +1142,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1161,9 +1167,9 @@
                     "default"
                 ],
                 "clouds": [
-                    "gcp",
                     "aws",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1189,8 +1195,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1267,9 +1273,9 @@
                     "default"
                 ],
                 "clouds": [
-                    "gcp",
                     "aws",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1294,8 +1300,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1321,8 +1327,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1348,8 +1354,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1375,8 +1381,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1441,8 +1447,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
@@ -1516,8 +1522,8 @@
                 ],
                 "clouds": [
                     "aws",
-                    "gcp",
-                    "azure"
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
