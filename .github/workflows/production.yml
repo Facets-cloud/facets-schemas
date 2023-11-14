@@ -1,4 +1,4 @@
-name: promotion
+name: production
 on:
   workflow_dispatch:
     inputs:
@@ -89,6 +89,14 @@ jobs:
           S3_KEY: 'production/${{ inputs.tag }}.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      - name: Trigger Jenkins job
+        id: trigger
+        run: |
+          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/facets-iac-docs-ci/build" \
+            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" -D -)
+          queue_url=$(echo "$response" | grep -Fi Location | awk '{print $2}' | tr -d '\r')
+          queue_id=$(basename "$queue_url")
+          echo "::set-output name=queue_id::$queue_id"
       - name: Post Success to a Slack channel
         if: ${{ inputs.force == 'false' }}
         uses: slackapi/slack-github-action@v1.24.0
