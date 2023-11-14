@@ -1,0 +1,78 @@
+name: release-candidate
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag'
+        required: false
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check team membership
+        uses: tspascoal/get-user-teams-membership@v2
+        id: actorTeams
+        with:
+          username: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Check if user belongs to team
+        run: |
+          if [[ "${{ steps.actorTeams.outputs.teams }}" == *"infra-release-managers"* ]]; then
+            echo "User belongs to team"
+          else
+            echo "User does not belong to team"
+            exit 1
+          fi
+      - name: Merge production -> tfdev
+        uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ secrets.PAT }}
+          source_ref: 'production'
+          target_branch: 'tfdev'
+          commit_message_template: '[Automated] Merged {source_ref} into {target_branch} for creating release candidate rc-${{ steps.tag.outputs.tag }}'
+      - name: Checkout branch "tfdev"
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: 'tfdev'
+      - name: Determine tag and ref to build
+        id: tag
+        run: |
+          if [[ -n "${{ steps.tag.outputs.tag }}" ]]; then
+            tag="${{ steps.tag.outputs.tag }}"
+            echo "Tag: $tag"
+          else
+            echo "Tag input is not provided. Incrementing the minor version to build the tag."
+            # Fetch all tags from remote
+            git fetch --tags
+            # Get the latest tag name
+            latestTag=$(git tag --sort=-v:refname | head -n 1)
+            # Extract major, minor, and patch versions
+            majorVersion=$(echo $latestTag | cut -d. -f1)
+            minorVersion=$(echo $latestTag | cut -d. -f2)
+            patchVersion=0
+            # Increment the minor version
+            newMinorVersion=$((minorVersion + 1))
+            # Construct the new tag name
+            tag="$majorVersion.$newMinorVersion.$patchVersion"
+          fi
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+      - name: Get Commit SHA
+        id: get_sha
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Creating the release candidate branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          branch: 'rc-${{ steps.tag.outputs.tag }}'
+          sha: '${{ steps.get_sha.outputs.sha }}'
+      - name: Post Success to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.CHANNEL_ID }}
+          slack-message: 'Release Candidate rc-${{ steps.tag.outputs.tag }} branch is ready for QA testing'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
