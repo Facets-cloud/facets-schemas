@@ -92,10 +92,12 @@ jobs:
           fetch-depth: 0
           ref: '${{ needs.determine-tag-and-ref.outputs.ref }}'
       - name: Generate Tag
-        uses: tvdias/github-tagger@v0.0.1
-        with:
-          repo-token: ${{ secrets.PAT }}
-          tag: ${{ needs.determine-tag-and-ref.outputs.tag }}
+        shell: bash
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git tag -a ${{ needs.determine-tag-and-ref.outputs.tag }} -m "[Automated] Building tag ${{ needs.determine-tag-and-ref.outputs.tag }}"
+          git push origin ${{ needs.determine-tag-and-ref.outputs.tag }}
       - name: Install zip
         uses: montudor/action-zip@v1
       - name: Zip output
