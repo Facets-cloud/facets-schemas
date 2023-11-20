@@ -1,9 +1,9 @@
 {
   "kind": "ingress",
-  "flavor": "nginx_ingress_controller",
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json",
+  "flavor": "gcp_alb",
   "disabled": true,
-  "version": "0.1",
+  "version": "0.2",
   "lifecycle": "ENVIRONMENT",
   "provided": false,
   "depends_on": [],
