@@ -7,7 +7,7 @@ import socket
 import time
 import botocore
 
-USE_MINIO = os.getenv("USE_MINIO", False)
+USE_MINIO = os.getenv("USE_MINIO", "false")
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
@@ -34,7 +34,7 @@ class FacetsRun:
                                 aws_secret_access_key=s3source["secret"],
                                 region_name=s3source["region"])
         else:
-            if bool(USE_MINIO):
+            if eval(USE_MINIO.capitalize()):
                 return boto3.client('s3',
                                     endpoint_url = MINIO_ENDPOINT,
                                     aws_access_key_id=MINIO_ACCESS_KEY,
