@@ -1,0 +1,122 @@
+name: promotion
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag'
+        required: true
+      force:
+        description: 'force'
+        type: choice
+        required: true
+        default: 'false'
+        options:
+          - true
+          - false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.run.outputs.run }}
+      status: ${{ steps.run.outputs.status }}
+    steps:
+      - name: Check team membership
+        uses: tspascoal/get-user-teams-membership@v2
+        id: actorTeams
+        with:
+          username: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Check if user belongs to team
+        run: |
+          if [[ "${{ steps.actorTeams.outputs.teams }}" == *"infra-release-managers"* ]]; then
+            echo "User belongs to team"
+          else
+            echo "User does not belong to team"
+            exit 1
+          fi
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: 'tfdev'
+      - name: Build and run Go function
+        id: run
+        shell: bash
+        run: |
+         set +e
+         if [ "${{ inputs.force }}" == "false" ]; then 
+          cd .github/workflows/promotion
+          # Retrieve the JSON content from the repository variable
+          JSON_CONTENT='${{ vars.CONTROL_PLANES }}'
+          echo "$JSON_CONTENT" > control_planes.json
+          TOKENS='${{ secrets.TOKENS }}'
+          echo "$TOKENS" > passwords.json
+          go build -o promotion
+          output=$(./promotion --tag ${{ inputs.tag }})
+          exit_status=${PIPESTATUS[0]}
+          echo "run<<EOF" >> $GITHUB_OUTPUT
+          echo "$output" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+         else
+          echo "WARNING: Not running the check to check all stage releases since force is set to true!"
+          exit_status=0
+         fi
+         echo "status=$exit_status" >> $GITHUB_OUTPUT
+         echo "Tag: ${{ inputs.tag }}"
+         echo "Exit Status: $exit_status"
+  on-success:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.status == '0' || inputs.force == 'true' }}
+    steps:
+      - name: Copy the tag from s3
+        uses: prewk/s3-cp-action@v2
+        with:
+          aws_access_key_id: ${{ secrets.AWS_SECRET_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+          source: 's3://${{ secrets.BUCKET_NAME }}/stage/${{ inputs.tag }}.zip'
+          dest: './${{ inputs.tag }}.zip'
+      - name: Upload file to bucket
+        uses: zdurham/s3-upload-github-action@master
+        env:
+          FILE: ${{ inputs.tag }}.zip
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+          S3_KEY: 'production/${{ inputs.tag }}.zip'
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+      - name: Post Success to a Slack channel
+        if: ${{ inputs.force == 'false' }}
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.CHANNEL_ID }}
+          slack-message: ${{needs.build.outputs.run}}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      - name: Post Success to a Slack channel(force)
+        if: ${{ inputs.force == 'true' }}
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.CHANNEL_ID }}
+          slack-message: 'Tag ${{ inputs.tag }} has been forcefully promoted to production!'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+  on-failure:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.status != '0'  && inputs.force == 'false' }}
+    steps:
+      - name: Post Failure to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.CHANNEL_ID }}
+          slack-message: 'Failed: ${{needs.build.outputs.run}}'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      - name: Exiting with error
+        run: exit 1

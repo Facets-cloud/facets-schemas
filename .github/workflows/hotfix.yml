@@ -1,4 +1,4 @@
-name: Cherry-pick Merged PRs
+name: hotfix
 
 on:
   issue_comment:
@@ -7,12 +7,12 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   cherry-pick:
-    if: github.event.issue.pull_request && github.event.comment.body == '/perform-hotfix'
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/perform-hotfix')
     runs-on: ubuntu-latest
-
     steps:
       - name: Check team membership
         uses: tspascoal/get-user-teams-membership@v2
@@ -33,17 +33,39 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'tfdev' # Make sure we checkout the branch where PR gets merged
-
-      - name: Install GitHub CLI
+      - name: Extract text after /perform-hotfix
+        id: input
         run: |
-          curl -sSL https://github.com/cli/cli/releases/download/v2.3.0/gh_2.3.0_linux_amd64.tar.gz -o ghcli.tar.gz
-          tar xvf ghcli.tar.gz
-          sudo mv gh_*/bin/gh /usr/local/bin/
-          rm -rf ghcli.tar.gz gh_*
+          branch=$(cat $GITHUB_EVENT_PATH | jq -r '.comment.body | capture("/perform-hotfix\\s*\\b(?<text1>[^\\s]+)(?:\\s+(?<text2>[^\\s]+))?\\b") | .text1')
+          tag=$(cat $GITHUB_EVENT_PATH | jq -r '.comment.body | capture("/perform-hotfix\\s*\\b(?<text1>[^\\s]+)(?:\\s+(?<text2>[^\\s]+))?\\b") | if .text2 then .text2 else "" end')
+          if [ -z "$branch" ]; then
+            branch="production"
+          fi
+          if [ -n "$tag" ]; then
+            newTag=$tag
+          else
+            # Fetch all tags from remote
+            git fetch --tags
+            # Get the latest tag name
+            latestTag=$(git tag --sort=-v:refname | head -n 1)
+            # Extract major, minor, and patch versions
+            majorVersion=$(echo $latestTag | cut -d. -f1)
+            minorVersion=$(echo $latestTag | cut -d. -f2)
+            patchVersion=$(echo $latestTag | cut -d. -f3)
 
+            # Increment the patch version
+            newPatchVersion=$((patchVersion + 1))
+
+            # Construct the new tag name
+            newTag="$majorVersion.$minorVersion.$newPatchVersion"
+          fi
+          echo "branch=$branch"
+          echo "tag=$newTag"
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "tag=$newTag" >> $GITHUB_OUTPUT
       - name: Authenticate GH CLI
         run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Check if PR is merged
         id: check
         run: |
@@ -68,8 +90,8 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Checkout production branch
-        run: git checkout production
+      - name: Checkout hotfix branch
+        run: git checkout ${{ steps.input.outputs.branch }}
 
       - name: Cherry-pick commit
         run: git cherry-pick ${{ steps.commit_id.outputs.id }}
@@ -78,59 +100,36 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: 'production'
-          
-      - name: Increment version patch and push tag
-        id: tag
-        run: |
-          # Fetch all tags from remote
-          git fetch --tags
-
-          # Get the latest tag name
-          latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
-
-          # Extract major, minor, and patch versions
-          majorVersion=$(echo $latestTag | cut -d. -f1)
-          minorVersion=$(echo $latestTag | cut -d. -f2)
-          patchVersion=$(echo $latestTag | cut -d. -f3)
-
-          # Increment the patch version
-          newPatchVersion=$((patchVersion + 1))
-
-          # Construct the new tag name
-          newTag="$majorVersion.$minorVersion.$newPatchVersion"
-
-          # Set the new tag
-          git tag $newTag
-
-          # Push the new tag to remote
-          git push origin $newTag
-          
-          # Output the new tag for use in later steps
-          echo "::set-output name=newTag::$newTag"
-
+          branch: ${{ steps.input.outputs.branch }}
         env:
           GIT_COMMITTER_NAME: ${{ github.actor }}
           GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
-
-      - name: Trigger Jenkins job
-        id: trigger
+      - name: Trigger the stage workflow
+        id: stage_trigger
         run: |
-          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/tf/buildWithParameters?ref=${{ steps.tag.outputs.newTag }}" \
-            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" -D -)
-          queue_url=$(echo "$response" | grep -Fi Location | awk '{print $2}' | tr -d '\r')
-          queue_id=$(basename "$queue_url")
-          echo "::set-output name=queue_id::$queue_id"
-
+          gh workflow run stage -R ${{ github.repository }} --ref tfdev -F tag=${{ steps.input.outputs.tag }} -F ref=${{ steps.input.outputs.branch }}
+          sleep 3
+          url=$(gh run list --workflow=stage.yml --json url --jq '.[0].url')
+          echo "url=$url" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
       - name: Add comment to PR
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const issueComment = `The new tag [${{ steps.tag.outputs.newTag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.newTag }}) has been created, the Jenkins job has been triggered and can be seen [here](https://jenkins.root.console.facets.cloud/job/tf/${{ steps.trigger.outputs.queue_id }}/console).`
+            const issueComment = `The new tag [${{ steps.input.outputs.tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.input.outputs.tag }}) has been created, the stage workflow has been triggered and can be seen [here](${{ steps.stage_trigger.outputs.url }}).`
             github.issues.createComment({
               issue_number: ${{ github.event.issue.number }},
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: issueComment
             })
+      - name: Post Success to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.CHANNEL_ID }}
+          slack-message: 'HOTFIX: The new tag <https://github.com/${{ github.repository }}/releases/tag/${{ steps.input.outputs.tag }}|${{ steps.input.outputs.tag }}> has been created, the stage workflow has been triggered and can be seen <${{ steps.stage_trigger.outputs.url }}|here>.'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
