@@ -116,6 +116,6 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'The new tag <https://github.com/${{ github.repository }}/releases/tag/${{ needs.determine-tag-and-ref.outputs.tag }}|${{ needs.determine-tag-and-ref.outputs.tag }}> has been successfully built. Please monitor the stage environments.'
+          slack-message: 'Tag <https://github.com/${{ github.repository }}/releases/tag/${{ needs.determine-tag-and-ref.outputs.tag }}|${{ needs.determine-tag-and-ref.outputs.tag }}> has been successfully built. Please monitor stage environments.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}

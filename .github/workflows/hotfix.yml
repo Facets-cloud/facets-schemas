@@ -125,11 +125,18 @@ jobs:
               repo: context.repo.repo,
               body: issueComment
             })
+      - name: Get SLACK USER ID
+        id: slack_userid
+        run: |
+          SLACK_USERNAMES='${{ vars.SLACK_USERNAMES }}'
+          echo "$SLACK_USERNAMES" > slack_usernames.json
+          userid=$(cat slack_usernames.json | jq -r '.${{ github.actor }} // "${{ github.actor }}"')
+          echo "userid=$userid" >> $GITHUB_OUTPUT
       - name: Post Success to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'HOTFIX: The new tag <https://github.com/${{ github.repository }}/releases/tag/${{ steps.input.outputs.tag }}|${{ steps.input.outputs.tag }}> has been created, the stage workflow has been triggered and can be seen <${{ steps.stage_trigger.outputs.url }}|here>.'
+          slack-message: 'HOTFIX(<https://github.com/${{ github.repository }}/pull/${{ github.event.issue.number }}|#${{ github.event.issue.number }}>): Tag <https://github.com/${{ github.repository }}/releases/tag/${{ steps.input.outputs.tag }}|${{ steps.input.outputs.tag }}> has been created by <@${{ steps.slack_userid.outputs.userid }}>, the stage workflow has been triggered and can be seen <${{ steps.stage_trigger.outputs.url }}|here>.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
