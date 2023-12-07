@@ -24,7 +24,7 @@
         "flavor": {
           "type": "string",
           "enum": [
-            "k8s","aws"
+            "k8s","opensearch"
           ]
         },
         "version": {
@@ -45,6 +45,9 @@
           "anyOf": [
             {
               "$ref": "./flavor-k8s.schema.json"
+            },
+            {
+              "$ref": "./flavor-opensearch.json"
             }
           ]
         }
