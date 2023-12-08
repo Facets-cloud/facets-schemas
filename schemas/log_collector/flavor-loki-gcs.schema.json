@@ -40,23 +40,6 @@
               "values": {
                 "type": "object",
                 "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/promtail\n Note: By default, loki push endpoint will be configured automatically to send log entries to Loki"
-              },
-              "scrape_kubelet_logs": {
-                "type": "object",
-                "description": "Settings to enable or disable scraping kubelet logs as well as extra filters to scrape other journal logs like containerd, cron",
-                "properties": {
-                  "enabled": {
-                    "type": "boolean",
-                    "description": "Settings to enable or disable scraping kubelet logs. Defaults to false"
-                  },
-                  "scrape_extra_matches": {
-                    "type": "array",
-                    "description": "List of service to scrape logs. Syntax: `<name.service>`. Examples: containerd.service, cron.service"
-                  }
-                },
-                "required": [
-                  "enabled"
-                ]
               }
             },
             "required": ["values"]

@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for AWS Cluster Autoscaler",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "description": "Spec block for AWS cluster autoscaler",
+          "properties": {
+            "size": {
+              "type": "object",
+              "description": "Map containing necessary information for instance size",
+              "additionalProperties": false,
+              "properties": {
+                "cpu": {
+                  "type": "string",
+                  "description": "No. of cpu cores to be utilized by the instance"
+                },
+                "memory": {
+                  "type": "string",
+                  "description": "Memory to be utilized by the instance"
+                }
+              },
+              "required": [
+                "cpu",
+                "memory"
+              ]
+            }
+          },
+          "required": [
+            "size"
+          ]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced section of the module",
+          "properties": {
+            "cluster-autoscaler": {
+              "type": "object",
+              "description": "Advanced values for cluster autoscaler",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Helm values as per the chart https://artifacthub.io/packages/helm/cluster-autoscaler/cluster-autoscaler"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

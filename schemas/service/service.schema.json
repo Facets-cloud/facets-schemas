@@ -22,12 +22,12 @@
           "flavor": {
             "type": "string",
             "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-            "enum": ["default", "k8s"]
+            "enum": ["default"]
           },
           "version": {
             "type": "string",
             "description": "This field can be used to pin to a particular version",
-            "enum": ["0.1", "latest"]
+            "enum": ["0.1"]
           }
         }
       }
@@ -126,11 +126,6 @@
                 "type": "object",
                 "description": "Map of all chart advanced keys",
                 "$ref": "./chart-advanced.schema.json"
-              },
-              "common": {
-                "type": "object",
-                "description": "Map of all the advanced values passed to app-chart",
-                "$ref": "./common-advanced.schema.json"
               }
             },
             "anyOf": [
@@ -142,7 +137,7 @@
                         "flavor": { "enum": ["aws"] }
                       }
                   },
-                  "then": {}
+                  "then": { "required": ["aws"]}
                   },
                   {
                     "not" : { "required" : ["gcp"] }
@@ -157,7 +152,7 @@
                         "flavor": { "enum": ["gcp"] }
                       }
                   },
-                  "then": {}
+                  "then": { "required": ["gcp"]}
                   },
                   {
                     "not" : { "required" : ["aws"] }
@@ -206,4 +201,4 @@
         }
       }
     }
-}
+  }

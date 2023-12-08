@@ -60,7 +60,7 @@
                       "type": "object",
                       "properties": {
                         "url": { "type": "string" },
-                        "send_resolved": { "type": "bool" }
+                        "send_resolved": { "type": "string" }
                       }
                     }
                   }
