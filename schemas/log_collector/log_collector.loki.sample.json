@@ -236,6 +236,12 @@
         }
       },
       "promtail": {
+        "scrape_kubelet_logs": {
+          "enabled": true,
+          "scrape_extra_matches": [
+            "containerd.service"
+          ]
+        },
         "values": {
           "config": {
             "snippets": {
