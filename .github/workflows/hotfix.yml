@@ -130,7 +130,7 @@ jobs:
         run: |
           SLACK_USERNAMES='${{ vars.SLACK_USERNAMES }}'
           echo "$SLACK_USERNAMES" > slack_usernames.json
-          userid=$(cat slack_usernames.json | jq -r '.${{ github.actor }} // "${{ github.actor }}"')
+          userid=$(cat slack_usernames.json | jq -r '.["${{ github.actor }}"] // "${{ github.actor }}"')
           echo "userid=$userid" >> $GITHUB_OUTPUT
       - name: Post Success to a Slack channel
         id: slack
