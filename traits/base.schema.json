@@ -21,7 +21,7 @@
           "type": "string",
           "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
           "enum": [
-            "ENVIRONMENT_BOOTSTRAP"
+            "ENVIRONMENT_BOOTSTRAP", "ENVIRONMENT"
           ]
         },
         "disabled": {
