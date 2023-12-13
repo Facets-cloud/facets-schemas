@@ -1,0 +1,29 @@
+{
+  "kind": "ingress",
+  "flavor": "nginx_ingress_controller",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json",
+  "disabled": true,
+  "version": "0.1",
+  "lifecycle": "ENVIRONMENT",
+  "provided": false,
+  "depends_on": [],
+  "metadata": {
+    "name": "myingress",
+    "annotations": {}
+  },
+  "spec": {
+    "private": false,
+    "basic_auth": false,
+    "grpc": false,
+    "domains": {},
+    "rules": {
+      "myapp": {
+        "service_name": "${service.myapp.out.interfaces.http.name}",
+        "path": "/",
+        "port": 8080,
+        "domain_prefix": "",
+      }
+    },
+    "force_ssl_redirection": true
+  }
+}
