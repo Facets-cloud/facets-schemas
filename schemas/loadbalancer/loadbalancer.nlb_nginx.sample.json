@@ -21,7 +21,7 @@
         "service_name": "${service.myapp.out.interfaces.http.name}",
         "path": "/",
         "port": 8080,
-        "domain_prefix": "",
+        "domain_prefix": ""
       }
     },
     "force_ssl_redirection": true
