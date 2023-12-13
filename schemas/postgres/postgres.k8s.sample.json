@@ -1,0 +1,29 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
+  "provided": false,
+  "kind": "postgres",
+  "version": "0.1",
+  "depends_on": [],
+  "disabled": true,
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {
+    "name": "demo-db"
+  },
+  "flavor": "k8s",
+  "spec": {
+    "postgres_version": "12",
+    "size": {
+      "writer": {
+        "cpu": "1",
+        "memory": "1.5Gi",
+        "volume": "10G"
+      },
+      "reader": {
+        "cpu": "1",
+        "memory": "1.5Gi",
+        "instance_count": 0,
+        "volume": "10G"
+      }
+    }
+  }
+}
