@@ -189,6 +189,13 @@
             }
         }
     },
+    "aws_iam_role": {
+        "out": {
+            "attributes": {
+                "irsa_iam_role_arn": {}
+            }
+        }
+    },
     "elasticsearch": {
         "out": {
             "interfaces": {
