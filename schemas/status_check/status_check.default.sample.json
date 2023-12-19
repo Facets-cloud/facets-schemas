@@ -1,6 +1,6 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/uptime/uptime.schema.json",
-  "kind": "uptime",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/status_check/status_check.schema.json",
+  "kind": "status_check",
   "flavor": "default",
   "version": "latest",
   "lifecycle": "ENVIRONMENT",
@@ -12,22 +12,30 @@
   },
   "spec": {
     "http": {
-      "url": "https://www.google.com",
-      "method": "GET",
-      "expected_status_code": "200"
+      "http-check": {
+        "url": "https://www.google.com",
+        "method": "GET",
+        "expected_status_code": "200"
+      }
     },
     "mongo": {
-      "url": "mongodb+srv://localhost:27017"
+      "mongo-check" : {
+        "url": "mongodb://localhost:27017"
+      }
     },
     "redis": {
-      "url": "redis://localhost:6379"
+      "redis-check": {
+        "url": "redis://localhost:6379"
+      }
     },
     "tcp": {
-      "url": "google.com:443"
+      "tcp-check" : {
+        "url": "google.com:443"
+      }
     }
   },
   "advanced": {
-    "uptime": {
+    "status_check": {
       "image_pull_policy": "Always",
       "run_interval": "10s",
       "size": {

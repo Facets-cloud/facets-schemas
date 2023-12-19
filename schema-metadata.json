@@ -129,8 +129,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -154,6 +154,21 @@
                     }
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.aurora.sample.json"
+            },
+            {
+                "name": [
+                    "alloydb"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.alloydb.sample.json"
             },
             {
                 "name": [
@@ -211,8 +226,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -312,8 +327,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -415,9 +430,9 @@
                     "nginx_ingress_controller"
                 ],
                 "clouds": [
-                    "providedk8s",
                     "gcp",
-                    "azure"
+                    "azure",
+                    "providedk8s"
                 ],
                 "versions": [
                     {
@@ -457,8 +472,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -636,7 +651,7 @@
         "flavors": [
             {
                 "name": [
-                    "aws"
+                    "opensearch"
                 ],
                 "clouds": [
                     "aws"
@@ -647,7 +662,7 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.aws.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.opensearch.sample.json"
             },
             {
                 "name": [
@@ -656,8 +671,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -711,8 +726,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -737,8 +752,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -801,8 +816,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -846,8 +861,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -948,8 +963,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -975,8 +990,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1013,6 +1028,32 @@
         ]
     },
     {
+        "intent": "pvc",
+        "displayName": "Pvc",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "gcp",
+                    "azure",
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.default.sample.json"
+            }
+        ]
+    },
+    {
         "intent": "mysql_user",
         "displayName": "Mysql_user",
         "description": "Some random description",
@@ -1025,8 +1066,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1042,8 +1083,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1068,8 +1109,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1142,8 +1183,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1168,8 +1209,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1195,8 +1236,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1274,8 +1315,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1324,8 +1365,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1351,8 +1392,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1378,8 +1419,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1405,8 +1446,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1471,8 +1512,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1485,10 +1526,10 @@
         ]
     },
     {
-        "intent": "uptime",
-        "displayName": "Uptime",
+        "intent": "status_check",
+        "displayName": "Status_check",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/uptime/uptime.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/status_check/status_check.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -1497,8 +1538,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1506,7 +1547,7 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/uptime/uptime.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/status_check/status_check.default.sample.json"
             }
         ]
     },
@@ -1572,8 +1613,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "versions": [
                     {

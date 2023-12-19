@@ -39,11 +39,11 @@
                     "enum": ["RollingUpdate", "Recreate"]
                 },
                 "max_available": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "If type RollingUpdate , this is the max number of pods that can be created from the default replicas"
                 },
                 "max_unavailable": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas"
                 }
             },
@@ -71,11 +71,11 @@
             "description": "The disruption policy for the service",
             "properties": {
                 "min_available": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "This is the min number of pods should be available in case of failures"
                 },
                 "max_unavailable": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "This is the max number of pods that can be unavailable during a failure."
                 }
             }
@@ -99,7 +99,14 @@
             "then": { "required": ["image"] }
         }
     ],
-    "required": [
-        "strategy"
+    "allOf":[
+        {
+            "if": {
+                "properties": {
+                    "type": { "enum": ["application", "statefulset"] }
+                }
+            },
+            "then": { "required": ["strategy"] }
+        }
     ]
   }

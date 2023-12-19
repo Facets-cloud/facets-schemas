@@ -26,7 +26,8 @@
           "type": "string",
           "enum": [
             "cloudsql",
-            "aurora"
+            "aurora",
+            "alloydb"
           ],
           "description": "Implementation selector for the Postgres resource. e.g. for a resource type cloudsql or aurora."
         },
