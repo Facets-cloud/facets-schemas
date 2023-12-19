@@ -3,34 +3,34 @@
 | Property   | Type                | Required | Description                                                                                                                                                    |
 |------------|---------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `flavor`   | string              | **Yes**  | Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc. Possible values are: `default`.                     |
-| `kind`     | string              | **Yes**  | Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances Possible values are: `uptime`. |
+| `kind`     | string              | **Yes**  | Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances Possible values are: `status_check`. |
 | `spec`     | [object](#spec)     | **Yes**  |                                                                                                                                                                |
 | `version`  | string              | **Yes**  | This field can be used to pin to a particular version Possible values are: `0.1`, `latest`.                                                                    |
-| `advanced` | [object](#advanced) | No       | Advanced uptime Schema                                                                                                                                         |
+| `advanced` | [object](#advanced) | No       | Advanced status_check Schema                                                                                                                                         |
 
 ## advanced
 
-Advanced uptime Schema
+Advanced status_check Schema
 
-### Properties
+#### Properties
 
 | Property | Type              | Required | Description                       |
 |----------|-------------------|----------|-----------------------------------|
-| `uptime` | [object](#uptime) | No       | Advanced values for uptime module |
+| `status_check` | [object](#status_check) | No       | Advanced values for status_check module |
 
-### uptime
+### status_check
 
-Advanced values for uptime module
+Advanced values for status_check module
 
 #### Properties
 
 | Property            | Type            | Required | Description                                                                                         |
 |---------------------|-----------------|----------|-----------------------------------------------------------------------------------------------------|
-| `image_pull_policy` | string          | No       | Imagepull policy for the uptime check check Possible values are: `Always`, `IfNotPresent`, `Never`. |
-| `image`             | string          | No       | Image for the uptime check                                                                          |
+| `image_pull_policy` | string          | No       | Imagepull policy for the status_check check check Possible values are: `Always`, `IfNotPresent`, `Never`. |
+| `image`             | string          | No       | Image for the status_check check                                                                          |
 | `run_interval`      | string          | No       | How often to run the check                                                                          |
 | `size`              | [object](#size) | No       |                                                                                                     |
-| `timeout`           | string          | No       | Timeout for uptime check                                                                            |
+| `timeout`           | string          | No       | Timeout for status_check check                                                                            |
 
 #### size
 
@@ -49,16 +49,26 @@ Advanced values for uptime module
 
 | Property | Type             | Required | Description                                 |
 |----------|------------------|----------|---------------------------------------------|
-| `http`   | [object](#http)  | No       | HTTP configuration for the uptime service.  |
-| `mongo`  | [object](#mongo) | No       | Mongo configuration for the uptime service. |
-| `redis`  | [object](#redis) | No       | Redis configuration for the uptime service. |
-| `tcp`    | [object](#tcp)   | No       | TCP configuration for the uptime service.   |
+| `http`   | [object](#http)  | No       | HTTP configuration for the status_check service.  |
+| `mongo`  | [object](#mongo) | No       | Mongo configuration for the status_check service. |
+| `redis`  | [object](#redis) | No       | Redis configuration for the status_check service. |
+| `tcp`    | [object](#tcp)   | No       | TCP configuration for the status_check service.   |
+
+
 
 ### http
 
-HTTP configuration for the uptime service.
+HTTP configuration for the status_check service.
 
 #### Properties
+
+Maps of all the http checks want to expose to create 
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `^[a-zA-Z0-9_.-]*$`   | [object](#`httpcheck`)  | No       | This is the name of the http check, this can be any name
+
+#### `^[a-zA-Z0-9_.-]*$`
 
 | Property               | Type   | Required | Description                                                           |
 |------------------------|--------|----------|-----------------------------------------------------------------------|
@@ -66,15 +76,23 @@ HTTP configuration for the uptime service.
 | `method`               | string | **Yes**  | The HTTP method. Possible values are: `GET`, `POST`, `PUT`, `DELETE`. |
 | `url`                  | string | **Yes**  | The URL of the service.                                               |
 | `body`                 | string | No       | The Body that needs to be passed.                                     |
-| `count`                | string | No       | The number of times to check for the uptime.                          |
+| `count`                | string | No       | The number of times to check for the status_check.                          |
 | `expected_response`    | string | No       | The expected response.                                                |
 | `headers`              | string | No       | The HTTP headers that needs to passed.                                |
 
 ### mongo
 
-Mongo configuration for the uptime service.
+Mongo configuration for the status_check service.
 
 #### Properties
+
+Maps of all the mongo checks want to expose to create 
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `^[a-zA-Z0-9_.-]*$`   | [object](#`mongocheck`)  | No       | This is the name of the mongo check, this can be any name
+
+#### `^[a-zA-Z0-9_.-]*$`
 
 | Property | Type   | Required | Description                                       |
 |----------|--------|----------|---------------------------------------------------|
@@ -82,9 +100,17 @@ Mongo configuration for the uptime service.
 
 ### redis
 
-Redis configuration for the uptime service.
+Redis configuration for the status_check service.
 
 #### Properties
+
+Maps of all the redis checks want to expose to create 
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `^[a-zA-Z0-9_.-]*$`   | [object](#`redischeck`)  | No       | This is the name of the redis check, this can be any name
+
+#### `^[a-zA-Z0-9_.-]*$`
 
 | Property | Type   | Required | Description                                       |
 |----------|--------|----------|---------------------------------------------------|
@@ -92,9 +118,17 @@ Redis configuration for the uptime service.
 
 ### tcp
 
-TCP configuration for the uptime service.
+TCP configuration for the status_check service.
 
 #### Properties
+
+Maps of all the redis checks want to expose to create 
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `^[a-zA-Z0-9_.-]*$`   | [object](#`tcpcheck`)  | No       | This is the name of the tcp check, this can be any name
+
+#### tcpcheck
 
 | Property | Type   | Required | Description                 |
 |----------|--------|----------|-----------------------------|
