@@ -49,6 +49,50 @@ def versioning(directory_path):
             }
     return version_data
 
+def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
+    for item in json_data:
+        intent = item["intent"]
+        # Skip checking for specific intents
+        if intent == "kubernetes_node_pool" or intent == "ingress":
+            continue
+
+        schema_path = os.path.join(base_folder, intent, f"{intent}.schema.json")
+        md_path = os.path.join(base_folder, intent, f"{intent}.schema.md")
+
+        if not os.path.exists(schema_path):
+            print(f"Error: Schema File not found - {schema_path}")
+
+        if not os.path.exists(md_path):
+            print(f"Error: Readme File not found - {md_path}")
+
+
+def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_folder="schemas"):
+    for item in json_data:
+        intent = item["intent"]
+        # Skip checking for specific intents
+        if intent == "kubernetes_node_pool" or intent == "ingress":
+            continue
+
+        flavors = item.get("flavors", [])
+
+        for flavor in flavors:
+            flavor_name = flavor["name"][0]
+            flavor_sample_url = flavor.get("flavorSampleUrl", "")
+
+            if not flavor_sample_url:
+                print(f"Warning: No flavorSampleUrl found for {intent}.{flavor_name}")
+                continue
+
+            # Extracting the file name from the URL
+            file_name = os.path.basename(flavor_sample_url)
+
+            sample_path = os.path.join(base_folder, intent, file_name)
+            doc_sample_path = os.path.join(doc_folder, sample_path)
+
+            if not os.path.exists(doc_sample_path):
+                print(f"Error: Flavor File not found - {doc_sample_path}")
+
+
 
 if __name__ == '__main__':
     
@@ -116,4 +160,12 @@ if __name__ == '__main__':
     full_data_list = [v for _,v in full_data.items()]
     # print(json.dumps(full_data_list, indent=4))
     with open('schema-metadata.json', 'w') as f:
-        json.dump(full_data_list, f, indent=4) 
+        json.dump(full_data_list, f, indent=4)
+
+    input_json_path = 'schema-metadata.json'
+
+    with open(input_json_path, 'r') as json_file:
+        json_data = json.load(json_file)
+
+    check_files_exist(json_data)
+    flavor_sample_exists(json_data)
