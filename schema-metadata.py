@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 
 
 def find_module_files(directory):
@@ -49,7 +50,21 @@ def versioning(directory_path):
             }
     return version_data
 
+def print_error_messages(errors):
+    # Print all error messages
+    for error in errors:
+        print(error)
+
+
+def exit_code(errors):
+    # Set exit code based on the presence of errors
+    exit_code = 1 if errors else 0
+    print(f"Exit Code for above error messages: {exit_code}")
+    sys.exit(exit_code)
+
+
 def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
+    errors = []
     for item in json_data:
         intent = item["intent"]
         # Skip checking for specific intents
@@ -60,13 +75,17 @@ def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
         md_path = os.path.join(base_folder, intent, f"{intent}.schema.md")
 
         if not os.path.exists(schema_path):
-            print(f"Error: Schema File not found - {schema_path}")
+            errors.append(f"Error: Schema File not found - {schema_path}")
 
         if not os.path.exists(md_path):
-            print(f"Error: Readme File not found - {md_path}")
+            errors.append(f"Error: Readme File not found - {md_path}")
+
+    print_error_messages(errors)
+    exit_code(errors)
 
 
 def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_folder="schemas"):
+    errors = []
     for item in json_data:
         intent = item["intent"]
         # Skip checking for specific intents
@@ -90,7 +109,10 @@ def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_
             doc_sample_path = os.path.join(doc_folder, sample_path)
 
             if not os.path.exists(doc_sample_path):
-                print(f"Error: Flavor File not found - {doc_sample_path}")
+                errors.append(f"Error: Flavor File not found - {doc_sample_path}")
+
+    print_error_messages(errors)
+    exit_code(errors)
 
 
 
