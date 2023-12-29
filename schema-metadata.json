@@ -1,143 +1,5 @@
 [
     {
-        "intent": "tcp_lb",
-        "displayName": "Tcp_lb",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default",
-                    "nlb"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.nlb.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "k8s_resource",
-        "displayName": "K8s_resource",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "kubernetes_node_pool",
-        "displayName": "Kubernetes_node_pool",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default",
-                    "eks_self_managed"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.eks_self_managed.sample.json"
-            },
-            {
-                "name": [
-                    "default",
-                    "eks_managed"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.eks_managed.sample.json"
-            },
-            {
-                "name": [
-                    "default",
-                    "gke_node_pool"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.gke_node_pool.sample.json"
-            },
-            {
-                "name": [
-                    "default",
-                    "aks"
-                ],
-                "clouds": [
-                    "azure"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.aks.sample.json"
-            }
-        ]
-    },
-    {
         "intent": "redis",
         "displayName": "Redis",
         "description": "Some random description",
@@ -146,11 +8,30 @@
         "flavors": [
             {
                 "name": [
+                    "memorystore"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.memorystore.sample.json"
+            },
+            {
+                "name": [
                     "k8s"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -190,10 +71,51 @@
                     }
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.elasticache.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "mysql",
+        "displayName": "Mysql",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "aurora",
+                    "default"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.aurora.sample.json"
             },
             {
                 "name": [
-                    "memorystore"
+                    "rds"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.rds.sample.json"
+            },
+            {
+                "name": [
+                    "cloudsql",
+                    "default"
                 ],
                 "clouds": [
                     "gcp"
@@ -202,21 +124,73 @@
                     {
                         "number": "0.1",
                         "documentation": "NA"
-                    },
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.cloudsql.sample.json"
+            },
+            {
+                "name": [
+                    "k8s"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.k8s.sample.json"
+            },
+            {
+                "name": [
+                    "flexible_server"
+                ],
+                "clouds": [
+                    "azure"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.flexible_server.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "sqs",
+        "displayName": "Sqs",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/sqs/sqs.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
                     {
                         "number": "0.2",
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.memorystore.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/sqs/sqs.default.sample.json"
             }
         ]
     },
     {
-        "intent": "aws_lambda",
-        "displayName": "Aws_lambda",
+        "intent": "dax_cluster",
+        "displayName": "Dax_cluster",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda/aws_lambda.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dax_cluster/dax_cluster.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -232,25 +206,133 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda/aws_lambda.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dax_cluster/dax_cluster.default.sample.json"
             }
         ]
     },
     {
-        "intent": "elasticsearch",
-        "displayName": "Elasticsearch",
+        "intent": "postgres",
+        "displayName": "Postgres",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
                 "name": [
-                    "default",
+                    "cloudsql_postgres",
+                    "default"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.cloudsql_postgres.sample.json"
+            },
+            {
+                "name": [
+                    "alloydb"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.alloydb.sample.json"
+            },
+            {
+                "name": [
                     "k8s"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.k8s.sample.json"
+            },
+            {
+                "name": [
+                    "aurora"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.aurora.sample.json"
+            },
+            {
+                "name": [
+                    "cloudsql",
+                    "default"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.cloudsql.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "ingress",
+        "displayName": "Ingress",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "aws_alb",
+                    "alb"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.aws_alb.sample.json"
+            },
+            {
+                "name": [
+                    "nlb_nginx",
+                    "nginx_ingress_controller"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -263,11 +345,162 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.k8s.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.nlb_nginx.sample.json"
             },
             {
                 "name": [
-                    "opensearch"
+                    "nlb_nginx",
+                    "nginx_ingress_controller"
+                ],
+                "clouds": [
+                    "providedk8s",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.nlb_nginx.sample.json"
+            },
+            {
+                "name": [
+                    "gcp_alb",
+                    "alb"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.gcp_alb.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "helm",
+        "displayName": "Helm",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/helm/helm.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "helm_simple",
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/helm/helm.helm_simple.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "iam_policy",
+        "displayName": "Iam_policy",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/iam_policy/iam_policy.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "aws_iam_policy"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/iam_policy/iam_policy.aws_iam_policy.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "kubernetes_node_pool",
+        "displayName": "Kubernetes_node_pool",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default",
+                    "gke_node_pool"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.gke_node_pool.sample.json"
+            },
+            {
+                "name": [
+                    "default",
+                    "aks"
+                ],
+                "clouds": [
+                    "azure"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.aks.sample.json"
+            },
+            {
+                "name": [
+                    "default",
+                    "eks_managed"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.eks_managed.sample.json"
+            },
+            {
+                "name": [
+                    "default",
+                    "eks_self_managed"
                 ],
                 "clouds": [
                     "aws"
@@ -278,7 +511,62 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.opensearch.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.eks_self_managed.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "config_map",
+        "displayName": "Config_map",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "k8s",
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.k8s.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "azure_functions",
+        "displayName": "Azure_functions",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/azure_functions/azure_functions.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "azure"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/azure_functions/azure_functions.default.sample.json"
             }
         ]
     },
@@ -289,21 +577,6 @@
         "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json",
         "documentation": "Documentation link",
         "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.default.sample.json"
-            },
             {
                 "name": [
                     "vm-installation"
@@ -318,6 +591,21 @@
                     }
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.vm-installation.sample.json"
+            },
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.default.sample.json"
             },
             {
                 "name": [
@@ -382,122 +670,41 @@
         ]
     },
     {
-        "intent": "dynamodb",
-        "displayName": "Dynamodb",
+        "intent": "tcp_lb",
+        "displayName": "Tcp_lb",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dynamodb/dynamodb.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
                 "name": [
-                    "default"
+                    "default",
+                    "nlb"
                 ],
                 "clouds": [
-                    "aws"
+                    "aws",
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    },
                     {
                         "number": "0.2",
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dynamodb/dynamodb.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.nlb.sample.json"
             }
         ]
     },
     {
-        "intent": "postgres",
-        "displayName": "Postgres",
+        "intent": "aws_lambda_permission",
+        "displayName": "Aws_lambda_permission",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "k8s"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.k8s.sample.json"
-            },
-            {
-                "name": [
-                    "alloydb"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.alloydb.sample.json"
-            },
-            {
-                "name": [
-                    "cloudsql_postgres",
-                    "default"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.cloudsql_postgres.sample.json"
-            },
-            {
-                "name": [
-                    "aurora"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.aurora.sample.json"
-            },
-            {
-                "name": [
-                    "cloudsql",
-                    "default"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.cloudsql.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "aws_api_gateway",
-        "displayName": "Aws_api_gateway",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_api_gateway/aws_api_gateway.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda_permission/aws_lambda_permission.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -513,15 +720,15 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_api_gateway/aws_api_gateway.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda_permission/aws_lambda_permission.default.sample.json"
             }
         ]
     },
     {
-        "intent": "grafana_dashboard",
-        "displayName": "Grafana_dashboard",
+        "intent": "cloudfront",
+        "displayName": "Cloudfront",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cloudfront/cloudfront.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -529,8 +736,32 @@
                     "default"
                 ],
                 "clouds": [
-                    "azure",
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cloudfront/cloudfront.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "postgres_user",
+        "displayName": "Postgres_user",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres_user/postgres_user.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -539,7 +770,74 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres_user/postgres_user.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "mysql_user",
+        "displayName": "Mysql_user",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.default.sample.json"
+            },
+            {
+                "name": [
+                    "sharded_user"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.sharded_user.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "aws_lambda",
+        "displayName": "Aws_lambda",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda/aws_lambda.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda/aws_lambda.default.sample.json"
             }
         ]
     },
@@ -556,8 +854,8 @@
                     "default"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -597,8 +895,8 @@
                     "default"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -612,43 +910,20 @@
         ]
     },
     {
-        "intent": "alb",
-        "displayName": "Alb",
+        "intent": "zookeeper",
+        "displayName": "Zookeeper",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alb/alb.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/zookeeper/zookeeper.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
                 "name": [
-                    "default"
+                    "default",
+                    "k8s"
                 ],
                 "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alb/alb.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "schemahero_database",
-        "displayName": "Schemahero_database",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -657,57 +932,7 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "cloudfront",
-        "displayName": "Cloudfront",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cloudfront/cloudfront.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cloudfront/cloudfront.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "alert_group",
-        "displayName": "Alert_group",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/zookeeper/zookeeper.k8s.sample.json"
             }
         ]
     },
@@ -723,8 +948,8 @@
                     "loki"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -795,57 +1020,14 @@
         ]
     },
     {
-        "intent": "kubernetes_secret",
-        "displayName": "Kubernetes_secret",
+        "intent": "alb",
+        "displayName": "Alb",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alb/alb.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
                 "name": [
-                    "k8s",
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.k8s.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "mysql",
-        "displayName": "Mysql",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "rds"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.rds.sample.json"
-            },
-            {
-                "name": [
-                    "aurora",
                     "default"
                 ],
                 "clouds": [
@@ -857,127 +1039,7 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.aurora.sample.json"
-            },
-            {
-                "name": [
-                    "flexible_server"
-                ],
-                "clouds": [
-                    "azure"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.flexible_server.sample.json"
-            },
-            {
-                "name": [
-                    "k8s"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.k8s.sample.json"
-            },
-            {
-                "name": [
-                    "cloudsql",
-                    "default"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.cloudsql.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "ingress",
-        "displayName": "Ingress",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "aws_alb",
-                    "alb"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.aws_alb.sample.json"
-            },
-            {
-                "name": [
-                    "gcp_alb",
-                    "alb"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.gcp_alb.sample.json"
-            },
-            {
-                "name": [
-                    "nlb_nginx",
-                    "nginx_ingress_controller"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp",
-                    "providedk8s"
-                ],
-                "versions": [
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/loadbalancer.nlb_nginx.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alb/alb.default.sample.json"
             }
         ]
     },
@@ -993,8 +1055,8 @@
                     "default"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -1004,153 +1066,6 @@
                     }
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "cassandra",
-        "displayName": "Cassandra",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cassandra/cassandra.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default",
-                    "k8s"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cassandra/cassandra.k8s.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "rabbitmq",
-        "displayName": "Rabbitmq",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/rabbitmq/rabbitmq.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default",
-                    "k8s"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/rabbitmq/rabbitmq.k8s.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "mysql_user",
-        "displayName": "Mysql_user",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "sharded_user"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.sharded_user.sample.json"
-            },
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "postgres_user",
-        "displayName": "Postgres_user",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres_user/postgres_user.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/postgres_user/postgres_user.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "peering",
-        "displayName": "Peering",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/peering/peering.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/peering/peering.default.sample.json"
             }
         ]
     },
@@ -1179,30 +1094,6 @@
         ]
     },
     {
-        "intent": "azure_functions",
-        "displayName": "Azure_functions",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/azure_functions/azure_functions.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/azure_functions/azure_functions.default.sample.json"
-            }
-        ]
-    },
-    {
         "intent": "snapshot_schedule",
         "displayName": "Snapshot_schedule",
         "description": "Some random description",
@@ -1214,8 +1105,8 @@
                     "default"
                 ],
                 "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -1229,10 +1120,159 @@
         ]
     },
     {
-        "intent": "aws_event_bus",
-        "displayName": "Aws_event_bus",
+        "intent": "cassandra",
+        "displayName": "Cassandra",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_event_bus/aws_event_bus.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cassandra/cassandra.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default",
+                    "k8s"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/cassandra/cassandra.k8s.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "google_cloud_storage",
+        "displayName": "Google_cloud_storage",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/google_cloud_storage/google_cloud_storage.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/google_cloud_storage/google_cloud_storage.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "loki_alerting_rules",
+        "displayName": "Loki_alerting_rules",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loki_alerting_rules/loki_alerting_rules.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loki_alerting_rules/loki_alerting_rules.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "elasticsearch",
+        "displayName": "Elasticsearch",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "opensearch"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.opensearch.sample.json"
+            },
+            {
+                "name": [
+                    "default",
+                    "k8s"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    },
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.k8s.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "schemahero_table",
+        "displayName": "Schemahero_table",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "peering",
+        "displayName": "Peering",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/peering/peering.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -1248,7 +1288,110 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_event_bus/aws_event_bus.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/peering/peering.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "mongo",
+        "displayName": "Mongo",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default",
+                    "k8s"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.2",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.k8s.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "aws_api_gateway",
+        "displayName": "Aws_api_gateway",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_api_gateway/aws_api_gateway.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_api_gateway/aws_api_gateway.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "schemahero_database",
+        "displayName": "Schemahero_database",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "alert_group",
+        "displayName": "Alert_group",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.default.sample.json"
             }
         ]
     },
@@ -1278,37 +1421,10 @@
         ]
     },
     {
-        "intent": "mongo",
-        "displayName": "Mongo",
+        "intent": "aws_iam_role",
+        "displayName": "Aws_iam_role",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default",
-                    "k8s"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.k8s.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "loki_alerting_rules",
-        "displayName": "Loki_alerting_rules",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loki_alerting_rules/loki_alerting_rules.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_iam_role/aws_iam_role.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -1316,9 +1432,7 @@
                     "default"
                 ],
                 "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
+                    "aws"
                 ],
                 "versions": [
                     {
@@ -1326,34 +1440,31 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loki_alerting_rules/loki_alerting_rules.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_iam_role/aws_iam_role.default.sample.json"
             }
         ]
     },
     {
-        "intent": "zookeeper",
-        "displayName": "Zookeeper",
+        "intent": "dynamodb",
+        "displayName": "Dynamodb",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/zookeeper/zookeeper.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dynamodb/dynamodb.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
                 "name": [
-                    "default",
-                    "k8s"
+                    "default"
                 ],
                 "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
+                    "aws"
                 ],
                 "versions": [
                     {
-                        "number": "0.1",
+                        "number": "0.2",
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/zookeeper/zookeeper.k8s.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dynamodb/dynamodb.default.sample.json"
             }
         ]
     },
@@ -1382,67 +1493,20 @@
         ]
     },
     {
-        "intent": "aws_iam_role",
-        "displayName": "Aws_iam_role",
+        "intent": "kubernetes_secret",
+        "displayName": "Kubernetes_secret",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_iam_role/aws_iam_role.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
                 "name": [
+                    "k8s",
                     "default"
                 ],
                 "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_iam_role/aws_iam_role.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "google_cloud_storage",
-        "displayName": "Google_cloud_storage",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/google_cloud_storage/google_cloud_storage.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/google_cloud_storage/google_cloud_storage.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "schemahero_table",
-        "displayName": "Schemahero_table",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
                     "aws",
+                    "azure",
                     "gcp"
                 ],
                 "versions": [
@@ -1451,15 +1515,15 @@
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.k8s.sample.json"
             }
         ]
     },
     {
-        "intent": "aws_lambda_permission",
-        "displayName": "Aws_lambda_permission",
+        "intent": "k8s_resource",
+        "displayName": "K8s_resource",
         "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda_permission/aws_lambda_permission.schema.json",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.json",
         "documentation": "Documentation link",
         "flavors": [
             {
@@ -1467,39 +1531,98 @@
                     "default"
                 ],
                 "clouds": [
-                    "aws"
+                    "aws",
+                    "azure",
+                    "gcp"
                 ],
                 "versions": [
                     {
                         "number": "0.1",
                         "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda_permission/aws_lambda_permission.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "sqs",
-        "displayName": "Sqs",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/sqs/sqs.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
+                    },
                     {
                         "number": "0.2",
                         "documentation": "NA"
                     }
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/sqs/sqs.default.sample.json"
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "aws_event_bus",
+        "displayName": "Aws_event_bus",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_event_bus/aws_event_bus.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/aws_event_bus/aws_event_bus.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "rabbitmq",
+        "displayName": "Rabbitmq",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/rabbitmq/rabbitmq.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default",
+                    "k8s"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/rabbitmq/rabbitmq.k8s.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "grafana_dashboard",
+        "displayName": "Grafana_dashboard",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "aws",
+                    "azure",
+                    "gcp"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.default.sample.json"
             }
         ]
     },
@@ -1524,112 +1647,6 @@
                     }
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/s3/s3.default.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "iam_policy",
-        "displayName": "Iam_policy",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/iam_policy/iam_policy.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "aws_iam_policy"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/iam_policy/iam_policy.aws_iam_policy.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "helm",
-        "displayName": "Helm",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/helm/helm.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "helm_simple",
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/helm/helm.helm_simple.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "config_map",
-        "displayName": "Config_map",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "k8s",
-                    "default"
-                ],
-                "clouds": [
-                    "azure",
-                    "aws",
-                    "gcp"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    },
-                    {
-                        "number": "0.2",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.k8s.sample.json"
-            }
-        ]
-    },
-    {
-        "intent": "dax_cluster",
-        "displayName": "Dax_cluster",
-        "description": "Some random description",
-        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dax_cluster/dax_cluster.schema.json",
-        "documentation": "Documentation link",
-        "flavors": [
-            {
-                "name": [
-                    "default"
-                ],
-                "clouds": [
-                    "aws"
-                ],
-                "versions": [
-                    {
-                        "number": "0.1",
-                        "documentation": "NA"
-                    }
-                ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/dax_cluster/dax_cluster.default.sample.json"
             }
         ]
     }
