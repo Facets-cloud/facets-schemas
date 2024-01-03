@@ -51,11 +51,11 @@
                   "description": "Define a name for the security group that you want to create",
                   "properties": {
                     "from_port": {
-                      "type": "integer",
+                      "type": "string",
                       "description": "Define the port that you want to allow traffic from"
                     },
                     "to_port": {
-                      "type": "integer",
+                      "type": "string",
                       "description": "Define the port that you want to allow traffic to"
                     },
                     "protocol": {

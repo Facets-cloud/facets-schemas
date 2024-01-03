@@ -3,7 +3,7 @@
   "type": "object",
   "description": "Advanced uptime Schema",
   "properties": {
-    "uptime": {
+    "status_check": {
       "type": "object",
       "description": "Advanced values for uptime module",
       "properties": {
