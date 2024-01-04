@@ -353,9 +353,9 @@
                     "nginx_ingress_controller"
                 ],
                 "clouds": [
-                    "providedk8s",
                     "azure",
-                    "gcp"
+                    "gcp",
+                    "providedk8s"
                 ],
                 "versions": [
                     {
