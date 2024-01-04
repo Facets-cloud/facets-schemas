@@ -73,6 +73,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.build.outputs.status == '0' || inputs.force == 'true' }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: 'production'
       - name: Copy the tag from s3
         uses: prewk/s3-cp-action@v2
         with:
@@ -92,7 +97,7 @@ jobs:
       - name: Trigger schema-documentation workflow
         id: schema_documentation_trigger
         run: |
-          gh workflow run schema-documentation -R ${{ github.repository }} --ref tfdev -F tag=${{ steps.input.outputs.tag }} 
+          gh workflow run schema-documentation -R ${{ github.repository }} --ref tfdev -F tag=${{ inputs.tag }} 
           sleep 3
           url=$(gh run list --workflow=schema-documentation.yml --json url --jq '.[0].url')
           echo "url=$url" >> $GITHUB_OUTPUT
@@ -103,7 +108,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: ${{needs.build.outputs.run}}
+          slack-message: 'Tag ${{ inputs.tag }} has been promoted to production!. Workflow for publishing the schema documentation has been triggered and can be tracked <${{ steps.schema_documentation_trigger.outputs.url }}|here>'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
       - name: Post Success to a Slack channel(force)
@@ -111,7 +116,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'Tag ${{ inputs.tag }} has been forcefully promoted to production!'
+          slack-message: 'Tag ${{ inputs.tag }} has been forcefully promoted to production!. Workflow for publishing the schema documentation has been triggered and can be tracked <${{ steps.schema_documentation_trigger.outputs.url }}|here>'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
   on-failure:
