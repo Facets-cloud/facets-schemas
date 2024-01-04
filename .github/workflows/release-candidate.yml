@@ -23,13 +23,6 @@ jobs:
             echo "User does not belong to team"
             exit 1
           fi
-      - name: Merge production -> tfdev
-        uses: everlytic/branch-merge@1.1.5
-        with:
-          github_token: ${{ secrets.PAT }}
-          source_ref: 'production'
-          target_branch: 'tfdev'
-          commit_message_template: '[Automated] Merged {source_ref} into {target_branch} for creating release candidate rc-${{ steps.tag.outputs.tag }}'
       - name: Checkout branch "tfdev"
         uses: actions/checkout@v2
         with:
@@ -38,8 +31,8 @@ jobs:
       - name: Determine tag and ref to build
         id: tag
         run: |
-          if [[ -n "${{ steps.tag.outputs.tag }}" ]]; then
-            tag="${{ steps.tag.outputs.tag }}"
+          if [[ -n "${{ inputs.tag }}" ]]; then
+            tag="${{ inputs.tag }}"
             echo "Tag: $tag"
           else
             echo "Tag input is not provided. Incrementing the minor version to build the tag."
@@ -57,6 +50,13 @@ jobs:
             tag="$majorVersion.$newMinorVersion.$patchVersion"
           fi
           echo "tag=$tag" >> $GITHUB_OUTPUT
+      - name: Merge production -> tfdev
+        uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ secrets.PAT }}
+          source_ref: 'production'
+          target_branch: 'tfdev'
+          commit_message_template: '[Automated] Merged {source_ref} into {target_branch} for creating release candidate rc-${{ steps.tag.outputs.tag }}'
       - name: Get Commit SHA
         id: get_sha
         run: |

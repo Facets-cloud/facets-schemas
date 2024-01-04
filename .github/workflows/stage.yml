@@ -14,6 +14,7 @@ jobs:
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       ref: ${{ steps.tag.outputs.ref }}
+      merge_rc: ${{ steps.tag.outputs.merge_rc }}
     steps:
       - name: Check team membership
         uses: tspascoal/get-user-teams-membership@v2
@@ -56,6 +57,14 @@ jobs:
             tag="$majorVersion.$newMinorVersion.$patchVersion"
           fi
           echo "tag=$tag" >> $GITHUB_OUTPUT
+          if git branch --all | grep -q remotes/origin/rc-$tag$; then
+            merge_rc="true"
+            echo "Release candidate branch rc-$tag found and will be merged."
+          else
+            merge_rc="false"
+            echo "Release candidate branch rc-$tag was not found!"
+          fi
+          echo "merge_rc=$merge_rc" >> $GITHUB_OUTPUT
           if [[ -n "${{ inputs.ref }}" ]]; then
             ref="${{ inputs.ref }}"
             echo "Ref: $ref"
@@ -69,14 +78,14 @@ jobs:
     needs: determine-tag-and-ref
     steps:
       - name: Merge release candidate -> production
-        if: "${{ github.event.inputs.ref == '' }}"
+        if: "${{ needs.determine-tag-and-ref.outputs.merge_rc == 'true' }}"
         uses: everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ secrets.PAT }}
           source_ref: 'rc-${{ needs.determine-tag-and-ref.outputs.tag }}'
           target_branch: 'production'
       - name: Merge release candidate -> tfdev
-        if: "${{ github.event.inputs.ref == '' }}"
+        if: "${{ needs.determine-tag-and-ref.outputs.merge_rc == 'true' }}"
         uses: everlytic/branch-merge@1.1.5
         with:
           github_token: ${{ secrets.PAT }}
