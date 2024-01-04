@@ -71,7 +71,7 @@ jobs:
       - name: Trigger Jenkins job
         id: trigger
         run: |
-          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/tf-ci-2/buildWithParameters?ref=${{ steps.tag.outputs.tag }}" \
+          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/tf-ci-2/buildWithParameters?ref=rc-${{ steps.tag.outputs.tag }}" \
             --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" -D -)
           queue_url=$(echo "$response" | grep -Fi Location | awk '{print $2}' | tr -d '\r')
           queue_id=$(basename "$queue_url")
@@ -81,6 +81,6 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'Release Candidate <https://github.com/Facets-cloud/facets-iac/tree/rc-${{ steps.tag.outputs.tag }}|rc-${{ steps.tag.outputs.tag }}> branch is ready for QA testing. Jenkins job to build the release candidate has been triggered and can be tracked <https://jenkins.root.console.facets.cloud/job/tf-ci-2/${{ steps.trigger.outputs.queue_id }}/console|here>'
+          slack-message: 'Release Candidate <https://github.com/Facets-cloud/facets-iac/tree/rc-${{ steps.tag.outputs.tag }}|rc-${{ steps.tag.outputs.tag }}> branch is ready for QA testing. Jenkins job to build the release candidate has been triggered.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
