@@ -1,4 +1,4 @@
-name: promotion
+name: production
 on:
   workflow_dispatch:
     inputs:
