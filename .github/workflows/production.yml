@@ -47,32 +47,37 @@ jobs:
         id: run
         shell: bash
         run: |
-         set +e
-         if [ "${{ inputs.force }}" == "false" ]; then 
-          cd .github/workflows/promotion
-          # Retrieve the JSON content from the repository variable
-          JSON_CONTENT='${{ vars.CONTROL_PLANES }}'
-          echo "$JSON_CONTENT" > control_planes.json
-          TOKENS='${{ secrets.TOKENS }}'
-          echo "$TOKENS" > passwords.json
-          go build -o promotion
-          output=$(./promotion --tag ${{ inputs.tag }})
-          exit_status=${PIPESTATUS[0]}
-          echo "run<<EOF" >> $GITHUB_OUTPUT
-          echo "$output" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-         else
-          echo "WARNING: Not running the check to check all stage releases since force is set to true!"
-          exit_status=0
-         fi
-         echo "status=$exit_status" >> $GITHUB_OUTPUT
-         echo "Tag: ${{ inputs.tag }}"
-         echo "Exit Status: $exit_status"
+          set +e
+          if [ "${{ inputs.force }}" == "false" ]; then 
+           cd .github/workflows/promotion
+           # Retrieve the JSON content from the repository variable
+           JSON_CONTENT='${{ vars.CONTROL_PLANES }}'
+           echo "$JSON_CONTENT" > control_planes.json
+           TOKENS='${{ secrets.TOKENS }}'
+           echo "$TOKENS" > passwords.json
+           go build -o promotion
+           output=$(./promotion --tag ${{ inputs.tag }})
+           exit_status=${PIPESTATUS[0]}
+           echo "run<<EOF" >> $GITHUB_OUTPUT
+           echo "$output" >> $GITHUB_OUTPUT
+           echo "EOF" >> $GITHUB_OUTPUT
+          else
+           echo "WARNING: Not running the check to check all stage releases since force is set to true!"
+           exit_status=0
+          fi
+          echo "status=$exit_status" >> $GITHUB_OUTPUT
+          echo "Tag: ${{ inputs.tag }}"
+          echo "Exit Status: $exit_status"
   on-success:
     needs: build
     runs-on: ubuntu-latest
     if: ${{ needs.build.outputs.status == '0' || inputs.force == 'true' }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: 'production'
       - name: Copy the tag from s3
         uses: prewk/s3-cp-action@v2
         with:
@@ -89,20 +94,21 @@ jobs:
           S3_KEY: 'production/${{ inputs.tag }}.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-      - name: Trigger Jenkins job
-        id: trigger
+      - name: Trigger schema-documentation workflow
+        id: schema_documentation_trigger
         run: |
-          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/facets-iac-docs-ci/build" \
-            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" -D -)
-          queue_url=$(echo "$response" | grep -Fi Location | awk '{print $2}' | tr -d '\r')
-          queue_id=$(basename "$queue_url")
-          echo "::set-output name=queue_id::$queue_id"
+          gh workflow run schema-documentation -R ${{ github.repository }} --ref tfdev -F tag=${{ inputs.tag }} 
+          sleep 3
+          url=$(gh run list --workflow=schema-documentation.yml --json url --jq '.[0].url')
+          echo "url=$url" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
       - name: Post Success to a Slack channel
         if: ${{ inputs.force == 'false' }}
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: ${{needs.build.outputs.run}}
+          slack-message: 'Tag ${{ inputs.tag }} has been promoted to production!. Workflow for publishing the schema documentation has been triggered and can be tracked <${{ steps.schema_documentation_trigger.outputs.url }}|here>'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
       - name: Post Success to a Slack channel(force)
@@ -110,7 +116,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'Tag ${{ inputs.tag }} has been forcefully promoted to production!'
+          slack-message: 'Tag ${{ inputs.tag }} has been forcefully promoted to production!. Workflow for publishing the schema documentation has been triggered and can be tracked <${{ steps.schema_documentation_trigger.outputs.url }}|here>'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
   on-failure:
