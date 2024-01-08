@@ -5,9 +5,6 @@
         tag:
           description: 'Tag'
           required: true
-        ref:
-          description: 'Ref'
-          required: false
   jobs:
     build:
       runs-on: ubuntu-latest
@@ -18,7 +15,7 @@
             repository: Facets-cloud/facets-iac
             fetch-depth: 0
             token:  ${{ secrets.PAT }}
-            ref: ${{ github.event.inputs.tag || github.event.inputs.ref }}
+            ref: ${{ github.event.inputs.tag }}
         - name: Setup python
           uses: actions/setup-python@v4
           with:
