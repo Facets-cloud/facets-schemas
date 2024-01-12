@@ -1,0 +1,93 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "../../traits/base.schema.json"
+
+        },
+        {
+            "$ref": "#/$defs/specDef"
+        },
+        {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                            "aws_event_bus"
+                    ]
+                },
+                "flavor": {
+                    "type": "string",
+                    "enum": [
+                        "default"
+                    ]
+                },
+                "version": {
+                  "type": "string",
+                  "enum": [
+                    "0.1", "latest"
+                  ]
+                }
+            }
+        },
+        {
+            "$ref": "#/$defs/advancedDef"
+        },
+        {
+            "$ref": "#/$defs/outDef"
+        }
+    ],
+    "required": [
+        "kind",
+        "flavor",
+        "version",
+        "metadata",
+        "spec"
+    ],
+    "$defs": {
+        "specDef": {
+          "type": "object",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the event bus"
+                }
+              }
+            }
+        }
+    },
+    "advancedDef": {
+        "type": "object",
+        "properties": {
+          "advanced": {
+            "type": "object",
+            "properties": {
+              "additional_tags": {
+                  "type": "object",
+                  "description": "The additional tags to be added to the event bus resource."
+              }
+            }
+          }
+      }
+  },
+  "outDef": {
+    "type": "object",
+    "properties": {
+      "out": {
+        "type": "object",
+        "properties": {
+          "name": {
+              "type": "string",
+              "description": "The name of the event bus resource."
+          }
+        }
+      }
+  }
+}
+}
+}

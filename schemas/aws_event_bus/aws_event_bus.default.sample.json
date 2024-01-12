@@ -1,0 +1,9 @@
+{
+    "kind": "aws_event_bus",
+    "disabled": true,
+    "version": "0.1",
+    "metadata": {},
+    "flavor": "default",
+    "spec": {},
+    "advanced": {}
+}
