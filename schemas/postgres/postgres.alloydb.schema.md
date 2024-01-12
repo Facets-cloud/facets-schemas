@@ -27,7 +27,7 @@ Use the following [link](https://registry.terraform.io/modules/GoogleCloudPlatfo
 
 ## Consideration
 
-- To handle invocation of database flags as an advanced feature, refer the given json sinppet.
+- To handle invocation of database flags as an advanced feature, refer the given json snippet.
   ```
   "advanced": {
     "allloydb": {

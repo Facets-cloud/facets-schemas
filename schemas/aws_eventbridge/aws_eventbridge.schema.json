@@ -1,0 +1,119 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+      {
+        "$ref": "../../traits/base.schema.json"
+      },
+      {
+        "$ref": "#/$defs/specDef"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "aws_eventbridge"
+            ]
+          },
+          "flavor": {
+            "type": "string",
+            "enum": [
+              "default"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "0.1",
+              "latest"
+            ]
+          }
+        }
+      },
+      {
+        "$ref": "#/$defs/advancedDef"
+      },
+      {
+        "$ref": "#/$defs/outDef"
+      }
+    ],
+    "required": [
+      "kind",
+      "flavor",
+      "version",
+      "metadata",
+      "spec"
+    ],
+    "$defs": {
+      "specDef": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "rules": {
+                "type": "object",
+                "patternProperties": {
+                  "^[a-zA-Z0-9_.-]*$": {
+                    "type": "object",
+                    "properties": {
+                      "is_enabled": {
+                        "type": "boolean",
+                        "description": "Flag to enable or disable a rule"
+                      },
+                      "schedule_expression": {
+                        "type": "string",
+                        "description": "The scheduling expression for the rule"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description for the rule."
+                      },
+                      "targets": {
+                        "type": "array",
+                        "description": "Targets to be added to the rule.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "arn": {
+                              "type": "string",
+                              "description": "The arn of the target."
+                            },
+                            "input": {
+                              "type": "object",
+                              "description": "Valid JSON text passed to the target."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "rules"
+            ]
+          }
+        }
+      },
+      "advancedDef": {
+        "type": "object",
+        "properties": {
+          "advanced": {
+            "type": "object"
+          }
+        }
+      },
+      "outDef": {
+        "type": "object",
+        "properties": {
+          "out": {
+            "type": "object"
+          }
+        }
+      }
+    }
+}
