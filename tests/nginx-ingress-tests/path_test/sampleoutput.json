@@ -1,0 +1,112 @@
+{
+  "domain": {
+    "sensitive": false,
+    "type": "string",
+    "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+  },
+  "domains": {
+    "sensitive": false,
+    "type": ["tuple", ["string"]],
+    "value": ["test-ingress-controller-unique.moduletesting.facetsdev.click"]
+  },
+  "ingress_annotations": {
+    "sensitive": false,
+    "type": ["map", "string"],
+    "value": {}
+  },
+  "legacy_resource_details": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ]
+      ]
+    ],
+    "value": [
+      {
+        "key": "test-ingress-controller",
+        "name": "Base Domain",
+        "resource_name": "test-ingress-controller",
+        "resource_type": "ingress",
+        "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "path-echoserver1",
+        "name": "ingress domain",
+        "resource_name": "path-echoserver1",
+        "resource_type": "ingress_rules_infra",
+        "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "path-echoserver2",
+        "name": "ingress domain",
+        "resource_name": "path-echoserver2",
+        "resource_type": "ingress_rules_infra",
+        "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "path-echoserver3",
+        "name": "ingress domain",
+        "resource_name": "path-echoserver3",
+        "resource_type": "ingress_rules_infra",
+        "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+      }
+    ]
+  },
+  "secure_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://test-ingress-controller-unique.moduletesting.facetsdev.click"
+  },
+  "subdomain": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "test-ingress-controller": ["object", {}]
+      }
+    ],
+    "value": {
+      "test-ingress-controller": {}
+    }
+  }
+}

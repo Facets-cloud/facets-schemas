@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: echoserver-1
+  name: echoserver-1
+  namespace: default
+spec:
+  containers:
+    - image: mendhak/http-https-echo:26
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 10
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 8080
+        timeoutSeconds: 60
+      name: echoserver-1
+      ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+      readinessProbe:
+        failureThreshold: 10
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 8080
+        timeoutSeconds: 60
+      resources:
+        limits:
+          cpu: 250m
+          memory: 350Mi
+        requests:
+          cpu: 100m
+          memory: 200Mi
+  # dnsPolicy: ClusterFirst
+  # enableServiceLinks: false
+  # imagePullSecrets:
+  # - name: aws-ecr-token-facets-config-auto
+  # nodeName: ip-10-30-106-143.ap-south-1.compute.internal
+  terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoserver-1
+spec:
+  selector:
+    app: echoserver-1
+  ports:
+    - port: 80
+      targetPort: http

@@ -1,0 +1,74 @@
+{
+  "flavor": "nginx_ingress_controller",
+  "metadata": {
+    "name": "domainprefix_test_nginx",
+    "annotations": {}
+  },
+  "advanced": {
+    "nginx_ingress_controller": {}
+  },
+  "spec": {
+    "private": false,
+    "basicAuth": false,
+    "grpc": false,
+    "domains": {},
+    "rules": {
+      "domainpfx-echoserver1": {
+        "service_name": "echoserver-1",
+        "path": "/",
+        "port_name": "http",
+        "port": 80,
+        "domain_prefix": "echoserver1",
+        "annotations": {
+          "app": "domainpfx-echoserver"
+        },
+        "disable_auth": false
+      },
+      "domainpfx-echoserver2": {
+        "service_name": "echoserver-2",
+        "path": "/",
+        "port_name": "http",
+        "port": 80,
+        "domain_prefix": "echoserver2",
+        "annotations": {
+          "app": "domainpfx-echoserver"
+        },
+        "disable_auth": false
+      },
+      "domainpfx-echoserver3": {
+        "service_name": "echoserver-3",
+        "path": "/echoserver-3",
+        "port_name": "http",
+        "port": 80,
+        "domain_prefix": "echoserver2",
+        "annotations": {
+          "app": "domainpfx-echoserver"
+        },
+        "disable_auth": false
+      },
+      "domainpfx-echoserver4": {
+        "service_name": "echoserver-4",
+        "path": "/echoserver-3/echoserver-4",
+        "port_name": "http",
+        "port": 80,
+        "domain_prefix": "echoserver2",
+        "annotations": {
+          "app": "domainpfx-echoserver"
+        },
+        "disable_auth": false
+      },
+      "domainpfx-echoserver5": {
+        "service_name": "echoserver-5",
+        "path": "/echoserver-5",
+        "port_name": "http",
+        "port": 80,
+        "domain_prefix": "echoserver2",
+        "annotations": {
+          "app": "domainpfx-echoserver"
+        },
+        "disable_auth": false
+      }
+    },
+    "force_ssl_redirection": false
+  }
+}

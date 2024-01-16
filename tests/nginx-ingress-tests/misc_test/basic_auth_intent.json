@@ -1,0 +1,29 @@
+{
+  "flavor": "nginx_ingress_controller",
+  "metadata": {
+    "name": "ingress-setup-test",
+    "annotations": {}
+  },
+  "advanced": {
+    "nginx_ingress_controller": {}
+  },
+  "spec": {
+    "private": false,
+    "basicAuth": true,
+    "grpc": false,
+    "domains": {},
+    "rules": {
+      "path-echoserver1": {
+        "service_name": "echoserver-1",
+        "path": "/",
+        "port_name": "http",
+        "port": 80,
+        "annotations": {
+          "app": "path-echoserver"
+        },
+        "disable_auth": false
+      }
+    },
+    "force_ssl_redirection": false
+  }
+}

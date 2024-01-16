@@ -1,0 +1,146 @@
+{
+  "domain": {
+    "sensitive": false,
+    "type": "string",
+    "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+  },
+  "domains": {
+    "sensitive": false,
+    "type": ["tuple", ["string"]],
+    "value": ["test-ingress-controller-unique.moduletesting.facetsdev.click"]
+  },
+  "ingress_annotations": {
+    "sensitive": false,
+    "type": ["map", "string"],
+    "value": {}
+  },
+  "legacy_resource_details": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ],
+        [
+          "object",
+          {
+            "key": "string",
+            "name": "string",
+            "resource_name": "string",
+            "resource_type": "string",
+            "value": "string"
+          }
+        ]
+      ]
+    ],
+    "value": [
+      {
+        "key": "test-ingress-controller",
+        "name": "Base Domain",
+        "resource_name": "test-ingress-controller",
+        "resource_type": "ingress",
+        "value": "test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "domainpfx-echoserver1",
+        "name": "ingress domain",
+        "resource_name": "domainpfx-echoserver1",
+        "resource_type": "ingress_rules_infra",
+        "value": "echoserver1.test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "domainpfx-echoserver2",
+        "name": "ingress domain",
+        "resource_name": "domainpfx-echoserver2",
+        "resource_type": "ingress_rules_infra",
+        "value": "echoserver2.test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "domainpfx-echoserver3",
+        "name": "ingress domain",
+        "resource_name": "domainpfx-echoserver3",
+        "resource_type": "ingress_rules_infra",
+        "value": "echoserver2.test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "domainpfx-echoserver4",
+        "name": "ingress domain",
+        "resource_name": "domainpfx-echoserver4",
+        "resource_type": "ingress_rules_infra",
+        "value": "echoserver2.test-ingress-controller-unique.moduletesting.facetsdev.click"
+      },
+      {
+        "key": "domainpfx-echoserver5",
+        "name": "ingress domain",
+        "resource_name": "domainpfx-echoserver5",
+        "resource_type": "ingress_rules_infra",
+        "value": "echoserver2.test-ingress-controller-unique.moduletesting.facetsdev.click"
+      }
+    ]
+  },
+  "secure_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://test-ingress-controller-unique.moduletesting.facetsdev.click"
+  },
+  "subdomain": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "test-ingress-controller": ["object", {}]
+      }
+    ],
+    "value": {
+      "test-ingress-controller": {}
+    }
+  }
+}

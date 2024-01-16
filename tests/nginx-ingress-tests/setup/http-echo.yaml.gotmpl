@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: {{ .Name -}} {{- .Count }}
+  name: {{ .Name -}} {{- .Count }}
+  namespace: {{ .Namespace }}
+  annotations:
+    "motd/info": |
+      ~~~hello there!~~~
+      
+      these echo servers are being used
+      to run ingress testing.
+      Don't mind them
+      
+      thnx :)
+      ==================
+spec:
+  containers:
+    - image: mendhak/http-https-echo:26
+      imagePullPolicy: IfNotPresent
+      livenessProbe:
+        failureThreshold: 10
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 8080
+        timeoutSeconds: 60
+      name: {{ .Name -}} {{- .Count }}
+      ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+      readinessProbe:
+        failureThreshold: 10
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 8080
+        timeoutSeconds: 60
+      resources:
+        limits:
+          cpu: 250m
+          memory: 350Mi
+        requests:
+          cpu: 10m
+          memory: 50Mi
+  # dnsPolicy: ClusterFirst
+  # enableServiceLinks: false
+  # imagePullSecrets:
+  # - name: aws-ecr-token-facets-config-auto
+  # nodeName: ip-10-30-106-143.ap-south-1.compute.internal
+  terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Name -}} {{- .Count }}
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    app: {{ .Name -}} {{- .Count }}
+  ports:
+    - port: 8080
+      targetPort: http

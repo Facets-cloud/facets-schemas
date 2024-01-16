@@ -1,0 +1,234 @@
+name: Test NGINX ingress
+
+on:
+  push:
+    paths:
+      - ".github/workflows/test-ingress.yml"
+  pull_request:
+    paths:
+      - ".github/workflows/test-ingress.yml"
+      - "capillary-cloud-tf/modules/nginx_ingress_controller/**"
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Custom test command to run instead, eg task test-ingress-setup"
+        required: false
+      should-test-ingress-v2:
+        description: "Test ingress 0.2? (default 0.1)"
+        type: boolean
+        required: false
+
+concurrency:
+  # since only one fixed namespace 'ingress-testing'& one fixed ci-specific
+  # domain is used, parallel execution of these tests is not possible, so
+  # restricting concurrency to only 1 active running workflow for this workflow
+  # only
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  ingress-version:
+    name: test 0.2 ingress?
+    runs-on: ubuntu-latest
+    outputs:
+      use_v2: ${{ steps.set_version.outputs.use_v2 }}
+      ing_version: ${{ steps.set_version.outputs.version }}
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            v2:
+              - 'capillary-cloud-tf/modules/nginx_ingress_controller/0.2/**'
+      - id: set_version
+        run: |
+          if [[ "${{ github.event.inputs.should-test-ingress-v2 }}" == "true" || "${{ steps.filter.outputs.v2 }}" == "true" ]]; then
+            echo "use_v2=true" >> $GITHUB_OUTPUT
+            echo "version=0.2" >> $GITHUB_OUTPUT
+          else
+            echo "use_v2=false" >> $GITHUB_OUTPUT
+            echo "version=0.1" >> $GITHUB_OUTPUT
+          fi
+          cat $GITHUB_OUTPUT
+  test:
+    needs: ingress-version
+    runs-on: ubuntu-latest
+    env:
+      WORKING_DIR: tests/nginx-ingress-tests
+      GOTESTSUM_JUNITFILE: report-ingress.xml
+      KUBECONFIG: /tmp/facets-demo-kubeconfig
+      LOGS_FOLDER: test-output
+      INGRESS_TESTING_HOSTED_ZONE: ${{ vars.INGRESS_TESTING_HOSTED_ZONE }}
+      INGRESS_TESTING_HOSTED_ZONE_ID: ${{ vars.INGRESS_TESTING_HOSTED_ZONE_ID }}
+
+    steps:
+      - name: change dns to cloudflare
+        run: |
+          echo $USER $UID
+          resolvectl status
+          cat /etc/resolv.conf
+          sudo cp /etc/resolv.conf /etc/resolv.conf.bak
+          sudo sed -i '/^nameserver/c\nameserver 1.1.1.1' /etc/resolv.conf
+          echo "---------"
+          resolvectl status
+
+          sudo systemctl daemon-reload
+          sudo systemctl restart systemd-networkd
+          sudo systemctl restart systemd-resolved
+
+          echo "---------"
+          resolvectl status
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Use Ingress 0.2? ${{ needs.ingress-version.outputs.use_v2 }}
+        if: needs.ingress-version.outputs.use_v2 == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          echo "${{ needs.ingress-version.outputs.use_v2 }}"
+          echo "${{ needs.ingress-version.outputs.ing_version }}"
+          rm nginx_ingress_controller
+          ln -s ../../capillary-cloud-tf/modules/nginx_ingress_controller/0.2 nginx_ingress_controller
+          ls -al
+          ls nginx_ingress_controller
+
+      - name: Setup Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: ${{ env.WORKING_DIR }}/go.mod
+          cache-dependency-path: ${{ env.WORKING_DIR }}/go.sum
+
+      # to merge generated report.xml
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # to simplify the report
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Setup tooling
+        run: |
+          # setup Taskfile
+          command -v task || go install github.com/go-task/task/v3/cmd/task@latest
+
+          # setup junit-report-merger
+          npm install -g junit-report-merger
+          command -v jrm
+
+          # setup gotestsum
+          go install gotest.tools/gotestsum@latest
+          command -v gotestsum
+
+          # setup terratest log parser
+          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
+          command -v terratest_log_parser
+
+      - name: Create kubeconfig
+        env:
+          KUBECONFIG_DATA: ${{ secrets.FACETSDEMO_KUBECONFIG }}
+        run: |
+          echo "$KUBECONFIG_DATA" > $KUBECONFIG
+
+      - name: Validate kubeconfig works
+        run: |
+          if ! command -v kubectl &> /dev/null
+          then
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod +x kubectl
+              mv ./kubectl ~/go/bin/   # apparently ~/.local/bin started giving errors unexpectedly
+              command -v kubectl
+          fi
+
+          kubectl cluster-info
+
+      - name: Download Dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          go mod tidy
+          mkdir $LOGS_FOLDER
+
+      - name: Run tests
+        working-directory: ${{ env.WORKING_DIR }}
+        continue-on-error: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.INGRESS_TESTING_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.INGRESS_TESTING_AWS_ACCESS_KEY_SECRET }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          # if custom command is specified, run that and treat it like a
+          # taskfile command otherwise run the entire suite
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.command }}" ]]; then
+            echo "Running custom command"
+            eval "${{ github.event.inputs.command }}" | tee $LOGS_FOLDER/output.log
+          else
+            task ci | tee $LOGS_FOLDER/output.log
+          fi
+
+      - name: destroy
+        working-directory: ${{ env.WORKING_DIR }}
+        continue-on-error: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.INGRESS_TESTING_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.INGRESS_TESTING_AWS_ACCESS_KEY_SECRET }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          task ci-destroy | tee -a $LOGS_FOLDER/output.log
+
+      - name: Combine Reports & Process it
+        if: success() || failure()
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          jrm $LOGS_FOLDER/combined-report.xml "./**/${{ env.GOTESTSUM_JUNITFILE }}" "$LOGS_FOLDER/*-${{ env.GOTESTSUM_JUNITFILE }}"
+
+          python3 ./scripts/report_parsing/simplify-report.py $LOGS_FOLDER/simplified.xml $LOGS_FOLDER/combined-report.xml
+
+      - name: Strip ANSI color codes from report and logs
+        working-directory: ${{ env.WORKING_DIR }}/${{ env.LOGS_FOLDER }}
+        if: success() || failure()
+        run: |
+          # replace color codes in the log
+          # https://unix.stackexchange.com/questions/694671/leave-color-in-stdout-but-remove-from-tee
+          sed -r $'s/(\033|�)[[][^A-Za-z]*m//g' -i output.log
+
+          # replace color code in the xml
+          # apparently, instead of escape character unicode's "replacement char"
+          # is used
+          sed -r $'s/(\033|�)[[][^A-Za-z]*m//g' -i *.xml
+
+      - name: Parse terratest logs
+        working-directory: ${{ env.WORKING_DIR }}/${{ env.LOGS_FOLDER }}
+        if: success() || failure()
+        run: |
+          terratest_log_parser -testlog output.log -outputdir parsed_logs
+          cp *.xml parsed_logs/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: logs-and-reports
+          path: ${{ env.WORKING_DIR }}/${{ env.LOGS_FOLDER }}/parsed_logs
+
+      - name: Create Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        id: gen-report
+        with:
+          name: "Test Report: [AWS] NGINX v${{needs.ingress-version.outputs.ing_version}}"
+          working-directory: ${{ env.WORKING_DIR }}/${{ env.LOGS_FOLDER }}
+          # add combined-report.xml,parsed_logs/report.xml if you want to cross check
+          path: simplified.xml
+          reporter: java-junit
+
+      - name: echo test urls
+        if: success() || failure()
+        run: |
+          echo "${{ steps.gen-report.outputs.url }}"
+          echo "${{ steps.gen-report.outputs.url_html }}"

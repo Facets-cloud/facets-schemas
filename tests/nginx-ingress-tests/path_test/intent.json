@@ -1,0 +1,49 @@
+{
+  "flavor": "nginx_ingress_controller",
+  "metadata": {
+    "name": "path_test_nginx",
+    "annotations": {}
+  },
+  "advanced": {
+    "nginx_ingress_controller": {}
+  },
+  "spec": {
+    "private": false,
+    "basicAuth": false,
+    "grpc": false,
+    "domains": {},
+    "rules": {
+      "path-echoserver1": {
+        "service_name": "echoserver-1",
+        "path": "/echoserver-1",
+        "port_name": "http",
+        "port": 80,
+        "annotations": {
+          "app": "path-echoserver"
+        },
+        "disable_auth": false
+      },
+      "path-echoserver2": {
+        "service_name": "echoserver-2",
+        "path": "/echoserver-2",
+        "port_name": "http",
+        "port": 80,
+        "annotations": {
+          "app": "path-echoserver"
+        },
+        "disable_auth": false
+      },
+      "path-echoserver3": {
+        "service_name": "echoserver-3",
+        "path": "/echoserver-1/echoserver-3",
+        "port_name": "http",
+        "port": 80,
+        "annotations": {
+          "app": "path-echoserver"
+        },
+        "disable_auth": false
+      }
+    },
+    "force_ssl_redirection": false
+  }
+}

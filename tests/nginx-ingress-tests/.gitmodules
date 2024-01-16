@@ -1,0 +1,3 @@
+[submodule "facets-iac"]
+	path = facets-iac
+	url = git@github.com:Facets-cloud/facets-iac.git
