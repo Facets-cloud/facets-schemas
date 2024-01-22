@@ -31,8 +31,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -134,8 +134,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -254,8 +254,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -354,8 +354,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "kubernetes"
+                    "kubernetes",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -401,8 +401,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -529,8 +529,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -608,8 +608,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -785,8 +785,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -811,8 +811,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -828,8 +828,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -879,8 +879,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -920,8 +920,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -947,8 +947,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -973,8 +973,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1080,8 +1080,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1130,8 +1130,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1157,8 +1157,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1207,8 +1207,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1249,8 +1249,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1279,8 +1279,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1289,6 +1289,32 @@
                     }
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.default.sample.json"
+            }
+        ]
+    },
+    {
+        "intent": "loki_recording_rules",
+        "displayName": "Loki_recording_rules",
+        "description": "Some random description",
+        "schemaUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loki_recording_rules/loki_recording_rules.schema.json",
+        "documentation": "Documentation link",
+        "flavors": [
+            {
+                "name": [
+                    "default"
+                ],
+                "clouds": [
+                    "gcp",
+                    "aws",
+                    "azure"
+                ],
+                "versions": [
+                    {
+                        "number": "0.1",
+                        "documentation": "NA"
+                    }
+                ],
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/loki_recording_rules/loki_recording_rules.default.sample.json"
             }
         ]
     },
@@ -1330,8 +1356,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1380,8 +1406,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1406,8 +1432,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1530,8 +1556,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1556,8 +1582,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1611,8 +1637,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {
@@ -1637,8 +1663,8 @@
                 ],
                 "clouds": [
                     "gcp",
-                    "azure",
-                    "aws"
+                    "aws",
+                    "azure"
                 ],
                 "versions": [
                     {

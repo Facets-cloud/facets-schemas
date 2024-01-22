@@ -23,6 +23,7 @@ A Postgres Instance in reader/writer datastore mode.
 
 - [Aurora](postgres.aurora.schema.md)
 - [Cloudsql](postgres.cloudsql.schema.md)
+- [AlloyDB](postgres.alloydb.schema.md)
 
 ## Alerts
 
