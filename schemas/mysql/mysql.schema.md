@@ -81,7 +81,6 @@ The writer details
 - [RDS](mysql.rds.schema.md)
 - [Cloudsql](mysql.cloudsql.schema.md)
 - [Flexible Server](mysql.flexible_server.schema.md)
-- [k8s](mysql.k8s.schema.md)
 
 ## Alerts
 

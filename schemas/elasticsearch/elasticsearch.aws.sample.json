@@ -1,6 +1,5 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json",
-  "flavor": "opensearch",
+  "flavor": "aws",
   "kind": "elasticsearch",
   "metadata": {
     "name": "elasticsearch"
@@ -10,7 +9,7 @@
     "size": {
       "instance": "r4.large.elasticsearch",
       "instance_count": 2,
-      "volume": "100G"
+      "volume": "100"
     }
   },
   "version":"latest",

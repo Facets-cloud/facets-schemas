@@ -4,7 +4,7 @@
   "flavor": "default",
   "version": "latest",
   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
-  "disabled": true,
+  "disabled": false,
   "provided": false,
   "depends_on": [
   ],

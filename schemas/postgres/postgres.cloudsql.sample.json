@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
   "flavor": "cloudsql",
   "disabled": true,
-  "version": "0.2",
+  "version": "0.1",
   "kind": "postgres",
   "provided": false,
   "metadata": {

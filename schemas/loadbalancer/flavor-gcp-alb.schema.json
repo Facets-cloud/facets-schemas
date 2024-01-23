@@ -6,9 +6,9 @@
       "type": "object",
       "description": "Advanced section of the gcp_alb",
       "properties": {
-        "certificate_type": {
-          "type": "string",
-          "description": "Set type of certificate to be created in GCP"
+        "enable_managed_certificates": {
+          "type": "boolean",
+          "description": "Boolean flag to enable or disable the creation of managed certificates in GCP"
         }
       }
     }
