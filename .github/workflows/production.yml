@@ -34,15 +34,15 @@ jobs:
             echo "User does not belong to team"
             exit 1
           fi
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.21
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
           ref: 'tfdev'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: '.github/workflows/promotion/go.mod'
       - name: Build and run Go function
         id: run
         shell: bash
