@@ -62,8 +62,8 @@ The disruption policy for the service
 
 | Property          | Type    | Required | Description                                                              |
 |-------------------|---------|----------|--------------------------------------------------------------------------|
-| `max_available`   | string | No       | This is the max number of pods should be available in case of failures   |
-| `max_unavailable` | string | No       | This is the max number of pods that can be unavailable during a failure. |
+| `max_available`   | integer | No       | This is the max number of pods should be available in case of failures   |
+| `max_unavailable` | integer | No       | This is the max number of pods that can be unavailable during a failure. |
 
 #### strategy
 The type of upgrade strategy to be followed by this service
@@ -71,8 +71,8 @@ The type of upgrade strategy to be followed by this service
 
 | Property          | Type    | Required | Description                                                                                                  |
 |-------------------|---------|----------|--------------------------------------------------------------------------------------------------------------|
-| `max_available`   | string | No       | If type RollingUpdate , this is the max number of pods that can be created from the default replicas         |
-| `max_unavailable` | string | No       | If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas     |
+| `max_available`   | integer | No       | If type RollingUpdate , this is the max number of pods that can be created from the default replicas         |
+| `max_unavailable` | integer | No       | If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas     |
 | `type`            | string  | **Yes**       | Your kubernetes rollout type , Possible values are: `RollingUpdate`, `Recreate`. |
 
 ### runtime
@@ -96,10 +96,10 @@ Map of all runtime keys
 
 | Property              | Type                           | Required | Description                                                                                 |
 |-----------------------|--------------------------------|----------|---------------------------------------------------------------------------------------------|
-| `cpu_threshold`       | string                        | No       | The max cpu threshold that the hpa waits until it upscales                                  |
-| `max`                 | string                        | No       | This is the max replicas where the hpa upscales to                                          |
-| `min`                 | string                        | No       | This is the min replicas where the hpa downscales to                                        |
-| `ram_threshold`       | string                        | No       | The max ram threshold that the hpa waits until it upscales                                  |
+| `cpu_threshold`       | integer                        | No       | The max cpu threshold that the hpa waits until it upscales                                  |
+| `max`                 | integer                        | No       | This is the max replicas where the hpa upscales to                                          |
+| `min`                 | integer                        | No       | This is the min replicas where the hpa downscales to                                        |
+| `ram_threshold`       | integer                        | No       | The max ram threshold that the hpa waits until it upscales                                  |
 
 
 #### health_checks
@@ -110,10 +110,10 @@ All the health check related key value pairs
 
 | Property                 | Type    | Required | Description                                                          |
 |--------------------------|---------|----------|----------------------------------------------------------------------|
-| `period`                 | string | **Yes**  | This is the repeated interval in which kubelet does a health check   |
+| `period`                 | integer | **Yes**  | This is the repeated interval in which kubelet does a health check   |
 | `port`                   | string | **Yes**  | Specify the port in which the health checks should be made           |
-| `start_up_time`          | string | **Yes**  | The time kubernetes api needs to wait until the application is ready |
-| `timeout`                | string | **Yes**  | Timeout for the health check                                         |
+| `start_up_time`          | integer | **Yes**  | The time kubernetes api needs to wait until the application is ready |
+| `timeout`                | integer | **Yes**  | Timeout for the health check                                         |
 | `liveness_exec_command`  | array   | No       | The list of commands to make liveness check                          |
 | `liveness_url`           | string  | No       | URL to make the liveness check                                       |
 | `readiness_exec_command` | array   | No       | The list of commands to make readiness check                         |

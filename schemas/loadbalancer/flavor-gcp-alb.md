@@ -8,7 +8,7 @@ Advanced configuraiton for gcp_alb
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `certificate_type`   | string | No       | String to set the type of certificate (managed/k8s) in GCP
+| `enable_managed_certificates`   | boolean | No       | Boolean flag to enable or disable the creation of managed certificates in GCP
 
 Example usage
 
@@ -16,7 +16,7 @@ Example usage
     {
       "advanced": {
         "gcp_alb": {
-          "certificate_type": "managed"
+          "enable_managed_certificates": false
         }
       }
     }

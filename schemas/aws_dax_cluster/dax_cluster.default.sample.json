@@ -2,7 +2,7 @@
     "kind": "dax_cluster",
     "flavor": "default",
     "version": "0.1",
-    "disabled": true,
+    "disabled": false,
     "provided": false,
     "depends_on": [],
     "metadata": {

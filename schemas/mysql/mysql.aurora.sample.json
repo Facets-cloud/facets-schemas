@@ -3,13 +3,13 @@
   "kind": "mysql",
   "flavor": "aurora",
   "version": "0.1",
-  "disabled": true,
+  "disabled": false,
   "provided": false,
   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "depends_on": [],
   "metadata": {},
   "spec": {
-    "mysql_version": "8.0.mysql_aurora.3.02.0",
+    "mysql_version": "5.7.mysql_aurora.2.10.1",
     "size": {
       "writer": {
         "instance": "db.t4g.medium",
