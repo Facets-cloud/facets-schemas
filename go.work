@@ -1,3 +1,6 @@
 go 1.21.1
 
-use ./tests/nginx-ingress-tests
+use (
+	./.github/workflows/promotion
+	./tests/nginx-ingress-tests
+)
