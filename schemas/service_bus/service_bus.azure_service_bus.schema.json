@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for service",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["service_bus"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["azure_service_bus"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1","latest"]
+        }
+      }
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced values for service bus",
+          "anyOf": [
+            {
+              "$ref": "./flavour-azure_service_bus.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "topics": {
+              "type": "object",
+              "description": "Topics configuration",
+              "patternProperties": {
+                "^[a-zA-Z0-9-_]+$": {
+                  "type": "object",
+                  "description": "Topic configuration",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the topic",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the topic",
+                      "enum": [
+                        "Active",
+                        "Creating",
+                        "Deleting",
+                        "Disabled",
+                        "ReceiveDisabled",
+                        "Renaming",
+                        "SendDisabled",
+                        "Unknown"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "queues": {
+              "type": "object",
+              "description": "Queues configuration",
+              "patternProperties": {
+                "^[a-zA-Z0-9-_]+$": {
+                  "type": "object",
+                  "description": "Queues configuration",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the queue",
+                      "minLength": 1,
+                      "maxLength": 255
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the queue",
+                      "enum": [
+                        "Active",
+                        "Disabled"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "size": {
+              "type": "object",
+              "properties": {
+                "sku": {
+                  "type": "string"
+                },
+                "capacity": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sku"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Output from the azure service bus",
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
+              "properties": {
+                "endpoint": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "primary_connection_string": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "primary_key": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "secondary_connection_string": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "secondary_key": {
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "allOf": [
+            {
+              "$ref": "./flavour-azure_service_bus.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

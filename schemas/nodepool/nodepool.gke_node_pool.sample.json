@@ -8,7 +8,7 @@
   "lifecycle": "ENVIRONMENT",
 
   "spec": {
-    "instance_type": "n2d-standard-16",
+    "instance_type": "n2d-standard-2",
     "min_node_count": 1,
     "max_node_count": 50,
     "disk_size": 100,

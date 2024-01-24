@@ -25,7 +25,7 @@ Specification as per resource types schema
 | Property              | Type            | Required | Description                           |
 | --------------------- | --------------- | -------- | ------------------------------------- |
 | `authenticated`       | boolean         | **Yes**  | Make this mongo is Password protected |
-| `mongo_version`       | string          | **Yes**  | Version of mongo e.g. 5.0.14          |
+| `mongodb_version`       | string          | **Yes**  | Version of mongo e.g. 5.0.14          |
 | `persistence_enabled` | boolean         | **Yes**  | Enable Persistence for this redis     |
 | `size`                | [object](#size) | **Yes**  |                                       |
 

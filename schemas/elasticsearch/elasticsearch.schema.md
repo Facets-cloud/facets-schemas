@@ -80,9 +80,10 @@ Advanced values for elasticsearch
 
 Output given by the resource for others to refer.
 
-| Property     | Type               | Required | Description                                                        |
-|--------------|--------------------|----------|--------------------------------------------------------------------|
-| `interfaces` | [object](#cluster) | **Yes**  | elasticsearch broker details interfaces of type cluster as object  |
+| Property     | Type               | Required | Description                                                       |
+|--------------|--------------------|----------|-------------------------------------------------------------------|
+| `interfaces` | [object](#cluster) | **Yes**  | elasticsearch broker details interfaces of type cluster as object |
+| `interfaces` | [object](#http)    | **No**   | elasticsearch broker details interfaces of type http as object    |
 
 Added an example of out
 ```json
@@ -110,6 +111,16 @@ elasticsearch broker details
 | password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
 | connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
 
+
+### http
+
+elasticsearch broker details
+
+| Name              | Description                                                          | Type   | Required |
+|-------------------|----------------------------------------------------------------------|--------|----------|
+| host              | The host for the Elasticsearch cluster endpoint.                     | string | Yes      |
+| port              | The port to use for authentication when connecting to the datastore. | string | No       |
+| connection_string | The connection_string to use when connecting to the datastore.       | string | Yes      |
 ### Flavors
 
 - `k8s`

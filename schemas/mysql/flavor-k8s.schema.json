@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "description": "Advanced Values for Mysql K8s",
+    "properties": {
+      "k8s": {
+        "type": "object",
+        "properties": {
+          "mysql": {
+            "type": "object",
+            "properties": {
+              "values" : {
+                "type": "object",
+                "description": "Helm values as per bitnami mysql helm chart https://artifacthub.io/packages/helm/bitnami/mysql"
+              },
+              "k8s_service_names": {
+                "type": "object",
+                "description": "k8s services for reader and writer"
+              }
+            }
+          }
+        }
+      }
+    }
+  }

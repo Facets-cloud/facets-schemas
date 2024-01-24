@@ -3,7 +3,7 @@
   "kind" : "iam_policy",
   "flavor": "aws_iam_policy",
   "lifecycle": "ENVIRONMENT",
-  "disabled": false,
+  "disabled": true,
   "provided": false,
   "depends_on": [
   ],

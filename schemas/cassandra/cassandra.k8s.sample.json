@@ -1,0 +1,24 @@
+{
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/cassandra/cassandra.schema.json",
+    "flavor": "k8s",
+    "kind": "cassandra",
+    "metadata": {
+      "name": "cassandra"
+    },
+    "spec": {
+      "cassandra_version": "3.11.6",
+      "size": {
+        "cpu": "2",
+        "memory": "2Gi",
+        "volume": "5Gi",
+        "replica_count": 1
+      }
+    },
+    "advanced": {
+      "k8s": {
+        "cassandra": {
+          "values": {}
+        }
+      }
+    }
+  }
