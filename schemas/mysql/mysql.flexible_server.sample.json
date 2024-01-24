@@ -7,7 +7,7 @@
   },
   "provided": false,
   "kind": "mysql",
-  "disabled": false,
+  "disabled": true,
   "version": "0.1",
   "spec": {
     "mysql_version": "8.0.21",

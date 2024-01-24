@@ -45,3 +45,4 @@ Output given by the resource for others to refer.
 - [loki](log_collector.loki.schema.md)
 - [loki_s3](log_collector.loki_s3.schema.md)
 - [loki_blob](log_collector.loki_blob.schema.md)
+- [loki_gcs](log_collector.loki_gcs.schema.md)
