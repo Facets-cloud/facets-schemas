@@ -5,6 +5,7 @@ env:
   ECHO_SERVER_COUNT: 5
   INGRESS_TESTING_HOSTED_ZONE: moduletesting.facetsdev.click
   INGRESS_TESTING_HOSTED_ZONE_ID: Z0667775XB8W7BJIM9S2
+  INGRESS_VERSION: 0.1
   KUBE_CONFIG_PATH:
     sh: echo $KUBECONFIG
 
@@ -76,6 +77,10 @@ tasks:
     cmd: "{{.TEST_CMD}} -timeout 30m"
     dir: misc_test
 
+  redirect-test:
+    cmd: "{{.TEST_CMD}} -timeout 30m"
+    dir: redirect_test
+
   setup:
     cmds:
       - task: setup-echoserver
@@ -91,6 +96,7 @@ tasks:
       - task: path-test
       - task: domain-prefix-test
       - task: misc-test
+      - task: redirect-test
 
   default:
     cmds:

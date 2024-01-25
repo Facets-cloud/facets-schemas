@@ -34,6 +34,9 @@ func DeleteFromBlueprint(t *testing.T, blueprintPath string) {
 	}
 	defer alterPreventDestroy(true)
 
+	// in case the setup part is *never* run, destroy shouldnt fail because
+	// terraform was never initialised
+	terraform.Init(t, terraformOptions)
 	terraform.Destroy(t, terraformOptions)
 	os.Remove("../nginx_ingress_controller/providers.tf")
 }

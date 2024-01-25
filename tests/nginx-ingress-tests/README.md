@@ -198,6 +198,7 @@ dynamically uses `gotestsum` if present otherwise `go test`
 - [func DestroyIngressController\(t \*testing.T, terraformOptions \*terraform.Options\)](#DestroyIngressController)
 - [func GetDomainName\(terraformOutput \*gabs.Container, index string\) \(string, error\)](#GetDomainName)
 - [func GetFromEnv\(t \*testing.T, key string\) string](#GetFromEnv)
+- [func GetIngressVersionToTest\(t \*testing.T\) string](#GetIngressVersionToTest)
 - [func MakeHostnameValidator\(test PathHostnameLink\) func\(int, string\) bool](#MakeHostnameValidator)
 - [func ParseEchoHostname\(body string\) \(hostname string, err error\)](#ParseEchoHostname)
 - [func ParseOutput\(t \*testing.T, terraformOptions \*terraform.Options\) \*gabs.Container](#ParseOutput)
@@ -275,6 +276,17 @@ func GetFromEnv(t *testing.T, key string) string
 
 Fetches the value for the given env variable, fails the testcase if it does not
 exist or if the value is empty
+
+<a name="GetIngressVersionToTest"></a>
+
+### func [GetIngressVersionToTest](https://github.com/Facets-cloud/facets-iac/blob/tfdev/tests/nginx-ingress-tests/setup/util.go#L128)
+
+```go
+func GetIngressVersionToTest(t *testing.T) string
+```
+
+Fetches the ingress version to test from the env variable \`INGRESS_VERSION\`.
+Currently output could be "0.1" or "0.2"
 
 <a name="MakeHostnameValidator"></a>
 
