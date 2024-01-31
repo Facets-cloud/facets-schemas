@@ -1,0 +1,142 @@
+{
+  "$schema": "redis.schema.json",
+  "flavor": "k8s",
+  "kind": "redis",
+  "version": "latest",
+  "disabled": false,
+  "provided": false,
+  "depends_on": [
+  ],
+  "metadata": {
+    "name": "test-redis"
+  },
+  "spec": {
+    "authenticated": true,
+    "redis_version": "6.2",
+    "persistence_enabled": true,
+    "size": {
+      "writer": {
+        "cpu": "1",
+        "memory": "512M",
+        "replica_count": 1
+      },
+      "reader": {
+        "cpu": "1",
+        "memory": "512M",
+        "replica_count": 0
+      }
+    }
+  },
+  "out": {
+    "spec": {
+      "authenticated": true,
+      "redis_version": "6.2",
+      "persistence_enabled": true,
+      "size": {
+        "writer": {
+          "cpu": "1",
+          "memory": "512M",
+          "replica_count": 0
+        },
+        "reader": {
+          "cpu": "1",
+          "memory": "512M",
+          "replica_count": 0
+        }
+      }
+    },
+    "instances": {
+      "fsfdf-0": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      }
+    },
+    "interfaces": {
+      "reader": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      },
+      "writer": {
+        "username": "",
+        "password": "",
+        "host": "",
+        "port": 6379
+      }
+    }
+  },
+  "advanced": {
+    "k8s": {
+      "redis": {
+        "values": {
+
+        }
+      }
+    },
+    "elasticache": {
+      "aws_elasticache_replication_group": {
+        "apply_immediately": true,
+        "at_rest_encryption_enabled": true,
+        "auto_minor_version_upgrade": false,
+        "multi_az_enabled": false,
+        "kms_key_id": null,
+        "log_delivery_configuration": [],
+        "maintenance_window": "sun:05:00-sun:09:00",
+        "notification_topic_arn": null,
+        "snapshot_name": null,
+        "snapshot_arns": [],
+        "snapshot_retention_limit": null,
+        "snapshot_window": null,
+        "security_group_ids": null,
+        "data_tiering_enabled": false,
+        "final_snapshot_identifier": null,
+        "global_replication_group_id": null
+      },
+      "aws_elasticache_parameter_group": {
+        "parameters": [
+          {
+            "name": "maxmemory-policy",
+            "value": "noeviction"
+          }
+        ],
+        "name" : "something",
+        "description" : "something"
+      },
+      "aws_security_group": {
+        "description" : "something",
+        "ingress": {
+          "cidr_blocks": [
+            "10.0.0.0/16",
+            "11.0.0.0/16"
+          ]
+        }
+      }
+    },
+    "memorystore": {
+      "display_name" : null,
+      "tier" : "STANDARD_HA",
+      "authorized_network" : null,
+      "transit_encryption_mode": "DISABLED",
+      "alternative_location_id": "asia-south1-c",
+      "connect_mode": "PRIVATE_SERVICE_ACCESS",
+      "read_replicas_mode": "READ_REPLICAS_ENABLED",
+      "redis_configs": {
+        "name": "redis",
+        "count": "2"
+      },
+      "labels": {},
+      "reserved_ip_range": null,
+      "maintenance_policy" : {
+        "weekly_maintenance_window" : {
+          "day" : "THURSDAY",
+          "start_time" : {
+            "hours" : 12
+          }
+        }
+      }
+    }
+  }
+}

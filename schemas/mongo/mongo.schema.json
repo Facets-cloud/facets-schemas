@@ -90,7 +90,7 @@
               "type": "boolean",
               "description": "Make this mongodb instance Password protected"
             },
-            "mongodb_version": {
+            "mongo_version": {
               "type": "string",
               "description": "Version of mongodb e.g. 6.0, see valid tags here: https://hub.docker.com/_/mongo/tags?page=1",
               "minLength": 3,
@@ -131,17 +131,7 @@
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "properties": {
-                    "cluster" : {
-                      "type" : "object",
-                      "description" :"Map of type interface for cluster endpoint & port of MongoDB",
-                      "allOf": [
-                        {
-                          "$ref": "../../traits/multi-node-datastore-interface.schema.json"
-                        }
-                      ]
-                    }
-                  }
+                  "$ref": "../../traits/multi-node-datastore-interface.schema.json"
                 },
                 "instances": {
                   "type": "object",

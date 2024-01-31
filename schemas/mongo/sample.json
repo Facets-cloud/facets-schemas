@@ -1,0 +1,28 @@
+{
+  "$schema": "./mongo.schema.json",
+  "version": "0.2",
+  "flavor": "k8s",
+  "kind": "mongo",
+  "provided": false,
+  "metadata": {
+    "name": "mongo"
+  },
+  "spec": {
+    "authenticated": true,
+    "mongo_version" : "6.0.2",
+    "size" : {
+      "cpu": "2001m",
+      "memory": "900MiB",
+      "volume": "8G",
+      "instance_count": 3
+    }
+  },
+  "advanced" : {
+    "k8s": {
+      "mongodb": {
+        "values": {
+        }
+      }
+    }
+  }
+}

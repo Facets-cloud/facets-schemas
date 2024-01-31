@@ -1,0 +1,97 @@
+{
+   "$schema": "http://json-schema.org/draft-04/schema#",
+   "type": "object",
+   "allOf": [
+     {
+       "$ref": "../../traits/base.schema.json"
+     },
+     {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "config_map"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1", "latest"
+          ]
+        }
+      }
+    },
+     {
+       "$ref": "#/$defs/specDef"
+     },
+     {
+       "$ref": "#/$defs/outDef"
+     }
+   ],
+   "required": [
+     "kind",
+     "flavor",
+     "version",
+     "metadata",
+     "spec"
+   ],
+   "$defs": {
+     "specDef": {
+       "type": "object",
+       "properties": {
+         "spec": {
+           "type": "object",
+           "properties": {
+             "data": {
+               "type": "object",
+               "additionalProperties": false,
+               "minProperties": 1,
+               "description": "the map of all filename and their contents",
+               "patternProperties": {
+                  "^[a-zA-Z0-9_.-]*$": { 
+                     "type": "string",
+                     "description": "The contents of the file"
+                  }
+               }
+             }
+           },
+         "required": ["data"]
+         },
+         "advanced": {
+            "type": "object",
+            "properties": {
+               "k8s": {
+                  "type": "object",
+                  "description": "The advanced section of all the k8s config map module"
+               }
+            }
+         }
+       }
+     },
+     "outDef": {
+       "type": "object",
+       "properties": {
+         "out": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "description": "The output for your configmap module, this can be generated or provided",
+            "patternProperties": {
+               "^[a-zA-Z0-9_.-]*$": {
+                  "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
+                  "type": "string"
+               }
+           },
+           "required": []
+         }
+       }
+     }
+   }
+ }

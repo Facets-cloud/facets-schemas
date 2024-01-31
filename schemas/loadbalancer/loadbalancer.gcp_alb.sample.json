@@ -1,6 +1,6 @@
 {
   "kind": "ingress",
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json",
+  "$schema": "ingress.schema.json",
   "flavor": "gcp_alb",
   "disabled": true,
   "version": "0.2",

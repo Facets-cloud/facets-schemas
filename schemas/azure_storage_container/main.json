@@ -1,0 +1,25 @@
+{
+   "$schema": "./azure-storage-container.schema.json",
+   "disabled": false,
+   "flavor": "default",
+   "kind": "azure_storage_container",
+   "metadata": {},
+   "out": {
+      "attributes": {
+         
+      }
+   },
+   "version": "latest",
+   "spec": {},
+   "advanced": {
+      "azure_storage_container": {
+         "access_type": "private",
+         "lifecycles": {
+            "lf1":{
+               "prefix_match": ["test"],
+               "delete_after_days": 50
+            }
+         }
+      }
+   }
+}
