@@ -26,7 +26,7 @@
           "type":"object",
           "description":"All the volumes you want to attach to the service",
           "properties":{
-             "configs":{
+             "config_maps":{
                 "type":"object",
                 "description":"The map of all the config maps that you want to mount",
                 "additionalProperties":false,
@@ -34,9 +34,9 @@
                 "patternProperties":{
                    "^[a-zA-Z0-9_.-]*$":{
                       "properties":{
-                         "mount_name":{
+                         "name":{
                             "type":"string",
-                            "description":"The mount name for the config map"
+                            "description":"The name of the config map that has been created in the kubernetes cluster"
                          },
                          "mount_path":{
                             "type":"string",
@@ -45,7 +45,63 @@
                       }
                    }
                 }
-             }
+             },
+             "secrets":{
+               "type":"object",
+               "description":"The map of all the secrets that you want to mount",
+               "additionalProperties":false,
+               "minProperties":1,
+               "patternProperties":{
+                  "^[a-zA-Z0-9_.-]*$":{
+                     "properties":{
+                        "name":{
+                           "type":"string",
+                           "description":"The name of the secret that has been created in the kubernetes cluster"
+                        },
+                        "mount_path":{
+                           "type":"string",
+                           "description":"The mount path for the secrets"
+                        }
+                     }
+                  }
+               }
+            },
+            "pvc":{
+               "type":"object",
+               "description":"The map of all the pvcs that you want to mount",
+               "additionalProperties":false,
+               "minProperties":1,
+               "patternProperties":{
+                  "^[a-zA-Z0-9_.-]*$":{
+                     "properties":{
+                        "claim_name":{
+                           "type":"string",
+                           "description":"The name of the pvc that has been created in the kubernetes cluster"
+                        },
+                        "mount_path":{
+                           "type":"string",
+                           "description":"The mount path for the pvc"
+                        }
+                     }
+                  }
+               }
+            },
+            "host_path":{
+               "type":"object",
+               "description":"The map of all the secrets that you want to mount",
+               "additionalProperties":false,
+               "minProperties":1,
+               "patternProperties":{
+                  "^[a-zA-Z0-9_.-]*$":{
+                     "properties":{
+                        "mount_path":{
+                           "type":"string",
+                           "description":"The mount path for the host path"
+                        }
+                     }
+                  }
+               }
+            }
           }
        },
        "health_checks":{
@@ -53,21 +109,53 @@
           "description":"All the health check related key value pairs",
           "properties":{
              "start_up_time":{
-                "type":"integer",
+                "type":"string",
                 "description":"The time kubernetes api needs to wait until the application is ready"
              },
+             "liveness_start_up_time":{
+               "type":"string",
+               "description":"The time kubernetes api needs to wait until the application is ready for liveness check, this is takes precedence from start_up_time"
+            },
+            "readiness_start_up_time":{
+               "type":"string",
+               "description":"The time kubernetes api needs to wait until the application is ready for readiness check, this is takes precedence from start_up_time"
+            },
              "timeout":{
-                "type":"integer",
+                "type":"string",
                 "description":"Timeout for the health check"
              },
+             "liveness_timeout":{
+               "type":"string",
+               "description": "Timeout for the health check liveness, this is takes precedence from timeout"
+            },
+            "readiness_timeout":{
+               "type":"string",
+               "description": "Timeout for the health check readiness, this is takes precedence from timeout"
+            },
              "period":{
-                "type":"integer",
+                "type":"string",
                 "description":"This is the repeated interval in which kubelet does a health check"
              },
+             "liveness_period":{
+               "type":"string",
+               "description":"This is the repeated interval in which kubelet does a health check, this is takes precedence from period"
+            },
+            "readiness_period":{
+               "type":"string",
+               "description":"This is the repeated interval in which kubelet does a health check, this is takes precedence from period"
+            },
              "port":{
-                "type":"integer",
+                "type":"string",
                 "description":"Specify the port in which the health checks should be made"
              },
+             "liveness_port":{
+               "type":"string",
+               "description":"Specify the port in which the health checks should be made, this is takes precedence from port"
+            },
+            "readiness_port":{
+               "type":"string",
+               "description":"Specify the port in which the health checks should be made, this is takes precedence from port"
+            },
              "liveness_url":{
                 "type":"string",
                 "description":"URL to make the liveness check"
@@ -85,30 +173,78 @@
                 "description":"The list of commands to make readiness check"
              }
           },
-          "required":[
-             "start_up_time",
-             "timeout",
-             "port",
-             "period"
-          ]
+            "allOf": [
+               {
+                  "if": {
+                  "not": {
+                     "allOf": [
+                        { "required": ["liveness_start_up_time"] },
+                        { "required": ["readiness_start_up_time"] }
+                     ]
+                  }
+                  },
+                  "then": {
+                  "required": ["start_up_time"]
+                  }
+               },
+               {
+                  "if": {
+                  "not": {
+                     "allOf": [
+                        { "required": ["liveness_timeout"] },
+                        { "required": ["readiness_timeout"] }
+                     ]
+                  }
+                  },
+                  "then": {
+                  "required": ["timeout"]
+                  }
+               },
+               {
+                  "if": {
+                  "not": {
+                     "allOf": [
+                        { "required": ["liveness_port"] },
+                        { "required": ["readiness_port"] }
+                     ]
+                  }
+                  },
+                  "then": {
+                  "required": ["port"]
+                  }
+               },
+               {
+                  "if": {
+                  "not": { 
+                     "allOf": [
+                        { "required": ["liveness_period"] },
+                        { "required": ["readiness_period"] }
+                     ]
+                  }
+                  },
+                  "then": {
+                  "required": ["period"]
+                  }
+               }
+            ]
        },
        "autoscaling":{
           "type":"object",
           "properties":{
              "min":{
-                "type":"integer",
+                "type":"string",
                 "description":"This is the min replicas where the hpa downscales to"
              },
              "max":{
-                "type":"integer",
+                "type":"string",
                 "description":"This is the max replicas where the hpa upscales to "
              },
              "cpu_threshold":{
-                "type":"integer",
+                "type":"string",
                 "description":"The max cpu threshold that the hpa waits until it upscales"
              },
              "ram_threshold":{
-                "type":"integer",
+                "type":"string",
                 "description":"The max ram threshold that the hpa waits until it upscales"
              },
              "packets_per_second":{

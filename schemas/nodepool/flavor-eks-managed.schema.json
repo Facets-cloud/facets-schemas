@@ -3,15 +3,9 @@
   "type": "object",
   "definition": "EKS Schema",
   "properties": {
-    "eks": {
+    "eks_managed": {
       "type": "object",
-      "description": "Advanced section of the EKS",
-      "properties": {
-        "managed_node_group": {
-          "type": "object",
-          "description": "Advanced values as per Terraform AWS EKS Managed Node Group resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group \nNote: If you want to pass multiple intsnace types then you can use `instance_types` attribute in advanced along with spec.instance_type"
-        }
-      }
+      "description": "Advanced values as per Terraform AWS EKS Managed Node Group resource https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/18.30.3/submodules/eks-managed-node-group \nNote: If you want to pass multiple intsnace types then you can use `instance_types` attribute in advanced along with spec.instance_type"
     }
   },
   "required": []

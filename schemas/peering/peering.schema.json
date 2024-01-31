@@ -53,7 +53,7 @@
           "advanced": {
             "anyOf": [
               {
-                "$ref": "./flavor-aws-vpc-peering.schema.json"
+                "$ref": "./flavor-default.schema.json"
               }
             ]
           }

@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "mysql_user"
+          ],
+          "description": "Describes the type of resource."
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ],
+          "description": "Implementation selector for the postgres_user resource. e.g. for a resource type default"
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ],
+          "description": "This field can be used to pin to a particular version"
+        }
+      }
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "flavor-default.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
+    }
+  },
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "The MySQL database endpoint. Syntax: `{username}:{password}@{endpoint}:{port}`, Eg: `mysql:testMySQLPassword@test-mysql.default.svc.cluster.local:3306`"
+            },
+            "permissions": {
+              "type": "object",
+              "description": "Map of permissions to be applied to user",
+              "patternProperties": {
+                "^[a-zA-Z1-9]*$": {
+                  "type": "object",
+                  "properties": {
+                    "permission": {
+                      "type": "string",
+                      "description": "The canned permission for grant",
+                      "enum": [
+                        "ADMIN",
+                        "RWO",
+                        "RO"
+                      ]
+                    },
+                    "database": {
+                      "type": "string",
+                      "description": "The database name. Note: You can use wildcard `*` for ALL databases"
+                    },
+                    "table": {
+                      "type": "string",
+                      "description": "The table name. Note: You can use wildcard `*` for ALL tables"
+                    }
+                  },
+                  "required": [
+                    "permission",
+                    "database",
+                    "table"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [
+            "endpoint",
+            "permissions"
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "The MySQL username"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "The MySQL user password"
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
+    }
+  }
+}

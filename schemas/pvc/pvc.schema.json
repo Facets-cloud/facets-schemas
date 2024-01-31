@@ -1,0 +1,98 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+      {
+        "$ref": "../../traits/base.schema.json"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "pvc"
+            ],
+            "description": "Describes the type of resource."
+          },
+          "flavor": {
+            "type": "string",
+            "enum": [
+              "default"
+            ],
+            "description": "Implementation selector for the pvc resource. e.g. for a resource type k8s"
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "0.1",
+              "latest"
+            ],
+            "description": "This field can be used to pin to a particular version"
+          }
+        }
+      },
+      {
+        "$ref": "#/$defs/specDef"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "advanced": {
+            "type": "object",
+            "description": "Advanced section for the module",
+            "properties": {
+              "additional_labels": {
+                "type": "object",
+                "description": "Advanced labels to be added to pvc"
+              },
+              "accessModes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The access mode for the pvc"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "The namespace in which pvc will be created"
+              },
+              "provisioned_for": {
+                "type": "string",
+                "description": "The resource type for which the pvc is provisioned for"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "required": [
+      "kind",
+      "flavor",
+      "version",
+      "metadata",
+      "spec"
+    ],
+    "$defs": {
+      "specDef": {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "size": {
+                "type": "object",
+                "description": "sizing attribute of the pvc",
+                "properties": {
+                  "volume": {
+                    "type": "string",
+                    "description": "Disk space of the pvc"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

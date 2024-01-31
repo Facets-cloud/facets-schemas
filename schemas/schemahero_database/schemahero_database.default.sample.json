@@ -1,0 +1,15 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.schema.json",
+  "flavor": "default",
+  "kind": "schemahero_database",
+  "metadata": {
+    "name": "schemahero"
+  },
+  "advanced" : {},
+  "spec": {
+    "connection": "postgres",
+    "uri": "postgresql://postgres:test12345@schemahero-postgres-postgresql.default.svc.cluster.local:5432/schemahero"
+  },
+  "version": "0.1",
+  "out": {}
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Azure Service-bus Schema",
+  "properties": {
+    "azure_functions": {
+      "type": "object",
+      "properties": {
+        "linux": {
+          "type": "object",
+          "properties": {
+            "linux_deployment_slots": {
+              "type": "object"
+            },
+            "linux_app_config": {
+              "type": "object",
+              "properties": {
+                "site_config": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

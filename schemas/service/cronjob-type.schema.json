@@ -33,7 +33,7 @@
             "type": "object",
             "properties": {
                 "retry": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "the number of time you want to retry the job before calling it a failure"
                 }
             },

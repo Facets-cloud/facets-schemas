@@ -1,22 +1,13 @@
 {
   "flavor": "flexible_server",
-  "$schema": "mysql.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
   "metadata": {
     "name": "azure-mysql",
     "tags": {}
   },
   "provided": false,
-  "out": {
-  },
-  "advanced": {
-    "azure": {
-      "flexible_server": {
-        "username": ""
-      }
-    }
-  },
   "kind": "mysql",
-  "disabled": false,
+  "disabled": true,
   "version": "0.1",
   "spec": {
     "mysql_version": "8.0.21",
@@ -26,9 +17,8 @@
         "instance": "GP_Standard_D2ds_v4"
       },
       "reader": {
-        "instance_count": 1,
-        "instance": "12",
-        "memory": ""
+        "replica_count": 1,
+        "instance": "GP_Standard_D2ds_v4"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "$schema": "mysql.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
   "kind": "mysql",
   "flavor": "cloudsql",
   "version": "0.1",
@@ -27,78 +27,5 @@
         "instance_count":1
       }
     }
-  },
-  "advanced": {
-    "cloudsql": {
-      "mysql": {
-        "reader_zone" : {
-          "reader-0" : "asia-south1-b"
-        },
-        "writer_zone": "asia-south1-c",
-        "name": "mysql-instance",
-        "activation_policy": "ALWAYS",
-        "availability_type": null,
-        "read_replica_deletion_protection": "false",
-        "read_replica_name_suffix": "",
-        "db_charset": "",
-        "db_collation": "",
-        "db_name": "test-mysql-default",
-        "delete_timeout": "10m",
-        "deletion_protection": "false",
-        "disk_autoresize": "false",
-        "disk_autoresize_limit": "0",
-        "disk_type": "PD_SSD",
-        "enable_default_db": "true",
-        "enable_default_user": "true",
-        "encryption_key_name": "null",
-        "maintenance_window_day": "1",
-        "maintenance_window_hour": "20",
-        "maintenance_window_update_track": "",
-        "random_instance_name": "true",
-        "secondary_zone" : "asia-south1-b",
-        "module_depends_on": ["wada","wad"],
-        "database_flags": {
-          "flag1": {
-            "name" : "max_user_connections",
-            "value" : "200"
-          },
-          "flag2": {
-            "name" : "max_execution_time",
-            "value" : "300"
-          }
-        },
-        "backup_configuration": {
-          "binary_log_enabled": false,
-          "enabled": true,
-          "location": null,
-          "retained_backups": null,
-          "retention_unit": null,
-          "start_time": null,
-          "transaction_log_retention_days": null
-        },
-        "ip_configuration": {},
-        "insights_config": {},
-        "additional_users": {
-          "user1" : {
-            "name" : "tester-adi",
-            "password" : "mysql",
-            "host": "localhost"
-          }
-        },
-        "additional_databases": {
-          "db1" : {
-            "name": "additional-test-db"
-          },
-          "db2" : {
-            "name": "additional-test-db-2"
-          }
-        },
-        "user_labels": {
-          "db" : "mysql"
-        }
-      }
-    }
-  },
-  "out": {
   }
 }

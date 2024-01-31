@@ -1,0 +1,40 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/azure_functions/schema.json",
+  "flavor": "default",
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {
+    "name": "test-function",
+    "tags": {}
+  },
+  "depends_on": [],
+  "kind": "azure_functions",
+  "disabled": false,
+  "version": "0.1",
+  "spec": {
+    "os": "Linux",
+    "sku": "P2v2",
+    "runtime": {
+      "stack": "node",
+      "version": "14"
+    },
+    "deploy_as": "code",
+    "in_vnet": true,
+    "app_setting": {
+      "WEBSITE_RUN_FROM_PACKAGE": "1"
+    },
+    "release": {
+      "zip_path": "<file_path>/<your_zipfile_name.zip>"
+    }
+  },
+  "out": {},
+  "advanced": {
+    "azure_functions": {
+      "linux": {
+        "linux_app_config": {
+          "site_config": {}
+        },
+        "linux_deployment_slots": {}
+      }
+    }
+  }
+}

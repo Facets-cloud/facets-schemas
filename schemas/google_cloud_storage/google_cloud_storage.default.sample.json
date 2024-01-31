@@ -1,0 +1,10 @@
+{
+    "kind": "google_storage_bucket",
+    "flavor": "default",
+    "version": "0.1",
+    "metadata": {
+      "name": "test-storage-bucket"
+    },
+    "spec": {},
+    "advanced": {}
+}
