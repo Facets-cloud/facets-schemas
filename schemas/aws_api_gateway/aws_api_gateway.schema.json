@@ -1,0 +1,445 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "$id": "../../traits/base.schema.json",
+    "allOf": [
+        {
+            "$ref": "../../traits/base.schema.json"
+        },
+        {   
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "enum": ["aws_api_gateway"]
+                },
+                "flavor": {
+                    "type": "string",
+                    "enum": ["default"]
+                },
+                "version": {
+                    "type": "string",
+                    "enum": ["0.1", "latest"]
+                }
+            }
+        },
+        {
+            "type": "object",
+            "properties": {
+                "metadata": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string",
+                            "description": "The description of the API."
+                        }
+                    },
+                    "required": ["description"]
+                }
+            }
+        },
+        {
+            "$ref": "#/$defs/specDef"
+        },
+        {
+            "$ref": "#/$defs/outDef"
+        }
+    ],
+    "required": [
+        "kind",
+        "flavor",
+        "version",
+        "metadata",
+        "spec"
+    ],
+    "$defs": {
+        "specDef": {
+            "type": "object",
+            "properties": {
+                "spec": {
+                    "type": "object",
+                    "properties": { 
+                        "protocol": {
+                            "type": "string",
+                            "enum": ["WEBSOCKET", "HTTP"],
+                            "description": "The API protocol. Valid values: HTTP, WEBSOCKET"
+                        },
+                        "integrations": {
+                            "type": "object",
+                                    "description": "Map of allowed triggers to create Lambda permission",
+                                    "additionalProperties": false,
+                                    "minProperties": 1,
+                                    "patternProperties": {
+                                    "^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|CONNECT|TRACE) .+$": {
+                                        "description": "This will have the HTTP method that is required for the rule and its path , eg: `GET /path`",
+                                        "type": "object",
+                                        "properties": {
+                                            "description": {
+                                                "type": "string",
+                                                "description": "The description of the API."
+                                            },
+                                            "integration_type": {
+                                                "type": "string",
+                                                "enum": ["MOCK", "AWS_PROXY","HTTP_PROXY","HTTP"],
+                                                "description": " Integration type of an integration. Valid values: AWS (supported only for WebSocket APIs), AWS_PROXY, HTTP (supported only for WebSocket APIs), HTTP_PROXY, MOCK (supported only for WebSocket APIs). For an HTTP API private integration, use HTTP_PROXY."
+                                            },
+                                            "integration_subtype": {
+                                                "type": "string",
+                                                "description": "AWS service action to invoke. Supported only for HTTP APIs when integration_type is AWS_PROXY. See the AWS service integration reference documentation for supported values. Must be between 1 and 128 characters in length."
+                                            },
+                                            "lambda_arn": {
+                                                "type": "string",
+                                                "description": "URI of the Lambda function for a Lambda proxy integration, when integration_type is AWS_PROXY. For an HTTP integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service."
+                                            },
+                                            "connection_type": {
+                                                "type": "string",
+                                                "enum": ["VPC_LINK", "INTERNET"],
+                                                "description": "Type of the network connection to the integration endpoint. Valid values: INTERNET, VPC_LINK. Default is INTERNET"
+                                            },
+                                            "connection_id": {
+                                                "type": "string",
+                                                "description": "ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length"
+                                            },
+                                            "payload_format_version": {
+                                                "type": "string",
+                                                "enum": ["0.1", "0.2"],
+                                                "description": "The format of the payload sent to an integration. Valid values: 1.0, 2.0. Default is 1.0"
+                                            },
+                                            "timeout_milliseconds": {
+                                                "type": "string",
+                                                "description": "Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs. The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs. Terraform will only perform drift detection of its value when present in a configuration"
+                                            },
+                                            "passthrough_behavior": {
+                                                "type": "string",
+                                                "enum": ["NEVER", "WHEN_NO_TEMPLATES", "WHEN_NO_MATCH"],
+                                                "description": "Pass-through behavior for incoming requests based on the Content-Type header in the request, and the available mapping templates specified as the request_templates attribute. Valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, NEVER. Default is WHEN_NO_MATCH. Supported only for WebSocket APIs"
+                                            },
+                                            "content_handling_strategy": {
+                                                "type": "string",
+                                                "enum": ["CONVERT_TO_BINARY", "CONVERT_TO_TEXT"],
+                                                "description": "How to handle response payload content type conversions. Valid values: CONVERT_TO_BINARY, CONVERT_TO_TEXT. Supported only for WebSocket APIs"
+                                            },
+                                            "credentials_arn": {
+                                                "type": "string",
+                                                "description": "Credentials required for the integration, if any"
+                                            },
+                                            "request_parameters": {
+                                                "type": "string",
+                                                "description": "For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend. For HTTP APIs with a specified integration_subtype, a key-value map specifying parameters that are passed to AWS_PROXY integrations. For HTTP APIs without a specified integration_subtype, a key-value map specifying how to transform HTTP requests before sending them to the backend. See the Amazon API Gateway Developer Guide for details."
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+                    },
+                    "required": ["integrations", "protocol"]
+                },
+                "advanced": {
+                    "type": "object",
+                    "properties": {
+                        "aws_api_gateway": {
+                            "type": "object",
+                            "description": "The advanced section of all the aws api gateway module",
+                            "properties": {
+                                "allowed_triggers": {
+                                    "type": "object",
+                                    "description": "Map of allowed triggers to create Lambda permission",
+                                    "additionalProperties": false,
+                                    "minProperties": 1,
+                                    "patternProperties": {
+                                    "^[a-zA-Z0-9_.-]*$": {
+                                        "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
+                                        "type": "object",
+                                        "properties": {
+                                            "service": {
+                                                "type": "string",
+                                                "description": "The service you want to invoke from",
+                                                "enum": [
+                                                    "apigateway", "config.amazonaws.com", "events.amazonaws.com"
+                                                ]
+                                            },
+                                            "source_arn": {
+                                                "type": "string",
+                                                "description": "Set this to true if using Lambda@Edge, to enable publishing, limit the timeout, and allow edgelambda.amazonaws.com to invoke the function"
+                                            }
+                                        }
+                                    }
+                                }
+                                },
+                                "cors": {
+                                    "type": "object",
+                                    "description": "The cross-origin resource sharing (CORS) configuration. Applicable for HTTP APIs.",
+                                    "properties": {
+                                        "allow_credentials": {
+                                            "type": "string",
+                                            "description": "Whether credentials are included in the CORS request."
+                                        },
+                                        "allow_headers": {
+                                            "type": "string",
+                                            "description": "Set of allowed HTTP headers."
+                                        },
+                                        "allow_methods": {
+                                            "type": "string",
+                                            "description": "Set of allowed HTTP methods."
+                                        },
+                                        "allow_origins": {
+                                            "type": "string",
+                                            "description": "Set of allowed origins."
+                                        },
+                                        "expose_headers": {
+                                            "type": "string",
+                                            "description": "Set of exposed HTTP headers."
+                                        },
+                                        "max_age": {
+                                            "type": "string",
+                                            "description": "Number of seconds that the browser should cache preflight request results."
+                                        }
+                                    }
+                                },
+                                "authorizers": {
+                                    "type": "object",
+                                    "description": "Map of allowed triggers to create Lambda permission",
+                                    "additionalProperties": false,
+                                    "minProperties": 1,
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9_.-]*$": {
+                                            "description": "These are the maps of all authorizers that can be attached to the api gateway",
+                                            "type": "object",
+                                            "properties": {
+                                                "authorizer_type": {
+                                                    "type": "string",
+                                                    "description": "Authorizer type. Valid values: JWT, REQUEST. Specify REQUEST for a Lambda function using incoming request parameters. For HTTP APIs, specify JWT to use JSON Web Tokens.",
+                                                    "enum": [
+                                                        "JWT", "REQUEST"
+                                                    ]
+                                                },
+                                                "identity_sources": {
+                                                    "type": "string",
+                                                    "description": "Identity sources for which authorization is requested. For REQUEST authorizers the value is a list of one or more mapping expressions of the specified request parameters. For JWT authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests."
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the authorizer. Must be between 1 and 128 characters in length."
+                                                },
+                                                "authorizer_uri": {
+                                                    "type": "string",
+                                                    "description": "Authorizer's Uniform Resource Identifier (URI). For REQUEST authorizers this must be a well-formed Lambda function URI, such as the invoke_arn attribute of the aws_lambda_function resource. Supported only for REQUEST authorizers. Must be between 1 and 2048 characters in length."
+                                                },
+                                                "authorizer_payload_format_version": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "1.0", "2.0"
+                                                    ],
+                                                    "description": "Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers. Valid values: 1.0, 2.0."
+                                                },
+                                                "authorizer_result_ttl_in_seconds": {
+                                                    "type": "string",
+                                                    "description": "Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled. If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to 300. Supported only for HTTP API Lambda authorizers."
+                                                },
+                                                "authorizer_credentials_arn": {
+                                                    "type": "string",
+                                                    "description": "Required credentials as an IAM role for API Gateway to invoke the authorizer. Supported only for REQUEST authorizers."
+                                                },
+                                                "enable_simple_responses": {
+                                                    "type": "string",
+                                                    "description": "Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy. Supported only for HTTP APIs."
+                                                },
+                                                "issuer": {
+                                                    "type": "string",
+                                                    "description": "Base domain of the identity provider that issues JSON Web Tokens, such as the endpoint attribute of the aws_cognito_user_pool resource."
+                                                },
+                                                "audience": {
+                                                    "type": "array",
+                                                    "description": "List of the intended recipients of the JWT. A valid JWT must provide an aud that matches at least one entry in this list"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "default_route_settings": {
+                                    "type": "object",
+                                    "description": "Settings for default route",
+                                    "properties": {
+                                        "data_trace_enabled": {
+                                            "type": "boolean",
+                                            "description": "Whether data trace logging is enabled for the default route. Affects the log entries pushed to Amazon CloudWatch Logs. Defaults to false. Supported only for WebSocket APIs."
+                                        },
+                                        "logging_level": {
+                                            "type": "string",
+                                            "enum": ["ERROR", "INFO", "OFF"],
+                                            "description": " Logging level for the default route. Affects the log entries pushed to Amazon CloudWatch Logs. Valid values: ERROR, INFO, OFF. Defaults to OFF. Supported only for WebSocket APIs. Terraform will only perform drift detection of its value when present in a configuration"
+                                        },
+                                        "detailed_metrics_enabled": {
+                                            "type": "boolean",
+                                            "description": "Whether detailed metrics are enabled for the route. Defaults to false"
+                                        },
+                                        "throttling_burst_limit": {
+                                            "type": "string",
+                                            "description": "Throttling burst limit for the route."
+                                        },
+                                        "throttling_rate_limit": {
+                                            "type": "string",
+                                            "description": "Throttling rate limit for the route."
+                                        }
+                                    }
+                                },
+                                "domain_name": {
+                                    "type": "string",
+                                    "description": "The domain name to use for API gateway"
+                                },
+                                "domain_name_certificate_arn": {
+                                    "type": "string",
+                                    "description": "The ARN of an AWS-managed certificate that will be used by the endpoint for the domain name"
+                                },
+                                "default_stage_access_log_destination_arn": {
+                                    "type": "string",
+                                    "description": "Default stage's ARN of the CloudWatch Logs log group to receive access logs. Any trailing :* is trimmed from the ARN."
+                                },
+                                "default_stage_access_log_format": {
+                                    "type": "string",
+                                    "description": "Default stage's single line format of the access logs of data, as specified by selected $context variables."
+                                },
+                                "mutual_tls_authentication": {
+                                    "type": "object",
+                                    "description": "An Amazon S3 URL that specifies the truststore for mutual TLS authentication as well as version, keyed at uri and version",
+                                    "properties": {
+                                        "truststore_uri": {
+                                            "type": "string",
+                                            "description": "Amazon S3 URL that specifies the truststore for mutual TLS authentication, for example, s3://bucket-name/key-name. The truststore can contain certificates from public or private certificate authorities. To update the truststore, upload a new version to S3, and then update your custom domain name to use the new version."
+                                        },
+                                        "truststore_version": {
+                                            "type": "string",
+                                            "description": " Version of the S3 object that contains the truststore. To specify a version, you must have versioning enabled for the S3 bucket"
+                                        }
+                                    }
+                                },
+                                "body": {
+                                    "type": "object",
+                                    "description": "An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs."
+                                },
+                                "tags": {
+                                    "type": "object",
+                                    "description": "A mapping of tags to assign to API gateway resources."
+                                },
+                                "api_version": {
+                                    "type": "string",
+                                    "description": "A version identifier for the API"
+                                },
+                                "route_selection_expression": {
+                                    "type": "string",
+                                    "description": "he route selection expression for the API."
+                                },
+                                "route_key": {
+                                    "type": "string",
+                                    "description": "Part of quick create. Specifies any route key. Applicable for HTTP APIs."
+                                },
+                                "api_key_selection_expression": {
+                                    "type": "string",
+                                    "description": "An API key selection expression. Valid values: $context.authorizer.usageIdentifierKey, $request.header.x-api-key."
+                                },
+                                "disable_execute_api_endpoint": {
+                                    "type": "string",
+                                    "description": "Whether clients can invoke the API by using the default execute-api endpoint. To require that clients use a custom domain name to invoke the API, disable the default endpoint"
+                                },
+                                "create_default_stage": {
+                                    "type": "boolean",
+                                    "description": "Whether to create default stage"
+                                },
+                                "create_default_stage_api_mapping": {
+                                    "type": "boolean",
+                                    "description": "Whether to create default stage API mapping"
+                                },
+                                "create_api_domain_name": {
+                                    "type": "boolean",
+                                    "description": "Whether to create API domain name resource"
+                                },
+                                "create_routes_and_integrations": {
+                                    "type": "boolean",
+                                    "description": "Whether to create routes and integrations resources"
+                                },
+                                "create_vpc_link": {
+                                    "type": "boolean",
+                                    "description": "Whether to create VPC links"
+                                },
+                                "vpc_links": {
+                                    "type": "object",
+                                    "description": "Map of VPC Links details to create",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "Name of the VPC Link. Must be between 1 and 128 characters in length."
+                                        },
+                                        "security_group_ids": {
+                                            "type": "string",
+                                            "description": "Security group IDs for the VPC Link."
+                                        },
+                                        "subnet_ids": {
+                                            "type": "string",
+                                            "description": "Subnet IDs for the VPC Link."
+                                        }
+                                    },
+                                    "required": ["name", "security_group_ids", "subnet_ids"]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "outDef": {
+            "type": "object",
+            "properties": {
+                "out": {
+                    "type": "object",
+                    "description": "The output for your aws api gateway module, this can be generated or provided",
+                    "properties": {
+                        "attributes": {
+                            "type": "object",
+                            "description": "The advanced section of all the aws lambda module",
+                            "properties": {
+                                "arn": {
+                                    "type": "string",
+                                    "description": "The ARN of the API"
+                                },
+                                "endpoint": {
+                                    "type": "string",
+                                    "description": "The URI of the API"
+                                },
+                                "execution_arn": {
+                                    "type": "string",
+                                    "description": "The ARN prefix to be used in an aws_lambda_permission's source_arn attribute or in an aws_iam_policy to authorize access to the @connections API."
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "The API identifier"
+                                },
+                                "vpc_links_id": {
+                                    "type": "string",
+                                    "description": "The map of VPC Link identifiers"
+                                },
+                                "stage_arn": {
+                                    "type": "string",
+                                    "description": "The default stage ARN"
+                                },
+                                "stage_execution_arn": {
+                                    "type": "string",
+                                    "description": "The ARN prefix to be used in an aws_lambda_permission's source_arn attribute or in an aws_iam_policy to authorize access to the @connections API."
+                                },
+                                "stage_id": {
+                                    "type": "string",
+                                    "description": "The default stage identifier"
+                                },
+                                "stage_invoke_url": {
+                                    "type": "string",
+                                    "description": "The URL to invoke the API pointing to the stage"
+                                }
+
+                            }
+                        }
+                    },
+                    "required": []
+                }
+            }
+        }
+    }
+}

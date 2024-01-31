@@ -1,0 +1,46 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/iam_policy/iam_policy.schema.json",
+  "kind" : "iam_policy",
+  "flavor": "aws_iam_policy",
+  "lifecycle": "ENVIRONMENT",
+  "disabled": true,
+  "provided": false,
+  "depends_on": [
+  ],
+  "metadata": {
+    "annotations": {}
+  },
+  "spec": {
+    "name" : "test_aws_iam_policy",
+    "policy" : {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "ListYourObjects",
+          "Effect": "Allow",
+          "Action": "s3:ListBucket",
+          "Resource": [
+            "arn:aws:s3:::bucket-name"
+          ],
+          "Condition": {
+            "StringLike": {
+              "s3:prefix": [
+                "cognito/application-name/${cognito-identity.amazonaws.com:sub}/*"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "advanced": {
+    "iam_policy": {
+      "aws_iam_policy" : {
+        "description" : "aws_iam_policy",
+        "name_prefix" : "test",
+        "path" : "/test/new/aws_custom_iam_policy/",
+        "tags" : {}
+      }
+    }
+  }
+}

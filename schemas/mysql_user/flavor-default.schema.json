@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced MySQL User Schema",
+  "properties": {
+    "mysql_user": {
+      "type": "object",
+      "description": "The advanced options for MySQL User",
+      "properties": {
+        "resource_options": {
+          "type": "object",
+          "description": "The resource options for MySQL User. You can refer to this doc for more information - https://doc.crds.dev/github.com/crossplane-contrib/provider-sql/mysql.sql.crossplane.io/User/v1alpha1@v0.7.0#spec-forProvider-resourceOptions"
+        },
+        "user_password": {
+          "type": "string",
+          "description": "The user defined password for mysql user"
+        },
+        "user_name": {
+          "type": "string",
+          "description": "The user defined name for mysql user"
+        }
+      }
+    }
+  }
+}
