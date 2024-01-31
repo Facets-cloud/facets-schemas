@@ -35,37 +35,36 @@ Specification as per resource types schema
 
 The map of domain key to rules
 
-| Property            | Type                      | Required | Description                                                                        |
-|---------------------|---------------------------|----------|------------------------------------------------------------------------------------|
-| `^[a-zA-Z0-9_.-]*$` | [object](#`domain_regex`) | No       | This is the name of the domain object that you are creating, it can be of any name |
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `^[a-zA-Z0-9_.-]*$`   | [object](#`^[a-zA-Z0-9_.-]*$`)  | No       | This is the name of the domain object that you are creating, it can be of any name
 
-
-#### `domian_regex`
-
-| Property                | Type   | Required | Description                                                                                     |
-|-------------------------|--------|----------|-------------------------------------------------------------------------------------------------|
-| `domain`                | string | **Yes**  | The host name of the domain                                                                     |
-| `alias`                 | string | **Yes**  | Alias naming for the domain                                                                     |
-| `certificate_reference` | string | **Yes**  | Certificate reference name. For `flavor` `aws_alb`, it's the ACM ARN certificate reference. For `gcp_alb`, it's the name of the managed certificate in GCP. For `nginx_ingress_controller`, it's the uploaded Kubernetes certificate referenced as a secret. For `azure_agic`, it is the secret key ID of the secret in Azure Key Vault. |
+###### `^[a-zA-Z0-9_.-]*$`
+This is the name of the domain object that you are creating, it can be of any name
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `domain`   | string | **Yes**       | The host name of the domain                                                                                    |
+| `alias`   | string | **Yes**        | Alias naming for the domain 
+| `certificate_reference`   | string | **Yes**        | Certificate reference name, if flavor is `aws_alb` then its the ACM ARN certificate reference else `gcp_alb` its the name of the managed certificate that you want facets to create in gcp. In case of `nginx_ingress_controller` its the uploaded k8s certificate referenced as secret. In case of `azure_agic` it is the secret key id of the secret in azure key vault 
 
 ### rules
 
 Objects of all ingress rules
 
-| Property            | Type                     | Required | Description                                                                         |
-|---------------------|--------------------------|----------|-------------------------------------------------------------------------------------|
-| `^[a-zA-Z0-9_.-]*$` | [object](#`rules_regex`) | **Yes**  | This is the name of the ingress object that you are creating, it can be of any name |
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `^[a-zA-Z0-9_.-]*$`   | [object](#`^[a-zA-Z0-9_.-]*$`)  | **Yes**       | This is the name of the ingress object that you are creating, it can be of any name
 
-###### `rules_regex`
-| Property        | Type    | Required | Description                                                                                         |
-|-----------------|---------|----------|-----------------------------------------------------------------------------------------------------|
-| `service_name`  | string  | **Yes**  | The Kubernetes service name of the application                                                      |
-| `path`          | string  | **Yes**  | Path of the application                                                                             |
-| `port_name`     | string  | **Yes**  | Port name of the service                                                                            |
-| `port`          | integer | **Yes**  | Port number of the service                                                                          |
-| `domain_prefix` | string  | **Yes**  | Subdomain prefix for the service                                                                     |
-| `priority`      | string  | **Yes**  | Priority number for the above rule (ranging from 1 to 1000) and it should be unique for each rule. This property is applicable only for `aws_alb` version `0.2`. |
-
+###### `^[a-zA-Z0-9_.-]*$`
+This is the name of the ingress object that you are creating, it can be of any name
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `service_name`   | string | **Yes**       | The Kubernetes service name of the application                                                     |
+| `path`   | string | **Yes**        | Path of the application  
+| `port_name`   | string | **Yes**        | Port name of the service
+| `port`   | integer | **Yes**        | Port number of the service
+| `domain_prefix`   | string | **Yes**        | Subdomain prefix for the service
+| `priority`   | string | **Yes**        | Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule - applicable only for `aws_alb` version `0.2`
 
 ## Out
 

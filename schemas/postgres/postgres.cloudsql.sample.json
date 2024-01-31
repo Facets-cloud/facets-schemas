@@ -1,26 +1,32 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
+  "$schema": "postgres.schema.json",
   "flavor": "cloudsql",
   "disabled": true,
-  "version": "0.2",
+  "version": "0.1",
   "kind": "postgres",
   "provided": false,
   "metadata": {
     "name": "something"
   },
-  "lifecycle": "ENVIRONMENT",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "spec": {
     "size": {
       "writer": {
-        "instance": "db-f1-micro",
+        "instance": "n1-standard-2",
         "volume": "10G"
       },
       "reader": {
         "instance_count": 2,
-        "instance": "db-g1-small",
+        "instance": "n1-standard-2",
         "volume": "10G"
       }
     },
     "postgres_version": "12.11"
+  },
+  "advanced": {
+    "cloudsql": {
+      "postgres": {
+      }
+    }
   }
 }

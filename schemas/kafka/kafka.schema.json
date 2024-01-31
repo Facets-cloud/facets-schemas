@@ -17,13 +17,13 @@
         "flavor": {
           "type": "string",
           "enum": [
-            "k8s","msk"
+            "k8s"
           ]
         },
         "version": {
           "type": "string",
           "enum": [
-            "0.2","0.1","latest"
+            "0.2"
           ]
         }
       }
@@ -42,41 +42,12 @@
           "allOf": [
             {
               "$ref": "flavor-k8s.schema.json"
-            },
-            {
-              "$ref": "flavor-msk.schema.json"
             }
           ]
         }
       }
     }
   ],
-  "if": {
-    "properties": {
-      "flavor": {
-        "const": "k8s"
-      }
-    }
-  },
-  "then": {
-    "properties": {
-      "version": {
-        "enum": [
-          "0.1",
-          "0.2"
-        ]
-      }
-    }
-  },
-  "else": {
-    "properties": {
-      "version": {
-        "enum": [
-          "0.1"
-        ]
-      }
-    }
-  },
   "required": [
     "kind",
     "flavor",
@@ -101,6 +72,11 @@
               "description": "Version of kafka e.g. 3.2.3",
               "minLength": "3"
             },
+            "zookeeper_version": {
+              "type": "string",
+              "description": "Version of zookeeper e.g. 3.8.0",
+              "minLength": "3"
+            },
             "persistence_enabled": {
               "type": "boolean",
               "description": "Enable Persistence for this redis"
@@ -113,6 +89,7 @@
           "required": [
             "authenticated",
             "kafka_version",
+            "zookeeper_version",
             "persistence_enabled",
             "size"
           ]
@@ -127,14 +104,7 @@
           "properties": {
             "interfaces": {
               "type": "object",
-              "properties": {
-                "cluster": {
-                  "type": "object",
-                  "$ref": "../../traits/multi-node-datastore-interface.schema.json"
-                }
-              },
-              "required": ["cluster"],
-              "additionalProperties": false,
+              "$ref": "../../traits/datastore-interface.schema.json",
               "description": "Kafka broker details"
             },
             "instances": {

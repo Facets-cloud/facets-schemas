@@ -1,0 +1,18 @@
+{
+  "$schema": "./schemahero_database.schema.json",
+  "flavor": "default",
+  "kind": "schemahero_database",
+  "metadata": {
+    "name": "schemahero"
+  },
+  "spec": {
+    "connection": "mysql",
+    "uri": "root:test12345@tcp(schemahero-mysql.default.svc.cluster.local:3306)/schemahero"
+  },
+  "advanced" : {
+    "default": {
+      "immediateDeploy": true
+    }
+  },
+  "version": "0.1"
+}

@@ -1,0 +1,26 @@
+{
+    "$schema": "sqs.schema.json",
+    "version": "0.2",
+    "flavor": "default",
+    "kind": "sqs",
+    "provides": "sqs",
+    "metadata": {
+        "name": "test-aws-sqs-queue"
+    },
+    "spec": {},
+    "advanced": {
+        "visibility_timeout_seconds" : null,
+        "message_retention_seconds" : null,
+        "max_message_size" : null,
+        "delay_seconds" : null,
+        "receive_wait_time_seconds" : null,
+        "policy" : "",
+        "redrive_policy" : "",
+        "fifo_queue" : null,
+        "content_based_deduplication" : null,
+        "kms_master_key_id" : "",
+        "kms_data_key_reuse_period_seconds" : null,
+        "tags" : {}
+    }
+  
+ }
