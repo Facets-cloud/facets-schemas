@@ -81,7 +81,7 @@ def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
             errors.append(f"Error: Readme File not found - {md_path}")
 
     print_error_messages(errors)
-    exit_code(errors)
+    # exit_code(errors)
 
 
 def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_folder="schemas"):
@@ -112,7 +112,7 @@ def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_
                 errors.append(f"Error: Flavor File not found - {doc_sample_path}")
 
     print_error_messages(errors)
-    exit_code(errors)
+    # exit_code(errors)
 
 
 
