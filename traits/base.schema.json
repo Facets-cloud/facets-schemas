@@ -21,16 +21,12 @@
           "type": "string",
           "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
           "enum": [
-            "ENVIRONMENT_BOOTSTRAP", "ENVIRONMENT"
+            "ENVIRONMENT_BOOTSTRAP"
           ]
         },
         "disabled": {
           "type": "boolean",
           "description": "Flag to disable the resource"
-        },
-        "conditional_on_intent": {
-          "type": "string",
-          "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
         },
         "provided": {
           "type": "boolean",
@@ -81,7 +77,8 @@
           "kind",
           "flavor",
           "version",
-          "metadata"
+          "metadata",
+          "out"
         ]
       }
     },

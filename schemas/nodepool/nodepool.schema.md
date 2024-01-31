@@ -56,6 +56,7 @@ Output given by the resource for others to refer.
 |----------|-----------------|----------|-------------|
 | `labels` | object          | No       |             |
 | `name`   | string          | No       |             |
+| `spec`   | [object](#spec) | No       |             |
 | `taints` | list            | No       |             |
 
 

@@ -2,7 +2,6 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
   "kind": "mysql",
   "flavor": "rds",
-  "provided": false,
   "version": "0.1",
   "disabled": true,
   "metadata": {
@@ -12,13 +11,12 @@
     "mysql_version": "8.0",
     "size": {
       "writer": {
-        "instance": "db.t4g.medium",
-        "replica_count": 1
-      },
-      "reader": {
-        "instance": "db.t4g.medium",
-        "replica_count": 1
+        "replica_count": 1,
+        "instance": "db.t2.small"
       }
     }
+  },
+  "advanced": {
+    "rds": {}
   }
 }

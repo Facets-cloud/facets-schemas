@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "dashboard": {
+              "type": "object",
+              "description": "Grafana Dashboard json data. Please take a look at Dashboard JSON model here https://grafana.com/docs/grafana/latest/dashboards/build-dashboards/view-dashboard-json-model/. Note: `uid` attribute is auto generated."
+            }
+          }
+        }
+      }
+    }
+  }
+}

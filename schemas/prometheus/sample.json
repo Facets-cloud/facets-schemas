@@ -3,7 +3,7 @@
   "kind": "configuration",
   "provided": true,
   "for": "prometheus",
-  "disabled": true,
+  "disabled": false,
   "version": "latest",
   "metadata": {
     "name": "prometheus"
