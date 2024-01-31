@@ -1,0 +1,22 @@
+{
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.schema.json",
+    "kind":"config_map",
+    "flavor":"k8s",
+    "version":"0.1",
+    "disabled":false,
+    "provided":false,
+    "metadata":{
+       "name":"test-config"
+    },
+    "spec":{
+       "data": {
+            "ssl.crt": "-----BEGIN CERTIFICATE-----\nMIIDBzCCAe+gAwIBAgIJALOT/fiqj4yhMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV\nBAMMD3d3dy5leGFtcGxlLmNvbTAeFw0xNzA1MDMxNDA2NDVaFw0yNzA1MDExNDA2\nNDVaMBoxGDAWBgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEB\nBQADggEPADCCAQoCggEBALHEIGNhuQsD1MI3zE5Kts5zN91ggbFjFq0aLWjYuIB6\nttfpS158b9x9oWbdACAqGIHC5i1/iwiJkW8J1UcxtPOOHZy4s9E48KnPzJOd6yAv\npxsBuns78Jx5hgBBt+J2TSwEL+Hi40HhBiog+Omk2pi3juMGkhFJaaSiBQf7gA0E\nTXSC5iLK1XPCd6aQpDZwxQpjDNeDk9CR6asqtPJcm9X2skLuNWyIr8dKHpdzoQ5A\n/5GhmtLC/WYwZdqi14Gwph+GS7a2eQYzbGwIZWfcPiMytoNGidDC2HurRpGt91PK\nPxfXDhDk8taBuboHFDAW7beR/x68pPm+p2mTtVt+cS0CAwEAAaNQME4wHQYDVR0O\nBBYEFDpuS3ujMg9wC09nBy/QRQI8PipqMB8GA1UdIwQYMBaAFDpuS3ujMg9wC09n\nBy/QRQI8PipqMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAFh6UUfa\nYL9iLREMGgHTvn4O4nMtsWEEW46/9o4ZcGgVgIL343qD1G0isaTLStKHB5C653N0\n40DU/n9Fcver/x5EhKzjp9QcOSNizFDUG88tCOuW3H+EsTHsCwxdVvENzBT1+Z3N\nJkT8oHVjEc3LBeQmVZLHiWWA9CSVW9b6qco0OjLwLe92f1EWKjqrHPW+5xM3zC0e\nT2h5p4ApY74Pyl892HJrb/dd2DjzYDnXuvcDFZTAr9o5YgcS1jx0Gt9jE1FM7rhk\nGF5aek4Bir9K8xwNBTc8R+dvl2OhQYoxIglSApkNI+n0J9/1pfPnpwojBHifqy/p\nG9oErrv2EQ642e4=\n-----END CERTIFICATE-----\n",
+            "ssl2.crt": "-----BEGIN CERTIFICATE-----\nMIIDBzCCAe+gAwIBAgIJALOT/fiqj4yhMA0GCSqGSIb3DQEBBQUAMBoxGDAWBgNV\nBAMMD3d3dy5leGFtcGxlLmNvbTAeFw0xNzA1MDMxNDA2NDVaFw0yNzA1MDExNDA2\nNDVaMBoxGDAWBgNVBAMMD3d3dy5leGFtcGxlLmNvbTCCASIwDQYJKoZIhvcNAQEB\nBQADggEPADCCAQoCggEBALHEIGNhuQsD1MI3zE5Kts5zN91ggbFjFq0aLWjYuIB6\nttfpS158b9x9oWbdACAqGIHC5i1/iwiJkW8J1UcxtPOOHZy4s9E48KnPzJOd6yAv\npxsBuns78Jx5hgBBt+J2TSwEL+Hi40HhBiog+Omk2pi3juMGkhFJaaSiBQf7gA0E\nTXSC5iLK1XPCd6aQpDZwxQpjDNeDk9CR6asqtPJcm9X2skLuNWyIr8dKHpdzoQ5A\n/5GhmtLC/WYwZdqi14Gwph+GS7a2eQYzbGwIZWfcPiMytoNGidDC2HurRpGt91PK\nPxfXDhDk8taBuboHFDAW7beR/x68pPm+p2mTtVt+cS0CAwEAAaNQME4wHQYDVR0O\nBBYEFDpuS3ujMg9wC09nBy/QRQI8PipqMB8GA1UdIwQYMBaAFDpuS3ujMg9wC09n\nBy/QRQI8PipqMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEBAFh6UUfa\nYL9iLREMGgHTvn4O4nMtsWEEW46/9o4ZcGgVgIL343qD1G0isaTLStKHB5C653N0\n40DU/n9Fcver/x5EhKzjp9QcOSNizFDUG88tCOuW3H+EsTHsCwxdVvENzBT1+Z3N\nJkT8oHVjEc3LBeQmVZLHiWWA9CSVW9b6qco0OjLwLe92f1EWKjqrHPW+5xM3zC0e\nT2h5p4ApY74Pyl892HJrb/dd2DjzYDnXuvcDFZTAr9o5YgcS1jx0Gt9jE1FM7rhk\nGF5aek4Bir9K8xwNBTc8R+dvl2OhQYoxIglSApkNI+n0J9/1pfPnpwojBHifqy/p\nG9oErrv2EQ642e4=\n-----END CERTIFICATE-----\n"
+       }
+    },
+    "advanced":{
+       "k8s":{
+          
+       }
+    }
+}

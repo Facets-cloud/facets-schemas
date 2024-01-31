@@ -1,0 +1,33 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_dynamodb/aws_dynamodb.schema.json",
+  "kind": "dynamodb",
+  "flavor": "default",
+  "version": "latest",
+  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+  "disabled": true,
+  "provided": false,
+  "depends_on": [],
+  "metadata": {
+    "name": "test-dynamodb"
+  },
+  "spec": {
+    "attributes": {
+      "key1": {
+        "name": "LockID",
+        "type": "S"
+      }
+    },
+    "hash_key": "LockID"
+  },
+  "advanced": {
+    "aws_dynamodb": {
+      "global_secondary_indexes": [],
+      "billing_mode": "PROVISIONED",
+      "read_capacity": 1,
+      "write_capacity": 1,
+      "tags": {
+        "Owner": "facets.cloud"
+      }
+    }
+  }
+}

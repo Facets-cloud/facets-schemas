@@ -74,6 +74,16 @@
                                 "description":"The maximum number of snapshots per PVC to keep"
                              }
                         }
+                     },
+                     "additional_claim_selector_labels": {
+                        "type": "object",
+                        "description": "The additional labels to be added on snapshot scheduler",
+                        "properties": {
+                           "^[A-Za-z]+$": {
+                              "type": "string",
+                              "description": "key value pair of labels"
+                           }
+                        }
                      }
                 },
                 "required": ["schedule", "resource_name", "retention_policy", "resource_type"]

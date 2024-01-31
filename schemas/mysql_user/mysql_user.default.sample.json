@@ -1,0 +1,23 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.json",
+  "kind": "mysql_user",
+  "flavor": "default",
+  "version": "latest",
+  "spec": {
+    "endpoint": "mysql:testMySQLPassword@test-mysql.default.svc.cluster.local:3306",
+    "permissions": {
+      "permission1": {
+        "permission": "RO",
+        "database": "my_database",
+        "table": "*"
+      },
+      "permission2": {
+        "permission": "ADMIN",
+        "database": "*",
+        "table": "*"
+      }
+    }
+  },
+  "advanced": {},
+  "out": {}
+}

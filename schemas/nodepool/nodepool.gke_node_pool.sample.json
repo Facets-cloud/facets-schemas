@@ -1,0 +1,18 @@
+{
+  "flavor": "gke_node_pool",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
+  "version": "latest",
+  "kind": "kubernetes_node_pool",
+  "provided": false,
+  "disabled": true,
+  "lifecycle": "ENVIRONMENT",
+
+  "spec": {
+    "instance_type": "n2d-standard-2",
+    "min_node_count": 1,
+    "max_node_count": 50,
+    "disk_size": 100,
+    "taints": [],
+    "labels": {}
+  }
+}

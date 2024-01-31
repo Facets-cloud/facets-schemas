@@ -1,0 +1,124 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "../../traits/base.schema.json"
+
+        },
+        {
+            "$ref": "#/$defs/specDef"
+        },
+        {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string",
+                    "enum": [
+                            "dax_cluster"
+                    ]
+                },
+                "flavor": {
+                    "type": "string",
+                    "enum": [
+                        "default"
+                    ]
+                }
+            }
+        },
+        {
+            "$ref": "#/$defs/advancedDef"
+        },
+        {
+            "$ref": "#/$defs/outDef"
+        }
+    ],
+    "required": [
+        "kind",
+        "flavor",
+        "version",
+        "metadata",
+        "spec"
+    ],
+    "$defs": {
+        "specDef": {
+            "type": "object",
+            "properties": {
+                "spec": {
+                    "type": "object",
+                    "properties": {
+                        "iam_policies": {
+                            "type": "string",
+                            "description": "iam policies to be used"
+                        },
+                        "size": {
+                            "type": "object",
+                            "description": "Specify the instance type",
+                            "properties": {
+                                "instance": {
+                                    "type": "string",
+                                    "description": "Specify the instance type"
+                                }
+                            }
+                        },
+                        "replication_factor": {
+                            "type": "integer",
+                            "description": "The number of nodes in the DAX cluster"
+                        }
+                    },
+                    "required": [
+                        "size",
+                        "replication_factor"
+                    ]
+                }
+            }
+        },
+        "advancedDef": {
+            "type": "object",
+            "properties": {
+                "advanced": {
+                    "allOf": [
+                        {
+                            "$ref": "flavor-default.schema.json"
+                        }
+                    ]
+                }
+            }
+        },
+        "outDef": {
+            "type": "object",
+            "properties": {
+                "out": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "allOf": [
+                        {
+                            "properties": {
+                                "configuration_endpoint": {
+                                    "type": "string",
+                                    "additionalProperties": false
+                                },
+                                "cluster_address": {
+                                    "type": "string",
+                                    "additionalProperties": false
+                                },
+                                "arn": {
+                                    "type": "string",
+                                    "additionalProperties": false
+                                },
+                                "nodes": {
+                                    "type": "object",
+                                    "additionalProperties": false
+                                },
+                                "port": {
+                                    "type": "integer",
+                                    "additionalProperties": false
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
