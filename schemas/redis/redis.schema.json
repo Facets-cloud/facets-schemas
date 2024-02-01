@@ -19,8 +19,7 @@
           "enum": [
             "k8s",
             "memorystore",
-            "elasticache",
-            "azure_cache"
+            "elasticache"
           ]
         },
         "version": {
@@ -53,9 +52,6 @@
             },
             {
               "$ref": "flavor-memorystore.schema.json"
-            },
-            {
-              "$ref": "flavor-azure_cache.schema.json"
             }
           ]
         }
@@ -130,7 +126,8 @@
                   }
                 }
               },
-              "required": []
+              "required": [
+              ]
             }
           ]
         }

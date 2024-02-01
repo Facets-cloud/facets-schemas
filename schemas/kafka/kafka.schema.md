@@ -26,6 +26,7 @@ Specification as per resource types schema
 |-----------------------|-----------------|----------|---------------------------------------|
 | `authenticated`       | boolean         | **Yes**  | Make this kafka is Password protected |
 | `kafka_version`       | string          | **Yes**  | Version of kafka e.g. 3.2.3           |
+| `zookeeper_version`   | string          | **Yes**  | Version of kafka e.g. 3.2.3           |
 | `persistence_enabled` | boolean         | **Yes**  | Enable Persistence for this redis     |
 | `size`                | [object](#size) | **Yes**  |                                       |
 
@@ -113,30 +114,21 @@ Kafka extra settings for connection
 | `sasl_mechanism`    | string | No       | The sasl mechanism required to connect to the kafka broker Possible values are: `SCRAM-SHA-256`, `PLAIN`.         |
 | `security_protocol` | string | No       | The security protocol required to connect to the kafka broker Possible values are: `SASL_PLAINTEXT`, `PLAINTEXT`. |
 
-### cluster
 
-Kafka cluster configuration
+### interfaces
 
-| Name              | Description                                                                                                                                | Type   | Required |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
-| endpoint          | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | string | Yes      |
-| username          | The username to use for authentication when connecting to the datastore.                                                                   | string | No       |
-| password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
-| connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
+Kafka broker details
 
+| Property            | Type   | Required | Description                    |
+|---------------------|--------|----------|--------------------------------|
+| `connection_string` | string | No       | Connection string to connect   |
+| `host`              | string | No       | Host for service discovery     |
+| `name`              | string | No       | Name of interface, same as key |
+| `password`          | string | No       | Password to connect (if any)   |
+| `port`              | string | No       | Port for service discovery     |
+| `username`          | string | No       | Username to connect (if any)   |
 
 
 ### Flavors
 
-* k8s
-* [msk](kafka.msk.schema.md)
-
-### Alerts
-
-
-| Alert Name                      | Description                                                     | mitigation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | 
-|---------------------------------|-----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `UnderReplicatedPartitionCount` | Kafka is under replicated partitons                             | Debug the reason why few partitions are under-replicated                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | 
-| `ActiveController`              | No broker in the cluster is reporting as the active controller. | During steady state there should be only one active controller per cluster.                                                                                                                                                                                                                                                                                                                                                                                                                                                | 
-| `UncleanLeaderElection`         | Unclean partition leader elections in the cluster reported      | When unclean leader election is held among out-of-sync replicas, there is a possibility of data loss if any messages were not synced prior to the loss of the former leader. So if the number of unclean elections is greater than 0, investigate broker logs to determine why leaders were re-elected, and look for WARN or ERROR messages. Consider setting the broker configuration parameter unclean.leader.election.enable to false so that a replica outside of the set of in-sync replicas is never elected leader. |
-| `BrokerCount`                   | No Brokers online                                               | No Broker is available. Debug the instance health via metrics & logs                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+* `k8s`

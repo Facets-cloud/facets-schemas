@@ -22,12 +22,12 @@
           "flavor": {
             "type": "string",
             "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-            "enum": ["default", "k8s"]
+            "enum": ["default"]
           },
           "version": {
             "type": "string",
             "description": "This field can be used to pin to a particular version",
-            "enum": ["0.1", "latest"]
+            "enum": ["0.1"]
           }
         }
       }
@@ -70,8 +70,7 @@
               "release",
               "type",
               "enable_host_anti_affinity",
-              "runtime",
-              "env"
+              "runtime"
             ],
             "allOf": [
                 {
@@ -126,11 +125,6 @@
                 "type": "object",
                 "description": "Map of all chart advanced keys",
                 "$ref": "./chart-advanced.schema.json"
-              },
-              "common": {
-                "type": "object",
-                "description": "Map of all the advanced values passed to app-chart",
-                "$ref": "./common-advanced.schema.json"
               }
             },
             "anyOf": [
@@ -142,7 +136,7 @@
                         "flavor": { "enum": ["aws"] }
                       }
                   },
-                  "then": {}
+                  "then": { "required": ["aws"]}
                   },
                   {
                     "not" : { "required" : ["gcp"] }
@@ -157,7 +151,7 @@
                         "flavor": { "enum": ["gcp"] }
                       }
                   },
-                  "then": {}
+                  "then": { "required": ["gcp"]}
                   },
                   {
                     "not" : { "required" : ["aws"] }
@@ -181,22 +175,8 @@
                 "description": "The output for your service module, this can be generated or provided",
                 "patternProperties": {
                   "^[a-zA-Z0-9_.-]*$": {
-                    "type": "object",
                     "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
-                    "allOf": [
-                      {
-                        "$ref": "../../traits/datastore-interface.schema.json"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string",
-                            "description": "The name of the service which we want to reference"
-                          }
-                        }
-                      }
-                    ]
+                    "$ref": "../../traits/datastore-interface.schema.json"
                   }
                 }
               }
@@ -206,4 +186,4 @@
         }
       }
     }
-}
+  }

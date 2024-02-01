@@ -38,39 +38,16 @@
         "spec": {
           "type": "object",
           "description": "Spec block of the resource",
-          "if": {
-            "properties": {
-              "connection": { "enum": ["postgres"] }
-            }
-          },
-          "then": {
-            "properties": {
-              "type": "object",
-              "connection": {
-                "type": "string",
-                "description": "Database connection type",
-                "enum": ["mysql","postgres"]
-              },
-              "uri": {
-                "type": "string",
-                "description": "Connection uri of the database.",
-                "pattern": "^postgresql:\/\/\\w+:[^@]+@[a-zA-Z0-9.-]+:\\d+\/\\w+$"
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "type": "object",
-              "connection": {
-                "type": "string",
-                "description": "Database connection type",
-                "enum": ["mysql","postgres"]
-              },
-              "uri": {
-                "type": "string",
-                "description": "Connection uri of the database.",
-                "pattern": "\\w+:[^@]+@tcp\\([^:]+:\\d+\\)/\\w+$"
-              }
+          "properties": {
+            "type": "object",
+            "connection": {
+              "type": "string",
+              "description": "Database connection type",
+              "enum": ["mysql"]
+            },
+            "uri": {
+              "type": "string",
+              "description": "Connection uri of the database."
             }
           },
           "required": ["connection","uri"]

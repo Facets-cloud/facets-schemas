@@ -1,4 +1,4 @@
-# Elasticsearch
+# Mongo
 
 A elasticsearch Instance in clustering mode.
 
@@ -49,7 +49,6 @@ Additional fields if any for a particular implementation of a resource
 | Property | Type           | Required | Description                           |
 |----------|----------------|----------|---------------------------------------|
 | `k8s`    | [object](#k8s) | No       | Advanced k8s values for elasticsearch |
-| `aws`    | [object](#aws) | No       | Advanced aws values for elasticsearch |
 
 ### k8s
 
@@ -58,15 +57,6 @@ Advanced k8s values for elasticsearch
 | Property        | Type                     | Required | Description                       |
 |-----------------|--------------------------|----------|-----------------------------------|
 | `elasticsearch` | [object](#elasticsearch) | No       | Advanced values for elasticsearch |
-
-
-### aws
-
-Advanced aws values for elasticsearch
-
-| Property                   | Type                                                                                                       | Required | Description                                                     |
-|----------------------------|------------------------------------------------------------------------------------------------------------|----------|-----------------------------------------------------------------|
-| `aws_elasticsearch_domain` | [object](https://registry.terraform.io/providers/hashicorp/aws/3.74.0/docs/resources/elasticsearch_domain) | No       | Advanced values for terraform resource aws_elasticsearch_domain |
 
 #### elasticsearch
 
@@ -80,47 +70,23 @@ Advanced values for elasticsearch
 
 Output given by the resource for others to refer.
 
-| Property     | Type               | Required | Description                                                       |
-|--------------|--------------------|----------|-------------------------------------------------------------------|
-| `interfaces` | [object](#cluster) | **Yes**  | elasticsearch broker details interfaces of type cluster as object |
-| `interfaces` | [object](#http)    | **No**   | elasticsearch broker details interfaces of type http as object    |
+| Property     | Type                  | Required | Description                  |
+|--------------|-----------------------|----------|------------------------------|
+| `interfaces` | [object](#interfaces) | **Yes**  | elasticsearch broker details |
 
-Added an example of out
-```json
-{
-  "out": {
-    "interfaces": {
-      "cluster": {
-        "connection_string" : "string",
-        "endpoint" : "string"
-      }
-    }
-  }
-}
-```
-
-
-### cluster
+### interfaces
 
 elasticsearch broker details
 
-| Name              | Description                                                                                                                                | Type   | Required |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------|----------|
-| endpoint          | A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1. | string | Yes      |
-| username          | The username to use for authentication when connecting to the datastore.                                                                   | string | No       |
-| password          | The password to use for authentication when connecting to the datastore.                                                                   | string | No       |
-| connection_string | The connection_string to use when connecting to the datastore.                                                                             | string | Yes      |
+| Property            | Type   | Required | Description                    |
+|---------------------|--------|----------|--------------------------------|
+| `connection_string` | string | No       | Connection string to connect   |
+| `host`              | string | No       | Host for service discovery     |
+| `name`              | string | No       | Name of interface, same as key |
+| `password`          | string | No       | Password to connect (if any)   |
+| `port`              | string | No       | Port for service discovery     |
+| `username`          | string | No       | Username to connect (if any)   |
 
-
-### http
-
-elasticsearch broker details
-
-| Name              | Description                                                          | Type   | Required |
-|-------------------|----------------------------------------------------------------------|--------|----------|
-| host              | The host for the Elasticsearch cluster endpoint.                     | string | Yes      |
-| port              | The port to use for authentication when connecting to the datastore. | string | No       |
-| connection_string | The connection_string to use when connecting to the datastore.       | string | Yes      |
 ### Flavors
 
 - `k8s`
