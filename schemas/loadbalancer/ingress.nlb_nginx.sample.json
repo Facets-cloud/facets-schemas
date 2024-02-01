@@ -1,7 +1,7 @@
 {
   "kind": "ingress",
   "flavor": "nginx_ingress_controller",
-  "$schema": "ingress.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/loadbalancer/ingress.schema.json",
   "disabled": true,
   "version": "0.1",
   "lifecycle": "ENVIRONMENT",
@@ -29,8 +29,5 @@
       }
     },
     "force_ssl_redirection": true
-  },
-  "advanced": {
-    "nginx_ingress_controller": {}
   }
 }

@@ -8,7 +8,7 @@
     "k8s": {}
   },
   "kind": "redis",
-  "disabled": false,
+  "disabled": true,
   "version": "0.1",
   "spec": {
     "authenticated": true,
@@ -23,7 +23,7 @@
       "reader": {
         "cpu": "1",
         "memory": "512M",
-        "replica_count": 0
+        "replica_count": 1
       }
     }
   },

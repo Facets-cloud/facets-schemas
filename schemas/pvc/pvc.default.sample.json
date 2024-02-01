@@ -1,0 +1,17 @@
+{
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.schema.json",
+    "flavor": "default",
+    "kind": "pvc",
+    "disabled": "false",
+    "metadata": {
+        "name": "test-pvc"
+    },
+    "spec": {
+        "size": {
+            "volume": "8Gi"
+        }
+    },
+    "advanced": {
+        "accessModes": ["ReadWriteOnce"]
+    }
+}

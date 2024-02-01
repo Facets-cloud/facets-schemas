@@ -1,11 +1,11 @@
 {
-  "$schema": "postgres.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
   "provided": false,
   "kind" : "postgres",
   "version": "0.1",
   "depends_on": [],
-  "disabled": false,
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
+  "disabled": true,
+  "lifecycle": "ENVIRONMENT",
   "metadata": {
     "name": "daw"
   },
@@ -14,19 +14,12 @@
     "postgres_version": "12.11",
     "size": {
       "writer": {
-        "instance": "n1-standard-2"
+        "instance": "db.t3.medium",
+        "instance_count": 1
       },
       "reader": {
         "instance": "db.t3.medium",
-        "instance_count": 2
-      }
-    }
-  },
-  "advanced": {
-    "aurora": {
-      "rds-aurora": {
-      },
-      "aws_db_parameter_group": {
+        "instance_count": 1
       }
     }
   }

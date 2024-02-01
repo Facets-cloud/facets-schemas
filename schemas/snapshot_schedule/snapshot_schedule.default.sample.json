@@ -1,0 +1,27 @@
+{
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/snapshot_schedule/snapshot_schedule.schema.json",
+    "kind": "snapshot_schedule",
+    "conditional_on_intent": "kafka",
+    "flavor": "default",
+    "version": "latest",
+    "disabled": true,
+    "metadata": {
+      "name": "schedule"
+    },
+    "spec": {
+      "schedule": "@hourly",
+      "retention_policy": {
+        "expiry": "2160h",
+        "count": 10
+      },
+      "resource_name": "kafka-alpha",
+      "resource_type": "kafka",
+      "additional_claim_selector_labels": {
+        "key": "value"
+      }    
+    },
+    "advanced": {
+    },
+    "out": {}
+  }
+  

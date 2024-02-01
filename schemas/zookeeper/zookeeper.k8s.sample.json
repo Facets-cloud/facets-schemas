@@ -1,0 +1,28 @@
+{
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/zookeeper/zookeeper.schema.json",
+    "disabled": true,
+    "flavor": "k8s",
+    "kind": "zookeeper",
+    "version": "0.1",
+    "metadata": {
+      "name": "zookeeper"
+    },
+    "spec": {
+      "zookeeper_version" : "3.8.1",
+      "size" : {
+        "cpu": "500m",
+        "memory": "500Mi",
+        "volume": "8Gi",
+        "replica_count": 1
+      }
+    },
+    "advanced" : {
+      "k8s": {
+        "zookeeper": {
+          "k8s_service_names": {},
+          "values": {},
+          "chart_version": "11.2.1"
+        }
+      }
+    }
+  }

@@ -1,0 +1,28 @@
+{
+  "$schema": "./aws_iam_role.schema.json",
+  "version": "0.1",
+  "provided": false,
+  "disabled": true,
+  "flavor": "default",
+  "metadata": {},
+  "kind": "aws_iam_role",
+  "spec": {
+    "irsa": {
+      "service_accounts": {
+        "arbitray_name": {
+          "name": "sa_name"
+        }
+      },
+      "oidc_providers": {
+        "arbitray_name": {
+          "arn": "oidc_arn"
+        }
+      }
+    },
+    "policies": {
+      "external_policy": {
+        "arn": "external_policy arn"
+      }
+    }
+  }
+}

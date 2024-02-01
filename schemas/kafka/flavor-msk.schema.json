@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "definition": "Kafka MSK schema",
+  "description": "Values for kafka",
+  "properties": {
+    "advanced": {
+      "type": "object",
+      "properties": {
+        "kafka": {
+          "type": "object",
+          "properties": {
+            "msk": {
+              "type": "object",
+              "description": "Values as per the MSK kafka https://registry.terraform.io/modules/terraform-aws-modules/msk-kafka-cluster/aws/1.2.0?tab=inputs"
+            }
+          }
+        }
+      }
+    }
+  }
+}

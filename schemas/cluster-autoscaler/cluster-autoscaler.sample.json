@@ -1,0 +1,22 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_cluster_autoscaler/aws_clusterautoscaler.schema.json",
+  "lifecycle": "",
+  "metadata": {
+    "name": "cluster-autoscaler"
+  },
+  "kind" : "configuration",
+  "for"  : "cluster-autoscaler",
+  "version" : "0.1",
+  "spec": {
+    "size": {
+      "cpu": "",
+      "memory": ""
+    }
+  },
+  "advanced": {
+    "cluster-autoscaler": {
+      "values": {
+      }
+    }
+  }
+}

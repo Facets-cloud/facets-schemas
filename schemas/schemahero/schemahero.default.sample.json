@@ -1,0 +1,23 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero/schemahero.schema.json",
+  "for": "schemaHero",
+  "kind": "configuration",
+  "version": "0.1",
+  "metadata": {
+    "name": "schemahero"
+  },
+  "spec": {
+    "size" : {
+      "cpu": "1",
+      "memory": "150Mi"
+    }
+  },
+  "advanced" : {
+    "default": {
+      "schemahero": {
+        "values": {
+        }
+      }
+    }
+  }
+}
