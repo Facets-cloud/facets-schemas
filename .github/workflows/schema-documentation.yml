@@ -9,6 +9,14 @@
     build:
       runs-on: ubuntu-latest
       steps:
+        - name: Check version
+          id: tag_check
+          run: |
+            if [[ "${{ github.event.inputs.tag }}" != 2.* ]]; then
+                echo "Error: The tag must start with '2.'"
+                exit_status=1
+                exit 1
+            fi
         - name: Checkout Facets-IAC code
           uses: actions/checkout@v2
           with:
@@ -76,3 +84,20 @@
           env:
             GIT_COMMITTER_NAME: ${{ github.actor }}
             GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+
+        - name: Post failed schema documentation notification to a Slack channel
+          uses: slackapi/slack-github-action@v1.24.0
+          with:
+            channel-id: ${{ secrets.CHANNEL_ID }}
+            slack-message: 'Schema documentation updated for tag ${{ inputs.tag }}'
+          env:
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
+        - name: Post failed schema documentation notification to a Slack channel
+          if: failure()
+          uses: slackapi/slack-github-action@v1.24.0
+          with:
+            channel-id: ${{ secrets.CHANNEL_ID }}
+            slack-message: 'Schema documentation failed to update for tag ${{ inputs.tag }}'
+          env:
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
