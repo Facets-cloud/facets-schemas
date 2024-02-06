@@ -123,9 +123,3 @@ func GetFromEnv(t *testing.T, key string) string {
 	}
 	return value
 }
-
-// Fetches the ingress version to test from the env variable `INGRESS_VERSION`. Currently output could be "0.1" or "0.2"
-func GetIngressVersionToTest(t *testing.T) string {
-	return GetFromEnv(t, "INGRESS_VERSION")
-
-}

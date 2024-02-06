@@ -61,7 +61,6 @@ jobs:
       LOGS_FOLDER: test-output
       INGRESS_TESTING_HOSTED_ZONE: ${{ vars.INGRESS_TESTING_HOSTED_ZONE }}
       INGRESS_TESTING_HOSTED_ZONE_ID: ${{ vars.INGRESS_TESTING_HOSTED_ZONE_ID }}
-      INGRESS_VERSION: ${{needs.ingress-version.outputs.ing_version}}
 
     steps:
       - name: change dns to cloudflare
