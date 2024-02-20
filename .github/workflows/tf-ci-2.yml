@@ -13,7 +13,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: iac-arc
 
     steps:
       - name: Set BRANCH_NAME variable
@@ -22,38 +22,22 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ env.BRANCH_NAME }}
-
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v2
-        with:
-          java-version: '8'
-          distribution: 'adopt'
-
-      - name: Build with Maven
-        run: mvn -f capillary-cloud-tf/pom.xml clean install
-
       - name: Extract POM version
         id: pom_version
         run: |
-           POM_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+           POM_VERSION=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' pom.xml)
            echo "POM_VERSION=$POM_VERSION" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-
-
-      - name: Zip with POM_VERSION
+      - name: Extract POM Version, zip and upload to s3
         shell: bash
         id: run
         run: |
-          mkdir -p archive
-          zip -r archive/${{ steps.pom_version.outputs.POM_VERSION }}.zip capillary-cloud-tf
-
-      - name: Upload file to bucket
-        uses: zdurham/s3-upload-github-action@master
+          POM_VERSION=$(xmllint --xpath '/*[local-name()="project"]/*[local-name()="version"]/text()' pom.xml)
+          mkdir archive
+          zip -r archive/$POM_VERSION.zip capillary-cloud-tf
+          aws s3 cp archive/$POM_VERSION.zip s3://${{ secrets.BUCKET_NAME }}/${{ env.BRANCH_NAME }}/$POM_VERSION.zip
         env:
-          FILE: 'archive/${{ steps.pom_version.outputs.POM_VERSION }}.zip'
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_BUCKET: ${{ secrets.BUCKET_NAME }}
-          S3_KEY: '${{ env.BRANCH_NAME }}/${{ steps.pom_version.outputs.POM_VERSION }}.zip'
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
