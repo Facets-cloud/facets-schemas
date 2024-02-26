@@ -1,0 +1,22 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
+  "flavor": "aks",
+  "kind": "kubernetes_node_pool",
+  "metadata": {
+    "name": "spot",
+    "tags": {},
+    "annotations": {}
+  },
+  "advanced": {},
+  "disabled": true,
+  "version": "0.1",
+  "spec": {
+    "instance": "Spot",
+    "instance_type": "Standard_F8",
+    "min_node_count": 0,
+    "max_node_count": 100,
+    "disk_size": "50G",
+    "taints": {},
+    "labels": {}
+  }
+}

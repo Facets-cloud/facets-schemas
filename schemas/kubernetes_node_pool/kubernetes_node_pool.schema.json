@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["kubernetes_node_pool"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["eks_self_managed", "aks", "eks_managed"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        }
+      }
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "instance_type": {
+              "type": "string",
+              "description": "Instance type associated with the Node Pool"
+            },
+            "min_node_count": {
+              "type": "number",
+              "description": "Minimum number of worker nodes"
+            },
+            "max_node_count": {
+              "type": "number",
+              "description": "Maximum number of worker nodes"
+            },
+            "disk_size": {
+              "type": "number",
+              "description": "Disk size in GiB for worker nodes"
+            },
+            "azs": {
+              "type": "string",
+              "description": "Comma separated string of one or more availability zones for the Node Pool"
+            },
+            "is_public": {
+              "type": "boolean",
+              "description": "Whether to launch nodes in Public or Private network"
+            },
+            "taints": {
+              "type": "object",
+              "description": "The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool",
+              "patternProperties": {
+                "^[a-zA-Z]+\\d+$": {
+                  "type": "object",
+                  "description": "Specify taint",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "The key of the taint",
+                      "minLength": 2,
+                      "maxLength": 63
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "The value of the taint",
+                      "minLength": 2,
+                      "maxLength": 63
+                    },
+                    "effect": {
+                      "type": "string",
+                      "description": "The effect of the taint",
+                      "enum": [
+                        "NoSchedule",
+                        "NoExecute",
+                        "PreferNoSchedule"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "labels": {
+              "type": "object",
+              "description": "Key-value map of Kubernetes labels"
+            }
+          },
+          "required": [
+            "instance_type",
+            "min_node_count",
+            "max_node_count",
+            "is_public",
+            "disk_size",
+            "azs",
+            "taints",
+            "labels"
+          ]
+        }
+      }
+    },
+    "advancedDef": {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "allOf": [
+            {
+              "$ref": "./flavor-aks.schema.json"
+            },
+            {
+              "$ref": "./flavor-eks-managed.schema.json"
+            },
+            {
+              "$ref": "./flavor-eks-self-managed.schema.json"
+            }
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "$ref": "#/$defs/specDef"
+            },
+            {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": false
+                },
+                "taints": {
+                  "type": "list",
+                  "additionalProperties": false
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
+    }
+  }
+}
