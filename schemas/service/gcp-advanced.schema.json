@@ -14,6 +14,25 @@
                     "role":{
                         "type":"string",
                         "description":"The id of the role that you want to attach to the deployment, you can check out this link on how to create roles in gcp https://cloud.google.com/iam/docs/creating-custom-roles#iam-custom-roles-get-metadata-console"
+                    },
+                    "condition": {
+                      "type": "object",
+                      "description": "IAM Condition to be attached to the role for further granularity.",
+                      "properties": {
+                        "expression": {
+                          "type": "string",
+                          "description": "Expression of the IAM condition."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the IAM condition."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the IAM condition."
+                        }
+                      },
+                      "required": ["expression"]
                     }
                 },
                 "required": ["role"]

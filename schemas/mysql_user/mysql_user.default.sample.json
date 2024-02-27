@@ -3,6 +3,7 @@
   "kind": "mysql_user",
   "flavor": "default",
   "version": "latest",
+  "metadata": {},
   "spec": {
     "endpoint": "mysql:testMySQLPassword@test-mysql.default.svc.cluster.local:3306",
     "permissions": {

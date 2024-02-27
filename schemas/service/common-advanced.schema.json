@@ -47,162 +47,403 @@
                     }
                   }
                 }
-              },
-              "pod_distribution": {
-                "type": "object",
-                "description": "Pod topology for distributing pods across nodes"
-              },
-              "sidecars": {
-                "type": "object",
-                "description": "Sidecar containers configurations",
-                "patternProperties": {
-                  "^[a-zA-Z0-9_.-]*$": {
-                    "properties": {
-                      "image": {
-                        "type": "string",
-                        "description": "Image of the sidecar container"
-                      },
-                      "runtime": {
-                        "type": "object",
-                        "properties": {
-                          "size": {
-                            "type": "object",
-                            "description": "Resource request and limits configurations",
-                            "properties": {
-                              "cpu": {
-                                "type": "string",
-                                "description": "cpu request"
-                              },
-                              "memory": {
-                                "type": "string",
-                                "description": "memory request"
-                              },
-                              "cpu_limit": {
-                                "type": "string",
-                                "description": "cpu limit"
-                              },
-                              "memory_limit": {
-                                "type": "string",
-                                "description": "memory limit"
-                              }
+              }
+            },
+            "pod_distribution": {
+              "type": "object",
+              "description": "Pod topology for distributing pods across nodes"
+            },
+            "sidecars": {
+              "type": "object",
+              "description": "Sidecar containers configurations",
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "properties": {
+                    "image": {
+                      "type": "string",
+                      "description": "Image of the sidecar container"
+                    },
+                    "additional_k8s_env": {
+                      "type": "array",
+                      "description": "Allows you to set additional environment variables for a container, adhering to the Kubernetes schema for environment variables. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#envvar-v1-core"
+                    },
+                    "additional_k8s_env_from": {
+                      "type": "array",
+                      "description": "Allows you to set additional environment variables for a container from sources (ConfigMap, Secret), adhering to the Kubernetes schema for environment variables. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#envfromsource-v1-core"
+                    },
+                    "runtime": {
+                      "type": "object",
+                      "properties": {
+                        "size": {
+                          "type": "object",
+                          "description": "Resource request and limits configurations",
+                          "properties": {
+                            "cpu": {
+                              "type": "string",
+                              "description": "cpu request"
+                            },
+                            "memory": {
+                              "type": "string",
+                              "description": "memory request"
+                            },
+                            "cpu_limit": {
+                              "type": "string",
+                              "description": "cpu limit"
+                            },
+                            "memory_limit": {
+                              "type": "string",
+                              "description": "memory limit"
                             }
-                          },
-                          "volumes": {
-                            "type": "object",
-                            "description": "Volumes to be attached to sidecar",
-                            "properties": {
-                              "config_maps": {
-                                "type": "object",
-                                "description": "map of config_maps to attach to sidecar",
-                                "patternProperties": {
-                                  "^[a-zA-Z0-9_.-]*$": {
-                                    "properties": {
-                                      "name": {
-                                        "type": "string",
-                                        "description": "name of the config map"
-                                      },
-                                      "mount_path": {
-                                        "type": "string",
-                                        "description": "the mount path for the config map"
-                                      }
+                          }
+                        },
+                        "volumes": {
+                          "type": "object",
+                          "description": "Volumes to be attached to sidecar",
+                          "properties": {
+                            "config_maps": {
+                              "type": "object",
+                              "description": "map of config_maps to attach to sidecar",
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "description": "name of the config map"
+                                    },
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "the mount path for the config map"
                                     }
                                   }
                                 }
                               }
+                            },
+                            "secrets": {
+                              "type": "object",
+                              "description": "The map of all the secrets that you want to mount",
+                              "additionalProperties": false,
+                              "minProperties": 1,
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "description": "The name of the secret that has been created in the kubernetes cluster"
+                                    },
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "The mount path for the secrets"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "pvc": {
+                              "type": "object",
+                              "description": "The map of all the pvcs that you want to mount",
+                              "additionalProperties": false,
+                              "minProperties": 1,
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "claim_name": {
+                                      "type": "string",
+                                      "description": "The name of the pvc that has been created in the kubernetes cluster"
+                                    },
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "The mount path for the pvc"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "host_path": {
+                              "type": "object",
+                              "description": "The map of all the secrets that you want to mount",
+                              "additionalProperties": false,
+                              "minProperties": 1,
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "The mount path for the host path"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additional_volumes": {
+                              "type": "array",
+                              "description": "Allows you to set additional volumes for an application/statefulset, adhering to the Kubernetes schema for volumes. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/concepts/storage/volumes/"
+                            },
+                            "additional_volume_mounts": {
+                              "type": "array",
+                              "description": "Allows you to set the volume mounts"
                             }
-                          },
-                          "command": {
-                            "type": "array",
-                            "description": "Commands to run before starting sidecar container"
-                          },
-                          "args": {
-                            "type": "array",
-                            "description": "arguments to be passed to commands"
                           }
+                        },
+                        "command": {
+                          "type": "array",
+                          "description": "Commands to run before starting sidecar container"
+                        },
+                        "args": {
+                          "type": "array",
+                          "description": "arguments to be passed to commands"
                         }
-                      },
-                      "env": {
-                        "type": "object",
-                        "description": "environment variables"
                       }
+                    },
+                    "env": {
+                      "type": "object",
+                      "description": "environment variables"
                     }
                   }
                 }
-              },
-              "security_context": {
-                "type": "object",
-                "description": "security context for container",
-                "properties": {
-                  "fsgroup": {
-                    "type": "string"
-                  },
-                  "run_as_user": {
-                    "type": "string"
-                  },
-                  "run_as_group": {
-                    "type": "string"
-                  },
-                  "fs_group_change_policy": {
-                    "type": "string"
-                  },
-                  "run_as_non_root": {
-                    "type": "boolean"
-                  },
-                  "linux_options": {
-                    "type": "object"
-                  },
-                  "comp_profile": {
-                    "type": "string"
-                  },
-                  "supplemental_groups": {
-                    "type": "string"
-                  },
-                  "sysctls": {
-                    "type": "string"
-                  },
-                  "windows_options": {
-                    "type": "object"
-                  }
+              }
+            },
+            "security_context": {
+              "type": "object",
+              "description": "security context for container",
+              "properties": {
+                "fsgroup": {
+                  "type": "string"
+                },
+                "run_as_user": {
+                  "type": "string"
+                },
+                "run_as_group": {
+                  "type": "string"
+                },
+                "fs_group_change_policy": {
+                  "type": "string"
+                },
+                "run_as_non_root": {
+                  "type": "boolean"
+                },
+                "linux_options": {
+                  "type": "object"
+                },
+                "comp_profile": {
+                  "type": "string"
+                },
+                "supplemental_groups": {
+                  "type": "string"
+                },
+                "sysctls": {
+                  "type": "string"
+                },
+                "windows_options": {
+                  "type": "object"
                 }
-              },
-              "lifecycle": {
-                "type": "object",
-                "description": "",
-                "properties": {
-                  "preStop": {
-                    "type": "object",
-                    "description": "",
-                    "properties": {
-                      "exec": {
-                        "type": "object",
-                        "description": "",
-                        "properties": {
-                          "command": {
-                            "type": "array",
-                            "description": "The commands to be executed"
-                          }
+              }
+            },
+            "lifecycle": {
+              "type": "object",
+              "description": "",
+              "properties": {
+                "preStop": {
+                  "type": "object",
+                  "description": "",
+                  "properties": {
+                    "exec": {
+                      "type": "object",
+                      "description": "",
+                      "properties": {
+                        "command": {
+                          "type": "array",
+                          "description": "The commands to be executed"
                         }
                       }
                     }
-                  },
-                  "postStart": {
-                    "type": "object",
-                    "description": "",
-                    "properties": {
-                      "exec": {
-                        "type": "object",
-                        "description": "",
-                        "properties": {
-                          "command": {
-                            "type": "array",
-                            "description": "The commands to be executed"
-                          }
+                  }
+                },
+                "postStart": {
+                  "type": "object",
+                  "description": "",
+                  "properties": {
+                    "exec": {
+                      "type": "object",
+                      "description": "",
+                      "properties": {
+                        "command": {
+                          "type": "array",
+                          "description": "The commands to be executed"
                         }
                       }
                     }
                   }
                 }
               }
+            },
+            "init_containers": {
+              "type": "object",
+              "description": "init containers configurations",
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "properties": {
+                    "image": {
+                      "type": "string",
+                      "description": "Image of the init container"
+                    },
+                    "additional_k8s_env": {
+                      "type": "array",
+                      "description": "Allows you to set additional environment variables for a container, adhering to the Kubernetes schema for environment variables. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#envvar-v1-core"
+                    },
+                    "additional_k8s_env_from": {
+                      "type": "array",
+                      "description": "Allows you to set additional environment variables for a container from sources (ConfigMap, Secret), adhering to the Kubernetes schema for environment variables. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#envfromsource-v1-core"
+                    },
+                    "runtime": {
+                      "type": "object",
+                      "properties": {
+                        "size": {
+                          "type": "object",
+                          "description": "Resource request and limits configurations",
+                          "properties": {
+                            "cpu": {
+                              "type": "string",
+                              "description": "cpu request"
+                            },
+                            "memory": {
+                              "type": "string",
+                              "description": "memory request"
+                            },
+                            "cpu_limit": {
+                              "type": "string",
+                              "description": "cpu limit"
+                            },
+                            "memory_limit": {
+                              "type": "string",
+                              "description": "memory limit"
+                            }
+                          }
+                        },
+                        "volumes": {
+                          "type": "object",
+                          "description": "Volumes to be attached to init_containers",
+                          "properties": {
+                            "config_maps": {
+                              "type": "object",
+                              "description": "map of config_maps to attach to init_containers",
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "description": "name of the config map"
+                                    },
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "the mount path for the config map"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "secrets": {
+                              "type": "object",
+                              "description": "The map of all the secrets that you want to mount",
+                              "additionalProperties": false,
+                              "minProperties": 1,
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "description": "The name of the secret that has been created in the kubernetes cluster"
+                                    },
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "The mount path for the secrets"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "pvc": {
+                              "type": "object",
+                              "description": "The map of all the pvcs that you want to mount",
+                              "additionalProperties": false,
+                              "minProperties": 1,
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "claim_name": {
+                                      "type": "string",
+                                      "description": "The name of the pvc that has been created in the kubernetes cluster"
+                                    },
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "The mount path for the pvc"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "host_path": {
+                              "type": "object",
+                              "description": "The map of all the secrets that you want to mount",
+                              "additionalProperties": false,
+                              "minProperties": 1,
+                              "patternProperties": {
+                                "^[a-zA-Z0-9_.-]*$": {
+                                  "properties": {
+                                    "mount_path": {
+                                      "type": "string",
+                                      "description": "The mount path for the host path"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "additional_volume": {
+                              "type": "array",
+                              "description": "Allows you to set additional volumes for an application/statefulset, adhering to the Kubernetes schema for volumes. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/concepts/storage/volumes/"
+                            },
+                            "additional_volume_mounts": {
+                              "type": "array",
+                              "description": "Allows you to set the volume mounts"
+                            }
+                          }
+                        },
+                        "command": {
+                          "type": "array",
+                          "description": "Commands to run before starting sidecar container"
+                        },
+                        "args": {
+                          "type": "array",
+                          "description": "arguments to be passed to commands"
+                        }
+                      }
+                    },
+                    "env": {
+                      "type": "object",
+                      "description": "environment variables"
+                    }
+                  }
+                }
+              }
+            },
+            "additional_k8s_env": {
+              "type": "array",
+              "description": "Allows you to set additional environment variables for a container, adhering to the Kubernetes schema for environment variables. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#envvar-v1-core"
+            },
+            "additional_k8s_env_from": {
+              "type": "array",
+              "description": "Allows you to set additional environment variables for a container from sources (ConfigMap, Secret), adhering to the Kubernetes schema for environment variables. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#envfromsource-v1-core"
+            },
+            "termination_grace_period_seconds": {
+              "type": "number",
+              "description": "Specify the number of seconds for a pod wait for shut down after it has received the SIGTERM signal"
+            },
+            "additional_volume": {
+              "type": "array",
+              "description": "Allows you to set additional volumes for an application/statefulset, adhering to the Kubernetes schema for volumes. For more details on the schema, refer to the Kubernetes API documentation at https://kubernetes.io/docs/concepts/storage/volumes/"
+            },
+            "additional_volume_mounts": {
+              "type": "array",
+              "description": "Allows you to set the volume mounts"
             }
           }
         }

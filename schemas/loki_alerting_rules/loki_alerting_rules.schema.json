@@ -10,11 +10,11 @@
       "properties": {
         "kind":{
           "type":"string",
-          "enum": ["alert_group"]
+          "enum": ["loki_alerting_rules"]
         },
         "flavor":{
           "type":"string",
-          "enum": ["default"]
+          "enum": ["default","k8s"]
         },
         "version":{
           "type":"string",
@@ -45,7 +45,7 @@
           "properties": {
             "rules": {
               "type": "object",
-              "description": "Alerting rules allow you to define alert conditions based on Prometheus expression language expressions and to send notifications about firing alerts to an external service",
+              "description": "Loki Alerting rules allow you to define alert conditions based on LogQL expression language expressions and to send notifications about firing alerts to an external service",
               "patternProperties": {
                 "^[a-zA-Z]+\\d+$": {
                   "type": "object",
@@ -57,7 +57,7 @@
                     },
                     "for": {
                       "type": "string",
-                      "description": "The optional `for` clause causes Prometheus to wait for a certain duration between first encountering a new expression output vector element and counting an alert as firing for this element",
+                      "description": "The optional `for` clause causes Loki to wait for a certain duration between first encountering a new expression output vector element and counting an alert as firing for this element",
                       "pattern": "^\\d+[a-z]$"
                     },
                     "summary": {
@@ -75,6 +75,10 @@
                     "resource_name": {
                       "type": "string",
                       "description": "The resource name. Eg: {{ $labels.pod }}"
+                    },
+                    "disabled": {
+                      "type": "boolean",
+                      "description": "Enable/Disable alert rule"
                     },
                     "resource_type": {
                       "type": "string",

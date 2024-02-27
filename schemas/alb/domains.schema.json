@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "minProperties": 1,
+  "patternProperties": {
+    "^[a-zA-Z0-9_.-]*$": {
+      "description": "This is the name of the domain object that you are creating, it can be of any name",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "The host name of the domain"
+        },
+        "alias": {
+          "type": "string",
+          "description": "Alias naming for the domain"
+        },
+        "certificate_reference": {
+          "type": "string",
+          "description": "Certificate reference name, for `aws_alb` its the ACM ARN certificate reference"
+        },
+        "rules": {
+          "$ref": "./ingress-rules.schema.json",
+          "description": "Objects of all ingress rules"
+        },
+        "equivalent_prefixes": {
+          "type": "array",
+          "description": "The list of domain_prefix's to auto populate rules that matches from .spec.rules"
+        }
+      },
+      "required": [
+        "domain",
+        "alias",
+        "certificate_reference"
+      ]
+    }
+  }
+}

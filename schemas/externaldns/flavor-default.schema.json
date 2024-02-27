@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced externaldns Schema",
+  "properties": {
+    "externaldns": {
+      "type": "object",
+      "description": "Advanced values for externaldns module",
+      "properties": {
+        "values": {
+          "type": "object",
+          "description": "The chart values that can be passed based on this `https://github.com/bitnami/charts/blob/main/bitnami/external-dns/values.yaml`"
+        },
+        "version": {
+          "type": "string",
+          "description": "The version of the chart that needs to be used",
+          "default": "6.28.5"
+        },
+        "cleanup_on_fail": {
+          "type": "boolean",
+          "description": "if the chart fails for some reason, do u want to clean up all the ones that are installed",
+          "default": true
+        },
+        "namespace": {
+          "type": "string",
+          "description": "The namespace where you want to install the dns chart"
+        },
+        "wait": {
+          "type": "boolean",
+          "description": "Do you want terraform to wait until the chart is fully installed",
+          "default": false
+        },
+        "timeout": {
+          "type": "integer",
+          "description": "The version of the chart that needs to be used",
+          "default": 300
+        }
+      }
+    }
+  }
+}

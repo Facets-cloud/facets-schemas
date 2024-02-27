@@ -1,116 +1,354 @@
-# Introduction
-Prometheus configuration intends to configure kube-prometheus-stack in the Facets environment.
+Schema for Prometheus
 
 ## Properties
 
-| Property                | Type                | Required | Description                                                                                                                          |
-|-------------------------|---------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `kind`                  | string              | **Yes**  | Describes the type of resource. Possible values are: `configuration`.                                                                |
-| `for`                   | string              | **Yes**  | Possible values are: `prometheus`.                                                                                                   |
-| `metadata`              | [object](#metadata) | **Yes**  | Metadata related to the resource.                                                                                                    |
-| `spec`                  | [object](#spec)     | **Yes**  |                                                                                                                                      |
-| `version`               | string              | **Yes**  | This field can be used to pin to a particular version. Possible values are: `0.1`, `latest`.                                         |
-| `advanced`              | [object](#advanced) | No       | Advanced Prometheus Schema.                                                                                                          |
-| `depends_on`            |                     | No       | Dependencies on other resources. e.g., application x may depend on MySQL.                                                            |
-| `disabled`              | boolean             | No       | Flag to disable the resource.                                                                                                        |
-| `lifecycle`             | string              | No       | Describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`). Possible values are: `ENVIRONMENT_BOOTSTRAP`. |
-| `conditional_on_intent` | string              | No       | Defining the resource dashboard is dependent on for implementation. e.g., for a resource of kind redis, value would be "redis".      |
+| Property   | Type                | Required | Description                                                                                                                                                    |
+|------------|---------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `spec`     | [object](#spec)     | **Yes**  |                                                                                                                                                                |
+| `advanced` | [object](#advanced) | No       | Advanced block of the Prometheus configuration                                                                                                                 |
+| `flavor`   | string              | No       | Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc. Possible values are: `default`, `victoria_metrics`. |
 
-## Spec
+## advanced
+
+Advanced block of the Prometheus configuration
 
 ### Properties
 
-| Property              | Type                           | Required | Description                            |
-|-----------------------|--------------------------------|----------|----------------------------------------|
-| `alertmanager`        | [object](#Alertmanager)        | **Yes**  | Specifications for alertmanager        |
-| `grafana`             | [object](#Grafana)             | **Yes**  | Specifications for grafana             |
-| `prometheus-operator` | [object](#Prometheus Operator) | **Yes**  | Specifications for prometheus operator |
-| `pushgateway`         | [object](#Pushgateway)         | **Yes**  | Specifications for pushgateway         |
-| `prometheus`          | [object](#Prometheus)          | **Yes**  | Specifications for prometheus          |
-| `diskSize`            | string                         | **No**   | Disk Size of prometheus                |
+| Property                     | Type                                  | Required | Description                                                                                                                                           |
+|------------------------------|---------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `enable_host_anti_affinty`   | boolean                               | No       | Enable if you want to spread victoria metrics pods across different nodes, should only be enabled when flavor is victoria_metrics and mode is cluster |
+| `enable_migration`           | boolean                               | No       | Enable if you want to migrate existing prometheus data to victoria_metrics. this should be only enabled when flavor is victoria_metrics               |
+| `kube-prometheus-stack`      | [object](#kube-prometheus-stack)      | No       | Advanced values of kube-prometheus-stack                                                                                                              |
+| `pushgateway`                | [object](#pushgateway)                | No       | Advanced values of pushgateway                                                                                                                        |
+| `victoria-metrics-k8s-stack` | [object](#victoria-metrics-k8s-stack) | No       | Advanced values of victoria-metrics-k8s-stack                                                                                                         |
 
-### Alertmanager
+### kube-prometheus-stack
 
-Specifications for Alertmanager
+Advanced values of kube-prometheus-stack
 
-| Property | Type   | Required | Description                                                                              |
-| -- | ------ | -------- | ---------------------------------------------------------------------------------------- |
-| `size` | [object](#size) | **Yes**  | Sizing Requests.              |
-| `receivers` | [object](#Size) | **Yes**  | Receivers for alertmanager. |
+#### Properties
 
-### Grafana
+| Property | Type              | Required | Description                                                                                                       |
+|----------|-------------------|----------|-------------------------------------------------------------------------------------------------------------------|
+| `values` | [object](#values) | No       | Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack |
 
-Specifications for Grafana
+#### values
 
-| Property | Type   | Required | Description                                                                              |
-| -- | ------ | -------- | ---------------------------------------------------------------------------------------- |
-| `size` | [object](#size) | **Yes**  | Sizing Requests.              |
-| `additionalDataSources` | [object](#Additional DataSources) | **No**  | Additional datasource's for Grafana. |
+Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
 
-### Prometheus Operator
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
 
-Specifications for Prometheus Operator
+### pushgateway
 
-| Property | Type   | Required | Description                                                                              |
-| -- | ------ | -------- | ---------------------------------------------------------------------------------------- |
-| `size` | [object](#size) | **Yes**  | Sizing Requests.              |
+Advanced values of pushgateway
 
-### Pushgateway
+#### Properties
 
-Specifications for Pushgateway
+| Property | Type              | Required | Description                                                                                                        |
+|----------|-------------------|----------|--------------------------------------------------------------------------------------------------------------------|
+| `values` | [object](#values) | No       | Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-pushgateway |
 
-| Property | Type   | Required | Description                                                                              |
-| -- | ------ | -------- | ---------------------------------------------------------------------------------------- |
-| `size` | [object](#size) | **Yes**  | Sizing Requests.              |
+#### values
 
-### Prometheus
+Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-pushgateway
 
-Specifications for Prometheus
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
 
-| Property | Type   | Required | Description                                                                              |
-| -- | ------ | -------- | ---------------------------------------------------------------------------------------- |
-| `size` | [object](#size) | **Yes**  | Sizing Requests.              |
+### victoria-metrics-k8s-stack
 
-#### size
+Advanced values of victoria-metrics-k8s-stack
 
-Sizing Requests
+#### Properties
 
-| Property         | Type    | Required | Description                                                                                                                           |
-|------------------|---------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `cpu`            | string  | No       | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
-| `memory`         | string  | No       | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| Property | Type              | Required | Description                                                                                                                                |
+|----------|-------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `values` | [object](#values) | No       | Helm values as per the helm chart https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-k8s-stack/values.yaml |
+
+#### values
+
+Helm values as per the helm chart https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-k8s-stack/values.yaml
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+
+## spec
+
+### Properties
+
+| Property              | Type                           | Required | Description                                                                                                                                             |
+|-----------------------|--------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `alertmanager`        | [object](#alertmanager)        | **Yes**  | Alertmanager specifications                                                                                                                             |
+| `grafana`             | [object](#grafana)             | **Yes**  | Grafana specifications                                                                                                                                  |
+| `prometheus`          | [object](#prometheus)          | **Yes**  | Prometheus specifications                                                                                                                               |
+| `pushgateway`         | [object](#pushgateway)         | **Yes**  | Pushgateway specifications                                                                                                                              |
+| `diskSize`            | string                         | No       | Size of the prometheus PV                                                                                                                               |
+| `mode`                | string                         | No       | if the flavor is victoria_metrics, you can choose your mode of installation. either standalone or cluster Possible values are: `cluster`, `standalone`. |
+| `prometheus-operator` | [object](#prometheus-operator) | No       | Prometheus Operator specifications                                                                                                                      |
+| `vmagent`             | [object](#vmagent)             | No       | vmalert specifications                                                                                                                                  |
+| `vmalert`             | [object](#vmalert)             | No       | vmalert specifications                                                                                                                                  |
+| `vminsert`            | [object](#vminsert)            | No       | vminsert specifications                                                                                                                                 |
+| `vmselect`            | [object](#vmselect)            | No       | vmselect specifications                                                                                                                                 |
+| `vmsingle`            | [object](#vmsingle)            | No       | vmsingle specifications                                                                                                                                 |
+| `vmstorage`           | [object](#vmstorage)           | No       | vmstorage specifications                                                                                                                                |
+
+### alertmanager
+
+Alertmanager specifications
+
+#### Properties
+
+| Property    | Type                 | Required | Description                |
+|-------------|----------------------|----------|----------------------------|
+| `receivers` | [object](#receivers) | No       | Receivers for alertmanager |
+| `size`      | [object](#size)      | No       | Size of alertmanager pod   |
 
 #### receivers
 
-Receivers can have multiple receivers configured for Alertmanager. Each receivers block is defined with the structure below. 
+Receivers for alertmanager
 
-| Property        | Type    | Required | Description                                                |
-|-----------------|---------|----------|------------------------------------------------------------|
-| `url`           | string  | Yes      | URL of the receiver.                                       |
-| `send_resolved` | boolean | No       | Flag to determine whether to notify about resolved alerts. |
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
 
-#### Additional DataSources
+#### size
 
-This block can configure multiple datasources in Grafana. Each datasource block is defined with the structure below. Please note that Prometheus is already configured as the `default` datasource.
+Size of alertmanager pod
 
-| Property   | Type    | Required | Description                                            |
-|------------|---------|----------|--------------------------------------------------------|
-| `name`     | string  | Yes      | Name of the datasource.                                |
-| `access`   | string  | No       | Type of access for the datasource.                     |
-| `editable` | boolean | Yes      | Flag indicating whether the datasource is editable.    |
-| `jsonData` | object  | Yes      | Additional JSON data for the datasource configuration. |
-| `orgId`    | integer | Yes      | Organization ID associated with the datasource.        |
-| `type`     | string  | Yes      | Type of the datasource.                                |
-| `url`      | string  | Yes      | URL of the datasource.                                 |
-| `version`  | integer | Yes      | Version of the datasource.                             |
+##### Properties
 
-## Advanced
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
 
-Advanced Prometheus Schema
+### grafana
 
-### Properties
+Grafana specifications
 
-| Property                       | Type   | Required | Description                                                                                                              |
-| ------------------------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `kube-prometheus-stack.values` | object | No       | Helm values for [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack).  |
-| `pushgateway.values`            | object | No       | The advanced options for [pushgateway](https://artifacthub.io/packages/helm/prometheus-community/prometheus-pushgateway). |
+#### Properties
+
+| Property                | Type                             | Required | Description              |
+|-------------------------|----------------------------------|----------|--------------------------|
+| `additionalDataSources` | [object](#additionaldatasources) | No       | Additional data sources  |
+| `size`                  | [object](#size)                  | No       | Size of alertmanager pod |
+
+#### additionalDataSources
+
+Additional data sources
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+
+#### size
+
+Size of alertmanager pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### prometheus
+
+Prometheus specifications
+
+#### Properties
+
+| Property  | Type            | Required | Description                                |
+|-----------|-----------------|----------|--------------------------------------------|
+| `enabled` | boolean         | No       | you want prometheus to be enabled/disabled |
+| `size`    | [object](#size) | No       | Size of alertmanager pod                   |
+
+#### size
+
+Size of alertmanager pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### prometheus-operator
+
+Prometheus Operator specifications
+
+#### Properties
+
+| Property | Type            | Required | Description              |
+|----------|-----------------|----------|--------------------------|
+| `size`   | [object](#size) | No       | Size of alertmanager pod |
+
+#### size
+
+Size of alertmanager pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### pushgateway
+
+Pushgateway specifications
+
+#### Properties
+
+| Property | Type            | Required | Description              |
+|----------|-----------------|----------|--------------------------|
+| `size`   | [object](#size) | No       | Size of alertmanager pod |
+
+#### size
+
+Size of alertmanager pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### vmagent
+
+vmalert specifications
+
+#### Properties
+
+| Property | Type            | Required | Description         |
+|----------|-----------------|----------|---------------------|
+| `size`   | [object](#size) | No       | Size of vmagent pod |
+
+#### size
+
+Size of vmagent pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### vmalert
+
+vmalert specifications
+
+#### Properties
+
+| Property | Type            | Required | Description         |
+|----------|-----------------|----------|---------------------|
+| `size`   | [object](#size) | No       | Size of vmalert pod |
+
+#### size
+
+Size of vmalert pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### vminsert
+
+vminsert specifications
+
+#### Properties
+
+| Property | Type            | Required | Description          |
+|----------|-----------------|----------|----------------------|
+| `size`   | [object](#size) | No       | Size of vminsert pod |
+
+#### size
+
+Size of vminsert pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### vmselect
+
+vmselect specifications
+
+#### Properties
+
+| Property | Type            | Required | Description          |
+|----------|-----------------|----------|----------------------|
+| `size`   | [object](#size) | No       | Size of vmselect pod |
+
+#### size
+
+Size of vmselect pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### vmsingle
+
+vmsingle specifications
+
+#### Properties
+
+| Property | Type            | Required | Description          |
+|----------|-----------------|----------|----------------------|
+| `size`   | [object](#size) | No       | Size of vmsingle pod |
+
+#### size
+
+Size of vmsingle pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+
+### vmstorage
+
+vmstorage specifications
+
+#### Properties
+
+| Property | Type            | Required | Description           |
+|----------|-----------------|----------|-----------------------|
+| `size`   | [object](#size) | No       | Size of vmstorage pod |
+
+#### size
+
+Size of vmstorage pod
+
+##### Properties
+
+| Property | Type   | Required | Description                                                                                                                           |
+|----------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | string | **Yes**  | CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu       |
+| `memory` | string | **Yes**  | Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory |
+| `volume` | string | No       | Volume request in kubernetes persistent volumes                                                                                       |
+

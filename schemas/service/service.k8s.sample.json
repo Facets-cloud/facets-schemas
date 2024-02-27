@@ -1,6 +1,6 @@
 {
     "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json",
-    "flavor": "default",
+    "flavor": "k8s",
     "metadata": {
         "labels": {
         }

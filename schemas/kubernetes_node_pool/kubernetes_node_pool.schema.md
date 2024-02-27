@@ -61,6 +61,7 @@ Output given by the resource for others to refer.
 
 ### flavor
 
-- [aks_nodepool](nodepool.aks.schema.md)
+- [aks_nodepool](kubernetes_node_pool.aks.schema.md)
 - [eks-managed](nodepool.eks-managed.schema.md)
 - [eks-self-managed](nodepool.eks-self-managed.schema.md)
+- [gke_node_pool](kubernetes_node_pool.gke_node_pool.schema.md)

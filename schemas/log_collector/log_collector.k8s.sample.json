@@ -1,7 +1,7 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/log-collector/log-collector.schema.json",
   "kind": "log_collector",
-  "flavor": "loki",
+  "flavor": "k8s",
   "version": "latest",
   "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": true,

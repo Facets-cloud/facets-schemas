@@ -9,6 +9,32 @@
         "$ref": "#/$defs/specDef"
       },
       {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "tcp_lb"
+            ],
+            "description": "Describes the type of resource."
+          },
+          "flavor": {
+            "type": "string",
+            "enum": [
+              "nlb"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "0.1",
+              "latest"
+            ],
+            "description": "This field can be used to pin to a particular version"
+          }
+        }
+      },
+      {
         "$ref": "#/$defs/outDef"
       }
     ],

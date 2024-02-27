@@ -15,21 +15,29 @@
       "http-check": {
         "url": "https://www.google.com",
         "method": "GET",
-        "expected_status_code": "200"
+        "expected_status_code": "200",
+        "disabled": false
       }
     },
     "mongo": {
       "mongo-check" : {
+        "disabled": false,
+        "url": "mongodb://localhost:27017"
+      },
+      "mongo-check2" : {
+        "disabled": false,
         "url": "mongodb://localhost:27017"
       }
     },
     "redis": {
       "redis-check": {
+        "disabled": false,
         "url": "redis://localhost:6379"
       }
     },
     "tcp": {
       "tcp-check" : {
+        "disabled": false,
         "url": "google.com:443"
       }
     }

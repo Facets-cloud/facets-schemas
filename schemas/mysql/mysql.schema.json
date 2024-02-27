@@ -25,7 +25,8 @@
             "aurora",
             "cloudsql",
             "rds",
-            "flexible_server"
+            "flexible_server",
+            "k8s"
           ]
         },
         "version": {

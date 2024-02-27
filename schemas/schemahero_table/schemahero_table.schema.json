@@ -32,7 +32,7 @@
         },
         "flavor": {
           "type": "string",
-          "enum": ["default"],
+          "enum": ["default","k8s"],
           "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
         }
       }

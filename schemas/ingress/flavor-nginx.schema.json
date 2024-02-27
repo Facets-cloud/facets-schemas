@@ -21,6 +21,11 @@
         "enable-underscores-in-headers": {
           "type": "boolean",
           "description": "Enables underscores in header names"
+        },
+        "renew_cert_before": {
+          "type": "string",
+          "description": "configures number of hours before cert manager renews a certificate. Default value is 720hrs (30 days). Entered duration must be parseable by go's time.ParseDuration method. see https://pkg.go.dev/time#ParseDuration",
+          "pattern": "^(\\d+(ms|ns|us|µs|ms|s|m|h))+$"
         }
       }
     }
