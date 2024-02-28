@@ -56,11 +56,6 @@
             cp -R ../capillary-cloud-tf/docs/README.md README.md
             echo "Updating schema-metadata.json"
             cp -R ../schema-metadata.json schema-metadata.json
-            # Copying LB dependencies
-            cp -R ../capillary-cloud-tf/docs/schemas/loadbalancer/ingress.schema.json schemas/loadbalancer/loadbalancer.schema.json
-            cp -R ../capillary-cloud-tf/docs/schemas/loadbalancer/ingress.aws_alb.sample.json schemas/loadbalancer/loadbalancer.aws_alb.sample.json
-            cp -R ../capillary-cloud-tf/docs/schemas/loadbalancer/ingress.gcp_alb.sample.json schemas/loadbalancer/loadbalancer.gcp_alb.sample.json
-            echo "Copied LB dependencies"
         - name: Set Git identity
           run: |
             cd target
