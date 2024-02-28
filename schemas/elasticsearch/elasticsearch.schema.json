@@ -95,6 +95,14 @@
           "additionalProperties": false,
           "allOf": [
             {
+              "properties": {
+                "http_endpoint": {
+                  "type": "string",
+                  "description": "The connection_string/http_endpoint to use when connecting to the datastore."
+                }
+              }
+            },
+            {
               "$ref": "#/$defs/specDef"
             },
             {

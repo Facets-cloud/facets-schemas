@@ -60,6 +60,11 @@
                 "^[a-zA-Z0-9_.-]*$": {
                   "description" : "This is the name of the http check that you have to specify",
                   "properties": {
+                    "disabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "enable or disable the check"
+                    },
                     "url": {
                       "type": "string",
                       "description": "The URL of the service.",
@@ -116,6 +121,11 @@
                   "description" : "This is the name of the redis check that you have to specify",
                   "type": "object",
                   "properties": {
+                    "disabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "enable or disable the check"
+                    },
                     "url": {
                       "type": "string",
                       "description": "The URL / Connection string of the redis service.",
@@ -142,13 +152,20 @@
                   "description" : "This is the name of the mongo check that you have to specify",
                   "type": "object",
                   "properties": {
-                    "type": "string",
-                    "description": "The URL / Connection string of the mongo service.",
-                    "format": "uri",
-                    "examples": [
-                      "mongodb://localhost:27017"
-                    ],
-                    "pattern": "^(mongodb\\:\\/\\/|mongodb\\+srv\\:\\/\\/)\\w+"
+                    "disabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "enable or disable the check"
+                    },
+                    "url":{
+                      "type": "string",
+                      "description": "The URL / Connection string of the mongo service.",
+                      "format": "uri",
+                      "examples": [
+                        "mongodb://localhost:27017"
+                      ],
+                      "pattern": "^(mongodb\\:\\/\\/|mongodb\\+srv\\:\\/\\/)\\w+"
+                    }
                   },
                   "required": [
                     "url"
@@ -166,16 +183,24 @@
                   "description" : "This is the name of the mongo check that you have to specify",
                   "type": "object",
                   "properties": {
-                    "type": "string",
-                    "description": "The URL of the tcp service.",
-                    "format": "uri",
-                    "examples": [
-                      "localhost:8080", "github.com:443"
-                    ]
+                    "disabled": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "enable or disable the check"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The URL of the tcp service.",
+                      "format": "uri",
+                      "examples": [
+                        "localhost:8080", "github.com:443"
+                      ]
+                    }
                   },
                   "required": [
                     "url"
                   ]
+                  
                 }
               }
             }

@@ -1,0 +1,19 @@
+{
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/prometheus/prometheus.schema.json",
+    "kind": "configuration",
+    "version": "0.1",
+    "flavor": "default",
+    "metadata": {},
+    "spec": {
+        "alertmanager": {},
+        "prometheus": {},
+        "pushgateway": {},
+        "grafana": {},
+        "prometheus-operator": {}
+    },
+    "advanced": {
+        "kube-prometheus-stack": {},
+        "pushgateway": {}
+    }
+
+}

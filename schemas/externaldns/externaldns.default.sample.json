@@ -1,0 +1,21 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/externaldns/externaldns.schema.json",
+  "kind": "externaldns",
+  "flavor": "dafault",
+  "version": "latest",
+  "lifecycle": "ENVIRONMENT",
+  "disabled": true,
+  "provided": false,
+  "depends_on": [],
+  "metadata": {
+    "name": "test-externaldns"
+  },
+  "spec": {
+    "provider": "aws",
+    "domains": [
+      "abc.com"
+    ],
+    "aws": {
+    }
+  }
+}

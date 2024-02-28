@@ -1,6 +1,7 @@
 {
-  "kind": "alert_group",
-	"flavor": "loki",
+	"$schema": "https://facets-cloud.github.io/facets-schemas/schemas/loki_alerting_rules/loki_alerting_rules.schema.json", 
+  "kind": "loki_alerting_rules",
+	"flavor": "k8s",
   "version": "0.1",
   "disabled": true,
 	"lifecycle": "ENVIRONMENT",

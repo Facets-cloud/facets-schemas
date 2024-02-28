@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+     "type": "object",
+     "properties": {
+       "kind": {
+         "type": "string",
+         "enum": [
+           "gcp_iam_role"
+         ]
+       },
+       "flavor": {
+         "type": "string",
+         "enum": [
+           "default"
+         ]
+       },
+       "version": {
+         "type": "string",
+         "enum": [
+           "0.1", "latest"
+         ]
+       }
+     }
+   },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "$ref": "#/$defs/outDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "role_id": {
+              "type": "string"
+            },
+            "stage": {
+              "type": "string"
+            },
+            "base_roles": {
+              "type": "array",
+              "items": []
+            },
+            "permissions": {
+              "type": "array",
+              "items": []
+            },
+            "excluded_permissions": {
+              "type": "array",
+              "items": {}
+            },
+            "title": {
+              "type": "string"
+            }
+          },
+          "anyOf": [
+            {
+              "required": ["base_roles"]
+            },
+            {
+              "required": ["permissions"]
+            }
+          ]
+        }
+      }
+    },
+    "outDef": {
+      "type": "object",
+      "properties": {
+        "out": {
+           "type": "object",
+           "description": "The output for the gcp iam role",
+           "properties": {
+            "role_id": {
+              "type": "string"
+            }
+           },
+          "required": []
+        }
+      }
+    }
+  }
+}

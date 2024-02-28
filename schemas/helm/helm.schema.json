@@ -9,7 +9,11 @@
     },
     "flavor": {
       "description": "Flavor for the Helm chart implementation, always set to 'default'",
-      "const": "default"
+      "type": "string",
+      "enum": [
+        "default",
+        "k8s"
+      ]
     },
     "spec": {
       "description": "Specification of the Helm chart intent",

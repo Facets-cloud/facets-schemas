@@ -11,6 +11,16 @@
     },
     {
       "$ref": "#/$defs/advancedDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+          "enum": ["default", "victoria_metrics"]
+        }
+      }
     }
   ],
   "required": [
@@ -26,14 +36,16 @@
         "spec": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "alertmanager",
-            "grafana",
-            "prometheus-operator",
-            "pushgateway",
-            "prometheus"
-          ],
+          "required": ["alertmanager", "grafana", "pushgateway", "prometheus"],        
           "properties": {
+            "mode": {
+              "type": "string",
+              "description": "if the flavor is victoria_metrics, you can choose your mode of installation. either standalone or cluster",
+              "enum": [
+                "cluster", "standalone"
+              ],
+              "default": "standalone"
+            },
             "diskSize": {
               "type": "string",
               "description": "Size of the prometheus PV"
@@ -106,9 +118,110 @@
               "type": "object",
               "description": "Prometheus specifications",
               "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "you want prometheus to be enabled/disabled",
+                  "default": true
+                },
                 "size": {
                   "type": "object",
                   "description": "Size of alertmanager pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "vmsingle": {
+              "type": "object",
+              "description": "vmsingle specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of vmsingle pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "vmalert": {
+              "type": "object",
+              "description": "vmalert specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of vmalert pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "vmselect": {
+              "type": "object",
+              "description": "vmselect specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of vmselect pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "vmstorage": {
+              "type": "object",
+              "description": "vmstorage specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of vmstorage pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "vminsert": {
+              "type": "object",
+              "description": "vminsert specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of vminsert pod",
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "$ref": "../../traits/size-k8s.schema.json"
+                    }
+                  ]
+                }
+              }
+            },
+            "vmagent": {
+              "type": "object",
+              "description": "vmalert specifications",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "description": "Size of vmagent pod",
                   "allOf": [
                     {
                       "type": "object",
@@ -161,6 +274,16 @@
           "type": "object",
           "description": "Advanced block of the Prometheus configuration",
           "properties": {
+            "enable_migration": {
+              "type": "boolean",
+              "description": "Enable if you want to migrate existing prometheus data to victoria_metrics. this should be only enabled when flavor is victoria_metrics",
+              "default": false
+            },
+            "enable_host_anti_affinty": {
+              "type": "boolean",
+              "description": "Enable if you want to spread victoria metrics pods across different nodes, should only be enabled when flavor is victoria_metrics and mode is cluster",
+              "default": false
+            },
             "kube-prometheus-stack": {
               "type": "object",
               "description": "Advanced values of kube-prometheus-stack",
@@ -168,6 +291,16 @@
                 "values": {
                   "type": "object",
                   "description": "Helm values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack"
+                }
+              }
+            },
+            "victoria-metrics-k8s-stack": {
+              "type": "object",
+              "description": "Advanced values of victoria-metrics-k8s-stack",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Helm values as per the helm chart https://github.com/VictoriaMetrics/helm-charts/blob/master/charts/victoria-metrics-k8s-stack/values.yaml"
                 }
               }
             },

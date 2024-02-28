@@ -39,8 +39,9 @@
         },
         "then": {
           "properties": {
-            "version": {
-              "const": "0.1"
+            "version":{
+              "type":"string",
+              "enum": ["0.1","0.2"]
             }
           }
         },
@@ -54,8 +55,9 @@
           },
           "then": {
             "properties": {
-              "version": {
-                "const": "0.2"
+              "version":{
+                "type":"string",
+                "enum": ["0.1","0.2"]
               }
             }
           },
@@ -69,8 +71,9 @@
             },
             "then": {
               "properties": {
-                "version": {
-                  "const": "0.2"
+                "version":{
+                  "type":"string",
+                  "enum": ["0.1","0.2"]
                 }
               }
             },

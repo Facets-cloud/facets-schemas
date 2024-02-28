@@ -47,7 +47,7 @@
            },
            "flavor":{
              "type":"string",
-             "enum": ["default"]
+             "enum": ["default","k8s"]
            },
            "version":{
              "type":"string",

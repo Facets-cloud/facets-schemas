@@ -1,0 +1,550 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
+          "enum": ["externaldns"]
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+          "enum": ["default"]
+        },
+        "version": {
+          "type": "string",
+          "description": "This field can be used to pin to a particular version",
+          "enum": ["0.1", "latest"]
+        },
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "flavor-default.schema.json"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "required": [
+            "provider", "domains"
+          ],
+          "properties": {
+            "provider": {
+              "type": "string",
+              "description": "DNS provider where the DNS records will be created",
+              "enum": [
+                "akamai","scaleway", "ns1", "ovh", "pdns", "civo", "alibabacloud", "aws", "azure", "cloudflare", "designate", "digitalocean", "google", "hetzner", "infoblox", "linode", "rfc2136", "transip", "oci", "exoscale"
+              ]
+            },
+            "domains": {
+              "type": "array",
+              "description": "The list of domains that you want to manage via externaldns"
+            },
+            "akamai": {
+              "type": "object",
+              "description": "The akamai configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with key `akamai_api_seret` defined."
+                },
+                "host": {
+                  "type": "string",
+                  "description": "Hostname to use for EdgeGrid auth"
+                },
+                "access_token": {
+                  "type": "string",
+                  "description": "Access Token to use for EdgeGrid auth"
+                },
+                "client_token": {
+                  "type": "string",
+                  "description": "Client Token to use for EdgeGrid auth"
+                },
+                "client_secret": {
+                  "type": "string",
+                  "description": "When using the Akamai provider, `AKAMAI_CLIENT_SECRET` to set"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["client_token", "access_token","client_secret"]
+                }
+              ]
+            },
+            "civo": {
+              "type": "object",
+              "description": "The civo configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with key 'apiToken' defined."
+                },
+                "api_token": {
+                  "type": "string",
+                  "description": "`CIVO_TOKEN` to set"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["api_token"]
+                }
+              ]
+            },
+            "exoscale": {
+              "type": "object",
+              "description": "The exoscale configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with keys `exoscale_api_key` and `exoscale_api_token` defined. This ignores exoscale.apiKey and exoscale.apiToken"
+                },
+                "api_token": {
+                  "type": "string",
+                  "description": "`EXTERNAL_DNS_EXOSCALE_APIKEY` to set"
+                },
+                "api_key": {
+                  "type": "string",
+                  "description": "`EXTERNAL_DNS_EXOSCALE_APISECRET` to set"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["api_token", "api_key"]
+                }
+              ]
+            },
+            "digitalocean": {
+              "type": "object",
+              "description": "The digitalocean configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with key `digitalocean_api_token` defined. This ignores api_token"
+                },
+                "api_token": {
+                  "type": "string",
+                  "description": "`DO_TOKEN` to set"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["api_token"]
+                }
+              ]
+            },
+            "hetzner": {
+              "type": "object",
+              "description": "The hetzner configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "When using the Hetzner provider, specify the existing secret which contains your token. Disables the usage of `hetzner.token` "
+                },
+                "token": {
+                  "type": "string",
+                  "description": "`specify your token here. (required when `hetzner.secret_name` is not provided. In this case a new secret will be created holding the token.) Mutually exclusive with `hetzner.secret_name`."
+                },
+                "secret_key": {
+                  "type": "string",
+                  "description": "When using the Hetzner provider with an existing secret, specify the key name"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["secret_key", "token"]
+                }
+              ]
+            },
+            "linode": {
+              "type": "object",
+              "description": "The linode configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with key `linode_api_token` defined. This ignores linode.api_token"
+                },
+                "api_token": {
+                  "type": "string",
+                  "description": "`LINODE_TOKEN` to set "
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["api_token"]
+                }
+              ]
+            },
+            "ns1": {
+              "type": "object",
+              "description": "The linode configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with key `ns1-api-key` defined. This ignores ns1.api_token"
+                },
+                "api_key": {
+                  "type": "string",
+                  "description": "specify the API key to use"
+                },
+                "min_ttl": {
+                  "type": "string",
+                  "description": "specify minimal TTL, as an integer, for records"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["api_key"]
+                }
+              ]
+            },
+            "scaleway": {
+              "type": "object",
+              "description": "The scaleway configurations that needs to be set",
+              "properties": {
+                "scw_access_key": {
+                  "type": "string",
+                  "description": "specify an existing access key. (required when provider=scaleway)"
+                },
+                "scw_secret_key": {
+                  "type": "string",
+                  "description": "specify an existing secret key. (required when provider=scaleway)"
+                }
+              },
+              "required": ["scw_secret_key", "scw_access_key"]
+            },
+            "transip": {
+              "type": "object",
+              "description": "The transip configurations that needs to be set",
+              "properties": {
+                "account": {
+                  "type": "string",
+                  "description": "specify the account name."
+                },
+                "api_key": {
+                  "type": "string",
+                  "description": "specify the API key to use."
+                }
+              },
+              "required": ["account", "api_key"]
+            },
+            "vinyldns": {
+              "type": "object",
+              "description": "The vinyldns configurations that needs to be set",
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "description": "specify the VinylDNS API host."
+                },
+                "access_key": {
+                  "type": "string",
+                  "description": "specify the Access Key to use."
+                },
+                "secret_key": {
+                  "type": "string",
+                  "description": "specify the Secret key to use."
+                }
+              },
+              "required": ["host", "access_key", "secret_key"]
+            },
+            "cloudflare": {
+              "type": "object",
+              "description": "The cloudflare configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "it's the name of the secret containing cloudflare_api_token or cloudflare_api_key."
+                },
+                "api_token": {
+                  "type": "string",
+                  "description": "`CF_API_TOKEN` to set "
+                },
+                "api_key": {
+                  "type": "string",
+                  "description": "`CF_API_KEY` to set"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "`CF_API_EMAIL` to set (optional). Needed when using CF_API_KEY"
+                },
+                "proxied": {
+                  "type": "boolean",
+                  "description": "enable the proxy feature (DDOS protection, CDN...)"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["api_token", "api_key"]
+                }
+              ]
+            },
+            "google": {
+              "type": "object",
+              "description": "The GOOGLE configurations that needs to be set",
+              "properties": {
+                "project": {
+                  "type": "string",
+                  "description": "specify the Google project (required when provider=google)"
+                },
+                "batch_change_size": {
+                  "type": "integer",
+                  "description": "set the maximum number of changes that will be applied in each batch",
+                  "default": 1000
+                },
+                "service_account_secret": {
+                  "type": "string",
+                  "description": "specify the existing secret which contains credentials.json"
+                },
+                "service_account_secret_key": {
+                  "type": "string",
+                  "description": "When using the Google provider with an existing secret, specify the key name"
+                },
+                "service_account_key": {
+                  "type": "string",
+                  "description": " specify the service account key JSON file. In this case a new secret will be created holding this service account"
+                },
+                "zone_visibility": {
+                  "type": "string",
+                  "description": "fiter for zones of a specific visibility (private or public)",
+                  "enum": [
+                    "public", "private"
+                  ]
+                }
+              },
+              "required": [
+                "project"
+              ]
+            },
+            "azure": {
+              "type": "object",
+              "description": "The AZURE configurations that needs to be set",
+              "properties": {
+                "secret_name": {
+                  "type": "string",
+                  "description": "Use an existing secret with key credentials defined, set the secret containing the `azure.json` file"
+                },
+                "cloud": {
+                  "type": "string",
+                  "description": "set the Azure Cloud"
+                },
+                "resource_group": {
+                  "type": "string",
+                  "description": "set the Azure Resource Group"
+                },
+                "tenant_id": {
+                  "type": "string",
+                  "description": "set the Azure Tenant ID"
+                },
+                "subscription_id": {
+                  "type": "string",
+                  "description": "set the Azure Subscription ID"
+                },
+                "aad_client_id": {
+                  "type": "string",
+                  "description": "set the Azure AAD Client ID"
+                },
+                "aad_client_secret": {
+                  "type": "string",
+                  "description": "set the Azure AAD Client Secret"
+                },
+                "use_workload_identity_extension": {
+                  "type": "boolean",
+                  "description": "set if you use Workload Identity extension."
+                },
+                "use_managed_identity_extension": {
+                  "type": "boolean",
+                  "description": "set if you use Azure MSI"
+                },
+                "user_assigned_identity_id": {
+                  "type": "string",
+                  "description": "set Client ID of Azure user-assigned managed identity (optional, otherwise system-assigned managed identity is used)"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": ["secret_name"]
+                },
+                {
+                  "required": ["resource_group", "tenant_id", "subscription_id", "aad_client_id", "aad_client_secret"]
+                }
+              ]
+            },
+            "aws": {
+              "type": "object",
+              "description": "The AWS configurations that needs to be set",
+              "properties": {
+                "credentials": {
+                  "type": "object",
+                  "description": "The aws credentials block where you define for externaldns",
+                  "properties": {
+                    "secret_access_key_id": {
+                      "type": "string",
+                      "description": "When using the AWS provider, set `aws_access_key_id` in the AWS credentials"
+                    },
+                    "secret_access_key": {
+                      "type": "string",
+                      "description": "When using the AWS provider, set `aws_secret_access_key` in the AWS credentials"
+                    },
+                    "mount_path": {
+                      "type": "string",
+                      "description": "When using the AWS provider, rootpath to check the aws creds",
+                      "default": "/.aws"
+                    },
+                    "secret_name": {
+                      "type": "string",
+                      "description": "Use an existing secret with key credentials defined."
+                    },
+                    "access_key_id_secret_ref": {
+                      "type": "object",
+                      "description": "Reference to where access key id is stored in the secret",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Define the name of the secret that stores aws_access_key_id."
+                        },
+                        "key": {
+                          "type": "string",
+                          "description": "Define the key of the secret that stores aws_access_key_id."
+                        }
+                      },
+                      "required": [
+                        "key", "name"
+                      ]
+                    },
+                    "secret_access_key_secret_ref": {
+                      "type": "object",
+                      "description": "Reference to where access key id is stored in the secret",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Define the name of the secret that stores aws_secret_access_key."
+                        },
+                        "key": {
+                          "type": "string",
+                          "description": "Define the key of the secret that stores aws_secret_access_key."
+                        }
+                      },
+                      "required": [
+                        "key", "name"
+                      ]
+                    }
+                  },
+                  "anyOf": [
+                    {
+                      "required": ["secret_name", "access_key_id_secret_ref", "secret_access_key_secret_ref"]
+                    },
+                    {
+                      "required": ["secret_access_key_id", "secret_access_key"]
+                    }
+                  ]
+                },
+                "region": {
+                  "type": "string",
+                  "description": "AWS_DEFAULT_REGION to set in the environment"
+                },
+                "zone_type": {
+                  "type": "string",
+                  "description": "Filter for zones of this type",
+                  "enum": [
+                    "public", "private"
+                  ]
+                },
+                "assume_role_arn": {
+                  "type": "string",
+                  "description": "Assume role by specifying --aws-assume-role to the external-dns daemon"
+                },
+                "role_arn": {
+                  "type": "string",
+                  "description": "Specify role ARN to the external-dns daemon"
+                },
+                "api_retries": {
+                  "type": "integer",
+                  "description": "Maximum number of retries for AWS API calls before giving up",
+                  "default": 3
+                },
+                "batch_change_size": {
+                  "type": "integer",
+                  "description": "set the maximum number of changes that will be applied in each batch",
+                  "default": 1000
+                },
+                "zones_cache_duration": {
+                  "type": "integer",
+                  "description": "If the list of Route53 zones managed by ExternalDNS doesn't change frequently, cache it by setting a TTL",
+                  "default": 0
+                },
+                "zone_tags": {
+                  "type": "array",
+                  "description": "Filter for zones with these tags"
+                },
+                "prefer_cname": {
+                  "type": "boolean",
+                  "description": "replaces Alias records with CNAME (options: true, false)"
+                },
+                "evaluate_target_health": {
+                  "type": "boolean",
+                  "description": "sets the evaluate target health flag (options: true, false)"
+                },
+                "dynamodb_table": {
+                  "type": "string",
+                  "description": "sets the DynamoDB table name to use for dynamodb registry"
+                },
+                "dynamodb_region": {
+                  "type": "string",
+                  "description": "sets the DynamoDB table region to use for dynamodb registry"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
