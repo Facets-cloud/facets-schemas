@@ -37,6 +37,37 @@
               }
             }
           }
+        },
+        "acl": {
+          "type": "object",
+          "description": "Acl for bucket objects",
+          "properties": {
+            "object_ownership": {
+              "type": "string",
+              "description": "bucket-level setting that controls ownership of objects uploaded to your bucket",
+              "enum": [
+                "BucketOwnerPreferred",
+                "ObjectWriter",
+                "BucketOwnerEnforced"
+              ]
+            },
+            "block_public_acls": {
+              "type": "boolean",
+              "description": "Whether s3 should block public acl"
+            },
+            "block_public_policy": {
+              "type": "boolean",
+              "description": "Whether s3 should block public bucket policies"
+            },
+            "ignore_public_acls": {
+              "type": "boolean",
+              "description": "Whether s3 should ignore public acls"
+            },
+            "restrict_public_buckets": {
+              "type": "boolean",
+              "description": "Whether s3 should restrict public bucket policies"
+            }
+          }
         }
       },
       "description": "Advance values of s3 as per the resource documentation https://registry.terraform.io/providers/hashicorp/aws/3.74.0/docs/resources/s3_bucket along with \"aws_s3_bucket_policy\" object for custom bucket policy"

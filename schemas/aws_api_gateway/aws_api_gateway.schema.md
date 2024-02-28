@@ -105,9 +105,6 @@ These are the maps of all authorizers that can be attached to the api gateway
 
 An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-
 #### cors
 
 The cross-origin resource sharing (CORS) configuration. Applicable for HTTP APIs.
@@ -151,9 +148,6 @@ An Amazon S3 URL that specifies the truststore for mutual TLS authentication as 
 #### tags
 
 A mapping of tags to assign to API gateway resources.
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
 
 #### vpc_links
 

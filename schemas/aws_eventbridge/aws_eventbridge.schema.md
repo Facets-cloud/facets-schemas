@@ -37,6 +37,11 @@ Specification as per resource types schema
 | `targets` | [list(object)](#targets) | **No**  |  The list of targets. |
 
 ## Targets
+
+EventBridge targets
+
+### Properties
+
 | Property           | Type   | Required | Description                                                                                                                                                                                                                              |
 | ------------------ | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `arn` | string | **No**  |  The arn of the target |
@@ -46,10 +51,19 @@ Specification as per resource types schema
 
 Advanced specifications 
 
+### Properties
+
 | Property           | Type   | Required | Description                                                                                                                                                                                                                              |
 | ------------------ | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `event_bus_name` | string | **No** | The name or ARN of the event bus to associate with the rule. If you omit this, the default event bus is used.           |
 
 
 ## Output 
+
+### Properties
+
 | Name            | Description                                                          | Datatype | Required |
 |-----------------|----------------------------------------------------------------------|----------|----------|
+|`rule_id`    | string | **No** | Event Rule ID                                          |
+|`rule_arn`   | srting | **No** | Event Rule ARN                                         |
+|`rule_name`  | string | **No** | Event Rule name                                        |

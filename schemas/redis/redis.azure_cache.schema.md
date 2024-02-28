@@ -13,8 +13,7 @@ Use the module [INPUT](https://registry.terraform.io/providers/hashicorp/azurerm
 {
     "advanced": {
         "azure_cache": {
-            "public_network_access_enabled": true
-        }
+            "public_network_access_enabled": "true"
     }
 }
 ```

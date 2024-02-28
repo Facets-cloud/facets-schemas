@@ -18,7 +18,7 @@
           "flavor": {
             "type": "string",
             "enum": [
-              "default"
+              "default","k8s"
             ],
             "description": "Implementation selector for the pvc resource. e.g. for a resource type k8s"
           },

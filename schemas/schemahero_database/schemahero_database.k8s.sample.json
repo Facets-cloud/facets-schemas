@@ -1,6 +1,6 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.schema.json",
-  "flavor": "default",
+  "flavor": "k8s",
   "kind": "schemahero_database",
   "metadata": {
     "name": "schemahero"

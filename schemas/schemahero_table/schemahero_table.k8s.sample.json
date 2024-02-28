@@ -1,6 +1,6 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.schema.json",
-  "flavor": "default",
+  "flavor": "k8s",
   "kind": "schemahero_table",
   "version": "0.1",
   "disabled": true,

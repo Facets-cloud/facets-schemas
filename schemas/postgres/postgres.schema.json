@@ -27,7 +27,9 @@
           "enum": [
             "cloudsql",
             "aurora",
-            "alloydb"
+            "alloydb",
+            "k8s",
+            "cloudsql_postgres"
           ],
           "description": "Implementation selector for the Postgres resource. e.g. for a resource type cloudsql or aurora."
         },
@@ -125,7 +127,19 @@
             "size": {
               "type": "object",
               "description": "Map containing necessary information for Reader and Writer. For aurora postgres sql, volume is not needed for reader and writer but required for cloudsql.",
-              "$ref": "../../traits/reader-writer-datastore-sizing.schema.json"
+              "allOf": [
+                {
+                  "$ref": "../../traits/reader-writer-datastore-sizing.schema.json"
+                },
+                {
+                  "type": "object",
+                  "patternProperties": {
+                    "reader" : {
+                      "$ref": "../../traits/multi-instance-datastore-sizing.schema.json"
+                    }
+                  }
+                }
+              ]
             }
           },
           "required": [

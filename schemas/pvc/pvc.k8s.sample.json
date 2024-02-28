@@ -1,8 +1,9 @@
 {
     "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.schema.json",
-    "flavor": "default",
+    "flavor": "k8s",
+    "version": "latest",
     "kind": "pvc",
-    "disabled": "false",
+    "disabled": "true",
     "metadata": {
         "name": "test-pvc"
     },

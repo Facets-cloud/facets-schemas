@@ -20,6 +20,7 @@
         "flavor": {
           "type": "string",
           "enum": [
+            "k8s",
             "loki",
             "loki_s3",
             "loki_blob"

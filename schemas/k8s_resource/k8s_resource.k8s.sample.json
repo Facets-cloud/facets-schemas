@@ -2,7 +2,7 @@
     "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.json",
     "kind": "k8s_resource",
     "metadata": {},
-    "flavor": "default",
+    "flavor": "k8s",
     "version": "latest",
     "disabled": true,
     "provided": false,

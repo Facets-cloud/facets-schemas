@@ -1,0 +1,200 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "allOf":[
+        {
+            "$ref":"../../traits/base.schema.json"
+        },
+        {
+            "type": "object",
+            "properties": {
+              "kind":{
+                "type":"string",
+                "description": "Describes the type of resource.",
+                "enum": ["alb"]
+              },
+              "flavor":{
+                "type":"string",
+                "description": "Implementation selector for the resource.",
+                "enum": ["default"]
+              },
+              "version":{
+                "type":"string",
+                "description": "This field can be used to pin to a particular version",
+                "enum": ["0.1"]
+              }
+            }
+          },
+          {
+             "$ref":"#/$defs/specDef"
+          },
+          {
+             "$ref": "#/$defs/outDef"
+          }
+    ],
+    "required": [
+        "kind",
+        "flavor",
+        "version",
+        "metadata",
+        "spec"
+    ],
+    "$defs": {
+        "specDef": {
+          "type": "object",
+          "properties": {
+            "spec": {
+              "type": "object",
+              "properties": {
+                "private": {
+                  "type": "boolean",
+                  "description": "Make this alb private"
+                },
+                "domains": {
+                  "$ref": "./domains.schema.json",
+                  "description": "The map of domain key to rules"
+                },
+                "rules": {
+                  "$ref": "./ingress-rules.schema.json",
+                  "description": "Objects of all alb rules"
+                },
+                "force_ssl_redirection": {
+                  "type": "boolean",
+                  "description": "Force SSL redirection from http to https"
+                }
+              },
+              "required": [
+                "private",
+                "rules",
+                "force_ssl_redirection"
+              ]
+            },
+            "advanced": {
+                "type": "object",
+                "properties": {
+                    "aws": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "alb": {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "description": "Add properties to change the behaviour of alb, supports all the properties coming from the [module](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb)",
+                                "properties": {
+                                    "default_target_group_arn": {
+                                        "type": "string",
+                                        "description": "Default ARN of the target group"
+                                    },
+                                    "subnets": {
+                                        "type": "list",
+                                        "description": "A list of subnets to associate with the load balancer. e.g. ['subnet-1a2b3c4d','subnet-1a2b3c4e','subnet-1a2b3c4f']"
+                                    },
+                                    "target_groups": {
+                                        "type": "object",
+                                        "description": "A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend_protocol, backend_port"
+                                    },
+                                    "http_tcp_listener": {
+                                        "type": "object",
+                                        "description": "A list of maps describing the HTTP listeners or TCP ports for this ALB. Required key/values: port, protocol. Optional key/values: target_group_index"
+                                    },
+                                    "drop_invalid_header_fields": {
+                                        "type": "boolean",
+                                        "description": "Indicates whether invalid header fields are dropped in application load balancers. Defaults to false."
+                                    },
+                                    "enable_deletion_protection": {
+                                        "type": "boolean",
+                                        "description": "If true, deletion of the load balancer will be disabled via the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to false."
+                                    },
+                                    "enable_http2": {
+                                        "type": "boolean",
+                                        "description": "Indicates whether HTTP/2 is enabled in application load balancers."
+                                    },
+                                    "enable_cross_zone_load_balancing": {
+                                        "type": "boolean",
+                                        "description": "Indicates whether cross zone load balancing should be enabled in application load balancers."
+                                    },
+                                    "idle_timeout": {
+                                        "type": "number",
+                                        "description": "The time in seconds that the connection is allowed to be idle."
+                                    },
+                                    "ip_address_type": {
+                                        "type": "string",
+                                        "description": "The type of IP addresses used by the subnets for your load balancer. The possible values are ipv4 and dualstack."
+                                    },
+                                    "listener_ssl_policy_default": {
+                                        "type": "string",
+                                        "description": "The security policy if using HTTPS externally on the load balancer. [See](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/elb-security-policy-table)"
+                                    },
+                                    "load_balancer_create_timeout": {
+                                        "type": "string",
+                                        "description": "Timeout value when creating the ALB."
+                                    },
+                                    "load_balancer_delete_timeout": {
+                                        "type": "string",
+                                        "description": "Timeout value when deleting the ALB."
+                                    },
+                                    "load_balancer_update_timeout": {
+                                        "type": "string",
+                                        "description": "Timeout value when updating the ALB."
+                                    },
+                                    "access_logs": {
+                                        "type": "object",
+                                        "description": "Map containing access logging configuration for load balancer."
+                                    },
+                                    "subnet_mapping": {
+                                        "type": "list",
+                                        "description": "A list of subnet mapping blocks describing subnets to attach to network load balancer"
+                                    },
+                                    "tags": {
+                                        "type": "object",
+                                        "description": "A map of tags to add to all resources"
+                                    },
+                                    "security_groups": {
+                                        "type": "list",
+                                        "description": "The security groups to attach to the load balancer. e.g. [\"sg-edcd9784\",\"sg-edcd9785\"]"
+                                    },
+                                    "enable_waf_fail_open": {
+                                        "type": "boolean",
+                                        "description": "Indicates whether to route requests to targets if lb fails to forward the request to AWS WAF"
+                                    },
+                                    "desync_mitigation_mode": {
+                                        "type": "string",
+                                        "description": "Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync."
+                                    },
+                                    "http_tcp_listener_rules": {
+                                        "type": "object",
+                                        "description": "A list of maps describing the Listener Rules for this ALB. Required key/values: actions, conditions. Optional key/values: priority, http_tcp_listener_index (default to http_tcp_listeners[count.index])"
+                                    } 
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+          }
+        },
+        "outDef": {
+            "type": "object",
+            "properties": {
+              "out": {
+                "type": "object",
+                "properties": {
+                  "interfaces": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "description": "The output for your alb module, this can be generated or provided",
+                    "patternProperties": {
+                      "^[a-zA-Z0-9_.-]*$": {
+                        "description": "This is the name of the output interface this can be any name depending on the domains block",
+                        "$ref": "../../traits/interface.schema.json"
+                      }
+                    }
+                  }
+                },
+                "required": []
+              }
+            }
+          }
+    }
+}

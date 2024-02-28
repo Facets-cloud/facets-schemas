@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../traits/base.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind":{
+          "type":"string",
+          "enum": ["loki_recording_rules"]
+        },
+        "flavor":{
+          "type":"string",
+          "enum": ["default","k8s"]
+        },
+        "version":{
+          "type":"string",
+          "enum": ["0.1", "latest"]
+        },
+        "conditional_on_intent":{
+          "type":"string"
+        }
+      }
+    },
+    {
+      "$ref": "#/$defs/specDef"
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "$defs": {
+    "specDef": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "rules": {
+              "type": "object",
+              "description": "Loki Recording rules allow you to run metric queries over your logs and derive a numeric aggregation from your logs, like calculating the number of requests over time from your NGINX access log then push it to prometheus server.",
+              "patternProperties": {
+                "^[a-zA-Z_:][a-zA-Z0-9_:]*$": {
+                  "type": "object",
+                  "description": "Specify recording rule name",
+                  "properties": {
+                    "expr": {
+                      "type": "string",
+                      "description": "Recording rule expression"
+                    },
+                    "disabled": {
+                      "type": "boolean",
+                      "description": "Enable/Disable recording rule"
+                    },
+                    "labels": {
+                      "type": "object",
+                      "description": "The `labels` clause allows specifying a set of additional labels to be attached to the recording rule metric.",
+                      "patternProperties": {
+                        "^[a-zA-Z0-9-_]*$": {
+                          "type": "string",
+                          "description": "Label value"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "expr"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
