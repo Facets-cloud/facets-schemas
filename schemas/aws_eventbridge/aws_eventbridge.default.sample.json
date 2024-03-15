@@ -1,19 +1,18 @@
 {
-    "provided": false,
-    "disabled": true,
-    "version": "0.1",
-    "metadata": {},
-    "flavor": "default",
-    "kind": "aws_eventbridge",
-    "spec": {
-        "rules": {
-            "TestRule": {
-                "is_enabled": true,
-                "schedule_expression": "rate(5 minutes)",
-                "description": "This rule is used for sqs queue",
-                "targets": []
-            }
-        }
-    },
-    "advanced": {}
+  "disabled": true,
+  "version": "0.1",
+  "metadata": {},
+  "flavor": "default",
+  "kind": "aws_eventbridge",
+  "spec": {
+    "rules": {
+      "TestRule": {
+        "is_enabled": true,
+        "schedule_expression": "rate(5 minutes)",
+        "description": "This rule is used for sqs queue",
+        "targets": []
+      }
+    }
+  },
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_eventbridge/aws_eventbridge.schema.json"
 }

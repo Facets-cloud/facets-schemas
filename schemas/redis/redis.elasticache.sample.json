@@ -1,20 +1,12 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json",
   "flavor": "elasticache",
-  "lifecycle": "ENVIRONMENT",
   "metadata": {
-    "name": "something",
     "tags": {
-      "name": "something"
-    }
-  },
-  "depends_on": [],
-  "advanced": {
-    "elasticache": {
+      "managed-by": "facets"
     }
   },
   "kind": "redis",
-  "provided": false,
   "disabled": true,
   "version": "0.1",
   "spec": {
@@ -23,12 +15,12 @@
     "persistence_enabled": false,
     "size": {
       "reader": {
-        "replica_count": 1,
+        "instance_count": 1,
         "instance": "cache.t3.micro"
       },
       "writer": {
         "instance": "cache.t3.micro",
-        "replica_count": 1
+        "instance_count": 1
       }
     }
   }

@@ -3,47 +3,137 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
-     "type": "object",
-     "properties": {
-       "kind": {
-         "type": "string",
-         "enum": [
-           "aws_iam_role"
-         ]
-       },
-       "flavor": {
-         "type": "string",
-         "enum": [
-           "default"
-         ]
-       },
-       "version": {
-         "type": "string",
-         "enum": [
-           "0.1", "latest"
-         ]
-       }
-     }
-   },
-    {
-      "$ref": "#/$defs/specDef"
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "aws_iam_role"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        }
+      }
     },
     {
-      "$ref": "#/$defs/outDef"
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
-  ],
-  "$defs": {
-    "specDef": {
       "type": "object",
       "properties": {
         "spec": {
@@ -53,94 +143,103 @@
               "type": "object",
               "description": "IRSA block which required to attach EKS OIDC to service accounts for allowing applications to get cloud credentials",
               "properties": {
-                "service_accounts":{
+                "service_accounts": {
                   "type": "object",
                   "additionalProperties": false,
                   "description": "the map of all service accounts that you want to attach IRSA",
                   "patternProperties": {
-                  "^[a-zA-Z0-9_.-]*$": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "description": "An arbitrary name given to the service account which is not used anywhere",
-                    "properties": {
-                      "name": {
-                        "type": "string",
-                        "description": "The name of the service account that you want to attach the role to with the trust relationship"
+                    "^[a-zA-Z0-9_.-]*$": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "description": "An arbitrary name given to the service account which is not used anywhere",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the service account that you want to attach the role to with the trust relationship"
                         }
                       }
                     }
                   }
                 },
-                "oidc_providers":{
+                "oidc_providers": {
                   "type": "object",
                   "additionalProperties": false,
                   "description": "the map of all OIDC arns that you want to attach IRSA",
                   "patternProperties": {
-                  "^[a-zA-Z0-9_.-]*$": {
-                    "type": "object",
-                    "minProperties": 1,
-                    "description": "An arbitrary name given to the OIDC provider which is not used anywhere",
-                    "properties": {
-                      "arn": {
-                        "type": "string",
-                        "description": "The arn of the OIDC that you want to attach the role to with the trust relationship"
+                    "^[a-zA-Z0-9_.-]*$": {
+                      "type": "object",
+                      "minProperties": 1,
+                      "description": "An arbitrary name given to the OIDC provider which is not used anywhere",
+                      "properties": {
+                        "arn": {
+                          "type": "string",
+                          "description": "The arn of the OIDC that you want to attach the role to with the trust relationship"
                         }
                       }
                     }
                   }
                 }
               },
-              "required": ["service_accounts"]
+              "required": [
+                "service_accounts"
+              ]
             },
-            "policies":{
+            "policies": {
               "type": "object",
               "additionalProperties": false,
               "description": "the map of all policies arns that you want to attach to the role",
               "patternProperties": {
-              "^[a-zA-Z0-9_.-]*$": {
-                "type": "object",
-                "minProperties": 1,
-                "description":"An arbitrary name given to the policies which is not used anywhere",
-                "properties": {
-                  "arn": {
-                    "type": "string",
-                    "description": "The arn of the polciy that you want to attach the role"
+                "^[a-zA-Z0-9_.-]*$": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "description": "An arbitrary name given to the policies which is not used anywhere",
+                  "properties": {
+                    "arn": {
+                      "type": "string",
+                      "description": "The arn of the polciy that you want to attach the role"
                     }
                   }
                 }
               }
             }
           },
-        "required": [
-          "policies"
-        ]
+          "required": [
+            "policies"
+          ]
         },
         "advanced": {
-           "type": "object",
-           "properties": {
-              "aws_iam_role": {
-                 "type": "object",
-                 "description": "The advanced section of all the aws iam role module"
-              }
-           }
+          "type": "object",
+          "properties": {
+            "aws_iam_role": {
+              "type": "object",
+              "description": "The advanced section of all the aws iam role module"
+            }
+          }
         }
       }
     },
-    "outDef": {
+    {
       "type": "object",
       "properties": {
         "out": {
-           "type": "object",
-           "description": "The output for the aws iam role",
-           "properties": {
+          "type": "object",
+          "description": "The output for the aws iam role",
+          "properties": {
             "irsa_iam_role_arn": {
               "type": "string",
               "description": "The ARN of the aws iam role which has the IRSA"
             }
-           },
+          },
           "required": []
         }
       }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }

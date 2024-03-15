@@ -60,11 +60,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             }
@@ -88,11 +88,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -107,11 +107,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -129,11 +129,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
@@ -188,11 +188,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             }
@@ -264,11 +264,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -355,11 +355,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -431,11 +431,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -585,11 +585,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             }
@@ -667,11 +667,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             }
@@ -742,18 +742,18 @@
                 "clouds": [
                     "azure"
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.loki_blob.sample.json",
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.loki_azure_blob.sample.json",
                 "name": [
-                    "loki_blob"
+                    "loki_azure_blob"
                 ],
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -771,11 +771,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -783,9 +783,9 @@
                 "clouds": [
                     "gcp"
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.loki_gcs.sample.json",
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.loki_gcp_gcs.sample.json",
                 "name": [
-                    "loki_gcs"
+                    "loki_gcp_gcs"
                 ],
                 "versions": [
                     {
@@ -798,18 +798,18 @@
                 "clouds": [
                     "aws"
                 ],
-                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.loki_s3.sample.json",
+                "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.loki_aws_s3.sample.json",
                 "name": [
-                    "loki_s3"
+                    "loki_aws_s3"
                 ],
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             }
@@ -1521,11 +1521,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.2"
                     }
                 ]
             }

@@ -2,9 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json",
   "flavor": "opensearch",
   "kind": "elasticsearch",
-  "metadata": {
-    "name": "elasticsearch"
-  },
+  "metadata": {},
   "spec": {
     "elasticsearch_version": "7.10",
     "size": {
@@ -13,6 +11,6 @@
       "volume": "100G"
     }
   },
-  "version":"latest",
-  "out": {}
+  "version": "latest",
+  "disabled": true
 }

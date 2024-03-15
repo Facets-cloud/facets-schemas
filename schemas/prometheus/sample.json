@@ -1,13 +1,10 @@
 {
-  "$schema": "./prometheus.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/prometheus/prometheus.schema.json",
   "kind": "configuration",
-  "provided": true,
   "for": "prometheus",
   "disabled": true,
   "version": "latest",
-  "metadata": {
-    "name": "prometheus"
-  },
+  "metadata": {},
   "spec": {
     "diskSize": "100G",
     "alertmanager": {
@@ -58,16 +55,6 @@
       "size": {
         "cpu": "100m",
         "memory": "1Gi"
-      }
-    }
-  },
-  "advanced": {
-    "kube-prometheus-stack": {
-      "values": {
-      }
-    },
-    "pushgateway": {
-      "values": {
       }
     }
   }

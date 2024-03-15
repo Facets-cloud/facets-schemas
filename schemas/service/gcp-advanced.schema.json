@@ -1,44 +1,47 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "iam": {
-          "type": "object",
-          "description": "This is the iam key where all iam permissions are attached for the deployment",
-          "additionalProperties":false,
-          "minProperties":1,
-          "patternProperties": {
-            "^[a-zA-Z0-9_.-]*$" : {
-                "description":"This is the name of the iam object that you are creating, it can be of any name",
-                "properties":{
-                    "role":{
-                        "type":"string",
-                        "description":"The id of the role that you want to attach to the deployment, you can check out this link on how to create roles in gcp https://cloud.google.com/iam/docs/creating-custom-roles#iam-custom-roles-get-metadata-console"
-                    },
-                    "condition": {
-                      "type": "object",
-                      "description": "IAM Condition to be attached to the role for further granularity.",
-                      "properties": {
-                        "expression": {
-                          "type": "string",
-                          "description": "Expression of the IAM condition."
-                        },
-                        "title": {
-                          "type": "string",
-                          "description": "Title of the IAM condition."
-                        },
-                        "description": {
-                          "type": "string",
-                          "description": "Description of the IAM condition."
-                        }
-                      },
-                      "required": ["expression"]
-                    }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "iam": {
+      "type": "object",
+      "description": "This is the iam key where all iam permissions are attached for the deployment",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-zA-Z0-9_.-]*$": {
+          "description": "This is the name of the iam object that you are creating, it can be of any name",
+          "properties": {
+            "role": {
+              "type": "string",
+              "description": "The id of the role that you want to attach to the deployment, you can check out this link on how to create roles in gcp https://cloud.google.com/iam/docs/creating-custom-roles#iam-custom-roles-get-metadata-console"
+            },
+            "condition": {
+              "type": "object",
+              "description": "IAM Condition to be attached to the role for further granularity.",
+              "properties": {
+                "expression": {
+                  "type": "string",
+                  "description": "Expression of the IAM condition."
                 },
-                "required": ["role"]
+                "title": {
+                  "type": "string",
+                  "description": "Title of the IAM condition."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the IAM condition."
+                }
+              },
+              "required": [
+                "expression"
+              ]
             }
-          }
+          },
+          "required": [
+            "role"
+          ]
         }
       }
+    }
   }
- 
+}

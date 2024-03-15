@@ -3,10 +3,7 @@
   "kind": "postgres_user",
   "flavor": "default",
   "version": "latest",
-  "provided": true,
-  "metadata": {
-    "name": "test-postgres-user"
-  },
+  "metadata": {},
   "spec": {
     "endpoint": "postgres:testPostgresPassword@test-postgresql.default.svc.cluster.local:5432",
     "permissions": {
@@ -24,6 +21,5 @@
       }
     }
   },
-  "advanced": {},
-  "out": {}
+  "disabled": true
 }

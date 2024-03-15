@@ -3,7 +3,111 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "object",
@@ -34,43 +138,6 @@
       }
     },
     {
-      "$ref": "#/$defs/specDef"
-    },
-    {
-      "$ref": "#/$defs/outDef"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "advanced": {
-          "type": "object",
-          "allOf": [
-            {
-              "$ref": "flavor-k8s.schema.json"
-            },
-            {
-              "$ref": "flavor-elasticache.schema.json"
-            },
-            {
-              "$ref": "flavor-memorystore.schema.json"
-            },
-            {
-              "$ref": "flavor-azure_cache.schema.json"
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
-  ],
-  "$defs": {
-    "specDef": {
       "type": "object",
       "properties": {
         "spec": {
@@ -91,7 +158,220 @@
             },
             "size": {
               "type": "object",
-              "$ref": "../../traits/reader-writer-datastore-sizing.schema.json"
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "title": "writer-reader-datastore-sizing",
+              "required": [
+                "writer"
+              ],
+              "properties": {
+                "writer": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ],
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[m]?$",
+                          "examples": [
+                            "1",
+                            "1000m"
+                          ]
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                          "examples": [
+                            "800Mi",
+                            "1.5Gi"
+                          ]
+                        },
+                        "cpu_limit": {
+                          "type": "string",
+                          "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[m]?$",
+                          "examples": [
+                            "1",
+                            "1000m"
+                          ]
+                        },
+                        "memory_limit": {
+                          "type": "string",
+                          "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                          "examples": [
+                            "800Mi",
+                            "1.5Gi"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "required": [
+                        "instance"
+                      ],
+                      "properties": {
+                        "instance": {
+                          "type": "string",
+                          "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+                          "minLength": 1,
+                          "pattern": "^[a-zA-Z0-9-.]+$",
+                          "examples": [
+                            "t2.micro",
+                            "Standard_DS1_v2",
+                            "n1-standard-2",
+                            "db.m5.large",
+                            "db.r5.large",
+                            "db.t3.medium",
+                            "db-n1-standard-1",
+                            "db-f1-micro"
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "properties": {
+                    "volume": {
+                      "type": "string",
+                      "description": "The size of the volume. e.g '10G' or '5Gi'",
+                      "minLength": 1,
+                      "pattern": "^[0-9]+[a-zA-Z]$",
+                      "examples": [
+                        "10G",
+                        "5Gi"
+                      ]
+                    }
+                  }
+                },
+                "reader": {
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "type": "object",
+                  "required": [
+                    "instance_count"
+                  ],
+                  "properties": {
+                    "instance_count": {
+                      "type": "integer",
+                      "description": "The number of instances to create.",
+                      "minimum": 1
+                    },
+                    "replica_count": {
+                      "type": "integer",
+                      "description": "[Deprecated] The number of instances to create.",
+                      "minimum": 1
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "cpu",
+                            "memory"
+                          ],
+                          "properties": {
+                            "cpu": {
+                              "type": "string",
+                              "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[m]?$",
+                              "examples": [
+                                "1",
+                                "1000m"
+                              ]
+                            },
+                            "memory": {
+                              "type": "string",
+                              "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                              "examples": [
+                                "800Mi",
+                                "1.5Gi"
+                              ]
+                            },
+                            "cpu_limit": {
+                              "type": "string",
+                              "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[m]?$",
+                              "examples": [
+                                "1",
+                                "1000m"
+                              ]
+                            },
+                            "memory_limit": {
+                              "type": "string",
+                              "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                              "examples": [
+                                "800Mi",
+                                "1.5Gi"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "instance"
+                          ],
+                          "properties": {
+                            "instance": {
+                              "type": "string",
+                              "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-.]+$",
+                              "examples": [
+                                "t2.micro",
+                                "Standard_DS1_v2",
+                                "n1-standard-2",
+                                "db.m5.large",
+                                "db.r5.large",
+                                "db.t3.medium",
+                                "db-n1-standard-1",
+                                "db-f1-micro"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "properties": {
+                        "volume": {
+                          "type": "string",
+                          "description": "The size of the volume. e.g '10G' or '5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[a-zA-Z]$",
+                          "examples": [
+                            "10G",
+                            "5Gi"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
             }
           },
           "required": [
@@ -103,7 +383,7 @@
         }
       }
     },
-    "outDef": {
+    {
       "type": "object",
       "properties": {
         "out": {
@@ -111,21 +391,361 @@
           "additionalProperties": false,
           "allOf": [
             {
-              "$ref": "#/$defs/specDef"
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "authenticated": {
+                      "type": "boolean",
+                      "definition": "Make this redis Password protected"
+                    },
+                    "redis_version": {
+                      "type": "string",
+                      "definition": "Version of redis e.g. 6.3"
+                    },
+                    "persistence_enabled": {
+                      "type": "boolean",
+                      "definition": "Enable Persistence for this redis"
+                    },
+                    "size": {
+                      "type": "object",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "title": "writer-reader-datastore-sizing",
+                      "required": [
+                        "writer"
+                      ],
+                      "properties": {
+                        "writer": {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "oneOf": [
+                            {
+                              "$schema": "http://json-schema.org/draft-07/schema#",
+                              "type": "object",
+                              "required": [
+                                "cpu",
+                                "memory"
+                              ],
+                              "properties": {
+                                "cpu": {
+                                  "type": "string",
+                                  "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+[m]?$",
+                                  "examples": [
+                                    "1",
+                                    "1000m"
+                                  ]
+                                },
+                                "memory": {
+                                  "type": "string",
+                                  "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                  "examples": [
+                                    "800Mi",
+                                    "1.5Gi"
+                                  ]
+                                },
+                                "cpu_limit": {
+                                  "type": "string",
+                                  "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+[m]?$",
+                                  "examples": [
+                                    "1",
+                                    "1000m"
+                                  ]
+                                },
+                                "memory_limit": {
+                                  "type": "string",
+                                  "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                  "examples": [
+                                    "800Mi",
+                                    "1.5Gi"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "$schema": "http://json-schema.org/draft-07/schema#",
+                              "type": "object",
+                              "required": [
+                                "instance"
+                              ],
+                              "properties": {
+                                "instance": {
+                                  "type": "string",
+                                  "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+                                  "minLength": 1,
+                                  "pattern": "^[a-zA-Z0-9-.]+$",
+                                  "examples": [
+                                    "t2.micro",
+                                    "Standard_DS1_v2",
+                                    "n1-standard-2",
+                                    "db.m5.large",
+                                    "db.r5.large",
+                                    "db.t3.medium",
+                                    "db-n1-standard-1",
+                                    "db-f1-micro"
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "properties": {
+                            "volume": {
+                              "type": "string",
+                              "description": "The size of the volume. e.g '10G' or '5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[a-zA-Z]$",
+                              "examples": [
+                                "10G",
+                                "5Gi"
+                              ]
+                            }
+                          }
+                        },
+                        "reader": {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "instance_count"
+                          ],
+                          "properties": {
+                            "instance_count": {
+                              "type": "integer",
+                              "description": "The number of instances to create.",
+                              "minimum": 1
+                            },
+                            "replica_count": {
+                              "type": "integer",
+                              "description": "[Deprecated] The number of instances to create.",
+                              "minimum": 1
+                            }
+                          },
+                          "allOf": [
+                            {
+                              "$schema": "http://json-schema.org/draft-07/schema#",
+                              "type": "object",
+                              "oneOf": [
+                                {
+                                  "$schema": "http://json-schema.org/draft-07/schema#",
+                                  "type": "object",
+                                  "required": [
+                                    "cpu",
+                                    "memory"
+                                  ],
+                                  "properties": {
+                                    "cpu": {
+                                      "type": "string",
+                                      "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+[m]?$",
+                                      "examples": [
+                                        "1",
+                                        "1000m"
+                                      ]
+                                    },
+                                    "memory": {
+                                      "type": "string",
+                                      "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                      "examples": [
+                                        "800Mi",
+                                        "1.5Gi"
+                                      ]
+                                    },
+                                    "cpu_limit": {
+                                      "type": "string",
+                                      "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+[m]?$",
+                                      "examples": [
+                                        "1",
+                                        "1000m"
+                                      ]
+                                    },
+                                    "memory_limit": {
+                                      "type": "string",
+                                      "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                      "examples": [
+                                        "800Mi",
+                                        "1.5Gi"
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "$schema": "http://json-schema.org/draft-07/schema#",
+                                  "type": "object",
+                                  "required": [
+                                    "instance"
+                                  ],
+                                  "properties": {
+                                    "instance": {
+                                      "type": "string",
+                                      "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+                                      "minLength": 1,
+                                      "pattern": "^[a-zA-Z0-9-.]+$",
+                                      "examples": [
+                                        "t2.micro",
+                                        "Standard_DS1_v2",
+                                        "n1-standard-2",
+                                        "db.m5.large",
+                                        "db.r5.large",
+                                        "db.t3.medium",
+                                        "db-n1-standard-1",
+                                        "db-f1-micro"
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "properties": {
+                                "volume": {
+                                  "type": "string",
+                                  "description": "The size of the volume. e.g '10G' or '5Gi'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+[a-zA-Z]$",
+                                  "examples": [
+                                    "10G",
+                                    "5Gi"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "authenticated",
+                    "redis_version",
+                    "persistence_enabled",
+                    "size"
+                  ]
+                }
+              }
             },
             {
               "properties": {
                 "interfaces": {
                   "type": "object",
                   "additionalProperties": false,
-                  "$ref": "../../traits/reader-writer-interfaces.schema.json"
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "properties": {
+                    "reader": {
+                      "type": "object",
+                      "description": "The reader details",
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "definition": "Any Interface",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "Username to connect (if any)"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "Password to connect (if any)"
+                        },
+                        "host": {
+                          "type": "string",
+                          "description": "Host for service discovery"
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "Port for service discovery"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of interface, same as key"
+                        },
+                        "connection_string": {
+                          "type": "string",
+                          "description": "Connection string to connect"
+                        }
+                      }
+                    },
+                    "writer": {
+                      "type": "object",
+                      "description": "The writer details",
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "definition": "Any Interface",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "Username to connect (if any)"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "Password to connect (if any)"
+                        },
+                        "host": {
+                          "type": "string",
+                          "description": "Host for service discovery"
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "Port for service discovery"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of interface, same as key"
+                        },
+                        "connection_string": {
+                          "type": "string",
+                          "description": "Connection string to connect"
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "writer"
+                  ]
                 },
                 "instances": {
                   "type": "object",
                   "additionalProperties": false,
                   "patternProperties": {
                     "^([a-z]*-[0-9]+)$": {
-                      "$ref": "../../traits/interface.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "type": "object",
+                      "definition": "Any Interface",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "Username to connect (if any)"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "Password to connect (if any)"
+                        },
+                        "host": {
+                          "type": "string",
+                          "description": "Host for service discovery"
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "Port for service discovery"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of interface, same as key"
+                        },
+                        "connection_string": {
+                          "type": "string",
+                          "description": "Connection string to connect"
+                        }
+                      }
                     }
                   }
                 }
@@ -135,6 +755,98 @@
           ]
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "definition": "Kubernetes Schema",
+              "properties": {
+                "k8s": {
+                  "type": "object",
+                  "properties": {
+                    "redis": {
+                      "type": "object",
+                      "properties": {
+                        "values": {
+                          "type": "object",
+                          "description": "Helm values as per the Bitnami redis chart https://github.com/bitnami/charts/tree/master/bitnami/redis"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "required": []
+            },
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Elasticache Schema",
+              "properties": {
+                "elasticache": {
+                  "type": "object",
+                  "description": "Advanced values for AWS Elasticache",
+                  "properties": {
+                    "aws_elasticache_replication_group": {
+                      "type": "object",
+                      "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_replication_group"
+                    },
+                    "aws_elasticache_parameter_group": {
+                      "type": "object",
+                      "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_parameter_group"
+                    },
+                    "aws_security_group": {
+                      "type": "object",
+                      "description": "Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Memorystore Schema",
+              "properties": {
+                "memorystore": {
+                  "type": "object",
+                  "description": "Advanced values for GCP memorystore",
+                  "properties": {
+                    "google_redis_instance": {
+                      "type": "object",
+                      "description": "Resource values as per the terraform resource documentation for redis instance creation  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/redis_instance"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced RedisCache Schema",
+              "properties": {
+                "azure_cache": {
+                  "type": "object",
+                  "description": "Advanced values for Azure RedisCache, Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/redis_cache"
+                }
+              }
+            }
+          ]
+        }
+      }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }

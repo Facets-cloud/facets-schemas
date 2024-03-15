@@ -4,16 +4,17 @@
   "flavor": "aurora",
   "version": "0.1",
   "disabled": true,
-  "provided": false,
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
-  "depends_on": [],
-  "metadata": {},
+  "metadata": {
+    "tags": {
+      "managed-by": "facets"
+    }
+  },
   "spec": {
     "mysql_version": "8.0.mysql_aurora.3.02.0",
     "size": {
       "writer": {
         "instance": "db.t4g.medium",
-        "replica_count": 1
+        "instance_count": 1
       },
       "reader": {
         "instance_count": 1,

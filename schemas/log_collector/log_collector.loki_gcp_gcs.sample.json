@@ -1,4 +1,5 @@
 {
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.schema.json",
     "flavor": "loki_gcs",
     "metadata": {
       "name": "loki-gcs-log-collector"
@@ -10,8 +11,7 @@
     "spec": {},
     "advanced": {
       "loki_gcs": {
-        "bucket_name": "loki-gcs"
+        "bucket_name": "<Dollar reference the name of the gcs bucket>"
       }
     }
 }
-  

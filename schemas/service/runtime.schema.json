@@ -1,314 +1,449 @@
 {
-    "$schema":"http://json-schema.org/draft-04/schema#",
-    "type":"object",
-    "properties":{
-       "command":{
-          "type":"array",
-          "description":"The list of commands you want to perform before starting the container"
-       },
-       "args":{
-          "type":"array",
-          "description":"The list of arguments you want to pass for the above mentioned command"
-       },
-       "ports":{
-          "$ref":"./ports.schema.json",
-          "description":"Maps of all the ports that you want to expose in the service"
-       },
-       "metrics":{
-          "$ref":"./metrics.schema.json",
-          "description":"Maps of all the metrics port that you want to expose to prometheus"
-       },
-       "size":{
-          "$ref":"../../traits/kubernetes-sizing.schema.json",
-          "description":"Size of the deployment pods"
-       },
-       "volumes":{
-          "type":"object",
-          "description":"All the volumes you want to attach to the service",
-          "properties":{
-             "config_maps":{
-                "type":"object",
-                "description":"The map of all the config maps that you want to mount",
-                "additionalProperties":false,
-                "minProperties":1,
-                "patternProperties":{
-                   "^[a-zA-Z0-9_.-]*$":{
-                      "properties":{
-                         "name":{
-                            "type":"string",
-                            "description":"The name of the config map that has been created in the kubernetes cluster"
-                         },
-                         "mount_path":{
-                            "type":"string",
-                            "description":"The mount path for the config map"
-                         }
-                      }
-                   }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "command": {
+      "type": "array",
+      "description": "The list of commands you want to perform before starting the container"
+    },
+    "args": {
+      "type": "array",
+      "description": "The list of arguments you want to pass for the above mentioned command"
+    },
+    "ports": {
+      "description": "Maps of all the ports that you want to expose in the service",
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-zA-Z0-9_.-]*$": {
+          "description": "This is the name of the port that you have to specify",
+          "properties": {
+            "protocol": {
+              "type": "string",
+              "description": "the protocol of the port , either tcp or udp",
+              "enum": [
+                "tcp",
+                "udp"
+              ]
+            },
+            "port": {
+              "type": "string",
+              "description": "the port number where the pod is exposed"
+            },
+            "service_port": {
+              "type": "string",
+              "description": "the port number where the service is exposed, this is optional"
+            }
+          },
+          "required": [
+            "protocol",
+            "port"
+          ]
+        }
+      }
+    },
+    "metrics": {
+      "description": "Maps of all the metrics port that you want to expose to prometheus",
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "patternProperties": {
+        "^[a-zA-Z0-9_.-]*$": {
+          "description": "This is the name of the metrics, this can be any name",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "the path where the service monitor should scrape metrics"
+            },
+            "port_name": {
+              "type": "string",
+              "description": "name of the service monitor"
+            }
+          },
+          "required": [
+            "path",
+            "port_name"
+          ]
+        }
+      }
+    },
+    "size": {
+      "description": "Size of the deployment pods",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "required": [
+        "cpu",
+        "memory"
+      ],
+      "properties": {
+        "cpu": {
+          "type": "string",
+          "description": "The number of CPU cores required, e.g '1' or '1000m'",
+          "minLength": 1,
+          "pattern": "^[0-9]+[m]?$",
+          "examples": [
+            "1",
+            "1000m"
+          ]
+        },
+        "memory": {
+          "type": "string",
+          "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+          "minLength": 1,
+          "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+          "examples": [
+            "800Mi",
+            "1.5Gi"
+          ]
+        },
+        "cpu_limit": {
+          "type": "string",
+          "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+          "minLength": 1,
+          "pattern": "^[0-9]+[m]?$",
+          "examples": [
+            "1",
+            "1000m"
+          ]
+        },
+        "memory_limit": {
+          "type": "string",
+          "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+          "minLength": 1,
+          "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+          "examples": [
+            "800Mi",
+            "1.5Gi"
+          ]
+        }
+      }
+    },
+    "volumes": {
+      "type": "object",
+      "description": "All the volumes you want to attach to the service",
+      "properties": {
+        "config_maps": {
+          "type": "object",
+          "description": "The map of all the config maps that you want to mount",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[a-zA-Z0-9_.-]*$": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the config map that has been created in the kubernetes cluster"
+                },
+                "mount_path": {
+                  "type": "string",
+                  "description": "The mount path for the config map"
                 }
-             },
-             "secrets":{
-               "type":"object",
-               "description":"The map of all the secrets that you want to mount",
-               "additionalProperties":false,
-               "minProperties":1,
-               "patternProperties":{
-                  "^[a-zA-Z0-9_.-]*$":{
-                     "properties":{
-                        "name":{
-                           "type":"string",
-                           "description":"The name of the secret that has been created in the kubernetes cluster"
-                        },
-                        "mount_path":{
-                           "type":"string",
-                           "description":"The mount path for the secrets"
-                        }
-                     }
-                  }
-               }
-            },
-            "pvc":{
-               "type":"object",
-               "description":"The map of all the pvcs that you want to mount",
-               "additionalProperties":false,
-               "minProperties":1,
-               "patternProperties":{
-                  "^[a-zA-Z0-9_.-]*$":{
-                     "properties":{
-                        "claim_name":{
-                           "type":"string",
-                           "description":"The name of the pvc that has been created in the kubernetes cluster"
-                        },
-                        "mount_path":{
-                           "type":"string",
-                           "description":"The mount path for the pvc"
-                        }
-                     }
-                  }
-               }
-            },
-            "host_path":{
-               "type":"object",
-               "description":"The map of all the secrets that you want to mount",
-               "additionalProperties":false,
-               "minProperties":1,
-               "patternProperties":{
-                  "^[a-zA-Z0-9_.-]*$":{
-                     "properties":{
-                        "mount_path":{
-                           "type":"string",
-                           "description":"The mount path for the host path"
-                        }
-                     }
-                  }
-               }
+              }
             }
           }
-       },
-       "health_checks":{
-          "type":"object",
-          "description":"All the health check related key value pairs",
-          "properties":{
-             "start_up_time":{
-                "type":"string",
-                "description":"The time kubernetes api needs to wait until the application is ready"
-             },
-             "liveness_start_up_time":{
-               "type":"string",
-               "description":"The time kubernetes api needs to wait until the application is ready for liveness check, this is takes precedence from start_up_time"
-            },
-            "readiness_start_up_time":{
-               "type":"string",
-               "description":"The time kubernetes api needs to wait until the application is ready for readiness check, this is takes precedence from start_up_time"
-            },
-             "timeout":{
-                "type":"string",
-                "description":"Timeout for the health check"
-             },
-             "liveness_timeout":{
-               "type":"string",
-               "description": "Timeout for the health check liveness, this is takes precedence from timeout"
-            },
-            "readiness_timeout":{
-               "type":"string",
-               "description": "Timeout for the health check readiness, this is takes precedence from timeout"
-            },
-             "period":{
-                "type":"string",
-                "description":"This is the repeated interval in which kubelet does a health check"
-             },
-             "liveness_period":{
-               "type":"string",
-               "description":"This is the repeated interval in which kubelet does a health check, this is takes precedence from period"
-            },
-            "readiness_period":{
-               "type":"string",
-               "description":"This is the repeated interval in which kubelet does a health check, this is takes precedence from period"
-            },
-             "port":{
-                "type":"string",
-                "description":"Specify the port in which the health checks should be made"
-             },
-             "liveness_port":{
-               "type":"string",
-               "description":"Specify the port in which the health checks should be made, this is takes precedence from port"
-            },
-            "readiness_port":{
-               "type":"string",
-               "description":"Specify the port in which the health checks should be made, this is takes precedence from port"
-            },
-             "liveness_url":{
-                "type":"string",
-                "description":"URL to make the liveness check"
-             },
-             "readiness_url":{
-                "type":"string",
-                "description":"URL to make the readiness check"
-             },
-             "liveness_exec_command":{
-                "type":"array",
-                "description":"The list of commands to make liveness check "
-             },
-             "readiness_exec_command":{
-                "type":"array",
-                "description":"The list of commands to make readiness check"
-             }
-          },
-            "allOf": [
-               {
-                  "if": {
-                  "not": {
-                     "allOf": [
-                        { "required": ["liveness_start_up_time"] },
-                        { "required": ["readiness_start_up_time"] }
-                     ]
-                  }
-                  },
-                  "then": {
-                  "required": ["start_up_time"]
-                  }
-               },
-               {
-                  "if": {
-                  "not": {
-                     "allOf": [
-                        { "required": ["liveness_timeout"] },
-                        { "required": ["readiness_timeout"] }
-                     ]
-                  }
-                  },
-                  "then": {
-                  "required": ["timeout"]
-                  }
-               },
-               {
-                  "if": {
-                  "not": {
-                     "allOf": [
-                        { "required": ["liveness_port"] },
-                        { "required": ["readiness_port"] }
-                     ]
-                  }
-                  },
-                  "then": {
-                  "required": ["port"]
-                  }
-               },
-               {
-                  "if": {
-                  "not": { 
-                     "allOf": [
-                        { "required": ["liveness_period"] },
-                        { "required": ["readiness_period"] }
-                     ]
-                  }
-                  },
-                  "then": {
-                  "required": ["period"]
-                  }
-               }
-            ]
-       },
-       "autoscaling":{
-          "type":"object",
-          "properties":{
-             "min":{
-                "type":"string",
-                "description":"This is the min replicas where the hpa downscales to"
-             },
-             "max":{
-                "type":"string",
-                "description":"This is the max replicas where the hpa upscales to "
-             },
-             "cpu_threshold":{
-                "type":"string",
-                "description":"The max cpu threshold that the hpa waits until it upscales"
-             },
-             "ram_threshold":{
-                "type":"string",
-                "description":"The max ram threshold that the hpa waits until it upscales"
-             },
-             "packets_per_second":{
-                "type":"string",
-                "description":"The max number of packets that can be sent to the pod, once exceeded it autoscales. eg: 10k"
-             },
-             "requests_per_second":{
-                "type":"object",
-                "description":"Requests per second RPS object keys",
-                "properties":{
-                   "threshold":{
-                      "type":"string",
-                      "description":"The rps threshold that hpa looks for , once exceeds it autoscales eg: 10k"
-                   },
-                   "ingress_name":{
-                      "type":"string",
-                      "description":"Name of the ingress object that the hpa should watch for autoscaling"
-                   }
+        },
+        "secrets": {
+          "type": "object",
+          "description": "The map of all the secrets that you want to mount",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[a-zA-Z0-9_.-]*$": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the secret that has been created in the kubernetes cluster"
                 },
-                "required":[
-                   "threshold",
-                   "ingress_name"
-                ]
-             }
-          },
-          "oneOf":[
-             {
-                "if":{
-                   "properties":{
-                      "cpu_threshold":{
-                         
-                      }
-                   }
-                },
-                "then":{
-                   "required":[
-                      "cpu_threshold",
-                      "min",
-                      "max"
-                   ]
+                "mount_path": {
+                  "type": "string",
+                  "description": "The mount path for the secrets"
                 }
-             },
-             {
-                "if":{
-                   "properties":{
-                      "ram_threshold":{
-                         
-                      }
-                   }
+              }
+            }
+          }
+        },
+        "pvc": {
+          "type": "object",
+          "description": "The map of all the pvcs that you want to mount",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[a-zA-Z0-9_.-]*$": {
+              "properties": {
+                "claim_name": {
+                  "type": "string",
+                  "description": "The name of the pvc that has been created in the kubernetes cluster"
                 },
-                "then":{
-                   "required":[
-                      "ram_threshold",
-                      "min",
-                      "max"
-                   ]
+                "mount_path": {
+                  "type": "string",
+                  "description": "The mount path for the pvc"
                 }
-             }
-          ]
-       }
+              }
+            }
+          }
+        },
+        "host_path": {
+          "type": "object",
+          "description": "The map of all the secrets that you want to mount",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[a-zA-Z0-9_.-]*$": {
+              "properties": {
+                "mount_path": {
+                  "type": "string",
+                  "description": "The mount path for the host path"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "required":[
-       "ports",
-       "size",
-       "health_checks"
-    ]
- }
+    "health_checks": {
+      "type": "object",
+      "description": "All the health check related key value pairs",
+      "properties": {
+        "start_up_time": {
+          "type": "string",
+          "description": "The time kubernetes api needs to wait until the application is ready"
+        },
+        "liveness_start_up_time": {
+          "type": "string",
+          "description": "The time kubernetes api needs to wait until the application is ready for liveness check, this is takes precedence from start_up_time"
+        },
+        "readiness_start_up_time": {
+          "type": "string",
+          "description": "The time kubernetes api needs to wait until the application is ready for readiness check, this is takes precedence from start_up_time"
+        },
+        "timeout": {
+          "type": "string",
+          "description": "Timeout for the health check"
+        },
+        "liveness_timeout": {
+          "type": "string",
+          "description": "Timeout for the health check liveness, this is takes precedence from timeout"
+        },
+        "readiness_timeout": {
+          "type": "string",
+          "description": "Timeout for the health check readiness, this is takes precedence from timeout"
+        },
+        "period": {
+          "type": "string",
+          "description": "This is the repeated interval in which kubelet does a health check"
+        },
+        "liveness_period": {
+          "type": "string",
+          "description": "This is the repeated interval in which kubelet does a health check, this is takes precedence from period"
+        },
+        "readiness_period": {
+          "type": "string",
+          "description": "This is the repeated interval in which kubelet does a health check, this is takes precedence from period"
+        },
+        "port": {
+          "type": "string",
+          "description": "Specify the port in which the health checks should be made"
+        },
+        "liveness_port": {
+          "type": "string",
+          "description": "Specify the port in which the health checks should be made, this is takes precedence from port"
+        },
+        "readiness_port": {
+          "type": "string",
+          "description": "Specify the port in which the health checks should be made, this is takes precedence from port"
+        },
+        "liveness_url": {
+          "type": "string",
+          "description": "URL to make the liveness check"
+        },
+        "readiness_url": {
+          "type": "string",
+          "description": "URL to make the readiness check"
+        },
+        "liveness_exec_command": {
+          "type": "array",
+          "description": "The list of commands to make liveness check "
+        },
+        "readiness_exec_command": {
+          "type": "array",
+          "description": "The list of commands to make readiness check"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "not": {
+              "allOf": [
+                {
+                  "required": [
+                    "liveness_start_up_time"
+                  ]
+                },
+                {
+                  "required": [
+                    "readiness_start_up_time"
+                  ]
+                }
+              ]
+            }
+          },
+          "then": {
+            "required": [
+              "start_up_time"
+            ]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "allOf": [
+                {
+                  "required": [
+                    "liveness_timeout"
+                  ]
+                },
+                {
+                  "required": [
+                    "readiness_timeout"
+                  ]
+                }
+              ]
+            }
+          },
+          "then": {
+            "required": [
+              "timeout"
+            ]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "allOf": [
+                {
+                  "required": [
+                    "liveness_port"
+                  ]
+                },
+                {
+                  "required": [
+                    "readiness_port"
+                  ]
+                }
+              ]
+            }
+          },
+          "then": {
+            "required": [
+              "port"
+            ]
+          }
+        },
+        {
+          "if": {
+            "not": {
+              "allOf": [
+                {
+                  "required": [
+                    "liveness_period"
+                  ]
+                },
+                {
+                  "required": [
+                    "readiness_period"
+                  ]
+                }
+              ]
+            }
+          },
+          "then": {
+            "required": [
+              "period"
+            ]
+          }
+        }
+      ]
+    },
+    "autoscaling": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "string",
+          "description": "This is the min replicas where the hpa downscales to"
+        },
+        "max": {
+          "type": "string",
+          "description": "This is the max replicas where the hpa upscales to "
+        },
+        "cpu_threshold": {
+          "type": "string",
+          "description": "The max cpu threshold that the hpa waits until it upscales"
+        },
+        "ram_threshold": {
+          "type": "string",
+          "description": "The max ram threshold that the hpa waits until it upscales"
+        },
+        "packets_per_second": {
+          "type": "string",
+          "description": "The max number of packets that can be sent to the pod, once exceeded it autoscales. eg: 10k"
+        },
+        "requests_per_second": {
+          "type": "object",
+          "description": "Requests per second RPS object keys",
+          "properties": {
+            "threshold": {
+              "type": "string",
+              "description": "The rps threshold that hpa looks for , once exceeds it autoscales eg: 10k"
+            },
+            "ingress_name": {
+              "type": "string",
+              "description": "Name of the ingress object that the hpa should watch for autoscaling"
+            }
+          },
+          "required": [
+            "threshold",
+            "ingress_name"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "if": {
+            "properties": {
+              "cpu_threshold": {}
+            }
+          },
+          "then": {
+            "required": [
+              "cpu_threshold",
+              "min",
+              "max"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "ram_threshold": {}
+            }
+          },
+          "then": {
+            "required": [
+              "ram_threshold",
+              "min",
+              "max"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "required": [
+    "ports",
+    "size",
+    "health_checks"
+  ]
+}

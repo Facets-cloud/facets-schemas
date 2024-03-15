@@ -4,11 +4,7 @@
   "disabled": true,
   "version": "0.2",
   "kind": "postgres",
-  "provided": false,
-  "metadata": {
-    "name": "something"
-  },
-  "lifecycle": "ENVIRONMENT",
+  "metadata": {},
   "spec": {
     "size": {
       "writer": {

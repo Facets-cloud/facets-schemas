@@ -25,7 +25,10 @@
               "description": "Adding constraints to the table"
             }
           },
-          "required": ["name","type"]
+          "required": [
+            "name",
+            "type"
+          ]
         }
       }
     }

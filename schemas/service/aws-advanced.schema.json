@@ -5,18 +5,20 @@
     "iam": {
       "type": "object",
       "description": "This is the iam key where all iam permissions are attached for the deployment",
-      "additionalProperties":false,
-      "minProperties":1,
+      "additionalProperties": false,
+      "minProperties": 1,
       "patternProperties": {
-        "^[a-zA-Z0-9_.-]*$" : {
-            "description":"This is the name of the iam object that you are creating, it can be of any name",
-            "properties":{
-                "arn":{
-                    "type":"string",
-                    "definition":"The arn of the policy that you want to create a role and attach it to the deployment"
-                }
-            },
-            "required": ["arn"]
+        "^[a-zA-Z0-9_.-]*$": {
+          "description": "This is the name of the iam object that you are creating, it can be of any name",
+          "properties": {
+            "arn": {
+              "type": "string",
+              "definition": "The arn of the policy that you want to create a role and attach it to the deployment"
+            }
+          },
+          "required": [
+            "arn"
+          ]
         }
       }
     },
@@ -221,7 +223,10 @@
                       }
                     }
                   },
-                  "required": ["port", "protocol"]
+                  "required": [
+                    "port",
+                    "protocol"
+                  ]
                 }
               }
             },
@@ -242,7 +247,7 @@
               "description": "A list of maps containing key/value pairs that define the target groups to be created. Order of these maps is important and the index of these are to be referenced in listener definitions. Required key/values: name, backend_protocol, backend_port",
               "additionalProperties": false,
               "minProperties": 1,
-              "patternProperties":{
+              "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
                   "type": "object",
                   "description": "Arbitary name for the additional target groups",
@@ -526,7 +531,7 @@
               "description": "The placement of the instance",
               "additionalProperties": false,
               "minProperties": 1,
-              "patternProperties":{
+              "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
                   "type": "object",
                   "description": "Arbitary name for the placement of the instance",
@@ -987,10 +992,10 @@
                                               "type": "string",
                                               "description": "specify predefined metric type"
                                             },
-                                           "resource_label": {
-                                            "type": "string",
-                                            "description": "specify resource label"
-                                           } 
+                                            "resource_label": {
+                                              "type": "string",
+                                              "description": "specify resource label"
+                                            }
                                           }
                                         }
                                       }

@@ -1,13 +1,12 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
-  "provided": false,
-  "kind" : "postgres",
+  "kind": "postgres",
   "version": "0.1",
-  "depends_on": [],
   "disabled": true,
-  "lifecycle": "ENVIRONMENT",
   "metadata": {
-    "name": "daw"
+    "tags": {
+      "managed-by": "facets"
+    }
   },
   "flavor": "aurora",
   "spec": {

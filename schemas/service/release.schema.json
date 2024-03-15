@@ -1,112 +1,152 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "image": {
-            "type": "string",
-            "description": "The docker image of the application that you want to run"
-        },
-        "build": {
-            "type": "object",
-            "description": "These contains the build objects required for running the containers",
-            "properties": {
-                "artifactory": {
-                    "type": "string",
-                    "description": "Parent artifactory name"
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Name of the artifactory"
-                },
-                "pull_policy": {
-                    "type": "string",
-                    "description": "ImagePullPolicy",
-                    "enum": ["IfNotPresent","Always","Never"]
-                }
-            },
-            "required": [
-                "artifactory",
-                "name"
-            ]
-        },
-        "strategy": {
-            "type": "object",
-            "description": "The type of upgrade strategy to be followed by this service",
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "description": "Your kubernetes rollout type eg: RollingUpdate or Recreate",
-                    "enum": ["RollingUpdate", "Recreate"]
-                },
-                "max_available": {
-                    "type": "string",
-                    "description": "If type RollingUpdate , this is the max number of pods that can be created from the default replicas"
-                },
-                "max_unavailable": {
-                    "type": "string",
-                    "description": "If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas"
-                }
-            },
-            "allOf": [
-                {
-                    "if": {
-                        "properties": {
-                            "type": { "enum": ["RollingUpdate"] }
-                        }
-                    },
-                    "then": { "required": ["type"] }
-                },
-                {
-                    "if": {
-                        "properties": {
-                            "type": { "enum": ["Recreate"] }
-                        }
-                    },
-                    "then": { "required": ["type"] }
-                }
-            ]
-        },
-        "disruption_policy": {
-            "type": "object",
-            "description": "The disruption policy for the service",
-            "properties": {
-                "min_available": {
-                    "type": "string",
-                    "description": "This is the min number of pods should be available in case of failures"
-                },
-                "max_unavailable": {
-                    "type": "string",
-                    "description": "This is the max number of pods that can be unavailable during a failure."
-                }
-            }
-        }
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "string",
+      "description": "The docker image of the application that you want to run"
     },
-    "oneOf": [
+    "build": {
+      "type": "object",
+      "description": "These contains the build objects required for running the containers",
+      "properties": {
+        "artifactory": {
+          "type": "string",
+          "description": "Parent artifactory name"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the artifactory"
+        },
+        "pull_policy": {
+          "type": "string",
+          "description": "ImagePullPolicy",
+          "enum": [
+            "IfNotPresent",
+            "Always",
+            "Never"
+          ]
+        }
+      },
+      "required": [
+        "artifactory",
+        "name"
+      ]
+    },
+    "strategy": {
+      "type": "object",
+      "description": "The type of upgrade strategy to be followed by this service",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Your kubernetes rollout type eg: RollingUpdate or Recreate",
+          "enum": [
+            "RollingUpdate",
+            "Recreate"
+          ]
+        },
+        "max_available": {
+          "type": "string",
+          "description": "If type RollingUpdate , this is the max number of pods that can be created from the default replicas"
+        },
+        "max_unavailable": {
+          "type": "string",
+          "description": "If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas"
+        }
+      },
+      "allOf": [
         {
-            "if": {
-                "properties": {
-                    "build": {}
-                }
-            },
-            "then": { "required": ["build"] }
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "RollingUpdate"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "type"
+            ]
+          }
         },
         {
-            "if": {
-                "properties": {
-                  "image": {}
-                }
-            },
-            "then": { "required": ["image"] }
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "Recreate"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "type"
+            ]
+          }
         }
-    ],
-    "allOf":[
-        {
-            "if": {
-                "properties": {
-                    "type": { "enum": ["application", "statefulset"] }
-                }
-            },
-            "then": { "required": ["strategy"] }
+      ]
+    },
+    "disruption_policy": {
+      "type": "object",
+      "description": "The disruption policy for the service",
+      "properties": {
+        "min_available": {
+          "type": "string",
+          "description": "This is the min number of pods should be available in case of failures"
+        },
+        "max_unavailable": {
+          "type": "string",
+          "description": "This is the max number of pods that can be unavailable during a failure."
         }
-    ]
-  }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "if": {
+        "properties": {
+          "build": {}
+        }
+      },
+      "then": {
+        "required": [
+          "build"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "image": {}
+        }
+      },
+      "then": {
+        "required": [
+          "image"
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "enum": [
+              "application",
+              "statefulset"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "strategy"
+        ]
+      }
+    }
+  ]
+}

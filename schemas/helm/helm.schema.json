@@ -40,14 +40,21 @@
               "type": "boolean"
             }
           },
-          "required": ["chart", "namespace", "wait"]
+          "required": [
+            "chart",
+            "namespace",
+            "wait"
+          ]
         },
         "values": {
           "description": "The values to be passed on to the chart in the form of a json object",
           "type": "object"
         }
       },
-      "required": ["helm", "values"]
+      "required": [
+        "helm",
+        "values"
+      ]
     },
     "version": {
       "type": "string",

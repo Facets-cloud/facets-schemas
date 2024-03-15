@@ -1,98 +1,198 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "allOf": [
-      {
-        "$ref": "../../traits/base.schema.json"
-      },
-      {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "type": "string",
-            "enum": [
-              "pvc"
-            ],
-            "description": "Describes the type of resource."
-          },
-          "flavor": {
-            "type": "string",
-            "enum": [
-              "default","k8s"
-            ],
-            "description": "Implementation selector for the pvc resource. e.g. for a resource type k8s"
-          },
-          "version": {
-            "type": "string",
-            "enum": [
-              "0.1",
-              "latest"
-            ],
-            "description": "This field can be used to pin to a particular version"
-          }
-        }
-      },
-      {
-        "$ref": "#/$defs/specDef"
-      },
-      {
-        "type": "object",
-        "properties": {
-          "advanced": {
-            "type": "object",
-            "description": "Advanced section for the module",
-            "properties": {
-              "additional_labels": {
-                "type": "object",
-                "description": "Advanced labels to be added to pvc"
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
               },
-              "accessModes": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "The access mode for the pvc"
-              },
-              "namespace": {
-                "type": "string",
-                "description": "The namespace in which pvc will be created"
-              },
-              "provisioned_for": {
-                "type": "string",
-                "description": "The resource type for which the pvc is provisioned for"
-              }
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "pvc"
+          ],
+          "description": "Describes the type of resource."
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default",
+            "k8s"
+          ],
+          "description": "Implementation selector for the pvc resource. e.g. for a resource type k8s"
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ],
+          "description": "This field can be used to pin to a particular version"
         }
       }
-    ],
-    "required": [
-      "kind",
-      "flavor",
-      "version",
-      "metadata",
-      "spec"
-    ],
-    "$defs": {
-      "specDef": {
-        "type": "object",
-        "properties": {
-          "spec": {
-            "type": "object",
-            "properties": {
-              "size": {
-                "type": "object",
-                "description": "sizing attribute of the pvc",
-                "properties": {
-                  "volume": {
-                    "type": "string",
-                    "description": "Disk space of the pvc"
-                  }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "object",
+              "description": "sizing attribute of the pvc",
+              "properties": {
+                "volume": {
+                  "type": "string",
+                  "description": "Disk space of the pvc"
                 }
               }
             }
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced section for the module",
+          "properties": {
+            "additional_labels": {
+              "type": "object",
+              "description": "Advanced labels to be added to pvc"
+            },
+            "accessModes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The access mode for the pvc"
+            },
+            "namespace": {
+              "type": "string",
+              "description": "The namespace in which pvc will be created"
+            },
+            "provisioned_for": {
+              "type": "string",
+              "description": "The resource type for which the pvc is provisioned for"
+            }
+          }
+        }
+      }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
+}

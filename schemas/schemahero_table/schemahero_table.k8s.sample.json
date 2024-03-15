@@ -4,16 +4,16 @@
   "kind": "schemahero_table",
   "version": "0.1",
   "disabled": true,
-  "metadata": {
-    "name": "test"
-  },
+  "metadata": {},
   "spec": {
     "database": "schemahero",
     "connection": "mysql",
-    "primary_key": ["code"],
+    "primary_key": [
+      "code"
+    ],
     "columns": {
       "1": {
-        "name" : "code",
+        "name": "code",
         "type": "char(4)"
       },
       "2": {
@@ -25,6 +25,5 @@
         "type": "varchar(100)"
       }
     }
-  },
-  "advanced" : {}
+  }
 }

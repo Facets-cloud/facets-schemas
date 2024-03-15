@@ -2,11 +2,8 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/helm/helm.schema.json",
   "kind": "helm",
   "flavor": "k8s",
-  "provided": false,
   "disabled": true,
-  "metadata": {
-
-  },
+  "metadata": {},
   "version": "0.1",
   "spec": {
     "helm": {

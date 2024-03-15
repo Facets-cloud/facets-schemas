@@ -2,10 +2,10 @@
   "flavor": "flexible_server",
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
   "metadata": {
-    "name": "azure-mysql",
-    "tags": {}
+    "tags": {
+      "managed-by": "facets"
+    }
   },
-  "provided": false,
   "kind": "mysql",
   "disabled": true,
   "version": "0.1",
@@ -13,11 +13,11 @@
     "mysql_version": "8.0.21",
     "size": {
       "writer": {
-        "replica_count": 1,
+        "instance_count": 1,
         "instance": "GP_Standard_D2ds_v4"
       },
       "reader": {
-        "replica_count": 1,
+        "instance_count": 1,
         "instance": "GP_Standard_D2ds_v4"
       }
     }

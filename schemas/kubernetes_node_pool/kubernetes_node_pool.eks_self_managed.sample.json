@@ -1,21 +1,18 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/nodepool/nodepool.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_node_pool/kubernetes_node_pool.schema.json",
   "kind": "kubernetes_node_pool",
   "flavor": "eks_self_managed",
   "version": "latest",
   "disabled": true,
-  "lifecycle": "ENVIRONMENT",
-  "provided": false,
   "metadata": {
-    "name": "test-node-group",
     "tags": {
-      "Name": "test-node-group"
+      "managed-by": "facets"
     },
     "annotations": {}
   },
   "spec": {
     "instance_type": "t3.medium",
-    "is_public": true,
+    "is_public": false,
     "azs": "us-east-1a",
     "min_node_count": 0,
     "max_node_count": 5,

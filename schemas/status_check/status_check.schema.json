@@ -3,49 +3,113 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
-    },
-    {
-      "$ref": "#/$defs/specDef"
-    },
-    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
       "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
-          "enum": ["status_check"]
-        },
-        "flavor": {
-          "type": "string",
-          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-          "enum": ["default"]
-        },
-        "version": {
-          "type": "string",
-          "description": "This field can be used to pin to a particular version",
-          "enum": ["0.1", "latest"]
-        },
-        "advanced": {
+      "allOf": [
+        {
           "type": "object",
-          "allOf": [
-            {
-              "$ref": "flavor-default.schema.json"
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
             }
-          ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
         }
-      }
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
-  ],
-  "$defs": {
-    "specDef": {
+      ]
+    },
+    {
       "type": "object",
       "properties": {
         "spec": {
@@ -58,7 +122,7 @@
               "description": "HTTP configuration for the uptime service.",
               "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
-                  "description" : "This is the name of the http check that you have to specify",
+                  "description": "This is the name of the http check that you have to specify",
                   "properties": {
                     "disabled": {
                       "type": "boolean",
@@ -103,10 +167,12 @@
                     "expected_response": {
                       "type": "string",
                       "description": "The expected response."
-                    }  
+                    }
                   },
                   "required": [
-                    "url",  "method", "expected_status_code"
+                    "url",
+                    "method",
+                    "expected_status_code"
                   ]
                 }
               }
@@ -118,7 +184,7 @@
               "minProperties": 1,
               "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
-                  "description" : "This is the name of the redis check that you have to specify",
+                  "description": "This is the name of the redis check that you have to specify",
                   "type": "object",
                   "properties": {
                     "disabled": {
@@ -149,7 +215,7 @@
               "minProperties": 1,
               "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
-                  "description" : "This is the name of the mongo check that you have to specify",
+                  "description": "This is the name of the mongo check that you have to specify",
                   "type": "object",
                   "properties": {
                     "disabled": {
@@ -157,7 +223,7 @@
                       "default": false,
                       "description": "enable or disable the check"
                     },
-                    "url":{
+                    "url": {
                       "type": "string",
                       "description": "The URL / Connection string of the mongo service.",
                       "format": "uri",
@@ -180,7 +246,7 @@
               "minProperties": 1,
               "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
-                  "description" : "This is the name of the mongo check that you have to specify",
+                  "description": "This is the name of the mongo check that you have to specify",
                   "type": "object",
                   "properties": {
                     "disabled": {
@@ -193,20 +259,151 @@
                       "description": "The URL of the tcp service.",
                       "format": "uri",
                       "examples": [
-                        "localhost:8080", "github.com:443"
+                        "localhost:8080",
+                        "github.com:443"
                       ]
                     }
                   },
                   "required": [
                     "url"
                   ]
-                  
                 }
               }
             }
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
+          "enum": [
+            "status_check"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "This field can be used to pin to a particular version",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        },
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced uptime Schema",
+              "properties": {
+                "status_check": {
+                  "type": "object",
+                  "description": "Advanced values for uptime module",
+                  "properties": {
+                    "run_interval": {
+                      "type": "string",
+                      "description": "How often to run the check",
+                      "format": "regex",
+                      "pattern": "^[0-9]+(s|m|h|d)$",
+                      "default": "60s"
+                    },
+                    "timeout": {
+                      "type": "string",
+                      "description": "Timeout for uptime check",
+                      "format": "regex",
+                      "pattern": "^[0-9]+(s|m|h|d)$",
+                      "default": "10m"
+                    },
+                    "image": {
+                      "type": "string",
+                      "description": "Image for the uptime check",
+                      "default": "313496281593.dkr.ecr.us-east-1.amazonaws.com/uptime-monitoring"
+                    },
+                    "image_pull_policy": {
+                      "type": "string",
+                      "description": "Imagepull policy for the uptime check check",
+                      "default": "IfNotPresent",
+                      "enum": [
+                        "Always",
+                        "IfNotPresent",
+                        "Never"
+                      ]
+                    },
+                    "size": {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ],
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[m]?$",
+                          "examples": [
+                            "1",
+                            "1000m"
+                          ]
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                          "examples": [
+                            "800Mi",
+                            "1.5Gi"
+                          ]
+                        },
+                        "cpu_limit": {
+                          "type": "string",
+                          "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[m]?$",
+                          "examples": [
+                            "1",
+                            "1000m"
+                          ]
+                        },
+                        "memory_limit": {
+                          "type": "string",
+                          "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                          "examples": [
+                            "800Mi",
+                            "1.5Gi"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }

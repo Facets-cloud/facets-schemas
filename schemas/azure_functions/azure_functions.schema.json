@@ -4,54 +4,288 @@
   "description": "Schema for service",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["azute_function"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "azute_function"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["default"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1","latest"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
         }
       }
     },
     {
-      "$ref": "#/$defs/outDef"
-    },
-    {
-      "$ref": "#/$defs/specDef"
-    },
-    {
       "type": "object",
       "properties": {
-        "advanced": {
+        "out": {
           "type": "object",
-          "description": "Advanced values for service bus",
-          "anyOf": [
+          "additionalProperties": false,
+          "description": "Output from the azure service bus",
+          "allOf": [
             {
-              "$ref": "flavour-azure_functions.schema.json"
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "object",
+                      "properties": {
+                        "os": {
+                          "type": "string",
+                          "enum": [
+                            "Linux",
+                            "Windows"
+                          ]
+                        },
+                        "sku": {
+                          "type": "string",
+                          "enum": [
+                            "B1",
+                            "B2",
+                            "B3",
+                            "D1",
+                            "F1",
+                            "I1",
+                            "I2",
+                            "I3",
+                            "I1v2",
+                            "I2v2",
+                            "I3v2",
+                            "I4v2",
+                            "I5v2",
+                            "I6v2",
+                            "P1v2",
+                            "P2v2",
+                            "P3v2",
+                            "P0v3",
+                            "P1v3",
+                            "P2v3",
+                            "P3v3",
+                            "P1mv3",
+                            "P2mv3",
+                            "P3mv3",
+                            "P4mv3",
+                            "P5mv3",
+                            "S1",
+                            "S2",
+                            "S3",
+                            "SHARED",
+                            "EP1",
+                            "EP2",
+                            "EP3",
+                            "WS1",
+                            "WS2",
+                            "WS3",
+                            "Y1"
+                          ]
+                        },
+                        "deploy_as": {
+                          "type": "string",
+                          "enum": [
+                            "code",
+                            "container"
+                          ]
+                        },
+                        "in_vnet": {
+                          "type": "boolean"
+                        },
+                        "runtime": {
+                          "type": "object",
+                          "properties": {
+                            "stack": {
+                              "type": "string",
+                              "enum": [
+                                "node",
+                                "python",
+                                "java",
+                                "docker",
+                                "dotnet",
+                                "powershell",
+                                "custom_runtime"
+                              ]
+                            },
+                            "version": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "stack",
+                            "version"
+                          ]
+                        },
+                        "app_settings": {
+                          "type": "object",
+                          "description": "App setting to be passed to azure fuction",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "sku",
+                        "os",
+                        "runtime",
+                        "deploy_as"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "endpoint": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "primary_connection_string": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "primary_key": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "secondary_connection_string": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "secondary_key": {
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "required": []
             }
           ]
         }
       }
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata"
-  ],
-  "$defs": {
-    "specDef": {
+    },
+    {
       "type": "object",
       "properties": {
         "spec": {
@@ -69,7 +303,45 @@
                 },
                 "sku": {
                   "type": "string",
-                  "enum": ["B1", "B2", "B3", "D1", "F1", "I1", "I2", "I3", "I1v2", "I2v2", "I3v2", "I4v2", "I5v2", "I6v2", "P1v2", "P2v2", "P3v2", "P0v3", "P1v3", "P2v3", "P3v3", "P1mv3", "P2mv3", "P3mv3", "P4mv3", "P5mv3", "S1", "S2", "S3", "SHARED", "EP1", "EP2", "EP3", "WS1", "WS2", "WS3", "Y1"]
+                  "enum": [
+                    "B1",
+                    "B2",
+                    "B3",
+                    "D1",
+                    "F1",
+                    "I1",
+                    "I2",
+                    "I3",
+                    "I1v2",
+                    "I2v2",
+                    "I3v2",
+                    "I4v2",
+                    "I5v2",
+                    "I6v2",
+                    "P1v2",
+                    "P2v2",
+                    "P3v2",
+                    "P0v3",
+                    "P1v3",
+                    "P2v3",
+                    "P3v3",
+                    "P1mv3",
+                    "P2mv3",
+                    "P3mv3",
+                    "P4mv3",
+                    "P5mv3",
+                    "S1",
+                    "S2",
+                    "S3",
+                    "SHARED",
+                    "EP1",
+                    "EP2",
+                    "EP3",
+                    "WS1",
+                    "WS2",
+                    "WS3",
+                    "Y1"
+                  ]
                 },
                 "deploy_as": {
                   "type": "string",
@@ -117,64 +389,60 @@
                 }
               },
               "required": [
-                "sku","os","runtime","deploy_as"
+                "sku",
+                "os",
+                "runtime",
+                "deploy_as"
               ]
             }
           }
         }
       }
     },
-    "outDef": {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Output from the azure service bus",
-          "allOf": [
-            {
-              "$ref": "#/$defs/specDef"
-            },
-            {
-              "properties": {
-                "endpoint": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "primary_connection_string": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "primary_key": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "secondary_connection_string": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "secondary_key": {
-                  "type": "string",
-                  "additionalProperties": false
-                }
-              },
-              "required": []
-            }
-          ]
-        }
-      }
-    },
-    "advancedDef": {
+    {
       "type": "object",
       "properties": {
         "advanced": {
-          "allOf": [
+          "type": "object",
+          "description": "Advanced values for service bus",
+          "anyOf": [
             {
-              "$ref": "flavour-azure_functions.schema.json"
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Azure Service-bus Schema",
+              "properties": {
+                "azure_functions": {
+                  "type": "object",
+                  "properties": {
+                    "linux": {
+                      "type": "object",
+                      "properties": {
+                        "linux_deployment_slots": {
+                          "type": "object"
+                        },
+                        "linux_app_config": {
+                          "type": "object",
+                          "properties": {
+                            "site_config": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           ]
         }
       }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata"
+  ]
 }

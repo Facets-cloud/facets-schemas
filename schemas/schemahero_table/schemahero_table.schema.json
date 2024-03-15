@@ -3,44 +3,113 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
-    },
-    {
-      "$ref": "#/$defs/specDef"
-    },
-    {
-      "$ref": "#/$defs/advancedDef"
-    },
-    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
       "type": "object",
-      "properties": {
-        "metadata": {
+      "allOf": [
+        {
           "type": "object",
-          "description": "Metadata related to the resource",
           "properties": {
-            "name": {
+            "kind": {
               "type": "string",
-              "description": "Name of the resource"
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
             }
           },
-          "required": ["name"]
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
         },
-        "version": {
-          "type": "string",
-          "enum": ["0.1"],
-          "description": "This field can be used to pin to a particular version"
-        },
-        "flavor": {
-          "type": "string",
-          "enum": ["default","k8s"],
-          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
         }
-      }
-    }
-  ],
-  "required": ["kind","flavor","metadata","spec","version"],
-  "$defs": {
-    "specDef": {
+      ]
+    },
+    {
       "type": "object",
       "properties": {
         "spec": {
@@ -53,7 +122,9 @@
                 "connection": {
                   "type": "string",
                   "description": "Database connection type",
-                  "enum": ["mysql"]
+                  "enum": [
+                    "mysql"
+                  ]
                 },
                 "database": {
                   "type": "string",
@@ -87,7 +158,11 @@
                           "description": "Bool indicating a unique index"
                         }
                       },
-                      "required": ["columns","name","is_unique"]
+                      "required": [
+                        "columns",
+                        "name",
+                        "is_unique"
+                      ]
                     }
                   }
                 },
@@ -119,34 +194,121 @@
                             }
                           },
                           "description": "Other side of the reference",
-                          "required": ["table","columns"]
+                          "required": [
+                            "table",
+                            "columns"
+                          ]
                         }
                       },
-                      "required": ["columns","references"]
+                      "required": [
+                        "columns",
+                        "references"
+                      ]
                     }
                   }
                 }
               }
             },
             {
-             "$ref": "./columns-mysql.schema.json"
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "columns": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "minProperties": 1,
+                  "description": "Columns of the table",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "object",
+                      "description": "Table column",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the column"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Data type of the column"
+                        },
+                        "constraints": {
+                          "type": "object",
+                          "description": "Adding constraints to the table"
+                        },
+                        "attributes": {
+                          "type": "object",
+                          "description": "Adding attributes to the column"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "type"
+                      ]
+                    }
+                  }
+                }
+              }
             },
             {
               "if": {
                 "properties": {
-                  "connection": { "enum": ["postgres"] }
+                  "connection": {
+                    "enum": [
+                      "postgres"
+                    ]
+                  }
                 }
               },
-              "then": { "$ref": "./columns-postgres.schema.json"}
+              "then": {
+                "$schema": "http://json-schema.org/draft-04/schema#",
+                "type": "object",
+                "properties": {
+                  "columns": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "minProperties": 1,
+                    "description": "Columns of the table",
+                    "patternProperties": {
+                      ".*": {
+                        "type": "object",
+                        "description": "Table column",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the column"
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Data type of the column"
+                          },
+                          "constraints": {
+                            "type": "object",
+                            "description": "Adding constraints to the table"
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "type"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
             },
             {
-              "required": ["connection","database","columns","primary_key"]
+              "required": [
+                "connection",
+                "database",
+                "columns",
+                "primary_key"
+              ]
             }
           ]
         }
       }
     },
-    "advancedDef": {
+    {
       "type": "object",
       "properties": {
         "advanced": {
@@ -160,6 +322,46 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "description": "Metadata related to the resource",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the resource"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1"
+          ],
+          "description": "This field can be used to pin to a particular version"
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default",
+            "k8s"
+          ],
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+        }
+      }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "metadata",
+    "spec",
+    "version"
+  ]
 }

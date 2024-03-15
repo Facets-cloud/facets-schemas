@@ -43,6 +43,6 @@ Output given by the resource for others to refer.
 
 ### flavors
 - [loki](log_collector.loki.schema.md)
-- [loki_s3](log_collector.loki_s3.schema.md)
-- [loki_blob](log_collector.loki_blob.schema.md)
-- [loki_gcs](log_collector.loki_gcs.schema.md)
+- [loki_s3](log_collector.loki_aws_s3.schema)
+- [loki_blob](log_collector.loki_azure_blob.schema)
+- [loki_gcs](log_collector.loki_gcp_gcs.schema)

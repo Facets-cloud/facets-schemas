@@ -3,13 +3,8 @@
   "kind": "grafana_dashboard",
   "flavor": "default",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": true,
-  "provided": false,
-  "depends_on": [],
-  "metadata": {
-    "name": "kubernetes-api-server-dashboard"
-  },
+  "metadata": {},
   "spec": {
     "dashboard": {
       "annotations": {
@@ -3050,6 +3045,5 @@
       "version": 1,
       "weekStart": ""
     }
-  },
-  "out": {}
+  }
 }

@@ -20,7 +20,9 @@
               "description": "Helm values as per the chart https://artifacthub.io/packages/helm/grafana/loki-distributed\n Note: By default `loki.structuredConfig.storage_config` is configured to use minio storage backend"
             }
           },
-          "required": ["values"]
+          "required": [
+            "values"
+          ]
         },
         "minio": {
           "type": "object",
@@ -31,7 +33,9 @@
               "description": "Helm values as per the chart https://artifacthub.io/packages/helm/bitnami/minio"
             }
           },
-          "required": ["values"]
+          "required": [
+            "values"
+          ]
         },
         "promtail": {
           "type": "object",
@@ -59,7 +63,9 @@
               ]
             }
           },
-          "required": ["values"]
+          "required": [
+            "values"
+          ]
         },
         "loki_canary": {
           "type": "object",

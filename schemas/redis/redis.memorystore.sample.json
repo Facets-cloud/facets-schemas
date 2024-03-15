@@ -1,16 +1,8 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas//redis/redis.schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json",
   "flavor": "memorystore",
-  "lifecycle": "ENVIRONMENT",
-  "metadata": {
-    "name": "redis-memorystore"
-  },
-  "depends_on": [],
-  "advanced": {
-    "memorystore": {}
-  },
+  "metadata": {},
   "kind": "redis",
-  "provided": false,
   "disabled": true,
   "version": "0.2",
   "spec": {
@@ -19,12 +11,12 @@
     "persistence_enabled": false,
     "size": {
       "reader": {
-        "replica_count": 1,
-        "volume": "6"
+        "instance_count": 1,
+        "volume": "5Gi"
       },
       "writer": {
-        "replica_count": 1,
-        "volume": "6"
+        "instance_count": 1,
+        "volume": "5Gi"
       }
     }
   }

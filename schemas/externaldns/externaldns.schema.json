@@ -3,62 +3,146 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
-    },
-    {
-      "$ref": "#/$defs/specDef"
-    },
-    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
       "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
-          "enum": ["externaldns"]
-        },
-        "flavor": {
-          "type": "string",
-          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-          "enum": ["default"]
-        },
-        "version": {
-          "type": "string",
-          "description": "This field can be used to pin to a particular version",
-          "enum": ["0.1", "latest"]
-        },
-        "advanced": {
+      "allOf": [
+        {
           "type": "object",
-          "allOf": [
-            {
-              "$ref": "flavor-default.schema.json"
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
             }
-          ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
         }
-      }
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
-  ],
-  "$defs": {
-    "specDef": {
+      ]
+    },
+    {
       "type": "object",
       "properties": {
         "spec": {
           "type": "object",
           "required": [
-            "provider", "domains"
+            "provider",
+            "domains"
           ],
           "properties": {
             "provider": {
               "type": "string",
               "description": "DNS provider where the DNS records will be created",
               "enum": [
-                "akamai","scaleway", "ns1", "ovh", "pdns", "civo", "alibabacloud", "aws", "azure", "cloudflare", "designate", "digitalocean", "google", "hetzner", "infoblox", "linode", "rfc2136", "transip", "oci", "exoscale"
+                "akamai",
+                "scaleway",
+                "ns1",
+                "ovh",
+                "pdns",
+                "civo",
+                "alibabacloud",
+                "aws",
+                "azure",
+                "cloudflare",
+                "designate",
+                "digitalocean",
+                "google",
+                "hetzner",
+                "infoblox",
+                "linode",
+                "rfc2136",
+                "transip",
+                "oci",
+                "exoscale"
               ]
             },
             "domains": {
@@ -92,10 +176,16 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["client_token", "access_token","client_secret"]
+                  "required": [
+                    "client_token",
+                    "access_token",
+                    "client_secret"
+                  ]
                 }
               ]
             },
@@ -114,10 +204,14 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["api_token"]
+                  "required": [
+                    "api_token"
+                  ]
                 }
               ]
             },
@@ -140,10 +234,15 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["api_token", "api_key"]
+                  "required": [
+                    "api_token",
+                    "api_key"
+                  ]
                 }
               ]
             },
@@ -162,10 +261,14 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["api_token"]
+                  "required": [
+                    "api_token"
+                  ]
                 }
               ]
             },
@@ -188,10 +291,15 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["secret_key", "token"]
+                  "required": [
+                    "secret_key",
+                    "token"
+                  ]
                 }
               ]
             },
@@ -210,10 +318,14 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["api_token"]
+                  "required": [
+                    "api_token"
+                  ]
                 }
               ]
             },
@@ -236,10 +348,14 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["api_key"]
+                  "required": [
+                    "api_key"
+                  ]
                 }
               ]
             },
@@ -256,7 +372,10 @@
                   "description": "specify an existing secret key. (required when provider=scaleway)"
                 }
               },
-              "required": ["scw_secret_key", "scw_access_key"]
+              "required": [
+                "scw_secret_key",
+                "scw_access_key"
+              ]
             },
             "transip": {
               "type": "object",
@@ -271,7 +390,10 @@
                   "description": "specify the API key to use."
                 }
               },
-              "required": ["account", "api_key"]
+              "required": [
+                "account",
+                "api_key"
+              ]
             },
             "vinyldns": {
               "type": "object",
@@ -290,7 +412,11 @@
                   "description": "specify the Secret key to use."
                 }
               },
-              "required": ["host", "access_key", "secret_key"]
+              "required": [
+                "host",
+                "access_key",
+                "secret_key"
+              ]
             },
             "cloudflare": {
               "type": "object",
@@ -319,10 +445,15 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["api_token", "api_key"]
+                  "required": [
+                    "api_token",
+                    "api_key"
+                  ]
                 }
               ]
             },
@@ -355,7 +486,8 @@
                   "type": "string",
                   "description": "fiter for zones of a specific visibility (private or public)",
                   "enum": [
-                    "public", "private"
+                    "public",
+                    "private"
                   ]
                 }
               },
@@ -410,10 +542,18 @@
               },
               "anyOf": [
                 {
-                  "required": ["secret_name"]
+                  "required": [
+                    "secret_name"
+                  ]
                 },
                 {
-                  "required": ["resource_group", "tenant_id", "subscription_id", "aad_client_id", "aad_client_secret"]
+                  "required": [
+                    "resource_group",
+                    "tenant_id",
+                    "subscription_id",
+                    "aad_client_id",
+                    "aad_client_secret"
+                  ]
                 }
               ]
             },
@@ -456,7 +596,8 @@
                         }
                       },
                       "required": [
-                        "key", "name"
+                        "key",
+                        "name"
                       ]
                     },
                     "secret_access_key_secret_ref": {
@@ -473,16 +614,24 @@
                         }
                       },
                       "required": [
-                        "key", "name"
+                        "key",
+                        "name"
                       ]
                     }
                   },
                   "anyOf": [
                     {
-                      "required": ["secret_name", "access_key_id_secret_ref", "secret_access_key_secret_ref"]
+                      "required": [
+                        "secret_name",
+                        "access_key_id_secret_ref",
+                        "secret_access_key_secret_ref"
+                      ]
                     },
                     {
-                      "required": ["secret_access_key_id", "secret_access_key"]
+                      "required": [
+                        "secret_access_key_id",
+                        "secret_access_key"
+                      ]
                     }
                   ]
                 },
@@ -494,7 +643,8 @@
                   "type": "string",
                   "description": "Filter for zones of this type",
                   "enum": [
-                    "public", "private"
+                    "public",
+                    "private"
                   ]
                 },
                 "assume_role_arn": {
@@ -545,6 +695,86 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
+          "enum": [
+            "externaldns"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "This field can be used to pin to a particular version",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        },
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced externaldns Schema",
+              "properties": {
+                "externaldns": {
+                  "type": "object",
+                  "description": "Advanced values for externaldns module",
+                  "properties": {
+                    "values": {
+                      "type": "object",
+                      "description": "The chart values that can be passed based on this `https://github.com/bitnami/charts/blob/main/bitnami/external-dns/values.yaml`"
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "The version of the chart that needs to be used",
+                      "default": "6.28.5"
+                    },
+                    "cleanup_on_fail": {
+                      "type": "boolean",
+                      "description": "if the chart fails for some reason, do u want to clean up all the ones that are installed",
+                      "default": true
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "description": "The namespace where you want to install the dns chart"
+                    },
+                    "wait": {
+                      "type": "boolean",
+                      "description": "Do you want terraform to wait until the chart is fully installed",
+                      "default": false
+                    },
+                    "timeout": {
+                      "type": "integer",
+                      "description": "The version of the chart that needs to be used",
+                      "default": 300
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }

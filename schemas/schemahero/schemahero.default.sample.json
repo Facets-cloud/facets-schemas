@@ -3,21 +3,12 @@
   "for": "schemaHero",
   "kind": "configuration",
   "version": "0.1",
-  "metadata": {
-    "name": "schemahero"
-  },
+  "metadata": {},
   "spec": {
-    "size" : {
+    "size": {
       "cpu": "1",
       "memory": "150Mi"
     }
   },
-  "advanced" : {
-    "default": {
-      "schemahero": {
-        "values": {
-        }
-      }
-    }
-  }
+  "disabled": true
 }

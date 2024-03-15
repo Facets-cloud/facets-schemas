@@ -9,7 +9,7 @@
         "mongodb": {
           "type": "object",
           "properties": {
-            "values" : {
+            "values": {
               "type": "object",
               "description": "Helm values as per bitnami mongodb helm chart https://artifacthub.io/packages/helm/bitnami/mongodb"
             }

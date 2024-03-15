@@ -1,12 +1,17 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.schema.json",
   "kind": "log_collector",
-  "flavor": "k8s",
+  "flavor": "loki_s3",
   "version": "latest",
   "disabled": true,
   "metadata": {},
   "spec": {
-    "retentation_days": 7,
-    "storage_size": "5Gi"
+    "retentation_days": 0,
+    "storage_size": ""
+  },
+  "advanced": {
+    "loki_s3": {
+      "bucket_name": "<Dollar reference the name of s3 bucket>"
+    }
   }
 }

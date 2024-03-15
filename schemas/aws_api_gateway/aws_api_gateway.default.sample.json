@@ -1,19 +1,16 @@
 {
-    "$schema": "./aws_api_gateway.schema.json",
-    "kind": "aws_api_gateway",
-    "flavor": "default",
-    "disabled": true,
-    "metadata": {"description": "some desc"},
-    "provided": false ,
-    "version": "0.1",
-    "spec": {
-        "protocol": "HTTP",
-        "routes": {
-            "GET /": {}
-        }
-    },
-    "advanced": {
-        "aws_api_gateway": {
-        }
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_api_gateway/aws_api_gateway.schema.json",
+  "kind": "aws_api_gateway",
+  "flavor": "default",
+  "disabled": true,
+  "metadata": {
+    "description": "some desc"
+  },
+  "version": "0.1",
+  "spec": {
+    "protocol": "HTTP",
+    "routes": {
+      "GET /": {}
     }
+  }
 }

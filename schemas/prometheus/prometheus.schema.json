@@ -4,45 +4,131 @@
   "description": "Schema for Prometheus",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
-    },
-    {
-      "$ref": "#/$defs/specDef"
-    },
-    {
-      "$ref": "#/$defs/advancedDef"
-    },
-    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
       "type": "object",
-      "properties": {
-        "flavor": {
-          "type": "string",
-          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-          "enum": ["default", "victoria_metrics"]
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
         }
-      }
-    }
-  ],
-  "required": [
-    "kind",
-    "version",
-    "metadata",
-    "spec"
-  ],
-  "$defs": {
-    "specDef": {
+      ]
+    },
+    {
       "type": "object",
       "properties": {
         "spec": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["alertmanager", "grafana", "pushgateway", "prometheus"],        
+          "required": [
+            "alertmanager",
+            "grafana",
+            "pushgateway",
+            "prometheus"
+          ],
           "properties": {
             "mode": {
               "type": "string",
               "description": "if the flavor is victoria_metrics, you can choose your mode of installation. either standalone or cluster",
               "enum": [
-                "cluster", "standalone"
+                "cluster",
+                "standalone"
               ],
               "default": "standalone"
             },
@@ -60,7 +146,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 },
@@ -71,8 +175,12 @@
                     ".*": {
                       "type": "object",
                       "properties": {
-                        "url": { "type": "string" },
-                        "send_resolved": { "type": "bool" }
+                        "url": {
+                          "type": "string"
+                        },
+                        "send_resolved": {
+                          "type": "bool"
+                        }
                       }
                     }
                   }
@@ -89,7 +197,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 },
@@ -100,14 +226,30 @@
                     ".*": {
                       "type": "object",
                       "properties": {
-                        "name": { "type": "string" },
-                        "access": { "type": "string" },
-                        "editable": { "type": "bool" },
-                        "jsonData": { "type": "object" },
-                        "orgId": { "type": "integer" },
-                        "type": { "type": "string" },
-                        "url": { "type": "string" },
-                        "version": { "type": "integer" }
+                        "name": {
+                          "type": "string"
+                        },
+                        "access": {
+                          "type": "string"
+                        },
+                        "editable": {
+                          "type": "bool"
+                        },
+                        "jsonData": {
+                          "type": "object"
+                        },
+                        "orgId": {
+                          "type": "integer"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "version": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -129,7 +271,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -145,7 +305,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -161,7 +339,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -177,7 +373,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -193,7 +407,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -209,7 +441,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -225,7 +475,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -241,7 +509,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -257,7 +543,25 @@
                   "allOf": [
                     {
                       "type": "object",
-                      "$ref": "../../traits/size-k8s.schema.json"
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
                     }
                   ]
                 }
@@ -267,7 +571,7 @@
         }
       }
     },
-    "advancedDef": {
+    {
       "type": "object",
       "properties": {
         "advanced": {
@@ -317,6 +621,25 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+          "enum": [
+            "default",
+            "victoria_metrics"
+          ]
+        }
+      }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }
