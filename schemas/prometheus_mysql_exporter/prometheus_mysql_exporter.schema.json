@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
+  "description": "Schema for Prometheus MySQL exporter",
   "allOf": [
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -112,75 +113,33 @@
     {
       "type": "object",
       "properties": {
-        "spec": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "The name of the event bus"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "aws_event_bus"
-          ]
-        },
-        "flavor": {
-          "type": "string",
-          "enum": [
-            "default"
-          ]
-        },
-        "version": {
-          "type": "string",
-          "enum": [
-            "0.1",
-            "latest"
-          ]
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
         "advanced": {
-          "type": "object",
-          "properties": {
-            "additional_tags": {
+          "anyOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
               "type": "object",
-              "description": "The additional tags to be added to the event bus resource."
+              "definition": "k8s Schema",
+              "properties": {
+                "k8s": {
+                  "type": "object",
+                  "description": "Advanced section of k8s",
+                  "properties": {
+                    "prometheus_mysql_exporter": {
+                      "type": "object",
+                      "description": "Advanced values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-mysql-exporter \nCustomized defaults other than chart defaults,\n - serviceMonitor.enabled = true\n  - serviceMonitor.interval = 60s\n - serviceMonitor.additionalLabels.release = prometheus-operator\n - collectors.info_schema.tables = false"
+                    }
+                  }
+                }
+              },
+              "required": []
             }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "The name of the event bus resource."
-            }
-          }
+          ]
         }
       }
     }
   ],
   "required": [
     "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
+    "version"
   ]
 }

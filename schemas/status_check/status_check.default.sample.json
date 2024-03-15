@@ -3,13 +3,8 @@
   "kind": "status_check",
   "flavor": "default",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT",
   "disabled": true,
-  "provided": false,
-  "depends_on": [],
-  "metadata": {
-    "name": "test-uptime"
-  },
+  "metadata": {},
   "spec": {
     "http": {
       "http-check": {
@@ -20,11 +15,11 @@
       }
     },
     "mongo": {
-      "mongo-check" : {
+      "mongo-check": {
         "disabled": false,
         "url": "mongodb://localhost:27017"
       },
-      "mongo-check2" : {
+      "mongo-check2": {
         "disabled": false,
         "url": "mongodb://localhost:27017"
       }
@@ -36,21 +31,9 @@
       }
     },
     "tcp": {
-      "tcp-check" : {
+      "tcp-check": {
         "disabled": false,
         "url": "google.com:443"
-      }
-    }
-  },
-  "advanced": {
-    "status_check": {
-      "image_pull_policy": "Always",
-      "run_interval": "10s",
-      "size": {
-        "cpu": "1",
-        "cpu_limit": "1000m",
-        "memory": "1.5Gi",
-        "memory_limit": "1.5Gi"
       }
     }
   }

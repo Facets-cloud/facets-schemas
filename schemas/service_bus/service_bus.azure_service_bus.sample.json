@@ -1,13 +1,10 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/service_bus/schema.json",
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/service_bus/service_bus.schema.json",
   "kind": "service_bus",
   "flavor": "azure_service_bus",
   "version": "0.1",
-  "lifecycle": "ENVIRONMENT",
   "disabled": true,
-  "depends_on": [],
   "metadata": {
-    "name": "test-service-bus",
     "tags": {}
   },
   "spec": {
@@ -20,15 +17,7 @@
         "name": "",
         "status": "Active"
       },
-      "test2": {
-
-      }
+      "test2": {}
     }
-  },
-  "advanced": {
-
-  },
-  "out": {
-
   }
 }

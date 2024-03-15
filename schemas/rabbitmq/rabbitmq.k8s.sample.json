@@ -3,29 +3,15 @@
   "flavor": "k8s",
   "kind": "rabbitmq",
   "version": "latest",
-  "depends_on": [],
   "disabled": true,
-  "lifecycle": "ENVIRONMENT",
-  "provided": false,
-  "metadata": {
-    "name": "rabbitmq"
-  },
+  "metadata": {},
   "spec": {
-    "rabbitmq_version" : "3.10.7",
-    "size" : {
+    "rabbitmq_version": "3.10.7",
+    "size": {
       "cpu": "1000m",
       "memory": "3Gi",
       "volume": "1Gi",
       "replica_count": 3
-    }
-  },
-  "advanced" : {
-    "k8s": {
-      "rabbitmq": {
-        "values": {
-
-        }
-      }
     }
   }
 }

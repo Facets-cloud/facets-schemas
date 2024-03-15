@@ -1,18 +1,17 @@
 {
-    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
-    "flavor": "cloudsql_postgres",
-    "disabled": true,
-    "version": "0.1",
-    "kind": "postgres",
-    "provided": false,
-    "spec": {
-      "size": {
-        "reader_size": "S",
-        "reader_count": "2",
-        "reader_service_names": "something",
-        "storage": "10Gi",
-        "writer_size": "L",
-        "writer_service_names": "something"
-        }
-      }
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json",
+  "flavor": "cloudsql_postgres",
+  "disabled": true,
+  "version": "0.1",
+  "kind": "postgres",
+  "spec": {
+    "size": {
+      "reader_size": "S",
+      "reader_count": "2",
+      "reader_service_names": "something",
+      "storage": "10Gi",
+      "writer_size": "L",
+      "writer_service_names": "something"
     }
+  }
+}

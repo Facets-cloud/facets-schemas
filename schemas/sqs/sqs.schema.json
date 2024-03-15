@@ -1,101 +1,353 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "description": "Schema for SQS",
-    "allOf": [
-        {
-          "$ref": "../../traits/base.schema.json"
-        },
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for SQS",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
         {
           "type": "object",
           "properties": {
-            "kind":{
-              "type":"string",
-              "enum": ["sqs"]
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
             },
-            "flavor":{
-              "type":"string",
-              "enum": ["default"]
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
             },
-            "version":{
-              "type":"string",
-              "enum": ["0.2"]
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
             }
           }
         },
         {
-          "$ref": "#/$defs/specDef"
-        },
-        {
-          "$ref": "#/$defs/outDef"
-        },
-        {
-            "type": "object",
+          "if": {
             "properties": {
-              "advanced": {
-                "type": "object",
-                "description": "Advanced values for SQS",
-                "anyOf": [
-                    {
-                      "$ref": "./flavour-sqs.schema.json"
-                    }
-                  ]
+              "provided": {
+                "const": true
+              }
             }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
           }
         }
-      ],
-      "required": [
-        "kind",
-        "flavor",
-        "version",
-        "metadata"
-      ],
-      "$defs": {
-        "specDef": {
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sqs"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.2"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": []
+        },
+        "advanced": {
+          "anyOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced values for sqs",
+              "properties": {
+                "visibility_timeout_seconds": {
+                  "type": "number"
+                },
+                "message_retention_seconds": {
+                  "type": "number"
+                },
+                "max_message_size": {
+                  "type": "number"
+                },
+                "delay_seconds": {
+                  "type": "number"
+                },
+                "receive_wait_time_seconds": {
+                  "type": "number"
+                },
+                "policy": {
+                  "type": "string"
+                },
+                "redrive_policy": {
+                  "type": "string"
+                },
+                "fifo_queue": {
+                  "type": "boolean"
+                },
+                "content_based_deduplication": {
+                  "type": "boolean"
+                },
+                "kms_master_key_id": {
+                  "type": "string"
+                },
+                "kms_data_key_reuse_period_seconds": {
+                  "type": "number"
+                },
+                "tags": {
+                  "type": "object",
+                  "properties": {
+                    "values": {
+                      "type": "object",
+                      "description": "Extra tags required for tagging resources"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Output from the RabbitMQ module",
+      "allOf": [
+        {
           "type": "object",
           "properties": {
             "spec": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-              ]
+              "required": []
             },
             "advanced": {
-                "anyOf": [
-                  {
-                    "$ref": "./flavour-sqs.schema.json"
+              "anyOf": [
+                {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object",
+                  "description": "Advanced values for sqs",
+                  "properties": {
+                    "visibility_timeout_seconds": {
+                      "type": "number"
+                    },
+                    "message_retention_seconds": {
+                      "type": "number"
+                    },
+                    "max_message_size": {
+                      "type": "number"
+                    },
+                    "delay_seconds": {
+                      "type": "number"
+                    },
+                    "receive_wait_time_seconds": {
+                      "type": "number"
+                    },
+                    "policy": {
+                      "type": "string"
+                    },
+                    "redrive_policy": {
+                      "type": "string"
+                    },
+                    "fifo_queue": {
+                      "type": "boolean"
+                    },
+                    "content_based_deduplication": {
+                      "type": "boolean"
+                    },
+                    "kms_master_key_id": {
+                      "type": "string"
+                    },
+                    "kms_data_key_reuse_period_seconds": {
+                      "type": "number"
+                    },
+                    "tags": {
+                      "type": "object",
+                      "properties": {
+                        "values": {
+                          "type": "object",
+                          "description": "Extra tags required for tagging resources"
+                        }
+                      }
+                    }
                   }
-                ]
-              }
+                }
+              ]
+            }
           }
         },
-        "outDef": {
-            "type": "object",
-            "additionalProperties": false,
-            "description": "Output from the RabbitMQ module",
-            "allOf": [
-              {
-                "$ref": "#/$defs/specDef"
-              },
-              {
-                "properties": {
-                    "sqs_queue_name": {
-                        "type": "string",
-                        "description": "Name of the SQS"
-                      },
-                      "sqs_queue_arn": {
-                        "type": "string",
-                        "description": "ARN of the SQS"
-                      },
-                      "sqs_queue_url": {
-                        "type": "string",
-                        "description": "URL of the SQS"
-                      }
-                    },
-                    "required": [
-                    ]
-                }
-            ]
+        {
+          "properties": {
+            "sqs_queue_name": {
+              "type": "string",
+              "description": "Name of the SQS"
+            },
+            "sqs_queue_arn": {
+              "type": "string",
+              "description": "ARN of the SQS"
+            },
+            "sqs_queue_url": {
+              "type": "string",
+              "description": "URL of the SQS"
+            }
+          },
+          "required": []
         }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced values for SQS",
+          "anyOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced values for sqs",
+              "properties": {
+                "visibility_timeout_seconds": {
+                  "type": "number"
+                },
+                "message_retention_seconds": {
+                  "type": "number"
+                },
+                "max_message_size": {
+                  "type": "number"
+                },
+                "delay_seconds": {
+                  "type": "number"
+                },
+                "receive_wait_time_seconds": {
+                  "type": "number"
+                },
+                "policy": {
+                  "type": "string"
+                },
+                "redrive_policy": {
+                  "type": "string"
+                },
+                "fifo_queue": {
+                  "type": "boolean"
+                },
+                "content_based_deduplication": {
+                  "type": "boolean"
+                },
+                "kms_master_key_id": {
+                  "type": "string"
+                },
+                "kms_data_key_reuse_period_seconds": {
+                  "type": "number"
+                },
+                "tags": {
+                  "type": "object",
+                  "properties": {
+                    "values": {
+                      "type": "object",
+                      "description": "Extra tags required for tagging resources"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
     }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata"
+  ]
 }

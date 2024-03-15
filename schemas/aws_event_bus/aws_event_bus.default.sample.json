@@ -1,9 +1,9 @@
 {
-    "kind": "aws_event_bus",
-    "disabled": true,
-    "version": "0.1",
-    "metadata": {},
-    "flavor": "default",
-    "spec": {},
-    "advanced": {}
+  "kind": "aws_event_bus",
+  "disabled": true,
+  "version": "0.1",
+  "metadata": {},
+  "flavor": "default",
+  "spec": {},
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_event_bus/aws_event_bus.schema.json"
 }

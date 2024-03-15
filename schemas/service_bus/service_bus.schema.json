@@ -4,54 +4,256 @@
   "description": "Schema for service",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "object",
       "properties": {
-        "kind":{
-          "type":"string",
-          "enum": ["service_bus"]
+        "kind": {
+          "type": "string",
+          "enum": [
+            "service_bus"
+          ]
         },
-        "flavor":{
-          "type":"string",
-          "enum": ["azure_service_bus"]
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "azure_service_bus"
+          ]
         },
-        "version":{
-          "type":"string",
-          "enum": ["0.1","latest"]
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
         }
       }
     },
     {
-      "$ref": "#/$defs/outDef"
-    },
-    {
-      "$ref": "#/$defs/specDef"
-    },
-    {
       "type": "object",
       "properties": {
-        "advanced": {
+        "out": {
           "type": "object",
-          "description": "Advanced values for service bus",
-          "anyOf": [
+          "additionalProperties": false,
+          "description": "Output from the azure service bus",
+          "allOf": [
             {
-              "$ref": "./flavour-azure_service_bus.schema.json"
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "properties": {
+                    "topics": {
+                      "type": "object",
+                      "description": "Topics configuration",
+                      "patternProperties": {
+                        "^[a-zA-Z0-9-_]+$": {
+                          "type": "object",
+                          "description": "Topic configuration",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the topic",
+                              "minLength": 1,
+                              "maxLength": 255
+                            },
+                            "status": {
+                              "type": "string",
+                              "description": "The status of the topic",
+                              "enum": [
+                                "Active",
+                                "Creating",
+                                "Deleting",
+                                "Disabled",
+                                "ReceiveDisabled",
+                                "Renaming",
+                                "SendDisabled",
+                                "Unknown"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "queues": {
+                      "type": "object",
+                      "description": "Queues configuration",
+                      "patternProperties": {
+                        "^[a-zA-Z0-9-_]+$": {
+                          "type": "object",
+                          "description": "Queues configuration",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the queue",
+                              "minLength": 1,
+                              "maxLength": 255
+                            },
+                            "status": {
+                              "type": "string",
+                              "description": "The status of the queue",
+                              "enum": [
+                                "Active",
+                                "Disabled"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "size": {
+                      "type": "object",
+                      "properties": {
+                        "sku": {
+                          "type": "string"
+                        },
+                        "capacity": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "sku"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "properties": {
+                "endpoint": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "primary_connection_string": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "primary_key": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "secondary_connection_string": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "secondary_key": {
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "required": []
             }
           ]
         }
       }
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata"
-  ],
-  "$defs": {
-    "specDef": {
+    },
+    {
       "type": "object",
       "properties": {
         "spec": {
@@ -133,57 +335,33 @@
         }
       }
     },
-    "outDef": {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Output from the azure service bus",
-          "allOf": [
-            {
-              "$ref": "#/$defs/specDef"
-            },
-            {
-              "properties": {
-                "endpoint": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "primary_connection_string": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "primary_key": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "secondary_connection_string": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "secondary_key": {
-                  "type": "string",
-                  "additionalProperties": false
-                }
-              },
-              "required": []
-            }
-          ]
-        }
-      }
-    },
-    "advancedDef": {
+    {
       "type": "object",
       "properties": {
         "advanced": {
-          "allOf": [
+          "type": "object",
+          "description": "Advanced values for service bus",
+          "anyOf": [
             {
-              "$ref": "./flavour-azure_service_bus.schema.json"
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Azure Service-bus Schema",
+              "properties": {
+                "azure_cache": {
+                  "type": "object",
+                  "description": "Advanced values for Azure Service-bus, Resource values as per the terraform resource documentation https://registry.terraform.io/providers/hashicorp/azurerm/2.50.0/docs/resources/servicebus_namespace"
+                }
+              }
             }
           ]
         }
       }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata"
+  ]
 }

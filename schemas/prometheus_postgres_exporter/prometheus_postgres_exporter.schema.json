@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
+  "description": "Schema for Prometheus postgres exporter",
   "allOf": [
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -112,64 +113,19 @@
     {
       "type": "object",
       "properties": {
-        "spec": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "The name of the event bus"
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "aws_event_bus"
-          ]
-        },
-        "flavor": {
-          "type": "string",
-          "enum": [
-            "default"
-          ]
-        },
-        "version": {
-          "type": "string",
-          "enum": [
-            "0.1",
-            "latest"
-          ]
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
         "advanced": {
           "type": "object",
+          "description": "Advanced section of the module",
           "properties": {
-            "additional_tags": {
+            "prometheus_postgres_exporter": {
               "type": "object",
-              "description": "The additional tags to be added to the event bus resource."
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "The name of the event bus resource."
+              "description": "Advanced values for the exporter",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Helm values as per the chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-postgres-exporter"
+                }
+              }
             }
           }
         }
@@ -178,9 +134,6 @@
   ],
   "required": [
     "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
+    "version"
   ]
 }

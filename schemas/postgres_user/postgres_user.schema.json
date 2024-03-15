@@ -3,7 +3,111 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "object",
@@ -33,53 +137,6 @@
       }
     },
     {
-      "$ref": "#/$defs/specDef"
-    },
-    {
-      "$ref": "#/$defs/outDef"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "advanced": {
-          "type": "object",
-          "allOf": [
-            {
-              "$ref": "flavor-default.schema.json"
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "required": [
-    "kind",
-    "flavor",
-    "version",
-    "metadata",
-    "spec"
-  ],
-  "if": {
-    "properties": {
-      "provided": {
-        "const": true
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "out"
-    ]
-  },
-  "else": {
-    "not": {
-      "required": [
-        "out"
-      ]
-    }
-  },
-  "$defs": {
-    "specDef": {
       "type": "object",
       "properties": {
         "spec": {
@@ -136,7 +193,7 @@
         }
       }
     },
-    "outDef": {
+    {
       "type": "object",
       "properties": {
         "out": {
@@ -144,7 +201,61 @@
           "additionalProperties": false,
           "allOf": [
             {
-              "$ref": "#/$defs/specDef"
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "type": "string",
+                      "description": "The PostgreSQL database endpoint. Syntax: `{username}:{password}@{endpoint}:{port}`, Eg: `postgres:testPostgresPassword@test-postgresql.default.svc.cluster.local:5432`"
+                    },
+                    "permissions": {
+                      "type": "object",
+                      "description": "Map of permissions to be applied to user",
+                      "patternProperties": {
+                        "^[a-zA-Z1-9]*$": {
+                          "type": "object",
+                          "properties": {
+                            "permission": {
+                              "type": "string",
+                              "description": "The canned permission for grant",
+                              "enum": [
+                                "ADMIN",
+                                "RWO",
+                                "RO"
+                              ]
+                            },
+                            "database": {
+                              "type": "string",
+                              "description": "The database name. Note: You can use wildcard `*` to apply permissions to ALL databases."
+                            },
+                            "schema": {
+                              "type": "string",
+                              "description": "The schema name"
+                            },
+                            "table": {
+                              "type": "string",
+                              "description": "The table name. Note: You can use wildcard `*` to apply permissions to ALL tables."
+                            }
+                          },
+                          "required": [
+                            "permission",
+                            "database",
+                            "schema",
+                            "table"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "permissions"
+                  ]
+                }
+              }
             },
             {
               "properties": {
@@ -162,6 +273,99 @@
           ]
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced PostgreSQL User Schema",
+              "properties": {
+                "postgres_user": {
+                  "type": "object",
+                  "description": "The advanced options for PostgreSQL User",
+                  "properties": {
+                    "role": {
+                      "type": "object",
+                      "description": "The extra options for role. You can refer to this doc for more information - https://www.postgresql.org/docs/current/role-attributes.html",
+                      "properties": {
+                        "connectionLimit": {
+                          "type": "number",
+                          "description": "The maximum number of concurrent connections to the database server. Default is 100"
+                        },
+                        "privileges": {
+                          "type": "object",
+                          "description": "A database role can have a number of attributes that define its privileges and interact with the client authentication system",
+                          "properties": {
+                            "login": {
+                              "type": "boolean",
+                              "description": "Only roles that have the LOGIN attribute can be used as the initial role name for a database connection"
+                            },
+                            "bypassRls": {
+                              "type": "boolean",
+                              "description": "A role must be explicitly given permission to bypass every row-level security (RLS) policy (except for superusers, since those bypass all permission checks)"
+                            },
+                            "createDb": {
+                              "type": "boolean",
+                              "description": "A role must be explicitly given permission to create databases (except for superusers, since those bypass all permission checks)"
+                            },
+                            "createRole": {
+                              "type": "boolean",
+                              "description": "A role must be explicitly given permission to create more roles (except for superusers, since those bypass all permission checks)"
+                            },
+                            "inherit": {
+                              "type": "boolean",
+                              "description": "A role is given permission to inherit the privileges of roles it is a member of"
+                            },
+                            "replication": {
+                              "type": "boolean",
+                              "description": "A role must explicitly be given permission to initiate streaming replication (except for superusers, since those bypass all permission checks). A role used for streaming replication must have LOGIN permission as well"
+                            },
+                            "superUser": {
+                              "type": "boolean",
+                              "description": "A database superuser bypasses all permission checks, except the right to log in. This is a dangerous privilege and should not be used carelessly; it is best to do most of your work as a role that is not a superuser"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
     }
   }
 }

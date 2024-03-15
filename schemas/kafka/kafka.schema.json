@@ -3,7 +3,111 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "object",
@@ -17,22 +121,255 @@
         "flavor": {
           "type": "string",
           "enum": [
-            "k8s","msk"
+            "k8s",
+            "msk"
           ]
         },
         "version": {
           "type": "string",
           "enum": [
-            "0.2","0.1","latest"
+            "0.2",
+            "0.1",
+            "latest"
           ]
         }
       }
     },
     {
-      "$ref": "#/$defs/specDef"
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "authenticated": {
+              "type": "boolean",
+              "description": "Make this kafka is Password protected"
+            },
+            "kafka_version": {
+              "type": "string",
+              "description": "Version of kafka e.g. 3.2.3",
+              "minLength": "3"
+            },
+            "persistence_enabled": {
+              "type": "boolean",
+              "description": "Enable Persistence for this redis"
+            },
+            "size": {
+              "type": "object",
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "properties": {
+                "zookeeper": {
+                  "type": "object",
+                  "description": "The zookeeper details",
+                  "allOf": [
+                    {
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "replica_count": {
+                          "type": "integer",
+                          "description": "Number of zookeeper instances needs to be deployed"
+                        }
+                      }
+                    }
+                  ],
+                  "required": [
+                    "replica_count"
+                  ]
+                },
+                "kafka": {
+                  "type": "object",
+                  "description": "The kafka details",
+                  "allOf": [
+                    {
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "type": "object",
+                      "properties": {
+                        "cpu": {
+                          "type": "string",
+                          "description": "CPU request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu"
+                        },
+                        "memory": {
+                          "type": "string",
+                          "description": "Memory request in format mentioned @ https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory"
+                        },
+                        "volume": {
+                          "type": "string",
+                          "description": "Volume request in kubernetes persistent volumes"
+                        }
+                      },
+                      "required": [
+                        "cpu",
+                        "memory"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "replica_count": {
+                          "type": "integer",
+                          "description": "Number of kafka instances needs to be deployed"
+                        }
+                      }
+                    }
+                  ],
+                  "required": [
+                    "replica_count"
+                  ]
+                }
+              },
+              "required": [
+                "zookeeper",
+                "kafka"
+              ]
+            }
+          },
+          "required": [
+            "authenticated",
+            "kafka_version",
+            "persistence_enabled",
+            "size"
+          ]
+        }
+      }
     },
     {
-      "$ref": "#/$defs/outDef"
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "properties": {
+            "interfaces": {
+              "type": "object",
+              "properties": {
+                "cluster": {
+                  "type": "object",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "required": [
+                    "endpoint",
+                    "connection_string"
+                  ],
+                  "properties": {
+                    "endpoint": {
+                      "type": "string",
+                      "pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}(,[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}$",
+                      "description": "A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1."
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "The username to use for authentication when connecting to the datastore."
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The password to use for authentication when connecting to the datastore."
+                    },
+                    "connection_string": {
+                      "type": "string",
+                      "description": "The connection_string to use when connecting to the datastore."
+                    }
+                  }
+                }
+              },
+              "required": [
+                "cluster"
+              ],
+              "additionalProperties": false,
+              "description": "Kafka broker details"
+            },
+            "instances": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "map of all kafka broker in the cluster with interface",
+              "patternProperties": {
+                "^(kafka_[0-9]+)$": {
+                  "description": "map of kafka broker starting `kafka_[0-9]*`",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "type": "object",
+                  "required": [
+                    "host",
+                    "port",
+                    "connection_string"
+                  ],
+                  "properties": {
+                    "host": {
+                      "type": "string",
+                      "description": "The hostname or IP address of the database or cache server."
+                    },
+                    "port": {
+                      "type": "integer",
+                      "description": "The port number to use for connecting to the database or cache server.",
+                      "minimum": 1,
+                      "maximum": 65535
+                    },
+                    "username": {
+                      "type": "string",
+                      "description": "The username to use for authentication when connecting to the database or cache server."
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The password to use for authentication when connecting to the database or cache server."
+                    },
+                    "connection_string": {
+                      "type": "string",
+                      "description": "The connection_string to use when connecting to the datastore."
+                    }
+                  }
+                }
+              }
+            },
+            "extra_settings": {
+              "type": "object",
+              "description": "The extra setting required for kafka brokers connection",
+              "properties": {
+                "kafka": {
+                  "type": "object",
+                  "description": "Kafka extra settings for connection",
+                  "properties": {
+                    "security_protocol": {
+                      "type": "string",
+                      "description": "The security protocol required to connect to the kafka broker",
+                      "enum": [
+                        "SASL_PLAINTEXT",
+                        "PLAINTEXT"
+                      ]
+                    },
+                    "sasl_mechanism": {
+                      "type": "string",
+                      "description": "The sasl mechanism required to connect to the kafka broker",
+                      "enum": [
+                        "SCRAM-SHA-256",
+                        "PLAIN"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     {
       "type": "object",
@@ -41,10 +378,50 @@
           "type": "object",
           "allOf": [
             {
-              "$ref": "flavor-k8s.schema.json"
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "definition": "Kubernetes Schema",
+              "description": "Helm values for kafka",
+              "properties": {
+                "k8s": {
+                  "type": "object",
+                  "description": "Advanced k8s values for kafka",
+                  "properties": {
+                    "kafka": {
+                      "type": "object",
+                      "description": "Advanced values for kafka",
+                      "properties": {
+                        "values": {
+                          "type": "object",
+                          "description": "Helm values as per the Bitnami kafka chart https://github.com/bitnami/charts/tree/master/bitnami/kafka"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             {
-              "$ref": "flavor-msk.schema.json"
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "definition": "Kafka MSK schema",
+              "description": "Values for kafka",
+              "properties": {
+                "advanced": {
+                  "type": "object",
+                  "properties": {
+                    "kafka": {
+                      "type": "object",
+                      "properties": {
+                        "msk": {
+                          "type": "object",
+                          "description": "Values as per the MSK kafka https://registry.terraform.io/modules/terraform-aws-modules/msk-kafka-cluster/aws/1.2.0?tab=inputs"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           ]
         }
@@ -83,102 +460,5 @@
     "version",
     "metadata",
     "spec"
-  ],
-  "$defs": {
-    "specDef": {
-      "type": "object",
-      "properties": {
-        "spec": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "authenticated": {
-              "type": "boolean",
-              "description": "Make this kafka is Password protected"
-            },
-            "kafka_version": {
-              "type": "string",
-              "description": "Version of kafka e.g. 3.2.3",
-              "minLength": "3"
-            },
-            "persistence_enabled": {
-              "type": "boolean",
-              "description": "Enable Persistence for this redis"
-            },
-            "size": {
-              "type": "object",
-              "$ref": "./zookeeper-kafka.schema.json"
-            }
-          },
-          "required": [
-            "authenticated",
-            "kafka_version",
-            "persistence_enabled",
-            "size"
-          ]
-        }
-      }
-    },
-    "outDef": {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "properties": {
-            "interfaces": {
-              "type": "object",
-              "properties": {
-                "cluster": {
-                  "type": "object",
-                  "$ref": "../../traits/multi-node-datastore-interface.schema.json"
-                }
-              },
-              "required": ["cluster"],
-              "additionalProperties": false,
-              "description": "Kafka broker details"
-            },
-            "instances": {
-              "type": "object",
-              "additionalProperties": false,
-              "description": "map of all kafka broker in the cluster with interface",
-              "patternProperties": {
-                "^(kafka_[0-9]+)$": {
-                  "description": "map of kafka broker starting `kafka_[0-9]*`",
-                  "$ref": "../../traits/datastore-interface.schema.json"
-                }
-              }
-            },
-            "extra_settings": {
-              "type": "object",
-              "description": "The extra setting required for kafka brokers connection",
-              "properties": {
-                "kafka": {
-                  "type": "object",
-                  "description": "Kafka extra settings for connection",
-                  "properties": {
-                    "security_protocol": {
-                      "type": "string",
-                      "description": "The security protocol required to connect to the kafka broker",
-                      "enum": [
-                        "SASL_PLAINTEXT",
-                        "PLAINTEXT"
-                      ]
-                    },
-                    "sasl_mechanism": {
-                      "type": "string",
-                      "description": "The sasl mechanism required to connect to the kafka broker",
-                      "enum": [
-                        "SCRAM-SHA-256",
-                        "PLAIN"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  ]
 }

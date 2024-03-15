@@ -1,20 +1,15 @@
 {
-    "$schema": "./aws_api_gateway.schema.json",
-    "kind": "aws_lambda_permission",
-    "flavor": "default",
-    "disabled": true,
-    "metadata": {},
-    "provided": false ,
-    "version": "0.1",
-    "spec": {
-        "allowed_triggers": {
-            "allowedVPC": {}
-        },
-        "lambda_name": "",
-        "lambda_version": ""
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda_permission/aws_lambda_permission.schema.json",
+  "kind": "aws_lambda_permission",
+  "flavor": "default",
+  "disabled": true,
+  "metadata": {},
+  "version": "0.1",
+  "spec": {
+    "allowed_triggers": {
+      "allowedVPC": {}
     },
-    "advanced": {
-        "aws_lambda_permission": {
-        }
-    }
+    "lambda_name": "",
+    "lambda_version": ""
+  }
 }

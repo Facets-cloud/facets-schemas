@@ -29,7 +29,10 @@
               "description": "Adding attributes to the column"
             }
           },
-          "required": ["name","type"]
+          "required": [
+            "name",
+            "type"
+          ]
         }
       }
     }

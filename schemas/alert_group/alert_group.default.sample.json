@@ -3,14 +3,8 @@
   "kind": "alert_group",
   "flavor": "default",
   "version": "latest",
-  "lifecycle": "ENVIRONMENT_BOOTSTRAP",
   "disabled": true,
-  "provided": false,
-  "depends_on": [
-  ],
-  "metadata": {
-    "name": "pod-rules"
-  },
+  "metadata": {},
   "spec": {
     "rules": {
       "KubernetesPodCrashLooping1": {
@@ -60,6 +54,5 @@
         "resource_type": "statefulset"
       }
     }
-  },
-  "out": {}
+  }
 }

@@ -1,124 +1,262 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "allOf": [
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
         {
-            "$ref": "../../traits/base.schema.json"
-
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
         },
         {
-            "$ref": "#/$defs/specDef"
-        },
-        {
-            "type": "object",
+          "if": {
             "properties": {
-                "kind": {
-                    "type": "string",
-                    "enum": [
-                            "dax_cluster"
-                    ]
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "iam_policies": {
+              "type": "string",
+              "description": "iam policies to be used"
+            },
+            "size": {
+              "type": "object",
+              "description": "Specify the instance type",
+              "properties": {
+                "instance": {
+                  "type": "string",
+                  "description": "Specify the instance type"
+                }
+              }
+            },
+            "replication_factor": {
+              "type": "integer",
+              "description": "The number of nodes in the DAX cluster"
+            }
+          },
+          "required": [
+            "size",
+            "replication_factor"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "dax_cluster"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Section of AWS DAX cluster Schema",
+              "properties": {
+                "cluster_endpoint_encryption_type": {
+                  "type": "string",
+                  "description": "Cluster's endpoint encryption type"
                 },
-                "flavor": {
-                    "type": "string",
-                    "enum": [
-                        "default"
-                    ]
+                "availability_zones": {
+                  "type": "object",
+                  "description": "Availability zones in which nodes would be created"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description od DAX cluster"
+                },
+                "notification_topic_arn": {
+                  "type": "string",
+                  "description": "ARN of SNS topic"
+                },
+                "parameter_group": {
+                  "type": "object",
+                  "description": "Values to create dax_parameter_group"
+                },
+                "maintenance_window": {
+                  "type": "string",
+                  "description": "Weekly time range to perform cluster maintenance"
+                },
+                "security_group_ids": {
+                  "type": "object",
+                  "description": "VPC security groups associated with the cluster"
+                },
+                "server_side_encryption": {
+                  "type": "object",
+                  "description": "Encrypt at rest options",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "To enable/disable server side encryption"
+                    }
+                  }
+                },
+                "tags": {
+                  "type": "object",
+                  "description": "Additional tags to cluster"
                 }
+              }
             }
-        },
-        {
-            "$ref": "#/$defs/advancedDef"
-        },
-        {
-            "$ref": "#/$defs/outDef"
+          ]
         }
-    ],
-    "required": [
-        "kind",
-        "flavor",
-        "version",
-        "metadata",
-        "spec"
-    ],
-    "$defs": {
-        "specDef": {
-            "type": "object",
-            "properties": {
-                "spec": {
-                    "type": "object",
-                    "properties": {
-                        "iam_policies": {
-                            "type": "string",
-                            "description": "iam policies to be used"
-                        },
-                        "size": {
-                            "type": "object",
-                            "description": "Specify the instance type",
-                            "properties": {
-                                "instance": {
-                                    "type": "string",
-                                    "description": "Specify the instance type"
-                                }
-                            }
-                        },
-                        "replication_factor": {
-                            "type": "integer",
-                            "description": "The number of nodes in the DAX cluster"
-                        }
-                    },
-                    "required": [
-                        "size",
-                        "replication_factor"
-                    ]
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "properties": {
+                "configuration_endpoint": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "cluster_address": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "arn": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "nodes": {
+                  "type": "object",
+                  "additionalProperties": false
+                },
+                "port": {
+                  "type": "integer",
+                  "additionalProperties": false
                 }
+              }
             }
-        },
-        "advancedDef": {
-            "type": "object",
-            "properties": {
-                "advanced": {
-                    "allOf": [
-                        {
-                            "$ref": "flavor-default.schema.json"
-                        }
-                    ]
-                }
-            }
-        },
-        "outDef": {
-            "type": "object",
-            "properties": {
-                "out": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "allOf": [
-                        {
-                            "properties": {
-                                "configuration_endpoint": {
-                                    "type": "string",
-                                    "additionalProperties": false
-                                },
-                                "cluster_address": {
-                                    "type": "string",
-                                    "additionalProperties": false
-                                },
-                                "arn": {
-                                    "type": "string",
-                                    "additionalProperties": false
-                                },
-                                "nodes": {
-                                    "type": "object",
-                                    "additionalProperties": false
-                                },
-                                "port": {
-                                    "type": "integer",
-                                    "additionalProperties": false
-                                }
-                            }
-                        }
-                    ]
-                }
-            }
+          ]
         }
+      }
     }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
 }

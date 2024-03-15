@@ -1,43 +1,34 @@
 {
-    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.json",
-    "kind": "k8s_resource",
-    "metadata": {},
-    "flavor": "k8s",
-    "version": "latest",
-    "disabled": true,
-    "provided": false,
-    "lifecycle": "ENVIRONMENT",
-    "advanced": {
-        "k8s_resource": {
-            "cleanup_on_fail": true,
-            "timeout": 300,
-            "wait": false
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.json",
+  "kind": "k8s_resource",
+  "metadata": {},
+  "flavor": "k8s",
+  "version": "latest",
+  "disabled": true,
+  "spec": {
+    "resource": {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "k8s-resource",
+        "annotations": {
+          "service.beta.kubernetes.io/aws-load-balancer-scheme": "internal",
+          "service.beta.kubernetes.io/aws-load-balancer-type": "nlb"
         }
-    },
-    "spec": {
-        "resource": {
-            "apiVersion": "v1",
-            "kind": "Service",
-            "metadata": {
-            "name": "k8s-resource",
-            "annotations": {
-                "service.beta.kubernetes.io/aws-load-balancer-scheme": "internal",
-                "service.beta.kubernetes.io/aws-load-balancer-type": "nlb"
-            }
-            },
-            "spec": {
-            "selector": {
-                "app": "facetsapi"
-            },
-            "type": "ClusterIP",
-            "ports": [
-                {
-                "port": 80,
-                "name": "http",
-                "targetPort": 80
-                }
-            ]
-            }
-        }
+      },
+      "spec": {
+        "selector": {
+          "app": "facetsapi"
+        },
+        "type": "ClusterIP",
+        "ports": [
+          {
+            "port": 80,
+            "name": "http",
+            "targetPort": 80
+          }
+        ]
+      }
     }
+  }
 }

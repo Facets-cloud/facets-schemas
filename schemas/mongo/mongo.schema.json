@@ -3,7 +3,111 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "../../traits/base.schema.json"
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
     },
     {
       "type": "object",
@@ -33,10 +137,386 @@
       }
     },
     {
-      "$ref": "#/$defs/specDef"
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "authenticated": {
+              "type": "boolean",
+              "description": "Make this mongodb instance Password protected"
+            },
+            "mongodb_version": {
+              "type": "string",
+              "description": "Version of mongodb e.g. 6.0, see valid tags here: https://hub.docker.com/_/mongo/tags?page=1",
+              "minLength": 3,
+              "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+            },
+            "size": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "volume"
+                  ],
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "instance_count": {
+                      "type": "integer",
+                      "description": "The number of instances to create.",
+                      "minimum": 1
+                    },
+                    "replica_count": {
+                      "type": "integer",
+                      "description": "[Deprecated] The number of instances to create.",
+                      "minimum": 1
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "cpu",
+                            "memory"
+                          ],
+                          "properties": {
+                            "cpu": {
+                              "type": "string",
+                              "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[m]?$",
+                              "examples": [
+                                "1",
+                                "1000m"
+                              ]
+                            },
+                            "memory": {
+                              "type": "string",
+                              "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                              "examples": [
+                                "800Mi",
+                                "1.5Gi"
+                              ]
+                            },
+                            "cpu_limit": {
+                              "type": "string",
+                              "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[m]?$",
+                              "examples": [
+                                "1",
+                                "1000m"
+                              ]
+                            },
+                            "memory_limit": {
+                              "type": "string",
+                              "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                              "examples": [
+                                "800Mi",
+                                "1.5Gi"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "instance"
+                          ],
+                          "properties": {
+                            "instance": {
+                              "type": "string",
+                              "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+                              "minLength": 1,
+                              "pattern": "^[a-zA-Z0-9-.]+$",
+                              "examples": [
+                                "t2.micro",
+                                "Standard_DS1_v2",
+                                "n1-standard-2",
+                                "db.m5.large",
+                                "db.r5.large",
+                                "db.t3.medium",
+                                "db-n1-standard-1",
+                                "db-f1-micro"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "properties": {
+                        "volume": {
+                          "type": "string",
+                          "description": "The size of the volume. e.g '10G' or '5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[a-zA-Z]$",
+                          "examples": [
+                            "10G",
+                            "5Gi"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "authenticated",
+            "mongo_version",
+            "size"
+          ]
+        }
+      }
     },
     {
-      "$ref": "#/$defs/outDef"
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "authenticated": {
+                      "type": "boolean",
+                      "description": "Make this mongodb instance Password protected"
+                    },
+                    "mongodb_version": {
+                      "type": "string",
+                      "description": "Version of mongodb e.g. 6.0, see valid tags here: https://hub.docker.com/_/mongo/tags?page=1",
+                      "minLength": 3,
+                      "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+                    },
+                    "size": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "volume"
+                          ],
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "properties": {
+                            "instance_count": {
+                              "type": "integer",
+                              "description": "The number of instances to create.",
+                              "minimum": 1
+                            },
+                            "replica_count": {
+                              "type": "integer",
+                              "description": "[Deprecated] The number of instances to create.",
+                              "minimum": 1
+                            }
+                          },
+                          "allOf": [
+                            {
+                              "$schema": "http://json-schema.org/draft-07/schema#",
+                              "type": "object",
+                              "oneOf": [
+                                {
+                                  "$schema": "http://json-schema.org/draft-07/schema#",
+                                  "type": "object",
+                                  "required": [
+                                    "cpu",
+                                    "memory"
+                                  ],
+                                  "properties": {
+                                    "cpu": {
+                                      "type": "string",
+                                      "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+[m]?$",
+                                      "examples": [
+                                        "1",
+                                        "1000m"
+                                      ]
+                                    },
+                                    "memory": {
+                                      "type": "string",
+                                      "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                      "examples": [
+                                        "800Mi",
+                                        "1.5Gi"
+                                      ]
+                                    },
+                                    "cpu_limit": {
+                                      "type": "string",
+                                      "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+[m]?$",
+                                      "examples": [
+                                        "1",
+                                        "1000m"
+                                      ]
+                                    },
+                                    "memory_limit": {
+                                      "type": "string",
+                                      "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                      "examples": [
+                                        "800Mi",
+                                        "1.5Gi"
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "$schema": "http://json-schema.org/draft-07/schema#",
+                                  "type": "object",
+                                  "required": [
+                                    "instance"
+                                  ],
+                                  "properties": {
+                                    "instance": {
+                                      "type": "string",
+                                      "description": "The instance type of the node. e.g 't2.micro', 'Standard_DS1_v2', 'n1-standard-2', 'db.m5.large', 'db-n1-standard-1' or 'db-f1-micro'",
+                                      "minLength": 1,
+                                      "pattern": "^[a-zA-Z0-9-.]+$",
+                                      "examples": [
+                                        "t2.micro",
+                                        "Standard_DS1_v2",
+                                        "n1-standard-2",
+                                        "db.m5.large",
+                                        "db.r5.large",
+                                        "db.t3.medium",
+                                        "db-n1-standard-1",
+                                        "db-f1-micro"
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "properties": {
+                                "volume": {
+                                  "type": "string",
+                                  "description": "The size of the volume. e.g '10G' or '5Gi'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+[a-zA-Z]$",
+                                  "examples": [
+                                    "10G",
+                                    "5Gi"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "authenticated",
+                    "mongo_version",
+                    "size"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "interfaces": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "cluster": {
+                      "type": "object",
+                      "description": "Map of type interface for cluster endpoint & port of MongoDB",
+                      "allOf": [
+                        {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "endpoint",
+                            "connection_string"
+                          ],
+                          "properties": {
+                            "endpoint": {
+                              "type": "string",
+                              "pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}(,[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}$",
+                              "description": "A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1."
+                            },
+                            "username": {
+                              "type": "string",
+                              "description": "The username to use for authentication when connecting to the datastore."
+                            },
+                            "password": {
+                              "type": "string",
+                              "description": "The password to use for authentication when connecting to the datastore."
+                            },
+                            "connection_string": {
+                              "type": "string",
+                              "description": "The connection_string to use when connecting to the datastore."
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "instances": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "patternProperties": {
+                    "^([a-z]*-[0-9]+)$": {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "required": [
+                        "host",
+                        "port",
+                        "connection_string"
+                      ],
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "description": "The hostname or IP address of the database or cache server."
+                        },
+                        "port": {
+                          "type": "integer",
+                          "description": "The port number to use for connecting to the database or cache server.",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username to use for authentication when connecting to the database or cache server."
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "The password to use for authentication when connecting to the database or cache server."
+                        },
+                        "connection_string": {
+                          "type": "string",
+                          "description": "The connection_string to use when connecting to the datastore."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
     },
     {
       "type": "object",
@@ -45,7 +525,25 @@
           "type": "object",
           "allOf": [
             {
-              "$ref": "flavor-k8s.schema.json"
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Values for MongoDB K8s",
+              "properties": {
+                "k8s": {
+                  "type": "object",
+                  "properties": {
+                    "mongodb": {
+                      "type": "object",
+                      "properties": {
+                        "values": {
+                          "type": "object",
+                          "description": "Helm values as per bitnami mongodb helm chart https://artifacthub.io/packages/helm/bitnami/mongodb"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           ]
         }
@@ -76,89 +574,6 @@
       "required": [
         "out"
       ]
-    }
-  },
-  "$defs": {
-    "specDef": {
-      "type": "object",
-      "properties": {
-        "spec": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "authenticated": {
-              "type": "boolean",
-              "description": "Make this mongodb instance Password protected"
-            },
-            "mongodb_version": {
-              "type": "string",
-              "description": "Version of mongodb e.g. 6.0, see valid tags here: https://hub.docker.com/_/mongo/tags?page=1",
-              "minLength": 3,
-              "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
-            },
-            "size": {
-              "allOf": [
-                {
-                  "type": "object",
-                  "$ref": "../../traits/multi-instance-datastore-sizing.schema.json",
-                  "required": [
-                    "volume"
-                  ]
-                }
-              ]
-            }
-          },
-          "required": [
-            "authenticated",
-            "mongo_version",
-            "size"
-          ]
-        }
-      }
-    },
-    "outDef": {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "additionalProperties": false,
-          "allOf": [
-            {
-              "$ref": "#/$defs/specDef"
-            },
-            {
-              "properties": {
-                "interfaces": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "cluster" : {
-                      "type" : "object",
-                      "description" :"Map of type interface for cluster endpoint & port of MongoDB",
-                      "allOf": [
-                        {
-                          "$ref": "../../traits/multi-node-datastore-interface.schema.json"
-                        }
-                      ]
-                    }
-                  }
-                },
-                "instances": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "patternProperties": {
-                    "^([a-z]*-[0-9]+)$": {
-                      "$ref": "../../traits/datastore-interface.schema.json"
-                    }
-                  }
-                }
-              },
-              "required": [
-              ]
-            }
-          ]
-        }
-      }
     }
   }
 }

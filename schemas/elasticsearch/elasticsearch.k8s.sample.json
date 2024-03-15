@@ -2,18 +2,16 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.schema.json",
   "version": "0.1",
   "flavor": "k8s",
-  "provided": false,
   "kind": "elasticsearch",
-  "metadata": {
-    "name": "elasticsearch"
-  },
+  "metadata": {},
   "spec": {
-    "elasticsearch_version" : "8.5.1",
-    "size" : {
+    "elasticsearch_version": "8.5.1",
+    "size": {
       "cpu": "2001m",
       "memory": "2Gi",
       "volume": "8Gi",
       "replica_count": 2
     }
-  }
+  },
+  "disabled": true
 }

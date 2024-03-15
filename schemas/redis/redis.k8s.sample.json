@@ -1,12 +1,7 @@
 {
   "flavor": "k8s",
-  "metadata": {
-    "name": "redis-simple"
-  },
+  "metadata": {},
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json",
-  "advanced": {
-    "k8s": {}
-  },
   "kind": "redis",
   "disabled": true,
   "version": "0.1",
@@ -26,6 +21,5 @@
         "replica_count": 1
       }
     }
-  },
-  "out": {}
+  }
 }

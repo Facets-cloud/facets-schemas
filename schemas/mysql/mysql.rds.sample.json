@@ -2,11 +2,12 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.schema.json",
   "kind": "mysql",
   "flavor": "rds",
-  "provided": false,
   "version": "0.1",
   "disabled": true,
   "metadata": {
-    "name": "test-rds"
+    "tags": {
+      "managed-by": "facets"
+    }
   },
   "spec": {
     "mysql_version": "8.0",

@@ -1,12 +1,7 @@
 {
-  "$schema": "prometheus-postgres-exporter.schema.json",
-  "kind" : "configuration",
-  "for"  : "prometheus-postgres-exporter",
-  "version" : "0.1",
-  "advanced": {
-    "prometheus_postgres_exporter": {
-      "values": {
-      }
-    }
-  }
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/prometheus_postgres_exporter/prometheus_postgres_exporter.schema.json",
+  "kind": "configuration",
+  "for": "prometheus-postgres-exporter",
+  "version": "0.1",
+  "disabled": true
 }

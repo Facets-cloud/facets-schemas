@@ -3,13 +3,104 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "#/$defs/specDef"
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "policy": {
+              "type": "object",
+              "properties": {
+                "Version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "Version",
+                "Statement"
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "policy"
+          ]
+        }
+      }
     },
     {
-      "$ref": "#/$defs/advancedDef"
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "anyOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "definition": "AWS Iam policy",
+              "properties": {
+                "iam_policy": {
+                  "type": "object",
+                  "description": "Advanced section of the AWS iam policy specification",
+                  "properties": {
+                    "aws_iam_policy": {
+                      "type": "object",
+                      "description": "Advanced values as per Terraform AWS Iam policy resource https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "Description about the AWS IAM policy resource"
+                        },
+                        "name_prefix": {
+                          "type": "string",
+                          "description": "Name prefix for the IAM policy resource"
+                        },
+                        "path": {
+                          "type": "string",
+                          "description": "Path to save IAM policy resource"
+                        },
+                        "tags": {
+                          "type": "object",
+                          "description": "Tags for the IAM policy resource"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
     },
     {
-      "$ref": "#/$defs/outDef"
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "additionalProperties": false
+                },
+                "arn": {
+                  "type": "string",
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "arn"
+              ]
+            }
+          ]
+        }
+      }
     }
   ],
   "properties": {
@@ -57,74 +148,5 @@
     "metadata",
     "spec",
     "advanced"
-  ],
-  "$defs" : {
-    "specDef" : {
-      "type" : "object",
-      "properties" : {
-        "spec": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "policy": {
-              "type": "object",
-              "properties": {
-                "Version": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "Version",
-                "Statement"
-              ]
-            }
-          },
-          "required": [
-            "name",
-            "policy"
-          ]
-        }
-      }
-    },
-    "advancedDef" : {
-      "type": "object",
-      "properties": {
-        "advanced": {
-          "anyOf": [
-            {
-              "$ref": "./flavor-aws-iam-policy.schema.json"
-            }
-          ]
-        }
-      }
-    },
-    "outDef": {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "additionalProperties": false,
-          "allOf": [
-            {
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "additionalProperties": false
-                },
-                "arn": {
-                  "type": "string",
-                  "additionalProperties": false
-                }
-              },
-              "required": [
-                "arn"
-              ]
-            }
-          ]
-        }
-      }
-    }
-  }
+  ]
 }

@@ -1,47 +1,173 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "allOf": [
-      {
-        "$ref": "../../traits/base.schema.json"
-      },
-      {
-        "type": "object",
-        "properties": {
-          "kind": {
-            "type": "string",
-            "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
-            "enum": [
-              "ingress"
-            ]
-          },
-          "flavor": {
-            "type": "string",
-            "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
-            "enum": [
-              "nginx_ingress_controller",
-              "aws_alb",
-              "azure_agic",
-              "gcp_alb"
-            ]
-          },
-          "version": {
-            "type": "string",
-            "description": "This field can be used to pin to a particular version"
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
           }
         },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances",
+          "enum": [
+            "ingress"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+          "enum": [
+            "nginx_ingress_controller",
+            "aws_alb",
+            "azure_agic",
+            "gcp_alb"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "This field can be used to pin to a particular version"
+        }
+      },
+      "if": {
+        "properties": {
+          "flavor": {
+            "const": "nginx_ingress_controller"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "enum": [
+              "0.1",
+              "0.2"
+            ]
+          }
+        }
+      },
+      "else": {
         "if": {
           "properties": {
             "flavor": {
-              "const": "nginx_ingress_controller"
+              "const": "aws_alb"
             }
           }
         },
         "then": {
           "properties": {
-            "version":{
-              "type":"string",
-              "enum": ["0.1","0.2"]
+            "version": {
+              "type": "string",
+              "enum": [
+                "0.1",
+                "0.2"
+              ]
             }
           }
         },
@@ -49,15 +175,18 @@
           "if": {
             "properties": {
               "flavor": {
-                "const": "aws_alb"
+                "const": "gcp_alb"
               }
             }
           },
           "then": {
             "properties": {
-              "version":{
-                "type":"string",
-                "enum": ["0.1","0.2"]
+              "version": {
+                "type": "string",
+                "enum": [
+                  "0.1",
+                  "0.2"
+                ]
               }
             }
           },
@@ -65,133 +194,379 @@
             "if": {
               "properties": {
                 "flavor": {
-                  "const": "gcp_alb"
+                  "const": "azure_agic"
                 }
               }
             },
             "then": {
               "properties": {
-                "version":{
-                  "type":"string",
-                  "enum": ["0.1","0.2"]
-                }
-              }
-            },
-            "else": {
-              "if": {
-                "properties": {
-                  "flavor": {
-                    "const": "azure_agic"
-                  }
-                }
-              },
-              "then": {
-                "properties": {
-                  "version": {
-                    "const": "0.1"
-                  }
+                "version": {
+                  "const": "0.1"
                 }
               }
             }
           }
         }
-      },
-      {
-        "$ref": "#/$defs/specDef"
-      },
-      {
-        "$ref": "#/$defs/outDef"
       }
-    ],
-    "required": [
-      "kind",
-      "flavor",
-      "version",
-      "metadata",
-      "spec"
-    ],
-    "$defs": {
-      "specDef": {
-        "type": "object",
-        "properties": {
-          "spec": {
-            "type": "object",
-            "properties": {
-              "basicAuth": {
-                "type": "boolean",
-                "description": "Enable or disable basic auth"
-              },
-              "grpc": {
-                "type": "boolean",
-                "description": "Enable or Disable grpc support in nginx_ingress_controller"
-              },
-              "private": {
-                "type": "boolean",
-                "description": "Make this load balancer private"
-              },
-              "domains": {
-                "$ref": "./domains.schema.json",
-                "description": "The map of domain key to rules"
-              },
-              "rules": {
-                "$ref": "./ingress-rules.schema.json",
-                "description": "Objects of all ingress rules"
-              },
-              "force_ssl_redirection": {
-                "type": "boolean",
-                "description": "Force SSL redirection from http to https"
-              },
-              "ipv6_enabled": {
-                "type": "boolean",
-                "description": "Enable/disable ipv6, this is a cloud specific check if your vpc has ipv6 support enabled"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "basicAuth": {
+              "type": "boolean",
+              "description": "Enable or disable basic auth"
+            },
+            "grpc": {
+              "type": "boolean",
+              "description": "Enable or Disable grpc support in nginx_ingress_controller"
+            },
+            "private": {
+              "type": "boolean",
+              "description": "Make this load balancer private"
+            },
+            "domains": {
+              "description": "The map of domain key to rules",
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "description": "This is the name of the domain object that you are creating, it can be of any name",
+                  "properties": {
+                    "domain": {
+                      "type": "string",
+                      "description": "The host name of the domain"
+                    },
+                    "alias": {
+                      "type": "string",
+                      "description": "Alias naming for the domain"
+                    },
+                    "certificate_reference": {
+                      "type": "string",
+                      "description": "Certificate reference name, if flavor is `aws_alb` then its the ACM ARN certificate reference else `gcp_alb` its the name of the managed certificate that you want facets to create in gcp. In case of `nginx_ingress_controller` its the uploaded k8s certificate referenced as secret. In case of `azure_agic` it is the secret key id of the secret in azure key vault"
+                    },
+                    "rules": {
+                      "description": "Objects of all ingress rules",
+                      "$schema": "http://json-schema.org/draft-04/schema#",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "minProperties": 1,
+                      "patternProperties": {
+                        "^[a-zA-Z0-9_.-]*$": {
+                          "description": "This is the name of the ingress object that you are creating, it can be of any name",
+                          "properties": {
+                            "service_name": {
+                              "type": "string",
+                              "description": "The Kubernetes service name of the application"
+                            },
+                            "path": {
+                              "type": "string",
+                              "description": "path of the application"
+                            },
+                            "port_name": {
+                              "type": "string",
+                              "description": "Port name of the service"
+                            },
+                            "port": {
+                              "type": "string",
+                              "description": "Port number of the service"
+                            },
+                            "domain_prefix": {
+                              "type": "string",
+                              "description": "Subdomain prefix for the service"
+                            },
+                            "priority": {
+                              "type": "integer",
+                              "description": "Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule - applicable only for `aws_alb` version `0.2`"
+                            }
+                          },
+                          "allOf": [
+                            {
+                              "required": [
+                                "service_name",
+                                "domain_prefix",
+                                "path"
+                              ]
+                            },
+                            {
+                              "anyOf": [
+                                {
+                                  "required": [
+                                    "port_name"
+                                  ]
+                                },
+                                {
+                                  "required": [
+                                    "port"
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "equivalent_prefixes": {
+                      "type": "array",
+                      "description": "The list of domain_prefix's to auto populate rules that matches from .spec.rules"
+                    }
+                  },
+                  "required": [
+                    "domain",
+                    "alias",
+                    "certificate_reference"
+                  ]
+                }
               }
             },
-            "required": [
-              "private",
-              "rules",
-              "force_ssl_redirection"
-            ]
-          },
-          "advanced": {
-            "anyOf": [
-              {
-                "$ref": "./flavor-aws-alb.schema.json"
-              },
-              {
-                "$ref": "./flavor-gcp-alb.schema.json"
-              },
-              {
-                "$ref": "./flavor-nginx.schema.json"
-              },
-              {
-                "$ref": "./flavor-azure-agic.schema.json"
+            "rules": {
+              "description": "Objects of all ingress rules",
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "description": "This is the name of the ingress object that you are creating, it can be of any name",
+                  "properties": {
+                    "service_name": {
+                      "type": "string",
+                      "description": "The Kubernetes service name of the application"
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "path of the application"
+                    },
+                    "port_name": {
+                      "type": "string",
+                      "description": "Port name of the service"
+                    },
+                    "port": {
+                      "type": "string",
+                      "description": "Port number of the service"
+                    },
+                    "domain_prefix": {
+                      "type": "string",
+                      "description": "Subdomain prefix for the service"
+                    },
+                    "priority": {
+                      "type": "integer",
+                      "description": "Priority number for the above rule ( this can be from 1 - 1000 ) and it should be unique for each rule - applicable only for `aws_alb` version `0.2`"
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "required": [
+                        "service_name",
+                        "domain_prefix",
+                        "path"
+                      ]
+                    },
+                    {
+                      "anyOf": [
+                        {
+                          "required": [
+                            "port_name"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "port"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
               }
-            ]
-          }
-        }
-      },
-      "outDef": {
-        "type": "object",
-        "properties": {
-          "out": {
-            "type": "object",
-            "properties": {
-              "interfaces": {
-                "type": "object",
-                "additionalProperties": false,
-                "minProperties": 1,
-                "description": "The output for your ingress module, this can be generated or provided",
-                "patternProperties": {
-                  "^[a-zA-Z0-9_.-]*$": {
-                    "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
-                    "$ref": "../../traits/interface.schema.json"
+            },
+            "force_ssl_redirection": {
+              "type": "boolean",
+              "description": "Force SSL redirection from http to https"
+            },
+            "ipv6_enabled": {
+              "type": "boolean",
+              "description": "Enable/disable ipv6, this is a cloud specific check if your vpc has ipv6 support enabled"
+            }
+          },
+          "required": [
+            "private",
+            "rules",
+            "force_ssl_redirection"
+          ]
+        },
+        "advanced": {
+          "anyOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "aws_alb": {
+                  "type": "object",
+                  "description": "Advanced section of the aws_alb",
+                  "properties": {
+                    "waf_arn": {
+                      "type": "string",
+                      "description": "ARN of WAF that you can hook into ALB"
+                    },
+                    "waf_acl_id": {
+                      "type": "string",
+                      "description": "ACL id of the WAF"
+                    },
+                    "shield": {
+                      "type": "boolean",
+                      "description": "Enable/Disable shield in AWS"
+                    },
+                    "target_type": {
+                      "type": "string",
+                      "enum": [
+                        "instance",
+                        "ip"
+                      ],
+                      "description": "backend target type of service in kubernetes eg: instance/ip : default is ip"
+                    },
+                    "disable_facets_host_rules": {
+                      "type": "boolean",
+                      "description": "Boolean flag to enable or disable facets host rules in alb, in order to incorporate more rules. Since there is a hard limit of 100 rules in alb: default is false"
+                    },
+                    "maintain_rule_order": {
+                      "type": "boolean",
+                      "description": "Boolean flag to maintain the order of rules specified in json using priority numbers inside rules"
+                    }
                   }
                 }
               }
             },
-            "required": []
-          }
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "gcp_alb": {
+                  "type": "object",
+                  "description": "Advanced section of the gcp_alb",
+                  "properties": {
+                    "certificate_type": {
+                      "type": "string",
+                      "description": "Set type of certificate to be created in GCP"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "nginx_ingress_controller": {
+                  "type": "object",
+                  "description": "Advanced section of the nginx_ingress_controller",
+                  "properties": {
+                    "domain_prefix_override": {
+                      "type": "string",
+                      "description": "The domain prefix you want to override for your facets subdomain. eg: `<your-override-value>.console.facets.cloud`"
+                    },
+                    "acm": {
+                      "type": "string",
+                      "description": "The ARN of the ACM certificate created for that domain"
+                    },
+                    "connection_idle_timeout": {
+                      "type": "string",
+                      "description": "The load balancer has a configured idle timeout period (in seconds) that applies to its connections. If no data has been sent or received by the time that the idle timeout period elapses, the load balancer closes the connection"
+                    },
+                    "enable-underscores-in-headers": {
+                      "type": "boolean",
+                      "description": "Enables underscores in header names"
+                    },
+                    "renew_cert_before": {
+                      "type": "string",
+                      "description": "configures number of hours before cert manager renews a certificate. Default value is 720hrs (30 days). Entered duration must be parseable by go's time.ParseDuration method. see https://pkg.go.dev/time#ParseDuration",
+                      "pattern": "^(\\d+(ms|ns|us|µs|ms|s|m|h))+$"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "azure_agic": {
+                  "type": "object",
+                  "description": "Advanced section of the Azure Application Gateway Ingress Controller",
+                  "properties": {
+                    "values": {
+                      "type": "string",
+                      "description": "Helm Values as per the helm chart https://github.com/Azure/application-gateway-kubernetes-ingress/tree/master/helm/ingress-azure"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "properties": {
+            "interfaces": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "description": "The output for your ingress module, this can be generated or provided",
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object",
+                  "definition": "Any Interface",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "Username to connect (if any)"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "Password to connect (if any)"
+                    },
+                    "host": {
+                      "type": "string",
+                      "description": "Host for service discovery"
+                    },
+                    "port": {
+                      "type": "string",
+                      "description": "Port for service discovery"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of interface, same as key"
+                    },
+                    "connection_string": {
+                      "type": "string",
+                      "description": "Connection string to connect"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": []
         }
       }
     }
-  }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
+}
