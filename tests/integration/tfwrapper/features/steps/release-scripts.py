@@ -118,12 +118,7 @@ def set_stack(context, stack_name):
 def set_cloud(context, cloud):
     context.cloud = cloud
     context.custom_env["CLOUD"] = cloud
-    if str.lower(cloud) == "aws":
-        context.custom_env['CLOUD_TF_PROVIDER'] = 'tfaws'
-    elif str.lower(cloud) == "azure":
-        context.custom_env['CLOUD_TF_PROVIDER'] = 'tfazure'
-    else:
-        context.custom_env['CLOUD_TF_PROVIDER'] = 'tfmain'
+    context.custom_env['CLOUD_TF_PROVIDER'] = 'tfmain'
 
 @given('custom command is')
 def custom_command(context):

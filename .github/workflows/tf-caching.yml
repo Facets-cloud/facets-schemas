@@ -20,10 +20,7 @@ jobs:
       
     - name: Create folders
       run: |
-        BASE_TF_AWS_CACHE=build-environments/terraform-capillary-cloud/tf-aws-cache-plugins
-        BASE_TF_GCP_CACHE=build-environments/terraform-capillary-cloud/tf-gcp-cache-plugins
-        BASE_TF_AZURE_CACHE=build-environments/terraform-capillary-cloud/tf-azure-cache-plugins
-        mkdir $BASE_TF_AWS_CACHE && mkdir $BASE_TF_GCP_CACHE && mkdir $BASE_TF_AZURE_CACHE 
+        BASE_TF_CACHE=build-environments/terraform-capillary-cloud/tf-cache-plugins
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -31,13 +28,11 @@ jobs:
     - name: Downloading terraform providers
       shell: bash
       run: |
-        BASE_TF_AWS_CACHE=build-environments/terraform-capillary-cloud/tf-aws-cache-plugins
-        BASE_TF_GCP_CACHE=build-environments/terraform-capillary-cloud/tf-gcp-cache-plugins
-        BASE_TF_AZURE_CACHE=build-environments/terraform-capillary-cloud/tf-azure-cache-plugins
+        BASE_TF_CACHE=build-environments/terraform-capillary-cloud/tf-cache-plugins
 
         ### AWS4 Plugin
         echo "Starting aws provider"
-        PLUGIN_PATH=capillary-cloud-tf/tfaws/terraform.d/plugins/registry.terraform.io/hashicorp/aws4/4.53.0/darwin_amd64
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/aws4/4.53.0/darwin_amd64
         echo "Downloading aws provider at $PLUGIN_PATH"
         mkdir -p $PLUGIN_PATH
         curl -sLo_ 'https://releases.hashicorp.com/terraform-provider-aws/4.53.0/terraform-provider-aws_4.53.0_darwin_amd64.zip'
@@ -51,7 +46,7 @@ jobs:
         echo "Done aws provider for darwin"
 
         # Setup aws alternate provider linux
-        PLUGIN_PATH=capillary-cloud-tf/tfaws/terraform.d/plugins/registry.terraform.io/hashicorp/aws4/4.53.0/linux_amd64
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/aws4/4.53.0/linux_amd64
         echo "Downloading aws provider at $PLUGIN_PATH"
         mkdir -p $PLUGIN_PATH
         curl -sLo_ 'https://releases.hashicorp.com/terraform-provider-aws/4.53.0/terraform-provider-aws_4.53.0_linux_amd64.zip'
@@ -65,7 +60,7 @@ jobs:
         echo "Done aws provider for linux amd"
 
         # Setup azure alternate provider darwin
-        PLUGIN_PATH=capillary-cloud-tf/tfazure/terraform.d/plugins/registry.terraform.io/hashicorp/azurerm3/3.52.0/darwin_amd64
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/azurerm3/3.52.0/darwin_amd64
         echo "Downloading azurerm provider at $PLUGIN_PATH"
         mkdir -p $PLUGIN_PATH
         curl -sLo_ 'https://releases.hashicorp.com/terraform-provider-azurerm/3.52.0/terraform-provider-azurerm_3.52.0_darwin_amd64.zip'
@@ -80,7 +75,7 @@ jobs:
 
         #Setup azure alternate provider linux
         echo "Starting azure provider"
-        PLUGIN_PATH=capillary-cloud-tf/tfazure/terraform.d/plugins/registry.terraform.io/hashicorp/azurerm3/3.52.0/linux_amd64
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/azurerm3/3.52.0/linux_amd64
         echo "Downloading azurerm provider at $PLUGIN_PATH"
         mkdir -p $PLUGIN_PATH
         curl -sLo_ 'https://releases.hashicorp.com/terraform-provider-azurerm/3.52.0/terraform-provider-azurerm_3.52.0_linux_amd64.zip'
@@ -94,8 +89,6 @@ jobs:
         echo "Done azure provider for linux amd"
 
         BASE_TF_CACHES=(
-            "tfaws"
-            "tfazure"
             "tfmain"
         )
 
@@ -129,16 +122,6 @@ jobs:
             echo "Done scratch provider for linux at $PLUGIN_PATH"
         done
 
-        cd capillary-cloud-tf/tfaws && rm backend.tf && rm main.tf
-        mkdir tmp_cache
-        echo "terraform init to initialize modules"
-        terraform init 
-        terraform providers mirror tmp_cache || true
-        cp -r terraform.d/plugins/registry.terraform.io/hashicorp/aws4 tmp_cache/registry.terraform.io/hashicorp/
-        cp -r terraform.d/plugins/registry.terraform.io/hashicorp/scratch tmp_cache/registry.terraform.io/hashicorp/
-        cp -r terraform.d/plugins/terraform.capillary.in/ tmp_cache/
-        cp -r tmp_cache/* ../../$BASE_TF_AWS_CACHE
-
         cd ../../capillary-cloud-tf/tfmain && rm backend.tf && rm main.tf
         mkdir tmp_cache
         echo "terraform init to initialize modules"
@@ -146,18 +129,7 @@ jobs:
         terraform providers mirror tmp_cache || true
         cp -r terraform.d/plugins/registry.terraform.io/hashicorp/scratch tmp_cache/registry.terraform.io/hashicorp/
         cp -r terraform.d/plugins/terraform.capillary.in/ tmp_cache/
-        cp -r tmp_cache/* ../../$BASE_TF_GCP_CACHE
-
-        cd ../../capillary-cloud-tf/tfazure && rm backend.tf && rm main.tf
-        mkdir tmp_cache
-        echo "terraform init to initialize modules"
-        terraform init
-        terraform providers mirror tmp_cache || true
-        cp -r terraform.d/plugins/registry.terraform.io/hashicorp/azurerm3 tmp_cache/registry.terraform.io/hashicorp/
-        cp -r terraform.d/plugins/registry.terraform.io/hashicorp/scratch tmp_cache/registry.terraform.io/hashicorp/
-        cp -r terraform.d/plugins/terraform.capillary.in/ tmp_cache/
-        cp -r tmp_cache/* ../../$BASE_TF_AZURE_CACHE
-        echo ${{ github.sha }}
+        cp -r tmp_cache/* ../../$BASE_TF_CACHE
      
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1

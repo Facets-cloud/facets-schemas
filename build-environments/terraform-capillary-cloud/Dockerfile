@@ -14,9 +14,7 @@ RUN cp kubectl1.21 /usr/bin/kubectl1.21
 RUN chmod +x /usr/bin/kubectl1.21
 ENV ENABLE_CACHING="true"
 COPY build-environments/terraform-capillary-cloud/scripts/run.py /run.py
-COPY build-environments/terraform-capillary-cloud/tf-aws-cache-plugins /sources/primary/tf-aws-cache-plugins
-COPY build-environments/terraform-capillary-cloud/tf-gcp-cache-plugins /sources/primary/tf-gcp-cache-plugins
-COPY build-environments/terraform-capillary-cloud/tf-azure-cache-plugins /sources/primary/tf-azure-cache-plugins
+COPY build-environments/terraform-capillary-cloud/tf-cache-plugins /sources/primary/tf-cache-plugins
 RUN wget https://app.getambassador.io/download/tel2/linux/amd64/2.4.2/telepresence
 RUN mv telepresence /usr/local/bin/telepresence
 RUN chmod +x /usr/local/bin/telepresence
