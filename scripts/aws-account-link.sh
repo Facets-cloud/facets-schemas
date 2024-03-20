@@ -21,7 +21,7 @@ if [ -z "$POLICY_JSON" ]; then
 fi
 
 TRUST_POLICY="{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Principal\": {\"AWS\": \"arn:aws:iam::$ACCOUNT_ID:root\"}, \"Action\": \"sts:AssumeRole\", \"Condition\": {\"StringEquals\": {\"sts:ExternalId\": \"$EXTERNAL_ID\"}}}]}"
-sleep 3000
+
 CREATE_ROLE_OUTPUT=$(aws iam create-role --role-name "$ROLE_NAME" --assume-role-policy-document "$TRUST_POLICY" --description "Role created from external policy JSON")
 if [ $? -ne 0 ]; then
     echo "Failed to create IAM role. Ensure you have the necessary permissions."
@@ -47,6 +47,9 @@ echo "Policy attached successfully to '$ROLE_NAME'."
 
 # Cleanup the temporary policy file
 rm "$POLICY_FILE"
+
+# Sleep 3 seconds
+sleep 3
 
 # Post data using curl
 curl -X POST "https://${CP_URL}/public/v1/link-aws" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "{ \"payload\":{ \"externalId\": \"$EXTERNAL_ID\", \"iamRole\": \"$ROLE_ARN\", \"name\": \"$ROLE_NAME\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
