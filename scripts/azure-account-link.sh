@@ -50,7 +50,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Create the Service Principal with Owner role
-SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role Owner --scopes /subscriptions/"$SUBSCRIPTION_ID" --sdk-auth)
+SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role Owner --scopes /subscriptions/"$SUBSCRIPTION_ID")
 
 if [ $? -ne 0 ]; then
     echo "Failed to create Service Principal."
