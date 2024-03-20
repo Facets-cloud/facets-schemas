@@ -21,7 +21,7 @@ if [ -z "$POLICY_JSON" ]; then
 fi
 
 TRUST_POLICY="{\"Version\": \"2012-10-17\", \"Statement\": [{\"Effect\": \"Allow\", \"Principal\": {\"AWS\": \"arn:aws:iam::$ACCOUNT_ID:root\"}, \"Action\": \"sts:AssumeRole\", \"Condition\": {\"StringEquals\": {\"sts:ExternalId\": \"$EXTERNAL_ID\"}}}]}"
-
+sleep 3000
 CREATE_ROLE_OUTPUT=$(aws iam create-role --role-name "$ROLE_NAME" --assume-role-policy-document "$TRUST_POLICY" --description "Role created from external policy JSON")
 if [ $? -ne 0 ]; then
     echo "Failed to create IAM role. Ensure you have the necessary permissions."
