@@ -9,7 +9,7 @@ fi
 CP_URL=$1
 ACCOUNT_NAME="$2"
 # Concatenate "facets-" with the provided principal name
-PRINCIPAL_NAME="facets-$2",
+PRINCIPAL_NAME="facets-$2"
 
 WEBHOOK_ID=$3
 
