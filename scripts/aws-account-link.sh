@@ -5,10 +5,10 @@ if [ "$#" -ne 4 ]; then
     exit 1
 fi
 
-ROLE_NAME=$1
-ACCOUNT_ID=$2
-CP_URL=$3
-WEBHOOK_ID=$4
+CP_URL=$1
+ROLE_NAME=$2
+WEBHOOK_ID=$3
+ACCOUNT_ID=$4
 POLICY_URL="https://facets-cloud.github.io/facets-schemas/scripts/aws-policy.json"
 
 EXTERNAL_ID=$(uuidgen)
@@ -49,6 +49,6 @@ echo "Policy attached successfully to '$ROLE_NAME'."
 rm "$POLICY_FILE"
 
 # Post data using curl
-curl -X POST "https://${CP_URL}/public/v1/link-aws" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"payload\":{ \"externalId\": \"$EXTERNAL_ID\", \"iamRole\": \"$ROLE_ARN\", \"name\": \"$ROLE_NAME\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
+curl -X POST "https://${CP_URL}/public/v1/link-aws" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "{ \"payload\":{ \"externalId\": \"$EXTERNAL_ID\", \"iamRole\": \"$ROLE_ARN\", \"name\": \"$ROLE_NAME\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
 
 echo "Data posted successfully to ${CP_URL}."
