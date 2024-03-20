@@ -67,7 +67,7 @@ echo "$SP_JSON"
 
 # Prepare the curl request
 CURL_DATA="{ \"payload\": { \"name\": \"$PRINCIPAL_NAME\", \"clientId\": \"$CLIENT_ID\", \"clientSecret\": \"$CLIENT_SECRET\", \"subscriptionId\": \"$SUBSCRIPTION_ID\", \"tenantId\": \"$TENANT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
-CURL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-azure" -H "accept: */*" -H "Content-Type: application/json" -d "$CURL_DATA")
+CURL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-azure" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "$CURL_DATA")
 
 if [ "$CURL_RESPONSE" -ne 200 ]; then
     echo "Failed to send data to the specified URL. HTTP response code: $CURL_RESPONSE"
