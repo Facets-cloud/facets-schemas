@@ -1,0 +1,4 @@
+aiohttp==3.8.4
+rich==13.7.0
+boto3==1.26.76
+pytz

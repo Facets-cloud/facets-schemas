@@ -1,0 +1,9 @@
+{
+  "root": {
+    "url": "https://root.console.facets.cloud",
+    "password": "fe9c3baf-6885-4fe5-ae32-da38a6cd1980",
+    "whitelisted_clusters": [
+      "root", "facetsdemo"
+    ]
+  }
+}
