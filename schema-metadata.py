@@ -77,7 +77,6 @@ def process_input_objects(input_objects):
                 }]
             }
             output_list.append(new_output_obj)
-
     return output_list
 
 
@@ -96,9 +95,38 @@ def add_additional_fields(output_objects):
             flavor['versions'] = [{"number": version, "documentation": "NA"} for version in flavor['versions']]
             flavor[
                 'flavorSampleUrl'] = f"{base_url}{output_obj['intent']}/{output_obj['intent']}.{flavor['name'][0]}.sample.json"
-
     return output_objects
 
+def generate_readme(input_json):
+    # Load the JSON data
+    # with open('your_json_file.json') as f:
+    #     data = json.load(f)
+
+    # Start the table with the headers
+    table = "| Kind | Flavor | Version | Schema | Sample | Readme |\n|---|---|---|---|---|---|\n"
+    # print(input_json)
+    for entry in input_json:
+        kind = entry['intent']
+        schema_url = f"<{entry['schemaUrl']}>"
+        for flavor in entry['flavors']:
+            flavor_name = flavor['name'][0]
+            flavor_sample_url = f"[Sample](schemas/{kind}/{flavor_name}.sample.json)"
+            readme_url = f"[Readme](schemas/{kind}/{kind}.schema.md)"
+            # get the latest version number
+            version_number = max(version['number'] for version in flavor['versions'])
+            # Add the row to the table
+            table += f"| {kind} | {flavor_name} | {version_number} | {schema_url} | {flavor_sample_url} | {readme_url} |\n"
+
+        # Open the README file and replace the placeholder with the table
+    with open('capillary-cloud-tf/docs/README.md', 'r') as file:
+        filedata = file.read()
+
+    # Replace the target string
+    filedata = filedata.replace('<!-- TABLE_INSERT -->', table)
+
+    # Write the file out again
+    with open('capillary-cloud-tf/docs/README.md', 'w') as file:
+        file.write(filedata)
 
 
 def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
@@ -138,5 +166,6 @@ all_modules = find_module_json_files("capillary-cloud-tf/modules/")
 per_instance_modules = filter_json_objects(all_modules)
 processed_data = process_input_objects(per_instance_modules)
 final_data = add_additional_fields(processed_data)
+generate_readme(final_data)
 pretty_print_json(final_data)
 check_files_exist(final_data)
