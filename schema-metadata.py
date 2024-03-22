@@ -3,73 +3,108 @@ import json
 import sys
 
 
-def find_module_files(directory):
-    module_files = []
+def pretty_print_json(data):
+    with open('schema-metadata.json', 'w') as file:
+        json.dump(data, file, indent=4, sort_keys=True)
+
+
+def find_module_json_files(directory):
+    json_objects = []
+
     for root, dirs, files in os.walk(directory):
-        if 'module.json' in files:
-            if 'capillary-cloud-tf/modules/2_deprecated' in root:
-                continue
-            module_file_path = os.path.join(root, 'module.json')
-            module_files.append(module_file_path)
-    return module_files
+        for file in files:
+            if file == 'module.json':
+                with open(os.path.join(root, file), 'r') as f:
+                    json_object = json.load(f)
+                    json_objects.append(json_object)
+
+    return json_objects
 
 
-def read_module_file(module_file_path):
-    with open(module_file_path) as f:
-        module_data = json.load(f)
-    return module_data
+def filter_json_objects(json_objects):
+    filtered_objects = []
+
+    for obj in json_objects:
+        if 'input_type' in obj and obj['input_type'] == 'instance':
+            if 'disabled' not in obj or not obj['disabled']:
+                filtered_objects.append(obj)
+    return filtered_objects
 
 
-def versioning(directory_path):
-    version_data = {}
-    module_files = find_module_files(directory_path)
-    for module_file in module_files:
-        module_data = read_module_file(module_file)
-        provides = module_data.get('provides')
-        version = module_data.get('version')
-        flavor = module_data.get('flavors')
-        clouds = module_data.get("supported_clouds")
-        lifecycle = module_data.get("lifecycle")
-        input_type = module_data.get("input_type")
-        disabled = module_data.get("disabled")
-        if input_type == "config" or disabled is True:
-            continue
-        if provides not in version_data:
-            version_data[provides] = {}
+def process_input_objects(input_objects):
+    output_list = []
+    loop_count = 0
+    for input_obj in input_objects:
+        # Convert 'provides', 'flavors' and 'supported_clouds' to lowercase
+        input_obj['provides'] = input_obj['provides'].lower()
+        input_obj['flavors'] = [flavor.lower() for flavor in input_obj['flavors']]
+        input_obj['supported_clouds'] = list(set(cloud.lower() for cloud in input_obj['supported_clouds']))
+        input_obj['supported_clouds'].sort()
+        # Find matching output object based on 'provides' property
+        matching_output_obj = next((item for item in output_list if item['intent'] == input_obj['provides']), None)
 
-        if version in version_data[provides]:
-            existing_flavor = next((f for f in version_data[provides][version]["flavors"] if f["clouds"] == clouds), None)
-            if existing_flavor is not None:
-                existing_flavor["versions"].append({"version": {"number": version , "documentation": "NA"}, "flavor": flavor, })
+        if matching_output_obj:
+            # Consider only the last flavor in the input object's flavors list
+            last_input_flavor = input_obj['flavors'][-1]
+
+            # Find matching output flavor
+            matching_flavor = next(
+                (flavor for flavor in matching_output_obj['flavors'] if flavor['name'][0] == last_input_flavor), None)
+
+            if matching_flavor:
+                # Concatenate clouds and versions, convert to set to remove duplicates, then convert back to list
+                matching_flavor['clouds'] = list(set(matching_flavor['clouds'] + input_obj['supported_clouds']))
+                matching_flavor['clouds'].sort()
+                matching_flavor['versions'] = list(set(matching_flavor['versions'] + [input_obj['version']]))
             else:
-                version_data[provides][version]["flavors"].append({"clouds": clouds, "versions": [{"version": {"number": version , "documentation": "NA"}, "flavor": flavor, }]})
+                # Create a new flavor and append it to the flavors list
+                new_flavor = {
+                    'name': [last_input_flavor],
+                    'clouds': input_obj['supported_clouds'],
+                    'versions': [input_obj['version']]
+                }
+                new_flavor['clouds'].sort()
+                matching_output_obj['flavors'].append(new_flavor)
+
         else:
-            version_data[provides][version] = {
-                'path': module_file,
-                'flavors': [{"clouds": clouds, "versions": [{"version": {"number": version , "documentation": "NA"}, "flavor": flavor, }]}]
+            # Create a new output object and append it to the output list
+            new_output_obj = {
+                'intent': input_obj['provides'],
+                'flavors': [{
+                    'name': [input_obj['flavors'][-1]],  # considering only the last flavor
+                    'clouds': input_obj['supported_clouds'],
+                    'versions': [input_obj['version']]
+                }]
             }
-    return version_data
+            output_list.append(new_output_obj)
 
-def print_error_messages(errors):
-    # Print all error messages
-    for error in errors:
-        print(error)
+    return output_list
 
 
-def exit_code(errors):
-    # Set exit code based on the presence of errors
-    exit_code = 1 if errors else 0
-    print(f"Exit Code for above error messages: {exit_code}")
-    sys.exit(exit_code)
+def add_additional_fields(output_objects):
+    base_url = "https://facets-cloud.github.io/facets-schemas/schemas/"
+
+    for output_obj in output_objects:
+        # Adding additional fields to the output object
+        output_obj['displayName'] = output_obj['intent'].capitalize()
+        output_obj['description'] = "Some random description"
+        output_obj['schemaUrl'] = f"{base_url}{output_obj['intent']}/{output_obj['intent']}.schema.json"
+        output_obj['documentation'] = f"{base_url}{output_obj['intent']}/{output_obj['intent']}.schema.html"
+
+        for flavor in output_obj['flavors']:
+            # Adding additional fields to the flavors
+            flavor['versions'] = [{"number": version, "documentation": "NA"} for version in flavor['versions']]
+            flavor[
+                'flavorSampleUrl'] = f"{base_url}{output_obj['intent']}/{output_obj['intent']}.{flavor['name'][0]}.sample.json"
+
+    return output_objects
+
 
 
 def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
     errors = []
     for item in json_data:
         intent = item["intent"]
-        # Skip checking for specific intents
-        if intent == "kubernetes_node_pool" or intent == "ingress":
-            continue
 
         schema_path = os.path.join(base_folder, intent, f"{intent}.schema.json")
         md_path = os.path.join(base_folder, intent, f"{intent}.schema.md")
@@ -79,21 +114,7 @@ def check_files_exist(json_data, base_folder="capillary-cloud-tf/docs/schemas"):
 
         if not os.path.exists(md_path):
             errors.append(f"Error: Readme File not found - {md_path}")
-
-    print_error_messages(errors)
-     exit_code(errors)
-
-
-def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_folder="schemas"):
-    errors = []
-    for item in json_data:
-        intent = item["intent"]
-        # Skip checking for specific intents
-        if intent == "kubernetes_node_pool" or intent == "ingress":
-            continue
-
         flavors = item.get("flavors", [])
-
         for flavor in flavors:
             flavor_name = flavor["name"][0]
             flavor_sample_url = flavor.get("flavorSampleUrl", "")
@@ -105,89 +126,17 @@ def flavor_sample_exists(json_data, doc_folder="capillary-cloud-tf/docs/", base_
             # Extracting the file name from the URL
             file_name = os.path.basename(flavor_sample_url)
 
-            sample_path = os.path.join(base_folder, intent, file_name)
-            doc_sample_path = os.path.join(doc_folder, sample_path)
+            doc_sample_path = os.path.join(base_folder, intent, file_name)
 
             if not os.path.exists(doc_sample_path):
                 errors.append(f"Error: Flavor File not found - {doc_sample_path}")
-
-    print_error_messages(errors)
-     exit_code(errors)
-
+    print('\n'.join(errors))
+    sys.exit(1 if errors else 0)
 
 
-if __name__ == '__main__':
-    
-    full_data = {}
-    # Map to handle current folder naming discrepancies
-    provides_mapping = {
-        "ingress": "loadbalancer/loadbalancer",
-        "kubernetes_node_pool": "nodepool/nodepool"
-    }
-    directory_path = 'capillary-cloud-tf/modules/'
-    version_data = versioning(directory_path)
-    for provides, versions in version_data.items():
-        for version, module_data in versions.items():
-            data = {}
-            data["intent"] = provides
-            data["displayName"] = provides.capitalize()
-            data["description"] = "Some random description"
-            # Check if provides value exists in the provides_mapping
-            if provides in provides_mapping:
-                url_value = provides_mapping[provides]
-            else:
-                url_value = f"{provides}/{provides}"
-            # Build the schemaUrl
-            data["schemaUrl"] = f"https://facets-cloud.github.io/facets-schemas/schemas/{url_value}.schema.json"
-            data["documentation"] = "Documentation link"
-            data["flavors"] = []
-            print(json.dumps(module_data["flavors"], indent=4))
-            for flavor in module_data["flavors"]:
-                for f in flavor["versions"]:
-                    transformed_clouds = []
-                    transformed_flavors = f['flavor'][:]
-                    if len(f['flavor']) > 1 and 'default' in f['flavor']:
-                        transformed_flavors.remove('default')
-                    for cloud in flavor["clouds"]:
-                        # To handle cloud inconsistencies
-                        if cloud == "all" or cloud == "any":
-                            transformed_clouds = ["gcp", "aws", "azure"]
-                            break
-                        else:
-                            transformed_clouds.append(cloud.lower())
-                    flavors = {
-                        "name": f["flavor"],
-                        "clouds": list(set(transformed_clouds)),
-                        "versions": [f["version"]],
-                        "flavorSampleUrl" : f"https://facets-cloud.github.io/facets-schemas/schemas/{url_value}.{transformed_flavors[0]}.sample.json"
-
-                    }
-                    data["flavors"].append(flavors)
-            
-            if provides not in full_data:    
-                full_data[provides] = data
-            else:
-                print(data["flavors"])
-                existing_data = full_data[provides]
-                for flavor in data["flavors"]:
-                    existing_flavor = next((f for f in existing_data["flavors"] if f["name"] == flavor["name"]), None)
-                    if existing_flavor is None:
-                        existing_data["flavors"].append(flavor)
-                    else:
-                        print(flavor)
-                        existing_flavor["versions"].extend(cloud for cloud in flavor["versions"] if cloud not in existing_flavor["versions"])
-                        existing_flavor["clouds"].extend(cloud for cloud in flavor["clouds"] if cloud not in existing_flavor["clouds"])
-
-
-    full_data_list = [v for _,v in full_data.items()]
-    # print(json.dumps(full_data_list, indent=4))
-    with open('schema-metadata.json', 'w') as f:
-        json.dump(full_data_list, f, indent=4)
-
-    input_json_path = 'schema-metadata.json'
-
-    with open(input_json_path, 'r') as json_file:
-        json_data = json.load(json_file)
-
-    check_files_exist(json_data)
-    flavor_sample_exists(json_data)
+all_modules = find_module_json_files("capillary-cloud-tf/modules/")
+per_instance_modules = filter_json_objects(all_modules)
+processed_data = process_input_objects(per_instance_modules)
+final_data = add_additional_fields(processed_data)
+pretty_print_json(final_data)
+check_files_exist(final_data)
