@@ -49,7 +49,8 @@ echo "Policy attached successfully to '$ROLE_NAME'."
 rm "$POLICY_FILE"
 
 # Sleep 3 seconds
-sleep 3
+echo "Sleeping 10 seconds"
+sleep 10
 
 # Post data using curl
 curl -X POST "https://${CP_URL}/public/v1/link-aws" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "{ \"payload\":{ \"externalId\": \"$EXTERNAL_ID\", \"iamRole\": \"$ROLE_ARN\", \"name\": \"$ROLE_NAME\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
