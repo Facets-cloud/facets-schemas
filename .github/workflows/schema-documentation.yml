@@ -37,6 +37,8 @@
             pip install inflect
         - name: Run schema-metadata script
           run: python3 schema-metadata.py
+        - name: Run output-tree script
+          run: python3 ./capillary-cloud-tf/docs/output-tree.py
         - name: Checkout Facets-Schema repository
           uses: actions/checkout@v2
           with:
@@ -59,6 +61,8 @@
             cp -R ../capillary-cloud-tf/docs/README.md README.md
             echo "Updating schema-metadata.json"
             cp -R ../schema-metadata.json schema-metadata.json
+            echo "Updating output_lookup_tree.json"
+            cp -R ../capillary-cloud-tf/docs/output_lookup_tree.json docs/output_lookup_tree.json
         - name: Set Git identity
           run: |
             cd target
