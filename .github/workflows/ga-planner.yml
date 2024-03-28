@@ -1,14 +1,26 @@
 name: GA-Planner
 
 env:
-  COLUMNS: 120
+  COLUMNS: 220
 
 on:
   workflow_dispatch:
     inputs:
       branchName:
         description: 'RC Branch Name'
-        required: true    
+        required: true
+      refbranchName:
+        description: 'Ref branch name to use'
+        default: tfdev
+      streamMajorVersion:
+        description: 'Stream Major Version'
+        default: "2"
+      branchMajorVersion:
+        description: 'Major Version for Branch'
+        default: "50"
+      branchMinorVersion:
+        description: 'Minor Version for Branch'
+        default: latest
 
 jobs:
   build:
@@ -17,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          ref: tfdev
+          ref: ${{ inputs.refbranchName }}
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -34,3 +46,7 @@ jobs:
           RC_BRANCH: ${{ inputs.branchName }}
           GA_AWS_ACCESS_KEY: ${{ secrets.GA_AWS_ACCESS_KEY }}
           GA_AWS_SECRET_KEY: ${{ secrets.GA_AWS_SECRET_KEY }}
+          MAJOR_VERSION: ${{ inputs.branchMajorVersion }}
+          MINOR_VERSION: ${{ inputs.branchMinorVersion }}
+          STREAM_MAJOR_VERSION: ${{ inputs.streamMajorVersion }}
+

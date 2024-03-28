@@ -19,8 +19,11 @@ AWS_ACCESS_KEY = os.getenv("GA_AWS_ACCESS_KEY", "")
 AWS_SECRET_KEY = os.getenv("GA_AWS_SECRET_KEY", "")
 LEVEL = os.getenv("LEVEL", "debug")
 TF_PLAN_FILE = "tfplan-output.json"
-STREAM_MAJOR_VERSION = os.getenv("STREAM_MAJOR_VERSION", 2)
+STREAM_MAJOR_VERSION = os.getenv("STREAM_MAJOR_VERSION", "2")
 TIMEOUT = os.getenv("TIMEOUT", 3600)
+
+MAJOR_VERSION = os.getenv("MAJOR_VERSION", "50")
+MINOR_VERSION = os.getenv("MINOR_VERSION", "latest")
 
 with open("./control_planes.json", "r") as ff:
     endpoints = json.load(ff)
@@ -203,8 +206,8 @@ async def create_and_wait_for_deployment(
         "forceRelease": True,
         "releaseType": "CUSTOM",
         "tfVersion": {
-            "majorVersion": 0,
-            "minorVersion": "latest",
+            "majorVersion": int(MAJOR_VERSION),
+            "minorVersion": MINOR_VERSION,
             "tfStream": RC_BRANCH,
         },
         "withRefresh": False,
@@ -407,6 +410,7 @@ def process_plan(planfile_path: str):
     del_resources = {}
     del_recreated_resources = {}
     updated_changes = []
+    name = "_".join(planfile_path.split("/")[:-2])
 
     for key, values in plans.items():
         if key == "resource_changes":
@@ -433,19 +437,19 @@ def process_plan(planfile_path: str):
                         if changes:
                             updated_changes.append(changes)
 
-    updated_grouped_data = group_json(updated_changes)
+    updated_grouped_data = group_json(name, updated_changes)
 
     return (del_recreated_resources, del_resources, updated_grouped_data)
 
 
-def group_json(json_data):
+def group_json(name, json_data):
     new_dict = {}
     for data in json_data:
         for key, value in data.items():
             if key not in new_dict:
                 new_dict[key] = []
             new_dict[key].append(value)
-    return new_dict
+    return {name: new_dict}
 
 
 def get_updates(plan: dict):
@@ -458,14 +462,23 @@ def get_updates(plan: dict):
     Returns:
         str: A markdown string containing the changes.
     """
-    changes = plan.get("change", {}).get("after", {})
+    changes = plan.get("change", {})
+    before = changes.get("before", {})
     type = plan.get("type", "")
-    diff = {
-        key: changes[key]
-        for key in changes.keys()
-        if changes.get(key) != plan.get("change", {}).get("before", {}).get(key, None)
-    }
-    return {type: diff} if len(diff) > 0 else {}
+    name = plan.get("name", "")
+    index = plan.get("index", None)
+
+    # Find the differences between before and after
+    changes_dict = {"module_address": plan.get("module_address", None)}
+
+    if name == "app-chart":
+        name = before.get("name", "")
+
+    if index is None:  # to filter out  None values
+        changes_req = {f"{type}.{name}": changes_dict}
+    else:
+        changes_req = {f"{type}.{name}[{index}]": changes_dict}
+    return changes_req
 
 
 ###################################################################
@@ -503,7 +516,7 @@ async def main():
     uploader_table.title = "Github Action Plan Uploader"
     uploader_table.add_column("Stack Name", style="dim", width=20, overflow="fold")
     uploader_table.add_column("Cluster Name", width=20, overflow="fold")
-    uploader_table.add_column("Release Link", width=80, overflow="fold")
+    uploader_table.add_column("Release Link", max_width=300, overflow="fold")
     uploader_table.add_column("status", width=20, overflow="fold")
 
     destroyed_table = Table(show_header=True, header_style="bold magenta")
@@ -518,20 +531,29 @@ async def main():
         "Github Action Plan Classifier for destroyed and recreated resources"
     )
     destroyed_recreated_table.add_column(
-        "Stack Name", style="dim", width=20, overflow="fold"
+        "Stack Name", style="dim", width=10, overflow="fold"
     )
-    destroyed_recreated_table.add_column("Cluster Name", overflow="fold", width=20)
+    destroyed_recreated_table.add_column("Cluster Name", overflow="fold", width=10)
     destroyed_recreated_table.add_column(
         "deleted_and_recreated_resources_addresss", max_width=100, overflow="fold"
     )
+
+    updated_table = Table(show_header=True, header_style="bold magenta")
+    updated_table.title = "Github Action Plan Classifier for updated resources"
+    updated_table.add_column("Stack Name", style="dim", width=10, overflow="fold")
+    updated_table.add_column("Cluster Name", overflow="fold", width=10)
+    updated_table.add_column("updated resource", max_width=100, overflow="fold")
+    updated_table.add_column("Module Address", max_width=200, overflow="fold")
 
     cluster_tasks = [
         process_cluster(console, stack_name, cluster)
         for stack_name, clusters in stacks_clusters_versions.items()
         for cluster in clusters.values()
         if cluster.get("state") == "RUNNING"
-        and cluster.get("version", {}).get("majorVersion", None) == STREAM_MAJOR_VERSION
+        and cluster.get("version", {}).get("majorVersion", None)
+        == int(STREAM_MAJOR_VERSION)
         and cluster.get("version", {}).get("tfStream", None) == "stage"
+        or cluster.get("version", {}).get("tfStream", None) == "production"
         and cluster.get("version", {}).get("minorVersion", None) == "latest"
         and await check_successful_releases(
             cluster.get("id"), cluster.get("url"), cluster.get("password")
@@ -552,7 +574,7 @@ async def main():
         download_plan_from_s3(
             PLAN_BUCKET, plan_path, plan_path, AWS_ACCESS_KEY, AWS_SECRET_KEY
         )
-        deleted_recreated, deleted, _ = process_plan(plan_path)
+        deleted_recreated, deleted, updated_changes = process_plan(plan_path)
         uploader_table.add_row(
             stack_name,
             cluster_name,
@@ -569,9 +591,18 @@ async def main():
                 stack_name, cluster_name, k, style="yellow"
             )
 
+        for _, values in updated_changes.items():
+            for kv, val in values.items():
+                for v in val:
+                    for x, y in v.items():
+                        updated_table.add_row(
+                            stack_name, cluster_name, kv, y
+                        )
+
     console.print(uploader_table)
     console.print(destroyed_table)
     console.print(destroyed_recreated_table)
+    console.print(updated_table)
 
 
 if __name__ == "__main__":
