@@ -33,13 +33,13 @@ def filter_json_objects(json_objects):
 
 def process_input_objects(input_objects):
     output_list = []
-    loop_count = 0
+
     for input_obj in input_objects:
         # Convert 'provides', 'flavors' and 'supported_clouds' to lowercase
         input_obj['provides'] = input_obj['provides'].lower()
         input_obj['flavors'] = [flavor.lower() for flavor in input_obj['flavors']]
-        input_obj['supported_clouds'] = list(set(cloud.lower() for cloud in input_obj['supported_clouds']))
-        input_obj['supported_clouds'].sort()
+        input_obj['supported_clouds'] = [cloud.lower() for cloud in input_obj['supported_clouds']]
+
         # Find matching output object based on 'provides' property
         matching_output_obj = next((item for item in output_list if item['intent'] == input_obj['provides']), None)
 
@@ -54,7 +54,6 @@ def process_input_objects(input_objects):
             if matching_flavor:
                 # Concatenate clouds and versions, convert to set to remove duplicates, then convert back to list
                 matching_flavor['clouds'] = list(set(matching_flavor['clouds'] + input_obj['supported_clouds']))
-                matching_flavor['clouds'].sort()
                 matching_flavor['versions'] = list(set(matching_flavor['versions'] + [input_obj['version']]))
             else:
                 # Create a new flavor and append it to the flavors list
@@ -63,7 +62,6 @@ def process_input_objects(input_objects):
                     'clouds': input_obj['supported_clouds'],
                     'versions': [input_obj['version']]
                 }
-                new_flavor['clouds'].sort()
                 matching_output_obj['flavors'].append(new_flavor)
 
         else:
