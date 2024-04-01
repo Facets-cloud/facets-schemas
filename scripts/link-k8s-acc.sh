@@ -22,8 +22,8 @@ if [ "$#" -ne 3 ]; then
 fi
 
 # Assign arguments to variables
-SERVICE_ACCOUNT_NAME="${1}"
-CP_URL="${2}"
+SERVICE_ACCOUNT_NAME="${2}"
+CP_URL="${1}"
 WEBHOOK_ID="${3}"
 NAMESPACE="default"  # You can change this if you want to create the service account in a different namespace
 
