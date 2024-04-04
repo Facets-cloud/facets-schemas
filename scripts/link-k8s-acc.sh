@@ -79,5 +79,9 @@ RESPONSE=$(curl -X POST "https://${CP_URL}/public/v1/link-kubernetes" \
     --write-out "\nHTTP response code: %{http_code}\n" \
     --silent \
     --output /dev/null)
-echo "{ \"payload\":{ \"token\": \"$TOKEN\", \"certificateAuthority\": \"$CA_CERT\", \"host\":\"$APISERVER\",\"name\": \"$SERVICE_ACCOUNT_NAME\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
-echo "Response from server: $RESPONSE"
+if [ "$RESPONSE" -ne 200 ]; then
+    echo "Failed to send data to the specified URL. HTTP response code: $RESPONSE"
+    exit 1
+fi
+
+echo "Data successfully sent to the specified URL."
