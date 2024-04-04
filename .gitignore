@@ -53,6 +53,7 @@ deploymentcontext.json
 artifacts.json
 .terraform.lock.hcl
 terraform.tfstate
+
 terraform.tfstate.backup
 capillary-cloud-tf/tfmain/infra/main.tf
 *.backup
