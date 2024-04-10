@@ -21,9 +21,6 @@ jobs:
     - name: Create folders
       run: mkdir build-environments/terraform-capillary-cloud/tf-cache-plugins
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-
     - name: Downloading terraform providers
       shell: bash
       run: |
