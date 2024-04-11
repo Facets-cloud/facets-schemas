@@ -70,6 +70,8 @@ fi
 echo "Service Account created successfully."
 echo "Key file saved as $PRINCIPAL_NAME-key.json"
 
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
+
 # Base64 encode the service account key JSON
 SERVICE_ACCOUNT_KEY_BASE64=$(base64 -w 0 "$PRINCIPAL_NAME-key.json")
 
