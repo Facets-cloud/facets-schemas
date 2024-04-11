@@ -12,9 +12,9 @@ FROM ghcr.io/actions/actions-runner
 ENV HOME="/home/runner"
 # Update the package list
 RUN sudo apt-get update
-RUN sudo apt-get install zip libxml2-utils awscli git gh jq software-properties-common curl -y
+RUN sudo apt-get install zip libxml2-utils awscli git gh jq software-properties-common curl build-essential -y
 RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
-RUN sudo apt-get install python3.12 -y
+RUN sudo apt-get install python3.12-dev -y
 RUN sudo cp /usr/bin/python3.12 /usr/bin/python3
 RUN sudo cp /usr/bin/python3.12 /usr/bin/python
 #installing pip
