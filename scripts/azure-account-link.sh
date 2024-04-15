@@ -65,6 +65,10 @@ TENANT_ID=$(echo $SP_JSON | jq -r .tenant)
 echo "Service Principal created successfully."
 echo "$SP_JSON"
 
+# Sleep 10 seconds
+echo "Sleeping 10 seconds"
+sleep 10
+
 # Prepare the curl request
 CURL_DATA="{ \"payload\": { \"name\": \"$PRINCIPAL_NAME\", \"clientId\": \"$CLIENT_ID\", \"clientSecret\": \"$CLIENT_SECRET\", \"subscriptionId\": \"$SUBSCRIPTION_ID\", \"tenantId\": \"$TENANT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
 CURL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-azure" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "$CURL_DATA")
