@@ -7,7 +7,7 @@ on:
         required: false
 jobs:
   release-candidate:
-    runs-on: iac-arc
+    runs-on: ubuntu-latest
     steps:
       - name: Check team membership
         uses: tspascoal/get-user-teams-membership@v2
@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'tfdev'
-      - name: Determine tag to build
+      - name: Determine tag and ref to build
         id: tag
         run: |
           if [[ -n "${{ inputs.tag }}" ]]; then
@@ -50,43 +50,37 @@ jobs:
             tag="$majorVersion.$newMinorVersion.$patchVersion"
           fi
           echo "tag=$tag" >> $GITHUB_OUTPUT
-      - name: Configure git
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
       - name: Merge production -> tfdev
+        uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ secrets.PAT }}
+          source_ref: 'production'
+          target_branch: 'tfdev'
+          commit_message_template: '[Automated] Merged {source_ref} into {target_branch} for creating release candidate rc-${{ steps.tag.outputs.tag }}'
+      - name: Get Commit SHA
+        id: get_sha
         run: |
-          git checkout tfdev
-          git merge origin/production -m "[Automated] Merging production to tfdev for creating release candidate rc-${{ steps.tag.outputs.tag }}"
-          git push origin tfdev
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Creating the release candidate branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-        run: |
-          set -e
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          if gh api repos/$GITHUB_REPOSITORY/branches/rc-${{ steps.tag.outputs.tag }} --silent; then
-            echo "Release candidate branch already exists. Exiting."
-            exit 1
-          else
-            git checkout -b rc-${{ steps.tag.outputs.tag }}
-          fi
-          git push origin rc-${{ steps.tag.outputs.tag }}
-      - name: Authenticate GH CLI
-        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
-      - name: Trigger tf-ci dev
+        with:
+          branch: 'rc-${{ steps.tag.outputs.tag }}'
+          sha: '${{ steps.get_sha.outputs.sha }}'
+      - name: Trigger Jenkins job
         id: trigger
         run: |
-          gh workflow run tf-ci-2.yml -R ${{ github.repository }} --ref tfdev -F branchName=rc-${{ steps.tag.outputs.tag }}
-          sleep 3
-          url=$(gh run list --workflow=tf-ci-2.yml --json url --jq '.[0].url')
-          echo "url=$url" >> $GITHUB_OUTPUT
+          response=$(curl -s -X POST "https://jenkins.root.console.facets.cloud/job/tf-ci-2/buildWithParameters?ref=rc-${{ steps.tag.outputs.tag }}" \
+            --user "rohit@facets.cloud:${{ secrets.JENKINS_TOKEN }}" -D -)
+          queue_url=$(echo "$response" | grep -Fi Location | awk '{print $2}' | tr -d '\r')
+          queue_id=$(basename "$queue_url")
+          echo "::set-output name=queue_id::$queue_id"
       - name: Post Success to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'Release Candidate rc-${{ steps.tag.outputs.tag }} branch is ready for QA testing. Github Action for building the release candidate has been triggered and can be tracked <${{ steps.trigger.outputs.url }}|here>.'
+          slack-message: 'Release Candidate <https://github.com/Facets-cloud/facets-iac/tree/rc-${{ steps.tag.outputs.tag }}|rc-${{ steps.tag.outputs.tag }}> branch is ready for QA testing. Jenkins job to build the release candidate has been triggered.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}

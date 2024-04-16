@@ -15,7 +15,7 @@ on:
           - false
 jobs:
   build:
-    runs-on: iac-arc
+    runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.run.outputs.run }}
       status: ${{ steps.run.outputs.status }}
@@ -39,31 +39,35 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'tfdev'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: '.github/workflows/promotion/go.mod'
       - name: Build and run Go function
         id: run
         shell: bash
         run: |
-         set +e
-         if [ "${{ inputs.force }}" == "false" ]; then 
-          cd .github/workflows/promotion
-          # Retrieve the JSON content from the repository variable
-          JSON_CONTENT='${{ vars.CONTROL_PLANES }}'
-          echo "$JSON_CONTENT" > control_planes.json
-          TOKENS='${{ secrets.TOKENS }}'
-          echo "$TOKENS" > passwords.json
-          go build -o promotion
-          output=$(./promotion --tag ${{ inputs.tag }})
-          exit_status=${PIPESTATUS[0]}
-          echo "run<<EOF" >> $GITHUB_OUTPUT
-          echo "$output" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-         else
-          echo "WARNING: Not running the check to check all stage releases since force is set to true!"
-          exit_status=0
-         fi
-         echo "status=$exit_status" >> $GITHUB_OUTPUT
-         echo "Tag: ${{ inputs.tag }}"
-         echo "Exit Status: $exit_status"
+          set +e
+          if [ "${{ inputs.force }}" == "false" ]; then 
+           cd .github/workflows/promotion
+           # Retrieve the JSON content from the repository variable
+           JSON_CONTENT='${{ vars.CONTROL_PLANES }}'
+           echo "$JSON_CONTENT" > control_planes.json
+           TOKENS='${{ secrets.TOKENS }}'
+           echo "$TOKENS" > passwords.json
+           go build -o promotion
+           output=$(./promotion --tag ${{ inputs.tag }})
+           exit_status=${PIPESTATUS[0]}
+           echo "run<<EOF" >> $GITHUB_OUTPUT
+           echo "$output" >> $GITHUB_OUTPUT
+           echo "EOF" >> $GITHUB_OUTPUT
+          else
+           echo "WARNING: Not running the check to check all stage releases since force is set to true!"
+           exit_status=0
+          fi
+          echo "status=$exit_status" >> $GITHUB_OUTPUT
+          echo "Tag: ${{ inputs.tag }}"
+          echo "Exit Status: $exit_status"
   on-success:
     needs: build
     runs-on: ubuntu-latest
@@ -74,12 +78,20 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'production'
-      - name: Copy and upload to s3
-        run: |
-          aws s3 cp s3://${{ secrets.BUCKET_NAME }}/stage/${{ inputs.tag }}.zip ./${{ inputs.tag }}.zip
-          aws s3 cp ./${{ inputs.tag }}.zip s3://${{ secrets.BUCKET_NAME }}/production/${{ inputs.tag }}.zip
+      - name: Copy the tag from s3
+        uses: prewk/s3-cp-action@v2
+        with:
+          aws_access_key_id: ${{ secrets.AWS_SECRET_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_KEY }}
+          source: 's3://${{ secrets.BUCKET_NAME }}/stage/${{ inputs.tag }}.zip'
+          dest: './${{ inputs.tag }}.zip'
+      - name: Upload file to bucket
+        uses: zdurham/s3-upload-github-action@master
         env:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          FILE: ${{ inputs.tag }}.zip
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+          S3_KEY: 'production/${{ inputs.tag }}.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
       - name: Trigger schema-documentation workflow

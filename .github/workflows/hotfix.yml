@@ -12,7 +12,7 @@ permissions:
 jobs:
   cherry-pick:
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/perform-hotfix')
-    runs-on: iac-arc
+    runs-on: ubuntu-latest
     steps:
       - name: Check team membership
         uses: tspascoal/get-user-teams-membership@v2
@@ -64,7 +64,7 @@ jobs:
           echo "branch=$branch" >> $GITHUB_OUTPUT
           echo "tag=$newTag" >> $GITHUB_OUTPUT
       - name: Authenticate GH CLI
-        run: gh auth login --with-token <<< ${{ secrets.PAT }}
+        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check if PR is merged
         id: check
@@ -83,7 +83,7 @@ jobs:
             exit 1
           fi
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set Git identity
         run: |
@@ -94,40 +94,16 @@ jobs:
         run: git checkout ${{ steps.input.outputs.branch }}
 
       - name: Cherry-pick commit
-        run: | 
-          git cherry-pick -x ${{ steps.commit_id.outputs.id }}
-          git commit --amend -m "[Automated] cherry-pick for building tag ${{ steps.input.outputs.tag }}: $(git log --format=%B -n 1 HEAD)"
+        run: git cherry-pick ${{ steps.commit_id.outputs.id }}
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ steps.input.outputs.branch }}
         env:
           GIT_COMMITTER_NAME: ${{ github.actor }}
           GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
-
-      - name: Get rc_branch
-        id: rc_branch
-        run: |
-          rc_branch=$(git branch -r | grep -E '^  origin/rc-[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 | awk -F/ '{print $2}')
-          echo "rc_branch=$rc_branch" >> $GITHUB_OUTPUT
-
-      - name: Cherry-pick and push to the release candidate
-        if: "${{ steps.input.outputs.branch == 'production' }}"
-        id: release-candidate
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.PAT}}
-          script: |
-            const issueComment = `/cherry-pick ${{ steps.rc_branch.outputs.rc_branch }}`
-            github.issues.createComment({
-              issue_number: ${{ github.event.issue.number }},
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: issueComment
-            })
-
       - name: Trigger the stage workflow
         id: stage_trigger
         run: |
@@ -140,7 +116,7 @@ jobs:
       - name: Add comment to PR
         uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.PAT}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const issueComment = `The new tag [${{ steps.input.outputs.tag }}](https://github.com/${{ github.repository }}/releases/tag/${{ steps.input.outputs.tag }}) has been created, the stage workflow has been triggered and can be seen [here](${{ steps.stage_trigger.outputs.url }}).`
             github.issues.createComment({

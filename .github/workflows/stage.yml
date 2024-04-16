@@ -9,8 +9,12 @@ on:
         description: 'Ref'
         required: false
 jobs:
-  stage-build:
-    runs-on: iac-arc
+  determine-tag-and-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      ref: ${{ steps.tag.outputs.ref }}
+      merge_rc: ${{ steps.tag.outputs.merge_rc }}
     steps:
       - name: Check team membership
         uses: tspascoal/get-user-teams-membership@v2
@@ -26,23 +30,12 @@ jobs:
             echo "User does not belong to team"
             exit 1
           fi
-      - name: Determine ref to build
-        id: ref
-        run: |
-          if [[ -n "${{ inputs.ref }}" ]]; then
-            ref="${{ inputs.ref }}"
-            echo "Ref: $ref"
-          else
-            echo "Ref input is not provided. Using 'production' as the default value."
-            ref="production"
-          fi
-          echo "ref=$ref" >> $GITHUB_OUTPUT
-      - name: Checkout ref branch
+      - name: Checkout branch "production"
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: '${{ steps.ref.outputs.ref }}'
-      - name: Determine tag to build
+          ref: 'tfdev'
+      - name: Determine tag and ref to build
         id: tag
         run: |
           if [[ -n "${{ inputs.tag }}" ]]; then
@@ -72,26 +65,59 @@ jobs:
             echo "Release candidate branch rc-$tag was not found!"
           fi
           echo "merge_rc=$merge_rc" >> $GITHUB_OUTPUT
-      - name: Configure git
+          if [[ -n "${{ inputs.ref }}" ]]; then
+            ref="${{ inputs.ref }}"
+            echo "Ref: $ref"
+          else
+            echo "Ref input is not provided. Using 'production' as the default value."
+            ref="production"
+          fi
+          echo "ref=$ref" >> $GITHUB_OUTPUT
+  merge-rc:
+    runs-on: ubuntu-latest
+    needs: determine-tag-and-ref
+    steps:
+      - name: Merge release candidate -> production
+        if: "${{ needs.determine-tag-and-ref.outputs.merge_rc == 'true' }}"
+        uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ secrets.PAT }}
+          source_ref: 'rc-${{ needs.determine-tag-and-ref.outputs.tag }}'
+          target_branch: 'production'
+      - name: Merge release candidate -> tfdev
+        if: "${{ needs.determine-tag-and-ref.outputs.merge_rc == 'true' }}"
+        uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ secrets.PAT }}
+          source_ref: 'rc-${{ needs.determine-tag-and-ref.outputs.tag }}'
+          target_branch: 'tfdev'
+  generate-tag:
+    runs-on: ubuntu-latest
+    needs: [determine-tag-and-ref,merge-rc]
+    steps:
+      - name: Checkout ref branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: '${{ needs.determine-tag-and-ref.outputs.ref }}'
+      - name: Generate Tag
+        shell: bash
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-      - name: Merge release candidate to production and tfdev
-        if: "${{ steps.tag.outputs.merge_rc == 'true' }}"
-        run: |
-          git checkout production
-          git merge origin/rc-${{ steps.tag.outputs.tag }} -m "[Automated] Merging release candidate rc-${{ steps.tag.outputs.tag }} to production for building tag ${{ steps.tag.outputs.tag }}"
-          git checkout tfdev
-          git merge origin/rc-${{ steps.tag.outputs.tag }} -m "[Automated] Merging release candidate rc-${{ steps.tag.outputs.tag }} to tfdev for building tag ${{ steps.tag.outputs.tag }}"
-          git push origin production tfdev
-      - name: Generate Tag, zip and upload to s3
-        run: |
-          git tag -a ${{ steps.tag.outputs.tag }} -m "[Automated] Building tag ${{ steps.tag.outputs.tag }}"
-          git push origin ${{ steps.tag.outputs.tag }}
-          zip -r ${{ steps.tag.outputs.tag }}.zip capillary-cloud-tf
-          aws s3 cp ${{ steps.tag.outputs.tag }}.zip s3://${{ secrets.BUCKET_NAME }}/stage/${{ steps.tag.outputs.tag }}.zip
+          git tag -a ${{ needs.determine-tag-and-ref.outputs.tag }} -m "[Automated] Building tag ${{ needs.determine-tag-and-ref.outputs.tag }}"
+          git push origin ${{ needs.determine-tag-and-ref.outputs.tag }}
+      - name: Install zip
+        uses: montudor/action-zip@v1
+      - name: Zip output
+        run: zip -r ${{ needs.determine-tag-and-ref.outputs.tag }}.zip capillary-cloud-tf
+      - name: Upload file to bucket
+        uses: zdurham/s3-upload-github-action@master
         env:
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          FILE: ${{ needs.determine-tag-and-ref.outputs.tag }}.zip
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+          S3_KEY: 'stage/${{ needs.determine-tag-and-ref.outputs.tag }}.zip'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
       - name: Post Success to a Slack channel
@@ -99,6 +125,6 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ secrets.CHANNEL_ID }}
-          slack-message: 'Tag <https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}|${{ steps.tag.outputs.tag }}> has been successfully built. Please monitor stage environments.'
+          slack-message: 'Tag <https://github.com/${{ github.repository }}/releases/tag/${{ needs.determine-tag-and-ref.outputs.tag }}|${{ needs.determine-tag-and-ref.outputs.tag }}> has been successfully built. Please monitor stage environments.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}

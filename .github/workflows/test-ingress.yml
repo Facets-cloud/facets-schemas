@@ -29,7 +29,7 @@ concurrency:
 jobs:
   ingress-version:
     name: test 0.2 ingress?
-    runs-on: iac-arc
+    runs-on: ubuntu-latest
     outputs:
       use_v2: ${{ steps.set_version.outputs.use_v2 }}
       ing_version: ${{ steps.set_version.outputs.version }}
@@ -53,7 +53,7 @@ jobs:
           cat $GITHUB_OUTPUT
   test:
     needs: ingress-version
-    runs-on: iac-arc
+    runs-on: ubuntu-latest
     env:
       WORKING_DIR: tests/nginx-ingress-tests
       GOTESTSUM_JUNITFILE: report-ingress.xml
