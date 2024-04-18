@@ -10,7 +10,7 @@ on:
 
 jobs:
   terraform_providers_caching:
-    runs-on: ubuntu-latest
+    runs-on: iac-arc
 
     steps:
     - name: Checkout code
@@ -19,8 +19,7 @@ jobs:
         ref: ${{ github.event.inputs.branch }}
       
     - name: Create folders
-      run: |
-        BASE_TF_CACHE=build-environments/terraform-capillary-cloud/tf-cache-plugins
+      run: mkdir build-environments/terraform-capillary-cloud/tf-cache-plugins
 
     - name: Downloading terraform providers
       shell: bash
@@ -84,49 +83,73 @@ jobs:
             chmod 755 ${PLUGIN_PATH}/terraform-provider-azurerm3_v3.52.0
         fi
         echo "Done azure provider for linux amd"
+        
+        # Setup scratch alternate provider darwin
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/scratch/0.4.0/darwin_amd64
+        echo "Downloading scratch provider at $PLUGIN_PATH"
+        mkdir -p $PLUGIN_PATH
+        curl -sLo_ 'https://github.com/BrendanThompson/terraform-provider-scratch/releases/download/v0.4.0/terraform-provider-scratch_0.4.0_darwin_amd64.zip'
+        unzip -p _ 'terraform-provider-scratch*' > ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
+        if [ -f _ ]; then
+            rm _
+        fi
+        if [ -f ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0 ]; then
+            chmod 755 ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
+        fi
+        echo "Done scratch provider for darwin at $PLUGIN_PATH"
 
-        BASE_TF_CACHES=(
-            "tfmain"
-        )
+        # Setup scratch alternate provider linux
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/scratch/0.4.0/linux_amd64
+        echo "Downloading scratch provider at $PLUGIN_PATH"
+        mkdir -p $PLUGIN_PATH
+        curl -sLo_ 'https://github.com/BrendanThompson/terraform-provider-scratch/releases/download/v0.4.0/terraform-provider-scratch_0.4.0_linux_amd64.zip'
+        unzip -p _ 'terraform-provider-scratch*' > ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
+        if [ -f _ ]; then
+            rm _
+        fi
+        if [ -f ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0 ]; then
+            chmod 755 ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
+        fi
+        echo "Done scratch provider for linux at $PLUGIN_PATH"
 
-        for BASE_TF_CACHE in "${BASE_TF_CACHES[@]}"; do
-            # Setup scratch alternate provider darwin
-            PLUGIN_PATH=capillary-cloud-tf/$BASE_TF_CACHE/terraform.d/plugins/registry.terraform.io/hashicorp/scratch/0.4.0/darwin_amd64
-            echo "Downloading scratch provider at $PLUGIN_PATH"
-            mkdir -p $PLUGIN_PATH
-            curl -sLo_ 'https://github.com/BrendanThompson/terraform-provider-scratch/releases/download/v0.4.0/terraform-provider-scratch_0.4.0_darwin_amd64.zip'
-            unzip -p _ 'terraform-provider-scratch*' > ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
-            if [ -f _ ]; then
-                rm _
-            fi
-            if [ -f ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0 ]; then
-                chmod 755 ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
-            fi
-            echo "Done scratch provider for darwin at $PLUGIN_PATH"
+        # Setup cloudflare alternate provider darwin
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/cloudflare/cloudflare4/4.29.0/darwin_amd64
+        echo "Downloading cloudflare provider at $PLUGIN_PATH"
+        mkdir -p $PLUGIN_PATH
+        curl -sLo_ 'https://github.com/cloudflare/terraform-provider-cloudflare/releases/download/v4.29.0/terraform-provider-cloudflare_4.29.0_darwin_amd64.zip'
+        unzip -p _ 'terraform-provider-cloudflare*' > ${PLUGIN_PATH}/terraform-provider-cloudflare4_v4.29.0
+        if [ -f _ ]; then
+            rm _
+        fi
+        if [ -f ${PLUGIN_PATH}/terraform-provider-cloudflare4_v4.29.0 ]; then
+            chmod 755 ${PLUGIN_PATH}/terraform-provider-cloudflare4_v4.29.0
+        fi
+        echo "Done cloudflare provider for darwin"
 
-            # Setup scratch alternate provider linux
-            PLUGIN_PATH=capillary-cloud-tf/$BASE_TF_CACHE/terraform.d/plugins/registry.terraform.io/hashicorp/scratch/0.4.0/linux_amd64
-            echo "Downloading scratch provider at $PLUGIN_PATH"
-            mkdir -p $PLUGIN_PATH
-            curl -sLo_ 'https://github.com/BrendanThompson/terraform-provider-scratch/releases/download/v0.4.0/terraform-provider-scratch_0.4.0_linux_amd64.zip'
-            unzip -p _ 'terraform-provider-scratch*' > ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
-            if [ -f _ ]; then
-                rm _
-            fi
-            if [ -f ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0 ]; then
-                chmod 755 ${PLUGIN_PATH}/terraform-provider-scratch_v0.4.0
-            fi
-            echo "Done scratch provider for linux at $PLUGIN_PATH"
-        done
+        # Setup cloudflare alternate provider linux
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/cloudflare/cloudflare4/4.29.0/linux_amd64
+        echo "Downloading cloudflare provider at $PLUGIN_PATH"
+        mkdir -p $PLUGIN_PATH
+        curl -sLo_ 'https://github.com/cloudflare/terraform-provider-cloudflare/releases/download/v4.29.0/terraform-provider-cloudflare_4.29.0_linux_amd64.zip'
+        unzip -p _ 'terraform-provider-cloudflare*' > ${PLUGIN_PATH}/terraform-provider-cloudflare4_v4.29.0
+        if [ -f _ ]; then
+            rm _
+        fi
+        if [ -f ${PLUGIN_PATH}/terraform-provider-cloudflare4_v4.29.0 ]; then
+            chmod 755 ${PLUGIN_PATH}/terraform-provider-cloudflare4_v4.29.0
+        fi
+        echo "Done cloudflare provider for linux"
 
-        cd ../../capillary-cloud-tf/tfmain && rm backend.tf && rm main.tf
+        cd capillary-cloud-tf/tfmain && rm main.tf
         mkdir tmp_cache
         echo "terraform init to initialize modules"
-        terraform init 
+        terraform init
         terraform providers mirror tmp_cache || true
-        cp -r terraform.d/plugins/registry.terraform.io/hashicorp/scratch tmp_cache/registry.terraform.io/hashicorp/
+        cp -r terraform.d/plugins/registry.terraform.io/hashicorp/* tmp_cache/registry.terraform.io/hashicorp/
+        cp -r terraform.d/plugins/registry.terraform.io/cloudflare/ tmp_cache/registry.terraform.io/cloudflare/
         cp -r terraform.d/plugins/terraform.capillary.in/ tmp_cache/
         cp -r tmp_cache/* ../../$BASE_TF_CACHE
+        echo ${{ github.sha }}
      
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
