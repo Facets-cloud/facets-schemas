@@ -35,6 +35,7 @@
           "application-autoscaling:PutScalingPolicy",
           "application-autoscaling:RegisterScalableTarget",
           "sns:*",
+          "kms:*",
           "outposts:GetOutpostInstanceTypes",
           "elasticache:*"
         ],
