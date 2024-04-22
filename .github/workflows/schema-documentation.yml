@@ -63,29 +63,29 @@
             cp -R ../schema-metadata.json schema-metadata.json
             echo "Updating output_lookup_tree.json"
             cp -R ../capillary-cloud-tf/docs/output_lookup_tree.json docs/output_lookup_tree.json
-#        - name: Set Git identity
-#          run: |
-#            cd target
-#            pwd
-#            git status
-#            echo $(git config --list)
-#            echo "git identity"
-#            git config --global user.name "${{ github.actor }}"
-#            git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-#            echo "git commit"
-#            git status
-#            git add .
-#            git commit -m "Publishing docs for release ${{ inputs.tag || inputs.ref}}"
-#        - name: Push changes to Facets-schema
-#          uses: ad-m/github-push-action@master
-#          with:
-#            github_token: ${{ secrets.PAT }}
-#            directory: target
-#            repository: Facets-cloud/facets-schemas
-#            branch: 'master' ## master branch of facets-schemas repository
-#          env:
-#            GIT_COMMITTER_NAME: ${{ github.actor }}
-#            GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+        - name: Set Git identity
+          run: |
+            cd target
+            pwd
+            git status
+            echo $(git config --list)
+            echo "git identity"
+            git config --global user.name "${{ github.actor }}"
+            git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+            echo "git commit"
+            git status
+            git add .
+            git commit -m "Publishing docs for release ${{ inputs.tag || inputs.ref}}"
+        - name: Push changes to Facets-schema
+          uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.PAT }}
+            directory: target
+            repository: Facets-cloud/facets-schemas
+            branch: 'master' ## master branch of facets-schemas repository
+          env:
+            GIT_COMMITTER_NAME: ${{ github.actor }}
+            GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
 
         - name: Post failed schema documentation notification to a Slack channel
           uses: slackapi/slack-github-action@v1.24.0
