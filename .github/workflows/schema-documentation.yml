@@ -71,10 +71,10 @@
             echo $(git config --list)
             echo "git identity"
             git config --global user.name "${{ github.actor }}"
-            git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+            git config --global user.email "${{ github.actor }}@users.noreply.github.com"  
             echo "git commit"
             git status
-            git add .
+            git add . 
             git commit -m "Publishing docs for release ${{ inputs.tag || inputs.ref}}"
         - name: Push changes to Facets-schema
           uses: ad-m/github-push-action@master
