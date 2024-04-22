@@ -38,7 +38,7 @@
         - name: Run schema-metadata script
           run: python3 schema-metadata.py
         - name: Run output-tree script
-          run: python3 ./capillary-cloud-tf/docs/output-tree.py
+          run: python3 capillary-cloud-tf/docs/output-tree.py
         - name: Checkout Facets-Schema repository
           uses: actions/checkout@v2
           with:
