@@ -4,7 +4,7 @@ on:
     branches: [tfdev]
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: iac-arc
     steps:
       - name: Checkout
         uses: actions/checkout@v3
