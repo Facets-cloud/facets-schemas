@@ -18,7 +18,7 @@ COPY build-environments/terraform-capillary-cloud/tf-cache-plugins /sources/prim
 RUN wget https://app.getambassador.io/download/tel2/linux/amd64/2.4.2/telepresence
 RUN mv telepresence /usr/local/bin/telepresence
 RUN chmod +x /usr/local/bin/telepresence
-RUN pip3 install --no-cache-dir pykube-ng pytz google-api-python-client google-auth
+RUN pip3 install --no-cache-dir pykube-ng pytz google-api-python-client google-auth psycopg2-binary
 
 RUN rm -rf /usr/local/bin/telepresence
 RUN rm -rf terraform_1.0.11 terraform_1.0 kubectl1.21 terraform_1.5.7
