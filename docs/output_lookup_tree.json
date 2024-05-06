@@ -208,7 +208,14 @@
             }
         }
     },
-    "iam_policy": {},
+    "iam_policy": {
+        "out": {
+            "attributes": {
+                "arn": {},
+                "name": {}
+            }
+        }
+    },
     "config_map": {},
     "sqs": {},
     "s3": {}
