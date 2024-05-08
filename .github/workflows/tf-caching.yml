@@ -155,7 +155,7 @@ jobs:
         terraform init
         terraform providers mirror tmp_cache || true
         cp -r terraform.d/plugins/registry.terraform.io/hashicorp/* tmp_cache/registry.terraform.io/hashicorp/
-        cp -r terraform.d/plugins/registry.terraform.io/cloudflare/ tmp_cache/registry.terraform.io/cloudflare/
+        cp -r terraform.d/plugins/registry.terraform.io/cloudflare/* tmp_cache/registry.terraform.io/cloudflare/
         cp -r terraform.d/plugins/terraform.capillary.in/ tmp_cache/
         cp -r tmp_cache/* ../../$BASE_TF_CACHE
         echo ${{ github.sha }}
