@@ -4,7 +4,7 @@
       inputs:
         tag:
           description: 'Tag'
-          required: true
+          required: false
         ref:
           description: 'Ref'
           required: false

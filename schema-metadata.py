@@ -23,9 +23,12 @@ def find_module_json_files(directory):
 
 def filter_json_objects(json_objects):
     filtered_objects = []
+    ignore_modules_list = ["kustomize", "argo_account"]
 
     for obj in json_objects:
         if 'input_type' in obj and obj['input_type'] == 'instance':
+            if 'provides' in obj and obj['provides'] in ignore_modules_list:
+                continue
             if 'disabled' not in obj or not obj['disabled']:
                 filtered_objects.append(obj)
     return filtered_objects
@@ -94,6 +97,7 @@ def add_additional_fields(output_objects):
             flavor[
                 'flavorSampleUrl'] = f"{base_url}{output_obj['intent']}/{output_obj['intent']}.{flavor['name'][0]}.sample.json"
     return output_objects
+
 
 def generate_readme(input_json):
     # Load the JSON data
