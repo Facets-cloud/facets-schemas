@@ -140,6 +140,35 @@ jobs:
         fi
         echo "Done cloudflare provider for linux"
 
+        ### AWS5 Plugin
+        echo "Starting aws5 provider"
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/aws5/5.49.0/darwin_amd64
+        echo "Downloading aws5 provider at $PLUGIN_PATH"
+        mkdir -p $PLUGIN_PATH
+        curl -sLo_ 'https://releases.hashicorp.com/terraform-provider-aws/5.49.0/terraform-provider-aws_5.49.0_darwin_amd64.zip'
+        unzip -p _ 'terraform-provider-aws*' > ${PLUGIN_PATH}/terraform-provider-aws5_v5.49.0
+        if [ -f _ ]; then
+            rm _
+        fi
+        if [ -f ${PLUGIN_PATH}/terraform-provider-aws5_v5.49.0 ]; then
+            chmod 755 ${PLUGIN_PATH}/terraform-provider-aws5_v5.49.0
+        fi
+        echo "Done aws5 provider for darwin"
+
+        # Setup aws5 alternate provider linux
+        PLUGIN_PATH=capillary-cloud-tf/tfmain/terraform.d/plugins/registry.terraform.io/hashicorp/aws5/5.49.0/linux_amd64
+        echo "Downloading aws5 provider at $PLUGIN_PATH"
+        mkdir -p $PLUGIN_PATH
+        curl -sLo_ 'https://releases.hashicorp.com/terraform-provider-aws/5.49.0/terraform-provider-aws_5.49.0_linux_amd64.zip'
+        unzip -p _ 'terraform-provider-aws*' > ${PLUGIN_PATH}/terraform-provider-aws5_v5.49.0
+        if [ -f _ ]; then
+            rm _
+        fi
+        if [ -f ${PLUGIN_PATH}/terraform-provider-aws5_v5.49.0 ]; then
+            chmod 755 ${PLUGIN_PATH}/terraform-provider-aws5_v5.49.0
+        fi
+        echo "Done aws5 provider for linux amd"
+
         cd capillary-cloud-tf/tfmain
         mkdir tmp_cache
         echo "terraform init to initialize modules"
