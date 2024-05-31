@@ -15,8 +15,8 @@
         - name: Check version
           id: tag_check
           run: |
-            if [[ "${{ github.event.inputs.tag }}" != 2.* ]]; then
-                echo "Error: The tag must start with '2.'"
+            if [[ "${{ github.event.inputs.tag }}" != 3.* ]]; then
+                echo "Error: The tag must start with '3.'"
                 exit_status=1
                 exit 1
             fi
