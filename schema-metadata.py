@@ -23,7 +23,16 @@ def find_module_json_files(directory):
 
 def filter_json_objects(json_objects):
     filtered_objects = []
-    ignore_modules_list = ["kustomize", "argo_account"]
+    ignore_modules_list = [
+        "kustomize",
+        "argo_account",
+        "karpenter_node_pool",
+        "service_monitoring",
+        "kubernetes_monitoring",
+        "kubernetes_cluster",
+        "network",
+        "cloudflare_account"
+    ]
 
     for obj in json_objects:
         if 'input_type' in obj and obj['input_type'] == 'instance':
