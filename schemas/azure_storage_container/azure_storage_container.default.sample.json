@@ -4,6 +4,6 @@
   "flavor": "default",
   "kind": "azure_storage_container",
   "metadata": {},
-  "version": "latest",
+  "version": "0.1",
   "spec": {}
 }

@@ -1,0 +1,418 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "mongo_user"
+          ],
+          "description": "Describes the type of resource."
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ],
+          "description": "Implementation selector for the mongo_user resource. e.g. for a resource type default"
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ],
+          "description": "This field can be used to pin to a particular version"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "endpoint": {
+              "type": "string",
+              "description": "The MongoDB database endpoint. Syntax: `mongodb://{username}:{password}@{endpoint}:{port}`, Eg: `mongodb://Mongo:testMongoPassword@test-MongoDB.default.svc.cluster.local:27017`"
+            },
+            "database": {
+              "type": "string",
+              "description": "The MongoDB database where user/roles will be created`"
+            },
+            "permissions": {
+              "type": "object",
+              "description": "Map of permissions to be attached to the role of the database per collection.",
+              "patternProperties": {
+                "^[a-zA-Z1-9]*$": {
+                  "type": "object",
+                  "properties": {
+                    "permission": {
+                      "type": "string",
+                      "description": "The comma separated permissions for the role. For more information - https://www.mongodb.com/docs/manual/reference/privilege-actions/#std-label-security-user-actions"
+                    },
+                    "database": {
+                      "type": "string",
+                      "description": "The database name."
+                    },
+                    "collection": {
+                      "type": "string",
+                      "description": "The collection name. Applies for all collection if empty"
+                    },
+                    "cluster": {
+                      "type": "boolean",
+                      "description": "Value is true if permissions needs to be applied for all collections."
+                    }
+                  },
+                  "required": [
+                    "permission",
+                    "database",
+                    "collection"
+                  ]
+                }
+              }
+            }
+          },
+          "required": [
+            "endpoint",
+            "permissions",
+            "database"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "endpoint": {
+                      "type": "string",
+                      "description": "The MongoDB database endpoint. Syntax: `mongodb://{username}:{password}@{endpoint}:{port}`, Eg: `mongodb://Mongo:testMongoPassword@test-MongoDB.default.svc.cluster.local:27017`"
+                    },
+                    "database": {
+                      "type": "string",
+                      "description": "The MongoDB database where user/roles will be created`"
+                    },
+                    "permissions": {
+                      "type": "object",
+                      "description": "Map of permissions to be attached to the role of the database per collection",
+                      "patternProperties": {
+                        "^[a-zA-Z1-9]*$": {
+                          "type": "object",
+                          "properties": {
+                            "permission": {
+                              "type": "string",
+                              "description": "The comma separated permissions for the role. For more information - https://www.mongodb.com/docs/manual/reference/privilege-actions/#std-label-security-user-actions"
+                            },
+                            "database": {
+                              "type": "string",
+                              "description": "The database name."
+                            },
+                            "collection": {
+                              "type": "string",
+                              "description": "The collection name. Applies for all collection if empty"
+                            },
+                            "cluster": {
+                              "type": "boolean",
+                              "description": "Value is true if permissions needs to be applied for all collections."
+                            }
+                          },
+                          "required": [
+                            "permission",
+                            "database",
+                            "collection"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "endpoint",
+                    "permissions",
+                    "database"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "The MongoDB username"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "The MongoDB user password"
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced MongoDB User Schema",
+              "properties": {
+                "mongo_user": {
+                  "type": "object",
+                  "description": "The advanced options for MongoDB User-Management",
+                  "properties": {
+                    "role": {
+                      "type": "object",
+                      "description": "The extra options for role. You can refer to this doc for more information - https://www.mongodb.com/docs/manual/reference/method/db.createRole",
+                      "properties": {
+                        "rolesToRole": {
+                          "type": "string",
+                          "description": "Additional comma separated roles to inherit privileges from [admin database only]."
+                        },
+                        "dbRoles": {
+                          "type": "object",
+                          "description": "A map of other roles in databases to inherit their privileges",
+                          "patternProperties": {
+                            "^[a-zA-Z1-9]*$": {
+                              "type": "object",
+                              "properties": {
+                                "db": {
+                                  "type": "string",
+                                  "description": "Database where role exists (database should be same for non-admin users)"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "description": "Role name from which privileges will be inherited."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "user": {
+                      "type": "object",
+                      "description": "Advance options to configure user",
+                      "properties": {
+                        "authenticationRestrictions": {
+                          "type": "object",
+                          "description": "The authentication restrictions the server enforces on the created user. Specifies a list of IP addresses and CIDR ranges from which the user is allowed to connect to the server or from which the server can accept users",
+                          "patternProperties": {
+                            "^[a-zA-Z1-9]*$": {
+                              "type": "object",
+                              "properties": {
+                                "clientSource": {
+                                  "type": "string",
+                                  "description": "(comma separated) If present, when authenticating a user, the server verifies that the client's IP address is either in the given list or belongs to a CIDR range in the list. If the client's IP address is not present, the server does not authenticate the user."
+                                },
+                                "serverAddress": {
+                                  "type": "string",
+                                  "description": "(comma separated) A list of IP addresses or CIDR ranges to which the client can connect. If present, the server will verify that the client's connection was accepted via an IP address in the given list. If the connection was accepted via an unrecognized IP address, the server does not authenticate the user."
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "Name of the user"
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "Password of the user (plain text)"
+                        },
+                        "mechanisms": {
+                          "type": "string",
+                          "description": "A comma separated SCRAM mechanisms for user credentials"
+                        },
+                        "customData": {
+                          "type": "object",
+                          "description": "Custom data that defines the user"
+                        },
+                        "rolesToRole": {
+                          "type": "string",
+                          "description": "Additional comma separated roles to inherit privileges from [admin database only]."
+                        },
+                        "dbRoles": {
+                          "type": "object",
+                          "description": "A map of other roles in databases to inherit their privileges",
+                          "patternProperties": {
+                            "^[a-zA-Z1-9]*$": {
+                              "type": "object",
+                              "properties": {
+                                "db": {
+                                  "type": "string",
+                                  "description": "Database where role exists (database should be same for non-admin users)"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "description": "Role name from which privileges will be inherited."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
+    }
+  }
+}

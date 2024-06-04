@@ -1,0 +1,358 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for AWS WAF(Web Application Firewall)",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "out"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "aws_waf"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default",
+            "aws_waf"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Output from the azure service bus",
+          "properties": {
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "arn": {
+                  "type": "string",
+                  "description": "The ARN of the WAF WebACL."
+                }
+              },
+              "required": ["arn"]
+            }
+          },
+          "required": ["attributes"]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "properties": {
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "REGIONAL",
+                    "CLOUDFRONT"
+                  ],
+                  "description": "Specifies whether this is for an AWS CloudFront distribution or for a regional application."
+                },
+                "resource_arns": {
+                  "type": "object",
+                  "description": "The Amazon Resource Name (ARN) of the resource to associate with the web ACL.",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "arn": {
+                        "type": "string",
+                        "description": "The ARN of the resource"
+                      }
+                    }
+                  }
+                },
+                "default_action": {
+                  "type": "object",
+                  "description": "The action to perform if none of the rules contained in the WebACL match.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "allow": {
+                          "type": "object",
+                          "description": "Specifies that AWS WAF should allow requests by default.",
+                          "properties": {
+                            "custom_request_handling": {
+                              "type": "object",
+                              "description": "Defines custom handling for the web request.",
+                              "properties": {
+                                "insert_header": {
+                                  "type": "object",
+                                  "description": "The insert_header blocks used to define HTTP headers added to the request",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "description": "The name of the custom header."
+                                      },
+                                      "value": {
+                                        "type": "string",
+                                        "description": "The value of the custom header."
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "required": ["allow"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "block": {
+                          "type": "object",
+                          "description": "Specifies that AWS WAF should block requests by default.",
+                          "properties": {
+                            "custom_response": {
+                              "type": "object",
+                              "description": "Defines a custom response for the web request.",
+                              "properties": {
+                                "custom_response_body_key": {
+                                  "type": "string",
+                                  "description": "References the response body that you want AWS WAF to return to the web request client.",
+                                },
+                                "response_code": {
+                                  "type": "string",
+                                  "description": "The HTTP status code to return to the client."
+                                },
+                                "response_header": {
+                                  "type": "object",
+                                  "description": "The response_header blocks used to define the HTTP response headers added to the response.",
+                                  "properties": {
+                                    "name": {
+                                      "type": "string",
+                                      "description": "The name of the custom header."
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "description": "The value of the custom header."
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "required": ["block"]
+                    }
+                  ]
+                },
+                "rule_groups": {
+                  "type": "object",
+                  "description": "Specifies one or more rules groups to be added to the WAF resource.",
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "arn": {
+                        "type": "string",
+                        "description": "The Amazon Resource Name (ARN) of the rule_group resource"
+                      },
+                      "priority": {
+                        "type": "integer",
+                        "description": "If you define more than one Rule in a WebACL, AWS WAF evaluates each request against the rules in order based on the value of priority. AWS WAF processes rules with lower priority first."
+                      }
+                    },
+                    "required": ["arn"]
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "scope": {
+                    "const": "REGIONAL"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "scope",
+                  "rule_groups",
+                  "resource_arns",
+                  "default_action"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "provided": {
+                    "const": "CLOUDFRONT"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "scope",
+                  "rule_groups",
+                  "default_action"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "description": "Advanced values for AWS WAF",
+          "properties": {
+            "default": {
+              "type": "object",
+              "properties": {
+                "aws_wafv2_web_acl": {
+                  "type": "object",
+                  "description": "Advance values for the terraform resource aws_wafv2_web_acl. Documentation link https://registry.terraform.io/providers/hashicorp/aws/3.74.0/docs/resources/wafv2_web_acl"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata"
+  ]
+}

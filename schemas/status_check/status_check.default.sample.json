@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/status_check/status_check.schema.json",
   "kind": "status_check",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.1",
   "disabled": true,
   "metadata": {},
   "spec": {

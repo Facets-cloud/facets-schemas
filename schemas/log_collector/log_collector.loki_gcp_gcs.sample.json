@@ -1,17 +1,17 @@
 {
-    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.schema.json",
-    "flavor": "loki_gcs",
-    "metadata": {
-      "name": "loki-gcs-log-collector"
-    },
-    "kind": "log_collector",
-    "provided": false,
-    "disabled": false,
-    "version": "latest",
-    "spec": {},
-    "advanced": {
-      "loki_gcs": {
-        "bucket_name": "<Dollar reference the name of the gcs bucket>"
-      }
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.schema.json",
+  "flavor": "loki_gcs",
+  "metadata": {
+    "name": "loki-gcs-log-collector"
+  },
+  "kind": "log_collector",
+  "provided": false,
+  "disabled": false,
+  "version": "0.2",
+  "spec": {},
+  "advanced": {
+    "loki_gcs": {
+      "bucket_name": "<Dollar reference the name of the gcs bucket>"
     }
+  }
 }

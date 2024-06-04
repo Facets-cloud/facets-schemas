@@ -17,7 +17,7 @@
           "type": "boolean",
           "description": "It will suspend all executions"
         },
-        "concurreny_policy": {
+        "concurrency_policy": {
           "type": "string",
           "description": "Specifies how to treat concurrent executions of a job that is created by this cron job.",
           "enum": [
@@ -30,7 +30,7 @@
       "required": [
         "schedule",
         "suspend",
-        "concurreny_policy"
+        "concurrency_policy"
       ]
     },
     "job": {

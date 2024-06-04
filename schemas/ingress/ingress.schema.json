@@ -126,7 +126,8 @@
             "nginx_ingress_controller",
             "aws_alb",
             "azure_agic",
-            "gcp_alb"
+            "gcp_alb",
+            "nginx_k8s_native"
           ]
         },
         "version": {
@@ -436,6 +437,20 @@
                     "maintain_rule_order": {
                       "type": "boolean",
                       "description": "Boolean flag to maintain the order of rules specified in json using priority numbers inside rules"
+                    },
+                    "dns": {
+                      "type": "object",
+                      "description": "add custom record type and record values under dns",
+                      "properties": {
+                        "record_type": {
+                          "type": "string",
+                          "description": "Name of the record type. For eg. CNAME, A, AAA"
+                        },
+                        "record_value": {
+                          "type": "string",
+                          "description": "Value of the record. Use comma separated for multiple values"
+                        }
+                      }
                     }
                   }
                 }
@@ -485,6 +500,20 @@
                       "type": "string",
                       "description": "configures number of hours before cert manager renews a certificate. Default value is 720hrs (30 days). Entered duration must be parseable by go's time.ParseDuration method. see https://pkg.go.dev/time#ParseDuration",
                       "pattern": "^(\\d+(ms|ns|us|µs|ms|s|m|h))+$"
+                    },
+                    "dns": {
+                      "type": "object",
+                      "description": "add custom record type and record values under dns",
+                      "properties": {
+                        "record_type": {
+                          "type": "string",
+                          "description": "Name of the record type. For eg. CNAME, A, AAA"
+                        },
+                        "record_value": {
+                          "type": "string",
+                          "description": "Value of the record. Use comma separated for multiple values"
+                        }
+                      }
                     }
                   }
                 }

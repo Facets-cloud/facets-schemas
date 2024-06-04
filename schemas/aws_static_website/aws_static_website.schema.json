@@ -1,0 +1,244 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "$id": "../../traits/base.schema.json",
+    "allOf": [
+      {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "type": "object",
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+              },
+              "flavor": {
+                "type": "string",
+                "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+              },
+              "version": {
+                "type": "string",
+                "description": "This field can be used to pin to a particular version"
+              },
+              "lifecycle": {
+                "type": "string",
+                "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+                "enum": [
+                  "ENVIRONMENT"
+                ]
+              },
+              "disabled": {
+                "type": "boolean",
+                "description": "Flag to disable the resource"
+              },
+              "conditional_on_intent": {
+                "type": "string",
+                "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+              },
+              "provided": {
+                "type": "boolean",
+                "description": "Flag to tell if the resource should not be provisioned by facets",
+                "default": false
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {},
+                "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Metadata related to the resource",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                  }
+                },
+                "required": []
+              },
+              "spec": {
+                "type": "object",
+                "description": "Specification as per resource types schema"
+              },
+              "out": {
+                "type": "object",
+                "description": "Output given by the resource for others to refer."
+              },
+              "advanced": {
+                "type": "object",
+                "description": "Additional fields if any for a particular implementation of a resource"
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "provided": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "kind",
+                "flavor",
+                "version",
+                "metadata"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "provided": {
+                  "const": false
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "kind",
+                "flavor",
+                "version",
+                "metadata",
+                "spec"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "aws_static_website"
+            ]
+          },
+          "flavor": {
+            "type": "string",
+            "enum": [
+              "default"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "enum": [
+              "0.1"
+            ]
+          }
+        }
+      },
+      {
+        "type": "object",
+        "properties": {
+          "spec": {
+            "type": "object",
+            "properties": {
+              "website": {
+                "type": "object",
+                "description": "Website details",
+                "properties": {
+                  "source_code_s3_path": {
+                    "type": "string",
+                    "description": "Path of the file to be extracted and uploaded to bucket"
+                  },
+                  "cloudfront_enabled": {
+                    "type": "boolean",
+                    "description": "Flag to enable the cloudfront"
+                  },
+                  "acm_certificate_arn": {
+                    "type": "string",
+                    "description": "AWS Arn of the acm cerificate to be used by cloudfront. The certificate should cover all the provided domains"
+                  }
+                },
+                "required": [
+                  "source_code_s3_path"
+                ]
+              },
+              "domains": {
+                "type": "object",
+                "description": "Map of website details",
+                "patternProperties": {
+                  "^[a-zA-Z0-9-_]*$": {
+                    "type": "object",
+                    "properties": {
+                      "domain": {
+                        "type": "string",
+                        "description": "domain name"
+                      },
+                      "alias": {
+                        "type": "string",
+                        "description": "domain name alias for easy identification"
+                      }
+                    },
+                    "required": [
+                      "domain",
+                      "alias"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "website"
+            ]
+          },
+          "advanced": {
+            "type": "object",
+            "properties": {
+              "website": {
+                "type": "object",
+                "description": "The advanced section of website",
+                "properties": {
+                  "index_document": {
+                    "type": "string",
+                    "description": "Name of the index document"
+                  },
+                  "error_document": {
+                    "type": "string",
+                    "description": "Name of the error document"
+                  }
+                }
+              },
+              "s3": {
+                "type": "object",
+                "description": "The advanced section supported by aws s3 module",
+                "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/s3/flavor-s3.schema.json"
+              },
+              "cloudfront": {
+                "type": "object",
+                "description": "The advanced section supported by aws cloudfront module",
+                "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/cloudfront/cloudfront.schema.json"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "object",
+        "properties": {
+          "out": {
+            "type": "object",
+            "description": "The output for your aws_static_website module, this can be generated or provided",
+            "properties": {
+              "attributes": {
+                "type": "object",
+                "description": "The advanced section of all the aws static website module"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "required": [
+      "kind",
+      "flavor",
+      "version",
+      "metadata",
+      "spec"
+    ]
+}

@@ -1,13 +1,17 @@
 {
-  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.schema.json",
-  "flavor": "k8s",
-  "version": "latest",
-  "kind": "pvc",
-  "disabled": true,
-  "metadata": {},
-  "spec": {
-    "size": {
-      "volume": "8Gi"
+    "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/pvc/pvc.schema.json",
+    "flavor": "k8s",
+    "kind": "pvc",
+    "disabled": "false",
+    "metadata": {
+        "name": "test-pvc"
+    },
+    "spec": {
+        "size": {
+            "volume": "8Gi"
+        }
+    },
+    "advanced": {
+        "accessModes": ["ReadWriteOnce"]
     }
-  }
 }

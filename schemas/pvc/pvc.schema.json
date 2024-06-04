@@ -54,6 +54,10 @@
                 "name": {
                   "type": "string",
                   "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                },
+                "annotations": {
+                  "type": "object",
+                  "description": "Annotations to be added to pvc"
                 }
               },
               "required": []

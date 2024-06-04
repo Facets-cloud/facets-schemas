@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/dynamodb/dynamodb.schema.json",
   "kind": "dynamodb",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.2",
   "disabled": true,
   "metadata": {},
   "spec": {

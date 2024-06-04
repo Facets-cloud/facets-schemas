@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for Prometheus MySQL exporter",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "anyOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "definition": "k8s Schema",
+              "properties": {
+                "k8s": {
+                  "type": "object",
+                  "description": "Advanced section of k8s",
+                  "properties": {
+                    "prometheus_mysql_exporter": {
+                      "type": "object",
+                      "description": "Advanced values as per the helm chart https://artifacthub.io/packages/helm/prometheus-community/prometheus-mysql-exporter \nCustomized defaults other than chart defaults,\n - serviceMonitor.enabled = true\n  - serviceMonitor.interval = 60s\n - serviceMonitor.additionalLabels.release = prometheus-operator\n - collectors.info_schema.tables = false"
+                    }
+                  }
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "version"
+  ]
+}

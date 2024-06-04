@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/rabbitmq/rabbitmq.schema.json",
   "flavor": "k8s",
   "kind": "rabbitmq",
-  "version": "latest",
+  "version": "0.1",
   "disabled": true,
   "metadata": {},
   "spec": {

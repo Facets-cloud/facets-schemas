@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.json",
   "kind": "mysql_user",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.1",
   "metadata": {},
   "spec": {
     "endpoint": "mysql:testMySQLPassword@test-mysql.default.svc.cluster.local:3306",
