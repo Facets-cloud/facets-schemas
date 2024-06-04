@@ -1,8 +1,8 @@
 {
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/externaldns/externaldns.schema.json",
   "kind": "externaldns",
-  "flavor": "dafault",
-  "version": "latest",
+  "flavor": "default",
+  "version": "0.1",
   "disabled": true,
   "metadata": {},
   "spec": {

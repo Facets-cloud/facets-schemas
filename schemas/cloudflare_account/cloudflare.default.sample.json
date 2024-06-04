@@ -1,0 +1,15 @@
+{
+  "kind": "cloudflare_account",
+  "provided": false,
+  "disabled": false,
+  "flavor": "default",
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {
+    "name": "cloudflare-account-test"
+  },
+  "depends_on": [],
+  "version": "0.1",
+  "spec": {
+    "api_token_secret_name": "CF_API_TOKEN_1"
+  }
+}

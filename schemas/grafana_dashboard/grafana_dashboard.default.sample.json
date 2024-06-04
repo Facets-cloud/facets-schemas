@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.schema.json",
   "kind": "grafana_dashboard",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.1",
   "disabled": true,
   "metadata": {},
   "spec": {

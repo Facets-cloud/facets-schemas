@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced MongoDB User Schema",
+  "properties": {
+    "mongo_user": {
+      "type": "object",
+      "description": "The advanced options for MongoDB User-Management",
+      "properties": {
+        "role": {
+          "type": "object",
+          "description": "The extra options for role. You can refer to this doc for more information - https://www.mongodb.com/docs/manual/reference/method/db.createRole",
+          "properties": {
+            "rolesToRole": {
+              "type": "string",
+              "description": "Additional comma separated roles to inherit privileges from [admin database only]."
+            },
+            "dbRoles": {
+              "type": "object",
+              "description": "A map of other roles in databases to inherit their privileges",
+              "patternProperties": {
+                "^[a-zA-Z1-9]*$": {
+                  "type": "object",
+                  "properties": {
+                    "db": {
+                      "type": "string",
+                      "description": "Database where role exists (database should be same for non-admin users)"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Role name from which privileges will be inherited."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "user": {
+          "type": "object",
+          "description": "Advance options to configure user",
+          "properties": {
+            "authenticationRestrictions": {
+              "type": "object",
+              "description": "The authentication restrictions the server enforces on the created user. Specifies a list of IP addresses and CIDR ranges from which the user is allowed to connect to the server or from which the server can accept users",
+              "patternProperties": {
+                "^[a-zA-Z1-9]*$": {
+                  "type": "object",
+                  "properties": {
+                    "clientSource": {
+                      "type": "string",
+                      "description": "(comma separated) If present, when authenticating a user, the server verifies that the client's IP address is either in the given list or belongs to a CIDR range in the list. If the client's IP address is not present, the server does not authenticate the user."
+                    },
+                    "serverAddress": {
+                      "type": "string",
+                      "description": "(comma separated) A list of IP addresses or CIDR ranges to which the client can connect. If present, the server will verify that the client's connection was accepted via an IP address in the given list. If the connection was accepted via an unrecognized IP address, the server does not authenticate the user."
+                    }
+                  }
+                }
+              }
+            },
+            "username": {
+              "type": "string",
+              "description": "Name of the user"
+            },
+            "password": {
+              "type": "string",
+              "description": "Password of the user (plain text)"
+            },
+            "mechanisms": {
+              "type": "string",
+              "description": "A comma separated SCRAM mechanisms for user credentials"
+            },
+            "customData": {
+              "type": "object",
+              "description": "Custom data that defines the user"
+            },
+            "rolesToRole": {
+              "type": "string",
+              "description": "Additional comma separated roles to inherit privileges from [admin database only]."
+            },
+            "dbRoles": {
+              "type": "object",
+              "description": "A map of other roles in databases to inherit their privileges",
+              "patternProperties": {
+                "^[a-zA-Z1-9]*$": {
+                  "type": "object",
+                  "properties": {
+                    "db": {
+                      "type": "string",
+                      "description": "Database where role exists (database should be same for non-admin users)"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Role name from which privileges will be inherited."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

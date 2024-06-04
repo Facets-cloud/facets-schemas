@@ -1,0 +1,25 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_waf/azure_waf.schema.json",
+  "provided": false,
+  "metadata": {},
+  "flavor": "default",
+  "kind": "aws_waf",
+  "disabled": true,
+  "version": "0.1",
+  "spec": {
+    "scope": "REGIONAL",
+    "rule_groups": {
+      "rule1": {
+        "arn": "arn:aws:wafv2:ap-south-1:338360549315:regional/rulegroup/test/49c6912b-5401-49ca-a3ed-02325baab5aa"
+      }
+    },
+    "resource_arns": {
+      "test": {
+        "arn:aws:elasticloadbalancing:ap-south-1:338360549315:loadbalancer/app/k8s-default-awsalb01-deb18e9e1c/be085e94f9aaf842"
+      }
+    },
+    "default_action": {
+      "allow": {}
+    }
+  }
+}

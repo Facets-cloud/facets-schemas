@@ -19,12 +19,7 @@
             },
             "version": {
               "type": "string",
-              "description": "This field can be used to pin to a particular version",
-              "enum": [
-                "latest",
-                "0.1",
-                "0.2"
-              ]
+              "description": "This field can be used to pin to a particular version"
             },
             "lifecycle": {
               "type": "string",

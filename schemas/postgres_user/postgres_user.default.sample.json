@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/postgres_user/postgres_user.schema.json",
   "kind": "postgres_user",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.1",
   "metadata": {},
   "spec": {
     "endpoint": "postgres:testPostgresPassword@test-postgresql.default.svc.cluster.local:5432",

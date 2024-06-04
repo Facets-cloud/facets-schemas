@@ -33,6 +33,20 @@
         "maintain_rule_order": {
           "type": "boolean",
           "description": "Boolean flag to maintain the order of rules specified in json using priority numbers inside rules"
+        },
+        "dns": {
+          "type": "object",
+          "description": "add custom record type and record values under dns",
+          "properties": {
+            "record_type": {
+              "type": "string",
+              "description": "Name of the record type. For eg. CNAME, A, AAA"
+            },
+            "record_value": {
+              "type": "string",
+              "description": "Value of the record. Use comma separated for multiple values"
+            }
+          }
         }
       }
     }

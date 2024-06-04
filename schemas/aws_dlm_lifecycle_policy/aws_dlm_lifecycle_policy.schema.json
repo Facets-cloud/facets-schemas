@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Generated schema for Root",
+  "description": "Schema for configuring AWS DLM (Data Lifecycle Manager) lifecycle policies for automated snapshot and volume management.",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "aws_dlm_lifecycle_policy"
+    },
+    "flavor": {
+      "const": "default"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "spec": {
+      "type": "object",
+      "description": "The specification section containing detailed configuration settings for the DLM lifecycle policy.",
+      "properties": {
+        "schedules": {
+          "type": "object",
+          "description": "Defines the schedules for snapshot management operations, allowing multiple named schedules.",
+          "patternProperties": {
+            "^[a-zA-Z0-9_-]+$": {
+              "type": "object",
+              "description": "A schedule configuration for managing the lifecycle of snapshots, identified by a unique name.",
+              "properties": {
+                "copy_tags": {
+                  "type": "boolean",
+                  "description": "Indicates whether tags should be copied from the source volume to the snapshots."
+                },
+                "create_rule": {
+                  "type": "object",
+                  "description": "Defines the rules for creating snapshots, including timing and frequency.",
+                  "properties": {
+                    "interval": {
+                      "type": "number",
+                      "description": "The interval at which snapshots are taken."
+                    },
+                    "interval_unit": {
+                      "type": "string",
+                      "description": "The unit of measurement for the interval, such as hours or days."
+                    },
+                    "times": {
+                      "type": "array",
+                      "description": "Specific times of the day when snapshots should be created.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "cron_expression": {
+                      "type": "string",
+                      "description": "A CRON expression specifying the snapshot creation schedule."
+                    }
+                  },
+                  "oneOf": [
+                    {
+                      "required": ["cron_expression"]
+                    },
+                    {
+                      "required": ["interval", "interval_unit", "times"]
+                    }
+                  ]
+                },
+                "cross_region_copy_rules": {
+                  "type": "object",
+                  "description": "Defines rules for copying snapshots across AWS regions.",
+                  "patternProperties": {
+                    "^[a-zA-Z0-9_-]+$": {
+                      "type": "object",
+                      "description": "A rule specifying how snapshots should be copied to another region.",
+                      "properties": {
+                        "copy_tags": {
+                          "type": "boolean",
+                          "description": "Indicates whether tags should be copied along with the snapshot to the target region."
+                        },
+                        "encrypted": {
+                          "type": "boolean",
+                          "description": "Specifies whether the copied snapshot should be encrypted."
+                        },
+                        "retain_rule": {
+                          "type": "object",
+                          "description": "Defines how long the copied snapshots should be retained in the target region.",
+                          "properties": {
+                            "interval": {
+                              "type": "number",
+                              "description": "The retention interval for the copied snapshots."
+                            },
+                            "interval_unit": {
+                              "type": "string",
+                              "description": "The unit of measurement for the retention interval, such as months."
+                            }
+                          },
+                          "required": ["interval", "interval_unit"]
+                        },
+                        "target": {
+                          "type": "string",
+                          "description": "The target AWS region where the snapshot will be copied."
+                        }
+                      },
+                      "required": ["copy_tags", "encrypted", "retain_rule", "target"]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "retain_rule": {
+                  "type": "object",
+                  "description": "Specifies the retention rule for how long snapshots should be kept.",
+                  "properties": {
+                    "count": {
+                      "type": "number",
+                      "description": "The number of snapshots to retain."
+                    }
+                  },
+                  "required": ["count"]
+                },
+                "tags_to_add": {
+                  "type": "object",
+                  "description": "Defines tags to be added to the snapshots created by this policy.",
+                  "patternProperties": {
+                    "^.+$": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "required": ["copy_tags", "create_rule", "cross_region_copy_rules", "retain_rule", "tags_to_add"]
+            }
+          },
+          "additionalProperties": false
+        },
+        "target_tags": {
+          "type": "object",
+          "description": "Defines the tags used to identify which volumes should be managed by this lifecycle policy.",
+          "patternProperties": {
+            "^.+$": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schedules",
+        "target_tags"
+      ]
+    }
+  },
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "spec"
+  ]
+}

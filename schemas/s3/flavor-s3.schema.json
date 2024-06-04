@@ -6,6 +6,10 @@
     "s3": {
       "type": "object",
       "properties": {
+        "bucket": {
+          "type": "string",
+          "description": "Override the bucket name. If not specified, the bucket name will be determined by Facets."
+        },
         "aws_s3_bucket_policy": {
           "type": "object",
           "properties": {

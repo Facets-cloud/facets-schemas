@@ -1,7 +1,7 @@
 {
    "$schema": "ingress.schema.json",
    "kind": "ingress",
-   "flavor": "aws_alb",
+   "flavor": "nginx_ingress_controller",
    "version": "0.2",
    "lifecycle": "ENVIRONMENT_BOOTSTRAP",
    "disabled": true,
@@ -12,7 +12,9 @@
          "maintain_rule_order": false,
          "target_type": "ip",
          "shield": false,
-         "disable_facets_host_rules": false
+         "disable_facets_host_rules": false,
+         "dns": {
+         }
       }
    },
    "spec": {

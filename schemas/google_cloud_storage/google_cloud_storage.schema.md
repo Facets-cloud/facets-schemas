@@ -34,7 +34,7 @@ Advanced configurations for GCS bucket
 | `iam_members`   | [list(map)](#iam_members) | **No**  | The list of IAM members to grant permissions on the bucket. |
 | `bucket_policy_only`   | boolean | **No**  | Enables Bucket Policy Only access to a bucket. |
 | `Cors`   | [list(map)](#cors) | **No**  | Configuration of CORS for bucket with structure as defined in https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#cors |
-| `default_kms_key_name`   | string | **No**  | A Cloud KMS key that will be used to encrypt objects inserted into this bucket |
+| `encryption`   | [object](#encryption) | **No**  | A Cloud KMS key that will be used to encrypt objects inserted into this bucket |
 | `force_destroy`   | boolean | **No**  | When deleting a bucket, this boolean option will delete all contained objects. If false, Terraform will fail to delete buckets which contain objects. |
 | `lifecycle_rules`   | [list(map)](#lifecycle_rules) | **No**  | The bucket's Lifecycle Rules configuration. |
 | `log_bucket`   | string | **No**  | The bucket that will receive log objects. |
@@ -116,6 +116,13 @@ The website block supports the following elements, and requires at least one to 
 | `main_page_suffix`   |  Behaves as the bucket's directory index where missing objects are treated as potential directories.  | number   | No      |
 | `not_found_page`   |  The custom object to return when a requested resource is not found.  | No      |
 
+### encryption
+
+The website block supports the following elements, and requires at least one to be defined:
+
+| Name            | Description                                                          | Datatype | Required |
+|-----------------|----------------------------------------------------------------------|----------|----------|
+| `default_kms_key_name`   |  The id of a Cloud KMS key that will be used to encrypt objects inserted into the bucket.  | string   | No      |
 
 ## Out
 | Name            | Description                                                          | Datatype | Required |

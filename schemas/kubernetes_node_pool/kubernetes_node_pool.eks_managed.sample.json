@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_node_pool/kubernetes_node_pool.schema.json",
   "kind": "kubernetes_node_pool",
   "flavor": "eks_managed",
-  "version": "latest",
+  "version": "0.2",
   "metadata": {
     "tags": {
       "managed-by": "facets"

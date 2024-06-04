@@ -2,7 +2,7 @@
   "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.schema.json",
   "kind": "alert_group",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.1",
   "disabled": true,
   "metadata": {},
   "spec": {

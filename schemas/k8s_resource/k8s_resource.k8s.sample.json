@@ -3,8 +3,17 @@
   "kind": "k8s_resource",
   "metadata": {},
   "flavor": "k8s",
-  "version": "latest",
+  "version": "0.2",
   "disabled": true,
+  "provided": false,
+  "lifecycle": "ENVIRONMENT",
+  "advanced": {
+    "k8s_resource": {
+      "cleanup_on_fail": true,
+      "timeout": 300,
+      "wait": false
+    }
+  },
   "spec": {
     "resource": {
       "apiVersion": "v1",

@@ -3,7 +3,7 @@
   "kind": "snapshot_schedule",
   "conditional_on_intent": "kafka",
   "flavor": "default",
-  "version": "latest",
+  "version": "0.1",
   "disabled": true,
   "metadata": {},
   "spec": {
