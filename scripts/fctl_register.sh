@@ -1,13 +1,16 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
 # Default values for environment variables
-DOCKER_IMAGE_URL=${DOCKER_IMAGE_URL:-}
-TOKEN=${TOKEN:-}
-GIT_REF=${GIT_REF:-}
+DOCKER_IMAGE_URL=${DOCKER_IMAGE_URL:-nginx:latest}
+TOKEN=${TOKEN:-8c2ad1b3-d18c-4e71-86dd-273660a14a4c}
+GIT_REF=${GIT_REF:-test123}
 RUN_ID=${RUN_ID:-}
 
 # Parse command-line options
-while getopts u:cpurl:p:s:a:push: flag
+while getopts u:c:p:s:a:i: flag
 do
     case "${flag}" in
         u) USERNAME=${OPTARG};;
@@ -16,7 +19,7 @@ do
         s) SERVICE_NAME=${OPTARG};;
         a) ARTIFACTORY_NAME=${OPTARG};;
         i) IS_PUSH=${OPTARG};;
-        *) echo "Invalid option: $flag" 1>&2; exit 1;;
+        *) echo "Invalid option: -${OPTARG}" 1>&2; exit 1;;
     esac
 done
 
@@ -70,18 +73,48 @@ if [ ! -x "$BIN_PATH" ]; then
     exit 1
 fi
 
+# Print all variable values
+echo "Username: $USERNAME"
+echo "CP_URL: $CP_URL"
+echo "Project Name: $PROJECT_NAME"
+echo "Service Name: $SERVICE_NAME"
+echo "Artifactory Name: $ARTIFACTORY_NAME"
+echo "Is Push: $IS_PUSH"
+echo "Docker Image URL: $DOCKER_IMAGE_URL"
+echo "Token: $TOKEN"
+echo "GIT_REF: $GIT_REF"
+echo "RUN_ID: $RUN_ID"
+echo "Bin Path: $BIN_PATH"
+
 # Login using facetsctl
 $BIN_PATH login -u "$USERNAME" -t "$TOKEN" -f "$CP_URL"
+if [ $? -ne 0 ]; then
+    echo "facetsctl login failed."
+    exit 1
+fi
 
 # Initialize artifact
 $BIN_PATH artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
+if [ $? -ne 0 ]; then
+    echo "facetsctl artifact init failed."
+    exit 1
+fi
 
 # Push artifact if required
 if [ "$IS_PUSH" == "true" ]; then
     $BIN_PATH artifact push -d "$DOCKER_IMAGE_URL"
+    if [ $? -ne 0 ]; then
+        echo "facetsctl artifact push failed."
+        exit 1
+    fi
 fi
 
 # Register artifact
 $BIN_PATH artifact register -t GIT_REF -v "$GIT_REF" -i "$DOCKER_IMAGE_URL" -r "$RUN_ID"
+if [ $? -ne 0 ]; then
+    echo "facetsctl artifact register failed."
+    exit 1
+fi
 
 echo "facetsctl operations completed."
+
