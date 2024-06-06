@@ -71,7 +71,7 @@ if [ ! -x "$BIN_PATH" ]; then
 fi
 
 # Login using facetsctl
-$BIN_PATH login -u "$USERNAME" -t "$TOKEN" -c "$CP_URL"
+$BIN_PATH login -u "$USERNAME" -t "$TOKEN" -f "$CP_URL"
 
 # Initialize artifact
 $BIN_PATH artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
