@@ -11,11 +11,11 @@ while getopts u:cpurl:p:s:a:push: flag
 do
     case "${flag}" in
         u) USERNAME=${OPTARG};;
-        cpurl) CP_URL=${OPTARG};;
+        c) CP_URL=${OPTARG};;
         p) PROJECT_NAME=${OPTARG};;
         s) SERVICE_NAME=${OPTARG};;
         a) ARTIFACTORY_NAME=${OPTARG};;
-        push) IS_PUSH=${OPTARG};;
+        i) IS_PUSH=${OPTARG};;
         *) echo "Invalid option: $flag" 1>&2; exit 1;;
     esac
 done
