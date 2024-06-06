@@ -30,15 +30,16 @@ fi
 # Determine GIT_REF based on CI/CD environment variables if not set
 if [ -z "$GIT_REF" ]; then
     if [ ! -z "$GITHUB_REF" ]; then
-        GIT_REF=$GITHUB_REF
+        # Extract the last part after '/'
+        GIT_REF=${GITHUB_REF##*/}
     elif [ ! -z "$GIT_COMMIT" ]; then
-        GIT_REF=$GIT_COMMIT  # Common in Jenkins
+        GIT_REF=$GIT_COMMIT  # Common in Jenkins; usually this is a commit SHA
     elif [ ! -z "$CI_COMMIT_REF_NAME" ]; then
-        GIT_REF=$CI_COMMIT_REF_NAME  # GitLab CI
+        GIT_REF=$CI_COMMIT_REF_NAME  # GitLab CI; usually just the branch or tag name
     elif [ ! -z "$BITBUCKET_COMMIT" ]; then
-        GIT_REF=$BITBUCKET_COMMIT  # Bitbucket Pipelines
+        GIT_REF=$BITBUCKET_COMMIT  # Bitbucket Pipelines; usually this is a commit SHA
     elif [ ! -z "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then
-        GIT_REF=$CODEBUILD_RESOLVED_SOURCE_VERSION  # AWS CodeBuild
+        GIT_REF=$CODEBUILD_RESOLVED_SOURCE_VERSION  # AWS CodeBuild; usually this is a commit SHA
     else
         echo "GIT_REF is not set and could not be determined from the environment."
         exit 1
@@ -61,7 +62,7 @@ if [ -z "$RUN_ID" ]; then
 fi
 
 # Path to facetsctl binary
-BIN_PATH="$HOME/facetsctl/bin/facetsctl"
+BIN_PATH="facetsctl"
 
 # Ensure facetsctl is executable
 if [ ! -x "$BIN_PATH" ]; then
