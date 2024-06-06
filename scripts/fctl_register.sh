@@ -82,6 +82,6 @@ if [ "$IS_PUSH" == "true" ]; then
 fi
 
 # Register artifact
-$BIN_PATH artifact register -t "$GIT_REF" -v "$VERSION" -i "$DOCKER_IMAGE_URL" -r "$RUN_ID"
+$BIN_PATH artifact register -t GIT_REF -v "$GIT_REF" -i "$DOCKER_IMAGE_URL" -r "$RUN_ID"
 
 echo "facetsctl operations completed."
