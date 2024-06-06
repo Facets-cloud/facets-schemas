@@ -24,7 +24,6 @@ case $OS in
                 ;;
             x86_64)
                 URL=$URL_LINUX_X86_64
-                exit 1
                 ;;
             *)
                 echo "Unsupported architecture: $ARCH"
