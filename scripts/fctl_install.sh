@@ -7,6 +7,7 @@ BIN_PATH="$INSTALL_DIR/facetsctl/bin/facetsctl"
 
 # URLs for different architectures
 URL_LINUX_ARM64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3/production/$VERSION/facetsctl-linux-arm64.tar.gz"
+URL_LINUX_X86_64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3/production/$VERSION/facetsctl-linux-x64.tar.gz"
 URL_DARWIN_X64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3/production/$VERSION/facetsctl-darwin-x64.tar.xz"
 URL_DARWIN_ARM64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3/production/$VERSION/facetsctl-darwin-arm64.tar.gz"
 
