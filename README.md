@@ -77,7 +77,7 @@ The advanced property is an optional field that contains additional fields that 
 | postgres | alloydb | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json> | [Sample](schemas/postgres/alloydb.sample.json) | [Readme](schemas/postgres/postgres.schema.md) |
 | postgres | k8s | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json> | [Sample](schemas/postgres/k8s.sample.json) | [Readme](schemas/postgres/postgres.schema.md) |
 | postgres | aurora | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/postgres/postgres.schema.json> | [Sample](schemas/postgres/aurora.sample.json) | [Readme](schemas/postgres/postgres.schema.md) |
-| redis | elasticache | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json> | [Sample](schemas/redis/elasticache.sample.json) | [Readme](schemas/redis/redis.schema.md) |
+| redis | elasticache | 0.2 | <https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json> | [Sample](schemas/redis/elasticache.sample.json) | [Readme](schemas/redis/redis.schema.md) |
 | redis | memorystore | 0.2 | <https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json> | [Sample](schemas/redis/memorystore.sample.json) | [Readme](schemas/redis/redis.schema.md) |
 | redis | k8s | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json> | [Sample](schemas/redis/k8s.sample.json) | [Readme](schemas/redis/redis.schema.md) |
 | redis | azure_cache | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/redis/redis.schema.json> | [Sample](schemas/redis/azure_cache.sample.json) | [Readme](schemas/redis/redis.schema.md) |
@@ -118,7 +118,7 @@ The advanced property is an optional field that contains additional fields that 
 | kafka | msk | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/kafka/kafka.schema.json> | [Sample](schemas/kafka/msk.sample.json) | [Readme](schemas/kafka/kafka.schema.md) |
 | kafka | k8s | 0.2 | <https://facets-cloud.github.io/facets-schemas/schemas/kafka/kafka.schema.json> | [Sample](schemas/kafka/k8s.sample.json) | [Readme](schemas/kafka/kafka.schema.md) |
 | google_cloud_storage | default | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/google_cloud_storage/google_cloud_storage.schema.json> | [Sample](schemas/google_cloud_storage/default.sample.json) | [Readme](schemas/google_cloud_storage/google_cloud_storage.schema.md) |
-| mongo | k8s | 0.2 | <https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json> | [Sample](schemas/mongo/k8s.sample.json) | [Readme](schemas/mongo/mongo.schema.md) |
+| mongo | k8s | 0.3 | <https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.schema.json> | [Sample](schemas/mongo/k8s.sample.json) | [Readme](schemas/mongo/mongo.schema.md) |
 | mysql_user | default | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.json> | [Sample](schemas/mysql_user/default.sample.json) | [Readme](schemas/mysql_user/mysql_user.schema.md) |
 | mysql_user | sharded_user | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.json> | [Sample](schemas/mysql_user/sharded_user.sample.json) | [Readme](schemas/mysql_user/mysql_user.schema.md) |
 | mongo_user | default | 0.1 | <https://facets-cloud.github.io/facets-schemas/schemas/mongo_user/mongo_user.schema.json> | [Sample](schemas/mongo_user/default.sample.json) | [Readme](schemas/mongo_user/mongo_user.schema.md) |
