@@ -8,20 +8,14 @@
   },
   "kind": "redis",
   "disabled": true,
-  "version": "0.1",
+  "version": "0.2",
   "spec": {
     "authenticated": true,
     "redis_version": "6.x",
     "persistence_enabled": false,
     "size": {
-      "reader": {
-        "instance_count": 1,
-        "instance": "cache.t3.micro"
-      },
-      "writer": {
-        "instance": "cache.t3.micro",
-        "instance_count": 1
-      }
+      "instance_count": 1,
+      "instance": "cache.t3.micro"
     }
   }
 }

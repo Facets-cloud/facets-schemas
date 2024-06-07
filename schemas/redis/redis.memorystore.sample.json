@@ -16,7 +16,7 @@
       },
       "writer": {
         "instance_count": 1,
-        "volume": "5Gi"
+        "memory": "5Gi"
       }
     }
   }
