@@ -1,13 +1,13 @@
 #!/bin/bash
 
 if [ "$#" -ne 3 ]; then
-	echo "Usage: $0 <accountName> <webhookId> <callbackHost>"
+	echo "Usage: $0 <accountName> <callbackHost> <webhookId>"
 	exit 1
 fi
 
 ACCOUNT_NAME=$1
-WEBHOOKID=$2
-CALLBACKHOST=$3
+CALLBACKHOST=$2
+WEBHOOKID=$3
 
 read -p "Please enter the AWS region: " REGION
 
