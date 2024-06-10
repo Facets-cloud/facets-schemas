@@ -115,7 +115,7 @@ gcloud iam service-accounts keys create "$key_path" --iam-account "$service_acco
 encoded_key=$(base64 < "$key_path" | tr -d '\n')
 
 # Send the encoded key with the curl command
-curl -X POST "$callback_uri/public/v1/link-docker-registries" \
+curl -X POST "https://$callback_uri/public/v1/link-docker-registries" \
     -H "Content-Type: application/json" \
     -d '{
         "payload": {
