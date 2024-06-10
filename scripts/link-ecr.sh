@@ -56,7 +56,7 @@ PAYLOAD='{
 }'
 
 
-curl -X POST "${CALLBACKHOST}/public/v1/link-ecr" \
+curl -X POST "https://${CALLBACKHOST}/public/v1/link-ecr" \
     -H "Content-Type: application/json" \
     -d "$PAYLOAD"
 
