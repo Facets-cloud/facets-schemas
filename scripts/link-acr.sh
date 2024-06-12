@@ -42,7 +42,7 @@ for i in $(seq 0 $(($subscriptions_count - 1))); do
     echo "$(($i + 1))) $subscription_name ($subscription_id)"
 done
 
-read -p "Select the number of the Azure Subscription you want to use: " selected_subscription_number
+read -p "Select the Azure Subscription you want to use: " selected_subscription_number
 selected_subscription_index=$(($selected_subscription_number - 1))
 
 # Validate selection
@@ -57,9 +57,16 @@ selected_subscription_id=$(echo "$subscriptions_list" | jq -r ".[$selected_subsc
 az account set --subscription "$selected_subscription_id"
 
 # Ask the user if they want to create a new ACR or use an existing one
-read -p "Do you want to create a new Azure Container Registry (N/y)? " create_new_acr
+echo "Do you want to create a new Azure Container Registry or use an existing one?"
+options=("Create a new Azure Container Registry" "Use an existing Azure Container Registry")
+for i in "${!options[@]}"; do
+    echo "$((i + 1))) ${options[$i]}"
+done
 
-if [[ $create_new_acr =~ ^[Yy]$ ]]; then
+read -p "Slect your option " choice
+choice=$((choice - 1))
+
+if [ $choice -eq 0 ]; then
     # User wants to create a new ACR
 
     # List available resource groups
@@ -71,7 +78,7 @@ if [[ $create_new_acr =~ ^[Yy]$ ]]; then
         echo "$((i + 1))) ${resource_groups[$i]}"
     done
 
-    read -p "Select the number of the Azure Resource Group you want to use: " selected_resource_group_number
+    read -p "Select the Azure Resource Group you want to use: " selected_resource_group_number
     selected_resource_group_index=$((selected_resource_group_number - 1))
 
     # Validate selection
@@ -111,7 +118,7 @@ if [[ $create_new_acr =~ ^[Yy]$ ]]; then
         echo "$((i + 1))) ${skus[$i]}"
     done
 
-    read -p "Select the number of the SKU you want to use: " selected_sku_number
+    read -p "Select the SKU you want to use: " selected_sku_number
     selected_sku_index=$((selected_sku_number - 1))
 
     # Validate selection
@@ -136,7 +143,7 @@ else
     done
 
     # Ask the user to select an ACR by number
-    read -p "Select the number of the Azure Container Registry you want to use: " selected_number
+    read -p "Select the Azure Container Registry you want to use: " selected_number
     selected_index=$((selected_number - 1))
 
     # Validate selection
