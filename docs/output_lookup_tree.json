@@ -9,10 +9,22 @@
         "out": {}
     },
     "s3": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "bucket_name": {},
+                "bucket_arn": {},
+                "bucket_region": {},
+                "read_only_iam_policy_arn": {},
+                "read_write_iam_policy_arn": {}
+            }
+        }
     },
     "gcp_iam_role": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "role_id": {}
+            }
+        }
     },
     "status_check": {
         "out": {}
@@ -26,12 +38,22 @@
     "loki_alerting_rules": {
         "out": {}
     },
+    "mongo_user": {
+        "out": {}
+    },
     "google_cloud_storage": {
         "out": {}
     },
     "iam_policy": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "name": {},
+                "arn": {},
+                "policy": {}
+            }
+        }
     },
+    "aws_dlm_lifecycle_policy": {},
     "ingress": {
         "out": {
             "interfaces": {
@@ -47,7 +69,11 @@
         }
     },
     "aws_iam_role": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "irsa_iam_role_arn": {}
+            }
+        }
     },
     "redis": {
         "out": {
@@ -88,6 +114,9 @@
     "alert_group": {
         "out": {}
     },
+    "cloudflare": {
+        "out": {}
+    },
     "alb": {
         "out": {
             "interfaces": {
@@ -103,10 +132,18 @@
         }
     },
     "dynamodb": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "role_id": {}
+            }
+        }
     },
     "config_map": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "name": {}
+            }
+        }
     },
     "k8s_resource": {
         "out": {
@@ -124,6 +161,13 @@
     },
     "dax_cluster": {
         "out": {}
+    },
+    "aws_waf": {
+        "out": {
+            "attributes": {
+                "arn": {}
+            }
+        }
     },
     "rabbitmq": {
         "out": {
@@ -224,6 +268,11 @@
                     "connection_string": {}
                 }
             }
+        }
+    },
+    "aws_static_website": {
+        "out": {
+            "attributes": {}
         }
     },
     "aws_event_bus": {
