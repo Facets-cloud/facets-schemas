@@ -6,7 +6,11 @@
         "out": {}
     },
     "kubernetes_secret": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "name": {}
+            }
+        }
     },
     "s3": {
         "out": {
