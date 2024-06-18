@@ -160,6 +160,9 @@
                     "name": {},
                     "connection_string": {}
                 }
+            },
+            "attributes": {
+                "resource_name": {}
             }
         }
     },
