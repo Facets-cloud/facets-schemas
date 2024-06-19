@@ -221,7 +221,13 @@
         }
     },
     "tcp_lb": {
-        "out": {}
+        "out": {
+          "interfaces": {
+            "KEY": {
+              "host": {}
+            }
+          }
+        }
     },
     "sqs": {
         "out": {}
