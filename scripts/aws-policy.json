@@ -37,7 +37,14 @@
           "sns:*",
           "kms:*",
           "outposts:GetOutpostInstanceTypes",
-          "elasticache:*"
+          "elasticache:*",
+          "ce:*",
+          "dax:*",
+          "dlm:*",
+          "kafka:*",
+          "kafka-cluster:*",
+          "kafkaconnect:*",
+          "es:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
