@@ -222,11 +222,11 @@
     },
     "tcp_lb": {
         "out": {
-          "interfaces": {
-            "KEY": {
-              "host": {}
+            "interfaces": {
+                "KEY": {
+                    "host": {}
+                }
             }
-          }
         }
     },
     "sqs": {
@@ -384,6 +384,9 @@
                     "connection_string": {},
                     "name": {}
                 }
+            },
+            "attributes": {
+                "service_name": {}
             }
         }
     },
