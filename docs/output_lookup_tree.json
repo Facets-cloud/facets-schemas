@@ -151,16 +151,6 @@
     },
     "k8s_resource": {
         "out": {
-            "interfaces": {
-                "KEY": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "name": {},
-                    "connection_string": {}
-                }
-            },
             "attributes": {
                 "resource_name": {}
             }
