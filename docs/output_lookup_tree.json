@@ -46,7 +46,12 @@
         "out": {}
     },
     "google_cloud_storage": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "name": {},
+                "url": {}
+            }
+        }
     },
     "iam_policy": {
         "out": {
