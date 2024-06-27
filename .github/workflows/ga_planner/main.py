@@ -12,7 +12,6 @@ import pytz
 
 
 TIME_ZONE = pytz.timezone("Asia/Kolkata")
-USER = "vishnu.kv@facets.cloud"
 RC_BRANCH = os.getenv("RC_BRANCH")
 PLAN_BUCKET = os.getenv("PLAN_BUCKET", "rc-branch-plan-upload-bucket")
 AWS_ACCESS_KEY = os.getenv("GA_AWS_ACCESS_KEY", "")
@@ -35,13 +34,14 @@ GA plan Uploader
 
 
 ###################################################################
-async def check_successful_releases(cluster_id: str, url: str, password: str) -> bool:
+async def check_successful_releases(cluster_id: str, url: str, username: str, password: str) -> bool:
     """
     Checks if there are successful releases in the last 14 days for a given cluster.
 
     Args:
         cluster_id (str): The ID of the cluster.
         url (str): The URL of the API endpoint.
+        username (str): The username for the API endpoint.
         password (str): The password for the API endpoint.
 
     Returns:
@@ -49,7 +49,7 @@ async def check_successful_releases(cluster_id: str, url: str, password: str) ->
     """
     end_date = datetime.now(TIME_ZONE)
     start_date = end_date - timedelta(days=14)
-    auth_value = base64.b64encode(f"{USER}:{password}".encode("utf-8")).decode("utf-8")
+    auth_value = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
     headers = {"Authorization": f"Basic {auth_value}"}
     parameters = {
         "clusterId": cluster_id,
@@ -73,7 +73,7 @@ async def check_successful_releases(cluster_id: str, url: str, password: str) ->
             return len(data["content"]) > 0
 
 
-async def fetch_stacks(session: aiohttp.ClientSession, url: str, password: str) -> dict:
+async def fetch_stacks(session: aiohttp.ClientSession, url: str, username:str, password: str) -> dict:
     """
     Fetches all the stacks of a given control Plane.
 
@@ -86,7 +86,7 @@ async def fetch_stacks(session: aiohttp.ClientSession, url: str, password: str) 
         dict: Returns the json response as a dictionary (json)
     """
     url = f"{url}/cc-ui/v1/stacks/"
-    auth_value = base64.b64encode(f"{USER}:{password}".encode("utf-8")).decode("utf-8")
+    auth_value = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
     headers = {"Authorization": f"Basic {auth_value}"}
     async with session.get(url, headers=headers) as response:
         if response.status != 200:
@@ -112,7 +112,7 @@ async def get_clusters_by_stackname(
     """
     url = f"{endpoint['url']}/cc-ui/v1/stacks/{stack_name}/clustersWithStatus"
     auth_value = base64.b64encode(
-        f"{USER}:{endpoint['password']}".encode("utf-8")
+        f"{endpoint['username']}:{endpoint['password']}".encode("utf-8")
     ).decode("utf-8")
     headers = {"Authorization": f"Basic {auth_value}"}
     async with session.get(url, headers=headers) as response:
@@ -139,7 +139,7 @@ async def get_cluster_version(
     """
     url = f"{endpoint['url']}/cc-ui/v1/terraform/cluster/{cluster_id}"
     auth_value = base64.b64encode(
-        f"{USER}:{endpoint['password']}".encode("utf-8")
+        f"{endpoint['username']}:{endpoint['password']}".encode("utf-8")
     ).decode("utf-8")
     headers = {"Authorization": f"Basic {auth_value}"}
     async with session.get(url, headers=headers) as response:
@@ -159,6 +159,7 @@ async def create_and_wait_for_deployment(
     console: Console,
     session: aiohttp.ClientSession,
     endpoint: str,
+    username: str,
     password: str,
     cluster_id: str,
     presigned_url: dict,
@@ -171,6 +172,7 @@ async def create_and_wait_for_deployment(
         console: The console object for logging.
         session (aiohttp.ClientSession): The HTTP session for making API calls.
         endpoint (str): The endpoint URL.
+        username (str): The username for authentication.
         password (str): The password for authentication.
         cluster_id (str): The ID of the cluster.
         presigned_url (dict): The presigned URL for S3.
@@ -179,7 +181,7 @@ async def create_and_wait_for_deployment(
         dict: Returns the deployment response as a dictionary.
     """
     url = f"{endpoint}/cc-ui/v1/clusters/{cluster_id}/deployments"
-    auth_value = base64.b64encode(f"{USER}:{password}".encode("utf-8")).decode("utf-8")
+    auth_value = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("utf-8")
     headers = {
         "Authorization": f"Basic {auth_value}",
         "Content-Type": "application/json",
@@ -290,7 +292,7 @@ async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) ->
     """
     console = Console()
     console.log(f"Fetching stack {name} from {endpoint['url']}")
-    stacks = await fetch_stacks(session, endpoint["url"], endpoint["password"])
+    stacks = await fetch_stacks(session, endpoint["url"], endpoint["username"], endpoint["password"])
     stacks_clusters_versions = {}  # Initialize stacks_clusters_versions here
     white_listed_clusters = endpoint.get("whitelisted_clusters", [])
     for stack in stacks:
@@ -312,6 +314,7 @@ async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) ->
                         "id": cluster_id,
                         "version": version,
                         "url": endpoint["url"],
+                        "username": endpoint["username"],
                         "password": endpoint["password"],
                     }
             else:
@@ -322,6 +325,7 @@ async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) ->
                         "id": cluster_id,
                         "version": version,
                         "url": endpoint["url"],
+                        "username": endpoint["username"],
                         "password": endpoint["password"],
                     }
 
@@ -348,6 +352,7 @@ async def process_cluster(console: Console, stack_name: str, cluster: dict) -> t
         cluster_name = cluster.get("name")
         cluster_state = cluster.get("state")
         cc_endpoint = cluster.get("url", "")
+        cc_username = cluster.get("username", "")
         cc_password = cluster.get("password", "")
         plan_path = f"{stack_name}/{cluster_id}/{RC_BRANCH}/{TF_PLAN_FILE}"
         presigned_url = await get_presigned_url_for_s3(
@@ -359,6 +364,7 @@ async def process_cluster(console: Console, stack_name: str, cluster: dict) -> t
             console,
             session,
             cc_endpoint,
+            cc_username,
             cc_password,
             cluster_id,
             presigned_url,
@@ -556,7 +562,7 @@ async def main():
         or cluster.get("version", {}).get("tfStream", None) == "production"
         and cluster.get("version", {}).get("minorVersion", None) == "latest"
         and await check_successful_releases(
-            cluster.get("id"), cluster.get("url"), cluster.get("password")
+            cluster.get("id"), cluster.get("url"), cluster.get("username"), cluster.get("password")
         )
     ]
 
