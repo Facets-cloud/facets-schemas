@@ -47,7 +47,7 @@ if [ -z "$RUN_ID" ]; then
 fi
 
 # Path to facetsctl binary
-BIN_PATH="facetsctl"
+BIN_PATH="$(which facetsctl)"
 
 # Ensure facetsctl is executable
 if [ ! -x "$BIN_PATH" ]; then
