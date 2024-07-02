@@ -157,7 +157,7 @@ else
 fi
 
 # Get the login server for the ACR
-acr_login_server=$(az acr show --name "$acr_name" --query loginServer --output tsv)
+acr_login_server="https://$(az acr show --name "$acr_name" --query loginServer --output tsv)"
 
 # Get the credentials for the ACR
 acr_username=$(az acr credential show --name "$acr_name" --query "username" --output tsv)
