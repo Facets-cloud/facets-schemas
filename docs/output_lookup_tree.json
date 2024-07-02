@@ -350,10 +350,7 @@
     "mongo": {
         "out": {
             "interfaces": {
-                "cluster": {
-                    "endpoint": {},
-                    "username": {},
-                    "password": {},
+                "writer": {
                     "connection_string": {}
                 }
             }
