@@ -107,12 +107,17 @@ echo "The Google Artifact Registry URI is: $uri"
 # Create a service account and fetch its credentials
 service_account_name="$artifactory_name-sa"
 gcloud iam service-accounts create "$service_account_name" --display-name "Artifact Registry Service Account"
-gcloud projects add-iam-policy-binding "$project_id" \
-    --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
-    --role="roles/artifactregistry.writer"
-gcloud projects add-iam-policy-binding "$project_id" \
-    --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
-    --role="roles/viewer"
+ROLES=(
+    "roles/artifactregistry.repositories.list"
+    "roles/artifactregistry.dockerimages.list"
+    "roles/artifactregistry.tags.list"
+    "roles/artifactregistry.writer"
+)
+for ROLE in "${ROLES[@]}"; do
+  gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+      --member="serviceAccount:$SERVICE_ACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
+      --role="$ROLE"
+done
 key_path="$(mktemp).json"
 gcloud iam service-accounts keys create "$key_path" --iam-account "$service_account_name@$project_id.iam.gserviceaccount.com"
 encoded_key=$(base64 < "$key_path" | tr -d '\n')
