@@ -355,6 +355,12 @@
                     "username": {},
                     "password": {},
                     "connection_string": {}
+                },
+                "writer": {
+                    "endpoint": {},
+                    "username": {},
+                    "password": {},
+                    "connection_string": {}
                 }
             }
         }
