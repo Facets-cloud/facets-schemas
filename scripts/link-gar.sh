@@ -100,7 +100,7 @@ fi
 
 # Construct the URI for the Artifact Registry
 project_id=$(gcloud config get-value core/project)
-uri="${location}-docker.pkg.dev/${project_id}/${repository_name}"
+uri="${location}-docker.pkg.dev"
 
 echo "The Google Artifact Registry URI is: $uri"
 
@@ -110,6 +110,9 @@ gcloud iam service-accounts create "$service_account_name" --display-name "Artif
 gcloud projects add-iam-policy-binding "$project_id" \
     --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
     --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding "$project_id" \
+    --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.viewer"
 key_path="$(mktemp).json"
 gcloud iam service-accounts keys create "$key_path" --iam-account "$service_account_name@$project_id.iam.gserviceaccount.com"
 encoded_key=$(base64 < "$key_path" | tr -d '\n')
