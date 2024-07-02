@@ -74,7 +74,7 @@ if [[ $create_new_gar =~ ^[Yy]$ ]]; then
         --description="$description"
 else
     # Assume that the location is provided for existing repositories
-     gar_list_json=$(gcloud artifacts repositories list --format="json")
+    gar_list_json=$(gcloud artifacts repositories list --format="json")
     
     # Parse the JSON and get an array of registry names
     IFS=$'\n' read -r -d '' -a gar_names < <(echo "$gar_list_json" | jq -r '.[].name' && printf '\0')
@@ -112,7 +112,7 @@ gcloud projects add-iam-policy-binding "$project_id" \
     --role="roles/artifactregistry.writer"
 gcloud projects add-iam-policy-binding "$project_id" \
     --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
-    --role="roles/artifactregistry.viewer"
+    --role="roles/viewer"
 key_path="$(mktemp).json"
 gcloud iam service-accounts keys create "$key_path" --iam-account "$service_account_name@$project_id.iam.gserviceaccount.com"
 encoded_key=$(base64 < "$key_path" | tr -d '\n')
