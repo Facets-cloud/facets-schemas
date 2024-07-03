@@ -26,5 +26,23 @@
 
 <!-- Detail how the changes have been tested, including any automated or manual tests performed. Include the results of the testing (Screenshots, links to releases, etc.), including any issues or bugs encountered and how they were resolved -->
 
+## IaC QA Test Cases
+
+### Test Case 1:
+
+**Description**: Description of the test cases
+
+**Phase of the QA process**: <Eg: Selective release after launch with stage/Full release with new version/Launch/Destroy>
+
+**Blueprint changes done in iac-qa blueprint**: Yes/No
+
+### Test Case 2:
+
+**Description**: Description of the test cases
+
+**Phase of the QA process**: <Eg: Selective release after launch with stage/Full release with new version/Launch/Destroy>
+
+**Blueprint changes done in iac-qa blueprint**: Yes/No
+
 ## Reviewer instructions
 <!-- Include any instructions or guidance for reviewers, including specific areas to focus on or areas that require additional attention -->
