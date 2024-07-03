@@ -109,7 +109,7 @@ service_account_name="$artifactory_name-sa"
 gcloud iam service-accounts create "$service_account_name" --display-name "Artifact Registry Service Account"
 gcloud projects add-iam-policy-binding "$project_id" \
     --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
-    --role="roles/editor"
+    --role="roles/artifactregistry.writer"
 key_path="$(mktemp).json"
 gcloud iam service-accounts keys create "$key_path" --iam-account "$service_account_name@$project_id.iam.gserviceaccount.com"
 encoded_key=$(base64 < "$key_path" | tr -d '\n')
