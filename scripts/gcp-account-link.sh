@@ -70,14 +70,41 @@ fi
 echo "Service Account created successfully."
 echo "Key file saved as $PRINCIPAL_NAME-key.json"
 
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="roles/owner"
+# Generate a new etag (Here we use a random string to simulate an etag)
+GENERATED_ETAG=$(uuidgen | base64 | tr -d '\n')
+
+# Create a JSON file for the IAM policy binding
+IAM_POLICY_JSON="iam-policy.json"
+cat <<EOF > $IAM_POLICY_JSON
+{
+  "bindings": [
+    {
+      "members": [
+        "serviceAccount:$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+      ],
+      "role": "roles/owner"
+    }
+  ],
+  "etag": "$GENERATED_ETAG"
+}
+EOF
+
+# Attach the role to the service account using the JSON file
+gcloud projects set-iam-policy "$PROJECT_ID" $IAM_POLICY_JSON
+
+if [ $? -ne 0 ]; then
+    echo "Failed to attach role to Service Account."
+    exit 1
+fi
+
+echo "Role attached to Service Account successfully."
 
 # Base64 encode the service account key JSON
 SERVICE_ACCOUNT_KEY_BASE64=$(base64 -w 0 "$PRINCIPAL_NAME-key.json")
 
 # Prepare the curl request with base64 encoded key
 CURL_DATA="{ \"payload\": { \"name\": \"$ACCOUNT_NAME\", \"serviceAccountKey\": \"$SERVICE_ACCOUNT_KEY_BASE64\", \"project\": \"$PROJECT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
-CURL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; ; charset=utf-8" -d "$CURL_DATA")
+CURL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "$CURL_DATA")
 
 if [ "$CURL_RESPONSE" -ne 200 ]; then
     echo "Failed to send data to the specified URL. HTTP response code: $CURL_RESPONSE"
