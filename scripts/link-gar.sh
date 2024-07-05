@@ -104,35 +104,15 @@ uri="https://${location}-docker.pkg.dev"
 
 echo "The Google Artifact Registry URI is: $uri"
 
-# Create a service account
+# Create a service account and fetch its credentials
 service_account_name="$artifactory_name-sa"
 gcloud iam service-accounts create "$service_account_name" --display-name "Artifact Registry Service Account"
-
-# Create a policy file
-policy_file=$(mktemp).json
-cat <<EOF > "$policy_file"
-{
-  "bindings": [
-    {
-      "role": "roles/viewer",
-      "members": [
-        "serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com"
-      ]
-    },
-    {
-      "role": "roles/artifactregistry.writer",
-      "members": [
-        "serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com"
-      ]
-    }
-  ]
-}
-EOF
-
-# Set the IAM policy using the policy file
-gcloud projects set-iam-policy "$project_id" "$policy_file"
-
-# Create a key for the service account
+gcloud projects add-iam-policy-binding "$project_id" \
+    --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
+    --role="roles/artifactregistry.writer"
+gcloud projects add-iam-policy-binding "$project_id" \
+    --member="serviceAccount:$service_account_name@$project_id.iam.gserviceaccount.com" \
+    --role="roles/storage.objectViewer"
 key_path="$(mktemp).json"
 gcloud iam service-accounts keys create "$key_path" --iam-account "$service_account_name@$project_id.iam.gserviceaccount.com"
 encoded_key=$(base64 < "$key_path" | tr -d '\n')
@@ -153,5 +133,5 @@ curl -X POST "https://$callback_uri/public/v1/link-docker-registries" \
 
 echo "CURL request to the callback URI has been made with the Google Artifact Registry details."
 
-# Clean up the service account key file and policy file
-rm -f "$key_path" "$policy_file"
+# Clean up the service account key file
+rm -f "$key_path"
