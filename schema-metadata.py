@@ -31,7 +31,12 @@ def filter_json_objects(json_objects):
         "kubernetes_monitoring",
         "kubernetes_cluster",
         "network",
-        "cloudflare_account"
+        "cloudflare_account",
+        "postgres_monitoring",
+        "redis_monitoring",
+        "mongo_monitoring",
+        "mysql_monitoring",
+        "elasticsearch_monitoring"
     ]
 
     for obj in json_objects:
