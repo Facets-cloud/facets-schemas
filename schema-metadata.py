@@ -121,7 +121,7 @@ def generate_readme(input_json):
         schema_url = f"<{entry['schemaUrl']}>"
         for flavor in entry['flavors']:
             flavor_name = flavor['name'][0]
-            flavor_sample_url = f"[Sample](schemas/{kind}/{flavor_name}.sample.json)"
+            flavor_sample_url = f"[Sample](schemas/{kind}/{kind}.{flavor_name}.sample.json)"
             readme_url = f"[Readme](schemas/{kind}/{kind}.schema.md)"
             # get the latest version number
             version_number = max(version['number'] for version in flavor['versions'])
