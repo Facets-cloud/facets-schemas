@@ -95,7 +95,7 @@ jobs:
 
       - name: Cherry-pick commit
         run: | 
-          git cherry-pick -x ${{ steps.commit_id.outputs.id }}
+          git cherry-pick --allow-empty -x ${{ steps.commit_id.outputs.id }}
           git commit --amend -m "[Automated] cherry-pick for building tag ${{ steps.input.outputs.tag }}: $(git log --format=%B -n 1 HEAD)"
 
       - name: Push changes
