@@ -51,6 +51,46 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+##### Enabling apis before creating service account #######
+
+# List of APIs to enable
+apis=(
+  "alloydb.googleapis.com" "analyticshub.googleapis.com" "artifactregistry.googleapis.com" "autoscaling.googleapis.com" 
+  "bigquery.googleapis.com" "bigqueryconnection.googleapis.com" "bigquerydatapolicy.googleapis.com" "bigquerymigration.googleapis.com" 
+  "bigqueryreservation.googleapis.com" "bigquerystorage.googleapis.com" "certificatemanager.googleapis.com" "cloudapis.googleapis.com" 
+  "cloudkms.googleapis.com" "cloudresourcemanager.googleapis.com" "cloudtrace.googleapis.com" "compute.googleapis.com" "container.googleapis.com" 
+  "containerfilesystem.googleapis.com" "containerregistry.googleapis.com" "dataform.googleapis.com" "dataplex.googleapis.com" 
+  "datastore.googleapis.com" "deploymentmanager.googleapis.com" "dns.googleapis.com" "gkebackup.googleapis.com" "iam.googleapis.com" 
+  "iamcredentials.googleapis.com" "logging.googleapis.com" "monitoring.googleapis.com" "networkconnectivity.googleapis.com" "oslogin.googleapis.com" 
+  "pubsub.googleapis.com" "redis.googleapis.com" "servicemanagement.googleapis.com" "servicenetworking.googleapis.com" "serviceusage.googleapis.com" 
+  "sql-component.googleapis.com" "sqladmin.googleapis.com" "storage-api.googleapis.com" "storage-component.googleapis.com" "storage.googleapis.com"
+)
+
+# Get the list of enabled APIs
+echo "Fetching the list of enabled APIs..."
+enabled_apis=$(gcloud services list --enabled --format="value(config.name)")
+
+# Function to enable an API
+enable_api() {
+  local api_name=$1
+  echo "Enabling API: ${api_name}"
+  gcloud services enable "${api_name}"
+}
+
+# Iterate over the APIs and enable them if not already enabled
+for api in "${apis[@]}"; do
+  if echo "${enabled_apis}" | grep -q "${api}"; then
+    echo "API : ${api} is already enabled"
+  else
+    enable_api "${api}" &
+  fi
+done
+
+# Wait for all background jobs to complete
+wait
+
+echo "All specified APIs have been enabled."
+
 # Create the Service Account with Owner role
 gcloud iam service-accounts create "$PRINCIPAL_NAME" --display-name="$PRINCIPAL_NAME"
 
