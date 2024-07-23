@@ -198,7 +198,8 @@ async def create_and_wait_for_deployment(
     )
     body = {
         "overrideBuildSteps": [
-            f"terraform plan -out ./tfplan.json && terraform show -no-color -json ./tfplan.json > {TF_PLAN_FILE}",
+            # f"terraform plan -out ./tfplan.json && terraform show -no-color -json ./tfplan.json > {TF_PLAN_FILE}",
+            "bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh",
             f"""
             {curl_cmd}
             """,
@@ -219,7 +220,7 @@ async def create_and_wait_for_deployment(
             if response.status == 403:
                 await asyncio.sleep(10)  # Wait for 10 seconds before retrying
                 console.log(
-                    f"A deployment is already in progress for {cluster_id}... Waiting for existing deployment to complete"
+                    f"A deployment is already in progress for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/releases... Waiting for existing deployment to complete"
                 )
                 continue
             deployment_response = await response.json()
@@ -228,7 +229,7 @@ async def create_and_wait_for_deployment(
             error_logs = deployment_response.get("errorLogs", None)
             if error_logs is not None:
                 raise Exception(
-                    f"Deployment failed for cluster {cluster_id} : {error_logs}"
+                    f"Deployment failed for cluster {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id} : {error_logs}"
                 )
             else:
                 while True:
@@ -242,7 +243,7 @@ async def create_and_wait_for_deployment(
                             )
                         deployment_status = await deployment_response.json()
                         console.log(
-                            f"{deployment_status.get('status')} for {cluster_id}"
+                            f"{deployment_status.get('status')} for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
                         )
                         if deployment_status.get("status") in ["SUCCEEDED", "FAILED"]:
                             break
