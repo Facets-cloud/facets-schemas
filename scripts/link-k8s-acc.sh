@@ -72,7 +72,7 @@ echo "CA certificate : ${CA_CERT}"
 echo "HOST: ${APISERVER}"
 
 # Perform curl request and handle the response
-RESPONSE=$(curl -X POST "https://${CP_URL}/public/v1/link-kubernetes" \
+RESPONSE=$(curl -k -X POST "https://${CP_URL}/public/v1/link-kubernetes" \
     -H "accept: */*" \
     -H "Content-Type: application/json; charset=utf-8" \
     -d "{ \"payload\":{ \"token\": \"$TOKEN\", \"certificateAuthority\": \"$CA_CERT\", \"host\":\"$APISERVER\",\"name\": \"$SERVICE_ACCOUNT_NAME\" }, \"webhookId\": \"$WEBHOOK_ID\"}" \
