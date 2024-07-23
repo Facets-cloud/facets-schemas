@@ -117,7 +117,7 @@ SERVICE_ACCOUNT_KEY_BASE64=$(base64 -w 0 "$PRINCIPAL_NAME-key.json")
 
 # Prepare the curl request with base64 encoded key
 CURL_DATA="{ \"payload\": { \"name\": \"$ACCOUNT_NAME\", \"serviceAccountKey\": \"$SERVICE_ACCOUNT_KEY_BASE64\", \"project\": \"$PROJECT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
-CURL_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; ; charset=utf-8" -d "$CURL_DATA")
+CURL_RESPONSE=$(curl -k -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; ; charset=utf-8" -d "$CURL_DATA")
 
 if [ "$CURL_RESPONSE" -ne 200 ]; then
     echo "Failed to send data to the specified URL. HTTP response code: $CURL_RESPONSE"
