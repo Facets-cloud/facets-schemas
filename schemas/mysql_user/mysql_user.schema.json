@@ -249,16 +249,20 @@
             },
             {
               "properties": {
-                "username": {
-                  "type": "string",
-                  "description": "The MySQL username"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "The MySQL user password"
+                "attributes": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "The MySQL username"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The MySQL user password"
+                    }
+                  }
                 }
-              },
-              "required": []
+              }
             }
           ]
         }

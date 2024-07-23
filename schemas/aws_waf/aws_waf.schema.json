@@ -242,7 +242,7 @@
                               "properties": {
                                 "custom_response_body_key": {
                                   "type": "string",
-                                  "description": "References the response body that you want AWS WAF to return to the web request client.",
+                                  "description": "References the response body that you want AWS WAF to return to the web request client."
                                 },
                                 "response_code": {
                                   "type": "string",

@@ -10,6 +10,6 @@
   "depends_on": [],
   "version": "0.1",
   "spec": {
-    "api_token_secret_name": "CF_API_TOKEN_1"
+    "api_token": "dummydummydummydummydummydummy"
   }
 }

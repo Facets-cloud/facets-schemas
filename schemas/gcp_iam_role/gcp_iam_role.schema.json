@@ -183,8 +183,14 @@
           "type": "object",
           "description": "The output for the gcp iam role",
           "properties": {
-            "role_id": {
-              "type": "string"
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "role_id": {
+                  "type": "string"
+                }
+              },
+              "required": []
             }
           },
           "required": []

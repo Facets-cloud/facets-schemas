@@ -16,10 +16,7 @@
             "strategy": {
                 "type": "RollingUpdate"
             },
-            "build": {
-                "artifactory": "default",
-                "name": "replace-with-app-name"
-            }
+            "image": "image_url"
         },
         "runtime": {
             "autoscaling": {

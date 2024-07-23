@@ -469,6 +469,29 @@
                           }
                         }
                       ]
+                    },
+                    "writer": {
+                      "type": "object",
+                      "description": "connection details of the mongodb",
+                      "properties": {
+                        "endpoint": {
+                          "type": "string",
+                          "pattern": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}(,[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]):[0-9]{1,5}$",
+                          "description": "A comma-separated string of endpoints in the format 'host1:port1,host2:port2'. The number of endpoints must be greater than or equal to 1."
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username to use for authentication when connecting to the datastore."
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "The password to use for authentication when connecting to the datastore."
+                        },
+                        "connection_string": {
+                          "type": "string",
+                          "description": "The connection_string to use when connecting to the datastore."
+                        }
+                      }
                     }
                   }
                 },

@@ -69,8 +69,7 @@
                     }
                   }
                 }
-              },
-              "required": []
+              }
             }
           ]
         }
@@ -82,23 +81,28 @@
         "out": {
           "type": "object",
           "additionalProperties": false,
-          "allOf": [
-            {
+          "description": "Output from the iam policy",
+          "properties": {
+            "attributes": {
+              "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
-                  "additionalProperties": false
+                  "description": "The name of the iam policy"
                 },
                 "arn": {
                   "type": "string",
-                  "additionalProperties": false
+                  "description": "ARN of iam policy"
+                },
+                "policy": {
+                  "type": "string",
+                  "description": "Policy block"
                 }
               },
-              "required": [
-                "arn"
-              ]
+              "required": []
             }
-          ]
+          },
+          "required": []
         }
       }
     }

@@ -167,6 +167,27 @@
           ]
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "description": "The output for the dynamodb",
+          "properties": {
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "role_id": {
+                  "type": "string"
+                }
+              },
+              "required": []
+            }
+          },
+          "required": []
+        }
+      }
     }
   ],
   "required": [
