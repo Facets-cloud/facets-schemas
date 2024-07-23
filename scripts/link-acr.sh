@@ -165,7 +165,7 @@ acr_password=$(az acr credential show --name "$acr_name" --query "passwords[0].v
 
 # Make a CURL request to the callback URI with the new JSON payload
 # Please ensure that the callback URI uses HTTPS and is secure
-curl -X POST "https://$callback_uri/public/v1/link-docker-registries" \
+curl -k -X POST "https://$callback_uri/public/v1/link-docker-registries" \
     -H "Content-Type: application/json" \
     -d '{
         "payload": {
