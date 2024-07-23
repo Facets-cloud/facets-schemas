@@ -63,8 +63,8 @@
                 "clouds": [
                     "kubernetes",
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/ingress/ingress.nginx_ingress_controller.sample.json",
                 "name": [
@@ -73,15 +73,15 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.01"
-                    },
-                    {
-                        "documentation": "NA",
                         "number": "0.2"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.1"
+                    },
+                    {
+                        "documentation": "NA",
+                        "number": "0.01"
                     }
                 ]
             }
@@ -757,8 +757,8 @@
                 "clouds": [
                     "kubernetes",
                     "gcp",
-                    "aws",
-                    "azure"
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.k8s.sample.json",
                 "name": [
