@@ -1,6 +1,6 @@
 ## Introduction
 
-[Postgresql DB implementation using k8s flavor](https://github.com/bitnami/charts/tree/main/bitnami/postgresql)
+Postgresql DB implementation using k8s flavor
 
 ## Spec
 

@@ -181,15 +181,24 @@
         "out": {
           "type": "object",
           "additionalProperties": false,
-          "minProperties": 1,
-          "description": "The output for your configmap module, this can be generated or provided",
-          "patternProperties": {
-            "^[a-zA-Z0-9_.-]*$": {
-              "description": "This is the name of the output interface this can be any name depending on the number of prefix domains in the domains block",
-              "type": "string"
+          "description": "Output from the Configmap",
+          "properties": {
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configmap"
+                }
+              },
+              "required": [
+                "name"
+              ]
             }
           },
-          "required": []
+          "required": [
+            "attributes"
+          ]
         }
       }
     }

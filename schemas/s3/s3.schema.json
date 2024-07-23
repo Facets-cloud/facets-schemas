@@ -141,7 +141,7 @@
         "out": {
           "type": "object",
           "additionalProperties": false,
-          "description": "Output from the RabbitMQ module",
+          "description": "Output from the S3 module",
           "allOf": [
             {
               "type": "object",
@@ -155,34 +155,33 @@
             },
             {
               "properties": {
-                "bucket_name": {
-                  "type": "string",
-                  "description": "Name of the s3 bucket"
-                },
-                "bucket_arn": {
-                  "type": "string",
-                  "description": "ARN of the bucket"
-                },
-                "bucket_region": {
-                  "type": "string",
-                  "description": "Region of the Bucket"
-                },
-                "iam_policies": {
+                "attributes": {
                   "type": "object",
-                  "description": "IAM read_only and read_write policies for the bucket",
                   "properties": {
-                    "READ_ONLY": {
+                    "bucket_name": {
                       "type": "string",
-                      "description": "ARN of the read_only policy of the bucket"
+                      "description": "Name of the s3 bucket"
                     },
-                    "READ_WRITE": {
+                    "bucket_arn": {
                       "type": "string",
-                      "description": "ARN of the read_write policy of the bucket"
+                      "description": "ARN of the bucket"
+                    },
+                    "bucket_region": {
+                      "type": "string",
+                      "description": "Region of the Bucket"
+                    },
+                    "read_only_iam_policy_arn": {
+                      "type": "string",
+                      "description": "ARN of the bucket"
+                    },
+                    "read_write_iam_policy_arn": {
+                      "type": "string",
+                      "description": "ARN of the bucket"
                     }
-                  }
+                  },
+                  "required": []
                 }
-              },
-              "required": []
+              }
             }
           ]
         }

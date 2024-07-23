@@ -270,6 +270,26 @@
             "loadbalancer_domains": {
               "type": "array",
               "description": "This is the list of loadbalancer domains that the module has created"
+            },
+            "interfaces": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "description": "The output for generated parameters",
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "description": "This is the name of the output interface this can be any name depending on instance name",
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object",
+                  "definition": "Any Interface",
+                  "properties": {
+                    "host": {
+                      "type": "string",
+                      "description": "New address of the resource tcp_lb is created for"
+                    }
+                  }
+                }
+              }
             }
           },
           "required": []

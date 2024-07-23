@@ -115,13 +115,13 @@
         "spec": {
           "type": "object",
           "properties": {
-            "api_token_secret_name": {
+            "api_token": {
               "type": "string",
-              "description": "Name of the Secret in which the Cloudflare API Token is saved"
+              "description": "Cloudflare API Token"
             }
           },
           "required": [
-            "api_token_secret_name"
+            "api_token"
           ]
         }
       }

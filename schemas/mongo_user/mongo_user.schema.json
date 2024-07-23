@@ -257,16 +257,20 @@
             },
             {
               "properties": {
-                "username": {
-                  "type": "string",
-                  "description": "The MongoDB username"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "The MongoDB user password"
+                "attributes": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "The MongoDB username"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The MongoDB user password"
+                    }
+                  }
                 }
-              },
-              "required": []
+              }
             }
           ]
         }

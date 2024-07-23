@@ -124,6 +124,15 @@
                   "type": "string",
                   "description": "The docker image of the application that you want to run"
                 },
+                "image_pull_policy": {
+                  "type": "string",
+                  "description": "ImagePullPolicy",
+                  "enum": [
+                    "IfNotPresent",
+                    "Always",
+                    "Never"
+                  ]
+                },
                 "build": {
                   "type": "object",
                   "description": "These contains the build objects required for running the containers",
@@ -135,15 +144,6 @@
                     "name": {
                       "type": "string",
                       "description": "Name of the artifactory"
-                    },
-                    "pull_policy": {
-                      "type": "string",
-                      "description": "ImagePullPolicy",
-                      "enum": [
-                        "IfNotPresent",
-                        "Always",
-                        "Never"
-                      ]
                     }
                   },
                   "required": [
@@ -2787,6 +2787,17 @@
                 }
               }
             }
+          },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "service_name": {
+                "type": "string",
+                "description": "The name of the service"
+              }
+            },
+            "required": [
+            ]
           },
           "required": []
         }

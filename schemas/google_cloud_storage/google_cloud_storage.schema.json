@@ -149,20 +149,24 @@
         "out": {
           "type": "object",
           "additionalProperties": false,
-          "allOf": [
-            {
+          "properties": {
+            "attributes": {
+              "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
-                  "additionalProperties": false
+                  "description": "The name of the google cloud storage"
                 },
                 "url": {
                   "type": "string",
-                  "additionalProperties": false
+                  "description": "The url of the google cloud storage"
                 }
-              }
+              },
+              "required": [
+                "name"
+              ]
             }
-          ]
+          }
         }
       }
     }

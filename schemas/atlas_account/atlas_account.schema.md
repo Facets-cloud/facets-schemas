@@ -1,15 +1,15 @@
 ## Introduction
 
-A Cloudflare intent which can be used to create Cloudflare Ruleset resource in Cloudflare Account
+An Atlas Account intent which can be used to configure Atlas provider to create atlas mongodb
 
 ## Properties
 
 | Property   | Type                | Required | Description                           |
 |------------|---------------------|----------|---------------------------------------|
 | `flavor`   | string              | **Yes**  | Possible values are: `default`.       |
-| `kind`     | string              | **Yes**  | Possible values are: `cloudflare`.    |
+| `kind`     | string              | **Yes**  | Possible values are: `atlas_account`.    |
 | `spec`     | [object](#spec)     | **Yes**  |                                       |
-| `version`  | string              | **Yes**  | Possible values are: `0.1`, `latest`. |
+| `version`  | string              | **Yes**  | Possible values are: `0.1`. |
 | `advanced` | [object](#advanced) | No       |                                       |
 
 ## spec
@@ -18,7 +18,9 @@ A Cloudflare intent which can be used to create Cloudflare Ruleset resource in C
 
 | Property    | Type                 | Required | Description           |
 | ----------- | -------------------- | -------- | --------------------- |
-| `api_token` | [string](#api_token) | **Yes**  | Cloudflare API Token. |
+| `project_id` | string | **Yes**  | Project ID for Atlas account. |
+| `public_key` | string | **Yes**  | Public Key for mongoatlas provider configuration. |
+| `private_key` | string | **Yes**  | Private Key for mongoatlas provider configuration. |
 
 ### Flavors
 

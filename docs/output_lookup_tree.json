@@ -6,29 +6,13 @@
         "out": {}
     },
     "kubernetes_secret": {
-        "out": {
-            "attributes": {
-                "name": {}
-            }
-        }
+        "out": {}
     },
     "s3": {
-        "out": {
-            "attributes": {
-                "bucket_name": {},
-                "bucket_arn": {},
-                "bucket_region": {},
-                "read_only_iam_policy_arn": {},
-                "read_write_iam_policy_arn": {}
-            }
-        }
+        "out": {}
     },
     "gcp_iam_role": {
-        "out": {
-            "attributes": {
-                "role_id": {}
-            }
-        }
+        "out": {}
     },
     "status_check": {
         "out": {}
@@ -42,27 +26,12 @@
     "loki_alerting_rules": {
         "out": {}
     },
-    "mongo_user": {
+    "google_cloud_storage": {
         "out": {}
     },
-    "google_cloud_storage": {
-        "out": {
-            "attributes": {
-                "name": {},
-                "url": {}
-            }
-        }
-    },
     "iam_policy": {
-        "out": {
-            "attributes": {
-                "name": {},
-                "arn": {},
-                "policy": {}
-            }
-        }
+        "out": {}
     },
-    "aws_dlm_lifecycle_policy": {},
     "ingress": {
         "out": {
             "interfaces": {
@@ -78,11 +47,7 @@
         }
     },
     "aws_iam_role": {
-        "out": {
-            "attributes": {
-                "irsa_iam_role_arn": {}
-            }
-        }
+        "out": {}
     },
     "redis": {
         "out": {
@@ -123,9 +88,6 @@
     "alert_group": {
         "out": {}
     },
-    "cloudflare": {
-        "out": {}
-    },
     "alb": {
         "out": {
             "interfaces": {
@@ -141,35 +103,27 @@
         }
     },
     "dynamodb": {
-        "out": {
-            "attributes": {
-                "role_id": {}
-            }
-        }
+        "out": {}
     },
     "config_map": {
-        "out": {
-            "attributes": {
-                "name": {}
-            }
-        }
+        "out": {}
     },
     "k8s_resource": {
         "out": {
-            "attributes": {
-                "resource_name": {}
+            "interfaces": {
+                "KEY": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "name": {},
+                    "connection_string": {}
+                }
             }
         }
     },
     "dax_cluster": {
         "out": {}
-    },
-    "aws_waf": {
-        "out": {
-            "attributes": {
-                "arn": {}
-            }
-        }
     },
     "rabbitmq": {
         "out": {
@@ -216,13 +170,7 @@
         }
     },
     "tcp_lb": {
-        "out": {
-            "interfaces": {
-                "KEY": {
-                    "host": {}
-                }
-            }
-        }
+        "out": {}
     },
     "sqs": {
         "out": {}
@@ -276,11 +224,6 @@
                     "connection_string": {}
                 }
             }
-        }
-    },
-    "aws_static_website": {
-        "out": {
-            "attributes": {}
         }
     },
     "aws_event_bus": {
@@ -355,12 +298,6 @@
                     "username": {},
                     "password": {},
                     "connection_string": {}
-                },
-                "writer": {
-                    "endpoint": {},
-                    "username": {},
-                    "password": {},
-                    "connection_string": {}
                 }
             }
         }
@@ -385,9 +322,6 @@
                     "connection_string": {},
                     "name": {}
                 }
-            },
-            "attributes": {
-                "service_name": {}
             }
         }
     },

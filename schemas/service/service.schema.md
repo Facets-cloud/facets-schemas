@@ -47,6 +47,7 @@ Map of all release keys
 | `build`             | [object](#build)             | No       | These contains the build objects required for running the containers |
 | `disruption_policy` | [object](#disruption_policy) | No       | The disruption policy for the service                                                                     |
 | `image`             | string                       | No       | The docker image of the application that you want to run             |
+| `image_pull_policy` | string                       | No       | ImagePullPolicy                                                      |
 
 #### build
 

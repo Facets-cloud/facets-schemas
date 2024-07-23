@@ -223,11 +223,18 @@
       "properties": {
         "out": {
           "type": "object",
-          "description": "The output for the aws iam role",
+          "additionalProperties": false,
+          "description": "Output from the iam role",
           "properties": {
-            "irsa_iam_role_arn": {
-              "type": "string",
-              "description": "The ARN of the aws iam role which has the IRSA"
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "irsa_iam_role_arn": {
+                  "type": "string",
+                  "description": "ARN of IRSA iam role"
+                }
+              },
+              "required": []
             }
           },
           "required": []
