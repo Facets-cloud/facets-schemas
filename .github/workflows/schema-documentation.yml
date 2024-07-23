@@ -57,7 +57,7 @@
             echo "Updating schema-metadata.json"
             cp -R ../schema-metadata.json schema-metadata.json
             echo "Updating output_lookup_tree.json"
-            cp -R ../capillary-cloud-tf/docs/output_lookup_tree.json docs/output_lookup_tree.json
+            cp -R ../output_lookup_tree.json docs/output_lookup_tree.json
         - name: Set Git identity
           run: |
             cd target
