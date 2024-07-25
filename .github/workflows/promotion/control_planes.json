@@ -1,8 +1,0 @@
-{
-  "root": {
-    "Name": "root",
-    "URL": "https://root.console.facets.cloud",
-    "Username": "ishaan.kalra@facets.cloud",
-    "includeCluster": ["facetsdemo"]
-  }
-}
