@@ -4,9 +4,6 @@
 set -e
 
 # Default values for environment variables
-DOCKER_IMAGE_URL=${DOCKER_IMAGE_URL:-nginx:latest}
-TOKEN=${TOKEN:-8c2ad1b3-d18c-4e71-86dd-273660a14a4c}
-GIT_REF=${GIT_REF:-test123}
 RUN_ID=${RUN_ID:-}
 
 # Parse command-line options
