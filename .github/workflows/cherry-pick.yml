@@ -74,7 +74,7 @@ jobs:
         run: git checkout ${{ steps.input.outputs.branch }}
 
       - name: Cherry-pick commit
-        run: git cherry-pick -x ${{ steps.commit_id.outputs.id }}
+        run: git cherry-pick --allow-empty -x ${{ steps.commit_id.outputs.id }}
 
       - name: Push changes
         uses: ad-m/github-push-action@master
