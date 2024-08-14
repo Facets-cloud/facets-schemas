@@ -8,7 +8,52 @@
       "properties": {
         "alloy-db": {
           "type": "object",
-          "description": "Resource values as per the module documentation https://registry.terraform.io/modules/GoogleCloudPlatform/alloy-db/google/1.1.2"
+          "description": "Resource values as per the module documentation https://registry.terraform.io/modules/GoogleCloudPlatform/alloy-db/google/1.1.2",
+          "properties": {
+            "primary_instance": {
+              "type": "object",
+              "description": "`primary_instance` values as per the module documentation https://registry.terraform.io/modules/GoogleCloudPlatform/alloy-db/google/1.1.2?tab=inputs",
+              "properties": {
+                "instance_id": {
+                  "type": "string",
+                  "description": "The ID of the primary instance"
+                },
+                "display_name": {
+                  "type": "string",
+                  "description": "The display name of the primary instance"
+                },
+                "database_flags": {
+                  "type": "object",
+                  "description": "Database flags for the primary instance"
+                },
+                "labels": {
+                  "type": "object",
+                  "description": "Labels for the primary instance"
+                },
+                "annotations": {
+                  "type": "object",
+                  "description": "Annotations for the primary instance"
+                },
+                "gce_zone": {
+                  "type": "string",
+                  "description": "The GCE zone for the primary instance"
+                },
+                "availability_type": {
+                  "type": "string",
+                  "description": "The availability type for the primary instance"
+                },
+                "machine_cpu_count": {
+                  "type": "number",
+                  "description": "The number of CPUs for the primary instance",
+                  "default": 2
+                },
+                "disable": {
+                  "type": "boolean",
+                  "description": "Specifies whether the primary instance is enabled or disabled"
+                }
+              }
+            }
+          }
         }
       }
     }

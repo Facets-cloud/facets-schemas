@@ -157,10 +157,12 @@
                   "properties": {
                     "type": {
                       "type": "string",
-                      "description": "Your kubernetes rollout type eg: RollingUpdate or Recreate",
+                      "description": "Your kubernetes rollout type eg: RollingUpdate / Recreate / BlueGreen / Canary",
                       "enum": [
                         "RollingUpdate",
-                        "Recreate"
+                        "Recreate",
+                        "BlueGreen",
+                        "Canary"
                       ]
                     },
                     "max_available": {
@@ -170,6 +172,182 @@
                     "max_unavailable": {
                       "type": "string",
                       "description": "If type RollingUpdate , this is the max number of pods that can be unavailable from the default replicas"
+                    },
+                    "blue_green_strategy": {
+                      "type": "object",
+                      "description": "Configuration for BlueGreen strategy",
+                      "properties": {
+                        "successful_run_history_limit": {
+                          "type": "integer",
+                          "description": "The number of successful runs to keep in history"
+                        },
+                        "unsuccessful_run_history_limit": {
+                          "type": "integer",
+                          "description": "The number of unsuccessful runs to keep in history"
+                        },
+                        "min_ready_seconds": {
+                          "type": "integer",
+                          "description": "The minimum number of seconds a new pod should be ready"
+                        },
+                        "revision_history_limit": {
+                          "type": "integer",
+                          "description": "The number of old ReplicaSets to retain"
+                        },
+                        "enable_manual_rollout": {
+                          "type": "boolean",
+                          "description": "Flag to enable manual rollout"
+                        },
+                        "progress_deadline_seconds": {
+                          "type": "integer",
+                          "description": "The maximum time in seconds for a rollout to make progress"
+                        },
+                        "progress_deadline_abort": {
+                          "type": "boolean",
+                          "description": "Flag to abort the rollout if the progress deadline is exceeded"
+                        },
+                        "restart_at": {
+                          "type": "string",
+                          "description": "Timestamp to restart the rollout"
+                        },
+                        "rollback_window_revisions": {
+                          "type": "integer",
+                          "description": "The number of revisions to keep for rollback"
+                        },
+                        "preview_replicas": {
+                          "type": "integer",
+                          "description": "The number of replicas for the preview service"
+                        },
+                        "auto_promotion": {
+                          "type": "boolean",
+                          "description": "Flag to enable automatic promotion"
+                        },
+                        "auto_promotion_seconds": {
+                          "type": "integer",
+                          "description": "The time in seconds before automatic promotion"
+                        },
+                        "scale_down_delay_seconds": {
+                          "type": "integer",
+                          "description": "The time in seconds to delay scaling down the old ReplicaSet"
+                        },
+                        "scale_down_delay_revision_limit": {
+                          "type": "integer",
+                          "description": "The number of old ReplicaSets to retain for scale down delay"
+                        },
+                        "abort_scale_down_delay_seconds": {
+                          "type": "integer",
+                          "description": "The time in seconds to delay scaling down the old ReplicaSet after an abort"
+                        }
+                      }
+                    },
+                    "canary_strategy": {
+                      "type": "object",
+                      "description": "Configuration for Canary strategy",
+                      "properties": {
+                        "successful_run_history_limit": {
+                          "type": "integer",
+                          "description": "The number of successful runs to keep in history"
+                        },
+                        "unsuccessful_run_history_limit": {
+                          "type": "integer",
+                          "description": "The number of unsuccessful runs to keep in history"
+                        },
+                        "min_ready_seconds": {
+                          "type": "integer",
+                          "description": "The minimum number of seconds a new pod should be ready"
+                        },
+                        "revision_history_limit": {
+                          "type": "integer",
+                          "description": "The number of old ReplicaSets to retain"
+                        },
+                        "enable_manual_rollout": {
+                          "type": "boolean",
+                          "description": "Flag to enable manual rollout"
+                        },
+                        "progress_deadline_seconds": {
+                          "type": "integer",
+                          "description": "The maximum time in seconds for a rollout to make progress"
+                        },
+                        "progress_deadline_abort": {
+                          "type": "boolean",
+                          "description": "Flag to abort the rollout if the progress deadline is exceeded"
+                        },
+                        "restart_at": {
+                          "type": "string",
+                          "description": "Timestamp to restart the rollout"
+                        },
+                        "rollback_window_revisions": {
+                          "type": "integer",
+                          "description": "The number of revisions to keep for rollback"
+                        },
+                        "max_unavailable": {
+                          "type": "integer",
+                          "description": "The maximum number of pods that can be unavailable during the update"
+                        },
+                        "max_surge": {
+                          "type": "string",
+                          "description": "The maximum number of pods that can be created over the desired number of pods"
+                        },
+                        "stable_metadata": {
+                          "type": "object",
+                          "description": "Metadata for the Stable strategy",
+                          "properties": {
+                            "annotations": {
+                              "type": "object",
+                              "description": "Annotations for the Stable strategy"
+                            },
+                            "labels": {
+                              "type": "object",
+                              "description": "Labels for the Stable strategy"
+                            }
+                          }
+                        },
+                        "canary_metadata": {
+                          "type": "object",
+                          "description": "Metadata for the canary strategy",
+                          "properties": {
+                            "annotations": {
+                              "type": "object",
+                              "description": "Annotations for the canary strategy"
+                            },
+                            "labels": {
+                              "type": "object",
+                              "description": "Labels for the canary strategy"
+                            }
+                          }
+                        },
+                        "scale_down_delay_seconds": {
+                          "type": "integer",
+                          "description": "The time in seconds to delay scaling down the old ReplicaSet"
+                        },
+                        "min_pods_per_replicaset": {
+                          "type": "integer",
+                          "description": "The minimum number of pods per ReplicaSet"
+                        },
+                        "scale_down_delay_revision_limit": {
+                          "type": "integer",
+                          "description": "The number of old ReplicaSets to retain for scale down delay"
+                        },
+                        "analysis": {
+                          "type": "object",
+                          "description": "Analysis configuration for the canary strategy"
+                        },
+                        "steps": {
+                          "type": "array",
+                          "description": "Steps configuration for the canary strategy"
+                        },
+                        "anti_affinity": {
+                          "type": "object",
+                          "description": "Anti-affinity configuration for the canary strategy"
+                        },
+                        "traffic_routing": {
+                          "type": "object",
+                          "description": "Traffic routing configuration for the canary strategy"
+                        },
+                        "abort_scale_down_delay_seconds": {
+                          "type": "integer",
+                          "description": "The time in seconds to delay scaling down the old ReplicaSet after an abort"
+                        }
+                      }
                     }
                   },
                   "allOf": [
@@ -428,7 +606,11 @@
                             },
                             "mount_path": {
                               "type": "string",
-                              "description": "The mount path for the config map"
+                              "description": "The mount path for the ConfigMap."
+                            },
+                            "sub_path": {
+                              "type": "string",
+                              "description": "Optional. The path within the ConfigMap to mount a specific key or file"
                             }
                           }
                         }
@@ -448,7 +630,11 @@
                             },
                             "mount_path": {
                               "type": "string",
-                              "description": "The mount path for the secrets"
+                              "description": "The mount path for the Secret."
+                            },
+                            "sub_path": {
+                              "type": "string",
+                              "description": "Optional. The path within the Secret to mount a specific key or file"
                             }
                           }
                         }
@@ -468,7 +654,11 @@
                             },
                             "mount_path": {
                               "type": "string",
-                              "description": "The mount path for the pvc"
+                              "description": "The mount path for the PVC."
+                            },
+                            "sub_path": {
+                              "type": "string",
+                              "description": "Optional. The path within the PVC to mount a specific subdirectory"
                             }
                           }
                         }
@@ -484,7 +674,11 @@
                           "properties": {
                             "mount_path": {
                               "type": "string",
-                              "description": "The mount path for the host path"
+                              "description": "The mount path for the HostPath."
+                            },
+                            "sub_path": {
+                              "type": "string",
+                              "description": "Optional. The path within the host filesystem to mount a specific directory or file"
                             }
                           }
                         }
@@ -2796,8 +2990,7 @@
                 "description": "The name of the service"
               }
             },
-            "required": [
-            ]
+            "required": []
           },
           "required": []
         }
