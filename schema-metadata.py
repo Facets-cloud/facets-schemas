@@ -36,7 +36,8 @@ def filter_json_objects(json_objects):
         "redis_monitoring",
         "mongo_monitoring",
         "mysql_monitoring",
-        "elasticsearch_monitoring"
+        "elasticsearch_monitoring",
+        "mysql_web"
     ]
 
     for obj in json_objects:
