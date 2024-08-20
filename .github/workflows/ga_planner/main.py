@@ -194,7 +194,7 @@ async def create_and_wait_for_deployment(
             for key, value in presigned_url["fields"].items()
         ]
     )
-    curl_cmd = "curl -v {form_values} {url}".format(
+    curl_cmd = "curl -sS {form_values} {url}".format(
         form_values=form_values, url=presigned_url["url"]
     )
     body = {
