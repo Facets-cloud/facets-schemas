@@ -21,6 +21,14 @@ on:
       branchMinorVersion:
         description: 'Minor Version for Branch'
         default: latest
+      runMigrationScripts:
+        description: 'Flag to run the plan with migration scripts'
+        type: choice
+        required: true
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build:
@@ -45,4 +53,5 @@ jobs:
           MAJOR_VERSION: ${{ inputs.branchMajorVersion }}
           MINOR_VERSION: ${{ inputs.branchMinorVersion }}
           STREAM_MAJOR_VERSION: ${{ inputs.streamMajorVersion }}
+          RUN_MIGRATION_SCRIPTS: ${{ inputs.runMigrationScripts }}
 

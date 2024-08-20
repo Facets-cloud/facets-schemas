@@ -20,6 +20,7 @@ LEVEL = os.getenv("LEVEL", "debug")
 TF_PLAN_FILE = "tfplan-output.json"
 STREAM_MAJOR_VERSION = os.getenv("STREAM_MAJOR_VERSION", "2")
 TIMEOUT = os.getenv("TIMEOUT", 3600)
+RUN_MIGRATION_SCRIPTS = os.getenv("RUN_MIGRATION_SCRIPTS", "false")
 
 MAJOR_VERSION = os.getenv("MAJOR_VERSION", "50")
 MINOR_VERSION = os.getenv("MINOR_VERSION", "latest")
@@ -199,8 +200,8 @@ async def create_and_wait_for_deployment(
     body = {
         "overrideBuildSteps": [
             # f"terraform plan -out ./tfplan.json && terraform show -no-color -json ./tfplan.json > {TF_PLAN_FILE}",
-            "bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh",
             f"""
+            "bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh {RUN_MIGRATION_SCRIPTS}",
             {curl_cmd}
             """,
         ],
@@ -242,10 +243,13 @@ async def create_and_wait_for_deployment(
                                 f"Failed to get deployment status for deployment ID {deployment_id}: {deployment_response.status}: {await deployment_response.text()}"
                             )
                         deployment_status = await deployment_response.json()
-                        console.log(
-                            f"{deployment_status.get('status')} for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
-                        )
-                        if deployment_status.get("status") in ["SUCCEEDED", "FAILED"]:
+                        current_status = deployment_status.get('status')
+                        if current_status != previous_status:
+                            console.log(
+                                f"{deployment_status.get('status')} for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
+                            )
+                        previous_status = current_status
+                        if current_status in ["SUCCEEDED", "FAILED"]:
                             break
                         await asyncio.sleep(
                             10
