@@ -22,9 +22,9 @@ on:
         description: 'Minor Version for Branch'
         default: latest
       runMigrationScripts:
-        description: 'Flag to run the plan with migration scripts'
+        description: 'Run migration scripts?'
         type: choice
-        required: true
+        required: false
         default: 'false'
         options:
           - 'true'
