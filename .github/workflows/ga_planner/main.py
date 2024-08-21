@@ -20,6 +20,7 @@ LEVEL = os.getenv("LEVEL", "debug")
 TF_PLAN_FILE = "tfplan-output.json"
 STREAM_MAJOR_VERSION = os.getenv("STREAM_MAJOR_VERSION", "2")
 TIMEOUT = os.getenv("TIMEOUT", 3600)
+RUN_MIGRATION_SCRIPTS = os.getenv("RUN_MIGRATION_SCRIPTS", "false")
 
 MAJOR_VERSION = os.getenv("MAJOR_VERSION", "50")
 MINOR_VERSION = os.getenv("MINOR_VERSION", "latest")
@@ -193,13 +194,13 @@ async def create_and_wait_for_deployment(
             for key, value in presigned_url["fields"].items()
         ]
     )
-    curl_cmd = "curl -v {form_values} {url}".format(
+    curl_cmd = "curl -sS {form_values} {url}".format(
         form_values=form_values, url=presigned_url["url"]
     )
     body = {
         "overrideBuildSteps": [
             # f"terraform plan -out ./tfplan.json && terraform show -no-color -json ./tfplan.json > {TF_PLAN_FILE}",
-            "bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh",
+            f"bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh {RUN_MIGRATION_SCRIPTS}",
             f"""
             {curl_cmd}
             """,
@@ -232,6 +233,7 @@ async def create_and_wait_for_deployment(
                     f"Deployment failed for cluster {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id} : {error_logs}"
                 )
             else:
+                status = None
                 while True:
                     deployment_url = f"{endpoint}/cc-ui/v1/clusters/{cluster_id}/deployments/{deployment_id}"
                     async with session.get(
@@ -242,10 +244,12 @@ async def create_and_wait_for_deployment(
                                 f"Failed to get deployment status for deployment ID {deployment_id}: {deployment_response.status}: {await deployment_response.text()}"
                             )
                         deployment_status = await deployment_response.json()
-                        console.log(
-                            f"{deployment_status.get('status')} for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
-                        )
-                        if deployment_status.get("status") in ["SUCCEEDED", "FAILED"]:
+                        if status != deployment_status.get('status'):
+                            console.log(
+                                f"{deployment_status.get('status')} for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
+                            )
+                        status = deployment_status.get('status')
+                        if status in ["SUCCEEDED", "FAILED"]:
                             break
                         await asyncio.sleep(
                             10
@@ -407,7 +411,10 @@ def download_plan_from_s3(
         region_name="ap-south-1",
     )
     os.makedirs(os.path.join(*local_path.split("/")[:-1]), exist_ok=True)
-    s3.download_file(bucket_name, file_key, local_path)
+    try:
+        s3.download_file(bucket_name, file_key, local_path)
+    except Exception as e:
+        print(f"An error occurred while downloading the file s3://{bucket_name}/{file_key}: {e}")
 
 
 def process_plan(planfile_path: str):
