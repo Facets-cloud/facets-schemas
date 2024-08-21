@@ -58,12 +58,6 @@ class FacetsRun:
             self.execute_shell("unzip -qq " + "/sources/" + i["key"] + " -d " + "/sources/" + i["name"].lower())
             os.environ["CODEBUILD_SRC_DIR_" + i["name"]] = "/sources/" + i["name"].lower()
 
-    def configure_kubernetes_environment(self):
-        for i in os.environ:
-            if i.startswith("KUBERNETES_"):
-                print(i)
-                os.environ.pop(i)
-
     def create_build_script(self, buildspec):
         os.chdir("/sources/primary")
         with open("/scripts/build.sh", "w") as f:
@@ -95,7 +89,6 @@ class FacetsRun:
 
             self.setup_git_sources()
             self.download_s3_sources()
-            self.configure_kubernetes_environment()
 
             
             self.create_build_script(self.buildspec)
