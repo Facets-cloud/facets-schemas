@@ -6,10 +6,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/ingress/ingress.nginx_ingress_controller.sample.json",
                 "name": [
@@ -347,10 +347,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.k8s.sample.json",
                 "name": [
@@ -551,10 +551,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
-                    "azure",
                     "gcp",
-                    "kubernetes"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.k8s.sample.json",
                 "name": [
@@ -569,8 +569,8 @@
             },
             {
                 "clouds": [
-                    "aws",
-                    "gcp"
+                    "gcp",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.vm.sample.json",
                 "name": [
@@ -613,10 +613,10 @@
             },
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.k8s.sample.json",
                 "name": [
@@ -971,10 +971,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.k8s.sample.json",
                 "name": [
@@ -1126,10 +1126,10 @@
             },
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.k8s.sample.json",
                 "name": [
@@ -1359,10 +1359,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.k8s.sample.json",
                 "name": [
@@ -1750,10 +1750,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
-                    "kubernetes",
                     "gcp",
-                    "azure"
+                    "kubernetes",
+                    "azure",
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.nlb.sample.json",
                 "name": [
