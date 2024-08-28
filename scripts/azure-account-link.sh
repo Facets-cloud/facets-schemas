@@ -50,7 +50,7 @@ if [ $? -ne 0 ]; then
 fi
 
 az role definition create --role-definition '{
-  "Name": "CustomMinimalRole",
+  "Name": "facets-'"$PRINCIPAL_NAME"'",
   "Description": "Custom role with minimal permissions",
   "Actions": [
     "Microsoft.Resources/subscriptions/resourceGroups/*",
@@ -67,7 +67,7 @@ az role definition create --role-definition '{
   "AssignableScopes": [
     "/subscriptions/'"$SUBSCRIPTION_ID"'"
   ]
-}' &>/dev/null
+}'
 
 if [ $? -ne 0 ]; then
     echo "Failed to create role definition."
@@ -75,7 +75,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Create the Service Principal with Custom role that has minimal permissions
-SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role CustomMinimalRole --scopes /subscriptions/"$SUBSCRIPTION_ID")
+SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "facets-$PRINCIPAL_NAME" --scopes /subscriptions/"$SUBSCRIPTION_ID")
 
 
 if [ $? -ne 0 ]; then
