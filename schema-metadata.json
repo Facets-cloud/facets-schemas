@@ -342,7 +342,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Config_map",
+        "displayName": "Config Map",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.schema.html",
         "flavors": [
             {
@@ -373,7 +373,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Dax_cluster",
+        "displayName": "DAX Cluster",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/dax_cluster/dax_cluster.schema.html",
         "flavors": [
             {
@@ -397,7 +397,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Kubernetes_node_pool",
+        "displayName": "Kubernetes Node Pool",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_node_pool/kubernetes_node_pool.schema.html",
         "flavors": [
             {
@@ -495,7 +495,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Iam_policy",
+        "displayName": "IAM Policy",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/iam_policy/iam_policy.schema.html",
         "flavors": [
             {
@@ -589,7 +589,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Log_collector",
+        "displayName": "Log Collector",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.schema.html",
         "flavors": [
             {
@@ -673,7 +673,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Snapshot_schedule",
+        "displayName": "Snapshot Schedule",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/snapshot_schedule/snapshot_schedule.schema.html",
         "flavors": [
             {
@@ -700,7 +700,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_static_website",
+        "displayName": "AWS Static Website",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_static_website/aws_static_website.schema.html",
         "flavors": [
             {
@@ -724,7 +724,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_event_bus",
+        "displayName": "AWS Event Bus",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_event_bus/aws_event_bus.schema.html",
         "flavors": [
             {
@@ -748,7 +748,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Google_cloud_storage",
+        "displayName": "Google Cloud Storage",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/google_cloud_storage/google_cloud_storage.schema.html",
         "flavors": [
             {
@@ -773,7 +773,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_iam_role",
+        "displayName": "AWS IAM Role",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_iam_role/aws_iam_role.schema.html",
         "flavors": [
             {
@@ -797,7 +797,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Service_bus",
+        "displayName": "Service Bus",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/service_bus/service_bus.schema.html",
         "flavors": [
             {
@@ -888,7 +888,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Atlas_account",
+        "displayName": "Atlas Account",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/atlas_account/atlas_account.schema.html",
         "flavors": [
             {
@@ -915,7 +915,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_api_gateway",
+        "displayName": "AWS API Gateway",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_api_gateway/aws_api_gateway.schema.html",
         "flavors": [
             {
@@ -939,7 +939,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Schemahero_table",
+        "displayName": "Schemahero Table",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_table/schemahero_table.schema.html",
         "flavors": [
             {
@@ -1012,7 +1012,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_eventbridge",
+        "displayName": "AWS Eventbridge",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_eventbridge/aws_eventbridge.schema.html",
         "flavors": [
             {
@@ -1036,7 +1036,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Loki_recording_rules",
+        "displayName": "Loki Recording Rules",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/loki_recording_rules/loki_recording_rules.schema.html",
         "flavors": [
             {
@@ -1063,7 +1063,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Gcp_iam_role",
+        "displayName": "GCP IAM Role",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/gcp_iam_role/gcp_iam_role.schema.html",
         "flavors": [
             {
@@ -1179,7 +1179,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Status_check",
+        "displayName": "Status Check",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/status_check/status_check.schema.html",
         "flavors": [
             {
@@ -1206,7 +1206,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Mysql_user",
+        "displayName": "Mysql User",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/mysql_user/mysql_user.schema.html",
         "flavors": [
             {
@@ -1251,7 +1251,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Mongo_user",
+        "displayName": "Mongo User",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/mongo_user/mongo_user.schema.html",
         "flavors": [
             {
@@ -1278,7 +1278,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Postgres_user",
+        "displayName": "Postgres User",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/postgres_user/postgres_user.schema.html",
         "flavors": [
             {
@@ -1305,7 +1305,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_waf",
+        "displayName": "AWS WAF",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_waf/aws_waf.schema.html",
         "flavors": [
             {
@@ -1354,7 +1354,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "K8s_resource",
+        "displayName": "K8s Resource",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.schema.html",
         "flavors": [
             {
@@ -1436,7 +1436,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Alb",
+        "displayName": "ALB",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/alb/alb.schema.html",
         "flavors": [
             {
@@ -1460,7 +1460,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_lambda_permission",
+        "displayName": "AWS Lambda Permission",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda_permission/aws_lambda_permission.schema.html",
         "flavors": [
             {
@@ -1484,7 +1484,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Kubernetes_secret",
+        "displayName": "Kubernetes Secret",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.schema.html",
         "flavors": [
             {
@@ -1511,7 +1511,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Grafana_dashboard",
+        "displayName": "Grafana Dashboard",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/grafana_dashboard/grafana_dashboard.schema.html",
         "flavors": [
             {
@@ -1565,7 +1565,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Loki_alerting_rules",
+        "displayName": "Loki Alerting Rules",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/loki_alerting_rules/loki_alerting_rules.schema.html",
         "flavors": [
             {
@@ -1619,7 +1619,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Azure_functions",
+        "displayName": "Azure Functions",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/azure_functions/azure_functions.schema.html",
         "flavors": [
             {
@@ -1643,7 +1643,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Alert_group",
+        "displayName": "Alert Group",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/alert_group/alert_group.schema.html",
         "flavors": [
             {
@@ -1670,7 +1670,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_lambda",
+        "displayName": "Aws Lambda",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_lambda/aws_lambda.schema.html",
         "flavors": [
             {
@@ -1694,7 +1694,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Azure_storage_container",
+        "displayName": "Azure Storage Container",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/azure_storage_container/azure_storage_container.schema.html",
         "flavors": [
             {
@@ -1745,7 +1745,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Tcp_lb",
+        "displayName": "TCP LB",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.schema.html",
         "flavors": [
             {
@@ -1776,7 +1776,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Schemahero_database",
+        "displayName": "Schemahero Database",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/schemahero_database/schemahero_database.schema.html",
         "flavors": [
             {
@@ -1803,7 +1803,7 @@
     },
     {
         "description": "Some random description",
-        "displayName": "Aws_dlm_lifecycle_policy",
+        "displayName": "AWS DLM Lifecycle Policy",
         "documentation": "https://facets-cloud.github.io/facets-schemas/schemas/aws_dlm_lifecycle_policy/aws_dlm_lifecycle_policy.schema.html",
         "flavors": [
             {
