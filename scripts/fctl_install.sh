@@ -79,6 +79,7 @@ fi
 if ! grep -q "export PATH=\"$INSTALL_DIR/facetsctl/bin:\$PATH\"" "$HOME/.bashrc"; then
     echo "Adding facetsctl to PATH in .bashrc"
     echo "export PATH=\"$INSTALL_DIR/facetsctl/bin:\$PATH\"" >> "$HOME/.bashrc"
+    export PATH="$INSTALL_DIR/facetsctl/bin":$PATH
     echo "Run 'source ~/.bashrc' to update the current session."
 fi
 
