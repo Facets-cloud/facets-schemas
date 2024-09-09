@@ -11,10 +11,11 @@ RUN mv terraform_1.0.11/terraform terraform_1.0.11/terraform_1.0.11
 RUN mv terraform_1.0.11/terraform_1.0.11 /usr/bin/terraform_1.0
 RUN wget https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kubectl -O kubectl1.21
 RUN cp kubectl1.21 /usr/bin/kubectl1.21
-RUN chmod +x /usr/bin/kubectl1.21
 ENV ENABLE_CACHING="true"
+RUN chmod +x /usr/bin/kubectl1.21
 COPY build-environments/terraform-capillary-cloud/scripts/run.py /run.py
 COPY build-environments/terraform-capillary-cloud/tf-cache-plugins /sources/primary/tf-cache-plugins
+COPY build-environments/terraform-capillary-cloud/scripts/mysql-schema-diff/Diff.pm  /usr/share/perl5/MySQL/Diff.pm
 RUN wget https://app.getambassador.io/download/tel2/linux/amd64/2.4.2/telepresence
 RUN mv telepresence /usr/local/bin/telepresence
 RUN chmod +x /usr/local/bin/telepresence

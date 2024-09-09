@@ -237,10 +237,22 @@ sub _diff_fields {
             my $f2 = $fields2->{$field};
 	    
 	    # skipping the charset set for columns - cj
-	    $f1 =~  s/ COLLATE [\w_]+//gi;
-            $f2 =~  s/ COLLATE [\w_]+//gi;
-            $f1 =~  s/ CHARACTER SET [\w_]+//gi;
-            $f2 =~  s/ CHARACTER SET [\w_]+//gi;
+	        #$f1 =~  s/ COLLATE [\w_]+//gi;
+            #$f2 =~  s/ COLLATE [\w_]+//gi;
+            #$f1 =~  s/ CHARACTER SET [\w_]+//gi;
+            #$f2 =~  s/ CHARACTER SET [\w_]+//gi;
+
+            if($f2 =~ /COLLATE/i && $f2 !~ /CHARACTER SET/i) {
+                # Replacing the charset in f1 is necessary because if the table is in latin1
+                # charset and the column only specifies the collation, the charset is
+                # automatically added to the schema by the server. If we don't replace it,
+                # this will create a redundant diff between fields.
+                  $f1 =~  s/ CHARACTER SET [\w_]+//gi;
+            }
+
+            if($f2 !~ /COLLATE/i && $f2 =~ /CHARACTER SET/i) {
+                 $f1 =~ s/ COLLATE [\w_]+//gi;
+            }
 
             if ($fields2 && $f2) {
                 if ($self->{opts}{tolerant}) {
