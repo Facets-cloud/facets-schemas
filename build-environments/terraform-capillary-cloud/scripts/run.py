@@ -74,7 +74,7 @@ class FacetsRun:
             raise e
         finally:
             self.upload_build_artifacts(self.buildspec)
-
+            
     def upload_build_artifacts(self, buildspec):
         for i in buildspec["artifacts"]["files"]:
             for j in glob.glob(os.path.expandvars("/sources/primary/" + i)):

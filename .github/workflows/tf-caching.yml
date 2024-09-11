@@ -93,4 +93,4 @@ jobs:
         context: .
         file: ./build-environments/terraform-capillary-cloud/Dockerfile
         push: true
-        tags: 313496281593.dkr.ecr.us-east-1.amazonaws.com/facets-tf-runtime:${{ github.sha }}
+        tags: 313496281593.dkr.ecr.us-east-1.amazonaws.com/facets-tf-runtime:${{ github.run_number }}
