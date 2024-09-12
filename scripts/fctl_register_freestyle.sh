@@ -3,11 +3,7 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Default values for environment variables
-FILE_PATH=${FILE_PATH:-nginx:latest}
-TOKEN=${TOKEN:-8c2ad1b3-d18c-4e71-86dd-273660a14a4c}
-GIT_REF=${GIT_REF:-test123}
-RUN_ID=${RUN_ID:-}
+echo "Starting script execution..."
 
 # Parse command-line options
 while getopts u:c:p:s:a:i: flag
@@ -49,6 +45,9 @@ if [ -z "$GIT_REF" ]; then
     fi
 fi
 
+# Print determined GIT_REF
+echo "Determined GIT_REF: $GIT_REF"
+
 # Determine RUN_ID based on CI/CD environment variables if not set
 if [ -z "$RUN_ID" ]; then
     if [ ! -z "$GITHUB_RUN_ID" ]; then
@@ -64,8 +63,13 @@ if [ -z "$RUN_ID" ]; then
     fi
 fi
 
+# Print determined RUN_ID
+echo "Determined RUN_ID: $RUN_ID"
+
 # Path to facetsctl binary
-BIN_PATH="$(which facetsctl)"
+# Attempt to find facetsctl using which
+BIN_PATH="$(which facetsctl || echo $HOME/facetsctl/bin/facetsctl)"
+echo "Bin path: $BIN_PATH"
 
 # Ensure facetsctl is executable
 if [ ! -x "$BIN_PATH" ]; then
@@ -74,6 +78,7 @@ if [ ! -x "$BIN_PATH" ]; then
 fi
 
 # Print all variable values
+echo "Final Variable Values:"
 echo "Username: $USERNAME"
 echo "CP_URL: $CP_URL"
 echo "Project Name: $PROJECT_NAME"
@@ -87,25 +92,30 @@ echo "RUN_ID: $RUN_ID"
 echo "Bin Path: $BIN_PATH"
 
 # Login using facetsctl
+echo "Logging in using facetsctl..."
 $BIN_PATH login -u "$USERNAME" -t "$TOKEN" -f "$CP_URL"
 if [ $? -ne 0 ]; then
     echo "facetsctl login failed."
     exit 1
 fi
+echo "facetsctl login succeeded."
 
 # Initialize artifact
+echo "Initializing artifact..."
 $BIN_PATH artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
 if [ $? -ne 0 ]; then
     echo "facetsctl artifact init failed."
     exit 1
 fi
+echo "facetsctl artifact init succeeded."
 
 # Register artifact
+echo "Registering artifact..."
 $BIN_PATH artifact upload -t GIT_REF -v "$GIT_REF" -f "$FILE_PATH" -r "$RUN_ID"
 if [ $? -ne 0 ]; then
     echo "facetsctl artifact register failed."
     exit 1
 fi
+echo "facetsctl artifact register succeeded."
 
 echo "facetsctl operations completed."
-
