@@ -31,8 +31,8 @@ fi
 echo "Please select a subscription by number:"
 IFS=$'\n' # Ensure we split lines on newlines
 select SUBSCRIPTION_LINE in $SUBSCRIPTIONS; do
-    SUBSCRIPTION_NAME=$(echo $SUBSCRIPTION_LINE | cut -d":" -f1)
-    SUBSCRIPTION_ID=$(echo $SUBSCRIPTION_LINE | cut -d":" -f2)
+    SUBSCRIPTION_NAME=$(echo "$SUBSCRIPTION_LINE" | cut -d":" -f1)
+    SUBSCRIPTION_ID=$(echo "$SUBSCRIPTION_LINE" | cut -d":" -f2)
     if [ -n "$SUBSCRIPTION_ID" ]; then
         echo "You have selected subscription '$SUBSCRIPTION_NAME' with ID '$SUBSCRIPTION_ID'"
         break
@@ -49,8 +49,40 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Create the Service Principal with Owner role
-SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role Owner --scopes /subscriptions/"$SUBSCRIPTION_ID")
+az role definition create --role-definition '{
+  "Name": "facets-'"$PRINCIPAL_NAME"'",
+  "Description": "Custom role with minimal permissions",
+  "Actions": [
+    "Microsoft.Resources/subscriptions/resourceGroups/*",
+    "Microsoft.Network/virtualNetworks/*",
+    "Microsoft.Network/networkSecurityGroups/*",
+    "Microsoft.Network/publicIPAddresses/*",
+    "Microsoft.Network/natGateways/*",
+    "Microsoft.ContainerService/*",
+    "Microsoft.Storage/storageAccounts/*",
+    "Microsoft.Authorization/roleAssignments/*",
+    "Microsoft.Network/privateDnsZones/*",
+    "Microsoft.DBforMySQL/flexibleServers/*",
+    "Microsoft.ManagedIdentity/userAssignedIdentities/*",
+    "Microsoft.Network/applicationGateways/*",
+    "Microsoft.Cache/redis/*",
+    "Microsoft.Web/serverFarms/*",
+    "Microsoft.Web/sites/*",
+    "Microsoft.ServiceBus/namespaces/*",
+    "Microsoft.ContainerService/managedClusters/*"
+  ],
+  "AssignableScopes": [
+    "/subscriptions/'"$SUBSCRIPTION_ID"'"
+  ]
+}'
+
+if [ $? -ne 0 ]; then
+    echo "Failed to create role definition."
+    exit 1
+fi
+
+# Create the Service Principal with Custom role that has minimal permissions
+SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "facets-$PRINCIPAL_NAME" --scopes /subscriptions/"$SUBSCRIPTION_ID")
 
 if [ $? -ne 0 ]; then
     echo "Failed to create Service Principal."
@@ -58,9 +90,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # Extract necessary data from SP_JSON
-CLIENT_ID=$(echo $SP_JSON | jq -r .appId)
-CLIENT_SECRET=$(echo $SP_JSON | jq -r .password)
-TENANT_ID=$(echo $SP_JSON | jq -r .tenant)
+CLIENT_ID=$(echo "$SP_JSON" | jq -r .appId)
+CLIENT_SECRET=$(echo "$SP_JSON" | jq -r .password)
+TENANT_ID=$(echo "$SP_JSON" | jq -r .tenant)
 
 echo "Service Principal created successfully."
 echo "$SP_JSON"
