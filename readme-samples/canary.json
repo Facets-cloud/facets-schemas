@@ -1,0 +1,145 @@
+{
+  "flavor": "default",
+  "metadata": {
+    "name": "example-canary-service",
+    "labels": {
+      "sidecar.istio.io/inject": "true"
+    }
+  },
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.schema.json",
+  "kind": "service",
+  "disabled": false,
+  "version": "0.1",
+  "spec": {
+    "type": "application",
+    "enable_host_anti_affinity": false,
+    "restart_policy": "OnFailure",
+    "release": {
+      "image": "hashicorp/http-echo:latest",
+      "strategy": {
+        "type": "Canary",
+        "canary_strategy": {
+          "enable_service": false,
+          "steps": [
+            {
+              "setWeight": 10
+            },
+            {
+              "pause": {}
+            }
+          ],
+          "traffic_routing": {
+            "istio": {
+              "destinationRule": {
+                "name": "canary-destination",
+                "canarySubsetName": "canary",
+                "stableSubsetName": "stable"
+              },
+              "virtualService": {
+                "name": "virtualservice-canary",
+                "routes": [
+                  "primary"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "runtime": {
+      "size": {
+        "cpu": "10m",
+        "memory": "50Mi"
+      },
+      "health_checks": {
+        "period": 10,
+        "port": "5678",
+        "timeout": 60,
+        "start_up_time": 10
+      },
+      "autoscaling": {
+        "cpu_threshold": 50,
+        "max": 10,
+        "min": 5
+      },
+      "ports": {
+        "http": {
+          "protocol": "tcp",
+          "port": "5678",
+          "test": 1,
+          "test2": 2
+        }
+      },
+      "args": [
+        "-text=hello-world-v2"
+      ]
+    }
+  },
+  "advanced": {
+    "common": {
+      "app_chart": {
+        "values": {
+          "additional_k8s_objects": {
+            "destination_rule": {
+              "apiVersion": "networking.istio.io/v1alpha3",
+              "kind": "DestinationRule",
+              "metadata": {
+                "name": "canary-destination"
+              },
+              "spec": {
+                "host": "canary",
+                "subsets": [
+                  {
+                    "name": "canary",
+                    "labels": {
+                      "app": "example-canary-service"
+                    }
+                  },
+                  {
+                    "name": "stable",
+                    "labels": {
+                      "app": "example-canary-service"
+                    }
+                  }
+                ]
+              }
+            },
+            "virtual_service": {
+              "apiVersion": "networking.istio.io/v1alpha3",
+              "kind": "VirtualService",
+              "metadata": {
+                "name": "virtualservice-canary"
+              },
+              "spec": {
+                "hosts": [
+                  "example-canary-service.default.svc.cluster.local"
+                ],
+                "http": [
+                  {
+                    "name": "primary",
+                    "route": [
+                      {
+                        "destination": {
+                          "host": "example-canary-service",
+                          "subset": "stable"
+                        },
+                        "weight": 90
+                      },
+                      {
+                        "destination": {
+                          "host": "example-canary-service",
+                          "subset": "canary"
+                        },
+                        "weight": 10
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
