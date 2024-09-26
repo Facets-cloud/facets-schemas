@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the version to install
-VERSION="1.0.0"
+VERSION="latest"
 INSTALL_DIR="$HOME"
 BIN_PATH="$INSTALL_DIR/facetsctl/bin/facetsctl"
 
