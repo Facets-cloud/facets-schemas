@@ -12,6 +12,7 @@
         "Action": [
           "iam:*",
           "s3:*",
+          "sqs:*",
           "cloudwatch:*",
           "ec2:*",
           "acm:*",
