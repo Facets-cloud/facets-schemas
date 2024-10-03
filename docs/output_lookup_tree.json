@@ -235,7 +235,14 @@
         }
     },
     "sqs": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "queue_arn": {},
+                "producer_policy_arn": {},
+                "consumer_policy_arn": {},
+                "sqs_queue_name": {}
+            }
+        }
     },
     "zookeeper": {
         "out": {
