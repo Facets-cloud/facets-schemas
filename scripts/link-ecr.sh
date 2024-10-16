@@ -34,7 +34,7 @@ SECRET_ACCESS_KEY=$(echo $ACCESS_KEY_JSON | jq -r '.AccessKey.SecretAccessKey')
 echo "Access Key ID: $ACCESS_KEY_ID"
 echo "Secret Access Key: $SECRET_ACCESS_KEY"
 
-aws iam attach-user-policy --user-name "$ACCOUNT_NAME" --policy-arn "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+aws iam attach-user-policy --user-name "$ACCOUNT_NAME" --policy-arn "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 ECR_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
