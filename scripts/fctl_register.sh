@@ -48,7 +48,7 @@ fi
 if [ -z "$GIT_REF" ]; then
     if [ ! -z "$GITHUB_REF" ]; then
         # Extract the last part after '/'
-        GIT_REF=$(echo "$GITHUB_REF" | sed 's|^[^/]*/||')
+        GIT_REF=${GITHUB_REF##*/}
     elif [ ! -z "$GIT_COMMIT" ]; then
         GIT_REF=$GIT_COMMIT  # Common in Jenkins; usually this is a commit SHA
     elif [ ! -z "$CI_COMMIT_REF_NAME" ]; then
