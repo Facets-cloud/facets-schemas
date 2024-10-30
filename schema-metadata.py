@@ -33,6 +33,7 @@ def filter_json_objects(json_objects):
         "network",
         "cloudflare_account",
         "postgres_monitoring",
+        "ingress_monitoring",
         "redis_monitoring",
         "mongo_monitoring",
         "mysql_monitoring",
