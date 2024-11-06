@@ -202,7 +202,6 @@ async def create_and_wait_for_deployment(
             # f"terraform plan -out ./tfplan.json && terraform show -no-color -json ./tfplan.json > {TF_PLAN_FILE}",
             f"bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh {RUN_MIGRATION_SCRIPTS}",
             f"""
-            "bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh {RUN_MIGRATION_SCRIPTS}",
             {curl_cmd}
             """,
         ],
