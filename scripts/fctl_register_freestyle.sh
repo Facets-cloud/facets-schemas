@@ -3,16 +3,7 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Print initial script information
 echo "Starting script execution..."
-
-RUN_ID=${RUN_ID:-}
-
-# Print initial environment variable values
-echo "Initial Environment Variables:"
-echo "DOCKER_IMAGE_URL: $DOCKER_IMAGE_URL"
-echo "TOKEN: $TOKEN"
-echo "RUN_ID: $RUN_ID"
 
 # Parse command-line options
 while getopts u:c:p:s:a:i: flag
@@ -28,18 +19,9 @@ do
     esac
 done
 
-# Print parsed command-line options
-echo "Parsed Command-Line Options:"
-echo "USERNAME: $USERNAME"
-echo "CP_URL: $CP_URL"
-echo "PROJECT_NAME: $PROJECT_NAME"
-echo "SERVICE_NAME: $SERVICE_NAME"
-echo "ARTIFACTORY_NAME: $ARTIFACTORY_NAME"
-echo "IS_PUSH: $IS_PUSH"
-
 # Ensure all critical environment variables are set
-if [[ -z "$DOCKER_IMAGE_URL" || -z "$TOKEN" ]]; then
-    echo "Critical environment variables DOCKER_IMAGE_URL or TOKEN are not set."
+if [[ -z "$FILE_PATH" || -z "$TOKEN" ]]; then
+    echo "Critical environment variables FILE_PATH or TOKEN are not set."
     echo "Please set these before running the script."
     exit 1
 fi
@@ -103,7 +85,7 @@ echo "Project Name: $PROJECT_NAME"
 echo "Service Name: $SERVICE_NAME"
 echo "Artifactory Name: $ARTIFACTORY_NAME"
 echo "Is Push: $IS_PUSH"
-echo "Docker Image URL: $DOCKER_IMAGE_URL"
+echo "File Path: $FILE_PATH"
 echo "Token: $TOKEN"
 echo "GIT_REF: $GIT_REF"
 echo "RUN_ID: $RUN_ID"
@@ -127,20 +109,9 @@ if [ $? -ne 0 ]; then
 fi
 echo "facetsctl artifact init succeeded."
 
-# Push artifact if required
-if [ "$IS_PUSH" == "true" ]; then
-    echo "Pushing artifact..."
-    $BIN_PATH artifact push -d "$DOCKER_IMAGE_URL"
-    if [ $? -ne 0 ]; then
-        echo "facetsctl artifact push failed."
-        exit 1
-    fi
-    echo "facetsctl artifact push succeeded."
-fi
-
 # Register artifact
 echo "Registering artifact..."
-$BIN_PATH artifact register -t GIT_REF -v "$GIT_REF" -i "$DOCKER_IMAGE_URL" -r "$RUN_ID"
+$BIN_PATH artifact upload -t GIT_REF -v "$GIT_REF" -f "$FILE_PATH" -r "$RUN_ID"
 if [ $? -ne 0 ]; then
     echo "facetsctl artifact register failed."
     exit 1

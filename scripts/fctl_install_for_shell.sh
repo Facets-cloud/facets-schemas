@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Define the version to install
 VERSION="latest"
@@ -16,71 +16,71 @@ OS="$(uname -s)"
 ARCH="$(uname -m)"
 
 # Select the correct download URL
-case $OS in
+case "$OS" in
     Linux)
-        case $ARCH in
+        case "$ARCH" in
             arm64)
-                URL=$URL_LINUX_ARM64
+                URL="$URL_LINUX_ARM64"
                 ;;
             x86_64)
-                URL=$URL_LINUX_X86_64
+                URL="$URL_LINUX_X86_64"
                 ;;
             *)
-                echo "Unsupported architecture: $ARCH"
+                printf "Unsupported architecture: %s\n" "$ARCH"
                 exit 1
                 ;;
         esac
         ;;
     Darwin)
-        case $ARCH in
+        case "$ARCH" in
             x86_64)
-                URL=$URL_DARWIN_X64
+                URL="$URL_DARWIN_X64"
                 ;;
             arm64)
-                URL=$URL_DARWIN_ARM64
+                URL="$URL_DARWIN_ARM64"
                 ;;
             *)
-                echo "Unsupported architecture: $ARCH"
+                printf "Unsupported architecture: %s\n" "$ARCH"
                 exit 1
                 ;;
         esac
         ;;
     *)
-        echo "Unsupported OS: $OS"
+        printf "Unsupported OS: %s\n" "$OS"
         exit 1
         ;;
 esac
 
 # Function to install facetsctl
 install_facetsctl() {
-    echo "Downloading facetsctl..."
+    printf "Downloading facetsctl...\n"
     mkdir -p "$INSTALL_DIR/facetsctl"
     curl -L "$URL" | tar -xz -C "$INSTALL_DIR/facetsctl" --strip-components=1
     chmod +x "$BIN_PATH"
-    echo "facetsctl installed successfully in $INSTALL_DIR/facetsctl"
+    printf "facetsctl installed successfully in %s/facetsctl\n" "$INSTALL_DIR"
 }
 
-# Check if facetsctl is already installed and check version contains the correct version
+# Check if facetsctl is already installed and check if the version matches
 if [ -x "$BIN_PATH" ]; then
     # Check if the installed version contains the desired version
-    if $BIN_PATH --version 2>/dev/null | grep -q "$VERSION"; then
-        echo "facetsctl $VERSION is already installed."
+    if "$BIN_PATH" --version 2>/dev/null | grep -q "$VERSION"; then
+        printf "facetsctl %s is already installed.\n" "$VERSION"
         exit 0
     else
-        echo "Version mismatch or facetsctl not executable. Updating facetsctl..."
+        printf "Version mismatch or facetsctl not executable. Updating facetsctl...\n"
         install_facetsctl
     fi
 else
-    echo "facetsctl not installed. Installing..."
+    printf "facetsctl not installed. Installing...\n"
     install_facetsctl
 fi
 
-# Add facetsctl to the PATH in .bashrc if not already added
-if ! grep -q "export PATH=\"$INSTALL_DIR/facetsctl/bin:\$PATH\"" "$HOME/.bashrc"; then
-    echo "Adding facetsctl to PATH in .bashrc"
-    echo "export PATH=\"$INSTALL_DIR/facetsctl/bin:\$PATH\"" >> "$HOME/.bashrc"
-    export PATH="$INSTALL_DIR/facetsctl/bin":$PATH
-    echo "Run 'source ~/.bashrc' to update the current session."
+# Add facetsctl to the PATH in .profile or .bashrc if not already added
+if ! grep -q "export PATH=\"$INSTALL_DIR/facetsctl/bin:\$PATH\"" "$HOME/.profile"; then
+    printf "Adding facetsctl to PATH in .profile\n"
+    printf "export PATH=\"$INSTALL_DIR/facetsctl/bin:\$PATH\"\n" >> "$HOME/.profile"
+    export PATH="$INSTALL_DIR/facetsctl/bin:$PATH"
+    printf "Run 'source ~/.profile' to update the current session.\n"
 fi
 
-echo "Installation complete."
+printf "Installation complete.\n"

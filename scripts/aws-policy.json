@@ -12,6 +12,7 @@
         "Action": [
           "iam:*",
           "s3:*",
+          "sqs:*",
           "cloudwatch:*",
           "ec2:*",
           "acm:*",
@@ -44,7 +45,8 @@
           "kafka:*",
           "kafka-cluster:*",
           "kafkaconnect:*",
-          "es:*"
+          "es:*",
+          "secretsmanager:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
