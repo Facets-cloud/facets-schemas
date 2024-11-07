@@ -3,19 +3,10 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# Print initial script information
 echo "Starting script execution..."
 
-RUN_ID=${RUN_ID:-}
-
-# Print initial environment variable values
-echo "Initial Environment Variables:"
-echo "DOCKER_IMAGE_URL: $DOCKER_IMAGE_URL"
-echo "TOKEN: $TOKEN"
-echo "RUN_ID: $RUN_ID"
-
 # Parse command-line options
-while getopts u:c:p:s:a:i: flag
+while getopts u:c:p:s:a:i:m: flag
 do
     case "${flag}" in
         u) USERNAME=${OPTARG};;
@@ -24,47 +15,17 @@ do
         s) SERVICE_NAME=${OPTARG};;
         a) ARTIFACTORY_NAME=${OPTARG};;
         i) IS_PUSH=${OPTARG};;
+        m) REGISTRATION_TYPE=${OPTARG};;
         *) echo "Invalid option: -${OPTARG}" 1>&2; exit 1;;
     esac
 done
 
-# Print parsed command-line options
-echo "Parsed Command-Line Options:"
-echo "USERNAME: $USERNAME"
-echo "CP_URL: $CP_URL"
-echo "PROJECT_NAME: $PROJECT_NAME"
-echo "SERVICE_NAME: $SERVICE_NAME"
-echo "ARTIFACTORY_NAME: $ARTIFACTORY_NAME"
-echo "IS_PUSH: $IS_PUSH"
-
 # Ensure all critical environment variables are set
-if [[ -z "$DOCKER_IMAGE_URL" || -z "$TOKEN" ]]; then
-    echo "Critical environment variables DOCKER_IMAGE_URL or TOKEN are not set."
+if [[ -z "$FILE_PATH" || -z "$TOKEN" || -z "$TARGET" ]]; then
+    echo "Critical environment variables FILE_PATH, TOKEN, or TARGET are not set."
     echo "Please set these before running the script."
     exit 1
 fi
-
-# Determine GIT_REF based on CI/CD environment variables if not set
-if [ -z "$GIT_REF" ]; then
-    if [ ! -z "$GITHUB_REF" ]; then
-        # Extract the last part after '/'
-        GIT_REF=${GITHUB_REF##*/}
-    elif [ ! -z "$GIT_COMMIT" ]; then
-        GIT_REF=$GIT_COMMIT  # Common in Jenkins; usually this is a commit SHA
-    elif [ ! -z "$CI_COMMIT_REF_NAME" ]; then
-        GIT_REF=$CI_COMMIT_REF_NAME  # GitLab CI; usually just the branch or tag name
-    elif [ ! -z "$BITBUCKET_COMMIT" ]; then
-        GIT_REF=$BITBUCKET_COMMIT  # Bitbucket Pipelines; usually this is a commit SHA
-    elif [ ! -z "$CODEBUILD_RESOLVED_SOURCE_VERSION" ]; then
-        GIT_REF=$CODEBUILD_RESOLVED_SOURCE_VERSION  # AWS CodeBuild; usually this is a commit SHA
-    else
-        echo "GIT_REF is not set and could not be determined from the environment."
-        exit 1
-    fi
-fi
-
-# Print determined GIT_REF
-echo "Determined GIT_REF: $GIT_REF"
 
 # Determine RUN_ID based on CI/CD environment variables if not set
 if [ -z "$RUN_ID" ]; then
@@ -103,11 +64,12 @@ echo "Project Name: $PROJECT_NAME"
 echo "Service Name: $SERVICE_NAME"
 echo "Artifactory Name: $ARTIFACTORY_NAME"
 echo "Is Push: $IS_PUSH"
-echo "Docker Image URL: $DOCKER_IMAGE_URL"
+echo "Docker Image URL: $FILE_PATH"
 echo "Token: $TOKEN"
-echo "GIT_REF: $GIT_REF"
+echo "TARGET: $TARGET"
 echo "RUN_ID: $RUN_ID"
 echo "Bin Path: $BIN_PATH"
+echo "Registration Type: $REGISTRATION_TYPE"
 
 # Login using facetsctl
 echo "Logging in using facetsctl..."
@@ -127,20 +89,9 @@ if [ $? -ne 0 ]; then
 fi
 echo "facetsctl artifact init succeeded."
 
-# Push artifact if required
-if [ "$IS_PUSH" == "true" ]; then
-    echo "Pushing artifact..."
-    $BIN_PATH artifact push -d "$DOCKER_IMAGE_URL"
-    if [ $? -ne 0 ]; then
-        echo "facetsctl artifact push failed."
-        exit 1
-    fi
-    echo "facetsctl artifact push succeeded."
-fi
-
 # Register artifact
 echo "Registering artifact..."
-$BIN_PATH artifact register -t GIT_REF -v "$GIT_REF" -i "$DOCKER_IMAGE_URL" -r "$RUN_ID"
+$BIN_PATH artifact upload -t "$REGISTRATION_TYPE" -v "$TARGET" -i "$FILE_PATH" -r "$RUN_ID"
 if [ $? -ne 0 ]; then
     echo "facetsctl artifact register failed."
     exit 1

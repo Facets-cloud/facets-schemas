@@ -52,7 +52,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-##### Enabling apis before creating service account #######
+##### Enabling APIs before creating service account #######
 
 # List of APIs to enable
 apis=(
@@ -92,23 +92,34 @@ wait
 
 echo "All specified APIs have been enabled."
 
-# Create the Service Account with Owner role
-gcloud iam service-accounts create "$PRINCIPAL_NAME" --display-name="$PRINCIPAL_NAME"
+# Check if the service account already exists
+SA_EMAIL="$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+EXISTING_SA=$(gcloud iam service-accounts list --filter="email:$SA_EMAIL" --format="value(email)")
 
-if [ $? -ne 0 ]; then
-    echo "Failed to create Service Account."
-    exit 1
+if [ -z "$EXISTING_SA" ]; then
+    # Create the Service Account with Owner role
+    gcloud iam service-accounts create "$PRINCIPAL_NAME" --display-name="$PRINCIPAL_NAME"
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to create Service Account."
+        exit 1
+    fi
+
+    # Wait for a short period to ensure the service account is fully created
+    sleep 10
+else
+    echo "Service Account $SA_EMAIL already exists."
 fi
 
 # Generate key for the Service Account
-gcloud iam service-accounts keys create "$PRINCIPAL_NAME-key.json" --iam-account="$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com"
+gcloud iam service-accounts keys create "$PRINCIPAL_NAME-key.json" --iam-account="$SA_EMAIL"
 
 if [ $? -ne 0 ]; then
     echo "Failed to generate key for Service Account."
     exit 1
 fi
 
-echo "Service Account created successfully."
+echo "Service Account key generated successfully."
 echo "Key file saved as $PRINCIPAL_NAME-key.json"
 
 PERMISSIONS=(
@@ -299,14 +310,14 @@ gcloud iam roles create $ROLE_NAME \
   --stage "GA" \
   --quiet
 
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com" --role="projects/$PROJECT_ID/roles/$ROLE_NAME"
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="projects/$PROJECT_ID/roles/$ROLE_NAME"
 
 # Base64 encode the service account key JSON
 SERVICE_ACCOUNT_KEY_BASE64=$(base64 -w 0 "$PRINCIPAL_NAME-key.json")
 
 # Prepare the curl request with base64 encoded key
 CURL_DATA="{ \"payload\": { \"name\": \"$ACCOUNT_NAME\", \"serviceAccountKey\": \"$SERVICE_ACCOUNT_KEY_BASE64\", \"project\": \"$PROJECT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
-CURL_RESPONSE=$(curl -k -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; ; charset=utf-8" -d "$CURL_DATA")
+CURL_RESPONSE=$(curl -k -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "$CURL_DATA")
 
 if [ "$CURL_RESPONSE" -ne 200 ]; then
     echo "Failed to send data to the specified URL. HTTP response code: $CURL_RESPONSE"
