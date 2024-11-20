@@ -28,6 +28,7 @@ RUN npm uninstall -g serverless
 # RUN apt remove -y npm
 # RUN apt autoremove -y
 
+RUN npm install -g handlebars@4.7.7
 RUN apt-get remove -y openjdk-8-jdk
 RUN apt autoremove -y
 RUN rm -rf /opt/apache-maven-3.3.9/
