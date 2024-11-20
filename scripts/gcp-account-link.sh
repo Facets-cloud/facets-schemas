@@ -10,7 +10,7 @@ CP_URL=$1
 ACCOUNT_NAME="$2"
 # Concatenate "facets-" with the provided principal name
 PRINCIPAL_NAME="facets-$2"
-ROLE_NAME="facets_$2"
+ROLE_NAME=$(echo $PRINCIPAL_NAME | tr '-' '_')
 
 WEBHOOK_ID=$3
 
