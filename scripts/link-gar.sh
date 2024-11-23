@@ -100,7 +100,7 @@ fi
 
 # Construct the URI for the Artifact Registry
 project_id=$(gcloud config get-value core/project)
-uri="https://${location}-docker.pkg.dev"
+uri="https://${location}-docker.pkg.dev/${project_id}/${repository_name}"
 
 echo "The Google Artifact Registry URI is: $uri"
 
