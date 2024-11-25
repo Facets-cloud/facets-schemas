@@ -254,6 +254,23 @@ sub _diff_fields {
                  $f1 =~ s/ COLLATE [\w_]+//gi;
             }
 
+            # When we moved from mysql 5 to 8 the column definition in mysql 8 does not give default characterset or collate value for tables which already existed.
+            # But for any newly created table it will always show the default character set and collate. e.g, the temp table created during mysql schema diff.
+            # This will result in redundant diff generation for existing table for whose column definition does not show the default charset or collate value
+
+            if($f2 =~ /COLLATE/i && $f2 =~ /CHARACTER SET/i) {       # when in f2 both are present
+                if($f1 !~ /COLLATE/i && $f1 =~ /CHARACTER SET/i) {   # if f1 has only charset then remove collate from f2
+                    $f2 =~ s/ COLLATE [\w_]+//gi;
+                }
+                if($f1 =~ /COLLATE/i && $f1 !~ /CHARACTER SET/i) {    # if f1 has only collate then remove charset from f2
+                    $f2 =~ s/ CHARACTER SET [\w_]+//gi;
+                }
+                if($f1 !~ /COLLATE/i && $f1 !~ /CHARACTER SET/i) {  # if f1 has nothing then remove from f2 also 
+                    $f2 =~ s/ COLLATE [\w_]+//gi;
+                    $f2 =~ s/ CHARACTER SET [\w_]+//gi;
+                }
+            }
+
             if ($fields2 && $f2) {
                 if ($self->{opts}{tolerant}) {
                     for ($f1, $f2) {
