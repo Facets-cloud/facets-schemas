@@ -71,7 +71,8 @@ az role definition create --role-definition '{
     "Microsoft.ServiceBus/namespaces/*",
     "Microsoft.ContainerService/managedClusters/*",
     "Microsoft.Compute/disks/write",
-    "Microsoft.Compute/disks/read"
+    "Microsoft.Compute/disks/read",
+    "Microsoft.ServiceFabricMesh/register/action"
   ],
   "AssignableScopes": [
     "/subscriptions/'"$SUBSCRIPTION_ID"'"
