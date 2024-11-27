@@ -95,6 +95,9 @@ func main() {
 	var tag string
 	flag.StringVar(&tag, "tag", "", "Tag to promote")
 	flag.Parse()
+	versionParts := strings.Split(tag, ".")
+	majorVersion := versionParts[0]
+    minorVersion := versionParts[1]
 	var control_planes map[string]APIConfig
 	var passwordMap map[string]string
     file, err := os.Open("control_planes.json")
@@ -185,7 +188,7 @@ func main() {
 		if result != nil {
 			releasesFromTag := make([]map[string]string, 0)
 			for _, content := range result.Content {
-				if strings.Contains(content.TFVersion, "stage/"+tag) {
+				if strings.Contains(content.TFVersion, "stage/"+ majorVersion + "." + minorVersion + ".") {
 					releaseLink := result.Config.URL + "/capc/capillary-cloud/cluster/" + result.Config.ClusterID + "/release-details/" + content.ID
 					releasesFromTag = append(releasesFromTag, map[string]string{
 						"absolutePath": absolutePath,
