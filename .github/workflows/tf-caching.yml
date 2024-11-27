@@ -28,6 +28,7 @@ jobs:
         
         providers=("provider=aws alias=aws4 version=4.53.0 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-aws/4.53.0 path=hashicorp/aws4/4.53.0"
                    "provider=cloudflare alias=cloudflare4 version=4.29.0 architectures=darwin_amd64,linux_amd64 link=https://github.com/cloudflare/terraform-provider-cloudflare/releases/download/v4.29.0 path=cloudflare/cloudflare4/4.29.0"
+                   "provider=cloudflare alias=cloudflare4a version=4.45.0 architectures=darwin_amd64,linux_amd64 link=https://github.com/cloudflare/terraform-provider-cloudflare/releases/download/v4.45.0 path=cloudflare/cloudflare4a/4.45.0"
                    "provider=azurerm alias=azurerm3 version=3.52.0 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-azurerm/3.52.0 path=hashicorp/azurerm3/3.52.0"
                    "provider=scratch alias=scratch version=0.4.0 architectures=darwin_amd64,linux_amd64 link=https://github.com/BrendanThompson/terraform-provider-scratch/releases/download/v0.4.0 path=hashicorp/scratch/0.4.0"
                    "provider=google alias=google5 version=5.32.0 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-google/5.32.0 path=hashicorp/google5/5.32.0"
