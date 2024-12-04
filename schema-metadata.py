@@ -38,7 +38,8 @@ def filter_json_objects(json_objects):
         "mongo_monitoring",
         "mysql_monitoring",
         "elasticsearch_monitoring",
-        "mysql_web"
+        "mysql_web",
+        "database_snapshot"
     ]
 
     for obj in json_objects:
