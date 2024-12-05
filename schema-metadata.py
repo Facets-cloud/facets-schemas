@@ -39,7 +39,12 @@ def filter_json_objects(json_objects):
         "mysql_monitoring",
         "elasticsearch_monitoring",
         "mysql_web",
-        "database_snapshot"
+        "database_snapshot",
+        "kafka_user",
+        "service", # TODO Remove this after fix the schema doc
+        "ecs_cluster", # TODO Remove this after fix the schema doc
+        "aws_secret_manager", # TODO Remove this after fix the schema doc
+        
     ]
 
     for obj in json_objects:
