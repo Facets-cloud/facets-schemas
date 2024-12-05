@@ -1,0 +1,33 @@
+{
+	"flavor": "rds",
+	"lifecycle": "ENVIRONMENT",
+	"metadata": {
+		"name": "rds-postgres-sample",
+		"tags": {}
+	},
+	"depends_on": [],
+	"kind": "postgres",
+	"provided": false,
+	"disabled": true,
+	"version": "0.1",
+	"spec": {
+		"postgres_version": "14",
+		"size": {
+			"writer": {
+				"instance": "db.t3.medium"
+			},
+			"reader": {
+				"instance": "db.t3.medium",
+				"instance_count": 1
+			}
+		},
+		"db_names": [
+			"test_db_1",
+			"test_db_2"
+		],
+		"max_connections": {
+			"reader": 50,
+			"writer": 25
+		}
+	}
+}

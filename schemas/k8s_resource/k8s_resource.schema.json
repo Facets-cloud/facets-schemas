@@ -161,7 +161,8 @@
           "type": "string",
           "enum": [
             "0.1",
-            "latest"
+            "0.2",
+            "0.3"
           ]
         }
       }
@@ -173,14 +174,98 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "additional_resources": {
+              "type": "object",
+              "description": "This should contain a map of kubernetes YAML manifest converted to JSON and pasted in a block",
+              "minProperties": 1,
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "description": "",
+                  "properties": {
+                    "apiVersion": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "properties": {
+                        "annotations": {
+                          "type": "object",
+                          "description": "Map of key-value pairs used to attach arbitrary non-identifying metadata. Optional.",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "labels": {
+                          "type": "object",
+                          "description": "Map of key-value pairs used to organize and select subsets of objects. Optional.",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name must be unique within a namespace. Required for most resources."
+                        },
+                        "namespace": {
+                          "type": "string",
+                          "description": "Namespace for the resource. Optional for cluster-scoped resources. This namespace will be created if not present in the cluster"
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ]
+                    }
+                  }
+                }
+              }
+            },
             "resource": {
               "type": "object",
               "description": "This should contain the kubernetes YAML manifest converted to JSON and pasted in a block",
-              "minProperties": 1
+              "minProperties": 1,
+              "properties": {
+                "apiVersion": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "properties": {
+                    "annotations": {
+                      "type": "object",
+                      "description": "Map of key-value pairs used to attach arbitrary non-identifying metadata. Optional.",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "labels": {
+                      "type": "object",
+                      "description": "Map of key-value pairs used to organize and select subsets of objects. Optional.",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name must be unique within a namespace. Required for most resources."
+                    },
+                    "namespace": {
+                      "type": "string",
+                      "description": "Namespace for the resource. Optional for cluster-scoped resources. This namespace will be created if not present in the cluster"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ]
+                }
+              }
             }
           },
           "required": [
-            "resource"
+            "additional_resources"
           ]
         }
       }
@@ -210,8 +295,7 @@
                 "description": "The name of the k8s resource"
               }
             },
-            "required": [
-            ]
+            "required": []
           },
           "required": []
         }

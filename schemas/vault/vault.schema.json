@@ -1,0 +1,454 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              },
+              "required": []
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "vault"
+          ],
+          "description": "Describes the type of resource."
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "k8s",
+            "default"
+          ],
+          "description": "Implementation selector for the vault resource. e.g. for a resource type k8s"
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ],
+          "description": "This field can be used to pin to a particular version"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "vault_version": {
+              "type": "string",
+              "description": "Version of vault e.g. 1.17.1",
+              "minLength": 3,
+              "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+            },
+            "size": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "volume"
+                  ],
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "properties": {
+                    "instance_count": {
+                      "type": "integer",
+                      "description": "The number of instances to create, 1 for standalone.",
+                      "minimum": 1
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "type": "object",
+                      "oneOf": [
+                        {
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "type": "object",
+                          "required": [
+                            "cpu",
+                            "memory"
+                          ],
+                          "properties": {
+                            "cpu": {
+                              "type": "string",
+                              "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[m]?$",
+                              "examples": [
+                                "1",
+                                "1000m"
+                              ]
+                            },
+                            "memory": {
+                              "type": "string",
+                              "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                              "examples": [
+                                "800Mi",
+                                "1.5Gi"
+                              ]
+                            },
+                            "cpu_limit": {
+                              "type": "string",
+                              "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+[m]?$",
+                              "examples": [
+                                "1",
+                                "1000m"
+                              ]
+                            },
+                            "memory_limit": {
+                              "type": "string",
+                              "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                              "minLength": 1,
+                              "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                              "examples": [
+                                "800Mi",
+                                "1.5Gi"
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "properties": {
+                        "volume": {
+                          "type": "string",
+                          "description": "The size of the volume. e.g '10G' or '5Gi'",
+                          "minLength": 1,
+                          "pattern": "^[0-9]+[a-zA-Z]$",
+                          "examples": [
+                            "10G",
+                            "5Gi"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "vault_version",
+            "size"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "spec": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "vault_version": {
+                      "type": "string",
+                      "description": "Version of vault server ",
+                      "minLength": 3,
+                      "pattern": "^(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$"
+                    },
+                    "size": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "volume"
+                          ],
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "properties": {
+                            "instance_count": {
+                              "type": "integer",
+                              "description": "The number of instances to create.",
+                              "minimum": 1
+                            }
+                          },
+                          "allOf": [
+                            {
+                              "$schema": "http://json-schema.org/draft-07/schema#",
+                              "type": "object",
+                              "oneOf": [
+                                {
+                                  "$schema": "http://json-schema.org/draft-07/schema#",
+                                  "type": "object",
+                                  "required": [
+                                    "cpu",
+                                    "memory"
+                                  ],
+                                  "properties": {
+                                    "cpu": {
+                                      "type": "string",
+                                      "description": "The number of CPU cores required, e.g '1' or '1000m'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+[m]?$",
+                                      "examples": [
+                                        "1",
+                                        "1000m"
+                                      ]
+                                    },
+                                    "memory": {
+                                      "type": "string",
+                                      "description": "The amount of memory required, e.g '800Mi' or '1.5Gi'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                      "examples": [
+                                        "800Mi",
+                                        "1.5Gi"
+                                      ]
+                                    },
+                                    "cpu_limit": {
+                                      "type": "string",
+                                      "description": "The CPU limit to set a maximum limit on the amount of CPU resources utilization, e.g '1' or '1000m'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+[m]?$",
+                                      "examples": [
+                                        "1",
+                                        "1000m"
+                                      ]
+                                    },
+                                    "memory_limit": {
+                                      "type": "string",
+                                      "description": "The memory limit to set a maximum limit on the amount of memory resources utilization, e.g '800Mi' or '1.5Gi'",
+                                      "minLength": 1,
+                                      "pattern": "^[0-9]+(\\.[0-9]+)?[EiKMGTP]i?",
+                                      "examples": [
+                                        "800Mi",
+                                        "1.5Gi"
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "properties": {
+                                "volume": {
+                                  "type": "string",
+                                  "description": "The size of the volume. e.g '10G' or '5Gi'",
+                                  "minLength": 1,
+                                  "pattern": "^[0-9]+[a-zA-Z]$",
+                                  "examples": [
+                                    "10G",
+                                    "5Gi"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "vault_version",
+                    "size"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "attributes": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "resource_name": {
+                      "type": "string",
+                      "description": "Name of resource"
+                    },
+                    "resource_type": {
+                      "type": "string",
+                      "description": "Type of resource"
+                    },
+                    "root_token": {
+                      "type": "string",
+                      "description": "The root token for hashicorp vault"
+                    },
+                    "secret_name": {
+                      "type": "string",
+                      "description": "The secret name for root token"
+                    }
+                  }
+                }
+              },
+              "required": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "advanced": {
+          "type": "object",
+          "allOf": [
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced Values for vault K8s",
+              "properties": {
+                "k8s": {
+                  "type": "object",
+                  "properties": {
+                    "vault": {
+                      "type": "object",
+                      "properties": {
+                        "values": {
+                          "type": "object",
+                          "description": "Helm values as per vault helm chart"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
+    }
+  }
+}

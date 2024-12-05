@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Values for AWS RDS Postgres",
+  "properties": {
+    "advanced": {
+      "type": "object",
+      "properties": {
+        "rds": {
+          "type": "object",
+          "properties": {
+            "rds-postgres": {
+              "type": "object",
+              "description": "Resource values as per the module documentation https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/6.7.0#inputs",
+              "properties": {
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "reader": {
+                      "type": "object",
+                      "description": "The map of parameters that needs to be added on reader instances.",
+                      "patternProperties": {
+                        "[a-zA-Z]+[a-zA-Z0-9\\.\\_]*": {
+                          "type": "object",
+                          "description": "parameter name",
+                          "properties": {
+                            "value": {
+                              "type": "string",
+                              "description": "value for parameter"
+                            },
+                            "apply_method": {
+                              "type": "string",
+                              "enum": [
+                                "immediate",
+                                "pending-reboot"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "value"
+                          ]
+                        }
+                      }
+                    },
+                    "writer": {
+                      "type": "object",
+                      "description": "The map of parameters that needs to be added on writer instances.",
+                      "patternProperties": {
+                        "[a-zA-Z]+[a-zA-Z0-9\\.\\_]*": {
+                          "type": "object",
+                          "description": "parameter name",
+                          "properties": {
+                            "value": {
+                              "type": "string",
+                              "description": "value for parameter"
+                            },
+                            "apply_method": {
+                              "type": "string",
+                              "enum": [
+                                "immediate",
+                                "pending-reboot"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "value"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

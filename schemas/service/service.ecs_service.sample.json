@@ -1,0 +1,39 @@
+{
+  "kind": "service",
+  "flavor": "ecs_service",
+  "version": "0.1",
+  "disabled": true,
+  "metadata": {},
+  "spec": {
+    "env" : {
+      "LOG_LEVEL": "INFO"
+    },
+    "release": {
+      "image": "image_url"
+    },
+    "runtime": {
+      "size": {
+        "cpu": "1",
+        "memory": "2"
+      },
+      "health_checks": {
+        "period": 2,
+        "port": "80",
+        "timeout": 6,
+        "start_up_time": 10
+      },
+      "autoscaling": {
+        "cpu_threshold": 50,
+        "max": 2,
+        "min": 1
+      },
+      "ports": {
+        "http": {
+          "protocol": "tcp",
+          "port": "80",
+          "service_port": "80"
+        }
+      }
+    }
+  }
+}

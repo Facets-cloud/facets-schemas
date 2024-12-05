@@ -1,6 +1,27 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "kafka_topic"
+      ]
+    },
+    "flavor": {
+      "type": "string",
+      "enum": [
+        "default"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "enum": [
+        "0.1",
+        "latest"
+      ]
+    }
+  },
   "allOf": [
     {
       "$schema": "http://json-schema.org/draft-04/schema#",
@@ -112,77 +133,54 @@
     {
       "type": "object",
       "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "kubernetes_secret"
-          ]
-        },
-        "flavor": {
-          "type": "string",
-          "enum": [
-            "k8s"
-          ]
-        },
-        "version": {
-          "type": "string",
-          "enum": [
-            "0.1"
-          ]
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
         "spec": {
           "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
           "properties": {
-            "data": {
+            "topics": {
               "type": "object",
-              "description": "This should contain the key value pairs of sensitive data that you want to be included as k8s secrets",
+              "description": "Contains a map of configurations for multiple Kafka Topics",
               "additionalProperties": false,
               "minProperties": 1,
               "patternProperties": {
                 "^[a-zA-Z0-9_.-]*$": {
-                  "description": "This is the name of the sensitive information that you want to be included as k8s secret",
-                  "type": "string"
+                  "description": "The name of the Kafka Topic to be created",
+                  "type": "object",
+                  "properties": {
+                    "topic_name": {
+                      "description": "The topic name.",
+                      "type": "string"
+                    },
+                    "replication_factor": {
+                      "description": "The replication factor for each partition in the topic being created. If not supplied, defaults to the cluster default.",
+                      "type": "number"
+                    },
+                    "partitions": {
+                      "description": "The number of partitions for the topic being created or altered (WARNING: If partitions are increased for a topic that has a key, the partition logic or ordering of the messages will be affected). If not supplied for create, defaults to the cluster default.",
+                      "type": "number"
+                    },
+                    "configs": {
+                      "description": "A topic configuration override for the topic",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "replication_factor",
+                    "partitions"
+                  ]
                 }
               }
             }
-          },
-          "required": []
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Output from the Kubernetes Secret",
-          "properties": {
-            "attributes": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name of the Kubernetes Secret"
-                },
-                "hash": {
-                  "type": "string",
-                  "description": "A unique hash value for the secret"
-                }
-              },
-              "required": []
-            }
-          },
-          "required": []
+          }
         }
       }
     }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec",
+    "conditional_on_intent"
   ]
 }

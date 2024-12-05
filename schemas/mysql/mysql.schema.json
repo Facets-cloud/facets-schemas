@@ -333,6 +333,10 @@
                   ]
                 }
               }
+            },
+            "apply_immediately": {
+              "type": "boolean",
+              "description": "This specifies whether any Aurora/Rds modifications are applied immediately, or during the next maintenance window. Default is false"
             }
           },
           "required": [

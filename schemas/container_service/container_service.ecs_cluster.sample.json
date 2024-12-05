@@ -1,0 +1,13 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/container_service/container_service.schema.json",
+  "flavor": "ecs_cluster",
+  "kind": "container_service",
+  "metadata": {},
+  "spec": {
+    "cluster": {
+      "lifecycle": "spot"
+    }
+  },
+  "version": "0.1",
+  "disabled": true
+}

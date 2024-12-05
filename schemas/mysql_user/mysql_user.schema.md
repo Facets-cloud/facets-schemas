@@ -33,7 +33,7 @@ Map of permissions to be applied to user
 
 | Property     | Type   | Required | Description                                                                         |
 | ------------ | ------ | -------- | ----------------------------------------------------------------------------------- |
-| `permission` | string | **Yes**  | The canned permission for grant. Allowed values are `ADMIN`, `RWO` and `RO`         |
+| `permission` | string | **Yes**  | The canned permission for grant. Allowed values are `ADMIN`, `RWO`, `RO`, `RWC`, `RWD` and `RWCT` |
 | `database`   | string | **Yes**  | The database. Note: You can use wildcard `*` to apply permissions to ALL databases. |
 | `table`      | string | **Yes**  | The table name. Note: You can use wildcard `*` to apply permissions to ALL table.   |
 

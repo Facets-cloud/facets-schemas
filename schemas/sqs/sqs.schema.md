@@ -24,8 +24,9 @@ SQS is a service where one service sends messages to the queue and another servi
 
 ## Output
 
-| Name           | Type     | Description     |
-|----------------|----------|-----------------|
-| sqs_queue_name | `string` | Name of the SQS |
-| sqs_queue_arn  | `string` | ARN of the SQS  |
-| sqs_queue_url  | `string` | URL of the SQS  |
+| Name                | Type     | Description             |
+|---------------------|----------|-------------------------|
+| sqs_queue_name      | `string` | Name of the SQS         |
+| consumer_policy_arn | `string` | Policy ARN for consumer |
+| consumer_policy_arn | `string` | Policy ARN for producer |
+| queue_arn           | `string` | ARN of the SQS          |

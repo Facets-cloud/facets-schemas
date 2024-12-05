@@ -8,20 +8,14 @@
   },
   "kind": "redis",
   "disabled": true,
-  "version": "0.1",
+  "version": "0.2",
   "spec": {
     "authenticated": true,
     "redis_version": "6",
     "persistence_enabled": true,
     "size": {
-      "reader": {
         "instance_count": 1,
         "instance": 1
-      },
-      "writer": {
-        "instance_count": 1,
-        "instance": 1
-      }
     }
   }
 }

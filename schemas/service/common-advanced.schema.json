@@ -11,6 +11,11 @@
           "type": "object",
           "description": "Values to be passed to app-chart helm chart",
           "properties": {
+            "pod_management_policy": {
+              "type": "string",
+              "description": "Pod Management Policy, to be used only for stateful services.",
+              "enum": ["Parallel", "OrderedReady"]
+            },
             "enable_service_links": {
               "type": "boolean",
               "description": "Enable service links"
@@ -225,7 +230,7 @@
                   "type": "object"
                 },
                 "comp_profile": {
-                  "type": "string"
+                  "type": "object"
                 },
                 "supplemental_groups": {
                   "type": "string"

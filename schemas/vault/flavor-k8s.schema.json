@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Advanced Values for vault K8s",
+  "properties": {
+    "k8s": {
+      "type": "object",
+      "properties": {
+        "vault": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "object",
+              "description": "Helm values as per vault helm chart"
+            }
+          }
+        }
+      }
+    }
+  }
+}

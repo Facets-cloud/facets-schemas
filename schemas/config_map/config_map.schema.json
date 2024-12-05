@@ -189,6 +189,10 @@
                 "name": {
                   "type": "string",
                   "description": "The name of the configmap"
+                },
+                "hash": {
+                  "type": "string",
+                  "description": "A unique hash value for the config map"
                 }
               },
               "required": [

@@ -178,14 +178,27 @@
             "attributes": {
               "type": "object",
               "properties": {
-                "role_id": {
-                  "type": "string"
+                "table_name": {
+                  "type": "string",
+                  "description": "The ID of the DynamoDB table."
+                },
+                "table_arn": {
+                  "type": "string",
+                  "description": "The Amazon Resource Name (ARN) of the DynamoDB table."
+                },
+                "read_only_policy": {
+                  "type": "string",
+                  "description": "The ARN of the read-only IAM policy."
+                },
+                "read_write_policy": {
+                  "type": "string",
+                  "description": "The ARN of the read-write IAM policy."
                 }
               },
-              "required": []
+              "required": ["read_only_policy","read_write_policy","table_arn","table_name"]
             }
           },
-          "required": []
+          "required": ["attributes"]
         }
       }
     }

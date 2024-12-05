@@ -122,6 +122,20 @@
               "type": "string",
               "description": "Version of postgres e.g. 12.11"
             },
+            "max_connections": {
+              "type": "object",
+              "description": "The maximum permitted number of simultaneous client connections.",
+              "properties": {
+                "reader": {
+                  "type": "number",
+                  "description": "The maximum permitted number of simultaneous client connections for the reader"
+                },
+                "writer": {
+                  "type": "number",
+                  "description": "The maximum permitted number of simultaneous client connections for the writer"
+                }
+              }
+            },
             "size": {
               "type": "object",
               "description": "Map containing necessary information for Reader and Writer. For aurora postgres sql, volume is not needed for reader and writer but required for cloudsql.",
@@ -491,6 +505,20 @@
                     "postgres_version": {
                       "type": "string",
                       "description": "Version of postgres e.g. 12.11"
+                    },
+                    "max_connections": {
+                      "type": "string",
+                      "description": "The maximum permitted number of simultaneous client connections.",
+                      "properties": {
+                        "reader": {
+                          "type": "number",
+                          "description": "The maximum permitted number of simultaneous client connections for the reader"
+                        },
+                        "writer": {
+                          "type": "number",
+                          "description": "The maximum permitted number of simultaneous client connections for the writer"
+                        }
+                      }
                     },
                     "size": {
                       "type": "object",
@@ -875,6 +903,10 @@
                         "connection_string": {
                           "type": "string",
                           "description": "Connection string to connect"
+                        },
+                        "db_names": {
+                          "type": "array",
+                          "description": "a list of additional databases created"
                         }
                       }
                     },
@@ -903,6 +935,10 @@
                         "connection_string": {
                           "type": "string",
                           "description": "Connection string to connect"
+                        },
+                        "db_names": {
+                          "type": "array",
+                          "description": "a list of additional databases created"
                         }
                       }
                     }
@@ -947,7 +983,8 @@
             "aurora",
             "alloydb",
             "k8s",
-            "cloudsql_postgres"
+            "cloudsql_postgres",
+            "rds"
           ],
           "description": "Implementation selector for the Postgres resource. e.g. for a resource type cloudsql or aurora."
         },
@@ -1028,6 +1065,81 @@
                   }
                 },
                 "required": []
+              }
+            },
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advanced values for AWS RDS Postgres",
+              "properties": {
+                "rds": {
+                  "type": "object",
+                  "properties": {
+                    "rds-postgres": {
+                      "type": "object",
+                      "description": "Resource values as per the module documentation https://registry.terraform.io/modules/terraform-aws-modules/rds/aws/6.7.0#inputs",
+                      "properties": {
+                        "parameters": {
+                          "type": "object",
+                          "properties": {
+                            "reader": {
+                              "type": "object",
+                              "description": "The map of parameters that needs to be added on reader instances.",
+                              "patternProperties": {
+                                "[a-zA-Z]+[a-zA-Z0-9\\.\\_]*": {
+                                  "type": "object",
+                                  "description": "parameter name",
+                                  "properties": {
+                                    "value": {
+                                      "type": "string",
+                                      "description": "value for parameter"
+                                    },
+                                    "apply_method": {
+                                      "type": "string",
+                                      "enum": [
+                                        "immediate",
+                                        "pending-reboot"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "value"
+                                  ]
+                                }
+                              }
+                            },
+                            "writer": {
+                              "type": "object",
+                              "description": "The map of parameters that needs to be added on writer instances.",
+                              "patternProperties": {
+                                "[a-zA-Z]+[a-zA-Z0-9\\.\\_]*": {
+                                  "type": "object",
+                                  "description": "parameter name",
+                                  "properties": {
+                                    "value": {
+                                      "type": "string",
+                                      "description": "value for parameter"
+                                    },
+                                    "apply_method": {
+                                      "type": "string",
+                                      "enum": [
+                                        "immediate",
+                                        "pending-reboot"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "value"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           ]

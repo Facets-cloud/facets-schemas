@@ -1,0 +1,16 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/sns/sns.schema.json",
+  "kind": "sns",
+  "flavor": "default",
+  "provided": false,
+  "version": "0.1",
+  "disabled": true,
+  "spec": {
+    "subscriptions": {
+      "sqs": {
+        "protocol": "sqs",
+        "endpoint": "<ARN of SQS Queue>"
+      }
+    }
+  }
+}

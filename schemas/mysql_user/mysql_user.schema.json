@@ -160,7 +160,10 @@
                       "enum": [
                         "ADMIN",
                         "RWO",
-                        "RO"
+                        "RO",
+                        "RWC",
+                        "RWD",
+                        "RWCT"
                       ]
                     },
                     "database": {
@@ -219,7 +222,10 @@
                               "enum": [
                                 "ADMIN",
                                 "RWO",
-                                "RO"
+                                "RO",
+                                "RWC",
+                                "RWD",
+                                "RWCT"
                               ]
                             },
                             "database": {

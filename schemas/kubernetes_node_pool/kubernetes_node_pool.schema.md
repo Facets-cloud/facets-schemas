@@ -34,6 +34,7 @@ Specification as per resource types schema
 | `max_node_count` | number            | **Yes**  | Maximum number of worker nodes                                                                        |
 | `min_node_count` | number            | **Yes**  | Minimum number of worker nodes                                                                        |
 | `taints`         | [object](#taints) | **Yes**  | The Kubernetes taints to be applied to the nodes in the Node Pool. Maximum of 50 taints per Node Pool |
+| `node_pools` | [object](#spec)       | **Yes**  | The list of nodepools that we will create **(Applicable only when `"flavor": "node_fleet"`)**  |
 
 ### taints
 
@@ -65,3 +66,4 @@ Output given by the resource for others to refer.
 - [eks-managed](nodepool.eks-managed.schema.md)
 - [eks-self-managed](nodepool.eks-self-managed.schema.md)
 - [gke_node_pool](kubernetes_node_pool.gke_node_pool.schema.md)
+- [node_fleet](kubernetes_node_pool.node_fleet.schema.md)
