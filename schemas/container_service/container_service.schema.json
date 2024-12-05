@@ -15,7 +15,8 @@
             },
             "flavor": {
               "type": "string",
-              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
+              "enum": ["ecs_cluster"]
             },
             "version": {
               "type": "string",
@@ -54,17 +55,13 @@
                 "name": {
                   "type": "string",
                   "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                },
+                "tags": {
+                  "type": "object",
+                  "description": "Additional cloud tags"
                 }
               },
               "required": []
-            },
-            "spec": {
-              "type": "object",
-              "description": "Specification as per resource types schema"
-            },
-            "out": {
-              "type": "object",
-              "description": "Output given by the resource for others to refer."
             },
             "advanced": {
               "type": "object",
@@ -106,83 +103,65 @@
               "spec"
             ]
           }
-        }
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "kubernetes_secret"
-          ]
         },
-        "flavor": {
-          "type": "string",
-          "enum": [
-            "k8s"
-          ]
-        },
-        "version": {
-          "type": "string",
-          "enum": [
-            "0.1"
-          ]
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "spec": {
+        {
           "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
           "properties": {
-            "data": {
+            "spec": {
               "type": "object",
-              "description": "This should contain the key value pairs of sensitive data that you want to be included as k8s secrets",
-              "additionalProperties": false,
-              "minProperties": 1,
-              "patternProperties": {
-                "^[a-zA-Z0-9_.-]*$": {
-                  "description": "This is the name of the sensitive information that you want to be included as k8s secret",
-                  "type": "string"
+              "description": "Specification as per resource types schema",
+              "properties": {
+                "cluster": {
+                  "type": "object",
+                  "description": "Cluster level settings for AWS ECS cluster",
+                  "properties": {
+                    "lifecycle": {
+                      "type": "string",
+                      "enum": ["spot", "ondemand"],
+                      "description": "Lifecycle for the Fargate capacity providers."
+                    }
+                  },
+                  "required": ["lifecycle"]
+                }
+              },
+              "required": ["cluster"]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer.",
+              "required": ["attributes"],
+              "properties": {
+                "attributes": {
+                  "required": ["cluster_arn","cluster_name"],
+                  "type": "object",
+                  "description": "Output Attributes",
+                  "properties": {
+                    "cluster_arn": {
+                      "type": "string",
+                      "description": "ARN of the ECS Cluster"
+                    },
+                    "cluster_name": {
+                      "type": "string",
+                      "description": "Name of the ECS Cluster"
+                    }
+                  }
                 }
               }
             }
-          },
-          "required": []
+          }
         }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "out": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "Output from the Kubernetes Secret",
-          "properties": {
-            "attributes": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name of the Kubernetes Secret"
-                },
-                "hash": {
-                  "type": "string",
-                  "description": "A unique hash value for the secret"
-                }
-              },
-              "required": []
-            }
-          },
-          "required": []
-        }
-      }
+      ]
     }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "spec",
+    "version"
   ]
 }

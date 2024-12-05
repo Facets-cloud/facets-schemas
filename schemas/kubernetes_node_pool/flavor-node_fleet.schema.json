@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "description": "Advanced Values for Node Fleet",
+    "properties": {
+      "eks": {
+        "type": "object",
+        "description": "Advanced Values for EKS nodepool",
+        "properties": {}
+      },
+      "aks": {
+        "type": "object",
+        "description": "Advanced Values for AKS nodepool",
+        "properties": {}
+      },
+      "gke": {
+        "type": "object",
+        "description": "Advanced Values for GKE nodepool",
+        "properties": {}
+      }
+    }
+  }
+  

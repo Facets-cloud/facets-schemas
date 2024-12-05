@@ -594,7 +594,7 @@
                   "properties": {
                     "config_maps": {
                       "type": "object",
-                      "description": "The map of all the config maps that you want to mount",
+                      "description": "The map of all the ConfigMaps that you want to mount.",
                       "additionalProperties": false,
                       "minProperties": 1,
                       "patternProperties": {
@@ -602,7 +602,7 @@
                           "properties": {
                             "name": {
                               "type": "string",
-                              "description": "The name of the config map that has been created in the kubernetes cluster"
+                              "description": "The name of the ConfigMap that has been created in the Kubernetes cluster."
                             },
                             "mount_path": {
                               "type": "string",
@@ -618,7 +618,7 @@
                     },
                     "secrets": {
                       "type": "object",
-                      "description": "The map of all the secrets that you want to mount",
+                      "description": "The map of all the Secrets that you want to mount.",
                       "additionalProperties": false,
                       "minProperties": 1,
                       "patternProperties": {
@@ -626,7 +626,7 @@
                           "properties": {
                             "name": {
                               "type": "string",
-                              "description": "The name of the secret that has been created in the kubernetes cluster"
+                              "description": "The name of the Secret that has been created in the Kubernetes cluster."
                             },
                             "mount_path": {
                               "type": "string",
@@ -642,7 +642,7 @@
                     },
                     "pvc": {
                       "type": "object",
-                      "description": "The map of all the pvcs that you want to mount",
+                      "description": "The map of all the PVCs (PersistentVolumeClaims) that you want to mount.",
                       "additionalProperties": false,
                       "minProperties": 1,
                       "patternProperties": {
@@ -650,7 +650,7 @@
                           "properties": {
                             "claim_name": {
                               "type": "string",
-                              "description": "The name of the pvc that has been created in the kubernetes cluster"
+                              "description": "The name of the PVC that has been created in the Kubernetes cluster."
                             },
                             "mount_path": {
                               "type": "string",
@@ -666,7 +666,7 @@
                     },
                     "host_path": {
                       "type": "object",
-                      "description": "The map of all the secrets that you want to mount",
+                      "description": "The map of all the HostPaths that you want to mount.",
                       "additionalProperties": false,
                       "minProperties": 1,
                       "patternProperties": {
@@ -2518,17 +2518,23 @@
                                       "properties": {
                                         "config_maps": {
                                           "type": "object",
-                                          "description": "map of config_maps to attach to sidecar",
+                                          "description": "The map of all the ConfigMaps that you want to mount.",
+                                          "additionalProperties": false,
+                                          "minProperties": 1,
                                           "patternProperties": {
                                             "^[a-zA-Z0-9_.-]*$": {
                                               "properties": {
                                                 "name": {
                                                   "type": "string",
-                                                  "description": "name of the config map"
+                                                  "description": "The name of the ConfigMap that has been created in the Kubernetes cluster."
                                                 },
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "the mount path for the config map"
+                                                  "description": "The mount path for the ConfigMap."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the ConfigMap to mount a specific key or file"
                                                 }
                                               }
                                             }
@@ -2536,7 +2542,7 @@
                                         },
                                         "secrets": {
                                           "type": "object",
-                                          "description": "The map of all the secrets that you want to mount",
+                                          "description": "The map of all the Secrets that you want to mount.",
                                           "additionalProperties": false,
                                           "minProperties": 1,
                                           "patternProperties": {
@@ -2544,11 +2550,15 @@
                                               "properties": {
                                                 "name": {
                                                   "type": "string",
-                                                  "description": "The name of the secret that has been created in the kubernetes cluster"
+                                                  "description": "The name of the Secret that has been created in the Kubernetes cluster."
                                                 },
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "The mount path for the secrets"
+                                                  "description": "The mount path for the Secret."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the Secret to mount a specific key or file"
                                                 }
                                               }
                                             }
@@ -2556,7 +2566,7 @@
                                         },
                                         "pvc": {
                                           "type": "object",
-                                          "description": "The map of all the pvcs that you want to mount",
+                                          "description": "The map of all the PVCs (PersistentVolumeClaims) that you want to mount.",
                                           "additionalProperties": false,
                                           "minProperties": 1,
                                           "patternProperties": {
@@ -2564,11 +2574,15 @@
                                               "properties": {
                                                 "claim_name": {
                                                   "type": "string",
-                                                  "description": "The name of the pvc that has been created in the kubernetes cluster"
+                                                  "description": "The name of the PVC that has been created in the Kubernetes cluster."
                                                 },
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "The mount path for the pvc"
+                                                  "description": "The mount path for the PVC."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the PVC to mount a specific subdirectory"
                                                 }
                                               }
                                             }
@@ -2576,7 +2590,7 @@
                                         },
                                         "host_path": {
                                           "type": "object",
-                                          "description": "The map of all the secrets that you want to mount",
+                                          "description": "The map of all the HostPaths that you want to mount.",
                                           "additionalProperties": false,
                                           "minProperties": 1,
                                           "patternProperties": {
@@ -2584,7 +2598,11 @@
                                               "properties": {
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "The mount path for the host path"
+                                                  "description": "The mount path for the HostPath."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the host filesystem to mount a specific directory or file"
                                                 }
                                               }
                                             }
@@ -2741,17 +2759,23 @@
                                       "properties": {
                                         "config_maps": {
                                           "type": "object",
-                                          "description": "map of config_maps to attach to init_containers",
+                                          "description": "The map of all the ConfigMaps that you want to mount.",
+                                          "additionalProperties": false,
+                                          "minProperties": 1,
                                           "patternProperties": {
                                             "^[a-zA-Z0-9_.-]*$": {
                                               "properties": {
                                                 "name": {
                                                   "type": "string",
-                                                  "description": "name of the config map"
+                                                  "description": "The name of the ConfigMap that has been created in the Kubernetes cluster."
                                                 },
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "the mount path for the config map"
+                                                  "description": "The mount path for the ConfigMap."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the ConfigMap to mount a specific key or file"
                                                 }
                                               }
                                             }
@@ -2759,7 +2783,7 @@
                                         },
                                         "secrets": {
                                           "type": "object",
-                                          "description": "The map of all the secrets that you want to mount",
+                                          "description": "The map of all the Secrets that you want to mount.",
                                           "additionalProperties": false,
                                           "minProperties": 1,
                                           "patternProperties": {
@@ -2767,11 +2791,15 @@
                                               "properties": {
                                                 "name": {
                                                   "type": "string",
-                                                  "description": "The name of the secret that has been created in the kubernetes cluster"
+                                                  "description": "The name of the Secret that has been created in the Kubernetes cluster."
                                                 },
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "The mount path for the secrets"
+                                                  "description": "The mount path for the Secret."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the Secret to mount a specific key or file"
                                                 }
                                               }
                                             }
@@ -2779,7 +2807,7 @@
                                         },
                                         "pvc": {
                                           "type": "object",
-                                          "description": "The map of all the pvcs that you want to mount",
+                                          "description": "The map of all the PVCs (PersistentVolumeClaims) that you want to mount.",
                                           "additionalProperties": false,
                                           "minProperties": 1,
                                           "patternProperties": {
@@ -2787,11 +2815,15 @@
                                               "properties": {
                                                 "claim_name": {
                                                   "type": "string",
-                                                  "description": "The name of the pvc that has been created in the kubernetes cluster"
+                                                  "description": "The name of the PVC that has been created in the Kubernetes cluster."
                                                 },
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "The mount path for the pvc"
+                                                  "description": "The mount path for the PVC."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the PVC to mount a specific subdirectory"
                                                 }
                                               }
                                             }
@@ -2799,7 +2831,7 @@
                                         },
                                         "host_path": {
                                           "type": "object",
-                                          "description": "The map of all the secrets that you want to mount",
+                                          "description": "The map of all the HostPaths that you want to mount.",
                                           "additionalProperties": false,
                                           "minProperties": 1,
                                           "patternProperties": {
@@ -2807,7 +2839,11 @@
                                               "properties": {
                                                 "mount_path": {
                                                   "type": "string",
-                                                  "description": "The mount path for the host path"
+                                                  "description": "The mount path for the HostPath."
+                                                },
+                                                "sub_path": {
+                                                  "type": "string",
+                                                  "description": "Optional. The path within the host filesystem to mount a specific directory or file"
                                                 }
                                               }
                                             }
@@ -2988,6 +3024,22 @@
               "service_name": {
                 "type": "string",
                 "description": "The name of the service"
+              },
+              "namespace": {
+                "type": "string",
+                "description": "The namespace of the service"
+              },
+              "resource_name": {
+                "type": "string",
+                "description": "The name of the service resource"
+              },
+              "resource_type": {
+                "type": "string",
+                "description": "The type of resource"
+              },
+              "selector_labels": {
+                "type": "string",
+                "description": "The labels for the service"
               }
             },
             "required": []
@@ -3011,7 +3063,9 @@
           "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc.",
           "enum": [
             "default",
-            "k8s"
+            "k8s",
+            "deployment",
+            "ecs_service"
           ]
         },
         "version": {

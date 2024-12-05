@@ -8,12 +8,12 @@
   "spec": {
     "irsa": {
       "service_accounts": {
-        "arbitray_name": {
+        "arbitrary_name": {
           "name": "sa_name"
         }
       },
       "oidc_providers": {
-        "arbitray_name": {
+        "arbitrary_name": {
           "arn": "oidc_arn"
         }
       }

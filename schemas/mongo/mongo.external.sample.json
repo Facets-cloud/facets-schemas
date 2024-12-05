@@ -1,0 +1,15 @@
+{
+  "flavor": "external",
+  "lifecycle": "ENVIRONMENT",
+  "metadata": {},
+  "depends_on": [],
+  "kind": "mongo",
+  "provided": true,
+  "disabled": false,
+  "version": "0.1",
+  "spec": {},
+  "out": {
+    "interfaces": {},
+    "attributes": {}
+  }
+}

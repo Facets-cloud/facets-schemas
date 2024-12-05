@@ -6,6 +6,7 @@
   "disabled": true,
   "metadata": {},
   "spec": {
+    "preserve_uid": false,
     "dashboard": {
       "annotations": {
         "list": [

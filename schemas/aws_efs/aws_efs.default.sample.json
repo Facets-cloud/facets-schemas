@@ -1,0 +1,10 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/aws_efs/aws_efs.schema.json",
+  "kind": "aws_efs",
+  "flavor": "default",
+  "disabled": true,
+  "metadata": {},
+  "version": "0.1",
+  "spec": {},
+  "advanced": {}
+}

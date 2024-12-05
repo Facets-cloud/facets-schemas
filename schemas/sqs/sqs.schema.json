@@ -20,7 +20,10 @@
             },
             "version": {
               "type": "string",
-              "description": "This field can be used to pin to a particular version"
+              "description": "This field can be used to pin to a particular version",
+              "enum": [
+                "0.2"
+              ]
             },
             "lifecycle": {
               "type": "string",
@@ -65,156 +68,37 @@
             },
             "out": {
               "type": "object",
-              "description": "Output given by the resource for others to refer."
-            },
-            "advanced": {
-              "type": "object",
-              "description": "Additional fields if any for a particular implementation of a resource"
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "provided": {
-                "const": true
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "kind",
-              "flavor",
-              "version",
-              "metadata"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "provided": {
-                "const": false
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "kind",
-              "flavor",
-              "version",
-              "metadata",
-              "spec"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "type": "string",
-          "enum": [
-            "sqs"
-          ]
-        },
-        "flavor": {
-          "type": "string",
-          "enum": [
-            "default"
-          ]
-        },
-        "version": {
-          "type": "string",
-          "enum": [
-            "0.2"
-          ]
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
-        "spec": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": []
-        },
-        "advanced": {
-          "anyOf": [
-            {
-              "$schema": "http://json-schema.org/draft-04/schema#",
-              "type": "object",
-              "description": "Advanced values for sqs",
+              "description": "Output given by the resource for others to refer.",
               "properties": {
-                "visibility_timeout_seconds": {
-                  "type": "number"
-                },
-                "message_retention_seconds": {
-                  "type": "number"
-                },
-                "max_message_size": {
-                  "type": "number"
-                },
-                "delay_seconds": {
-                  "type": "number"
-                },
-                "receive_wait_time_seconds": {
-                  "type": "number"
-                },
-                "policy": {
-                  "type": "string"
-                },
-                "redrive_policy": {
-                  "type": "string"
-                },
-                "fifo_queue": {
-                  "type": "boolean"
-                },
-                "content_based_deduplication": {
-                  "type": "boolean"
-                },
-                "kms_master_key_id": {
-                  "type": "string"
-                },
-                "kms_data_key_reuse_period_seconds": {
-                  "type": "number"
-                },
-                "tags": {
+                "attributes": {
                   "type": "object",
                   "properties": {
-                    "values": {
-                      "type": "object",
-                      "description": "Extra tags required for tagging resources"
+                    "sqs_topic_name": {
+                      "type": "string",
+                      "description": "Name of the SQS queue."
+                    },
+                    "consumer_policy_arn": {
+                      "type": "string",
+                      "description": "Policy ARN for consumer"
+                    },
+                    "producer_policy_arn": {
+                      "type": "string",
+                      "description": "Policy ARN for producer"
+                    },
+                    "queue_arn": {
+                      "type": "string",
+                      "description": "ARN of the SQS"
                     }
                   }
                 }
               }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Output from the RabbitMQ module",
-      "allOf": [
-        {
-          "type": "object",
-          "properties": {
-            "spec": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": []
             },
             "advanced": {
-              "anyOf": [
-                {
-                  "$schema": "http://json-schema.org/draft-04/schema#",
+              "type": "object",
+              "description": "Advance values for SQS",
+              "properties": {
+                "sqs": {
                   "type": "object",
-                  "description": "Advanced values for sqs",
                   "properties": {
                     "visibility_timeout_seconds": {
                       "type": "number"
@@ -260,88 +144,46 @@
                     }
                   }
                 }
-              ]
+              }
             }
           }
         },
         {
-          "properties": {
-            "sqs_queue_name": {
-              "type": "string",
-              "description": "Name of the SQS"
-            },
-            "sqs_queue_arn": {
-              "type": "string",
-              "description": "ARN of the SQS"
-            },
-            "sqs_queue_url": {
-              "type": "string",
-              "description": "URL of the SQS"
-            }
-          },
-          "required": []
-        }
-      ]
-    },
-    {
-      "type": "object",
-      "properties": {
-        "advanced": {
-          "type": "object",
-          "description": "Advanced values for SQS",
-          "anyOf": [
-            {
-              "$schema": "http://json-schema.org/draft-04/schema#",
-              "type": "object",
-              "description": "Advanced values for sqs",
-              "properties": {
-                "visibility_timeout_seconds": {
-                  "type": "number"
-                },
-                "message_retention_seconds": {
-                  "type": "number"
-                },
-                "max_message_size": {
-                  "type": "number"
-                },
-                "delay_seconds": {
-                  "type": "number"
-                },
-                "receive_wait_time_seconds": {
-                  "type": "number"
-                },
-                "policy": {
-                  "type": "string"
-                },
-                "redrive_policy": {
-                  "type": "string"
-                },
-                "fifo_queue": {
-                  "type": "boolean"
-                },
-                "content_based_deduplication": {
-                  "type": "boolean"
-                },
-                "kms_master_key_id": {
-                  "type": "string"
-                },
-                "kms_data_key_reuse_period_seconds": {
-                  "type": "number"
-                },
-                "tags": {
-                  "type": "object",
-                  "properties": {
-                    "values": {
-                      "type": "object",
-                      "description": "Extra tags required for tagging resources"
-                    }
-                  }
-                }
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
               }
             }
-          ]
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
         }
-      }
+      ]
     }
   ],
   "required": [

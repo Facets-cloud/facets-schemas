@@ -1,0 +1,29 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_node_pool/kubernetes_node_pool.schema.json",
+  "flavor": "node_fleet",
+  "kind": "kubernetes_node_pool",
+  "metadata": {
+    "annotations": {}
+  },
+  "disabled": true,
+  "version": "0.1",
+  "advanced": {
+    "gke": {},
+    "aks": {},
+    "eks": {}
+  },
+  "spec": {
+    "nodepools": {
+      "spot": {
+        "azs": [],
+        "disk_size": 100,
+        "instance_type": "",
+        "is_public": false,
+        "labels": {},
+        "max_node_count": 1,
+        "min_node_count": 2,
+        "taints": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "./kafka_topic.schema.json",
+  "kind": "kafka_topic",
+  "flavor": "default",
+  "version": "0.1",
+  "lifecycle": "ENVIRONMENT",
+  "disabled": true,
+  "provided": true,
+  "depends_on": [],
+  "metadata": {},
+  "spec": {
+    "topics": {
+      "systemd_logs": {
+        "topic_name": "systemd_logs",
+        "replication_factor": 1,
+        "partitions": 100,
+        "configs": {
+          "segment.ms": "20000",
+          "cleanup.policy": "compact"
+        }
+      }
+    }
+  },
+  "advanced": {}
+}

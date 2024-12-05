@@ -44,3 +44,21 @@ Output given by the resource for others to refer.
 
 | Property | Type | Required | Description |
 | -------- | ---- | -------- | ----------- |
+
+## out
+
+Output given by the resource for others to refer.
+
+| Property   | Type                  | Required | Description                            |
+|------------|-----------------------|----------|----------------------------------------|
+| attributes | [object](#attributes) | Yes      | The output attributes for the DynamoDB |
+
+## attributes
+
+| Property | Type | Required | Description |
+| -------- | ---- | -------- | ----------- |
+| table_name | string | Yes | The ID of the DynamoDB table |
+| table_arn | string | Yes | The Amazon Resource Name (ARN) of the DynamoDB table |
+| read_only_policy | string | Yes | The ARN of the read-only IAM policy |
+| read_write_policy | string | Yes | The ARN of the read-write IAM policy |
+
