@@ -48,6 +48,10 @@ echo "Policy attached successfully to '$ROLE_NAME'."
 # Cleanup the temporary policy file
 rm "$POLICY_FILE"
 
+echo "externalId: $EXTERNAL_ID"
+echo "iamRole: $ROLE_ARN"
+echo "name: $ROLE_NAME"
+
 # Sleep 3 seconds
 echo "Sleeping 10 seconds"
 sleep 10
