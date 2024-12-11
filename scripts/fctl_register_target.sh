@@ -11,7 +11,7 @@ echo "RUN_ID: $RUN_ID"
 echo "TARGET: $TARGET"
 
 # Parse command-line options
-while getopts u:c:p:s:a:i:m: flag
+while getopts u:c:p:s:a:i:m:n: flag
 do
     case "${flag}" in
         u) USERNAME=${OPTARG};;
@@ -21,6 +21,7 @@ do
         a) ARTIFACTORY_NAME=${OPTARG};;
         i) IS_PUSH=${OPTARG};;
         m) REGISTRATION_TYPE=${OPTARG};;
+        n) CI_NAME=${OPTARG};;
         *) echo "Invalid option: -${OPTARG}" 1>&2; exit 1;;
     esac
 done
@@ -34,11 +35,21 @@ echo "SERVICE_NAME: $SERVICE_NAME"
 echo "ARTIFACTORY_NAME: $ARTIFACTORY_NAME"
 echo "IS_PUSH: $IS_PUSH"
 echo "REGISTRATION_TYPE: $REGISTRATION_TYPE"
+echo "CI_NAME: $CI_NAME"
 
 # Ensure all critical environment variables are set
 if [[ -z "$DOCKER_IMAGE_URL" || -z "$TOKEN" || -z "$TARGET" ]]; then
     echo "Critical environment variables DOCKER_IMAGE_URL, TOKEN, or TARGET are not set."
     echo "Please set these before running the script."
+    exit 1
+fi
+
+# Ensure either SERVICE_NAME or CI_NAME is provided, but not both
+if [[ -n "$SERVICE_NAME" && -n "$CI_NAME" ]]; then
+    echo "Both SERVICE_NAME and CI_NAME are provided. Please provide only one."
+    exit 1
+elif [[ -z "$SERVICE_NAME" && -z "$CI_NAME" ]]; then
+    echo "Neither SERVICE_NAME nor CI_NAME is provided. Please provide one."
     exit 1
 fi
 
@@ -77,6 +88,7 @@ echo "Username: $USERNAME"
 echo "CP_URL: $CP_URL"
 echo "Project Name: $PROJECT_NAME"
 echo "Service Name: $SERVICE_NAME"
+echo "CI Name: $CI_NAME"
 echo "Artifactory Name: $ARTIFACTORY_NAME"
 echo "Is Push: $IS_PUSH"
 echo "Docker Image URL: $DOCKER_IMAGE_URL"
@@ -97,7 +109,11 @@ echo "facetsctl login succeeded."
 
 # Initialize artifact
 echo "Initializing artifact..."
-$BIN_PATH artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
+if [ -n "$SERVICE_NAME" ]; then
+    $BIN_PATH artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
+else
+    $BIN_PATH artifact init -p "$PROJECT_NAME" -c "$CI_NAME" -a "$ARTIFACTORY_NAME"
+fi
 if [ $? -ne 0 ]; then
     echo "facetsctl artifact init failed."
     exit 1
