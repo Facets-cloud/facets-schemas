@@ -15,6 +15,11 @@ URL_DARWIN_ARM64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3
 OS="$(uname -s)"
 ARCH="$(uname -m)"
 
+# Normalize architecture name
+if [ "$ARCH" = "aarch64" ]; then
+    ARCH="arm64"
+fi
+
 # Select the correct download URL
 case $OS in
     Linux)
