@@ -68,7 +68,9 @@
     "aws_efs": {
         "out": {
             "attributes": {
-                "topics": {}
+                "topics": {},
+                "storage_class_name": {},
+                "file_system_id": {}
             }
         }
     },
