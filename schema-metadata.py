@@ -42,7 +42,8 @@ def filter_json_objects(json_objects):
         "database_snapshot",
         "kafka_user",
         "ecs_cluster", # TODO Remove this after fix the schema doc
-        "aws_secret_manager" # TODO Remove this after fix the schema doc
+        "aws_secret_manager", # TODO Remove this after fix the schema doc
+        "facets_externaldns"
     ]
 
     for obj in json_objects:
