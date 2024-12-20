@@ -12,6 +12,7 @@
         "Action": [
           "iam:*",
           "lambda:*",
+          "apigateway:*",
           "s3:*",
           "sqs:*",
           "cloudwatch:*",
