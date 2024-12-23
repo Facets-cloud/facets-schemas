@@ -4,13 +4,13 @@ This JSON Schema defines for AWS EFS resources.
 
 ## Properties
 
-| Property   | Type                | Required | Description                                                              |
-|------------|---------------------|----------|--------------------------------------------------------------------------|
-| `flavor`   | string              | **Yes**  | Possible values are: `default`.                                          |
-| `kind`     | string              | **Yes**  | Possible values are: `aws_efs`.                                          |
-| `version`  | string              | **Yes**  | Possible values are: `0.1`, `latest`.                                    |
-| `advanced` | [object](#advanced) | No       |                                                                          |
-| `out`      | [object](#out)      | No       | The output for your aws lambda module, this can be generated or provided |
+| Property   | Type                | Required | Description                                                           |
+|------------|---------------------|----------|-----------------------------------------------------------------------|
+| `flavor`   | string              | **Yes**  | Possible values are: `default`.                                       |
+| `kind`     | string              | **Yes**  | Possible values are: `aws_efs`.                                       |
+| `version`  | string              | **Yes**  | Possible values are: `0.1`, `latest`.                                 |
+| `advanced` | [object](#advanced) | No       |                                                                       |
+| `out`      | [object](#out)      | No       | The output for your aws efs module, this can be generated or provided |
 
 ## advanced
 
@@ -51,21 +51,21 @@ A file system lifecycle policy object
 
 ## out
 
-The output for your aws lambda module, this can be generated or provided
+The output for your aws efs module, this can be generated or provided
 
 ### Properties
 
-| Property     | Type                  | Required | Description                                       |
-|--------------|-----------------------|----------|---------------------------------------------------|
-| `attributes` | [object](#attributes) | No       | The advanced section of all the aws lambda module |
+| Property     | Type                  | Required | Description                                    |
+|--------------|-----------------------|----------|------------------------------------------------|
+| `attributes` | [object](#attributes) | No       | The advanced section of all the aws efs module |
 
 ### attributes
 
-The advanced section of all the aws lambda module
+The advanced section of all the aws efs module
 
 #### Properties
 
-| Property | Type  | Required | Description             |
-|----------|-------|----------|-------------------------|
-| `topics` | array | No       | The list of topic names |
-
+| Property             | Type   | Required | Description               |
+|----------------------|--------|----------|---------------------------|
+| `file_system_id`     | string | No       | File System ID            |
+| `storage_class_name` | string | No       | Name of the Storage Class |
