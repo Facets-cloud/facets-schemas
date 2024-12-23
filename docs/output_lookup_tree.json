@@ -1,4 +1,7 @@
 {
+    "status_check": {
+        "out": {}
+    },
     "mongo_user": {
         "out": {
             "attributes": {
@@ -7,17 +10,50 @@
             }
         }
     },
-    "kafka": {
+    "schemahero_database": {
+        "out": {}
+    },
+    "pvc": {
+        "out": {}
+    },
+    "aws_efs": {
         "out": {
-            "interfaces": {
-                "cluster": {
-                    "endpoint": {},
-                    "username": {},
-                    "password": {},
-                    "connection_string": {}
-                }
+            "attributes": {
+                "storage_class_name": {},
+                "file_system_id": {}
             }
         }
+    },
+    "alert_group": {
+        "out": {}
+    },
+    "loki_alerting_rules": {
+        "out": {}
+    },
+    "s3": {
+        "out": {
+            "attributes": {
+                "bucket_name": {},
+                "bucket_arn": {},
+                "bucket_region": {},
+                "read_only_iam_policy_arn": {},
+                "read_write_iam_policy_arn": {}
+            }
+        }
+    },
+    "externaldns": {
+        "out": {}
+    },
+    "aws_static_website": {
+        "out": {
+            "attributes": {}
+        }
+    },
+    "aws_event_bus": {
+        "out": {}
+    },
+    "schemahero_table": {
+        "out": {}
     },
     "alb": {
         "out": {
@@ -33,175 +69,8 @@
             }
         }
     },
-    "cloudflare": {
+    "kafka_topic": {
         "out": {}
-    },
-    "cloudfront": {
-        "out": {
-            "attributes": {
-                "cloudfront_distribution_arn": {},
-                "cloudfront_distribution_domain_name": {},
-                "cloudfront_distribution_etag": {},
-                "cloudfront_distribution_id": {},
-                "cloudfront_distribution_last_modified_time": {}
-            }
-        }
-    },
-    "azure_functions": {
-        "out": {}
-    },
-    "mysql_user": {
-        "out": {
-            "attributes": {
-                "username": {},
-                "password": {}
-            }
-        }
-    },
-    "helm": {},
-    "externaldns": {
-        "out": {}
-    },
-    "pvc": {
-        "out": {}
-    },
-    "aws_efs": {
-        "out": {
-            "attributes": {
-                "topics": {},
-                "storage_class_name": {},
-                "file_system_id": {}
-            }
-        }
-    },
-    "k8s_resource": {
-        "out": {
-            "attributes": {
-                "resource_name": {}
-            }
-        }
-    },
-    "zookeeper": {
-        "out": {
-            "interfaces": {
-                "KEY": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "name": {},
-                    "connection_string": {}
-                }
-            }
-        }
-    },
-    "cassandra": {
-        "out": {}
-    },
-    "vault": {
-        "out": {
-            "attributes": {
-                "resource_name": {},
-                "resource_type": {},
-                "root_token": {},
-                "secret_name": {}
-            }
-        }
-    },
-    "aws_static_website": {
-        "out": {
-            "attributes": {}
-        }
-    },
-    "alert_group": {
-        "out": {}
-    },
-    "prometheus": {
-        "out": {}
-    },
-    "aws_lambda": {
-        "out": {
-            "attributes": {
-                "function_name": {},
-                "function_arn": {},
-                "function_invoke_arn": {},
-                "function_qualified_arn": {},
-                "function_role_arn": {},
-                "function_role_name": {}
-            }
-        }
-    },
-    "schemahero_table": {
-        "out": {}
-    },
-    "service": {
-        "out": {
-            "interfaces": {
-                "KEY": {
-                    "host": {},
-                    "port": {},
-                    "username": {},
-                    "password": {},
-                    "connection_string": {},
-                    "name": {}
-                }
-            },
-            "attributes": {
-                "service_name": {},
-                "namespace": {},
-                "resource_name": {},
-                "resource_type": {},
-                "selector_labels": {}
-            }
-        }
-    },
-    "log_collector": {
-        "out": {}
-    },
-    "aws_waf": {
-        "out": {
-            "attributes": {
-                "arn": {}
-            }
-        }
-    },
-    "kubernetes_secret": {
-        "out": {
-            "attributes": {
-                "name": {},
-                "hash": {}
-            }
-        }
-    },
-    "aws_event_bus": {
-        "out": {}
-    },
-    "prometheus_mysql_exporter": {
-        "out": {}
-    },
-    "aws_dlm_lifecycle_policy": {},
-    "status_check": {
-        "out": {}
-    },
-    "mysql": {
-        "out": {
-            "interfaces": {
-                "reader": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "connection_string": {}
-                },
-                "writer": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "connection_string": {}
-                }
-            }
-        }
     },
     "aws_iam_role": {
         "out": {
@@ -210,40 +79,15 @@
             }
         }
     },
-    "google_cloud_storage": {
-        "out": {
-            "attributes": {
-                "name": {},
-                "url": {}
-            }
-        }
-    },
-    "loki_recording_rules": {
-        "out": {}
-    },
-    "mongo": {
+    "peering": {
         "out": {
             "interfaces": {
-                "cluster": {
-                    "endpoint": {},
-                    "username": {},
-                    "password": {},
-                    "connection_string": {}
-                },
-                "writer": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "connection_string": {}
-                },
-                "reader": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "connection_string": {}
-                }
+                "username": {},
+                "password": {},
+                "host": {},
+                "port": {},
+                "name": {},
+                "connection_string": {}
             }
         }
     },
@@ -253,46 +97,6 @@
                 "cluster_arn": {},
                 "cluster_name": {}
             }
-        }
-    },
-    "azure_storage_container": {
-        "out": {
-            "attributes": {
-                "storage_account_name": {},
-                "storage_account_id": {},
-                "primary_access_key": {},
-                "container_name": {}
-            }
-        }
-    },
-    "cluster-autoscaler": {
-        "out": {}
-    },
-    "postgres": {
-        "out": {
-            "interfaces": {
-                "reader": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "connection_string": {},
-                    "db_names": {}
-                },
-                "writer": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "connection_string": {},
-                    "db_names": {}
-                }
-            }
-        }
-    },
-    "aws_lambda_permission": {
-        "out": {
-            "attributes": {}
         }
     },
     "rabbitmq": {
@@ -321,43 +125,32 @@
             }
         }
     },
-    "ingress": {
-        "out": {
-            "interfaces": {
-                "KEY": {
-                    "username": {},
-                    "password": {},
-                    "host": {},
-                    "port": {},
-                    "name": {},
-                    "connection_string": {}
-                }
-            }
-        }
-    },
-    "schemahero_database": {
-        "out": {}
-    },
-    "kubernetes_node_pool": {
-        "out": {}
-    },
-    "aws_api_gateway": {
+    "iam_policy": {
         "out": {
             "attributes": {
+                "name": {},
                 "arn": {},
-                "endpoint": {},
-                "execution_arn": {},
-                "id": {},
-                "vpc_links_id": {},
-                "stage_arn": {},
-                "stage_execution_arn": {},
-                "stage_id": {},
-                "stage_invoke_url": {}
+                "policy": {}
             }
         }
     },
-    "grafana_dashboard": {
+    "gcp_iam_role": {
+        "out": {
+            "attributes": {
+                "role_id": {}
+            }
+        }
+    },
+    "helm": {},
+    "cloudflare": {
         "out": {}
+    },
+    "aws_waf": {
+        "out": {
+            "attributes": {
+                "arn": {}
+            }
+        }
     },
     "elasticsearch": {
         "out": {
@@ -374,32 +167,20 @@
             }
         }
     },
-    "schemahero": {
-        "out": {}
-    },
-    "dax_cluster": {
-        "out": {}
-    },
-    "iam_policy": {
-        "out": {
-            "attributes": {
-                "name": {},
-                "arn": {},
-                "policy": {}
-            }
-        }
-    },
-    "peering": {
+    "kafka": {
         "out": {
             "interfaces": {
-                "username": {},
-                "password": {},
-                "host": {},
-                "port": {},
-                "name": {},
-                "connection_string": {}
+                "cluster": {
+                    "endpoint": {},
+                    "username": {},
+                    "password": {},
+                    "connection_string": {}
+                }
             }
         }
+    },
+    "cluster-autoscaler": {
+        "out": {}
     },
     "config_map": {
         "out": {
@@ -409,23 +190,21 @@
             }
         }
     },
-    "sns": {
-        "out": {}
-    },
-    "aws_eventbridge": {
-        "out": {}
-    },
-    "gcp_iam_role": {
+    "cloudfront": {
         "out": {
             "attributes": {
-                "role_id": {}
+                "cloudfront_distribution_arn": {},
+                "cloudfront_distribution_domain_name": {},
+                "cloudfront_distribution_etag": {},
+                "cloudfront_distribution_id": {},
+                "cloudfront_distribution_last_modified_time": {}
             }
         }
     },
-    "kafka_topic": {
+    "schemahero": {
         "out": {}
     },
-    "snapshot_schedule": {
+    "log_collector": {
         "out": {}
     },
     "postgres_user": {
@@ -436,10 +215,10 @@
             }
         }
     },
-    "service_bus": {
+    "prometheus_mysql_exporter": {
         "out": {}
     },
-    "atlas_account": {
+    "cassandra": {
         "out": {}
     },
     "redis": {
@@ -462,6 +241,34 @@
             }
         }
     },
+    "ingress": {
+        "out": {
+            "interfaces": {
+                "KEY": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "name": {},
+                    "connection_string": {}
+                }
+            }
+        }
+    },
+    "grafana_dashboard": {
+        "out": {}
+    },
+    "loki_recording_rules": {
+        "out": {}
+    },
+    "kubernetes_secret": {
+        "out": {
+            "attributes": {
+                "name": {},
+                "hash": {}
+            }
+        }
+    },
     "sqs": {
         "out": {
             "attributes": {
@@ -472,6 +279,45 @@
             }
         }
     },
+    "mysql": {
+        "out": {
+            "interfaces": {
+                "reader": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "connection_string": {}
+                },
+                "writer": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "connection_string": {}
+                }
+            }
+        }
+    },
+    "mysql_user": {
+        "out": {
+            "attributes": {
+                "username": {},
+                "password": {}
+            }
+        }
+    },
+    "aws_lambda_permission": {
+        "out": {
+            "attributes": {}
+        }
+    },
+    "service_bus": {
+        "out": {}
+    },
+    "prometheus": {
+        "out": {}
+    },
     "tcp_lb": {
         "out": {
             "interfaces": {
@@ -481,8 +327,13 @@
             }
         }
     },
-    "loki_alerting_rules": {
-        "out": {}
+    "google_cloud_storage": {
+        "out": {
+            "attributes": {
+                "name": {},
+                "url": {}
+            }
+        }
     },
     "dynamodb": {
         "out": {
@@ -494,18 +345,166 @@
             }
         }
     },
+    "azure_storage_container": {
+        "out": {
+            "attributes": {
+                "storage_account_name": {},
+                "storage_account_id": {},
+                "primary_access_key": {},
+                "container_name": {}
+            }
+        }
+    },
+    "aws_lambda": {
+        "out": {
+            "attributes": {
+                "function_name": {},
+                "function_arn": {},
+                "function_invoke_arn": {},
+                "function_qualified_arn": {},
+                "function_role_arn": {},
+                "function_role_name": {}
+            }
+        }
+    },
+    "aws_dlm_lifecycle_policy": {},
+    "aws_eventbridge": {
+        "out": {}
+    },
+    "vault": {
+        "out": {
+            "attributes": {
+                "resource_name": {},
+                "resource_type": {},
+                "root_token": {},
+                "secret_name": {}
+            }
+        }
+    },
+    "sns": {
+        "out": {}
+    },
     "prometheus_postgres_exporter": {
         "out": {}
     },
-    "s3": {
+    "postgres": {
         "out": {
-            "attributes": {
-                "bucket_name": {},
-                "bucket_arn": {},
-                "bucket_region": {},
-                "read_only_iam_policy_arn": {},
-                "read_write_iam_policy_arn": {}
+            "interfaces": {
+                "reader": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "connection_string": {},
+                    "db_names": {}
+                },
+                "writer": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "connection_string": {},
+                    "db_names": {}
+                }
             }
         }
+    },
+    "zookeeper": {
+        "out": {
+            "interfaces": {
+                "KEY": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "name": {},
+                    "connection_string": {}
+                }
+            }
+        }
+    },
+    "aws_api_gateway": {
+        "out": {
+            "attributes": {
+                "arn": {},
+                "endpoint": {},
+                "execution_arn": {},
+                "id": {},
+                "vpc_links_id": {},
+                "stage_arn": {},
+                "stage_execution_arn": {},
+                "stage_id": {},
+                "stage_invoke_url": {}
+            }
+        }
+    },
+    "kubernetes_node_pool": {
+        "out": {}
+    },
+    "snapshot_schedule": {
+        "out": {}
+    },
+    "k8s_resource": {
+        "out": {
+            "attributes": {
+                "resource_name": {}
+            }
+        }
+    },
+    "azure_functions": {
+        "out": {}
+    },
+    "mongo": {
+        "out": {
+            "interfaces": {
+                "cluster": {
+                    "endpoint": {},
+                    "username": {},
+                    "password": {},
+                    "connection_string": {}
+                },
+                "writer": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "connection_string": {}
+                },
+                "reader": {
+                    "username": {},
+                    "password": {},
+                    "host": {},
+                    "port": {},
+                    "connection_string": {}
+                }
+            }
+        }
+    },
+    "atlas_account": {
+        "out": {}
+    },
+    "service": {
+        "out": {
+            "interfaces": {
+                "KEY": {
+                    "host": {},
+                    "port": {},
+                    "username": {},
+                    "password": {},
+                    "connection_string": {},
+                    "name": {}
+                }
+            },
+            "attributes": {
+                "service_name": {},
+                "namespace": {},
+                "resource_name": {},
+                "resource_type": {},
+                "selector_labels": {}
+            }
+        }
+    },
+    "dax_cluster": {
+        "out": {}
     }
 }

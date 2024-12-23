@@ -218,15 +218,19 @@
       "properties": {
         "out": {
           "type": "object",
-          "description": "The output for your aws lambda module, this can be generated or provided",
+          "description": "The output for your aws efs module, this can be generated or provided",
           "properties": {
             "attributes": {
               "type": "object",
-              "description": "The advanced section of all the aws lambda module",
+              "description": "The advanced section of all the aws efs module",
               "properties": {
-                "topics": {
-                  "type": "array",
-                  "description": "The list of topic names"
+                "storage_class_name": {
+                  "type": "string",
+                  "description": "Name of the Storage Class"
+                },
+                "file_system_id": {
+                  "type": "string",
+                  "description": "File System ID"
                 }
               }
             }
