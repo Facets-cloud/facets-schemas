@@ -21,6 +21,10 @@
 - [ ] Changes to infrastructure resources have been tested in our dev environments
 - [ ] I have made corresponding changes to the documentation
 - [ ] I have added or updated `README.md` file for terraform module
+- [ ] Ensure the metadata.json file for the migration script includes the required fields: `description, seq_no, cloud, required_on, and downtime`
+
+## Schemas Requiring Validation
+<!-- Please list the schemas that need to be validated as part of this PR. This helps ensure that all necessary validations are performed before merging. -->
 
 ## Testing
 
