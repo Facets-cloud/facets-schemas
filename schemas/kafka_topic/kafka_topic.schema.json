@@ -136,6 +136,38 @@
         "spec": {
           "type": "object",
           "properties": {
+            "tls": {
+              "description": "TLS configuration for the Kafka cluster connection. If not specified, defaults to the default from the Kafka cluster.",
+              "type": "object",
+              "properties": {
+                "insecure_skip_verify": {
+                  "description": "Set this to true to disable certificate verification for the Kafka cluster connection.",
+                  "type": "boolean"
+                },
+                "client_certificate_secret_ref": {
+                  "description": "Set this to reference a Kubernetes Secret containing the client certificate, key and CA certificate for the Kafka cluster connection.",
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "description": "The name of the Secret containing the client certificate, key and CA certificate for the Kafka cluster connection.",
+                      "type": "string"
+                    },
+                    "namespace": {
+                      "description": "The namespace of the Secret containing the client certificate key and CA certificate for the Kafka cluster connection.",
+                      "type": "string"
+                    },
+                    "keyField": {
+                      "description": "The key in the Secret containing the client key for the Kafka cluster connection.",
+                      "type": "string"
+                    },
+                    "certField": {
+                      "description": "The key in the Secret containing the client certificate for the Kafka cluster connection.",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
             "topics": {
               "type": "object",
               "description": "Contains a map of configurations for multiple Kafka Topics",
