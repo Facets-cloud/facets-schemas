@@ -92,9 +92,6 @@ jobs:
            git push origin ${{ steps.tag.outputs.tag }}
            zip -r ${{ steps.tag.outputs.tag }}.zip capillary-cloud-tf
            aws s3 cp ${{ steps.tag.outputs.tag }}.zip s3://${{ secrets.BUCKET_NAME }}/stage/${{ steps.tag.outputs.tag }}.zip
-           python .github/workflows/get_migrations.py capillary-cloud-tf/tfmain/scripts/migrations
-           mv migrations.json ${{ steps.tag.outputs.tag }}-migrations.json
-           aws s3 cp ${{ steps.tag.outputs.tag }}-migrations.json s3://${{ secrets.BUCKET_NAME }}/stage/${{ steps.tag.outputs.tag }}-migrations.json
           else
            echo "Checkout branch is not the ref branch. Exiting"
            exit 1
