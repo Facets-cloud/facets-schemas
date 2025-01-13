@@ -8,7 +8,7 @@ RUN wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_am
 RUN unzip terraform_1.5.7_linux_amd64.zip
 RUN wget https://dl.k8s.io/release/v1.29.3/bin/linux/amd64/kubectl
 
-FROM ghcr.io/actions/actions-runner:2.320.0
+FROM ghcr.io/actions/actions-runner:2.321.0
 ENV HOME="/home/runner"
 # Update the package list
 RUN sudo apt-get update
