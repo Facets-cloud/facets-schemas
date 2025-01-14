@@ -14,7 +14,7 @@ on:
         default: tfdev
       streamMajorVersion:
         description: 'Stream Major Version'
-        default: "2"
+        default: "3"
       branchMajorVersion:
         description: 'Major Version for Branch'
         default: "50"
