@@ -67,10 +67,8 @@ install_facetsctl() {
 }
 
 # Check if the bundled node binary exists and remove it if it does
-if [ -f "$NODE_BIN_PATH" ]; then
-    echo "Removing bundled node binary at $NODE_BIN_PATH"
-    rm -f "$NODE_BIN_PATH"
-fi
+echo "Removing bundled node binary at $NODE_BIN_PATH"
+rm -f "$NODE_BIN_PATH"
 
 # Check if facetsctl is already installed and check version contains the correct version
 if [ -x "$BIN_PATH" ]; then
