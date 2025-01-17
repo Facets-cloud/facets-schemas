@@ -4,6 +4,7 @@
 VERSION="latest"
 INSTALL_DIR="$HOME"
 BIN_PATH="$INSTALL_DIR/facetsctl/bin/facetsctl"
+NODE_BIN_PATH="$INSTALL_DIR/facetsctl/bin/node"
 
 # URLs for different architectures
 URL_LINUX_ARM64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3/production/$VERSION/facetsctl-linux-arm64.tar.gz"
@@ -64,6 +65,12 @@ install_facetsctl() {
     chmod +x "$BIN_PATH"
     echo "facetsctl installed successfully in $INSTALL_DIR/facetsctl"
 }
+
+# Check if the bundled node binary exists and remove it if it does
+if [ -f "$NODE_BIN_PATH" ]; then
+    echo "Removing bundled node binary at $NODE_BIN_PATH"
+    rm -f "$NODE_BIN_PATH"
+fi
 
 # Check if facetsctl is already installed and check version contains the correct version
 if [ -x "$BIN_PATH" ]; then
