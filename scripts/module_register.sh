@@ -53,10 +53,11 @@ if [[ $? -ne 0 ]]; then
   echo "Error: Failed to create zip file."
   exit 1
 fi
+auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
 
 # Send the zip file via POST request
 response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
-  -H "Authorization: Basic $(echo -n "$username:$token" | base64)" \
+  -H "Authorization: Basic ${auth_string}" \
   -F "file=@$path/$zip_file")
 
 # Extract HTTP status code
