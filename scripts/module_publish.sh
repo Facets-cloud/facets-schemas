@@ -38,7 +38,7 @@ url="https://$url/cc-ui/v1/modules/intent/$intent/flavor/$flavor/version/$versio
 
 # Send the request via POST
 response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
-  -H "Authorization: Basic $(echo -n "$username:$token" | base64)")
+  -H "Authorization: Basic $(echo -n "$username:$token" | base64 | tr -d '\n')")
 
 # Extract HTTP status code
 http_code=$(tail -n 1 <<< "$response")
