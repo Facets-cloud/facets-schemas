@@ -33,10 +33,13 @@ fi
 url=$(echo "$url" | sed 's#/$##') # Remove trailing slash if exists
 url=$(echo "$url" | sed 's#^http://##; s#^https://##') # Remove http/https prefix if exists
 
+# Generate auth string
+auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
+
 # Get stack details
 get_url="https://$url/cc-ui/v1/stacks/$project_name"
 response=$(curl -w "\n%{http_code}" -o stack.json -s -X GET "$get_url" \
-  -H "Authorization: Basic $(echo -n "$username:$token" | base64)")
+  -H "Authorization: Basic ${auth_string}")
 
 # Extract HTTP status code
 http_code=$(tail -n 1 <<< "$response")
@@ -45,9 +48,12 @@ if [[ "$http_code" == "404" ]]; then
   echo "Error: Project not found with name $project_name."
   rm -f stack.json
   exit 1
+elif [[ "$http_code" == "401" ]]; then
+  echo "Error: Authentication failed."
+  rm -f stack.json
+  exit 1
 elif [[ "$http_code" != "200" ]]; then
   echo "Error: Failed to fetch stack details with status code $http_code."
-  cat stack.json 2>/dev/null
   rm -f stack.json
   exit 1
 fi
@@ -62,7 +68,7 @@ fi
 # Send the updated stack JSON to the update API
 put_url="https://$url/cc-ui/v1/stacks/$project_name"
 response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X PUT "$put_url" \
-  -H "Authorization: Basic $(echo -n "$username:$token" | base64)" \
+  -H "Authorization: Basic ${auth_string}" \
   -H "Content-Type: application/json" \
   -d @updated_stack.json)
 
