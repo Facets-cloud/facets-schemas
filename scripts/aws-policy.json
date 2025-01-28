@@ -48,7 +48,8 @@
           "kafka-cluster:*",
           "kafkaconnect:*",
           "es:*",
-          "secretsmanager:*"
+          "secretsmanager:*",
+          "ecs:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
