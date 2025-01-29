@@ -28,7 +28,7 @@ fi
 # Normalize URL
 url=$(echo "$url" | sed 's#/$##') # Remove trailing slash if exists
 url=$(echo "$url" | sed 's#^http://##; s#^https://##') # Remove http/https prefix if exists
-url="https://$url/cc-ui/v1/modules/intents" # Ensure https and proper endpoint
+url="https://$url/cc-ui/v1/intents" # Ensure https and proper endpoint
 
 auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
 
