@@ -75,10 +75,12 @@ install_facetsctl() {
     curl -L "$URL" | tar -xz -C "$INSTALL_DIR/facetsctl" --strip-components=1
     chmod +x "$BIN_PATH"
     
-    # Remove bundled Node.js if running on Alpine Linux
+    # Handle Node.js replacement if running on Alpine Linux
     if [ "$IS_ALPINE" = true ]; then
-        echo "Removing bundled Node.js..."
-        rm "$HOME/facetsctl/bin/node"
+        echo "Replacing bundled Node.js..."
+        rm -f "$HOME/facetsctl/bin/node"
+        # Create empty dummy node file for backward compatibility
+        touch "$HOME/facetsctl/bin/node"
     fi
     
     echo "facetsctl installed successfully in $INSTALL_DIR/facetsctl"
