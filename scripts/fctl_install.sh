@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Define the version to install
 VERSION="latest"
 INSTALL_DIR="$HOME"
@@ -14,6 +13,12 @@ URL_DARWIN_ARM64="https://facets-cf-templates.s3.amazonaws.com/oclif-tarballs/v3
 # Detect OS and architecture
 OS="$(uname -s)"
 ARCH="$(uname -m)"
+
+# Check if running on Alpine Linux
+IS_ALPINE=false
+if [ -f /etc/alpine-release ]; then
+    IS_ALPINE=true
+fi
 
 # Normalize architecture name
 if [ "$ARCH" = "aarch64" ]; then
@@ -60,8 +65,24 @@ esac
 install_facetsctl() {
     echo "Downloading facetsctl..."
     mkdir -p "$INSTALL_DIR/facetsctl"
+    
+    # Install Node.js if running on Alpine Linux
+    if [ "$IS_ALPINE" = true ]; then
+        echo "Alpine Linux detected. Installing Node.js..."
+        apk add nodejs
+    fi
+    
     curl -L "$URL" | tar -xz -C "$INSTALL_DIR/facetsctl" --strip-components=1
     chmod +x "$BIN_PATH"
+    
+    # Handle Node.js replacement if running on Alpine Linux
+    if [ "$IS_ALPINE" = true ]; then
+        echo "Replacing bundled Node.js..."
+        rm -f "$HOME/facetsctl/bin/node"
+        # Create empty dummy node file for backward compatibility
+        touch "$HOME/facetsctl/bin/node"
+    fi
+    
     echo "facetsctl installed successfully in $INSTALL_DIR/facetsctl"
 }
 
