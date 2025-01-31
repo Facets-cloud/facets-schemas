@@ -2,22 +2,28 @@
 
 # Function to print usage
 function print_usage() {
-  echo "Usage: $0 -c <control_plane_url> -u <username> -t <token> [-p <path>]"
+  echo "Usage: $0 -c <control_plane_url> -u <username> -t <token> [-p <path>] [-g <git_url>] [-r <git_ref>] [-d <relative_path>]"
   echo "-c: Control plane URL (e.g., example.com or https://example.com)"
   echo "-u: Username for Basic Auth"
   echo "-t: Token for Basic Auth"
   echo "-p: Optional path to the folder to zip (default: current directory)"
+  echo "-g: Optional Git URL"
+  echo "-r: Optional Git reference (branch, tag, or commit)"
+  echo "-d: Optional relative path within the Git repository"
   exit 1
 }
 
 # Parse command-line arguments
 path="$(pwd)" # Default to the current directory
-while getopts "c:u:t:p:" opt; do
+while getopts "c:u:t:p:g:r:d:" opt; do
   case $opt in
     c) url="$OPTARG" ;;
     u) username="$OPTARG" ;;
     t) token="$OPTARG" ;;
     p) path="$OPTARG" ;;
+    g) git_url="$OPTARG" ;;
+    r) git_ref="$OPTARG" ;;
+    d) relative_path="$OPTARG" ;;
     *) print_usage ;;
   esac
 done
@@ -53,12 +59,33 @@ if [[ $? -ne 0 ]]; then
   echo "Error: Failed to create zip file."
   exit 1
 fi
+
 auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
 
-# Send the zip file via POST request
-response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
-  -H "Authorization: Basic ${auth_string}" \
-  -F "file=@$path/$zip_file")
+# Prepare git info JSON if any git-related parameters are provided
+if [[ -n "$git_url" || -n "$git_ref" || -n "$relative_path" ]]; then
+  git_info="{}"
+  [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
+  [[ -n "$git_ref" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_ref" '. + {gitRef: $v}')
+  [[ -n "$relative_path" ]] && git_info=$(echo "$git_info" | jq --arg v "$relative_path" '. + {relativePath: $v}')
+  
+  # Create a temporary file for the git info
+  git_info_file=$(mktemp)
+  echo "$git_info" > "$git_info_file"
+  
+  # Send the request with both file and git info
+  response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
+    -H "Authorization: Basic ${auth_string}" \
+    -F "file=@$path/$zip_file" \
+    -F "metadata=@$git_info_file;type=application/json")
+    
+  rm -f "$git_info_file"
+else
+  # Send the request with file only
+  response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
+    -H "Authorization: Basic ${auth_string}" \
+    -F "file=@$path/$zip_file")
+fi
 
 # Extract HTTP status code
 http_code=$(tail -n 1 <<< "$response")
