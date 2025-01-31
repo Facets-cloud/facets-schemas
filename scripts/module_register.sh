@@ -37,7 +37,7 @@ fi
 # Normalize URL
 url=$(echo "$url" | sed 's#/$##') # Remove trailing slash if exists
 url=$(echo "$url" | sed 's#^http://##; s#^https://##') # Remove http/https prefix if exists
-url="https://$url/cc-ui/v1/modules/upload" # Ensure https and proper endpoint
+url="http://$url/cc-ui/v1/modules/upload" # Ensure https and proper endpoint
 
 # Validate the path
 if [[ ! -d "$path" ]]; then
