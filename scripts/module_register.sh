@@ -65,7 +65,7 @@ http_code=$(tail -n 1 <<< "$response")
 
 # Check response status
 if [[ "$http_code" == "200" ]]; then
-  echo "File uploaded successfully."
+  echo "Module registered successfully."
 elif [[ "$http_code" =~ ^4|5 ]]; then
   message=$(jq -r .message response_body.txt 2>/dev/null)
   if [[ -n "$message" && "$message" != "null" ]]; then

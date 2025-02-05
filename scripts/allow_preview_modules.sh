@@ -76,7 +76,7 @@ response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X PUT "$put_url" \
 http_code=$(tail -n 1 <<< "$response")
 
 if [[ "$http_code" == "200" ]]; then
-  echo "Stack updated successfully."
+  echo "Project updated successfully."
 elif [[ "$http_code" =~ ^4|5 ]]; then
   message=$(jq -r .message response_body.txt 2>/dev/null)
   if [[ -n "$message" && "$message" != "null" ]]; then
