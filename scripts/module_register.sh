@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Function to print usage
 function print_usage() {
@@ -70,11 +71,14 @@ elif [[ "$http_code" =~ ^4|5 ]]; then
   message=$(jq -r .message response_body.txt 2>/dev/null)
   if [[ -n "$message" && "$message" != "null" ]]; then
     echo "Error: $message (HTTP $http_code)"
+    exit 1
   else
     echo "Error: File upload failed with status code $http_code."
+    exit 1
   fi
 else
   echo "Error: File upload failed with unexpected status code $http_code."
+  exit 1
 fi
 
 # Clean up zip file and response body
