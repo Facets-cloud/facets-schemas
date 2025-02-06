@@ -45,6 +45,10 @@ if [[ ! -f "$path/facets.yaml" ]]; then
   exit 1
 fi
 
+# if **/.terraform and .terraform.lock.hcl exists, remove them
+find "$path" -type d -name .terraform -exec rm -rf {} +
+find "$path" -type f -name .terraform.lock.hcl -exec rm -f {} +
+
 # Create a zip file of the specified folder
 zip_file="$(basename "$path").zip"
 (cd "$path" && zip -r "$zip_file" . > /dev/null)
