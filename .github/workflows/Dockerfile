@@ -11,8 +11,9 @@ RUN wget https://dl.k8s.io/release/v1.29.3/bin/linux/amd64/kubectl
 FROM ghcr.io/actions/actions-runner:2.321.0
 ENV HOME="/home/runner"
 # Update the package list
+RUN sudo add-apt-repository ppa:rmescandon/yq -y
 RUN sudo apt-get update
-RUN sudo apt-get install zip libxml2-utils awscli git gh jq software-properties-common curl build-essential -y
+RUN sudo apt-get install zip libxml2-utils awscli git gh jq software-properties-common curl build-essential yq -y
 RUN sudo add-apt-repository ppa:deadsnakes/ppa -y
 RUN sudo apt-get install python3.12-dev -y
 RUN sudo cp /usr/bin/python3.12 /usr/bin/python3
