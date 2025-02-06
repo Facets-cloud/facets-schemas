@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Function to print usage
 function print_usage() {
