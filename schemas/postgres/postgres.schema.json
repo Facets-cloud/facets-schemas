@@ -477,6 +477,34 @@
                   }
                 }
               ]
+            },
+            "db_schemas": {
+              "type": "object",
+              "description": "Map of schema objects containing name of db and schema to be created inside the db.",
+              "allOf":[
+                {
+                  "type": "object",
+                  "patternProperties": {
+                    "^[a-zA-Z]+[a-zA-Z0-9\\_\\-]*$":{
+                      "type": "object",
+                      "description": "Schema object which contains name of db and schema to be created.",
+                      "properties": {
+                        "db":{
+                          "type": "string",
+                          "description": "Database name under which schema needs to be created.",
+                          "pattern": "^[a-zA-Z\\_]+[a-zA-Z0-9\\_\\-]*$"
+                        },
+                        "schema":{
+                          "type": "string",
+                          "description": "Schema name that needs to be created. Will be created only if not present.",
+                          "pattern": "^[a-zA-Z\\_]+[a-zA-Z0-9\\_\\-]*$"
+                        }
+                      }
+                    }
+
+                  }
+                }
+              ]
             }
           },
           "required": [

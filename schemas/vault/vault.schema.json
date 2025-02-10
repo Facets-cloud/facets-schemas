@@ -385,6 +385,30 @@
                       "description": "The secret name for root token"
                     }
                   }
+                },
+                "interfaces": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "server": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "root_token": {
+                          "type": "string",
+                          "description": "The root token for hashicorp vault"
+                        },
+                        "endpoint": {
+                          "type": "string",
+                          "description": "The service endpoint of vault server"
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "Vault server port"
+                        }
+                      }
+                    }
+                  }
                 }
               },
               "required": []
