@@ -1,0 +1,11 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/kms/kms.schema.json",
+  "version": "0.1",
+  "flavor": "default",
+  "kind": "kms",
+  "provides": "kms",
+  "metadata": {},
+  "spec": {},
+  "out": {},
+  "disabled": true
+}

@@ -9,6 +9,7 @@ A Postgres Instance in reader/writer datastore mode.
 | `postgres_version` | string                                                            | **Yes**  | Version of Postgres e.g. 12.11                           |
 | `size`             | [object](../../traits/reader-writer-datastore-sizing.schema.json) | **Yes**  | Sizing attribute for postgres writer and reader instance |
 | `max_connections`  | object({"reader": number, "writer": number })                     | **No**  | The maximum permitted number of simultaneous client connections. |
+| `db_schemas`  | object({"schema1": {"db": "<db_name>", "schema": "<schema_name>" }})                     | **No**  | Map of schema objects containing schema name and db name under which schema needs to be created.  |
 
 ## Outputs
 

@@ -1,0 +1,201 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "allOf": [
+    {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "type": "object",
+      "allOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+            },
+            "flavor": {
+              "type": "string",
+              "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+            },
+            "version": {
+              "type": "string",
+              "description": "This field can be used to pin to a particular version"
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+              "enum": [
+                "ENVIRONMENT_BOOTSTRAP",
+                "ENVIRONMENT"
+              ]
+            },
+            "disabled": {
+              "type": "boolean",
+              "description": "Flag to disable the resource"
+            },
+            "conditional_on_intent": {
+              "type": "string",
+              "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+            },
+            "provided": {
+              "type": "boolean",
+              "description": "Flag to tell if the resource should not be provisioned by facets",
+              "default": false
+            },
+            "depends_on": {
+              "type": "array",
+              "items": {},
+              "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Metadata related to the resource",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+                }
+              }
+            },
+            "spec": {
+              "type": "object",
+              "description": "Specification as per resource types schema"
+            },
+            "out": {
+              "type": "object",
+              "description": "Output given by the resource for others to refer."
+            },
+            "advanced": {
+              "type": "object",
+              "description": "Additional fields if any for a particular implementation of a resource"
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "out"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provided": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "kind",
+              "flavor",
+              "version",
+              "metadata",
+              "spec"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "artifactories"
+          ]
+        },
+        "flavor": {
+          "type": "string",
+          "enum": [
+            "default"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "enum": [
+            "0.1",
+            "latest"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "object",
+          "properties": {
+            "include_all": {
+              "type": "boolean",
+              "description": "Include all container registries mapped to this project. Note: The `artifactories` attribute must not be specified if this attribute is used"
+            },
+            "artifactories": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "A mapping of container registries. Example: {<registry1>: \"<container_registry_name>\", <registry2>: \"<container_registry_name>\"}",
+              "patternProperties": {
+                "^[a-zA-Z0-9_.-]*$": {
+                  "type": "object",
+                  "description": "Name of the Container Registry for creating a secret.",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Container Registry Name"
+                    }
+                  },
+                  "required":["name"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "out": {
+          "type": "object",
+          "description": "The output for your artifactories module, this can be generated or provided",
+          "properties": {
+            "attributes": {
+              "type": "object",
+              "description": "The output attributes section for artifactories module",
+              "properties": {
+                "registry_secrets_list": {
+                  "type": "array",
+                  "description": "List of Container Registry secrets"
+                },
+                "registry_secret_objects": {
+                  "type": "object",
+                  "description": "Map of Container Registry secrets. Eg: {<container_registry_name>: [{\"name\": \"<k8s_secret_name>\"}]}"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata",
+    "spec"
+  ]
+}

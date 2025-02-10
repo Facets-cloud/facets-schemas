@@ -115,6 +115,10 @@
         "spec": {
           "type": "object",
           "properties": {
+            "runtime_class_name": {
+              "type": "string",
+              "description": "Specifies the runtime class name for the pod, such as gvisor for enhanced security."
+            },
             "release": {
               "description": "Map of all release keys",
               "$schema": "http://json-schema.org/draft-04/schema#",

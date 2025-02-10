@@ -1,0 +1,356 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Schema for KMS",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "description": "Describes the type of resource. e.g. ingress, application, mysql etc. If not specified, fallback is the `folder_name`/instances"
+    },
+    "flavor": {
+      "type": "string",
+      "description": "Implementation selector for the resource. e.g. for a resource type ingress, default, aws_alb, gcp_alb etc."
+    },
+    "version": {
+      "type": "string",
+      "description": "This field can be used to pin to a particular version"
+    },
+    "lifecycle": {
+      "type": "string",
+      "description": "This field describes the phase in which the resource has to be invoked (`ENVIRONMENT_BOOTSTRAP`)",
+      "enum": [
+        "ENVIRONMENT_BOOTSTRAP",
+        "ENVIRONMENT"
+      ]
+    },
+    "disabled": {
+      "type": "boolean",
+      "description": "Flag to disable the resource"
+    },
+    "conditional_on_intent": {
+      "type": "string",
+      "description": "Flag to enable the resource based on intent availability. eg mysql if mysql dashboard is required to be deployed. Note: Need to have the instance running beforehand to avail."
+    },
+    "provided": {
+      "type": "boolean",
+      "description": "Flag to tell if the resource should not be provisioned by facets",
+      "default": false
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {},
+      "description": "Dependencies on other resources. e.g. application x may depend on mysql"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata related to the resource",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the resource\n    - if not specified, fallback is the `filename`"
+        }
+      },
+      "required": []
+    },
+    "spec": {
+      "type": "object",
+      "description": "Specification as per resource types schema",
+      "properties": {
+        "create_external": {
+          "type": "boolean",
+          "description": "Determines whether an external CMK (externally provided material) will be created or a standard CMK (AWS provided material)"
+        },
+        "bypass_policy_lockout_safety_check": {
+          "type": [
+            "boolean"
+          ],
+          "description": "A flag to indicate whether to bypass the key policy lockout safety check. Setting this value to true increases the risk that the KMS key becomes unmanageable"
+        },
+        "customer_master_key_spec": {
+          "type": [
+            "string"
+          ],
+          "enum": [
+            "SYMMETRIC_DEFAULT",
+            "RSA_2048",
+            "RSA_3072",
+            "RSA_4096",
+            "HMAC_256",
+            "ECC_NIST_P256",
+            "ECC_NIST_P384",
+            "ECC_NIST_P521",
+            "ECC_SECG_P256K1"
+          ],
+          "description": "Specifies whether the key contains a symmetric key or an asymmetric key pair and the encryption algorithms or signing algorithms that the key supports. Valid values: SYMMETRIC_DEFAULT, RSA_2048, RSA_3072, RSA_4096, HMAC_256, ECC_NIST_P256, ECC_NIST_P384, ECC_NIST_P521, or ECC_SECG_P256K1. Defaults to SYMMETRIC_DEFAULT"
+        },
+        "custom_key_store_id": {
+          "type": [
+            "string"
+          ],
+          "description": "ID of the KMS Custom Key Store where the key will be stored instead of KMS (eg CloudHSM)."
+        },
+        "deletion_window_in_days": {
+          "type": "integer",
+          "description": "The waiting period, specified in number of days. After the waiting period ends, AWS KMS deletes the KMS key. If you specify a value, it must be between 7 and 30, inclusive. If you do not specify a value, it defaults to 30"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the key as viewed in AWS console"
+        },
+        "enable_key_rotation": {
+          "type": "boolean",
+          "description": "Specifies whether key rotation is enabled. Defaults to true"
+        },
+        "is_enabled": {
+          "type": "boolean",
+          "description": "Specifies whether the key is enabled. Defaults to true"
+        },
+        "key_material_base64": {
+          "type": [
+            "string"
+          ],
+          "description": "Base64 encoded 256-bit symmetric encryption key material to import. The CMK is permanently associated with this key material. External key only"
+        },
+        "key_usage": {
+          "type": [
+            "string"
+          ],
+          "enum": [
+            "ENCRYPT_DECRYPT",
+            "SIGN_VERIFY"
+          ],
+          "description": "Specifies the intended use of the key. Valid values: ENCRYPT_DECRYPT or SIGN_VERIFY. Defaults to ENCRYPT_DECRYPT"
+        },
+        "multi_region": {
+          "type": "boolean",
+          "description": "Indicates whether the KMS key is a multi-Region (true) or regional (false) key. Defaults to false"
+        },
+        "policy": {
+          "type": [
+            "string"
+          ],
+          "description": "A valid policy JSON document. Although this is a key policy, not an IAM policy, an aws_iam_policy_document, in the form that designates a principal, can be used"
+        },
+        "valid_to": {
+          "type": [
+            "string"
+          ],
+          "description": "Time at which the imported key material expires. When the key material expires, AWS KMS deletes the key material and the CMK becomes unusable. If not specified, key material does not expire"
+        },
+        "enable_default_policy": {
+          "type": "boolean",
+          "description": "Specifies whether to enable the default key policy. Defaults to true"
+        },
+        "key_owners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for those who will have full key permissions (kms:*)"
+        },
+        "key_administrators": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for key [administrators](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-administrators)"
+        },
+        "key_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for key [users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-default-allow-users)"
+        },
+        "key_service_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for key service [users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-service-integration)"
+        },
+        "key_service_roles_for_autoscaling": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for [AWSServiceRoleForAutoScaling roles](https://docs.aws.amazon.com/autoscaling/ec2/userguide/key-policy-requirements-EBS-encryption.html#policy-example-cmk-access) "
+        },
+        "key_symmetric_encryption_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for key symmetric [encryption users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-users-crypto)"
+        },
+        "key_hmac_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for key [HMAC users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-users-crypto)"
+        },
+        "key_asymmetric_public_encryption_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for those who will have key usage permissions for asymmetric public encryption"
+        },
+        "key_asymmetric_sign_verify_users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of IAM ARNs for key asymmetric sign and [verify users](https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-default.html#key-policy-users-crypto)"
+        },
+        "key_statements": {
+          "type": "object",
+          "description": "A map of IAM policy statements for custom permission usage"
+        },
+        "source_policy_documents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of IAM policy documents that are merged together into the exported document. Statements must have unique sids"
+        },
+        "override_policy_documents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of IAM policy documents that are merged together into the exported document. In merging, statements with non-blank sids will override statements with the same sid"
+        },
+        "enable_route53_dnssec": {
+          "type": "boolean",
+          "description": "Specifies whether Route53 DNSSEC signing is enabled"
+        },
+        "route53_dnssec_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Determines whether the KMS policy used for Route53 DNSSEC signing is enabled"
+        },
+        "rotation_period_in_days": {
+          "type": "integer",
+          "description": "Custom period of time between each rotation date. Must be a number between 90 and 2560 (inclusive)"
+        },
+        "create_replica": {
+          "type": "boolean",
+          "description": "Determines whether a replica standard CMK will be created (AWS provided material)"
+        },
+        "primary_key_arn": {
+          "type": [
+            "string"
+          ],
+          "description": "The primary key arn of a multi-region replica key"
+        },
+        "create_replica_external": {
+          "type": "boolean",
+          "description": "Whether to create an external replica KMS key"
+        },
+        "primary_external_key_arn": {
+          "type": [
+            "string"
+          ],
+          "description": "Determines whether a replica external CMK will be created (externally provided material)"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of aliases to create. Note - due to the use of toset(), values must be static strings and not computed values"
+        },
+        "computed_aliases": {
+          "type": "object",
+          "description": "A map of aliases to create. Values provided via the name key of the map can be computed from upstream resources"
+        },
+        "aliases_use_name_prefix": {
+          "type": "boolean",
+          "description": "Determines whether the alias name is used as a prefix"
+        },
+        "grants": {
+          "type": "object",
+          "description": "A map of grant definitions to create"
+        }
+      },
+      "required": []
+    },
+    "out": {
+      "type": "object",
+      "description": "Output given by the resource for others to refer.",
+      "properties": {
+        "attributes": {
+          "type": "object",
+          "properties": {
+            "kms_key_arn": {
+              "type": "string",
+              "description": "ARN of the KMS key"
+            },
+            "kms_key_id": {
+              "type": "string",
+              "description": "ID of the KMS key"
+            },
+            "kms_key_policy": {
+              "type": "string",
+              "description": "Policy of the KMS key"
+            },
+            "kms_external_key_expiration_model": {
+              "type": "string",
+              "description": "Expiration model of the KMS key"
+            },
+            "kms_external_key_state": {
+              "type": "string",
+              "description": "State of the KMS key"
+            },
+            "kms_external_key_usage": {
+              "type": "string",
+              "description": "Usage of the KMS key"
+            },
+            "kms_aliases": {
+              "type": "string",
+              "description": "Aliases of the KMS key"
+            },
+            "kms_grants": {
+              "type": "string",
+              "description": "Grants of the KMS key"
+            }
+          },
+          "required": []
+        }
+      }
+    },
+    "advanced": {
+      "type": "object",
+      "description": "Additional fields if any for a particular implementation of a resource"
+    }
+  },
+  "required": [
+    "kind",
+    "flavor",
+    "version",
+    "metadata"
+  ],
+  "if": {
+    "properties": {
+      "provided": {
+        "const": true
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "out"
+    ]
+  },
+  "else": {
+    "not": {
+      "required": [
+        "out"
+      ]
+    }
+  }
+}

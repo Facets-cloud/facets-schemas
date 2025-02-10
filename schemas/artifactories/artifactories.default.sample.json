@@ -1,0 +1,13 @@
+{
+  "$schema": "https://facets-cloud.github.io/facets-schemas/schemas/artifactories/artifactories.schema.json",
+  "kind": "artifactories",
+  "flavor": "default",
+  "disabled": true,
+  "metadata": {},
+  "version": "0.1",
+  "spec": {
+    "include_all": false,
+    "artifactories": {}
+  },
+  "advanced": {}
+}
