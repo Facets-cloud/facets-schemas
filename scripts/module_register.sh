@@ -9,7 +9,6 @@ function print_usage() {
   echo "-p: Optional path to the folder to zip (default: current directory)"
   echo "-g: Optional Git URL"
   echo "-r: Optional Git reference (branch, tag, or commit)"
-  echo "-d: Optional relative path within the Git repository"
   exit 1
 }
 
