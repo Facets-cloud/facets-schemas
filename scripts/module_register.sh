@@ -2,7 +2,7 @@
 
 # Function to print usage
 function print_usage() {
-  echo "Usage: $0 -c <control_plane_url> -u <username> -t <token> [-p <path>] [-g <git_url>] [-r <git_ref>] [-d <relative_path>]"
+  echo "Usage: $0 -c <control_plane_url> -u <username> -t <token> [-p <path>] [-g <git_url>] [-r <git_ref>]"
   echo "-c: Control plane URL (e.g., example.com or https://example.com)"
   echo "-u: Username for Basic Auth"
   echo "-t: Token for Basic Auth"
@@ -15,7 +15,7 @@ function print_usage() {
 
 # Parse command-line arguments
 path="$(pwd)" # Default to the current directory
-while getopts "c:u:t:p:g:r:d:" opt; do
+while getopts "c:u:t:p:g:r:" opt; do
   case $opt in
     c) url="$OPTARG" ;;
     u) username="$OPTARG" ;;
@@ -23,7 +23,6 @@ while getopts "c:u:t:p:g:r:d:" opt; do
     p) path="$OPTARG" ;;
     g) git_url="$OPTARG" ;;
     r) git_ref="$OPTARG" ;;
-    d) relative_path="$OPTARG" ;;
     *) print_usage ;;
   esac
 done
@@ -37,7 +36,7 @@ fi
 # Normalize URL
 url=$(echo "$url" | sed 's#/$##') # Remove trailing slash if exists
 url=$(echo "$url" | sed 's#^http://##; s#^https://##') # Remove http/https prefix if exists
-url="http://$url/cc-ui/v1/modules/upload" # Ensure https and proper endpoint
+url="https://$url/cc-ui/v1/modules/upload" # Ensure https and proper endpoint
 
 # Validate the path
 if [[ ! -d "$path" ]]; then
@@ -63,11 +62,10 @@ fi
 auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
 
 # Prepare git info JSON if any git-related parameters are provided
-if [[ -n "$git_url" || -n "$git_ref" || -n "$relative_path" ]]; then
+if [[ -n "$git_url" || -n "$git_ref" ]]; then
   git_info="{}"
   [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
   [[ -n "$git_ref" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_ref" '. + {gitRef: $v}')
-  [[ -n "$relative_path" ]] && git_info=$(echo "$git_info" | jq --arg v "$relative_path" '. + {relativePath: $v}')
   
   # Create a temporary file for the git info
   git_info_file=$(mktemp)
