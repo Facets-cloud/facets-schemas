@@ -2,19 +2,21 @@
 
 # Function to print usage
 function print_usage() {
-  echo "Usage: $0 -c <control_plane_url> -u <username> -t <token> [-p <path>] [-g <git_url>] [-r <git_ref>]"
+  echo "Usage: $0 -c <control_plane_url> -u <username> -t <token> [-p <path>] [-g <git_url>] [-r <git_ref>] [-f]"
   echo "-c: Control plane URL (e.g., example.com or https://example.com)"
   echo "-u: Username for Basic Auth"
   echo "-t: Token for Basic Auth"
   echo "-p: Optional path to the folder to zip (default: current directory)"
   echo "-g: Optional Git URL"
   echo "-r: Optional Git reference (branch, tag, or commit)"
+  echo "-f: Optional flag to mark as feature branch (cannot be published)"
   exit 1
 }
 
 # Parse command-line arguments
 path="$(pwd)" # Default to the current directory
-while getopts "c:u:t:p:g:r:" opt; do
+is_feature_branch=false # Default to false
+while getopts "c:u:t:p:g:r:f" opt; do
   case $opt in
     c) url="$OPTARG" ;;
     u) username="$OPTARG" ;;
@@ -22,6 +24,7 @@ while getopts "c:u:t:p:g:r:" opt; do
     p) path="$OPTARG" ;;
     g) git_url="$OPTARG" ;;
     r) git_ref="$OPTARG" ;;
+    f) is_feature_branch=true ;;
     *) print_usage ;;
   esac
 done
@@ -60,11 +63,12 @@ fi
 
 auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
 
-# Prepare git info JSON if any git-related parameters are provided
-if [[ -n "$git_url" || -n "$git_ref" ]]; then
+# Prepare git info JSON if any git-related parameters are provided or is_feature_branch is true
+if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true ]]; then
   git_info="{}"
   [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
   [[ -n "$git_ref" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_ref" '. + {gitRef: $v}')
+  [[ "$is_feature_branch" == true ]] && git_info=$(echo "$git_info" | jq '. + {isFeatureBranch: true}')
   
   # Create a temporary file for the git info
   git_info_file=$(mktemp)
