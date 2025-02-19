@@ -53,7 +53,7 @@ elif [[ "$http_code" == "401" ]]; then
   rm -f stack.json
   exit 1
 elif [[ "$http_code" != "200" ]]; then
-  echo "Error: Failed to fetch stack details with status code $http_code."
+  echo "Error: Failed to fetch project details with status code $http_code."
   rm -f stack.json
   exit 1
 fi
