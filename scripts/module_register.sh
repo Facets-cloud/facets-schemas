@@ -13,6 +13,9 @@ function print_usage() {
   exit 1
 }
 
+# Enable debug mode
+set -x
+
 # Parse command-line arguments
 path="$(pwd)" # Default to the current directory
 is_feature_branch=false # Default to false
@@ -29,6 +32,8 @@ while getopts "c:u:t:p:g:r:f" opt; do
   esac
 done
 
+echo "Debug: is_feature_branch value: $is_feature_branch"
+
 # Validate inputs
 if [[ -z "$url" || -z "$username" || -z "$token" ]]; then
   echo "Error: Missing required arguments."
@@ -39,6 +44,8 @@ fi
 url=$(echo "$url" | sed 's#/$##') # Remove trailing slash if exists
 url=$(echo "$url" | sed 's#^http://##; s#^https://##') # Remove http/https prefix if exists
 url="https://$url/cc-ui/v1/modules/upload" # Ensure https and proper endpoint
+
+echo "Debug: Final URL: $url"
 
 # Validate the path
 if [[ ! -d "$path" ]]; then
@@ -68,14 +75,19 @@ if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true ]]; then
   git_info="{}"
   [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
   [[ -n "$git_ref" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_ref" '. + {gitRef: $v}')
-  [[ "$is_feature_branch" == true ]] && git_info=$(echo "$git_info" | jq '. + {isFeatureBranch: true}')
+  # Always include isFeatureBranch in the JSON to match Java class
+  git_info=$(echo "$git_info" | jq --arg v "$is_feature_branch" '. + {isFeatureBranch: ($v == "true")}')
   
   # Create a temporary file for the git info
   git_info_file=$(mktemp)
   echo "$git_info" > "$git_info_file"
   
+  echo "Debug: Git info JSON content:"
+  cat "$git_info_file"
+  
   # Send the request with both file and git info
-  response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
+  echo "Debug: Sending request with metadata..."
+  response=$(curl -v -w "\n%{http_code}" -o response_body.txt -X POST "$url" \
     -H "Authorization: Basic ${auth_string}" \
     -F "file=@$path/$zip_file" \
     -F "metadata=@$git_info_file;type=application/json")
@@ -83,13 +95,18 @@ if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true ]]; then
   rm -f "$git_info_file"
 else
   # Send the request with file only
-  response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
+  echo "Debug: Sending request without metadata..."
+  response=$(curl -v -w "\n%{http_code}" -o response_body.txt -X POST "$url" \
     -H "Authorization: Basic ${auth_string}" \
     -F "file=@$path/$zip_file")
 fi
 
 # Extract HTTP status code
 http_code=$(tail -n 1 <<< "$response")
+
+echo "Debug: Response body:"
+cat response_body.txt
+echo "Debug: HTTP status code: $http_code"
 
 # Check response status
 if [[ "$http_code" == "200" ]]; then
@@ -107,3 +124,6 @@ fi
 
 # Clean up zip file and response body
 rm -f "$path/$zip_file" response_body.txt
+
+# Disable debug mode
+set +x
