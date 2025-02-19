@@ -68,7 +68,7 @@ if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true ]]; then
   git_info="{}"
   [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
   [[ -n "$git_ref" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_ref" '. + {gitRef: $v}')
-  [[ "$is_feature_branch" == true ]] && git_info=$(echo "$git_info" | jq '. + {featureBranch: true}')
+  [[ "$is_feature_branch" == true ]] && git_info=$(echo "$git_info" | jq '. + {isFeatureBranch: true}')
   
   # Create a temporary file for the git info
   git_info_file=$(mktemp)
