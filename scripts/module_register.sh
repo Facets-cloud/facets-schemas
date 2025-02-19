@@ -69,7 +69,7 @@ if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true ]]; then
   [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
   [[ -n "$git_ref" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_ref" '. + {gitRef: $v}')
   # Always include isFeatureBranch in the JSON to match Java class
-  git_info=$(echo "$git_info" | jq --arg v "$is_feature_branch" '. + {isFeatureBranch: ($v == "true")}')
+  git_info=$(echo "$git_info" | jq --arg v "$is_feature_branch" '. + {featureBranch: ($v == "true")}')
   
   # Create a temporary file for the git info
   git_info_file=$(mktemp)
