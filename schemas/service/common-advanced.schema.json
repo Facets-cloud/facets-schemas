@@ -54,6 +54,10 @@
                 }
               }
             },
+            "pod_distribution_enabled": {
+              "type": "boolean",
+              "description": "Enable or disable pod distribution across nodes"
+            },
             "pod_distribution": {
               "type": "object",
               "description": "Pod topology for distributing pods across nodes"
