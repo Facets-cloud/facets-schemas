@@ -35,7 +35,7 @@ done
 
 # Validate inputs
 if [[ -z "$url" || -z "$username" || -z "$token" ]]; then
-  echo "Error: Missing required arguments."
+  echo "❌ Error: Missing required arguments."
   print_usage
 fi
 
@@ -46,13 +46,13 @@ url="https://$url/cc-ui/v1/modules/upload" # Ensure https and proper endpoint
 
 # Validate the path
 if [[ ! -d "$path" ]]; then
-  echo "Error: Specified path '$path' does not exist or is not a directory."
+  echo "❌ Error: Specified path '$path' does not exist or is not a directory."
   exit 1
 fi
 
 # Validate presence of facets.yaml in the specified path
 if [[ ! -f "$path/facets.yaml" ]]; then
-  echo "Error: facets.yaml file not found in the specified path '$path'."
+  echo "❌ Error: facets.yaml file not found in the specified path '$path'."
   exit 1
 fi
 
@@ -64,7 +64,7 @@ find "$path" -type f -name .terraform.lock.hcl -exec rm -f {} +
 zip_file="$(basename "$path").zip"
 (cd "$path" && zip -r "$zip_file" . > /dev/null)
 if [[ $? -ne 0 ]]; then
-  echo "Error: Failed to create zip file."
+  echo "❌ Error: Failed to create zip file."
   exit 1
 fi
 
@@ -106,14 +106,14 @@ if [[ "$http_code" == "200" ]]; then
 elif [[ "$http_code" =~ ^4|5 ]]; then
   message=$(jq -r .message response_body.txt 2>/dev/null)
   if [[ -n "$message" && "$message" != "null" ]]; then
-    echo "Error: $message (HTTP $http_code)"
+    echo "❌ Error: $message (HTTP $http_code)"
     exit 1
   else
-    echo "Error: File upload failed with status code $http_code."
+    echo "❌ Error: File upload failed with status code $http_code."
     exit 1
   fi
 else
-  echo "Error: File upload failed with unexpected status code $http_code."
+  echo "❌ Error: File upload failed with unexpected status code $http_code."
   exit 1
 fi
 
