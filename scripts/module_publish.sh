@@ -27,8 +27,9 @@ done
 
 # Validate inputs
 if [[ -z "$url" || -z "$username" || -z "$token" || -z "$intent" || -z "$flavor" || -z "$version" ]]; then
-  echo "Error: Missing required arguments."
+  echo "❌ Error: Missing required arguments."
   print_usage
+  exit 1
 fi
 
 # Normalize URL
@@ -49,12 +50,15 @@ if [[ "$http_code" == "200" ]]; then
 elif [[ "$http_code" =~ ^4|5 ]]; then
   message=$(jq -r .message response_body.txt 2>/dev/null)
   if [[ -n "$message" && "$message" != "null" ]]; then
-    echo "Error: $message (HTTP $http_code)"
+    echo "❌ Error: $message (HTTP $http_code)"
+    exit 1
   else
-    echo "Error: Operation failed with status code $http_code."
+    echo "❌ Error: Operation failed with status code $http_code."
+    exit 1
   fi
 else
-  echo "Error: Operation failed with unexpected status code $http_code."
+  echo "❌ Error: Operation failed with unexpected status code $http_code."
+  exit 1
 fi
 
 # Clean up response body
