@@ -14,6 +14,17 @@ function print_usage() {
   exit 1
 }
 
+# Function to clean up temporary files
+function cleanup() {
+  echo "Cleaning up temporary files..."
+  [[ -f "$path/$zip_file" ]] && rm -f "$path/$zip_file"
+  [[ -f "response_body.txt" ]] && rm -f "response_body.txt"
+  [[ -n "$git_info_file" && -f "$git_info_file" ]] && rm -f "$git_info_file"
+}
+
+# Set up trap to ensure cleanup on script exit, including errors
+trap cleanup EXIT
+
 # Parse command-line arguments
 path="$(pwd)" # Default to the current directory
 is_feature_branch=false # Default to false
@@ -71,6 +82,7 @@ fi
 auth_string=$(echo -n "${username}:${token}" | base64 | tr -d '\n')
 
 # Prepare git info JSON if any git-related parameters are provided or is_feature_branch is true
+git_info_file=""
 if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true || "$auto_create" == true ]]; then
   git_info="{}"
   [[ -n "$git_url" ]] && git_info=$(echo "$git_info" | jq --arg v "$git_url" '. + {gitUrl: $v}')
@@ -88,8 +100,6 @@ if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true || "$auto_c
     -H "Authorization: Basic ${auth_string}" \
     -F "file=@$path/$zip_file" \
     -F "metadata=@$git_info_file;type=application/json")
-    
-  rm -f "$git_info_file"
 else
   # Send the request with file only
   response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
@@ -117,5 +127,5 @@ else
   exit 1
 fi
 
-# Clean up zip file and response body
-rm -f "$path/$zip_file" response_body.txt
+# Note: cleanup function will be called automatically via the EXIT trap
+exit 0
