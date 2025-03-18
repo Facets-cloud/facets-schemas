@@ -61,7 +61,26 @@
             },
             "spec": {
               "type": "object",
-              "description": "Specification as per resource types schema"
+              "description": "Specification as per resource types schema",
+              "properties": {
+                "imports": {
+                  "type": "object",
+                  "description": "Imports help you import existing S3 resources into Facets",
+                  "properties": {
+                    "s3_bucket": {
+                      "type": "string",
+                      "description": "ID of the S3 Bucket that you want to import"
+                    },
+                    "s3_bucket_policy": {
+                      "type": "string",
+                      "description": "ID of the S3 Bucket Policy that you want to import"
+                    }
+                  },
+                  "required": [
+                    "s3_bucket"
+                  ]                  
+                }
+              }
             },
             "out": {
               "type": "object",
