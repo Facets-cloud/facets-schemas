@@ -16,7 +16,6 @@ function print_usage() {
 
 # Function to clean up temporary files
 function cleanup() {
-  echo "Cleaning up temporary files..."
   [[ -f "$path/$zip_file" ]] && rm -f "$path/$zip_file"
   [[ -f "response_body.txt" ]] && rm -f "response_body.txt"
   [[ -n "$git_info_file" && -f "$git_info_file" ]] && rm -f "$git_info_file"
