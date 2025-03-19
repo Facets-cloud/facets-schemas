@@ -242,32 +242,38 @@ sub _diff_fields {
             #$f1 =~  s/ CHARACTER SET [\w_]+//gi;
             #$f2 =~  s/ CHARACTER SET [\w_]+//gi;
 
-            if($f2 =~ /COLLATE/i && $f2 !~ /CHARACTER SET/i) {
-                # Replacing the charset in f1 is necessary because if the table is in latin1
-                # charset and the column only specifies the collation, the charset is
-                # automatically added to the schema by the server. If we don't replace it,
-                # this will create a redundant diff between fields.
-                  $f1 =~  s/ CHARACTER SET [\w_]+//gi;
-            }
-
-            if($f2 !~ /COLLATE/i && $f2 =~ /CHARACTER SET/i) {
-                 $f1 =~ s/ COLLATE [\w_]+//gi;
-            }
-
-            # When we moved from mysql 5 to 8 the column definition in mysql 8 does not give default characterset or collate value for tables which already existed.
-            # But for any newly created table it will always show the default character set and collate. e.g, the temp table created during mysql schema diff.
-            # This will result in redundant diff generation for existing table for whose column definition does not show the default charset or collate value
-
-            if($f2 =~ /COLLATE/i && $f2 =~ /CHARACTER SET/i) {       # when in f2 both are present
-                if($f1 !~ /COLLATE/i && $f1 =~ /CHARACTER SET/i) {   # if f1 has only charset then remove collate from f2
-                    $f2 =~ s/ COLLATE [\w_]+//gi;
-                }
-                if($f1 =~ /COLLATE/i && $f1 !~ /CHARACTER SET/i) {    # if f1 has only collate then remove charset from f2
-                    $f2 =~ s/ CHARACTER SET [\w_]+//gi;
-                }
+            if($f2 =~ /COLLATE/i || $f2 !~ /CHARACTER SET/i) {
+                # for the temp table created during schema diff if no charset or collate given then f2 will have only collate information with utf8_mb4_ci (db default) and will create a diff with f1
+                # f1 table could be in latin. so avoid diff in scenario where f1 had nothing
                 if($f1 !~ /COLLATE/i && $f1 !~ /CHARACTER SET/i) {  # if f1 has nothing then remove from f2 also 
                     $f2 =~ s/ COLLATE [\w_]+//gi;
                     $f2 =~ s/ CHARACTER SET [\w_]+//gi;
+                }
+                else {
+                    if($f2 =~ /COLLATE/i && $f2 !~ /CHARACTER SET/i) {
+                        # Replacing the charset in f1 is necessary because if the table is in latin1
+                        # charset and the column only specifies the collation, the charset is
+                        # automatically added to the schema by the server. If we don't replace it,
+                        # this will create a redundant diff between fields.
+                        $f1 =~  s/ CHARACTER SET [\w_]+//gi;
+                    }
+
+                    if($f2 !~ /COLLATE/i && $f2 =~ /CHARACTER SET/i) {
+                        $f1 =~ s/ COLLATE [\w_]+//gi;
+                    }
+
+                    # When we moved from mysql 5 to 8 the column definition in mysql 8 does not give default characterset or collate value for tables which already existed.
+                    # But for any newly created table it will show the default character set and collate always if charset or collate or both are mentioned. 
+                    # This will result in redundant diff generation for existing table for whose column definition does not show the default charset or collate value
+
+                    if($f2 =~ /COLLATE/i && $f2 =~ /CHARACTER SET/i) {       # when in f2 both are present
+                        if($f1 !~ /COLLATE/i && $f1 =~ /CHARACTER SET/i) {   # if f1 has only charset then remove collate from f2
+                            $f2 =~ s/ COLLATE [\w_]+//gi;
+                        }
+                        if($f1 =~ /COLLATE/i && $f1 !~ /CHARACTER SET/i) {    # if f1 has only collate then remove charset from f2
+                            $f2 =~ s/ CHARACTER SET [\w_]+//gi;
+                        }
+                    }
                 }
             }
 
