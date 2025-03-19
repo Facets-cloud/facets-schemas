@@ -242,7 +242,7 @@ sub _diff_fields {
             #$f1 =~  s/ CHARACTER SET [\w_]+//gi;
             #$f2 =~  s/ CHARACTER SET [\w_]+//gi;
 
-            if($f2 =~ /COLLATE/i || $f2 !~ /CHARACTER SET/i) {
+            if($f2 =~ /COLLATE/i || $f2 =~ /CHARACTER SET/i) {
                 # for the temp table created during schema diff if no charset or collate given then f2 will have only collate information with utf8_mb4_ci (db default) and will create a diff with f1
                 # f1 table could be in latin. so avoid diff in scenario where f1 had nothing
                 if($f1 !~ /COLLATE/i && $f1 !~ /CHARACTER SET/i) {  # if f1 has nothing then remove from f2 also 
