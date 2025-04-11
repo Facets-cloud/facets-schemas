@@ -88,12 +88,21 @@ jobs:
         run: |
           CHECKOUT_BRANCH=$(git branch --show-current)
           if [[ "$CHECKOUT_BRANCH" == "${{ steps.ref.outputs.ref }}" ]]; then
+           #### Generating tag
            git tag -a ${{ steps.tag.outputs.tag }} -m "[Automated] Building tag ${{ steps.tag.outputs.tag }}"
            git push origin ${{ steps.tag.outputs.tag }}
+          
+           ### Zipping tag
            zip -r ${{ steps.tag.outputs.tag }}.zip capillary-cloud-tf
+          
+           ### Pushing ZIP to S3
            aws s3 cp ${{ steps.tag.outputs.tag }}.zip s3://${{ secrets.BUCKET_NAME }}/stage/${{ steps.tag.outputs.tag }}.zip
-           python .github/workflows/get_migrations.py capillary-cloud-tf/tfmain/scripts/migrations
+          
+           ### Generating Migration JSON
+           python .github/workflows/migrations/get_migrations.py capillary-cloud-tf/tfmain/scripts/migrations
            mv migrations.json ${{ steps.tag.outputs.tag }}-migrations.json
+          
+           ### Pusing Migration JSON to S3
            aws s3 cp ${{ steps.tag.outputs.tag }}-migrations.json s3://${{ secrets.BUCKET_NAME }}/stage/${{ steps.tag.outputs.tag }}-migrations.json
           else
            echo "Checkout branch is not the ref branch. Exiting"
@@ -103,7 +112,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-      - name: Post Success to a Slack channel
+      - name: Post Success to the Infra notifications Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
@@ -111,3 +120,17 @@ jobs:
           slack-message: 'Tag <https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}|${{ steps.tag.outputs.tag }}> has been successfully built. Please monitor stage environments.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      - name: Post message to customers slack channel
+        env:
+            BUCKET_NAME: ${{ secrets.BUCKET_NAME }}  # Add these secrets in your repo settings
+            IAC_STREAM: 'stage'
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+            AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+            MIGRATION_SCRIPTS_PATH: 'capillary-cloud-tf/tfmain/scripts/migrations'
+            SLACK_CHANNEL_IDS: ${{ vars.CUSTOMER_SLACK_CHANNEL_IDS }}
+            CURRENT_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+            pip install boto3
+            python3 .github/workflows/migrations/tag_cut_notification.py
