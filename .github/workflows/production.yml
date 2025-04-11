@@ -109,6 +109,20 @@ jobs:
           slack-message: 'Tag ${{ inputs.tag }} has been forcefully promoted to production!. Workflow for publishing the schema documentation has been triggered and can be tracked <${{ steps.schema_documentation_trigger.outputs.url }}|here>'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      - name: Post message to customers slack channel
+        env:
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          IAC_STREAM: 'production'
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          MIGRATION_SCRIPTS_PATH: 'capillary-cloud-tf/tfmain/scripts/migrations'
+          SLACK_CHANNEL_IDS: ${{ vars.CUSTOMER_SLACK_CHANNEL_IDS }}
+          CURRENT_TAG: ${{ inputs.tag }}
+        run: |
+          pip install boto3
+          python3 .github/workflows/migrations/tag_cut_notification.py
   on-failure:
     needs: build
     runs-on: ubuntu-latest

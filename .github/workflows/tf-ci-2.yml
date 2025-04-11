@@ -37,7 +37,7 @@ jobs:
           mkdir archive
           zip -r archive/$POM_VERSION.zip capillary-cloud-tf
           aws s3 cp archive/$POM_VERSION.zip s3://${{ secrets.BUCKET_NAME }}/${{ env.BRANCH_NAME }}/$POM_VERSION.zip
-          python .github/workflows/get_migrations.py capillary-cloud-tf/tfmain/scripts/migrations
+          python .github/workflows/migrations/get_migrations.py capillary-cloud-tf/tfmain/scripts/migrations
           mv migrations.json archive/$POM_VERSION-migrations.json
           aws s3 cp archive/$POM_VERSION-migrations.json s3://${{ secrets.BUCKET_NAME }}/${{ env.BRANCH_NAME }}/$POM_VERSION-migrations.json
         env:
