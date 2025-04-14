@@ -6,9 +6,12 @@ RUN tar -xvf go1.21.6.linux-amd64.tar.gz -C /usr/local
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN wget https://releases.hashicorp.com/terraform/1.5.7/terraform_1.5.7_linux_amd64.zip
 RUN unzip terraform_1.5.7_linux_amd64.zip
+RUN wget -q https://github.com/opentofu/opentofu/releases/download/v1.9.0/tofu_1.9.0_linux_amd64.zip -P tofu
+RUN unzip -q tofu/tofu_1.9.0_linux_amd64.zip -d tofu
+RUN chmod +x tofu/tofu
 RUN wget https://dl.k8s.io/release/v1.29.3/bin/linux/amd64/kubectl
 
-FROM ghcr.io/actions/actions-runner:2.321.0
+FROM ghcr.io/actions/actions-runner:2.323.0
 ENV HOME="/home/runner"
 # Update the package list
 RUN sudo add-apt-repository ppa:rmescandon/yq -y
@@ -27,6 +30,9 @@ ENV PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
 #installing terraform
 COPY --from=builder terraform /usr/local/bin/terraform
 RUN sudo chown runner /usr/local/bin/terraform
+#installing tofu
+COPY --from=builder tofu/tofu /usr/local/bin/tofu
+RUN sudo chown runner /usr/local/bin/tofu
 #installing kubectl
 COPY --from=builder kubectl /usr/local/bin/kubectl
 RUN sudo chown runner /usr/local/bin/kubectl

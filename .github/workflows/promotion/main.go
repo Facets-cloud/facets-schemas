@@ -2,24 +2,24 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"slices"
 	"strings"
 	"sync"
-	"flag"
-	"os"
 )
 
 type APIConfig struct {
-	URL          string `json:"URL"`
-	Username     string `json:"Username"`
-	Password     string `json:"Password"`
-	QueryParams  map[string]string
-	Name         string `json:"Name"`
-	ClusterID    string
-	AbsolutePath string
+	URL            string `json:"URL"`
+	Username       string `json:"Username"`
+	Password       string `json:"Password"`
+	QueryParams    map[string]string
+	Name           string `json:"Name"`
+	ClusterID      string
+	AbsolutePath   string
 	IncludeCluster []string `json:"IncludeCluster"`
 }
 
@@ -97,37 +97,37 @@ func main() {
 	flag.Parse()
 	versionParts := strings.Split(tag, ".")
 	majorVersion := versionParts[0]
-    minorVersion := versionParts[1]
+	minorVersion := versionParts[1]
 	var control_planes map[string]APIConfig
 	var passwordMap map[string]string
-    file, err := os.Open("control_planes.json")
-    if err != nil {
-    	fmt.Println("Error opening JSON file:", err)
-    	return
-    }
-    decoder := json.NewDecoder(file)
-    if err := decoder.Decode(&control_planes); err != nil {
-    	fmt.Println("Error decoding JSON:", err)
-    	return
-    }
-    defer file.Close()
-    file, err = os.Open("passwords.json")
-    if err != nil {
-        fmt.Println("Error opening JSON file:", err)
-        return
-    }
-    decoder = json.NewDecoder(file)
-    if err := decoder.Decode(&passwordMap); err != nil {
-        fmt.Println("Error decoding JSON:", err)
-        return
-    }
-    defer file.Close()
-    for key, token := range passwordMap {
-    	if apiConfig, exists := control_planes[key]; exists {
-    		apiConfig.Password = token
-    		control_planes[key] = apiConfig
-    	}
-    }
+	file, err := os.Open("control_planes.json")
+	if err != nil {
+		fmt.Println("Error opening JSON file:", err)
+		return
+	}
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&control_planes); err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return
+	}
+	defer file.Close()
+	file, err = os.Open("passwords.json")
+	if err != nil {
+		fmt.Println("Error opening JSON file:", err)
+		return
+	}
+	decoder = json.NewDecoder(file)
+	if err := decoder.Decode(&passwordMap); err != nil {
+		fmt.Println("Error decoding JSON:", err)
+		return
+	}
+	defer file.Close()
+	for key, token := range passwordMap {
+		if apiConfig, exists := control_planes[key]; exists {
+			apiConfig.Password = token
+			control_planes[key] = apiConfig
+		}
+	}
 	var wg sync.WaitGroup
 	controlPlaneChannel := make(chan *ApiResponse, len(control_planes))
 	for _, control_plane := range control_planes {
@@ -145,19 +145,19 @@ func main() {
 		if result != nil {
 			for _, content := range result.Content {
 				absolutePath := result.Config.Name + " -> " + content.StackName + " -> " + content.Name
-				if slices.Contains(result.Config.IncludeCluster,content.Name) {
-				    clusters[absolutePath] = map[string]interface{}{
-                    	"clusterID":    content.ID,
-                    	"URL":          result.Config.URL,
-                    	"Username":     result.Config.Username,
-                    	"Password":     result.Config.Password,
-                    	"AbsolutePath": absolutePath,
-                    }
+				if slices.Contains(result.Config.IncludeCluster, content.Name) {
+					clusters[absolutePath] = map[string]interface{}{
+						"clusterID":    content.ID,
+						"URL":          result.Config.URL,
+						"Username":     result.Config.Username,
+						"Password":     result.Config.Password,
+						"AbsolutePath": absolutePath,
+					}
 				}
 			}
 		} else {
 			panic("At least one API call failed to fetch list of the clusters. Exiting...")
-            break
+			break
 		}
 	}
 	resultChannel := make(chan *ApiResponse, len(clusters))
@@ -167,8 +167,8 @@ func main() {
 			Username: cluster["Username"].(string),
 			Password: cluster["Password"].(string),
 			QueryParams: map[string]string{
-			    "excludeStatus": "FAULT",
-			    "pageSize": "100",
+				"excludeStatus": "FAULT",
+				"pageSize":      "100",
 			},
 			ClusterID:    cluster["clusterID"].(string),
 			AbsolutePath: cluster["AbsolutePath"].(string),
@@ -180,37 +180,37 @@ func main() {
 	wg.Wait()
 	close(resultChannel)
 	failedReleases := make(map[string]map[string]string)
-	noReleases := make([]string,0)
+	noReleases := make([]string, 0)
 	excludeStatus := []string{"SUCCEEDED", "FAULT", "IN_PROGRESS"}
 	// Process the results
 	for result := range resultChannel {
-	    absolutePath := result.Config.AbsolutePath
+		absolutePath := result.Config.AbsolutePath
 		if result != nil {
 			releasesFromTag := make([]map[string]string, 0)
 			for _, content := range result.Content {
-				if strings.Contains(content.TFVersion, "stage/"+ majorVersion + "." + minorVersion + ".") {
+				if strings.Contains(content.TFVersion, "stage/"+majorVersion+"."+minorVersion+".") {
 					releaseLink := result.Config.URL + "/capc/capillary-cloud/cluster/" + result.Config.ClusterID + "/release-details/" + content.ID
 					releasesFromTag = append(releasesFromTag, map[string]string{
 						"absolutePath": absolutePath,
 						"releaseLink":  releaseLink,
 						"status":       content.Status,
-						"ReleaseType": content.ReleaseType,
+						"ReleaseType":  content.ReleaseType,
 					})
 				}
 			}
 			if len(releasesFromTag) == 0 {
-                noReleases = append(noReleases,absolutePath)
+				noReleases = append(noReleases, absolutePath)
 			}
 			for _, release := range releasesFromTag {
-			    if (release["ReleaseType"] == "RELEASE") {
-			        if (!slices.Contains(excludeStatus, release["status"])) {
-			            failedReleases[release["absolutePath"]] = map[string]string{
-                            "releaseLink": release["releaseLink"],
-                            "status":      release["status"],
-                        }
-			        }
-                    break
-			    }
+				if release["ReleaseType"] == "RELEASE" {
+					if !slices.Contains(excludeStatus, release["status"]) {
+						failedReleases[release["absolutePath"]] = map[string]string{
+							"releaseLink": release["releaseLink"],
+							"status":      release["status"],
+						}
+					}
+					break
+				}
 			}
 			if len(releasesFromTag) > 0 {
 				if !slices.Contains([]string{"SUCCEEDED", "FAULT", "IN_PROGRESS"}, releasesFromTag[0]["status"]) {
@@ -225,21 +225,26 @@ func main() {
 			break
 		}
 	}
+	var promote bool = true
 	if len(noReleases) > 0 {
-	    fmt.Printf("Tag %s could not be promoted to production. No releases found for the following clusters. \n", tag)
-	    for _, absolutePath := range noReleases {
-	        fmt.Printf("%s\n",absolutePath)
-	    }
-	    os.Exit(1)
+		fmt.Printf("Tag %s could not be promoted to production. No releases found for the following clusters. \n", tag)
+		for _, absolutePath := range noReleases {
+			fmt.Printf("%s\n", absolutePath)
+		}
+		promote = false
+	}
+
+	if len(failedReleases) > 0 {
+		fmt.Printf("Tag %s could not be promoted to production due to the following release failures.\n", tag)
+		for absolutePath, release := range failedReleases {
+			fmt.Printf(" <%s|%s>: %s \n", release["releaseLink"], absolutePath, release["status"])
+		}
+		promote = false
+	}
+
+	if promote {
+		fmt.Printf("Tag %s successfully promoted to production.\n", tag)
 	} else {
-	    if len(failedReleases) > 0 {
-        	fmt.Printf("Tag %s could not be promoted to production due to the following release failures.\n", tag)
-        	for absolutePath, release := range failedReleases {
-        		fmt.Printf(" <%s|%s>: %s \n", release["releaseLink"],absolutePath, release["status"])
-        	}
-        	os.Exit(1)
-        } else {
-        	fmt.Printf("Tag %s successfully promoted to production.\n", tag)
-       }
+		os.Exit(1)
 	}
 }
