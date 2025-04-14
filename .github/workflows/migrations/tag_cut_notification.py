@@ -43,8 +43,7 @@ def prepare_migration_message(migrations, previous_tag_sequence_number):
             messages.append(message)
     return messages
 
-def send_slack_notification(migration_messages, iac_stream):
-    tag = os.environ.get('CURRENT_TAG')
+def send_slack_notification(migration_messages, iac_stream, tag):
     slack_token = os.environ.get('SLACK_BOT_TOKEN')  # Get your Slack bot token from environment variable
     channel_ids_json = os.environ.get('SLACK_CHANNEL_IDS')  # Get JSON of Slack channel IDs from environment variable
 
@@ -82,13 +81,15 @@ def send_slack_notification(migration_messages, iac_stream):
 def main():
     bucket_name = os.environ.get('BUCKET_NAME')
     iac_stream = os.environ.get('IAC_STREAM')
+    current_tag = os.environ.get('CURRENT_TAG')
     json_files = list_json_files_from_bucket(bucket_name, iac_stream)
     if not json_files:
         print("No JSON files found in the S3 bucket.")
         return
 
     # Get the last file
-    last_file = json_files[0]  # First file after sorting in reverse order
+    current_tag_index = json_files.index(f'{iac_stream}/{current_tag}-migrations.json')
+    last_file = json_files[current_tag_index + 1]
 
     # Read and extract the first sequence number from the last file
     json_content = read_json_file_from_s3(bucket_name, last_file)
@@ -110,7 +111,7 @@ def main():
                 print(message)
 
             # Send the notification to Slack
-            send_slack_notification(migration_messages, iac_stream)  # Send the Slack notification for production
+            send_slack_notification(migration_messages, iac_stream, current_tag)  # Send the Slack notification for production
         else:
             print("No migrations with higher sequence numbers.")
     else:
