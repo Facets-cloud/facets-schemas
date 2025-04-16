@@ -70,9 +70,21 @@ fi
 find "$path" -type d -name .terraform -exec rm -rf {} +
 find "$path" -type f -name .terraform.lock.hcl -exec rm -f {} +
 
-# Create a zip file of the specified folder
-zip_file="$(basename "$path").zip"
-(cd "$path" && zip -r "$zip_file" . > /dev/null)
+# Create zip file in a cross-platform way
+(
+  cd "$path" || exit 1
+  if command -v zip >/dev/null 2>&1; then
+    # Linux/Mac approach
+    zip -r "$zip_file" . >/dev/null
+  elif command -v powershell >/dev/null 2>&1; then
+    # Windows approach using PowerShell
+    powershell -Command "Compress-Archive -Path './*' -DestinationPath './$zip_file' -Force" >/dev/null
+  else
+    echo "❌ Error: Neither 'zip' nor 'powershell' command found. Cannot create zip file."
+    exit 1
+  fi
+)
+
 if [[ $? -ne 0 ]]; then
   echo "❌ Error: Failed to create zip file."
   exit 1
