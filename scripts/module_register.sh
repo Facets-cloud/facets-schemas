@@ -71,6 +71,7 @@ find "$path" -type d -name .terraform -exec rm -rf {} +
 find "$path" -type f -name .terraform.lock.hcl -exec rm -f {} +
 
 # Create zip file in a cross-platform way
+zip_file="$(basename "$path").zip"
 (
   cd "$path" || exit 1
   if command -v zip >/dev/null 2>&1; then
@@ -101,16 +102,28 @@ if [[ -n "$git_url" || -n "$git_ref" || "$is_feature_branch" == true || "$auto_c
   # Include both isFeatureBranch and autoCreate in the JSON
   git_info=$(echo "$git_info" | jq --arg v "$is_feature_branch" '. + {featureBranch: ($v == "true")}')
   git_info=$(echo "$git_info" | jq --arg v "$auto_create" '. + {autoCreate: ($v == "true")}')
-  
+
   # Create a temporary file for the git info
   git_info_file=$(mktemp)
-  echo "$git_info" > "$git_info_file"
-  
+  echo "$git_info" >"$git_info_file"
+
   # Send the request with both file and git info
-  response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
-    -H "Authorization: Basic ${auth_string}" \
-    -F "file=@$path/$zip_file" \
-    -F "metadata=@$git_info_file;type=application/json")
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+    # Windows/Git Bash approach - convert paths to Windows format
+    win_path=$(cygpath -w "$path/$zip_file")
+    win_git_info=$(cygpath -w "$git_info_file")
+
+    response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
+      -H "Authorization: Basic ${auth_string}" \
+      -F "file=@\"$win_path\"" \
+      -F "metadata=@\"$win_git_info\";type=application/json")
+  else
+    # Unix/Mac approach
+    response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
+      -H "Authorization: Basic ${auth_string}" \
+      -F "file=@$path/$zip_file" \
+      -F "metadata=@$git_info_file;type=application/json")
+  fi
 else
   # Send the request with file only
   response=$(curl -w "\n%{http_code}" -o response_body.txt -s -X POST "$url" \
