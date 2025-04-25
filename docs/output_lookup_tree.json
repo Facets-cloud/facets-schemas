@@ -346,7 +346,15 @@
         "out": {}
     },
     "sns": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "sns_topic_name": {},
+                "consumer_policy_arn": {},
+                "producer_policy_arn": {},
+                "topic_arn": {},
+                "topic_name": {}
+            }
+        }
     },
     "postgres": {
         "out": {
@@ -470,7 +478,9 @@
                 "bucket_region": {},
                 "read_only_iam_policy_arn": {},
                 "read_write_iam_policy_arn": {}
-            }
+            },
+            "bucket_regional_domain_name": {},
+            "website_endpoint": {}
         }
     },
     "loki_recording_rules": {
