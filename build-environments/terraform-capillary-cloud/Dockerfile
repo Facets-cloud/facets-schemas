@@ -19,7 +19,7 @@ COPY build-environments/terraform-capillary-cloud/scripts/mysql-schema-diff/Diff
 RUN wget https://app.getambassador.io/download/tel2/linux/amd64/2.4.2/telepresence
 RUN mv telepresence /usr/local/bin/telepresence
 RUN chmod +x /usr/local/bin/telepresence
-RUN pip3 install --no-cache-dir pykube-ng pytz google-api-python-client google-auth psycopg2-binary google-cloud-secret-manager
+RUN pip3 install --no-cache-dir pykube-ng pytz google-api-python-client google-auth psycopg2-binary google-cloud-secret-manager google-cloud-storage
 
 RUN rm -rf /usr/local/bin/telepresence
 RUN rm -rf terraform_1.0.11 terraform_1.0 kubectl1.21 terraform_1.5.7

@@ -31,6 +31,8 @@ jobs:
                    "provider=cloudflare alias=cloudflare4 version=4.29.0 architectures=darwin_amd64,linux_amd64 link=https://github.com/cloudflare/terraform-provider-cloudflare/releases/download/v4.29.0 path=cloudflare/cloudflare4/4.29.0"
                    "provider=cloudflare alias=cloudflare4a version=4.45.0 architectures=darwin_amd64,linux_amd64 link=https://github.com/cloudflare/terraform-provider-cloudflare/releases/download/v4.45.0 path=cloudflare/cloudflare4a/4.45.0"
                    "provider=azurerm alias=azurerm3 version=3.52.0 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-azurerm/3.52.0 path=hashicorp/azurerm3/3.52.0"
+                   "provider=azurerm alias=azurerm3-105-0 version=3.105.0 architectures=linux_amd64 link=https://releases.hashicorp.com/terraform-provider-azurerm/3.105.0 path=hashicorp/azurerm3-105-0/3.105.0"
+                   "provider=azurerm alias=azurerm3-116-0 version=3.116.0 architectures=linux_amd64 link=https://releases.hashicorp.com/terraform-provider-azurerm/3.116.0 path=hashicorp/azurerm3-116-0/3.116.0"
                    "provider=scratch alias=scratch version=0.4.0 architectures=darwin_amd64,linux_amd64 link=https://github.com/BrendanThompson/terraform-provider-scratch/releases/download/v0.4.0 path=hashicorp/scratch/0.4.0"
                    "provider=google alias=google5 version=5.32.0 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-google/5.32.0 path=hashicorp/google5/5.32.0"
                    "provider=aws alias=aws5 version=5.49.0 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-aws/5.49.0 path=hashicorp/aws5/5.49.0")
