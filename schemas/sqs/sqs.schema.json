@@ -73,7 +73,7 @@
                 "attributes": {
                   "type": "object",
                   "properties": {
-                    "sqs_topic_name": {
+                    "sqs_queue_name": {
                       "type": "string",
                       "description": "Name of the SQS queue."
                     },
