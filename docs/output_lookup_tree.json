@@ -34,7 +34,14 @@
         }
     },
     "sns": {
-        "out": {}
+        "out": {
+        "attributes": {
+            "sns_topic_name": {},
+            "consumer_policy_arn": {},
+            "producer_policy_arn": {},
+            "topic_arn": {}
+        }
+      }
     },
     "alb": {
         "out": {
