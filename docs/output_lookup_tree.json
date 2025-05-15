@@ -371,8 +371,9 @@
     "google_cloud_storage": {
         "out": {
             "attributes": {
-                "name": {},
-                "url": {}
+                "bucket_name": {},
+                "url": {},
+                "bucket_iam_condition_expression": {}
             }
         }
     },
