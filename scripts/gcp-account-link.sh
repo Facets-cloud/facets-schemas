@@ -227,6 +227,7 @@ PERMISSIONS=(
   "container.cronJobs.get"
   "container.deployments.create"
   "container.deployments.get"
+  "container.deployments.update"
   "container.namespaces.create"
   "container.namespaces.delete"
   "container.namespaces.get"
