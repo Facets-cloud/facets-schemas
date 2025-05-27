@@ -1,8 +1,12 @@
 #!/bin/bash
 
-# Check if CP_URL, PRINCIPAL_NAME, and WEBHOOK_ID were provided as arguments
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
+# Check if CP_URL, PRINCIPAL_NAME, WEBHOOK_ID, and IMPERSONATION_SA_EMAIL were provided as arguments
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID> <IMPERSONATION_SA_EMAIL>"
+    echo "  CP_URL: The control plane URL"
+    echo "  PRINCIPAL_NAME: The name for the service account (will be prefixed with 'facets-')"
+    echo "  WEBHOOK_ID: The webhook ID for linking the account"
+    echo "  IMPERSONATION_SA_EMAIL: The release pod service account email that will be granted impersonation rights"
     exit 1
 fi
 
@@ -13,6 +17,7 @@ PRINCIPAL_NAME="facets-$2"
 ROLE_NAME=$(echo $PRINCIPAL_NAME | tr '-' '_')
 
 WEBHOOK_ID=$3
+IMPERSONATION_SA_EMAIL=$4
 
 # Fetch all projects in JSON format
 echo "Fetching available projects..."
@@ -56,14 +61,14 @@ fi
 
 # List of APIs to enable
 apis=(
-  "alloydb.googleapis.com" "analyticshub.googleapis.com" "artifactregistry.googleapis.com" "autoscaling.googleapis.com" 
-  "bigquery.googleapis.com" "bigqueryconnection.googleapis.com" "bigquerydatapolicy.googleapis.com" "bigquerymigration.googleapis.com" 
-  "bigqueryreservation.googleapis.com" "bigquerystorage.googleapis.com" "certificatemanager.googleapis.com" "cloudapis.googleapis.com" 
-  "cloudkms.googleapis.com" "cloudresourcemanager.googleapis.com" "cloudtrace.googleapis.com" "compute.googleapis.com" "container.googleapis.com" 
-  "containerfilesystem.googleapis.com" "containerregistry.googleapis.com" "dataform.googleapis.com" "dataplex.googleapis.com" 
-  "datastore.googleapis.com" "deploymentmanager.googleapis.com" "dns.googleapis.com" "gkebackup.googleapis.com" "iam.googleapis.com" 
-  "iamcredentials.googleapis.com" "logging.googleapis.com" "monitoring.googleapis.com" "networkconnectivity.googleapis.com" "oslogin.googleapis.com" 
-  "pubsub.googleapis.com" "redis.googleapis.com" "servicemanagement.googleapis.com" "servicenetworking.googleapis.com" "serviceusage.googleapis.com" 
+  "alloydb.googleapis.com" "analyticshub.googleapis.com" "artifactregistry.googleapis.com" "autoscaling.googleapis.com"
+  "bigquery.googleapis.com" "bigqueryconnection.googleapis.com" "bigquerydatapolicy.googleapis.com" "bigquerymigration.googleapis.com"
+  "bigqueryreservation.googleapis.com" "bigquerystorage.googleapis.com" "certificatemanager.googleapis.com" "cloudapis.googleapis.com"
+  "cloudkms.googleapis.com" "cloudresourcemanager.googleapis.com" "cloudtrace.googleapis.com" "compute.googleapis.com" "container.googleapis.com"
+  "containerfilesystem.googleapis.com" "containerregistry.googleapis.com" "dataform.googleapis.com" "dataplex.googleapis.com"
+  "datastore.googleapis.com" "deploymentmanager.googleapis.com" "dns.googleapis.com" "gkebackup.googleapis.com" "iam.googleapis.com"
+  "iamcredentials.googleapis.com" "logging.googleapis.com" "monitoring.googleapis.com" "networkconnectivity.googleapis.com" "oslogin.googleapis.com"
+  "pubsub.googleapis.com" "redis.googleapis.com" "servicemanagement.googleapis.com" "servicenetworking.googleapis.com" "serviceusage.googleapis.com"
   "sql-component.googleapis.com" "sqladmin.googleapis.com" "storage-api.googleapis.com" "storage-component.googleapis.com" "storage.googleapis.com"
 )
 
@@ -311,6 +316,20 @@ gcloud iam roles create $ROLE_NAME \
   --quiet
 
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="projects/$PROJECT_ID/roles/$ROLE_NAME"
+
+# Grant service account impersonation rights to the specified service account
+echo "Granting service account impersonation rights to $IMPERSONATION_SA_EMAIL..."
+gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" \
+  --member="serviceAccount:$IMPERSONATION_SA_EMAIL" \
+  --role="roles/iam.serviceAccountTokenCreator"
+
+if [ $? -ne 0 ]; then
+    echo "Failed to grant service account impersonation rights to $IMPERSONATION_SA_EMAIL."
+    echo "Please verify that the impersonation service account email is correct and that you have the necessary permissions."
+    exit 1
+fi
+
+echo "Service account impersonation rights granted successfully to $IMPERSONATION_SA_EMAIL."
 
 # Base64 encode the service account key JSON
 SERVICE_ACCOUNT_KEY_BASE64=$(base64 -w 0 "$PRINCIPAL_NAME-key.json")
