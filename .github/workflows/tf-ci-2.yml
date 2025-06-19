@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - tfdev
+      - 'rc-*.*.*'
   workflow_dispatch:
     inputs:
       branchName:
@@ -12,12 +13,11 @@ on:
 
 jobs:
   build:
-
     runs-on: iac-arc
 
     steps:
       - name: Set BRANCH_NAME variable
-        run: echo "BRANCH_NAME=${{ github.event.inputs.branchName || 'tfdev' }}" >> $GITHUB_ENV
+        run: echo "BRANCH_NAME=${{ github.event.inputs.branchName || github.ref_name }}" >> $GITHUB_ENV
       - name: Checkout Facets-IAC code
         uses: actions/checkout@v2
         with:
