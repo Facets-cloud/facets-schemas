@@ -563,8 +563,7 @@ async def main():
         process_cluster(console, stack_name, cluster)
         for stack_name, clusters in stacks_clusters_versions.items()
         for cluster in clusters.values()
-        if cluster.get("state") == "RUNNING"
-        and cluster.get("version", {}).get("majorVersion", None)
+        if cluster.get("version", {}).get("majorVersion", None)
         == int(STREAM_MAJOR_VERSION)
         and cluster.get("version", {}).get("tfStream", None) == "stage"
         or cluster.get("version", {}).get("tfStream", None) == "production"
