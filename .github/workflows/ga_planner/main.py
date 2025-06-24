@@ -4,6 +4,7 @@ import base64
 import json
 import boto3
 import os
+from botocore.exceptions import ClientError, NoCredentialsError
 from rich.console import Console
 from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -24,6 +25,8 @@ RUN_MIGRATION_SCRIPTS = os.getenv("RUN_MIGRATION_SCRIPTS", "false")
 
 MAJOR_VERSION = os.getenv("MAJOR_VERSION", "50")
 MINOR_VERSION = os.getenv("MINOR_VERSION", "latest")
+
+FORCE_RUN_ALL_ENVIRONMENTS = os.getenv("FORCE_RUN_ALL_ENVIRONMENTS", "false")
 
 with open("./control_planes.json", "r") as ff:
     endpoints = json.load(ff)
@@ -241,7 +244,7 @@ async def create_and_wait_for_deployment(
                     ) as deployment_response:
                         if deployment_response.status != 200:
                             raise Exception(
-                                f"Failed to get deployment status for deployment ID {deployment_id}: {deployment_response.status}: {await deployment_response.text()}"
+                                f"Failed to get deployment status for deployment ID {deployment_id} URL {deployment_url}: {deployment_response.status}: {await deployment_response.text()}"
                             )
                         deployment_status = await deployment_response.json()
                         if status != deployment_status.get('status'):
@@ -255,6 +258,42 @@ async def create_and_wait_for_deployment(
                             10
                         )  # Wait for 10 seconds before checking again
                 return release_url
+
+async def file_exists_in_s3(
+        file_name: str, access_key: str, secret_key: str
+) -> bool:
+    """
+    Check if a file exists in S3 bucket.
+
+    Args:
+        file_name (str): The name/key of the file to check.
+        access_key (str): The AWS access key.
+        secret_key (str): The AWS secret key.
+
+    Returns:
+        bool: True if file exists, False otherwise.
+    """
+    try:
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name="ap-south-1",
+        )
+
+        s3.head_object(Bucket=PLAN_BUCKET, Key=file_name)
+        return True
+
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            return False
+        else:
+            # For other AWS errors (permissions, etc.), return False
+            return False
+
+    except Exception:
+        # For any other errors, return False
+        return False
 
 
 async def get_presigned_url_for_s3(
@@ -360,21 +399,23 @@ async def process_cluster(console: Console, stack_name: str, cluster: dict) -> t
         cc_username = cluster.get("username", "")
         cc_password = cluster.get("password", "")
         plan_path = f"{stack_name}/{cluster_id}/{RC_BRANCH}/{TF_PLAN_FILE}"
-        presigned_url = await get_presigned_url_for_s3(
-            plan_path,
-            access_key=AWS_ACCESS_KEY,
-            secret_key=AWS_SECRET_KEY,
-        )
-        release_link = await create_and_wait_for_deployment(
-            console,
-            session,
-            cc_endpoint,
-            cc_username,
-            cc_password,
-            cluster_id,
-            presigned_url,
-            stack_name,
-        )  # Create deployments for the cluster
+        release_link = "NOT RUN IN THIS GA PLANNER, REFER TO THE PREVIOUS RUNS TO KNOW THE RELEASE LINK"
+        if FORCE_RUN_ALL_ENVIRONMENTS == "true" or not await file_exists_in_s3(plan_path, access_key=AWS_ACCESS_KEY, secret_key=AWS_SECRET_KEY):
+            presigned_url = await get_presigned_url_for_s3(
+                plan_path,
+                access_key=AWS_ACCESS_KEY,
+                secret_key=AWS_SECRET_KEY,
+            )
+            release_link = await create_and_wait_for_deployment(
+                console,
+                session,
+                cc_endpoint,
+                cc_username,
+                cc_password,
+                cluster_id,
+                presigned_url,
+                stack_name,
+            )  # Create deployments for the cluster
         return (
             stack_name,
             cluster_name,
@@ -510,7 +551,7 @@ async def main():
         console=console,
     ) as progress:
         fetch_task = progress.add_task(
-            "[cyan]Fetching stacks, clusters, and versions...", total=len(endpoints)
+            "[cyan]Fetching stacks, clusters, and versions...\n", total=len(endpoints)
         )
         async with aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=300)

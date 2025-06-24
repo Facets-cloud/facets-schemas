@@ -29,6 +29,14 @@ on:
         options:
           - 'true'
           - 'false'
+      forceRunInAllEnvironments:
+        description: 'Force run in all environments?'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build:
@@ -54,4 +62,5 @@ jobs:
           MINOR_VERSION: ${{ inputs.branchMinorVersion }}
           STREAM_MAJOR_VERSION: ${{ inputs.streamMajorVersion }}
           RUN_MIGRATION_SCRIPTS: ${{ inputs.runMigrationScripts }}
+          FORCE_RUN_ALL_ENVIRONMENTS: ${{ inputs.forceRunInAllEnvironments }}
 
