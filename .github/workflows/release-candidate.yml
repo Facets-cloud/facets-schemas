@@ -65,11 +65,20 @@ jobs:
             git checkout -b rc-${{ steps.tag.outputs.tag }}
           fi
           git push origin rc-${{ steps.tag.outputs.tag }}
+      - name: Authenticate GH CLI
+        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
+      - name: Trigger tf-ci dev
+        id: trigger
+        run: |
+          gh workflow run tf-ci-2.yml -R ${{ github.repository }} --ref tfdev -F branchName=rc-${{ steps.tag.outputs.tag }}
+          sleep 3
+          url=$(gh run list --workflow=tf-ci-2.yml --json url --jq '.[0].url')
+          echo "url=$url" >> $GITHUB_OUTPUT
       - name: Post Success to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
         with:
           channel-id: ${{ vars.IAC_QA_CHANNEL_ID }}
-          slack-message: 'Release Candidate rc-${{ steps.tag.outputs.tag }} branch is ready for QA testing.'
+          slack-message: 'Release Candidate rc-${{ steps.tag.outputs.tag }} branch is ready for QA testing. Github Action for building the release candidate has been triggered and can be tracked <${{ steps.trigger.outputs.url }}|here>.'
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
