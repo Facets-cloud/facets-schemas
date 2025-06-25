@@ -247,7 +247,12 @@
         }
     },
     "sns": {
-        "out": {}
+        "out": {
+            "attributes": {
+                "topic_arn": {},
+                "topic_name": {}
+            }
+        }
     },
     "ingress": {
         "out": {
