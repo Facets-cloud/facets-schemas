@@ -74,7 +74,10 @@ async def check_successful_releases(cluster_id: str, url: str, username: str, pa
                     f"Unable to fetch last 14 days of successful releases for cluster {cluster_id}: {response.status}: {await response.text()}"
                 )
             data = await response.json()
-            return len(data["content"]) > 0
+            length_content = len(data["content"])
+            if length_content == 0:
+                print(f"No successful releases for cluster {cluster_id} in control plane {url}.")
+            return length_content > 0
 
 
 async def fetch_stacks(session: aiohttp.ClientSession, url: str, username:str, password: str) -> dict:
