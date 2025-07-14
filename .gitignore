@@ -80,3 +80,4 @@ capillary-cloud-tf/tfmain/scripts/local-testing/hotfix.json
 capillary-cloud-tf/tfmain/scripts/local-testing/custom.txt
 schema.sh
 .aider*
+**/control_planes.json
