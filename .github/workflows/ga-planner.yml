@@ -9,18 +9,6 @@ on:
       branchName:
         description: 'RC Branch Name'
         required: true
-      refbranchName:
-        description: 'Ref branch name to use'
-        default: tfdev
-      streamMajorVersion:
-        description: 'Stream Major Version'
-        default: "3"
-      branchMajorVersion:
-        description: 'Major Version for Branch'
-        default: "50"
-      branchMinorVersion:
-        description: 'Minor Version for Branch'
-        default: latest
       runMigrationScripts:
         description: 'Run migration scripts?'
         type: choice
@@ -43,9 +31,10 @@ jobs:
     runs-on: iac-arc
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.refbranchName }}
+          ref: ${{ inputs.branchName }}
+          fetch-depth: 0  # Fetch all history and branches
       - name: Install dependencies from requirements.txt
         run: python -m pip install -r .github/workflows/ga_planner/requirements.txt
       - name: Invoke GA Planner python Script
@@ -58,9 +47,11 @@ jobs:
           RC_BRANCH: ${{ inputs.branchName }}
           GA_AWS_ACCESS_KEY: ${{ secrets.GA_AWS_ACCESS_KEY }}
           GA_AWS_SECRET_KEY: ${{ secrets.GA_AWS_SECRET_KEY }}
-          MAJOR_VERSION: ${{ inputs.branchMajorVersion }}
-          MINOR_VERSION: ${{ inputs.branchMinorVersion }}
-          STREAM_MAJOR_VERSION: ${{ inputs.streamMajorVersion }}
+          MAJOR_VERSION: "50"
           RUN_MIGRATION_SCRIPTS: ${{ inputs.runMigrationScripts }}
           FORCE_RUN_ALL_ENVIRONMENTS: ${{ inputs.forceRunInAllEnvironments }}
-
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CLICKUP_API_TOKEN: ${{ secrets.CLICKUP_API_TOKEN }}
+          CLICKUP_SPACE_ID: ${{ vars.CLICKUP_SPACE_ID }}
+          CLICKUP_ROOT_PAGE_ID: ${{ vars.CLICKUP_ROOT_PAGE_ID }}
+          CLICKUP_DOC_ID: ${{ vars.CLICKUP_DOC_ID }}
