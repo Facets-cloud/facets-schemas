@@ -6,10 +6,14 @@ import boto3
 import os
 from botocore.exceptions import ClientError, NoCredentialsError
 from rich.console import Console
-from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from datetime import datetime, timedelta
 import pytz
+import subprocess
+import re
+# Import our new modules
+from filter import load_and_filter_plan
+from ai_integration import OpenAIAnalyzer
 
 
 TIME_ZONE = pytz.timezone("Asia/Kolkata")
@@ -19,9 +23,20 @@ AWS_ACCESS_KEY = os.getenv("GA_AWS_ACCESS_KEY", "")
 AWS_SECRET_KEY = os.getenv("GA_AWS_SECRET_KEY", "")
 LEVEL = os.getenv("LEVEL", "debug")
 TF_PLAN_FILE = "tfplan-output.json"
+TF_PLAN_FILTERED_FILE = "tfplan-filtered.json"
 STREAM_MAJOR_VERSION = os.getenv("STREAM_MAJOR_VERSION", "2")
 TIMEOUT = os.getenv("TIMEOUT", 3600)
 RUN_MIGRATION_SCRIPTS = os.getenv("RUN_MIGRATION_SCRIPTS", "false")
+
+# New configuration variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+GENERATE_AI_SUMMARY = os.getenv("GENERATE_AI_SUMMARY", "true").lower() == "true"
+FILTER_SENSITIVE_VALUES = os.getenv("FILTER_SENSITIVE_VALUES", "true").lower() == "true"
+EXTRACT_CHANGES_ONLY = os.getenv("EXTRACT_CHANGES_ONLY", "true").lower() == "true"
+CLICKUP_API_TOKEN = os.getenv("CLICKUP_API_TOKEN", "")
+CLICKUP_SPACE_ID = os.getenv("CLICKUP_SPACE_ID", "")
+CLICKUP_ROOT_PAGE_ID = os.getenv("CLICKUP_ROOT_PAGE_ID", "")
+CLICKUP_DOC_ID = os.getenv("CLICKUP_DOC_ID", "")
 
 MAJOR_VERSION = os.getenv("MAJOR_VERSION", "50")
 MINOR_VERSION = os.getenv("MINOR_VERSION", "latest")
@@ -38,7 +53,7 @@ GA plan Uploader
 
 
 ###################################################################
-async def check_successful_releases(cluster_id: str, url: str, username: str, password: str) -> bool:
+async def check_successful_releases(cluster_id: str, url: str, username: str, password: str, stack_name: str = "", cluster_name: str = "") -> bool:
     """
     Checks if there are successful releases in the last 14 days for a given cluster.
 
@@ -60,7 +75,7 @@ async def check_successful_releases(cluster_id: str, url: str, username: str, pa
         "end": end_date.isoformat(),
         "releaseType": "RELEASE",
         "start": start_date.isoformat(),
-        "status": "SUCCEEDED",
+        "excludeStatus": ["FAULT", "TIMED_OUT", "IN_PROGRESS", "STOPPED", "STARTED" ,"QUEUED" , "APPROVED", "REJECTED"]
     }
     search_url = f"{url}/cc-ui/v1/clusters/{cluster_id}/deployments/search"
     async with aiohttp.ClientSession(
@@ -70,14 +85,19 @@ async def check_successful_releases(cluster_id: str, url: str, username: str, pa
             search_url, headers=headers, params=parameters
         ) as response:
             if response.status != 200:
+                cluster_identifier = f"{stack_name}/{cluster_name}" if stack_name and cluster_name else cluster_id
                 raise Exception(
-                    f"Unable to fetch last 14 days of successful releases for cluster {cluster_id}: {response.status}: {await response.text()}"
+                    f"Unable to fetch last 14 days of successful releases for cluster {cluster_identifier}: {response.status}: {await response.text()}"
                 )
             data = await response.json()
-            length_content = len(data["content"])
-            if length_content == 0:
-                print(f"No successful releases for cluster {cluster_id} in control plane {url}.")
-            return length_content > 0
+            content = data.get("content", [])
+            if len(content) > 0:
+                status = content[0].get('status')
+                if status not in ["SUCCEEDED"]:
+                    cluster_identifier = f"{stack_name}/{cluster_name}" if stack_name and cluster_name else cluster_id
+                    print(f"Skipping {cluster_identifier} since there is a {status} FULL release in the environment in control plane {url}.")
+                    return False
+            return True
 
 
 async def fetch_stacks(session: aiohttp.ClientSession, url: str, username:str, password: str) -> dict:
@@ -156,7 +176,7 @@ async def get_cluster_version(
             )  # Return empyt dict if the cluster version is not found (404 error)
         elif response.status != 200:
             raise Exception(
-                f"Failed to fetch cluster version for cluster name {cluster_name} cluster ID {cluster_id}: {response.status}: {await response.text()}"
+                f"Failed to fetch cluster version for cluster {cluster_name} (ID: {cluster_id}): {response.status}: {await response.text()}"
             )
         response_json = await response.json()
         return response_json.get("version", {})
@@ -171,6 +191,7 @@ async def create_and_wait_for_deployment(
     cluster_id: str,
     presigned_url: dict,
     stack_name: str,
+    cluster_name: str = "",
 ):
     """
     Creates and waits for a deployment.
@@ -205,7 +226,6 @@ async def create_and_wait_for_deployment(
     )
     body = {
         "overrideBuildSteps": [
-            # f"terraform plan -out ./tfplan.json && terraform show -no-color -json ./tfplan.json > {TF_PLAN_FILE}",
             f"bash  /sources/primary/capillary-cloud-tf/tfmain/scripts/baseinfra_migration_plan.sh {RUN_MIGRATION_SCRIPTS}",
             f"""
             {curl_cmd}
@@ -222,21 +242,24 @@ async def create_and_wait_for_deployment(
         },
         "withRefresh": False,
     }
+    environment_link = f"{endpoint}/capc/stack/{stack_name}/releases/cluster/{cluster_id}"
     while True:
         async with session.post(url, headers=headers, json=body) as response:
             if response.status == 403:
                 await asyncio.sleep(10)  # Wait for 10 seconds before retrying
+                cluster_identifier = f"{stack_name}/{cluster_name}" if cluster_name else cluster_id
                 console.log(
-                    f"A deployment is already in progress for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/releases... Waiting for existing deployment to complete"
+                    f"A deployment is already in progress for {cluster_identifier} - {environment_link}... Waiting for existing deployment to complete"
                 )
                 continue
             deployment_response = await response.json()
             deployment_id = deployment_response.get("id")
-            release_url = f"{endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
+            release_url = f"{environment_link}/dialog/release-details/{deployment_id}"
             error_logs = deployment_response.get("errorLogs", None)
             if error_logs is not None:
+                cluster_identifier = f"{stack_name}/{cluster_name}" if cluster_name else cluster_id
                 raise Exception(
-                    f"Deployment failed for cluster {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id} : {error_logs}"
+                    f"Deployment failed for cluster {cluster_identifier} - {release_url} : {error_logs}"
                 )
             else:
                 status = None
@@ -251,8 +274,9 @@ async def create_and_wait_for_deployment(
                             )
                         deployment_status = await deployment_response.json()
                         if status != deployment_status.get('status'):
+                            cluster_identifier = f"{stack_name}/{cluster_name}" if cluster_name else cluster_id
                             console.log(
-                                f"{deployment_status.get('status')} for {cluster_id} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
+                                f"{deployment_status.get('status')} for {cluster_identifier} - {endpoint}/capc/{stack_name}/cluster/{cluster_id}/release-details/{deployment_id}"
                             )
                         status = deployment_status.get('status')
                         if status in ["SUCCEEDED", "FAILED"]:
@@ -325,7 +349,7 @@ async def get_presigned_url_for_s3(
     return presigned_url
 
 
-async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) -> dict:
+async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict, control_plane_key: str) -> dict:
     """
     Fetch information about stacks, clusters, and versions.
 
@@ -333,6 +357,7 @@ async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) ->
         session (aiohttp.ClientSession): The aiohttp client session.
         name (str): The name of the stack.
         endpoint (dict): The endpoint details containing URL and password.
+        control_plane_key (str): The control plane key (e.g., 'root', 'moveinsync').
 
     Returns:
         dict: A dictionary containing information about stacks, clusters, and versions.
@@ -363,6 +388,7 @@ async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) ->
                         "url": endpoint["url"],
                         "username": endpoint["username"],
                         "password": endpoint["password"],
+                        "control_plane_key": control_plane_key,
                     }
             else:
                 if len(version) > 0:
@@ -374,22 +400,25 @@ async def get_info(session: aiohttp.ClientSession, name: str, endpoint: dict) ->
                         "url": endpoint["url"],
                         "username": endpoint["username"],
                         "password": endpoint["password"],
+                        "control_plane_key": control_plane_key,
                     }
 
     return stacks_clusters_versions
 
 
-async def process_cluster(console: Console, stack_name: str, cluster: dict) -> tuple:
+async def process_cluster(console: Console, stack_name: str, cluster: dict, ai_analyzer=None, previous_rc_branch: str = "", rc_page_id: str = None) -> tuple:
     """
-    Process a cluster for deployment.
+    Process a cluster for deployment and generate AI analysis report.
 
     Args:
         console (Console): The console object for logging.
         stack_name (str): The name of the stack.
         cluster (dict): The cluster details.
+        ai_analyzer: OpenAI analyzer instance for generating reports.
+        previous_rc_branch (str): Previous RC branch name for comparison.
 
     Returns:
-        tuple: A tuple containing stack_name, cluster_name, cluster_state, cluster_id, and cluster_version.
+        tuple: A tuple containing stack_name, cluster_name, cluster_state, cluster_id, cluster_version, plan_path, and release_link.
     """
     async with aiohttp.ClientSession(
         timeout=aiohttp.ClientTimeout(total=int(TIMEOUT))
@@ -403,6 +432,7 @@ async def process_cluster(console: Console, stack_name: str, cluster: dict) -> t
         cc_password = cluster.get("password", "")
         plan_path = f"{stack_name}/{cluster_id}/{RC_BRANCH}/{TF_PLAN_FILE}"
         release_link = "NOT RUN IN THIS GA PLANNER, REFER TO THE PREVIOUS RUNS TO KNOW THE RELEASE LINK"
+        
         if FORCE_RUN_ALL_ENVIRONMENTS == "true" or not await file_exists_in_s3(plan_path, access_key=AWS_ACCESS_KEY, secret_key=AWS_SECRET_KEY):
             presigned_url = await get_presigned_url_for_s3(
                 plan_path,
@@ -418,7 +448,19 @@ async def process_cluster(console: Console, stack_name: str, cluster: dict) -> t
                 cluster_id,
                 presigned_url,
                 stack_name,
+                cluster_name,
             )  # Create deployments for the cluster
+        
+        # Download and process plans asynchronously
+        plan_metadata = await process_plans_async(
+            console, stack_name, cluster_id, cluster_name, plan_path, previous_rc_branch
+        )
+        
+        # Generate AI analysis if analyzer is available and plans were processed successfully
+        if ai_analyzer and plan_metadata:
+            control_plane_key = cluster.get("control_plane_key", "")
+            await analyze_plans_async(console, plan_metadata, ai_analyzer, previous_rc_branch, control_plane_key, rc_page_id)
+        
         return (
             stack_name,
             cluster_name,
@@ -430,6 +472,225 @@ async def process_cluster(console: Console, stack_name: str, cluster: dict) -> t
         )
 
 
+async def process_plans_async(console: Console, stack_name: str, cluster_id: str, 
+                            cluster_name: str, plan_path: str, previous_rc_branch: str) -> dict:
+    """
+    Download and process plans asynchronously for a single environment.
+    Returns processed plan metadata for further analysis.
+    """
+    try:
+        # Download current RC plan
+        console.log(f"[cyan]Downloading current RC plan for {stack_name}/{cluster_name}")
+        if not download_plan_from_s3(PLAN_BUCKET, plan_path, plan_path, AWS_ACCESS_KEY, AWS_SECRET_KEY):
+            console.log(f"[red]Failed to download current RC plan for {stack_name}/{cluster_name}")
+            return {}
+        
+        # Download previous RC plan if available
+        previous_plan_path = None
+        if previous_rc_branch:
+            previous_plan_path = plan_path.replace(f"/{RC_BRANCH}/", f"/{previous_rc_branch}/")
+            previous_plan_key = f"{stack_name}/{cluster_id}/{previous_rc_branch}/tfplan-output.json"
+            
+            console.log(f"[cyan]Downloading previous RC plan: {previous_rc_branch} for {stack_name}/{cluster_name}")
+            if not download_plan_from_s3(PLAN_BUCKET, previous_plan_key, previous_plan_path, AWS_ACCESS_KEY, AWS_SECRET_KEY):
+                console.log(f"[yellow]Could not download previous RC plan for {stack_name}/{cluster_name}")
+                previous_plan_path = None
+        
+        # Process both plans
+        console.log(f"[cyan]Processing plans for {stack_name}/{cluster_name}")
+        _, _, _, plan_metadata = process_plan(plan_path, previous_plan_path)
+        
+        if not plan_metadata:
+            console.log(f"[red]Failed to process plans for {stack_name}/{cluster_name}")
+            return {}
+        
+        # Add environment information to metadata
+        plan_metadata["environment"] = f"{stack_name}/{cluster_name}"
+        plan_metadata["plan_path"] = plan_path
+        
+        console.log(f"[green]Successfully processed plans for {stack_name}/{cluster_name}")
+        return plan_metadata
+            
+    except Exception as e:
+        console.log(f"[red]Error processing plans for {stack_name}/{cluster_name}: {e}")
+        return {}
+
+
+async def analyze_plans_async(console: Console, plan_metadata: dict, ai_analyzer, previous_rc_branch: str, control_plane_key: str = "", rc_page_id: str = None):
+    """
+    Generate AI analysis for processed plan metadata.
+    Saves the AI analysis report in the same directory as the current RC plan and publishes to Google Docs.
+    """
+    if not plan_metadata or not ai_analyzer:
+        return
+    
+    try:
+        environment = plan_metadata.get("environment", "Unknown")
+        plan_path = plan_metadata.get("plan_path", "")
+        release_link = plan_metadata.get("release_link", "")
+        
+        console.log(f"[cyan]Generating AI analysis for {environment}")
+        
+        # Create context for single environment analysis
+        environment_context = f"Environment: {environment}"
+        if previous_rc_branch:
+            environment_context += f"\nRC Comparison: {RC_BRANCH} vs {previous_rc_branch}"
+        
+        # Extract the filtered plan from metadata for AI analysis
+        filtered_plan_data = plan_metadata.get("filtered_plan", {})
+        if not filtered_plan_data:
+            console.log(f"[yellow]No filtered plan data found for {environment}")
+            return
+        
+        # Get previous plan data from metadata
+        previous_filtered_plan = plan_metadata.get("previous_rc_plan", {})
+        
+        # Use the single plan analysis with RC comparison data
+        analysis_report = await ai_analyzer.analyze_single_plan(filtered_plan_data, previous_filtered_plan, environment_context)
+        
+        if analysis_report:
+            # Save report in the same directory as the current RC plan
+            plan_directory = "/".join(plan_path.split("/")[:-1])  # Remove filename
+            report_filename = f"{plan_directory}/ai_analysis_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+            
+            # Save the analysis report locally
+            ai_analyzer.save_analysis_report(
+                analysis_report,
+                report_filename
+            )
+            console.log(f"[green]AI analysis saved to: {report_filename}")
+            
+            # Publish to ClickUp if configured
+            if CLICKUP_API_TOKEN and CLICKUP_SPACE_ID and control_plane_key:
+                # Parse stack_name and cluster_name from environment
+                parts = environment.split("/")
+                if len(parts) >= 2:
+                    stack_name = parts[0]
+                    cluster_name = parts[1]
+                    await publish_to_clickup(console, RC_BRANCH, stack_name, cluster_name, analysis_report, rc_page_id, release_link)
+            
+        else:
+            console.log(f"[yellow]Could not generate AI analysis for {environment}")
+            
+    except Exception as e:
+        console.log(f"[red]Error analyzing plans for {plan_metadata.get('environment', 'Unknown')}: {e}")
+
+
+async def publish_to_clickup(console: Console, rc_name: str, stack_name: str, 
+                            cluster_name: str, analysis_report: str, rc_page_id: str = None, 
+                            release_link: str = ""):
+    """
+    Publishes analysis report to ClickUp with nested page structure.
+    Creates nested pages in the format: root_page > rc_name page > stack_name page > cluster_name page
+    
+    Args:
+        console (Console): Console for logging
+        rc_name (str): RC branch name (e.g., 'rc-3.27.0')
+        stack_name (str): Name of the stack
+        cluster_name (str): Name of the cluster
+        analysis_report (str): The AI analysis report content
+        rc_page_id (str): Pre-created RC page ID to reuse
+        release_link (str): Release link from current RC plan
+    """
+    if not CLICKUP_API_TOKEN or not CLICKUP_SPACE_ID or not rc_page_id:
+        console.log("[yellow]ClickUp integration not configured or missing RC page ID. Skipping publication.")
+        return
+    
+    try:
+        headers = {
+            "Authorization": f"{CLICKUP_API_TOKEN}",
+            "Content-Type": "application/json",
+            "accept": "application/json"
+        }
+        
+        # Use the pre-created RC page ID
+        stack_page_id = await create_clickup_page(headers, rc_page_id, stack_name,
+                                                 f"# {stack_name}\n\nTerraform plan analysis for stack: {stack_name}")
+        
+        # Create the final analysis page for the cluster using v3 API
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cluster_page_title = cluster_name
+        
+        # Build page content with release link if available
+        page_content = f"""# Terraform Plan Analysis Report
+
+**Environment:** {stack_name}/{cluster_name}  
+**RC Branch:** {rc_name}  
+**Generated:** {timestamp}
+"""
+        
+        # Add release link if available
+        if release_link:
+            page_content += f"\n**Release Link:** {release_link}"
+        
+        page_content += f"\n\n{analysis_report}\n"
+        
+        # Create the cluster analysis page
+        cluster_page_id = await create_clickup_page(headers, stack_page_id, cluster_page_title, page_content)
+        
+        if cluster_page_id:
+            console.log(f"[green]Created ClickUp page for {rc_name}/{stack_name}/{cluster_name}")
+        else:
+            console.log(f"[red]Failed to create ClickUp page for {rc_name}/{stack_name}/{cluster_name}")
+        
+    except Exception as e:
+        console.log(f"[red]Error publishing to ClickUp for {rc_name}/{stack_name}/{cluster_name}: {e}")
+
+
+
+
+
+async def create_clickup_page(headers: dict, parent_page_id: str, page_name: str, 
+                             page_content: str = "") -> str:
+    """
+    Create a ClickUp page using the v3 API only.
+    
+    Args:
+        headers (dict): API headers with authorization  
+        parent_page_id (str): Parent page ID
+        page_name (str): Name of the page to create
+        page_content (str): Content for the page (markdown format)
+    
+    Returns:
+        str: Page ID of newly created page
+    """
+    try:
+        # Create new page using v3 API
+        if not CLICKUP_DOC_ID:
+            raise Exception("CLICKUP_DOC_ID is required for v3 API page creation")
+            
+        url = f"https://api.clickup.com/api/v3/workspaces/{CLICKUP_SPACE_ID}/docs/{CLICKUP_DOC_ID}/pages"
+        
+        payload = {
+            "parent_page_id": parent_page_id,
+            "name": page_name,
+            "content_format": "text/md",
+            "content": page_content or f"# {page_name}\n\nThis page was created automatically."
+        }
+        
+        page_headers = {
+            "accept": "application/json",
+            "content-type": "application/json",  
+            "Authorization": headers.get("Authorization", "")
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            session_timeout = aiohttp.ClientTimeout(total=30)
+            async with aiohttp.ClientSession(timeout=session_timeout) as session:
+                async with session.post(url, json=payload, headers=page_headers) as response:
+                    if response.status == 201:  # v3 API returns 201 on successful creation
+                        result = await response.json()
+                        return result.get("id")
+                    else:
+                        error_text = await response.text()
+                        # Log the full error for debugging
+                        print(f"ClickUp API error response: {error_text}")
+                        raise Exception(f"Failed to create page via v3 API: {response.status} - {error_text}")
+                    
+    except Exception as e:
+        raise Exception(f"Error creating page {page_name}: {e}")
+
+
 ###################################################################
 """
 GA plan Classifier
@@ -439,7 +700,7 @@ GA plan Classifier
 
 def download_plan_from_s3(
     bucket_name: str, file_key: str, local_path: str, access_key: str, secret_key: str
-) -> None:
+) -> bool:
     """
     Download a plan from S3 and store it locally.
 
@@ -447,6 +708,9 @@ def download_plan_from_s3(
         bucket_name (str): The name of the S3 bucket.
         file_key (str): The key of the plan in the S3 bucket.
         local_path (str): The local path where the plan will be stored.
+        
+    Returns:
+        bool: True if download was successful, False otherwise.
     """
     s3 = boto3.client(
         "s3",
@@ -457,47 +721,242 @@ def download_plan_from_s3(
     os.makedirs(os.path.join(*local_path.split("/")[:-1]), exist_ok=True)
     try:
         s3.download_file(bucket_name, file_key, local_path)
+        return True
     except Exception as e:
         print(f"An error occurred while downloading the file s3://{bucket_name}/{file_key}: {e}")
+        return False
 
 
-def process_plan(planfile_path: str):
-    with open(planfile_path, "r+") as ff:
-        plans = json.load(ff)
+def get_previous_rc_branch(current_rc: str) -> str:
+    """
+    Get the previous RC branch by querying git for all RC branches and finding the one before current.
+    
+    Args:
+        current_rc (str): Current RC branch like 'rc-3.27.0'
+    
+    Returns:
+        str: Previous RC branch like 'rc-3.26.0' or empty string if not found
+    """
+    try:
+        
+        # Get all remote branches that start with 'rc-'
+        result = subprocess.run(
+            ['git', 'branch', '-r', '--list', 'origin/rc-*'],
+            capture_output=True,
+            text=True,
+            cwd=os.getcwd()
+        )
+        
+        if result.returncode != 0:
+            print(f"Failed to get git branches: {result.stderr}")
+            return ""
+        
+        # Extract RC branch names and parse versions
+        rc_branches = []
+        for line in result.stdout.strip().split('\n'):
+            if line.strip():
+                # Remove 'origin/' prefix and whitespace
+                branch = line.strip().replace('origin/', '')
+                # Match rc-x.y.z pattern
+                match = re.match(r'rc-(\d+)\.(\d+)\.(\d+)', branch)
+                if match:
+                    major, minor, patch = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                    rc_branches.append((branch, major, minor, patch))
+        
+        if not rc_branches:
+            print("No RC branches found in git")
+            return ""
+        
+        # Sort RC branches by version (major, minor, patch)
+        rc_branches.sort(key=lambda x: (x[1], x[2], x[3]))
+        
+        # Find current RC in the sorted list
+        current_index = -1
+        for i, (branch, major, minor, patch) in enumerate(rc_branches):
+            if branch == current_rc:
+                current_index = i
+                break
+        
+        if current_index == -1:
+            print(f"Current RC branch '{current_rc}' not found in git branches")
+            return ""
+        
+        if current_index == 0:
+            print(f"'{current_rc}' is the first RC branch, no previous RC available")
+            return ""
+        
+        # Return the previous RC branch
+        previous_rc = rc_branches[current_index - 1][0]
+        print(f"Found previous RC: {previous_rc} (before {current_rc})")
+        return previous_rc
+        
+    except Exception as e:
+        print(f"Error getting previous RC branch: {e}")
+        return ""
 
-    del_resources = {}
-    del_recreated_resources = {}
+
+
+
+# Constants for file naming
+TERRAFORM_PLAN_OUTPUT_FILE = "tfplan-output.json"
+TERRAFORM_PLAN_FILTERED_FILE = "tfplan-filtered.json"
+
+def load_and_save_filtered_plan(plan_path: str, plan_type: str = "current") -> tuple:
+    """
+    Load and filter a terraform plan, then save the filtered version.
+    
+    Args:
+        plan_path (str): Path to the terraform plan file
+        plan_type (str): Type of plan ("current" or "previous") for logging
+    
+    Returns:
+        tuple: (filtered_plan_data, release_link) - filtered plan data and release link from original plan (only for current plans)
+    """
+    print(f"Loading and filtering {plan_type} plan: {plan_path}")
+    
+    # For current plans, extract release_link from raw plan
+    release_link = ""
+    if plan_type == "current":
+        try:
+            with open(plan_path, 'r') as f:
+                raw_plan = json.load(f)
+            release_link = raw_plan.get("release_link", "")
+        except Exception as e:
+            print(f"Warning: Could not load raw {plan_type} plan for release_link extraction: {e}")
+    
+    # Load and filter the plan
+    filtered_plan = load_and_filter_plan(
+        plan_path,
+        filter_sensitive=FILTER_SENSITIVE_VALUES,
+        resource_changes_only=True,  # Always True - focus on resource changes only
+        changes_only=EXTRACT_CHANGES_ONLY
+    )
+    
+    if not filtered_plan:
+        print(f"Failed to load or filter {plan_type} plan: {plan_path}")
+        return {}, release_link
+    
+    # Save the filtered plan
+    filtered_plan_path = plan_path.replace(TERRAFORM_PLAN_OUTPUT_FILE, TERRAFORM_PLAN_FILTERED_FILE)
+    try:
+        with open(filtered_plan_path, 'w') as f:
+            json.dump(filtered_plan, f, indent=2)
+        print(f"Saved filtered {plan_type} plan to: {filtered_plan_path}")
+    except Exception as e:
+        print(f"Warning: Could not save filtered {plan_type} plan to {filtered_plan_path}: {e}")
+    
+    return filtered_plan, release_link
+
+def extract_rc_branch_from_path(plan_path: str) -> str:
+    """
+    Extract RC branch name from a plan path.
+    
+    Args:
+        plan_path (str): Path containing RC branch information
+    
+    Returns:
+        str: RC branch name or empty string if not found
+    """
+    path_parts = plan_path.split("/")
+    for part in path_parts:
+        if part.startswith("rc-"):
+            return part
+    return ""
+
+def categorize_resource_changes(resource_changes: list) -> tuple:
+    """
+    Categorize resource changes into deleted, recreated, and updated resources.
+    
+    Args:
+        resource_changes (list): List of resource change objects
+    
+    Returns:
+        tuple: (deleted_resources, recreated_resources, updated_changes)
+    """
+    deleted_resources = {}
+    recreated_resources = {}
     updated_changes = []
-    name = "_".join(planfile_path.split("/")[:-2])
 
-    for key, values in plans.items():
-        if key == "resource_changes":
-            for val in values:
-                actions = val["change"]["actions"]
-                after = val["change"]["after"]
+    for resource in resource_changes:
+        if not isinstance(resource, dict):
+            continue
+            
+        actions = resource.get("change", {}).get("actions", [])
+        after = resource.get("change", {}).get("after")
+        module_address = resource.get("module_address", "root")
+        resource_type = resource.get("type", "unknown")
 
-                if "create" in actions and "delete" in actions:
-                    if val["type"] != "null_resource":
-                        if val["module_address"] not in del_recreated_resources:
-                            del_recreated_resources[val["module_address"]] = []
-                        # append to the list
-                        del_recreated_resources[val["module_address"]].append(
-                            val["type"]
-                        )
-                elif "delete" in actions:
-                    if val["module_address"] not in del_resources:
-                        del_resources[val["module_address"]] = []
-                    if after is None:
-                        del_resources[val["module_address"]].append(val["type"])
-                elif "update" in actions:
-                    if val["type"] != "scratch_string":
-                        changes = get_updates(val)
-                        if changes:
-                            updated_changes.append(changes)
+        if "create" in actions and "delete" in actions:
+            # Resource is being recreated
+            if resource_type != "null_resource":
+                if module_address not in recreated_resources:
+                    recreated_resources[module_address] = []
+                recreated_resources[module_address].append(resource_type)
+                
+        elif "delete" in actions:
+            # Resource is being deleted
+            if after is None:
+                if module_address not in deleted_resources:
+                    deleted_resources[module_address] = []
+                deleted_resources[module_address].append(resource_type)
+                
+        elif "update" in actions:
+            # Resource is being updated
+            if resource_type != "scratch_string":
+                changes = get_updates(resource)
+                if changes:
+                    updated_changes.append(changes)
 
-    updated_grouped_data = group_json(name, updated_changes)
+    return deleted_resources, recreated_resources, updated_changes
 
-    return (del_recreated_resources, del_resources, updated_grouped_data)
+def process_plan(planfile_path: str, previous_plan_path: str = None):
+    """
+    Enhanced process_plan function that uses auto-detection and filtering capabilities.
+    Always filters sensitive attributes for Claude safety.
+    Processes both current and previous RC plans if provided.
+    """
+    # Process current plan
+    current_filtered_plan, current_release_link = load_and_save_filtered_plan(planfile_path, "current")
+    if not current_filtered_plan:
+        return ({}, {}, {}, {})
+
+    # Extract resource changes from current plan
+    current_resource_changes = current_filtered_plan.get("resource_changes", [])
+    
+    # Process previous plan if provided
+    previous_filtered_plan = None
+    previous_rc_branch = ""
+    if previous_plan_path:
+        previous_rc_branch = extract_rc_branch_from_path(previous_plan_path)
+        print(f"Processing previous RC plan: {previous_rc_branch}")
+        previous_filtered_plan, _ = load_and_save_filtered_plan(previous_plan_path, "previous")
+        
+        if not previous_filtered_plan:
+            print(f"Failed to filter previous RC plan from {previous_rc_branch}")
+    
+    # Categorize resource changes using helper function
+    deleted_resources, recreated_resources, updated_changes = categorize_resource_changes(current_resource_changes)
+    
+    # Generate environment name from plan path
+    environment_name = "_".join(planfile_path.split("/")[:-2])
+    
+    # Group updated changes for display
+    updated_grouped_data = group_json(environment_name, updated_changes)
+    
+    # Build metadata for AI analysis
+    plan_metadata = {
+        "environment": environment_name,
+        "plan_file": planfile_path,
+        "filtering_applied": FILTER_SENSITIVE_VALUES,
+        "resource_changes_count": len(current_resource_changes),
+        "filtered_plan": current_filtered_plan,
+        "auto_detection_info": current_filtered_plan.get("metadata", {}),
+        "previous_rc_plan": previous_filtered_plan,
+        "previous_rc_branch": previous_rc_branch,
+        "release_link": current_release_link
+    }
+
+    return (recreated_resources, deleted_resources, updated_grouped_data, plan_metadata)
 
 
 def group_json(name, json_data):
@@ -560,8 +1019,8 @@ async def main():
             timeout=aiohttp.ClientTimeout(total=300)
         ) as session:
             tasks = [
-                get_info(session, name, endpoint)
-                for name, endpoint in endpoints.items()
+                get_info(session, control_plane_key, endpoint, control_plane_key)
+                for control_plane_key, endpoint in endpoints.items()
             ]
             results = await asyncio.gather(*tasks)
             stacks_clusters_versions = {}
@@ -570,96 +1029,70 @@ async def main():
                     stacks_clusters_versions[stack_name] = clusters
                 progress.update(fetch_task, advance=1)
 
-    uploader_table = Table(show_header=True, header_style="bold magenta")
-    uploader_table.title = "Github Action Plan Uploader"
-    uploader_table.add_column("Stack Name", style="dim", width=20, overflow="fold")
-    uploader_table.add_column("Cluster Name", width=20, overflow="fold")
-    uploader_table.add_column("Release Link", max_width=300, overflow="fold")
-    uploader_table.add_column("status", width=20, overflow="fold")
 
-    destroyed_table = Table(show_header=True, header_style="bold magenta")
-    destroyed_table.title = "Github Action Plan Classifier for destroyed resources"
-    destroyed_table.add_column("Stack Name", style="dim", width=20, overflow="fold")
-    destroyed_table.add_column("Cluster Name", overflow="fold", width=20)
-    destroyed_table.add_column("deleted_resources_addresss", max_width=100)
-    destroyed_table.add_column("deleted_resources", max_width=100, overflow="fold")
+    # Initialize OpenAI analyzer if API key is provided
+    ai_analyzer = None
+    if GENERATE_AI_SUMMARY and OPENAI_API_KEY and OPENAI_API_KEY.strip():
+        try:
+            ai_analyzer = OpenAIAnalyzer(OPENAI_API_KEY)
+            console.log("[green]OpenAI integration enabled for summary generation")
+        except Exception as e:
+            console.log(f"[yellow]Warning: Could not initialize OpenAI analyzer: {e}")
+    else:
+        if GENERATE_AI_SUMMARY:
+            console.log("[yellow]Warning: GENERATE_AI_SUMMARY is enabled but OPENAI_API_KEY is not set or empty")
+    
+    # Get previous RC branch once at the top level (always enabled)
+    previous_rc_branch = ""
+    if RC_BRANCH:
+        console.log(f"[green]RC comparison enabled for branch: {RC_BRANCH}")
+        previous_rc_branch = get_previous_rc_branch(RC_BRANCH)
+        if previous_rc_branch:
+            console.log(f"[green]Will compare with previous RC: {previous_rc_branch}")
+        else:
+            console.log(f"[yellow]Could not determine previous RC for {RC_BRANCH}")
 
-    destroyed_recreated_table = Table(show_header=True, header_style="bold magenta")
-    destroyed_recreated_table.title = (
-        "Github Action Plan Classifier for destroyed and recreated resources"
-    )
-    destroyed_recreated_table.add_column(
-        "Stack Name", style="dim", width=10, overflow="fold"
-    )
-    destroyed_recreated_table.add_column("Cluster Name", overflow="fold", width=10)
-    destroyed_recreated_table.add_column(
-        "deleted_and_recreated_resources_addresss", max_width=100, overflow="fold"
-    )
-
-    updated_table = Table(show_header=True, header_style="bold magenta")
-    updated_table.title = "Github Action Plan Classifier for updated resources"
-    updated_table.add_column("Stack Name", style="dim", width=10, overflow="fold")
-    updated_table.add_column("Cluster Name", overflow="fold", width=10)
-    updated_table.add_column("updated resource", max_width=100, overflow="fold")
-    updated_table.add_column("Module Address", max_width=200, overflow="fold")
+    # Create RC page once for ClickUp integration
+    rc_page_id = None
+    if CLICKUP_API_TOKEN and CLICKUP_SPACE_ID and CLICKUP_ROOT_PAGE_ID and RC_BRANCH:
+        try:
+            headers = {
+                "Authorization": f"{CLICKUP_API_TOKEN}",
+                "Content-Type": "application/json",
+                "accept": "application/json"
+            }
+            rc_page_id = await create_clickup_page(headers, CLICKUP_ROOT_PAGE_ID, RC_BRANCH, 
+                                                  f"# {RC_BRANCH}\n\nTerraform plan analysis for RC branch: {RC_BRANCH}")
+            if rc_page_id:
+                console.log(f"[green]Created RC page once: {RC_BRANCH}")
+            else:
+                console.log(f"[yellow]Failed to create RC page: {RC_BRANCH}")
+        except Exception as e:
+            console.log(f"[yellow]Could not create RC page: {e}")
 
     cluster_tasks = [
-        process_cluster(console, stack_name, cluster)
+        process_cluster(console, stack_name, cluster, ai_analyzer, previous_rc_branch, rc_page_id)
         for stack_name, clusters in stacks_clusters_versions.items()
         for cluster in clusters.values()
-        if cluster.get("version", {}).get("majorVersion", None)
-        == int(STREAM_MAJOR_VERSION)
-        and cluster.get("version", {}).get("tfStream", None) == "stage"
-        or cluster.get("version", {}).get("tfStream", None) == "production"
-        and cluster.get("version", {}).get("minorVersion", None) == "latest"
-        and await check_successful_releases(
-            cluster.get("id"), cluster.get("url"), cluster.get("username"), cluster.get("password")
+        if await check_successful_releases(
+            cluster.get("id"), cluster.get("url"), cluster.get("username"), cluster.get("password"), stack_name, cluster.get("name")
         )
     ]
 
+    # Process all cluster tasks
     processed_clusters = await asyncio.gather(*cluster_tasks)
-
-    for (
-        stack_name,
-        cluster_name,
-        cluster_state,
-        cluster_id,
-        cluster_version,
-        plan_path,
-        release_link,
-    ) in processed_clusters:
-        download_plan_from_s3(
-            PLAN_BUCKET, plan_path, plan_path, AWS_ACCESS_KEY, AWS_SECRET_KEY
-        )
-        deleted_recreated, deleted, updated_changes = process_plan(plan_path)
-        uploader_table.add_row(
-            stack_name,
-            cluster_name,
-            release_link,
-            "DONE",
-            style="green",
-        )
-        for k, v in deleted.items():
-            destroyed_table.add_row(
-                stack_name, cluster_name, k, ",".join(vals for vals in v), style="red"
-            )
-        for k in deleted_recreated.keys():
-            destroyed_recreated_table.add_row(
-                stack_name, cluster_name, k, style="yellow"
-            )
-
-        for _, values in updated_changes.items():
-            for kv, val in values.items():
-                for v in val:
-                    for x, y in v.items():
-                        updated_table.add_row(
-                            stack_name, cluster_name, kv, y
-                        )
-
-    console.print(uploader_table)
-    console.print(destroyed_table)
-    console.print(destroyed_recreated_table)
-    console.print(updated_table)
+    
+    # Print summary statistics
+    console.log(f"\n[bold green]Summary:[/bold green]")
+    console.log(f"- Processed {len(processed_clusters)} environments")
+    if RC_BRANCH:
+        console.log(f"- RC comparison enabled for branch: {RC_BRANCH}")
+    
+    # Individual AI analysis reports have already been generated and saved per environment
+    if GENERATE_AI_SUMMARY and not OPENAI_API_KEY:
+        console.log("[yellow]Warning: AI summary generation enabled but OPENAI_API_KEY not provided")
+    elif GENERATE_AI_SUMMARY and OPENAI_API_KEY:
+        console.log(f"[green]Individual AI analysis reports generated for each environment")
 
 
 if __name__ == "__main__":
