@@ -7,6 +7,7 @@ summary reports from terraform plan analysis.
 
 import json
 import os
+from datetime import datetime
 from typing import Dict, List, Any, Optional
 import openai
 from openai import OpenAI
@@ -253,15 +254,6 @@ Please analyze the provided plan data and generate the tables according to these
         Returns:
             bool: True if saved successfully, False otherwise
         """
-        try:
-            report_content = f"""# Terraform Plan Analysis Report
-
-from datetime import datetime
-
-class OpenAIAnalyzer:
-    # ... class implementation ...
-
-    def save_analysis_report(self, analysis: str, file_path: str) -> bool:
         try:
             report_content = f"""# Terraform Plan Analysis Report
 
