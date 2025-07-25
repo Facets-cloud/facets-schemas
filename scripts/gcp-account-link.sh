@@ -203,6 +203,7 @@ PERMISSIONS=(
   "compute.sslPolicies.update"
   "compute.subnetworks.create"
   "compute.subnetworks.delete"
+  "compute.globalAddresses.setLabels"
   "compute.subnetworks.get"
   "compute.subnetworks.use"
   "compute.zoneOperations.get"
