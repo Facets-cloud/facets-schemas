@@ -675,17 +675,13 @@ async def create_clickup_page(headers: dict, parent_page_id: str, page_name: str
         }
         
         async with aiohttp.ClientSession() as session:
-            session_timeout = aiohttp.ClientTimeout(total=30)
-            async with aiohttp.ClientSession(timeout=session_timeout) as session:
-                async with session.post(url, json=payload, headers=page_headers) as response:
-                    if response.status == 201:  # v3 API returns 201 on successful creation
-                        result = await response.json()
-                        return result.get("id")
-                    else:
-                        error_text = await response.text()
-                        # Log the full error for debugging
-                        print(f"ClickUp API error response: {error_text}")
-                        raise Exception(f"Failed to create page via v3 API: {response.status} - {error_text}")
+            async with session.post(url, json=payload, headers=page_headers) as response:
+                if response.status == 201:  # v3 API returns 201 on successful creation
+                    result = await response.json()
+                    return result.get("id")
+                else:
+                    error_text = await response.text()
+                    raise Exception(f"Failed to create page via v3 API: {response.status} - {error_text}")
                     
     except Exception as e:
         raise Exception(f"Error creating page {page_name}: {e}")
