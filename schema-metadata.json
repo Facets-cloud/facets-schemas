@@ -309,10 +309,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
                     "gcp",
+                    "azure",
                     "kubernetes",
-                    "azure"
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.k8s.sample.json",
                 "name": [
@@ -321,15 +321,15 @@
                 "versions": [
                     {
                         "documentation": "NA",
+                        "number": "0.3"
+                    },
+                    {
+                        "documentation": "NA",
                         "number": "0.1"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.2"
-                    },
-                    {
-                        "documentation": "NA",
-                        "number": "0.3"
                     }
                 ]
             }
@@ -442,23 +442,23 @@
                 "versions": [
                     {
                         "documentation": "NA",
+                        "number": "0.3"
+                    },
+                    {
+                        "documentation": "NA",
                         "number": "0.1"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.2"
-                    },
-                    {
-                        "documentation": "NA",
-                        "number": "0.3"
                     }
                 ]
             },
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/ingress/ingress.nginx_ingress_controller.sample.json",
@@ -468,11 +468,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.01"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.01"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
@@ -537,15 +537,15 @@
                 "versions": [
                     {
                         "documentation": "NA",
+                        "number": "0.3"
+                    },
+                    {
+                        "documentation": "NA",
                         "number": "0.1"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.2"
-                    },
-                    {
-                        "documentation": "NA",
-                        "number": "0.3"
                     }
                 ]
             },
@@ -566,9 +566,9 @@
             },
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mysql/mysql.k8s.sample.json",
@@ -850,10 +850,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
                     "gcp",
+                    "azure",
                     "kubernetes",
-                    "azure"
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.k8s.sample.json",
                 "name": [
@@ -862,15 +862,15 @@
                 "versions": [
                     {
                         "documentation": "NA",
+                        "number": "0.3"
+                    },
+                    {
+                        "documentation": "NA",
                         "number": "0.1"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.2"
-                    },
-                    {
-                        "documentation": "NA",
-                        "number": "0.3"
                     }
                 ]
             }
@@ -970,9 +970,9 @@
             },
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/mongo/mongo.k8s.sample.json",
@@ -1019,9 +1019,9 @@
         "flavors": [
             {
                 "clouds": [
-                    "gcp",
                     "kubernetes",
                     "azure",
+                    "gcp",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.deployment.sample.json",
@@ -1491,9 +1491,9 @@
             },
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/log_collector/log_collector.k8s.sample.json",
@@ -1666,9 +1666,9 @@
             },
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/elasticsearch/elasticsearch.k8s.sample.json",
@@ -1898,9 +1898,9 @@
         "flavors": [
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kafka/kafka.k8s.sample.json",
@@ -1962,9 +1962,9 @@
         "flavors": [
             {
                 "clouds": [
-                    "kubernetes",
                     "gcp",
                     "azure",
+                    "kubernetes",
                     "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/tcp_lb/tcp_lb.nlb.sample.json",
@@ -1993,10 +1993,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "aws",
                     "gcp",
+                    "azure",
                     "kubernetes",
-                    "azure"
+                    "aws"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.k8s.sample.json",
                 "name": [
@@ -2005,15 +2005,15 @@
                 "versions": [
                     {
                         "documentation": "NA",
+                        "number": "0.3"
+                    },
+                    {
+                        "documentation": "NA",
                         "number": "0.1"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.2"
-                    },
-                    {
-                        "documentation": "NA",
-                        "number": "0.3"
                     }
                 ]
             }
