@@ -1,0 +1,18 @@
+[
+  {
+    "source": "registry.terraform.io/hashicorp/aws5",
+    "version": "5.0.0",
+    "download_url": {
+      "darwin_arm64": "https://releases.hashicorp.com/terraform-provider-aws/5.0.0/terraform-provider-aws_5.0.0_darwin_arm64.zip",
+      "linux_amd64": "https://releases.hashicorp.com/terraform-provider-aws/5.0.0/terraform-provider-aws_5.0.0_linux_amd64.zip"
+    }
+  },
+  {
+    "source": "registry.terraform.io/hashicorp/aws4",
+    "version": "4.53.0",
+    "download_url": {
+      "darwin_arm64": "https://releases.hashicorp.com/terraform-provider-aws/4.53.0/terraform-provider-aws_4.53.0_darwin_arm64.zip",
+      "linux_amd64": "https://releases.hashicorp.com/terraform-provider-aws/4.53.0/terraform-provider-aws_4.53.0_linux_amd64.zip"
+    }
+  }
+]
