@@ -72,7 +72,14 @@ az role definition create --role-definition '{
     "Microsoft.ContainerService/managedClusters/*",
     "Microsoft.Compute/disks/write",
     "Microsoft.Compute/disks/read",
-    "Microsoft.ServiceFabricMesh/register/action"
+    "Microsoft.ServiceFabricMesh/register/action",
+    "Microsoft.Sql/servers/*",
+    "Microsoft.Sql/servers/databases/*",
+    "Microsoft.Sql/servers/firewallRules/*",
+    "Microsoft.Sql/servers/vulnerabilityAssessments/*",
+    "Microsoft.Sql/servers/securityAlertPolicies/*",
+    "Microsoft.Sql/servers/auditingSettings/*",
+    "Microsoft.Sql/servers/extendedAuditingSettings/*"
   ],
   "AssignableScopes": [
     "/subscriptions/'"$SUBSCRIPTION_ID"'"
