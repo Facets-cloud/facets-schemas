@@ -67,7 +67,7 @@ az role definition create --role-definition '{
     "Microsoft.Network/applicationGateways/*",
     "Microsoft.Cache/redis/*",
     "Microsoft.Web/serverFarms/*",
-    "Microsoft.Network/privateEndpoints/read",
+    "Microsoft.Network/privateEndpoints/*",
     "Microsoft.Web/sites/*",
     "Microsoft.ServiceBus/namespaces/*",
     "Microsoft.ContainerService/managedClusters/*",
