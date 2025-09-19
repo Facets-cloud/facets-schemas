@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ✅ Mobile-friendly scaling -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ✅ Cross-browser font preload -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/maharlika/v1/Maharlika-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+<link rel="preload" href="fonts/Maharlika-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Maharlika-Regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/Maharlika-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<!-- Maharlika font from Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Maharlika&display=swap" rel="stylesheet">
+
+<title>Contact - Kilowatt Electric</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&display=swap" rel="stylesheet">
+<link rel="icon" href="./WhatsApp_Image_2025-08-06_at_1.02.13_PM-removebg-preview.png"  type="image/x-icon" >
+
+</head>
+<body>
+
+<!-- Navbar -->
+<header>
+    <nav>
+       <div class="logo">  <img src="./WhatsApp_Image_2025-08-06_at_1.02.13_PM-removebg-preview.png" alt="" style="width: 150px; height: 80px;"></div>
+          <div>
+            <a href="index.html">Home</a>
+            
+            <a href="./product.html">Products</a>
+            <a href="contact.html">Contact</a><hr>
+        </div>
+    </nav>
+</header>
+
+
+<section id="contact" class="contact-section">
+    <div class="contact-container">
+
+        <!-- Left: Contact Form -->
+        <div class="contact-form-container">
+            <h2>Send Us a Message</h2>
+            <form id="contactForm" method="post"  action="https://sheetdb.io/api/v1/xwwxbwfy8t7l7">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="Cname" name="Cname" placeholder="Enter your Company name" required>
+                </div>
+                <div class="form-group">
+                    <label>Interests On</label>
+                    <input type="text" id="IO" name="IO" placeholder="What are you looking for?" required>
+                </div>
+                <button type="submit" id="submitBtn">Submit</button>
+            </form>
+            <p id="statusMessage"></p>
+        </div>
+
+        <!-- Right: Company Info -->
+        <div class="contact-info">
+             <h2 style="margin-top: 0;">Contact Information</h2>
+            <div class="image-center"> <img src="./WhatsApp_Image_2025-08-06_at_1.02.13_PM-removebg-preview.png" alt="" style="margin-top: 0; width: 250px; height: 100px; "></div>
+  <div class="info-row">
+    
+    <span class="label">📍 Address:&nbsp;</span>
+    <span class="value">
+      <p>FDRK0185<br>
+      Compass Building<br>
+      Al Shohada Road<br>
+      Al Hamra Industrial Zone-FZ<br>
+      Ras Al Khaimah<br>
+      United Arab Emirates</p>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="label">📞 Phone:&nbsp;</span>
+    <span class="value"> 
+     <p>Suraj Syed Kadar: +971 566734085</p>
+     <p>Sharmila Babu:+971 526482065</p>
+    </span>
+  </div>
+  <div class="info-row">
+    <span class="label">✉ Email:&nbsp;</span>
+    <span class="value">
+     <p> <a href="mailto:suraj@k-watt.com">suraj@k-watt.com</a><br>
+      <a href="mailto:sharmila.b.16@gmail.com">sharmila.b.16@gmail.com</a></p>
+    </span>
+  </div>
+</div>
+</section>
+<script>
+ var form = document.getElementById('contactForm');
+ var submitBtn = document.getElementById('submitBtn');
+ form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    // Disable the button to prevent double click
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+    })
+    .then(r => r.json())
+    .then(response => {
+      alert('Form submitted successfully!');
+      form.reset(); // Clear form
+    })
+    .catch(err => {
+      alert("There was an error submitting the form. Please try again.");
+      console.error(err);
+    })
+    .finally(() => {
+      // Re-enable button after dialog is dismissed
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+    });
+  });
+</script>
+
+<footer class="simple-footer">
+    <p>&copy; 2025 Kilowatt Electric. All Rights Reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
