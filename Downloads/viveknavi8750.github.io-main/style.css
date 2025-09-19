@@ -838,3 +838,39 @@ html {
     font-style: italic !important;
     font-family: 'Cormorant Garamond', 'Maharlika', Georgia, serif !important;
 }
+
+/* iOS Safari mobile click fixes */
+.know-more1 {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.back-btn {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+/* iOS Safari popup fixes */
+.popup {
+    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+/* Prevent iOS Safari zoom on double tap */
+button, .know-more1, .back-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}

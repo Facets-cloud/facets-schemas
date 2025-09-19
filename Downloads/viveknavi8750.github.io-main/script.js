@@ -26,20 +26,42 @@ const backBtn = document.getElementById("backBtn");
 let lastClickedCard = null;
 
 document.querySelectorAll(".know-more1").forEach(btn => {
-  btn.addEventListener("click", (e) => {
+  // Add iOS Safari touch support
+  btn.style.cursor = "pointer";
+  btn.style.webkitTapHighlightColor = "rgba(0,0,0,0.1)";
+
+  // Multiple event listeners for cross-browser compatibility
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
     const card = e.target.closest(".product-card");
     lastClickedCard = card;
 
     const fullInfo = e.target.nextElementSibling;
-    popupInner.innerHTML = fullInfo.innerHTML;
-    popup.style.display = "flex";
-    popup.offsetHeight; // Safari repaint fix
-    popup.style.zIndex = "9999";
-  });
+    if (fullInfo && popupInner) {
+      popupInner.innerHTML = fullInfo.innerHTML;
+      popup.style.display = "flex";
+      popup.offsetHeight; // Safari repaint fix
+      popup.style.zIndex = "9999";
+
+      // iOS Safari scroll fix
+      document.body.style.overflow = "hidden";
+    }
+  };
+
+  // Add multiple event types for iOS Safari
+  btn.addEventListener("click", handleClick);
+  btn.addEventListener("touchstart", handleClick, {passive: false});
+  btn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+  }, {passive: false});
 });
 
-backBtn.addEventListener("click", () => {
+const handleBackClick = () => {
   popup.style.display = "none";
+  document.body.style.overflow = "auto"; // Restore scroll
+
   if (lastClickedCard) {
     try {
       lastClickedCard.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -47,7 +69,18 @@ backBtn.addEventListener("click", () => {
       lastClickedCard.scrollIntoView(); // Safari fallback
     }
   }
-});
+};
+
+if (backBtn) {
+  backBtn.style.cursor = "pointer";
+  backBtn.style.webkitTapHighlightColor = "rgba(0,0,0,0.1)";
+
+  backBtn.addEventListener("click", handleBackClick);
+  backBtn.addEventListener("touchstart", handleBackClick, {passive: false});
+  backBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+  }, {passive: false});
+}
 
 window.addEventListener('load', () => {
   document.body.style.display = 'none';
