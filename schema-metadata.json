@@ -248,11 +248,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
@@ -307,11 +307,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.01"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.01"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
@@ -330,11 +330,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
@@ -399,11 +399,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
@@ -747,11 +747,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     }
                 ]
             }
@@ -1051,8 +1051,8 @@
             },
             {
                 "clouds": [
-                    "aws",
                     "kubernetes",
+                    "aws",
                     "azure",
                     "gcp"
                 ],
@@ -1229,11 +1229,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
@@ -1300,11 +1300,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     }
                 ]
             },
@@ -1724,11 +1724,11 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
+                        "number": "0.3"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.2"
                     },
                     {
                         "documentation": "NA",
