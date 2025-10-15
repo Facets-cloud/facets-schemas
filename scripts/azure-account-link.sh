@@ -49,48 +49,38 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Check if the role already exists
-EXISTING_ROLE=$(az role definition list --name "facets-$PRINCIPAL_NAME" --query "[?name=='facets-$PRINCIPAL_NAME'].name" --output tsv 2>/dev/null)
+az role definition create --role-definition '{
+  "Name": "facets-'"$PRINCIPAL_NAME"'",
+  "Description": "Custom role with minimal permissions",
+  "Actions": [
+    "Microsoft.Resources/subscriptions/resourceGroups/*",
+    "Microsoft.Network/virtualNetworks/*",
+    "Microsoft.Network/networkSecurityGroups/*",
+    "Microsoft.Network/publicIPAddresses/*",
+    "Microsoft.Network/natGateways/*",
+    "Microsoft.ContainerService/*",
+    "Microsoft.Storage/storageAccounts/*",
+    "Microsoft.Authorization/roleAssignments/*",
+    "Microsoft.Network/privateDnsZones/*",
+    "Microsoft.DBforMySQL/flexibleServers/*",
+    "Microsoft.ManagedIdentity/userAssignedIdentities/*",
+    "Microsoft.Network/applicationGateways/*",
+    "Microsoft.Cache/redis/*",
+    "Microsoft.Web/serverFarms/*",
+    "Microsoft.Web/sites/*",
+    "Microsoft.ServiceBus/namespaces/*",
+    "Microsoft.ContainerService/managedClusters/*",
+    "Microsoft.Compute/disks/write",
+    "Microsoft.Compute/disks/read",
+    "Microsoft.ServiceFabricMesh/register/action"
+  ],
+  "AssignableScopes": [
+    "/subscriptions/'"$SUBSCRIPTION_ID"'"
+  ]
+}'
 
-if [ -n "$EXISTING_ROLE" ]; then
-    echo "Role 'facets-$PRINCIPAL_NAME' already exists. Skipping role creation."
-else
-    echo "Creating role 'facets-$PRINCIPAL_NAME'..."
-    az role definition create --role-definition '{
-      "Name": "facets-'"$PRINCIPAL_NAME"'",
-      "Description": "Custom role with minimal permissions",
-      "Actions": [
-        "Microsoft.Resources/subscriptions/resourceGroups/*",
-        "Microsoft.Network/virtualNetworks/*",
-        "Microsoft.Network/networkSecurityGroups/*",
-        "Microsoft.Network/publicIPAddresses/*",
-        "Microsoft.Network/natGateways/*",
-        "Microsoft.ContainerService/*",
-        "Microsoft.Storage/storageAccounts/*",
-        "Microsoft.Authorization/roleAssignments/*",
-        "Microsoft.Network/privateDnsZones/*",
-        "Microsoft.DBforMySQL/flexibleServers/*",
-        "Microsoft.ManagedIdentity/userAssignedIdentities/*",
-        "Microsoft.Network/applicationGateways/*",
-        "Microsoft.Cache/redis/*",
-        "Microsoft.Web/serverFarms/*",
-        "Microsoft.Web/sites/*",
-        "Microsoft.ServiceBus/namespaces/*",
-        "Microsoft.ContainerService/managedClusters/*",
-        "Microsoft.Compute/disks/write",
-        "Microsoft.Compute/disks/read",
-        "Microsoft.ServiceFabricMesh/register/action"
-      ],
-      "AssignableScopes": [
-        "/subscriptions/'"$SUBSCRIPTION_ID"'"
-      ]
-    }'
-
-    if [ $? -ne 0 ]; then
-        echo "Failed to create role definition."
-        exit 1
-    fi
-    echo "Role created successfully."
+if [ $? -ne 0 ]; then
+    echo "Role creation failed (may already exist). Proceeding anyway..."
 fi
 
 # Create the Service Principal with Custom role that has minimal permissions
