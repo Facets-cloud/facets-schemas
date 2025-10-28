@@ -23,7 +23,11 @@ facetsctl_login() {
 # Function to initialize artifact
 facetsctl_artifact_init() {
     log "Initializing artifact..."
-    "$BIN_PATH" artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
+    if [ -n "$SERVICE_NAME" ]; then
+        "$BIN_PATH" artifact init -p "$PROJECT_NAME" -s "$SERVICE_NAME" -a "$ARTIFACTORY_NAME"
+    else
+        "$BIN_PATH" artifact init -p "$PROJECT_NAME" -c "$CI_NAME" -a "$ARTIFACTORY_NAME"
+    fi
     log "facetsctl artifact init succeeded."
 }
 
@@ -54,7 +58,7 @@ log "TOKEN: $TOKEN"
 log "RUN_ID: $RUN_ID"
 
 # Parse command-line options
-while getopts "u:c:p:s:a:i:" flag; do
+while getopts "u:c:p:s:a:i:n:" flag; do
     case "$flag" in
         u) USERNAME="$OPTARG" ;;
         c) CP_URL="$OPTARG" ;;
@@ -62,6 +66,7 @@ while getopts "u:c:p:s:a:i:" flag; do
         s) SERVICE_NAME="$OPTARG" ;;
         a) ARTIFACTORY_NAME="$OPTARG" ;;
         i) IS_PUSH="$OPTARG" ;;
+        n) CI_NAME="$OPTARG" ;;
         *)
             error "Invalid option: -$OPTARG"
             exit 1
@@ -75,6 +80,7 @@ log "USERNAME: $USERNAME"
 log "CP_URL: $CP_URL"
 log "PROJECT_NAME: $PROJECT_NAME"
 log "SERVICE_NAME: $SERVICE_NAME"
+log "CI_NAME: $CI_NAME"
 log "ARTIFACTORY_NAME: $ARTIFACTORY_NAME"
 log "IS_PUSH: $IS_PUSH"
 
@@ -82,6 +88,15 @@ log "IS_PUSH: $IS_PUSH"
 if [ -z "$DOCKER_IMAGE_URL" ] || [ -z "$TOKEN" ]; then
     error "Critical environment variables DOCKER_IMAGE_URL or TOKEN are not set."
     error "Please set these before running the script."
+    exit 1
+fi
+
+# Ensure either SERVICE_NAME or CI_NAME is provided, but not both
+if [ -n "$SERVICE_NAME" ] && [ -n "$CI_NAME" ]; then
+    error "Both SERVICE_NAME and CI_NAME are provided. Please provide only one."
+    exit 1
+elif [ -z "$SERVICE_NAME" ] && [ -z "$CI_NAME" ]; then
+    error "Neither SERVICE_NAME nor CI_NAME is provided. Please provide one."
     exit 1
 fi
 
@@ -142,6 +157,7 @@ log "Username: $USERNAME"
 log "CP_URL: $CP_URL"
 log "Project Name: $PROJECT_NAME"
 log "Service Name: $SERVICE_NAME"
+log "CI Name: $CI_NAME"
 log "Artifactory Name: $ARTIFACTORY_NAME"
 log "Is Push: $IS_PUSH"
 log "Docker Image URL: $DOCKER_IMAGE_URL"
