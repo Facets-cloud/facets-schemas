@@ -12,8 +12,8 @@ WEBHOOK_ID=$3
 
 # Prompt for access mode
 echo "Select access mode:"
-echo "  1) Write access (default) - Full permissions to create and manage resources"
-echo "  2) Read-only access - Minimal read permissions with optional AKS cluster access"
+echo "  1) Write access (default) - Use this to provision environments in Azure using Facets"
+echo "  2) Read-only access - Use this to discover Facets blueprint from existing setup"
 read -p "Enter choice [1]: " ACCESS_MODE
 
 # Default to write mode if empty
