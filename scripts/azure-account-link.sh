@@ -1,19 +1,8 @@
 #!/bin/bash
 
-# Check for --read-only flag
-READ_ONLY=false
-if [ "$1" == "--read-only" ]; then
-    READ_ONLY=true
-    shift
-fi
-
 # Check if CP_URL, PRINCIPAL_NAME, and WEBHOOK_ID were provided as arguments
 if [ "$#" -ne 3 ]; then
-    if [ "$READ_ONLY" = true ]; then
-        echo "Usage: $0 --read-only <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
-    else
-        echo "Usage: $0 [--read-only] <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
-    fi
+    echo "Usage: $0 <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
     exit 1
 fi
 
@@ -21,9 +10,19 @@ CP_URL=$1
 PRINCIPAL_NAME="$2"
 WEBHOOK_ID=$3
 
-# If --read-only flag is set, download and execute the reader script
-if [ "$READ_ONLY" = true ]; then
-    echo "Read-only mode enabled. Downloading reader script..."
+# Prompt for access mode
+echo "Select access mode:"
+echo "  1) Write access (default) - Full permissions to create and manage resources"
+echo "  2) Read-only access - Minimal read permissions with optional AKS cluster access"
+read -p "Enter choice [1]: " ACCESS_MODE
+
+# Default to write mode if empty
+ACCESS_MODE=${ACCESS_MODE:-1}
+
+# If read-only mode is selected, download and execute the reader script
+if [ "$ACCESS_MODE" = "2" ]; then
+    echo ""
+    echo "Read-only mode selected. Downloading reader script..."
     READER_SCRIPT_URL="https://facets-cloud.github.io/facets-schemas/scripts/azure-account-link-reader.sh"
     TEMP_SCRIPT=$(mktemp /tmp/azure-account-link-reader.XXXXXX.sh)
 
@@ -38,12 +37,19 @@ if [ "$READ_ONLY" = true ]; then
     chmod +x "$TEMP_SCRIPT"
 
     echo "Executing reader script..."
+    echo ""
     "$TEMP_SCRIPT" "$CP_URL" "$PRINCIPAL_NAME" "$WEBHOOK_ID"
     EXIT_CODE=$?
 
     rm -f "$TEMP_SCRIPT"
     exit $EXIT_CODE
+elif [ "$ACCESS_MODE" != "1" ]; then
+    echo "Invalid choice. Defaulting to write access mode."
 fi
+
+echo ""
+echo "Write access mode selected. Continuing with full permissions..."
+echo ""
 
 # Fetch all subscriptions in JSON format
 echo "Fetching available subscriptions..."

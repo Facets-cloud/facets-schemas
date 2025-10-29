@@ -71,10 +71,28 @@ read -p "Do you want to add read access to AKS clusters? (y/n): " ADD_AKS_ACCESS
 
 if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
     echo "Fetching AKS clusters in subscription..."
-    AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json)
+    AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json 2>&1)
+    AKS_LIST_EXIT_CODE=$?
 
-    if [ $? -ne 0 ]; then
+    if [ $AKS_LIST_EXIT_CODE -ne 0 ]; then
         echo "Failed to fetch AKS clusters."
+
+        # Check if it's the msrestazure error
+        if echo "$AKS_CLUSTERS_JSON" | grep -q "No module named 'msrestazure'"; then
+            echo ""
+            echo "This appears to be an Azure CLI extension issue."
+            echo "To fix this, run one of the following commands:"
+            echo ""
+            echo "  Option 1 - Remove the problematic extension:"
+            echo "    az extension remove --name aks-preview"
+            echo ""
+            echo "  Option 2 - Update the extension:"
+            echo "    az extension update --name aks-preview"
+            echo ""
+            echo "Then run this script again."
+        fi
+
+        echo "Skipping AKS configuration..."
     elif [ "$(echo "$AKS_CLUSTERS_JSON" | jq 'length')" -eq 0 ]; then
         echo "No AKS clusters found in this subscription."
     else
