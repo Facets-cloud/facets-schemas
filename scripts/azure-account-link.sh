@@ -1,14 +1,49 @@
 #!/bin/bash
 
+# Check for --read-only flag
+READ_ONLY=false
+if [ "$1" == "--read-only" ]; then
+    READ_ONLY=true
+    shift
+fi
+
 # Check if CP_URL, PRINCIPAL_NAME, and WEBHOOK_ID were provided as arguments
 if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
+    if [ "$READ_ONLY" = true ]; then
+        echo "Usage: $0 --read-only <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
+    else
+        echo "Usage: $0 [--read-only] <CP_URL> <PRINCIPAL_NAME> <WEBHOOK_ID>"
+    fi
     exit 1
 fi
 
 CP_URL=$1
 PRINCIPAL_NAME="$2"
 WEBHOOK_ID=$3
+
+# If --read-only flag is set, download and execute the reader script
+if [ "$READ_ONLY" = true ]; then
+    echo "Read-only mode enabled. Downloading reader script..."
+    READER_SCRIPT_URL="https://facets-cloud.github.io/facets-schemas/scripts/azure-account-link-reader.sh"
+    TEMP_SCRIPT=$(mktemp /tmp/azure-account-link-reader.XXXXXX.sh)
+
+    curl -fsSL "$READER_SCRIPT_URL" -o "$TEMP_SCRIPT"
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to download reader script from $READER_SCRIPT_URL"
+        rm -f "$TEMP_SCRIPT"
+        exit 1
+    fi
+
+    chmod +x "$TEMP_SCRIPT"
+
+    echo "Executing reader script..."
+    "$TEMP_SCRIPT" "$CP_URL" "$PRINCIPAL_NAME" "$WEBHOOK_ID"
+    EXIT_CODE=$?
+
+    rm -f "$TEMP_SCRIPT"
+    exit $EXIT_CODE
+fi
 
 # Fetch all subscriptions in JSON format
 echo "Fetching available subscriptions..."
