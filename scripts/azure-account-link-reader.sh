@@ -165,23 +165,33 @@ if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
                 echo "  - Granting access to '$CLUSTER_NAME'..."
 
                 # Assign Azure Kubernetes Service RBAC Cluster Reader role
-                az role assignment create \
+                RBAC_READER_ERROR=$(az role assignment create \
                     --assignee "$CLIENT_ID" \
                     --role "Azure Kubernetes Service RBAC Cluster Reader" \
-                    --scope "$CLUSTER_ID" &>/dev/null
+                    --scope "$CLUSTER_ID" 2>&1)
 
                 if [ $? -ne 0 ]; then
                     echo "    Warning: Failed to assign RBAC Cluster Reader role to '$CLUSTER_NAME'"
+                    if echo "$RBAC_READER_ERROR" | grep -q "already exists"; then
+                        echo "    (Role assignment already exists)"
+                    else
+                        echo "    Error: $RBAC_READER_ERROR"
+                    fi
                 fi
 
-                # Assign runcommand action for remote access
-                az role assignment create \
+                # Assign Cluster User role for credential access
+                CLUSTER_USER_ERROR=$(az role assignment create \
                     --assignee "$CLIENT_ID" \
                     --role "Azure Kubernetes Service Cluster User Role" \
-                    --scope "$CLUSTER_ID" &>/dev/null
+                    --scope "$CLUSTER_ID" 2>&1)
 
                 if [ $? -ne 0 ]; then
                     echo "    Warning: Failed to assign Cluster User role to '$CLUSTER_NAME'"
+                    if echo "$CLUSTER_USER_ERROR" | grep -q "already exists"; then
+                        echo "    (Role assignment already exists)"
+                    else
+                        echo "    Error: $CLUSTER_USER_ERROR"
+                    fi
                 fi
 
                 # Create custom role definition for remote access if it doesn't exist
@@ -201,15 +211,21 @@ if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
                 fi
 
                 # Assign the custom remote access role
-                az role assignment create \
+                CUSTOM_ROLE_ERROR=$(az role assignment create \
                     --assignee "$CLIENT_ID" \
                     --role "$CUSTOM_ROLE_NAME" \
-                    --scope "$CLUSTER_ID" &>/dev/null
+                    --scope "$CLUSTER_ID" 2>&1)
 
                 if [ $? -eq 0 ]; then
                     echo "    ✓ Successfully granted read access to '$CLUSTER_NAME'"
                 else
-                    echo "    Warning: Failed to assign runcommand role to '$CLUSTER_NAME'"
+                    echo "    Warning: Failed to assign remote access role to '$CLUSTER_NAME'"
+                    if echo "$CUSTOM_ROLE_ERROR" | grep -q "already exists"; then
+                        echo "    (Role assignment already exists)"
+                        echo "    ✓ Read access already configured for '$CLUSTER_NAME'"
+                    else
+                        echo "    Error: $CUSTOM_ROLE_ERROR"
+                    fi
                 fi
             done
 
