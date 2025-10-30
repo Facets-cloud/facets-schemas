@@ -164,14 +164,14 @@ if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
 
                 echo "  - Granting access to '$CLUSTER_NAME'..."
 
-                # Assign Azure Kubernetes Service RBAC Cluster Reader role
+                # Assign Azure Kubernetes Service RBAC Reader role (at cluster scope = all namespaces)
                 RBAC_READER_ERROR=$(az role assignment create \
                     --assignee "$CLIENT_ID" \
-                    --role "Azure Kubernetes Service RBAC Cluster Reader" \
+                    --role "Azure Kubernetes Service RBAC Reader" \
                     --scope "$CLUSTER_ID" 2>&1)
 
                 if [ $? -ne 0 ]; then
-                    echo "    Warning: Failed to assign RBAC Cluster Reader role to '$CLUSTER_NAME'"
+                    echo "    Warning: Failed to assign RBAC Reader role to '$CLUSTER_NAME'"
                     if echo "$RBAC_READER_ERROR" | grep -q "already exists"; then
                         echo "    (Role assignment already exists)"
                     else
