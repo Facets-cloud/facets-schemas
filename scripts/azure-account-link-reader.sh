@@ -10,6 +10,9 @@ CP_URL=$1
 PRINCIPAL_NAME="$2"
 WEBHOOK_ID=$3
 
+# Track if aks-preview extension was removed
+EXTENSION_REMOVED=false
+
 # Fetch all subscriptions in JSON format
 echo "Fetching available subscriptions..."
 SUBSCRIPTIONS_JSON=$(az account list --query "[].{name:name, id:id}" --output json)
@@ -74,74 +77,85 @@ if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
     AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json 2>&1)
     AKS_LIST_EXIT_CODE=$?
 
-    if [ $AKS_LIST_EXIT_CODE -ne 0 ]; then
-        echo "Failed to fetch AKS clusters."
+    # Check if it's the msrestazure error and offer to fix it
+    if [ $AKS_LIST_EXIT_CODE -ne 0 ] && echo "$AKS_CLUSTERS_JSON" | grep -q "No module named 'msrestazure'"; then
+        echo ""
+        echo "Detected an Azure CLI extension issue with 'aks-preview'."
+        echo "The extension has a broken dependency that prevents AKS commands from working."
+        echo ""
+        read -p "Temporarily remove 'aks-preview' extension to continue? (It will be reinstalled at the end) [y/N]: " REMOVE_EXTENSION
 
-        # Check if it's the msrestazure error
-        if echo "$AKS_CLUSTERS_JSON" | grep -q "No module named 'msrestazure'"; then
-            echo ""
-            echo "This appears to be an Azure CLI extension issue."
-            echo "To fix this, run one of the following commands:"
-            echo ""
-            echo "  Option 1 - Remove the problematic extension:"
-            echo "    az extension remove --name aks-preview"
-            echo ""
-            echo "  Option 2 - Update the extension:"
-            echo "    az extension update --name aks-preview"
-            echo ""
-            echo "Then run this script again."
+        if [[ "$REMOVE_EXTENSION" =~ ^[Yy]$ ]]; then
+            echo "Removing aks-preview extension..."
+            az extension remove --name aks-preview &>/dev/null
+
+            if [ $? -eq 0 ]; then
+                EXTENSION_REMOVED=true
+                echo "Extension removed. Retrying..."
+                echo ""
+
+                # Retry fetching clusters
+                echo "Fetching AKS clusters in subscription..."
+                AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json 2>&1)
+                AKS_LIST_EXIT_CODE=$?
+            else
+                echo "Failed to remove extension. Skipping AKS configuration..."
+            fi
+        else
+            echo "Skipping AKS configuration..."
         fi
+    fi
 
-        echo "Skipping AKS configuration..."
+    if [ $AKS_LIST_EXIT_CODE -ne 0 ]; then
+        echo "Failed to fetch AKS clusters. Skipping AKS configuration..."
     elif [ "$(echo "$AKS_CLUSTERS_JSON" | jq 'length')" -eq 0 ]; then
         echo "No AKS clusters found in this subscription."
     else
-        # Display clusters
-        echo ""
-        echo "Available AKS clusters:"
-        echo "$AKS_CLUSTERS_JSON" | jq -r '.[] | "  - \(.name) (RG: \(.resourceGroup), Azure RBAC: \(.enableAzureRbac // false))"'
-        echo ""
-        echo "Enter cluster names separated by spaces (or 'all' for all clusters):"
-        read -p "Clusters: " CLUSTER_INPUT
+        # Filter clusters with Azure RBAC enabled
+        RBAC_ENABLED_CLUSTERS=$(echo "$AKS_CLUSTERS_JSON" | jq '[.[] | select(.enableAzureRbac == true)]')
+        RBAC_CLUSTER_COUNT=$(echo "$RBAC_ENABLED_CLUSTERS" | jq 'length')
 
-        SELECTED_CLUSTERS=()
-        if [[ "$CLUSTER_INPUT" == "all" ]]; then
-            SELECTED_CLUSTERS=($(echo "$AKS_CLUSTERS_JSON" | jq -r '.[].name'))
-        else
-            read -ra SELECTED_CLUSTERS <<< "$CLUSTER_INPUT"
-        fi
-
-        # Verify all selected clusters have Azure RBAC enabled
-        ALL_RBAC_ENABLED=true
-        CLUSTERS_TO_GRANT=()
-
-        for CLUSTER_NAME in "${SELECTED_CLUSTERS[@]}"; do
-            CLUSTER_INFO=$(echo "$AKS_CLUSTERS_JSON" | jq -r --arg name "$CLUSTER_NAME" '.[] | select(.name == $name)')
-
-            if [ -z "$CLUSTER_INFO" ]; then
-                echo "Warning: Cluster '$CLUSTER_NAME' not found. Skipping..."
-                continue
-            fi
-
-            RBAC_ENABLED=$(echo "$CLUSTER_INFO" | jq -r '.enableAzureRbac // false')
-            CLUSTER_ID=$(echo "$CLUSTER_INFO" | jq -r '.id')
-
-            if [ "$RBAC_ENABLED" != "true" ]; then
-                echo "Error: Cluster '$CLUSTER_NAME' does not have Azure RBAC enabled."
-                ALL_RBAC_ENABLED=false
-            else
-                CLUSTERS_TO_GRANT+=("$CLUSTER_ID:$CLUSTER_NAME")
-            fi
-        done
-
-        if [ "$ALL_RBAC_ENABLED" = false ]; then
+        if [ "$RBAC_CLUSTER_COUNT" -eq 0 ]; then
             echo ""
-            echo "Some clusters do not have Azure RBAC enabled. Skipping AKS role assignment."
+            echo "No AKS clusters with Azure RBAC enabled found in this subscription."
             echo "To enable Azure RBAC on a cluster, run:"
             echo "  az aks update --resource-group <RG> --name <CLUSTER> --enable-azure-rbac"
-        elif [ ${#CLUSTERS_TO_GRANT[@]} -eq 0 ]; then
-            echo "No valid clusters selected. Skipping AKS role assignment."
+            echo ""
+            echo "Skipping AKS configuration..."
         else
+            # Display clusters with Azure RBAC enabled
+            echo ""
+            echo "Available AKS clusters (with Azure RBAC enabled):"
+            echo "$RBAC_ENABLED_CLUSTERS" | jq -r '.[] | "  - \(.name) (RG: \(.resourceGroup))"'
+            echo ""
+            echo "Enter cluster names separated by spaces (or 'all' for all clusters):"
+            read -p "Clusters: " CLUSTER_INPUT
+
+            SELECTED_CLUSTERS=()
+            if [[ "$CLUSTER_INPUT" == "all" ]]; then
+                SELECTED_CLUSTERS=($(echo "$RBAC_ENABLED_CLUSTERS" | jq -r '.[].name'))
+            else
+                read -ra SELECTED_CLUSTERS <<< "$CLUSTER_INPUT"
+            fi
+
+            # Verify all selected clusters exist in the RBAC-enabled list
+            CLUSTERS_TO_GRANT=()
+
+            for CLUSTER_NAME in "${SELECTED_CLUSTERS[@]}"; do
+                CLUSTER_INFO=$(echo "$RBAC_ENABLED_CLUSTERS" | jq -r --arg name "$CLUSTER_NAME" '.[] | select(.name == $name)')
+
+                if [ -z "$CLUSTER_INFO" ]; then
+                    echo "Warning: Cluster '$CLUSTER_NAME' not found or does not have Azure RBAC enabled. Skipping..."
+                    continue
+                fi
+
+                CLUSTER_ID=$(echo "$CLUSTER_INFO" | jq -r '.id')
+                CLUSTERS_TO_GRANT+=("$CLUSTER_ID:$CLUSTER_NAME")
+            done
+
+            if [ ${#CLUSTERS_TO_GRANT[@]} -eq 0 ]; then
+                echo "No valid clusters selected. Skipping AKS role assignment."
+            else
             echo ""
             echo "Granting AKS read access to ${#CLUSTERS_TO_GRANT[@]} cluster(s)..."
 
@@ -199,8 +213,9 @@ if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
                 fi
             done
 
-            echo ""
-            echo "AKS cluster access configuration complete."
+                echo ""
+                echo "AKS cluster access configuration complete."
+            fi
         fi
     fi
 fi
@@ -232,3 +247,17 @@ if [ "$HTTP_CODE" -ne 200 ]; then
 fi
 
 echo "Data successfully sent to the specified URL."
+
+# Reinstall aks-preview extension if it was removed
+if [ "$EXTENSION_REMOVED" = true ]; then
+    echo ""
+    echo "Reinstalling aks-preview extension..."
+    az extension add --name aks-preview &>/dev/null
+
+    if [ $? -eq 0 ]; then
+        echo "Extension reinstalled successfully."
+    else
+        echo "Warning: Failed to reinstall aks-preview extension."
+        echo "You can manually reinstall it with: az extension add --name aks-preview"
+    fi
+fi
