@@ -231,7 +231,7 @@ async def create_and_wait_for_deployment(
             {curl_cmd}
             """,
         ],
-        "allowDestroy": True,
+        "allowDestroy": False,
         "releaseComment": "This is a custom release where we do a custom terraform plan from the GA planner bot to check the release candidates stability, PS: This is internal for facets",
         "forceRelease": True,
         "releaseType": "CUSTOM",
