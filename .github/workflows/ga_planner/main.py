@@ -754,7 +754,7 @@ def get_previous_rc_branch(current_rc: str) -> str:
                 # Remove 'origin/' prefix and whitespace
                 branch = line.strip().replace('origin/', '')
                 # Match rc-x.y.z pattern
-                match = re.match(r'rc-(\d+)\.(\d+)\.(\d+)', branch)
+                match = re.match(r'rc-(\d+)\.(\d+)\.(\d+)$', branch)
                 if match:
                     major, minor, patch = int(match.group(1)), int(match.group(2)), int(match.group(3))
                     rc_branches.append((branch, major, minor, patch))
