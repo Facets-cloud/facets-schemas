@@ -259,26 +259,30 @@ if [[ "$ADD_EKS_ACCESS" =~ ^[Yy]$ ]]; then
                         read -p "  Do you want to select a jumpbox instance now? (y/n): " SELECT_JUMPBOX
 
                         if [[ "$SELECT_JUMPBOX" =~ ^[Yy]$ ]]; then
-                            # Find SSM-enabled instances in the cluster VPC
-                            echo "  Fetching SSM-enabled instances in VPC $CLUSTER_VPC..."
-                            SSM_INSTANCES=$(aws ssm describe-instance-information \
+                            # Find instances in cluster VPC with SSM connected
+                            echo "  Fetching instances in VPC $CLUSTER_VPC with SSM connected..."
+
+                            # Get all running instances in the cluster VPC
+                            VPC_INSTANCE_IDS=$(aws ec2 describe-instances \
                                 --region "$AWS_REGION" \
-                                --query "InstanceInformationList[?PingStatus=='Online'].[InstanceId]" \
+                                --filters "Name=vpc-id,Values=$CLUSTER_VPC" "Name=instance-state-name,Values=running" \
+                                --query "Reservations[].Instances[].InstanceId" \
                                 --output text 2>/dev/null)
 
-                            if [ -z "$SSM_INSTANCES" ]; then
-                                echo "  No SSM-enabled instances found online."
-                                echo "  You'll need to set up a jumpbox with SSM agent in VPC $CLUSTER_VPC"
+                            if [ -z "$VPC_INSTANCE_IDS" ]; then
+                                echo "  No running instances found in VPC $CLUSTER_VPC"
+                                echo "  You'll need to set up a jumpbox with SSM agent in this VPC."
                             else
-                                # Filter instances by VPC
+                                # Filter to only SSM-connected instances
                                 VPC_INSTANCES=()
-                                for INSTANCE_ID in $SSM_INSTANCES; do
-                                    INSTANCE_VPC=$(aws ec2 describe-instances \
-                                        --instance-ids "$INSTANCE_ID" \
+                                for INSTANCE_ID in $VPC_INSTANCE_IDS; do
+                                    SSM_STATUS=$(aws ssm get-connection-status \
+                                        --target "$INSTANCE_ID" \
                                         --region "$AWS_REGION" \
-                                        --query "Reservations[0].Instances[0].VpcId" \
+                                        --query 'Status' \
                                         --output text 2>/dev/null)
-                                    if [ "$INSTANCE_VPC" == "$CLUSTER_VPC" ]; then
+
+                                    if [ "$SSM_STATUS" == "connected" ]; then
                                         INSTANCE_NAME=$(aws ec2 describe-instances \
                                             --instance-ids "$INSTANCE_ID" \
                                             --region "$AWS_REGION" \
@@ -289,11 +293,11 @@ if [[ "$ADD_EKS_ACCESS" =~ ^[Yy]$ ]]; then
                                 done
 
                                 if [ ${#VPC_INSTANCES[@]} -eq 0 ]; then
-                                    echo "  No SSM-enabled instances found in cluster VPC."
-                                    echo "  You'll need to set up a jumpbox with SSM agent in VPC $CLUSTER_VPC"
+                                    echo "  No instances with SSM connected found in VPC $CLUSTER_VPC"
+                                    echo "  You'll need to set up a jumpbox with SSM agent in this VPC."
                                 else
                                     echo ""
-                                    echo "  Available SSM-enabled instances in cluster VPC:"
+                                    echo "  Available instances (SSM connected) in VPC $CLUSTER_VPC:"
                                     for i in "${!VPC_INSTANCES[@]}"; do
                                         IFS=':' read -r inst_id inst_name <<< "${VPC_INSTANCES[$i]}"
                                         echo "    $((i+1))) $inst_id ($inst_name)"
@@ -305,22 +309,9 @@ if [[ "$ADD_EKS_ACCESS" =~ ^[Yy]$ ]]; then
                                         SELECTED_INSTANCE="${VPC_INSTANCES[$((INSTANCE_CHOICE-1))]}"
                                         IFS=':' read -r JUMPBOX_ID JUMPBOX_NAME <<< "$SELECTED_INSTANCE"
 
-                                        # Verify SSM connection status
-                                        echo "  Verifying SSM connectivity for $JUMPBOX_ID..."
-                                        SSM_STATUS=$(aws ssm get-connection-status \
-                                            --target "$JUMPBOX_ID" \
-                                            --region "$AWS_REGION" \
-                                            --query 'Status' \
-                                            --output text 2>&1)
-
-                                        if [ "$SSM_STATUS" == "connected" ]; then
-                                            # Store jumpbox info for this cluster (including VPC for reference)
-                                            JUMPBOX_INFO+=("$CLUSTER_NAME:$AWS_REGION:$JUMPBOX_ID:$JUMPBOX_NAME:$CLUSTER_VPC")
-                                            echo "  ✓ SSM connectivity verified for $JUMPBOX_ID ($JUMPBOX_NAME) in VPC $CLUSTER_VPC"
-                                        else
-                                            echo "  ✗ SSM not connected for $JUMPBOX_ID (status: $SSM_STATUS)"
-                                            echo "    Ensure the instance has SSM agent running and proper IAM role."
-                                        fi
+                                        # Store jumpbox info for this cluster
+                                        JUMPBOX_INFO+=("$CLUSTER_NAME:$AWS_REGION:$JUMPBOX_ID:$JUMPBOX_NAME:$CLUSTER_VPC")
+                                        echo "  ✓ Jumpbox selected: $JUMPBOX_ID ($JUMPBOX_NAME)"
                                     fi
                                 fi
                             fi
