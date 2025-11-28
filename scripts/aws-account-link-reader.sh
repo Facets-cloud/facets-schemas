@@ -62,8 +62,41 @@ if [ $? -ne 0 ]; then
     echo "Failed to attach ReadOnlyAccess policy to IAM role."
     exit 1
 fi
+echo "ReadOnlyAccess policy attached successfully."
 
-echo "ReadOnlyAccess policy attached successfully to '$ROLE_NAME'."
+# Attach SSM policy for jumpbox access
+aws iam attach-role-policy --role-name "$ROLE_NAME" --policy-arn "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+if [ $? -ne 0 ]; then
+    echo "Warning: Failed to attach SSMReadOnlyAccess policy."
+fi
+
+# Create inline policy for SSM StartSession
+SSM_SESSION_POLICY='{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ssm:StartSession",
+                "ssm:TerminateSession",
+                "ssm:ResumeSession",
+                "ssm:DescribeSessions",
+                "ssm:GetConnectionStatus"
+            ],
+            "Resource": "*"
+        }
+    ]
+}'
+
+aws iam put-role-policy --role-name "$ROLE_NAME" --policy-name "SSMSessionAccess" --policy-document "$SSM_SESSION_POLICY" 2>/dev/null
+if [ $? -eq 0 ]; then
+    echo "SSM session access policy attached successfully."
+else
+    echo "Warning: Failed to attach SSM session policy."
+fi
+
+# Initialize jumpbox info array for private clusters
+declare -a JUMPBOX_INFO
 
 # Ask if user wants to add EKS cluster read access
 echo ""
@@ -212,6 +245,74 @@ if [[ "$ADD_EKS_ACCESS" =~ ^[Yy]$ ]]; then
                     fi
 
                     echo "  ✓ Successfully configured read access for cluster '$CLUSTER_NAME'"
+
+                    # Check if cluster is private
+                    PUBLIC_ACCESS=$(echo "$CLUSTER_INFO" | jq -r '.cluster.resourcesVpcConfig.endpointPublicAccess')
+                    PRIVATE_ACCESS=$(echo "$CLUSTER_INFO" | jq -r '.cluster.resourcesVpcConfig.endpointPrivateAccess')
+                    CLUSTER_VPC=$(echo "$CLUSTER_INFO" | jq -r '.cluster.resourcesVpcConfig.vpcId')
+
+                    if [ "$PUBLIC_ACCESS" == "false" ] && [ "$PRIVATE_ACCESS" == "true" ]; then
+                        echo ""
+                        echo "  Note: Cluster '$CLUSTER_NAME' has a private endpoint only."
+                        echo "  A jumpbox (EC2 instance with SSM) in the cluster VPC is required for kubectl access."
+                        echo ""
+                        read -p "  Do you want to select a jumpbox instance now? (y/n): " SELECT_JUMPBOX
+
+                        if [[ "$SELECT_JUMPBOX" =~ ^[Yy]$ ]]; then
+                            # Find SSM-enabled instances in the cluster VPC
+                            echo "  Fetching SSM-enabled instances in VPC $CLUSTER_VPC..."
+                            SSM_INSTANCES=$(aws ssm describe-instance-information \
+                                --region "$AWS_REGION" \
+                                --query "InstanceInformationList[?PingStatus=='Online'].[InstanceId]" \
+                                --output text 2>/dev/null)
+
+                            if [ -z "$SSM_INSTANCES" ]; then
+                                echo "  No SSM-enabled instances found online."
+                                echo "  You'll need to set up a jumpbox with SSM agent in VPC $CLUSTER_VPC"
+                            else
+                                # Filter instances by VPC
+                                VPC_INSTANCES=()
+                                for INSTANCE_ID in $SSM_INSTANCES; do
+                                    INSTANCE_VPC=$(aws ec2 describe-instances \
+                                        --instance-ids "$INSTANCE_ID" \
+                                        --region "$AWS_REGION" \
+                                        --query "Reservations[0].Instances[0].VpcId" \
+                                        --output text 2>/dev/null)
+                                    if [ "$INSTANCE_VPC" == "$CLUSTER_VPC" ]; then
+                                        INSTANCE_NAME=$(aws ec2 describe-instances \
+                                            --instance-ids "$INSTANCE_ID" \
+                                            --region "$AWS_REGION" \
+                                            --query "Reservations[0].Instances[0].Tags[?Key=='Name'].Value" \
+                                            --output text 2>/dev/null)
+                                        VPC_INSTANCES+=("$INSTANCE_ID:${INSTANCE_NAME:-unnamed}")
+                                    fi
+                                done
+
+                                if [ ${#VPC_INSTANCES[@]} -eq 0 ]; then
+                                    echo "  No SSM-enabled instances found in cluster VPC."
+                                    echo "  You'll need to set up a jumpbox with SSM agent in VPC $CLUSTER_VPC"
+                                else
+                                    echo ""
+                                    echo "  Available SSM-enabled instances in cluster VPC:"
+                                    for i in "${!VPC_INSTANCES[@]}"; do
+                                        IFS=':' read -r inst_id inst_name <<< "${VPC_INSTANCES[$i]}"
+                                        echo "    $((i+1))) $inst_id ($inst_name)"
+                                    done
+                                    echo ""
+                                    read -p "  Select instance number (or press Enter to skip): " INSTANCE_CHOICE
+
+                                    if [ -n "$INSTANCE_CHOICE" ] && [ "$INSTANCE_CHOICE" -ge 1 ] && [ "$INSTANCE_CHOICE" -le ${#VPC_INSTANCES[@]} ]; then
+                                        SELECTED_INSTANCE="${VPC_INSTANCES[$((INSTANCE_CHOICE-1))]}"
+                                        IFS=':' read -r JUMPBOX_ID JUMPBOX_NAME <<< "$SELECTED_INSTANCE"
+
+                                        # Store jumpbox info for this cluster
+                                        JUMPBOX_INFO+=("$CLUSTER_NAME:$AWS_REGION:$JUMPBOX_ID:$JUMPBOX_NAME")
+                                        echo "  ✓ Jumpbox selected: $JUMPBOX_ID ($JUMPBOX_NAME)"
+                                    fi
+                                fi
+                            fi
+                        fi
+                    fi
                 done
 
                 echo ""
@@ -244,6 +345,24 @@ fi
 
 echo "Data successfully sent to Facets."
 echo ""
-echo "Summary:"
+echo "============================================"
+echo "Summary"
+echo "============================================"
 echo "  Role ARN: $ROLE_ARN"
 echo "  External ID: $EXTERNAL_ID"
+
+# Print jumpbox info if any private clusters were configured
+if [ ${#JUMPBOX_INFO[@]} -gt 0 ]; then
+    echo ""
+    echo "Private Cluster Jumpboxes:"
+    echo "--------------------------------------------"
+    for info in "${JUMPBOX_INFO[@]}"; do
+        IFS=':' read -r cluster region jumpbox_id jumpbox_name <<< "$info"
+        echo "  Cluster: $cluster"
+        echo "    Region: $region"
+        echo "    Jumpbox Instance: $jumpbox_id ($jumpbox_name)"
+        echo "    Connect via: aws ssm start-session --target $jumpbox_id --region $region"
+        echo ""
+    done
+fi
+echo "============================================"
