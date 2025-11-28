@@ -305,9 +305,22 @@ if [[ "$ADD_EKS_ACCESS" =~ ^[Yy]$ ]]; then
                                         SELECTED_INSTANCE="${VPC_INSTANCES[$((INSTANCE_CHOICE-1))]}"
                                         IFS=':' read -r JUMPBOX_ID JUMPBOX_NAME <<< "$SELECTED_INSTANCE"
 
-                                        # Store jumpbox info for this cluster
-                                        JUMPBOX_INFO+=("$CLUSTER_NAME:$AWS_REGION:$JUMPBOX_ID:$JUMPBOX_NAME")
-                                        echo "  ✓ Jumpbox selected: $JUMPBOX_ID ($JUMPBOX_NAME)"
+                                        # Verify SSM connection status
+                                        echo "  Verifying SSM connectivity for $JUMPBOX_ID..."
+                                        SSM_STATUS=$(aws ssm get-connection-status \
+                                            --target "$JUMPBOX_ID" \
+                                            --region "$AWS_REGION" \
+                                            --query 'Status' \
+                                            --output text 2>&1)
+
+                                        if [ "$SSM_STATUS" == "connected" ]; then
+                                            # Store jumpbox info for this cluster (including VPC for reference)
+                                            JUMPBOX_INFO+=("$CLUSTER_NAME:$AWS_REGION:$JUMPBOX_ID:$JUMPBOX_NAME:$CLUSTER_VPC")
+                                            echo "  ✓ SSM connectivity verified for $JUMPBOX_ID ($JUMPBOX_NAME) in VPC $CLUSTER_VPC"
+                                        else
+                                            echo "  ✗ SSM not connected for $JUMPBOX_ID (status: $SSM_STATUS)"
+                                            echo "    Ensure the instance has SSM agent running and proper IAM role."
+                                        fi
                                     fi
                                 fi
                             fi
@@ -357,9 +370,10 @@ if [ ${#JUMPBOX_INFO[@]} -gt 0 ]; then
     echo "Private Cluster Jumpboxes:"
     echo "--------------------------------------------"
     for info in "${JUMPBOX_INFO[@]}"; do
-        IFS=':' read -r cluster region jumpbox_id jumpbox_name <<< "$info"
+        IFS=':' read -r cluster region jumpbox_id jumpbox_name vpc_id <<< "$info"
         echo "  Cluster: $cluster"
         echo "    Region: $region"
+        echo "    VPC: $vpc_id"
         echo "    Jumpbox Instance: $jumpbox_id ($jumpbox_name)"
         echo "    Connect via: aws ssm start-session --target $jumpbox_id --region $region"
         echo ""
