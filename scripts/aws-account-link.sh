@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <ROLE_NAME> <ACCOUNT_ID> <CP_URL> <WEBHOOK_ID>"
+    echo "Usage: $0 <CP_URL> <ROLE_NAME> <WEBHOOK_ID> <ACCOUNT_ID>"
     exit 1
 fi
 
@@ -9,6 +9,48 @@ CP_URL=$1
 ROLE_NAME=$2
 WEBHOOK_ID=$3
 ACCOUNT_ID=$4
+
+# Prompt for access mode
+echo "Select access mode:"
+echo "  1) Write access (default) - Use this to provision environments in AWS using Facets"
+echo "  2) Read-only access - Use this to discover Facets blueprint from existing setup"
+read -p "Enter choice [1]: " ACCESS_MODE
+
+# Default to write mode if empty
+ACCESS_MODE=${ACCESS_MODE:-1}
+
+# If read-only mode is selected, download and execute the reader script
+if [ "$ACCESS_MODE" = "2" ]; then
+    echo ""
+    echo "Read-only mode selected. Downloading reader script..."
+    READER_SCRIPT_URL="https://facets-cloud.github.io/facets-schemas/scripts/aws-account-link-reader.sh"
+    TEMP_SCRIPT=$(mktemp /tmp/aws-account-link-reader.XXXXXX.sh)
+
+    curl -fsSL "$READER_SCRIPT_URL" -o "$TEMP_SCRIPT"
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to download reader script from $READER_SCRIPT_URL"
+        rm -f "$TEMP_SCRIPT"
+        exit 1
+    fi
+
+    chmod +x "$TEMP_SCRIPT"
+
+    echo "Executing reader script..."
+    echo ""
+    "$TEMP_SCRIPT" "$CP_URL" "$ROLE_NAME" "$WEBHOOK_ID" "$ACCOUNT_ID"
+    EXIT_CODE=$?
+
+    rm -f "$TEMP_SCRIPT"
+    exit $EXIT_CODE
+elif [ "$ACCESS_MODE" != "1" ]; then
+    echo "Invalid choice. Defaulting to write access mode."
+fi
+
+echo ""
+echo "Write access mode selected. Continuing with full permissions..."
+echo ""
+
 POLICY_URL="https://facets-cloud.github.io/facets-schemas/scripts/aws-policy.json"
 
 EXTERNAL_ID=$(uuidgen)
