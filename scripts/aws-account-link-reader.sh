@@ -150,6 +150,25 @@ if [[ "$ADD_EKS_ACCESS" =~ ^[Yy]$ ]]; then
                                 continue
                             fi
 
+                            # Poll until auth mode actually changes (eventual consistency)
+                            echo "  Verifying authentication mode change..."
+                            POLL_COUNT=0
+                            MAX_POLLS=60  # 5 minutes max (60 * 5 seconds)
+                            while [ $POLL_COUNT -lt $MAX_POLLS ]; do
+                                CURRENT_MODE=$(aws eks describe-cluster --name "$CLUSTER_NAME" --region "$AWS_REGION" \
+                                    --query 'cluster.accessConfig.authenticationMode' --output text 2>/dev/null)
+                                if [ "$CURRENT_MODE" == "API_AND_CONFIG_MAP" ]; then
+                                    break
+                                fi
+                                sleep 5
+                                POLL_COUNT=$((POLL_COUNT + 1))
+                            done
+
+                            if [ "$CURRENT_MODE" != "API_AND_CONFIG_MAP" ]; then
+                                echo "  Timed out waiting for auth mode change. Skipping..."
+                                continue
+                            fi
+
                             echo "  IAM access entries enabled successfully."
                         else
                             echo "  Skipping cluster '$CLUSTER_NAME'..."
