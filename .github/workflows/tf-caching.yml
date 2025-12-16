@@ -72,6 +72,7 @@ jobs:
         mkdir tmp_cache
         echo "terraform init to initialize modules"
         pip3 install pystache
+        export TESTING=true
         python3 scripts/tfmain_preprocessor/main.py --input add_aws_providers=True --input add_azure_providers=True --input add_gcp_providers=True --input add_legacy_kubernetes_providers=True
         for file in *.tf
         do
