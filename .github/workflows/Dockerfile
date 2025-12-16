@@ -11,7 +11,7 @@ RUN unzip -q tofu/tofu_1.9.0_linux_amd64.zip -d tofu
 RUN chmod +x tofu/tofu
 RUN wget https://dl.k8s.io/release/v1.29.3/bin/linux/amd64/kubectl
 
-FROM ghcr.io/actions/actions-runner:2.328.0
+FROM ghcr.io/actions/actions-runner:2.330.0
 ENV HOME="/home/runner"
 # Update the package list
 RUN sudo add-apt-repository ppa:rmescandon/yq -y
