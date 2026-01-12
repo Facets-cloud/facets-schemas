@@ -21,6 +21,10 @@ RUN mv telepresence /usr/local/bin/telepresence
 RUN chmod +x /usr/local/bin/telepresence
 RUN pip3 install --no-cache-dir pykube-ng pytz google-api-python-client google-auth psycopg2-binary google-cloud-secret-manager google-cloud-storage
 
+# Install tf-state-pusher for parallel hotfix releases
+RUN wget -q https://github.com/Facets-cloud/tf-state-pusher-releases/releases/latest/download/tf-state-pusher-linux-amd64 -O /usr/local/bin/tf-state-pusher \
+    && chmod +x /usr/local/bin/tf-state-pusher
+
 RUN rm -rf /usr/local/bin/telepresence
 RUN rm -rf terraform_1.0.11 terraform_1.0 kubectl1.21 terraform_1.5.7
 
