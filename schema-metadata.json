@@ -138,18 +138,18 @@
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.3"
                     }
                 ]
             },
             {
                 "clouds": [
-                    "azure",
                     "gcp",
+                    "azure",
                     "kubernetes",
                     "aws"
                 ],
@@ -367,11 +367,11 @@
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.3"
                     }
                 ]
             },
@@ -395,10 +395,10 @@
             },
             {
                 "clouds": [
-                    "azure",
                     "gcp",
-                    "kubernetes",
-                    "aws"
+                    "azure",
+                    "aws",
+                    "kubernetes"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/ingress/ingress.nginx_ingress_controller.sample.json",
                 "name": [
@@ -407,15 +407,15 @@
                 "versions": [
                     {
                         "documentation": "NA",
-                        "number": "0.2"
-                    },
-                    {
-                        "documentation": "NA",
                         "number": "0.01"
                     },
                     {
                         "documentation": "NA",
                         "number": "0.1"
+                    },
+                    {
+                        "documentation": "NA",
+                        "number": "0.2"
                     }
                 ]
             }
@@ -483,8 +483,8 @@
             },
             {
                 "clouds": [
-                    "azure",
                     "gcp",
+                    "azure",
                     "kubernetes",
                     "aws"
                 ],
@@ -709,8 +709,8 @@
             },
             {
                 "clouds": [
-                    "azure",
                     "gcp",
+                    "azure",
                     "kubernetes",
                     "aws"
                 ],
@@ -792,8 +792,8 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
+                    "azure",
                     "kubernetes",
                     "aws"
                 ],
@@ -945,8 +945,8 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
+                    "azure",
                     "kubernetes",
                     "aws"
                 ],
@@ -1253,8 +1253,8 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
+                    "azure",
                     "kubernetes",
                     "aws"
                 ],
@@ -1284,10 +1284,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
-                    "kubernetes",
-                    "aws"
+                    "azure",
+                    "aws",
+                    "kubernetes"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/service/service.deployment.sample.json",
                 "name": [
@@ -1519,10 +1519,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
-                    "kubernetes",
-                    "aws"
+                    "azure",
+                    "aws",
+                    "kubernetes"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/k8s_resource/k8s_resource.k8s.sample.json",
                 "name": [
@@ -1535,11 +1535,11 @@
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.3"
                     }
                 ]
             }
@@ -1958,10 +1958,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
-                    "kubernetes",
-                    "aws"
+                    "azure",
+                    "aws",
+                    "kubernetes"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/kubernetes_secret/kubernetes_secret.k8s.sample.json",
                 "name": [
@@ -1974,11 +1974,11 @@
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.3"
                     }
                 ]
             }
@@ -2066,10 +2066,10 @@
         "flavors": [
             {
                 "clouds": [
-                    "azure",
                     "gcp",
-                    "kubernetes",
-                    "aws"
+                    "azure",
+                    "aws",
+                    "kubernetes"
                 ],
                 "flavorSampleUrl": "https://facets-cloud.github.io/facets-schemas/schemas/config_map/config_map.k8s.sample.json",
                 "name": [
@@ -2082,11 +2082,11 @@
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.3"
+                        "number": "0.1"
                     },
                     {
                         "documentation": "NA",
-                        "number": "0.1"
+                        "number": "0.3"
                     }
                 ]
             }
