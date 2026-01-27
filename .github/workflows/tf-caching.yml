@@ -41,7 +41,8 @@ jobs:
                    "provider=facets alias=facets version=0.1.4 architectures=darwin_amd64,linux_amd64 link=https://github.com/Facets-cloud/terraform-provider-facets/releases/download/v0.1.4 path=Facets-cloud/facets/0.1.4"
                    "provider=helm alias=helm-release-pod version=3.0.2 architectures=darwin_amd64,linux_amd64 link=https://releases.hashicorp.com/terraform-provider-helm/3.0.2 path=hashicorp/helm-release-pod/3.0.2"
                    "provider=aws alias=aws3 version=3.74.0 architectures=linux_amd64 link=https://releases.hashicorp.com/terraform-provider-aws/3.74.0 path=hashicorp/aws3/3.74.0"
-                   "provider=aws alias=aws3tooling version=3.74.0 architectures=linux_amd64 link=https://releases.hashicorp.com/terraform-provider-aws/3.74.0 path=hashicorp/aws3tooling/3.74.0")
+                   "provider=aws alias=aws3tooling version=3.74.0 architectures=linux_amd64 link=https://releases.hashicorp.com/terraform-provider-aws/3.74.0 path=hashicorp/aws3tooling/3.74.0"
+                   "provider=aws alias=aws6 version=6.28.0 architectures=linux_amd64, darwin_amd64 link=https://releases.hashicorp.com/terraform-provider-aws/6.28.0 path=hashicorp/aws6/6.28.0")
         
         for registry in "${registries[@]}"; do
           # Setup alternate providers
