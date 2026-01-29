@@ -50,7 +50,8 @@
           "es:*",
           "secretsmanager:*",
           "ecs:*",
-          "ssm:*"
+          "ssm:*",
+          "servicediscovery:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
