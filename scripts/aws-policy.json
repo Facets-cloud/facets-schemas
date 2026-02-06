@@ -51,7 +51,8 @@
           "secretsmanager:*",
           "ecs:*",
           "ssm:*",
-          "servicediscovery:*"
+          "servicediscovery:*",
+          "application-autoscaling:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
