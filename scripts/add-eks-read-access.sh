@@ -3,14 +3,14 @@
 # add-eks-read-access.sh
 #
 # Grants an existing IAM role read-only access to EKS clusters using
-# EKS access entries and the AmazonEKSAdminViewPolicy.
+# EKS access entries and the AmazonEKSViewPolicy.
 #
 # For clusters using CONFIG_MAP auth, the script can optionally upgrade
 # to API_AND_CONFIG_MAP (safe — existing aws-auth ConfigMap entries
 # continue to work).
 #
 # Usage:
-#   ./add-eks-read-access.sh --role-arn <ROLE_ARN> --region <AWS_REGION>
+#   ./add-eks-read-access.sh --role-arn <ROLE_ARN> [--region <AWS_REGION>]
 #
 # Requirements: aws cli v2, jq
 
@@ -23,13 +23,13 @@ ROLE_ARN=""
 AWS_REGION=""
 
 usage() {
-    echo "Usage: $0 --role-arn <ROLE_ARN> --region <AWS_REGION>"
+    echo "Usage: $0 --role-arn <ROLE_ARN> [--region <AWS_REGION>]"
     echo ""
     echo "Grants an IAM role read-only access to EKS clusters."
     echo ""
     echo "Options:"
-    echo "  --role-arn    ARN of the IAM role to grant access"
-    echo "  --region      AWS region to scan for EKS clusters"
+    echo "  --role-arn    ARN of the IAM role to grant access (required)"
+    echo "  --region      AWS region to scan for EKS clusters (prompted if not provided)"
     echo "  -h, --help    Show this help message"
     exit 1
 }
@@ -54,10 +54,19 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ -z "$ROLE_ARN" ] || [ -z "$AWS_REGION" ]; then
-    echo "Error: --role-arn and --region are required."
+if [ -z "$ROLE_ARN" ]; then
+    echo "Error: --role-arn is required."
     echo ""
     usage
+fi
+
+# Prompt for region if not provided
+if [ -z "$AWS_REGION" ]; then
+    read -p "Enter AWS region (e.g., us-east-1): " AWS_REGION
+    if [ -z "$AWS_REGION" ]; then
+        echo "Error: Region is required."
+        exit 1
+    fi
 fi
 
 # Verify the role exists
@@ -219,12 +228,12 @@ for CLUSTER_NAME in "${SELECTED_CLUSTERS[@]}"; do
     fi
 
     # Associate the read-only view policy
-    echo "  Associating AmazonEKSAdminViewPolicy..."
+    echo "  Associating AmazonEKSViewPolicy..."
     POLICY_OUTPUT=$(aws eks associate-access-policy \
         --cluster-name "$CLUSTER_NAME" \
         --region "$AWS_REGION" \
         --principal-arn "$ROLE_ARN" \
-        --policy-arn "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminViewPolicy" \
+        --policy-arn "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy" \
         --access-scope type=cluster 2>&1)
 
     if [ $? -ne 0 ]; then
