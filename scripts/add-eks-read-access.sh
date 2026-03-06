@@ -62,7 +62,7 @@ fi
 
 # Prompt for region if not provided
 if [ -z "$AWS_REGION" ]; then
-    read -p "Enter AWS region (e.g., us-east-1): " AWS_REGION
+    read -p "Enter AWS region (e.g., us-east-1): " AWS_REGION < /dev/tty
     if [ -z "$AWS_REGION" ]; then
         echo "Error: Region is required."
         exit 1
@@ -106,7 +106,7 @@ done
 # ──────────────────────────────────────────────────────────────────────
 echo ""
 echo "Enter cluster names separated by spaces (or 'all' for all clusters):"
-read -p "Clusters: " CLUSTER_INPUT
+read -p "Clusters: " CLUSTER_INPUT < /dev/tty
 
 SELECTED_CLUSTERS=()
 if [[ "$CLUSTER_INPUT" == "all" ]]; then
@@ -155,7 +155,7 @@ for CLUSTER_NAME in "${SELECTED_CLUSTERS[@]}"; do
         echo "  This cluster currently only supports ConfigMap-based authentication."
         echo "  Enabling IAM access entries is safe — all existing aws-auth ConfigMap"
         echo "  entries continue to work alongside the new access entries."
-        read -p "  Enable IAM access entries for this cluster? (y/n): " UPGRADE_CLUSTER
+        read -p "  Enable IAM access entries for this cluster? (y/n): " UPGRADE_CLUSTER < /dev/tty
 
         if [[ ! "$UPGRADE_CLUSTER" =~ ^[Yy]$ ]]; then
             echo "  Skipping cluster '$CLUSTER_NAME'."
