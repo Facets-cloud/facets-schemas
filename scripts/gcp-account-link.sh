@@ -14,9 +14,9 @@ ROLE_NAME=$(echo $PRINCIPAL_NAME | tr '-' '_')
 
 WEBHOOK_ID=$3
 
-# Fetch all projects in JSON format
+# Fetch all projects in JSON format, excluding sys- projects
 echo "Fetching available projects..."
-PROJECTS_JSON=$(gcloud projects list --format=json)
+PROJECTS_JSON=$(gcloud projects list --filter="NOT projectId:sys-*" --format=json)
 
 if [ $? -ne 0 ]; then
     echo "Failed to fetch projects. Ensure you're logged in and try again."
