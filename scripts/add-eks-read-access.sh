@@ -2,8 +2,19 @@
 #
 # add-eks-read-access.sh
 #
-# Grants an existing IAM role read-only access to EKS clusters using
-# EKS access entries and the AmazonEKSViewPolicy.
+# Grants an existing IAM role read access to EKS clusters using
+# EKS access entries.
+#
+# Access levels:
+#   Read       — AmazonEKSViewPolicy (standard read-only access to
+#                most Kubernetes resources)
+#   Admin Read — AmazonEKSAdminViewPolicy (read-only access to ALL
+#                Kubernetes resources, including Secrets)
+#
+# NOTE: "Admin Read" grants the ability to read Kubernetes Secrets.
+# Secrets may contain sensitive data such as TLS keys, database
+# passwords, and API tokens. Only grant Admin Read to principals
+# that genuinely need to inspect secret contents.
 #
 # For clusters using CONFIG_MAP auth, the script can optionally upgrade
 # to API_AND_CONFIG_MAP (safe — existing aws-auth ConfigMap entries
@@ -25,12 +36,16 @@ AWS_REGION=""
 usage() {
     echo "Usage: $0 --role-arn <ROLE_ARN> [--region <AWS_REGION>]"
     echo ""
-    echo "Grants an IAM role read-only access to EKS clusters."
+    echo "Grants an IAM role read access to EKS clusters."
     echo ""
     echo "Options:"
     echo "  --role-arn    ARN of the IAM role to grant access (required)"
     echo "  --region      AWS region to scan for EKS clusters (prompted if not provided)"
     echo "  -h, --help    Show this help message"
+    echo ""
+    echo "Access levels (prompted during execution):"
+    echo "  1) Read       — Standard read-only (AmazonEKSViewPolicy)"
+    echo "  2) Admin Read — Full read-only including Secrets (AmazonEKSAdminViewPolicy)"
     exit 1
 }
 
@@ -69,7 +84,53 @@ if [ -z "$AWS_REGION" ]; then
     fi
 fi
 
+# ──────────────────────────────────────────────────────────────────────
+# Select access level
+# ──────────────────────────────────────────────────────────────────────
+echo ""
+echo "Select the access level to grant:"
+echo ""
+echo "  1) Read        — Standard read-only access to Kubernetes resources"
+echo "                   (pods, deployments, services, configmaps, etc.)"
+echo ""
+echo "  2) Admin Read  — Full read-only access to ALL Kubernetes resources,"
+echo "                   including Secrets."
+echo "                   ⚠  This gives access to read Kubernetes Secrets,"
+echo "                   which may contain sensitive data such as TLS keys,"
+echo "                   database passwords, and API tokens."
+echo ""
+read -p "Enter choice [1 or 2]: " ACCESS_LEVEL_CHOICE < /dev/tty
+
+case "$ACCESS_LEVEL_CHOICE" in
+    1)
+        ACCESS_POLICY_ARN="arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+        ACCESS_POLICY_NAME="AmazonEKSViewPolicy"
+        ACCESS_LEVEL_LABEL="Read"
+        ;;
+    2)
+        ACCESS_POLICY_ARN="arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminViewPolicy"
+        ACCESS_POLICY_NAME="AmazonEKSAdminViewPolicy"
+        ACCESS_LEVEL_LABEL="Admin Read"
+        echo ""
+        echo "  ⚠  Reminder: Admin Read grants access to read Kubernetes Secrets."
+        echo "     Secrets can contain credentials, tokens, and private keys."
+        read -p "  Continue with Admin Read? (y/n): " CONFIRM_ADMIN < /dev/tty
+        if [[ ! "$CONFIRM_ADMIN" =~ ^[Yy]$ ]]; then
+            echo "Aborted."
+            exit 0
+        fi
+        ;;
+    *)
+        echo "Invalid choice. Please enter 1 or 2."
+        exit 1
+        ;;
+esac
+
+echo ""
+echo "Selected access level: $ACCESS_LEVEL_LABEL ($ACCESS_POLICY_NAME)"
+
 # Verify the role exists
+echo ""
 echo "Verifying role: $ROLE_ARN"
 if ! aws iam get-role --role-name "$(echo "$ROLE_ARN" | awk -F/ '{print $NF}')" > /dev/null 2>&1; then
     echo "Error: Role '$ROLE_ARN' not found. Please create the role first."
@@ -126,7 +187,7 @@ fi
 # Configure access for each cluster
 # ──────────────────────────────────────────────────────────────────────
 echo ""
-echo "Configuring read access for ${#SELECTED_CLUSTERS[@]} cluster(s)..."
+echo "Configuring $ACCESS_LEVEL_LABEL access for ${#SELECTED_CLUSTERS[@]} cluster(s)..."
 
 SUCCESS_COUNT=0
 FAIL_COUNT=0
@@ -227,13 +288,13 @@ for CLUSTER_NAME in "${SELECTED_CLUSTERS[@]}"; do
         fi
     fi
 
-    # Associate the read-only view policy
-    echo "  Associating AmazonEKSViewPolicy..."
+    # Associate the selected access policy
+    echo "  Associating $ACCESS_POLICY_NAME..."
     POLICY_OUTPUT=$(aws eks associate-access-policy \
         --cluster-name "$CLUSTER_NAME" \
         --region "$AWS_REGION" \
         --principal-arn "$ROLE_ARN" \
-        --policy-arn "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy" \
+        --policy-arn "$ACCESS_POLICY_ARN" \
         --access-scope type=cluster 2>&1)
 
     if [ $? -ne 0 ]; then
@@ -246,7 +307,7 @@ for CLUSTER_NAME in "${SELECTED_CLUSTERS[@]}"; do
         fi
     fi
 
-    echo "  Done — read access configured for '$CLUSTER_NAME'."
+    echo "  Done — $ACCESS_LEVEL_LABEL access configured for '$CLUSTER_NAME'."
     SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
 done
 
@@ -257,8 +318,9 @@ echo ""
 echo "============================================"
 echo "Summary"
 echo "============================================"
-echo "  Role:       $ROLE_ARN"
-echo "  Region:     $AWS_REGION"
-echo "  Succeeded:  $SUCCESS_COUNT cluster(s)"
-echo "  Skipped:    $FAIL_COUNT cluster(s)"
+echo "  Role:         $ROLE_ARN"
+echo "  Region:       $AWS_REGION"
+echo "  Access Level: $ACCESS_LEVEL_LABEL ($ACCESS_POLICY_NAME)"
+echo "  Succeeded:    $SUCCESS_COUNT cluster(s)"
+echo "  Skipped:      $FAIL_COUNT cluster(s)"
 echo "============================================"
