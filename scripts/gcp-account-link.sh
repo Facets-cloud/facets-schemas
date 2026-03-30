@@ -125,7 +125,7 @@ echo "Key file saved as $PRINCIPAL_NAME-key.json"
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner"
 
 # Base64 encode the service account key JSON
-SERVICE_ACCOUNT_KEY_BASE64=$(base64 -w 0 "$PRINCIPAL_NAME-key.json")
+SERVICE_ACCOUNT_KEY_BASE64=$(base64 < "$PRINCIPAL_NAME-key.json" | tr -d '\n')
 
 # Prepare the curl request with base64 encoded key
 CURL_DATA="{ \"payload\": { \"name\": \"$ACCOUNT_NAME\", \"serviceAccountKey\": \"$SERVICE_ACCOUNT_KEY_BASE64\", \"project\": \"$PROJECT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
