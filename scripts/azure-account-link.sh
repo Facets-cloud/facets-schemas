@@ -113,7 +113,9 @@ az role definition create --role-definition '{
     "Microsoft.ContainerService/managedClusters/*",
     "Microsoft.Compute/disks/write",
     "Microsoft.Compute/disks/read",
-    "Microsoft.ServiceFabricMesh/register/action"
+    "Microsoft.ServiceFabricMesh/register/action",
+    "Microsoft.Network/routeTables/*",
+    "Microsoft.DBforPostgreSQL/flexibleServers/*"
   ],
   "AssignableScopes": [
     "/subscriptions/'"$SUBSCRIPTION_ID"'"
@@ -124,13 +126,24 @@ if [ $? -ne 0 ]; then
     echo "Role creation failed (may already exist). Proceeding anyway..."
 fi
 
-# Create the Service Principal with Custom role that has minimal permissions
-SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "facets-$PRINCIPAL_NAME" --scopes /subscriptions/"$SUBSCRIPTION_ID")
+# Create the Service Principal with retry to handle Azure role propagation delay
+SP_JSON=""
+MAX_RETRIES=4
+RETRY_WAIT=30
 
-if [ $? -ne 0 ]; then
-    echo "Failed to create Service Principal."
-    exit 1
-fi
+for i in $(seq 1 $MAX_RETRIES); do
+    SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "facets-$PRINCIPAL_NAME" --scopes /subscriptions/"$SUBSCRIPTION_ID" 2>&1)
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    if [ $i -lt $MAX_RETRIES ]; then
+        echo "Service Principal creation failed (attempt $i/$MAX_RETRIES). Role may still be propagating. Retrying in ${RETRY_WAIT}s..."
+        sleep $RETRY_WAIT
+    else
+        echo "Failed to create Service Principal after $MAX_RETRIES attempts."
+        exit 1
+    fi
+done
 
 # Extract necessary data from SP_JSON
 CLIENT_ID=$(echo "$SP_JSON" | jq -r .appId)
