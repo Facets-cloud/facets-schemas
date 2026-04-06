@@ -52,13 +52,24 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Create the Service Principal with Reader role
-SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "Reader" --scopes /subscriptions/"$SUBSCRIPTION_ID")
+# Create the Service Principal with Reader role, with retry to handle transient propagation delays
+SP_JSON=""
+MAX_RETRIES=4
+RETRY_WAIT=30
 
-if [ $? -ne 0 ]; then
-    echo "Failed to create Service Principal."
-    exit 1
-fi
+for i in $(seq 1 $MAX_RETRIES); do
+    SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "Reader" --scopes /subscriptions/"$SUBSCRIPTION_ID" 2>&1)
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    if [ $i -lt $MAX_RETRIES ]; then
+        echo "Service Principal creation failed (attempt $i/$MAX_RETRIES). Retrying in ${RETRY_WAIT}s..."
+        sleep $RETRY_WAIT
+    else
+        echo "Failed to create Service Principal after $MAX_RETRIES attempts."
+        exit 1
+    fi
+done
 
 # Extract necessary data from SP_JSON
 CLIENT_ID=$(echo "$SP_JSON" | jq -r .appId)
