@@ -25,7 +25,7 @@ fi
 CP_URL="${1}"
 SERVICE_ACCOUNT_NAME="${2}"
 WEBHOOK_ID="${3}"
-NAMESPACE="default"  # You can change this if you want to create the service account in a different namespace
+NAMESPACE="facets"  # You can change this if you want to create the service account in a different namespace
 
 # Get the current Kubernetes context
 CURRENT_CONTEXT=$(kubectl config current-context)
@@ -34,6 +34,9 @@ echo "Current Kubernetes context: $CURRENT_CONTEXT"
 
 # Prompt user for confirmation before proceeding
 confirm "Do you want to create resources in the current Kubernetes context? ($CURRENT_CONTEXT)" || exit
+
+# Ensure the target namespace exists (idempotent)
+kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
 
 # Create the service account in the specified namespace
 kubectl create serviceaccount "${SERVICE_ACCOUNT_NAME}" --namespace "${NAMESPACE}"
