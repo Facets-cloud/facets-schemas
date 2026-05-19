@@ -49,22 +49,33 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: $SECRET_NAME
+  namespace: $NAMESPACE
   annotations:
     kubernetes.io/service-account.name: "$SERVICE_ACCOUNT_NAME"
 type: kubernetes.io/service-account-token
 EOF
 
 # Apply the changes using kubectl
-kubectl apply -f UPDATED_SECRET.YAML
+kubectl apply -n "${NAMESPACE}" -f UPDATED_SECRET.YAML
 
 # Get the API server endpoint
 APISERVER=$(kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}')
 
-# Read the token from the Kubernetes secret
-TOKEN=$(kubectl get secret "$SECRET_NAME" -o jsonpath='{.data.token}'| base64 --decode)
+# Wait for the token controller to populate the secret (it runs asynchronously after apply)
+TOKEN_RAW=""
+for _ in $(seq 1 10); do
+    TOKEN_RAW=$(kubectl get secret -n "${NAMESPACE}" "$SECRET_NAME" -o jsonpath='{.data.token}' 2>/dev/null || true)
+    [ -n "$TOKEN_RAW" ] && break
+    sleep 1
+done
+if [ -z "$TOKEN_RAW" ]; then
+    echo "Failed to retrieve token from secret $SECRET_NAME in namespace $NAMESPACE after 10 attempts" >&2
+    exit 1
+fi
+TOKEN=$(printf %s "$TOKEN_RAW" | base64 --decode)
 
 # Read the CA certificate from the Kubernetes secret
-CA_CERT=$(kubectl get secret "$SECRET_NAME" -o jsonpath='{.data.ca\.crt}')
+CA_CERT=$(kubectl get secret -n "${NAMESPACE}" "$SECRET_NAME" -o jsonpath='{.data.ca\.crt}')
 
 echo "Cluster information:"
 echo "Token: ${TOKEN}"
