@@ -2,14 +2,8 @@
     "Version": "2012-10-17",
     "Statement": [
       {
-        "Effect": "Allow",
         "Action": [
-          "ssm:PutParameter"
-        ],
-        "Resource": "arn:aws:ssm:*:*:parameter/CodeBuild/*"
-      },
-      {
-        "Action": [
+          "ssm:*",
           "iam:*",
           "lambda:*",
           "apigateway:*",
