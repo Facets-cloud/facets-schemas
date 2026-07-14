@@ -15,7 +15,7 @@ EXTENSION_REMOVED=false
 
 # Fetch all subscriptions in JSON format
 echo "Fetching available subscriptions..."
-SUBSCRIPTIONS_JSON=$(az account list --query "[].{name:name, id:id}" --output json)
+SUBSCRIPTIONS_JSON=$(az account list --query "[].{name:name, id:id}" --output json --only-show-errors)
 
 if [ $? -ne 0 ]; then
     echo "Failed to fetch subscriptions. Ensure you're logged in and try again."
@@ -58,7 +58,7 @@ MAX_RETRIES=4
 RETRY_WAIT=30
 
 for i in $(seq 1 $MAX_RETRIES); do
-    SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "Reader" --scopes /subscriptions/"$SUBSCRIPTION_ID" 2>&1)
+    SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "Reader" --scopes /subscriptions/"$SUBSCRIPTION_ID" --only-show-errors 2>&1)
     if [ $? -eq 0 ]; then
         break
     fi
@@ -85,7 +85,7 @@ read -p "Do you want to add read access to AKS clusters? (y/n): " ADD_AKS_ACCESS
 
 if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
     echo "Fetching AKS clusters in subscription..."
-    AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json 2>&1)
+    AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json --only-show-errors 2>&1)
     AKS_LIST_EXIT_CODE=$?
 
     # Check if it's the msrestazure error and offer to fix it
@@ -107,7 +107,7 @@ if [[ "$ADD_AKS_ACCESS" =~ ^[Yy]$ ]]; then
 
                 # Retry fetching clusters
                 echo "Fetching AKS clusters in subscription..."
-                AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json 2>&1)
+                AKS_CLUSTERS_JSON=$(az aks list --subscription "$SUBSCRIPTION_ID" --query "[].{name:name, resourceGroup:resourceGroup, id:id, enableAzureRbac:aadProfile.enableAzureRbac}" --output json --only-show-errors 2>&1)
                 AKS_LIST_EXIT_CODE=$?
             else
                 echo "Failed to remove extension. Skipping AKS configuration..."
