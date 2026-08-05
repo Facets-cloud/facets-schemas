@@ -5,7 +5,10 @@
 # backup package, then brings the control plane up.
 #
 # Usage:
-#   ./cp-dr-restore.sh [-n NAMESPACE] [-j CRONJOB] [-y]
+#   curl -fsSL https://facets-cloud.github.io/facets-schemas/scripts/cp-dr-restore.sh | bash
+#
+# With options, pass them after -s --
+#   curl -fsSL <url> | bash -s -- -n NAMESPACE -j CRONJOB
 #
 #   -n NAMESPACE   namespace holding the restore job   (default: default)
 #   -j CRONJOB     name of the restore cronjob         (default: cp-dr-restore)
@@ -16,6 +19,28 @@
 
 set -u
 
+usage() {
+	cat <<'USAGE'
+Facets Control Plane - disaster recovery restore.
+
+Restores the standby control plane in the DR region from the most recent
+backup package, then brings the control plane up.
+
+Usage:
+  curl -fsSL https://facets-cloud.github.io/facets-schemas/scripts/cp-dr-restore.sh | bash
+
+With options, pass them after -s --
+  curl -fsSL <url> | bash -s -- -n NAMESPACE -j CRONJOB
+
+  -n NAMESPACE   namespace holding the restore job   (default: default)
+  -j CRONJOB     name of the restore cronjob         (default: cp-dr-restore)
+  -y             skip the confirmation prompt
+
+Run this against the DR cluster, not the primary. The script checks which
+cluster your kubectl is pointed at and shows it before doing anything.
+USAGE
+}
+
 NAMESPACE="default"
 CRONJOB="cp-dr-restore"
 ASSUME_YES="no"
@@ -25,7 +50,7 @@ while getopts ":n:j:yh" opt; do
 		n) NAMESPACE="$OPTARG" ;;
 		j) CRONJOB="$OPTARG" ;;
 		y) ASSUME_YES="yes" ;;
-		h) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+		h) usage; exit 0 ;;
 		\?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
 		:) echo "Option -$OPTARG requires a value" >&2; exit 1 ;;
 	esac
@@ -122,8 +147,16 @@ echo "Existing data in this control plane will be overwritten."
 echo ""
 
 if [ "$ASSUME_YES" != "yes" ]; then
+	# Read from the terminal, not stdin, so this still prompts when the script
+	# is piped in from curl. /dev/tty can exist but be unusable (cron, CI), so
+	# the read itself is the test, not [ -r /dev/tty ].
 	printf "Type 'restore' to proceed: "
-	read -r REPLY
+	REPLY=""
+	if ! read -r REPLY < /dev/tty 2>/dev/null; then
+		echo ""
+		fail "No terminal available to confirm on." \
+		     "Re-run with -y if you intend to skip the confirmation prompt."
+	fi
 	if [ "$REPLY" != "restore" ]; then
 		echo "Aborted. Nothing has been changed."
 		exit 1
