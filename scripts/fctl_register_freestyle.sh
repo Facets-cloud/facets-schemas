@@ -1,4 +1,7 @@
 #!/bin/bash
+# DEPRECATED: wraps facetsctl, which is being retired in favour of raptor.
+# For zip/freestyle builds raptor does it in one command — see scripts/raptor_install.sh, then
+#   raptor set artifact-zip <artifact> -p <project> --git-ref <branch> -f <file.zip>
 
 # Exit immediately if a command exits with a non-zero status.
 set -e

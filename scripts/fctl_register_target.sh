@@ -1,4 +1,8 @@
 #!/bin/bash
+# DEPRECATED: wraps facetsctl, which is being retired in favour of raptor.
+# The whole sequence is two raptor commands — see scripts/raptor_install.sh, then
+#   raptor get registry-credentials <registry> -p <project> -a <artifact>
+#   raptor set artifact-uri -p <project> {-e <env> | --release-stream <stream>} <artifact> --uri <image>
 
 # Exit immediately if a command exits with a non-zero status.
 set -e

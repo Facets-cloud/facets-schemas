@@ -1,4 +1,6 @@
 #!/bin/sh
+# DEPRECATED: wraps facetsctl, which is being retired in favour of raptor.
+# See scripts/raptor_install.sh and `raptor set artifact-uri --help`.
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
