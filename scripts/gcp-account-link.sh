@@ -111,8 +111,15 @@ else
     echo "Service Account $SA_EMAIL already exists."
 fi
 
-# Generate key for the Service Account
-gcloud iam service-accounts keys create "$PRINCIPAL_NAME-key.json" --iam-account="$SA_EMAIL"
+# Generate key for the Service Account.
+# Write to a fresh temp path rather than a fixed name in the working directory: a
+# leftover key file from an earlier run would otherwise be at risk of being sent
+# instead of the key we just created, and an owner-grade key should not be left
+# lying around after the script finishes.
+KEY_FILE="$(mktemp).json"
+trap 'rm -f "$KEY_FILE"' EXIT
+
+gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL"
 
 if [ $? -ne 0 ]; then
     echo "Failed to generate key for Service Account."
@@ -120,20 +127,78 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Service Account key generated successfully."
-echo "Key file saved as $PRINCIPAL_NAME-key.json"
 
 gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner"
 
-# Base64 encode the service account key JSON
-SERVICE_ACCOUNT_KEY_BASE64=$(base64 < "$PRINCIPAL_NAME-key.json" | tr -d '\n')
+# A freshly created service account key is not usable immediately: GCP propagates
+# the key to its auth backend asynchronously, and until that lands, signing a JWT
+# with the key is rejected by oauth2.googleapis.com with
+# "invalid_grant: Invalid JWT Signature". The control plane validates the key by
+# minting a token the instant it receives it, so posting too early fails the link
+# with a 400 even though the key, the project and the IAM bindings are all correct.
+#
+# So exercise the key here exactly the way the control plane will, and only post
+# once it works. Note that `gcloud auth activate-service-account` changes the
+# active gcloud account, so it runs against a throwaway CLOUDSDK_CONFIG to leave
+# the caller's own gcloud configuration and active account untouched.
+wait_for_key_to_become_usable() {
+    local attempts=12
+    local delay=5
+    local probe_config
+    probe_config=$(mktemp -d)
 
-# Prepare the curl request with base64 encoded key
-CURL_DATA="{ \"payload\": { \"name\": \"$ACCOUNT_NAME\", \"serviceAccountKey\": \"$SERVICE_ACCOUNT_KEY_BASE64\", \"project\": \"$PROJECT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
-CURL_RESPONSE=$(curl -k -s -o /dev/null -w "%{http_code}" -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "$CURL_DATA")
+    local attempt
+    for ((attempt = 1; attempt <= attempts; attempt++)); do
+        if CLOUDSDK_CONFIG="$probe_config" gcloud auth activate-service-account --key-file="$KEY_FILE" &>/dev/null \
+            && CLOUDSDK_CONFIG="$probe_config" gcloud auth print-access-token --account="$SA_EMAIL" &>/dev/null; then
+            rm -rf "$probe_config"
+            echo "Service Account key verified as active."
+            return 0
+        fi
+        echo "Waiting for the Service Account key to propagate (attempt $attempt/$attempts)..."
+        sleep "$delay"
+    done
 
-if [ "$CURL_RESPONSE" -ne 200 ]; then
-    echo "Failed to send data to the specified URL. HTTP response code: $CURL_RESPONSE"
+    rm -rf "$probe_config"
+    return 1
+}
+
+echo "Verifying that the Service Account key is active..."
+if ! wait_for_key_to_become_usable; then
+    echo "The Service Account key did not become usable in time."
+    echo "Google is still rejecting it, so linking would fail. Please re-run the script."
     exit 1
 fi
 
-echo "Data successfully sent to the specified URL."
+# Base64 encode the service account key JSON
+SERVICE_ACCOUNT_KEY_BASE64=$(base64 < "$KEY_FILE" | tr -d '\n')
+
+# Prepare the curl request with base64 encoded key
+CURL_DATA="{ \"payload\": { \"name\": \"$ACCOUNT_NAME\", \"serviceAccountKey\": \"$SERVICE_ACCOUNT_KEY_BASE64\", \"project\": \"$PROJECT_ID\" }, \"webhookId\": \"$WEBHOOK_ID\"}"
+
+# Retrying the post is safe: the control plane accepts a callback for a webhook
+# that is still WAITING or already FAILED, so a rejected attempt does not consume
+# the webhook and the same WEBHOOK_ID can be reused.
+POST_ATTEMPTS=3
+for ((post_attempt = 1; post_attempt <= POST_ATTEMPTS; post_attempt++)); do
+    CURL_OUTPUT=$(curl -k -s -w $'\n%{http_code}' -X POST "https://$CP_URL/public/v1/link-gcp" -H "accept: */*" -H "Content-Type: application/json; charset=utf-8" -d "$CURL_DATA")
+    CURL_RESPONSE=$(echo "$CURL_OUTPUT" | tail -n 1)
+    CURL_BODY=$(echo "$CURL_OUTPUT" | sed '$d')
+
+    if [ "$CURL_RESPONSE" = "200" ]; then
+        echo "Data successfully sent to the specified URL."
+        exit 0
+    fi
+
+    echo "Failed to send data to the specified URL. HTTP response code: $CURL_RESPONSE"
+    if [ -n "$CURL_BODY" ]; then
+        echo "Response: $CURL_BODY"
+    fi
+
+    if [ "$post_attempt" -lt "$POST_ATTEMPTS" ]; then
+        echo "Retrying in 10 seconds (attempt $post_attempt/$POST_ATTEMPTS)..."
+        sleep 10
+    fi
+done
+
+exit 1
