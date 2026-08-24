@@ -1,4 +1,6 @@
 #!/bin/bash
+# DEPRECATED: installs facetsctl, which is being retired in favour of raptor.
+# Use scripts/raptor_install.sh instead.
 # Define the version to install
 VERSION="latest"
 INSTALL_DIR="$HOME"
