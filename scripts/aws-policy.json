@@ -43,7 +43,10 @@
           "kafkaconnect:*",
           "es:*",
           "secretsmanager:*",
-          "ecs:*"
+          "ecs:*",
+          "ssm:*",
+          "servicediscovery:*",
+          "application-autoscaling:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
