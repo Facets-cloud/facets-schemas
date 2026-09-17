@@ -8,60 +8,8 @@ fi
 
 CP_URL=$1
 ACCOUNT_NAME="$2"
-# Concatenate "facets-" with the provided principal name
 PRINCIPAL_NAME="facets-$2"
-ROLE_NAME=$(echo $PRINCIPAL_NAME | tr '-' '_')
-
 WEBHOOK_ID=$3
-
-# Prompt for access mode
-echo "Select access mode:"
-echo "  1) Write access (default) - Use this to provision environments in GCP using Facets"
-echo "  2) Read-only access - Use this to discover Facets blueprint from existing setup"
-read -p "Enter choice [1]: " ACCESS_MODE
-
-# Default to write mode if empty
-ACCESS_MODE=${ACCESS_MODE:-1}
-
-# If read-only mode is selected, download and execute the reader script
-if [ "$ACCESS_MODE" = "2" ]; then
-    echo ""
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
-    if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/gcp-account-link-reader.sh" ]; then
-        echo "Executing local reader script..."
-        echo ""
-        "$SCRIPT_DIR/gcp-account-link-reader.sh" "$CP_URL" "$ACCOUNT_NAME" "$WEBHOOK_ID"
-        exit $?
-    fi
-
-    echo "Read-only mode selected. Downloading reader script..."
-    READER_SCRIPT_URL="https://facets-cloud.github.io/facets-schemas/scripts/gcp-account-link-reader.sh"
-    TEMP_SCRIPT=$(mktemp /tmp/gcp-account-link-reader.XXXXXX.sh)
-
-    curl -fsSL "$READER_SCRIPT_URL" -o "$TEMP_SCRIPT"
-
-    if [ $? -ne 0 ]; then
-        echo "Failed to download reader script from $READER_SCRIPT_URL"
-        rm -f "$TEMP_SCRIPT"
-        exit 1
-    fi
-
-    chmod +x "$TEMP_SCRIPT"
-
-    echo "Executing reader script..."
-    echo ""
-    "$TEMP_SCRIPT" "$CP_URL" "$ACCOUNT_NAME" "$WEBHOOK_ID"
-    EXIT_CODE=$?
-
-    rm -f "$TEMP_SCRIPT"
-    exit $EXIT_CODE
-elif [ "$ACCESS_MODE" != "1" ]; then
-    echo "Invalid choice. Defaulting to write access mode."
-fi
-
-echo ""
-echo "Write access mode selected. Continuing with full permissions..."
-echo ""
 
 # Fetch all projects in JSON format, excluding sys- projects
 echo "Fetching available projects..."
@@ -101,53 +49,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-##### Enabling APIs before creating service account #######
-
-# List of APIs to enable
-apis=(
-  "alloydb.googleapis.com" "analyticshub.googleapis.com" "artifactregistry.googleapis.com" "autoscaling.googleapis.com" 
-  "bigquery.googleapis.com" "bigqueryconnection.googleapis.com" "bigquerydatapolicy.googleapis.com" "bigquerymigration.googleapis.com" 
-  "bigqueryreservation.googleapis.com" "bigquerystorage.googleapis.com" "certificatemanager.googleapis.com" "cloudapis.googleapis.com" 
-  "cloudkms.googleapis.com" "cloudresourcemanager.googleapis.com" "cloudtrace.googleapis.com" "compute.googleapis.com" "container.googleapis.com" 
-  "containerfilesystem.googleapis.com" "containerregistry.googleapis.com" "dataform.googleapis.com" "dataplex.googleapis.com" 
-  "datastore.googleapis.com" "deploymentmanager.googleapis.com" "dns.googleapis.com" "gkebackup.googleapis.com" "iam.googleapis.com" 
-  "iamcredentials.googleapis.com" "logging.googleapis.com" "monitoring.googleapis.com" "networkconnectivity.googleapis.com" "oslogin.googleapis.com" 
-  "pubsub.googleapis.com" "redis.googleapis.com" "servicemanagement.googleapis.com" "servicenetworking.googleapis.com" "serviceusage.googleapis.com" 
-  "sql-component.googleapis.com" "sqladmin.googleapis.com" "storage-api.googleapis.com" "storage-component.googleapis.com" "storage.googleapis.com"
-)
-
-# Get the list of enabled APIs
-echo "Fetching the list of enabled APIs..."
-enabled_apis=$(gcloud services list --enabled --format="value(config.name)")
-
-# Function to enable an API
-enable_api() {
-  local api_name=$1
-  echo "Enabling API: ${api_name}"
-  gcloud services enable "${api_name}"
-}
-
-# Iterate over the APIs and enable them if not already enabled
-for api in "${apis[@]}"; do
-  if echo "${enabled_apis}" | grep -q "${api}"; then
-    echo "API : ${api} is already enabled"
-  else
-    enable_api "${api}" &
-  fi
-done
-
-# Wait for all background jobs to complete
-wait
-
-echo "All specified APIs have been enabled."
-
 # Check if the service account already exists
 SA_EMAIL="$PRINCIPAL_NAME@$PROJECT_ID.iam.gserviceaccount.com"
 EXISTING_SA=$(gcloud iam service-accounts list --filter="email:$SA_EMAIL" --format="value(email)")
 
 if [ -z "$EXISTING_SA" ]; then
-    # Create the Service Account with Owner role
-    gcloud iam service-accounts create "$PRINCIPAL_NAME" --display-name="$PRINCIPAL_NAME"
+    echo "Creating Service Account '$PRINCIPAL_NAME'..."
+    gcloud iam service-accounts create "$PRINCIPAL_NAME" --display-name="Facets Reader ($PRINCIPAL_NAME)"
 
     if [ $? -ne 0 ]; then
         echo "Failed to create Service Account."
@@ -155,16 +63,61 @@ if [ -z "$EXISTING_SA" ]; then
     fi
 
     # Wait for a short period to ensure the service account is fully created
-    sleep 10
+    sleep 5
 else
     echo "Service Account $SA_EMAIL already exists."
 fi
 
+# Assign Read-Only IAM roles to the service account
+echo "Assigning read-only IAM policy bindings..."
+
+# Assign roles/viewer for project-wide discovery
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/viewer" --quiet
+
+if [ $? -ne 0 ]; then
+    echo "Failed to attach roles/viewer policy binding."
+    exit 1
+fi
+
+# Assign roles/container.viewer for GKE cluster inspection
+gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    --member="serviceAccount:$SA_EMAIL" \
+    --role="roles/container.viewer" --quiet
+
+if [ $? -ne 0 ]; then
+    echo "Warning: Failed to attach roles/container.viewer policy binding."
+fi
+
+echo "Read-only policy bindings attached successfully."
+
+# Optional GKE cluster read access
+echo ""
+read -p "Do you want to add read access to GKE clusters? (y/n): " ADD_GKE_ACCESS
+
+if [[ "$ADD_GKE_ACCESS" =~ ^[Yy]$ ]]; then
+    echo "Fetching GKE clusters in project..."
+    CLUSTERS_JSON=$(gcloud container clusters list --format=json 2>/dev/null)
+    CLUSTER_COUNT=$(echo "$CLUSTERS_JSON" | jq 'length')
+
+    if [ -n "$CLUSTERS_JSON" ] && [ "$CLUSTER_COUNT" -gt 0 ]; then
+        echo "Found $CLUSTER_COUNT GKE cluster(s). Adding cluster viewer role..."
+        gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+            --member="serviceAccount:$SA_EMAIL" \
+            --role="roles/container.clusterViewer" --quiet
+
+        if [ $? -eq 0 ]; then
+            echo "GKE cluster read access configured successfully."
+        else
+            echo "Warning: Failed to attach roles/container.clusterViewer policy binding."
+        fi
+    else
+        echo "No GKE clusters found in project '$PROJECT_ID'."
+    fi
+fi
+
 # Generate key for the Service Account.
-# Write to a fresh temp path rather than a fixed name in the working directory: a
-# leftover key file from an earlier run would otherwise be at risk of being sent
-# instead of the key we just created, and an owner-grade key should not be left
-# lying around after the script finishes.
 KEY_FILE="$(mktemp).json"
 trap 'rm -f "$KEY_FILE"' EXIT
 
@@ -176,8 +129,6 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Service Account key generated successfully."
-
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner"
 
 # A freshly created service account key is not usable immediately: GCP propagates
 # the key to its auth backend asynchronously, and until that lands, signing a JWT
