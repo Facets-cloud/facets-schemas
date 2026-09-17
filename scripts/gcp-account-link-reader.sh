@@ -87,7 +87,7 @@ for role in "${READ_ONLY_ROLES[@]}"; do
     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
         --member="serviceAccount:$SA_EMAIL" \
         --role="$role" \
-        --condition=None --quiet
+        --condition=None --format=none --quiet
 
     if [ $? -ne 0 ]; then
         echo "    Warning: Failed to attach $role. Proceeding with remaining roles..."

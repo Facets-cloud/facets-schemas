@@ -177,7 +177,7 @@ fi
 
 echo "Service Account key generated successfully."
 
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner" --condition=None --quiet
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner" --condition=None --format=none --quiet
 
 # A freshly created service account key is not usable immediately: GCP propagates
 # the key to its auth backend asynchronously, and until that lands, signing a JWT
