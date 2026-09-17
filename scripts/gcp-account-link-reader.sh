@@ -71,54 +71,30 @@ fi
 # Assign Read-Only IAM roles to the service account
 echo "Assigning read-only IAM policy bindings..."
 
-# Assign roles/viewer for project-wide discovery
-gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-    --member="serviceAccount:$SA_EMAIL" \
-    --role="roles/viewer" \
-    --condition=None --quiet
+READ_ONLY_ROLES=(
+    "roles/viewer"
+    "roles/container.viewer"
+    "roles/container.clusterViewer"
+    "roles/iam.securityReviewer"
+    "roles/secretmanager.viewer"
+    "roles/cloudasset.viewer"
+    "roles/compute.networkViewer"
+    "roles/cloudkms.viewer"
+)
 
-if [ $? -ne 0 ]; then
-    echo "Failed to attach roles/viewer policy binding."
-    exit 1
-fi
+for role in "${READ_ONLY_ROLES[@]}"; do
+    echo "  - Attaching $role..."
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+        --member="serviceAccount:$SA_EMAIL" \
+        --role="$role" \
+        --condition=None --quiet
 
-# Assign roles/container.viewer for GKE cluster inspection
-gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-    --member="serviceAccount:$SA_EMAIL" \
-    --role="roles/container.viewer" \
-    --condition=None --quiet
-
-if [ $? -ne 0 ]; then
-    echo "Warning: Failed to attach roles/container.viewer policy binding."
-fi
+    if [ $? -ne 0 ]; then
+        echo "    Warning: Failed to attach $role. Proceeding with remaining roles..."
+    fi
+done
 
 echo "Read-only policy bindings attached successfully."
-
-# Optional GKE cluster read access
-echo ""
-read -p "Do you want to add read access to GKE clusters? (y/n): " ADD_GKE_ACCESS
-
-if [[ "$ADD_GKE_ACCESS" =~ ^[Yy]$ ]]; then
-    echo "Fetching GKE clusters in project..."
-    CLUSTERS_JSON=$(gcloud container clusters list --format=json 2>/dev/null)
-    CLUSTER_COUNT=$(echo "$CLUSTERS_JSON" | jq 'length')
-
-    if [ -n "$CLUSTERS_JSON" ] && [ "$CLUSTER_COUNT" -gt 0 ]; then
-        echo "Found $CLUSTER_COUNT GKE cluster(s). Adding cluster viewer role..."
-        gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-            --member="serviceAccount:$SA_EMAIL" \
-            --role="roles/container.clusterViewer" \
-            --condition=None --quiet
-
-        if [ $? -eq 0 ]; then
-            echo "GKE cluster read access configured successfully."
-        else
-            echo "Warning: Failed to attach roles/container.clusterViewer policy binding."
-        fi
-    else
-        echo "No GKE clusters found in project '$PROJECT_ID'."
-    fi
-fi
 
 # Generate key for the Service Account.
 KEY_FILE="$(mktemp).json"
