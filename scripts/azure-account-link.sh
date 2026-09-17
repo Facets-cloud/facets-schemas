@@ -131,24 +131,38 @@ SP_JSON=""
 MAX_RETRIES=4
 RETRY_WAIT=30
 
+SP_ERROR_FILE=$(mktemp /tmp/azure-account-link-sp-error.XXXXXX)
+
 for i in $(seq 1 $MAX_RETRIES); do
-    SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "facets-$PRINCIPAL_NAME" --scopes /subscriptions/"$SUBSCRIPTION_ID" 2>&1)
+    # Keep stderr out of SP_JSON. The az CLI prints warnings to stderr, and a warning
+    # in front of the JSON makes every jq call below return an empty value.
+    SP_JSON=$(az ad sp create-for-rbac --name "facets-$PRINCIPAL_NAME" --role "facets-$PRINCIPAL_NAME" --scopes /subscriptions/"$SUBSCRIPTION_ID" --only-show-errors --output json 2>"$SP_ERROR_FILE")
     if [ $? -eq 0 ]; then
         break
     fi
+    cat "$SP_ERROR_FILE"
     if [ $i -lt $MAX_RETRIES ]; then
         echo "Service Principal creation failed (attempt $i/$MAX_RETRIES). Role may still be propagating. Retrying in ${RETRY_WAIT}s..."
         sleep $RETRY_WAIT
     else
         echo "Failed to create Service Principal after $MAX_RETRIES attempts."
+        rm -f "$SP_ERROR_FILE"
         exit 1
     fi
 done
 
+rm -f "$SP_ERROR_FILE"
+
 # Extract necessary data from SP_JSON
-CLIENT_ID=$(echo "$SP_JSON" | jq -r .appId)
-CLIENT_SECRET=$(echo "$SP_JSON" | jq -r .password)
-TENANT_ID=$(echo "$SP_JSON" | jq -r .tenant)
+CLIENT_ID=$(echo "$SP_JSON" | jq -r '.appId // empty')
+CLIENT_SECRET=$(echo "$SP_JSON" | jq -r '.password // empty')
+TENANT_ID=$(echo "$SP_JSON" | jq -r '.tenant // empty')
+
+if [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$TENANT_ID" ]; then
+    echo "Could not read appId, password, and tenant from the Service Principal output. Output was:"
+    echo "$SP_JSON"
+    exit 1
+fi
 
 echo "Service Principal created successfully."
 echo "$SP_JSON"
