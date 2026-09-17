@@ -168,21 +168,30 @@ fi
 KEY_FILE="$(mktemp).json"
 trap 'rm -f "$KEY_FILE"' EXIT
 
-KEY_OUTPUT=$(gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL" 2>&1)
+KEY_ERROR_FILE=$(mktemp /tmp/gcp-key-error.XXXXXX)
+gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL" >/dev/null 2>"$KEY_ERROR_FILE"
 
 if [ $? -ne 0 ]; then
-    echo "Failed to generate key for Service Account: $KEY_OUTPUT"
+    echo "Failed to generate key for Service Account."
+    cat "$KEY_ERROR_FILE"
+    rm -f "$KEY_ERROR_FILE"
     exit 1
 fi
+rm -f "$KEY_ERROR_FILE"
 
 echo "Service Account key generated successfully."
 
-OWNER_OUTPUT=$(gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner" --condition=None --quiet 2>&1)
+OWNER_ERROR_FILE=$(mktemp /tmp/gcp-owner-error.XXXXXX)
+gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner" --condition=None --quiet >/dev/null 2>"$OWNER_ERROR_FILE"
 
 if [ $? -ne 0 ]; then
-    echo "Failed to attach owner role: $OWNER_OUTPUT"
+    echo "Failed to attach owner role."
+    cat "$OWNER_ERROR_FILE"
+    rm -f "$OWNER_ERROR_FILE"
     exit 1
 fi
+rm -f "$OWNER_ERROR_FILE"
+
 echo "Owner role attached successfully."
 
 # A freshly created service account key is not usable immediately: GCP propagates

@@ -82,21 +82,23 @@ READ_ONLY_ROLES=(
     "roles/cloudkms.viewer"
 )
 
+ROLE_ERROR_FILE=$(mktemp /tmp/gcp-role-error.XXXXXX)
+
 for role in "${READ_ONLY_ROLES[@]}"; do
-    ROLE_OUTPUT=$(gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
         --member="serviceAccount:$SA_EMAIL" \
         --role="$role" \
-        --condition=None --quiet 2>&1)
+        --condition=None --quiet >/dev/null 2>"$ROLE_ERROR_FILE"
 
     if [ $? -eq 0 ]; then
         echo "  ✓ Attached $role"
     else
         echo "  ✗ Warning: Failed to attach $role. Proceeding with remaining roles..."
-        if [ -n "$ROLE_OUTPUT" ]; then
-            echo "    Error: $ROLE_OUTPUT"
-        fi
+        cat "$ROLE_ERROR_FILE"
     fi
 done
+
+rm -f "$ROLE_ERROR_FILE"
 
 echo "Read-only policy bindings attached successfully."
 
@@ -104,12 +106,16 @@ echo "Read-only policy bindings attached successfully."
 KEY_FILE="$(mktemp).json"
 trap 'rm -f "$KEY_FILE"' EXIT
 
-KEY_OUTPUT=$(gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL" 2>&1)
+KEY_ERROR_FILE=$(mktemp /tmp/gcp-key-error.XXXXXX)
+gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL" >/dev/null 2>"$KEY_ERROR_FILE"
 
 if [ $? -ne 0 ]; then
-    echo "Failed to generate key for Service Account: $KEY_OUTPUT"
+    echo "Failed to generate key for Service Account."
+    cat "$KEY_ERROR_FILE"
+    rm -f "$KEY_ERROR_FILE"
     exit 1
 fi
+rm -f "$KEY_ERROR_FILE"
 
 echo "Service Account key generated successfully."
 
