@@ -74,7 +74,8 @@ echo "Assigning read-only IAM policy bindings..."
 # Assign roles/viewer for project-wide discovery
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:$SA_EMAIL" \
-    --role="roles/viewer" --quiet
+    --role="roles/viewer" \
+    --condition=None --quiet
 
 if [ $? -ne 0 ]; then
     echo "Failed to attach roles/viewer policy binding."
@@ -84,7 +85,8 @@ fi
 # Assign roles/container.viewer for GKE cluster inspection
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \
     --member="serviceAccount:$SA_EMAIL" \
-    --role="roles/container.viewer" --quiet
+    --role="roles/container.viewer" \
+    --condition=None --quiet
 
 if [ $? -ne 0 ]; then
     echo "Warning: Failed to attach roles/container.viewer policy binding."
@@ -105,7 +107,8 @@ if [[ "$ADD_GKE_ACCESS" =~ ^[Yy]$ ]]; then
         echo "Found $CLUSTER_COUNT GKE cluster(s). Adding cluster viewer role..."
         gcloud projects add-iam-policy-binding "$PROJECT_ID" \
             --member="serviceAccount:$SA_EMAIL" \
-            --role="roles/container.clusterViewer" --quiet
+            --role="roles/container.clusterViewer" \
+            --condition=None --quiet
 
         if [ $? -eq 0 ]; then
             echo "GKE cluster read access configured successfully."
