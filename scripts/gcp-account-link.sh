@@ -168,16 +168,22 @@ fi
 KEY_FILE="$(mktemp).json"
 trap 'rm -f "$KEY_FILE"' EXIT
 
-gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL"
+KEY_OUTPUT=$(gcloud iam service-accounts keys create "$KEY_FILE" --iam-account="$SA_EMAIL" 2>&1)
 
 if [ $? -ne 0 ]; then
-    echo "Failed to generate key for Service Account."
+    echo "Failed to generate key for Service Account: $KEY_OUTPUT"
     exit 1
 fi
 
 echo "Service Account key generated successfully."
 
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner" --condition=None --format=none --quiet
+OWNER_OUTPUT=$(gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA_EMAIL" --role="roles/owner" --condition=None --quiet 2>&1)
+
+if [ $? -ne 0 ]; then
+    echo "Failed to attach owner role: $OWNER_OUTPUT"
+    exit 1
+fi
+echo "Owner role attached successfully."
 
 # A freshly created service account key is not usable immediately: GCP propagates
 # the key to its auth backend asynchronously, and until that lands, signing a JWT
