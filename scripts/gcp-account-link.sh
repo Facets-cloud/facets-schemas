@@ -30,7 +30,8 @@ if [ "$ACCESS_MODE" = "2" ]; then
     if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/gcp-account-link-reader.sh" ]; then
         echo "Executing local reader script..."
         echo ""
-        "$SCRIPT_DIR/gcp-account-link-reader.sh" "$CP_URL" "$ACCOUNT_NAME" "$WEBHOOK_ID"
+        chmod +x "$SCRIPT_DIR/gcp-account-link-reader.sh" 2>/dev/null || true
+        bash "$SCRIPT_DIR/gcp-account-link-reader.sh" "$CP_URL" "$ACCOUNT_NAME" "$WEBHOOK_ID"
         exit $?
     fi
 
@@ -46,11 +47,11 @@ if [ "$ACCESS_MODE" = "2" ]; then
         exit 1
     fi
 
-    chmod +x "$TEMP_SCRIPT"
+    chmod +x "$TEMP_SCRIPT" 2>/dev/null || true
 
     echo "Executing reader script..."
     echo ""
-    "$TEMP_SCRIPT" "$CP_URL" "$ACCOUNT_NAME" "$WEBHOOK_ID"
+    bash "$TEMP_SCRIPT" "$CP_URL" "$ACCOUNT_NAME" "$WEBHOOK_ID"
     EXIT_CODE=$?
 
     rm -f "$TEMP_SCRIPT"
