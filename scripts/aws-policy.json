@@ -35,6 +35,7 @@
           "kms:*",
           "outposts:GetOutpostInstanceTypes",
           "elasticache:*",
+          "memorydb:*",
           "ce:*",
           "dax:*",
           "dlm:*",
