@@ -8,7 +8,8 @@ cat > "$T/bin/gcloud" <<'S'
 #!/bin/bash
 printf '%s\n' "$*" >> "$LOG"
 case "$*" in
-  "config get-value project") echo my-proj ;;
+  "config get-value project") [ -n "${NOPROJ:-}" ] && echo "(unset)" || echo my-proj ;;
+  "projects list"*) printf '%s\n' other-proj my-proj ;;
   "projects describe"*) echo 123456 ;;
   *"pools describe"*"--format=value(state)"*) [ "${EXISTS:-}" = 1 ] && echo ACTIVE ;;
   *describe*) [ "${EXISTS:-}" = 1 ] || exit 1 ;;
@@ -57,6 +58,31 @@ ok '-d {"webhookId":"hook1","payload":{"authType":"WORKLOAD_IDENTITY","name":"ac
 ok "http://cp.example:8080/public/v1/link-gcp" "full: URL"
 no "keys create" "full: no keys create"
 no " -k " "full: no curl -k"
+
+# Project choice: --project wins, otherwise the user is asked with the current project as default.
+run cp.example acme hook1 --grants "$T/full.json" --project chosen-proj-1; rc=$?
+[ $rc = 0 ] && grep -q '"project":"chosen-proj-1"' "$LOG" && ! grep -q '^projects list' "$LOG" && echo "ok   --project used without asking" || { echo "FAIL --project rc=$rc"; fail=1; }
+
+printf '\n' > "$T/in"; FACETS_PROMPT_IN="$T/in" run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+[ $rc = 0 ] && grep -q 'my-proj  (current)' "$T/out" && grep -q 'Enter for my-proj' "$T/out" && grep -q '"project":"my-proj"' "$LOG" && echo "ok   asks even when a project is set; Enter keeps the current one" || { echo "FAIL prompt default rc=$rc"; cat "$T/out"; fail=1; }
+
+printf '1\n' > "$T/in"; FACETS_PROMPT_IN="$T/in" run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+[ $rc = 0 ] && grep -q '"project":"other-proj"' "$LOG" && echo "ok   picking a number switches project" || { echo "FAIL prompt pick rc=$rc"; fail=1; }
+
+printf '9\nx\n2\n' > "$T/in"; FACETS_PROMPT_IN="$T/in" run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+[ $rc = 0 ] && [ "$(grep -c 'Enter a number from 1 to 2' "$T/out")" = 2 ] && grep -q '"project":"my-proj"' "$LOG" && echo "ok   bad answers re-ask" || { echo "FAIL prompt retry rc=$rc"; cat "$T/out"; fail=1; }
+
+printf '\n2\n' > "$T/in"; NOPROJ=1 FACETS_PROMPT_IN="$T/in" run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+[ $rc = 0 ] && ! grep -q '(current)' "$T/out" && grep -q '"project":"my-proj"' "$LOG" && echo "ok   no current project: Enter alone is not accepted" || { echo "FAIL no-current prompt rc=$rc"; cat "$T/out"; fail=1; }
+
+run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+[ $rc = 0 ] && grep -q 'Using the current gcloud project my-proj' "$T/out" && echo "ok   no terminal: uses the current project and says so" || { echo "FAIL non-interactive rc=$rc"; fail=1; }
+
+NOPROJ=1 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+[ $rc != 0 ] && grep -q 'pass --project' "$T/out" && echo "ok   no terminal and no project: clear error" || { echo "FAIL non-interactive no project rc=$rc"; fail=1; }
+
+run cp.example acme hook1 --grants "$T/full.json" --project Bad_Proj; rc=$?
+[ $rc != 0 ] && grep -q 'invalid --project' "$T/out" && echo "ok   invalid --project rejected" || { echo "FAIL invalid --project rc=$rc"; fail=1; }
 
 run cp.example acme hook1 --grants "$T/ro.json" --aws-account-id 111122223333; rc=$?
 [ $rc = 0 ] && echo "ok   ro exit 0" || { echo "FAIL ro exit $rc"; cat "$T/out"; fail=1; }

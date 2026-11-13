@@ -1,17 +1,19 @@
 #!/bin/bash
 # Keyless GCP link via Workload Identity Federation. No service account keys.
-# Usage: bash gcp-wif-link.sh <CP_HOST> '<ACCOUNT_NAME>' <WEBHOOK_ID> --grants grants.json [--aws-account-id <12 digits>]
+# Usage: bash gcp-wif-link.sh <CP_HOST> '<ACCOUNT_NAME>' <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits>]
+# Without --project the script asks which project to use, offering the shell's current one as the default.
 set -euo pipefail
 
-usage() { echo "Usage: $0 <CP_HOST> <ACCOUNT_NAME> <WEBHOOK_ID> --grants grants.json [--aws-account-id <12 digits>]" >&2; exit 1; }
+usage() { echo "Usage: $0 <CP_HOST> <ACCOUNT_NAME> <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits>]" >&2; exit 1; }
 die() { echo "ERROR: $*" >&2; exit 1; }
 
 [ "$#" -ge 5 ] || usage
 CP_HOST=$1; ACCOUNT_NAME=$2; WEBHOOK_ID=$3; shift 3
-GRANTS=""; AWS_ID=""
+GRANTS=""; AWS_ID=""; PROJECT_ID=""
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --grants) [ "$#" -ge 2 ] || usage; GRANTS=$2; shift 2 ;;
+    --project) [ "$#" -ge 2 ] || usage; PROJECT_ID=$2; shift 2 ;;
     --aws-account-id) [ "$#" -ge 2 ] || usage; AWS_ID=$2; shift 2 ;;
     *) usage ;;
   esac
@@ -21,6 +23,7 @@ done
 [[ "$ACCOUNT_NAME" =~ ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$ ]] || die "ACCOUNT_NAME must be lowercase letters, digits and hyphens"
 [ -n "$WEBHOOK_ID" ] || die "WEBHOOK_ID is empty"
 [ -r "$GRANTS" ] || die "grants file not readable: ${GRANTS:-<missing --grants>}"
+[ -z "$PROJECT_ID" ] || [[ "$PROJECT_ID" =~ ^[a-z][a-z0-9-]{4,28}[a-z0-9]$ ]] || die "invalid --project: $PROJECT_ID"
 
 # JSON helpers: python3, else jq.
 if command -v python3 >/dev/null 2>&1; then
@@ -43,14 +46,35 @@ MAPPING=$(jstr wifSubjectMapping)
 ROLES=(); while IFS= read -r l; do ROLES+=("$l"); done < <(jlist projectRoles)
 APIS=();  while IFS= read -r l; do APIS+=("$l");  done < <(jlist apis)
 
-# Project
-PROJECT_ID=$(gcloud config get-value project 2>/dev/null || true)
-if [ -z "$PROJECT_ID" ] || [ "$PROJECT_ID" = "(unset)" ]; then
-  echo "Fetching available projects..."
-  PLIST=(); while IFS= read -r l; do PLIST+=("$l"); done < <(gcloud projects list --filter="NOT projectId:sys-*" --format='value(projectId)')
-  [ "${#PLIST[@]}" -gt 0 ] || die "No projects are available. Ensure you're logged in."
-  echo "Select a project:"
-  select PROJECT_ID in "${PLIST[@]}"; do [ -n "$PROJECT_ID" ] && break; done
+# Project: --project wins; otherwise ask, defaulting to the shell's current project.
+# Answers come from the terminal (FACETS_PROMPT_IN overrides it for tests).
+if [ -z "$PROJECT_ID" ]; then
+  CURRENT=$(gcloud config get-value project 2>/dev/null || true)
+  [ "$CURRENT" = "(unset)" ] && CURRENT=""
+  PROMPT_IN=${FACETS_PROMPT_IN:-/dev/tty}
+  if [ -n "${FACETS_PROMPT_IN:-}" ] || { [ -t 1 ] && { : < /dev/tty; } 2>/dev/null; }; then
+    echo "Fetching available projects..."
+    PLIST=(); while IFS= read -r l; do PLIST+=("$l"); done < <(gcloud projects list --filter="NOT projectId:sys-*" --format='value(projectId)')
+    [ "${#PLIST[@]}" -gt 0 ] || die "No projects are available. Ensure you're logged in."
+    exec 3< "$PROMPT_IN"
+    echo "Which project should Facets use?"
+    for i in "${!PLIST[@]}"; do
+      mark=""; [ "${PLIST[$i]}" = "$CURRENT" ] && mark="  (current)"
+      printf '  %2d) %s%s\n' "$((i + 1))" "${PLIST[$i]}" "$mark"
+    done
+    while :; do
+      if [ -n "$CURRENT" ]; then printf 'Number, or Enter for %s: ' "$CURRENT"; else printf 'Number: '; fi
+      IFS= read -r -u 3 ans || die "no project chosen"
+      if [ -z "$ans" ] && [ -n "$CURRENT" ]; then PROJECT_ID=$CURRENT; break; fi
+      if [[ "$ans" =~ ^[0-9]+$ ]] && [ "$ans" -ge 1 ] && [ "$ans" -le "${#PLIST[@]}" ]; then PROJECT_ID=${PLIST[$((ans - 1))]}; break; fi
+      echo "Enter a number from 1 to ${#PLIST[@]}."
+    done
+    exec 3<&-
+  else
+    [ -n "$CURRENT" ] || die "no project set; pass --project <id> or run: gcloud config set project <id>"
+    echo "Using the current gcloud project $CURRENT (pass --project to choose another)."
+    PROJECT_ID=$CURRENT
+  fi
 fi
 [ -n "$PROJECT_ID" ] || die "no project selected"
 PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
