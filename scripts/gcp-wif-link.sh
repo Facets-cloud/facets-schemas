@@ -105,12 +105,12 @@ for r in "${ROLES[@]}"; do
 done
 
 # Pool + provider
-POOL=facets-aws-pool; PROVIDER=facets-aws-provider
+POOL=facets-cp-pool; PROVIDER=facets-aws-provider
 COND="attribute.aws_account=='$AWS_ID'"
 LOC=(--project "$PROJECT_ID" --location global)
 STATE=$(gcloud iam workload-identity-pools describe "$POOL" "${LOC[@]}" --format='value(state)' 2>/dev/null || true)
 case "$STATE" in
-  "") gcloud iam workload-identity-pools create "$POOL" "${LOC[@]}" --display-name "Facets AWS pool" ;;
+  "") gcloud iam workload-identity-pools create "$POOL" "${LOC[@]}" --display-name "Facets control plane pool" ;;
   DELETED) gcloud iam workload-identity-pools undelete "$POOL" "${LOC[@]}" ;;
   *) echo "Pool exists: $POOL" ;;
 esac
