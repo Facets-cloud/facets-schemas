@@ -25,8 +25,16 @@ if [ -n "${CURL_FAIL:-}" ]; then
   [ -n "$failflag" ] && exit 22
   [ -n "$out" ] && echo '{"message":"bad link"}' > "$out"; printf 400; exit 0
 fi
+# IAM_LAG=n: the first n callbacks fail verification, as while a grant propagates.
+if [ -n "${IAM_LAG:-}" ]; then
+  n=$(grep -c '^curl .*link-gcp' "$LOG")
+  if [ "$n" -le "$IAM_LAG" ]; then
+    echo '{"message":"Unable to add account: Account Verification failed: Invalid credentials"}' > "$out"; printf 400; exit 0
+  fi
+fi
 [ -n "$out" ] && echo '{}' > "$out"; printf 200; exit 0
 S
+printf '#!/bin/bash\nprintf "sleep %%s\\n" "$*" >> "$LOG"\n' > "$T/bin/sleep"
 chmod +x "$T/bin/"*
 echo '{"projectRoles":["roles/owner"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":["compute.googleapis.com"],"awsAccountId":"313496281593"}' > "$T/full.json"
 echo '{"projectRoles":["roles/viewer","roles/iam.securityReviewer"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":[]}' > "$T/ro.json"
@@ -67,7 +75,17 @@ run cp.example acme hook1 --grants "$T/many.json"; rc=$?
 calls=$(grep -c 'services enable api' "$LOG"); widest=$(grep 'services enable api' "$LOG" | awk '{n=0; for(i=1;i<=NF;i++) if ($i ~ /^api[0-9]+\.googleapis\.com$/) n++; print n}' | sort -n | tail -1)
 [ $rc = 0 ] && [ "$calls" = 3 ] && [ "$widest" -le 20 ] && grep -q 'api40.googleapis.com' "$LOG" && echo "ok   41 apis enabled in 3 calls of <=20" || { echo "FAIL batching rc=$rc calls=$calls widest=$widest"; fail=1; }
 
+IAM_LAG=2 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+calls=$(grep -c '^curl .*link-gcp' "$LOG"); waits=$(grep -c '^sleep 15' "$LOG")
+[ $rc = 0 ] && [ "$calls" = 3 ] && [ "$waits" = 2 ] && echo "ok   retries the callback while the IAM grant propagates" || { echo "FAIL IAM lag rc=$rc calls=$calls waits=$waits"; fail=1; }
+
+IAM_LAG=99 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+calls=$(grep -c '^curl .*link-gcp' "$LOG")
+[ $rc != 0 ] && [ "$calls" = 9 ] && grep -q "Invalid credentials" "$T/out" && echo "ok   gives up after 9 callbacks with the server message" || { echo "FAIL IAM give-up rc=$rc calls=$calls"; fail=1; }
+
 CURL_FAIL=1 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
+calls=$(grep -c '^curl .*link-gcp' "$LOG")
+[ "$calls" = 1 ] && echo "ok   other rejections are not retried" || { echo "FAIL non-IAM rejection retried calls=$calls"; fail=1; }
 [ $rc != 0 ] && grep -q "bad link" "$T/out" && grep -q "HTTP 400" "$T/out" && echo "ok   rejected callback fails with the server message" || { echo "FAIL callback failure rc=$rc"; cat "$T/out"; fail=1; }
 
 for bad in "cp.example Bad_Name hook1 --grants $T/full.json" "cp.example acme '' --grants $T/full.json" "cp.example acme hook1" "cp.example acme hook1 --grants /nonexistent" "cp.example acme hook1 --grants $T/ro.json --aws-account-id 12"; do

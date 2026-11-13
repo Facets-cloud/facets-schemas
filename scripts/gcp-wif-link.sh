@@ -107,9 +107,17 @@ gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJE
 BODY=$(jbody "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$POOL" "$PROVIDER" "$AWS_ID")
 URL="${CP_SCHEME:-https}://$CP_HOST/public/v1/link-gcp"
 RESP=$(mktemp); trap 'rm -f "$RESP"' EXIT
-# No -f: curl drops the response body on an HTTP error with -f, and that body carries the reason.
-CODE=$(curl -sS --retry 3 -X POST -H 'Content-Type: application/json' -d "$BODY" -o "$RESP" -w '%{http_code}' "$URL") \
-  || { echo "ERROR: could not reach the control plane at $CP_HOST" >&2; exit 1; }
+# The control plane verifies the account by impersonating the SA, and the
+# workloadIdentityUser grant above takes up to ~2 minutes to propagate in IAM.
+# A rejected callback leaves the link usable, so retry while verification fails.
+for attempt in 1 2 3 4 5 6 7 8 9; do
+  # No -f: curl drops the response body on an HTTP error with -f, and that body carries the reason.
+  CODE=$(curl -sS --retry 3 -X POST -H 'Content-Type: application/json' -d "$BODY" -o "$RESP" -w '%{http_code}' "$URL") \
+    || { echo "ERROR: could not reach the control plane at $CP_HOST" >&2; exit 1; }
+  if [[ "$CODE" == 2* || $attempt -eq 9 ]] || ! grep -q "Invalid credentials" "$RESP"; then break; fi
+  echo "Waiting for the IAM grant to propagate (attempt $attempt of 9)..."
+  sleep 15
+done
 if [[ "$CODE" != 2* ]]; then
   echo "ERROR: control plane rejected the link (HTTP $CODE):" >&2; cat "$RESP" >&2; echo >&2
   echo "The project is set up; fix the issue above and run the same command again." >&2
