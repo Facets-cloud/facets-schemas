@@ -129,7 +129,7 @@ no "sts.googleapis.com" "imp: sts not enabled"
 ok "service-accounts create facets-acme" "imp: SA created"
 ok "services enable iam.googleapis.com iamcredentials.googleapis.com" "imp: iamcredentials enabled"
 ok "service-accounts add-iam-policy-binding facets-acme@my-proj.iam.gserviceaccount.com --project my-proj --role roles/iam.serviceAccountTokenCreator --member serviceAccount:facets-root-sa@cp-proj.iam.gserviceaccount.com" "imp: tokenCreator on the SA only"
-ok '-d {"webhookId":"hook1","payload":{"authType":"IMPERSONATION","name":"acme","projectId":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","impersonatorServiceAccount":"facets-root-sa@cp-proj.iam.gserviceaccount.com"}} -o' "imp: exact POST body"
+ok '-d {"webhookId":"hook1","payload":{"authType":"IMPERSONATION","name":"acme","project":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","impersonatorServiceAccount":"facets-root-sa@cp-proj.iam.gserviceaccount.com"}} -o' "imp: exact POST body"
 grep -q 'Linked.*impersonation mode' "$T/out" && echo "ok   imp: summary names mode" || { echo "FAIL imp summary"; fail=1; }
 
 IAM_LAG=2 run cp.example acme hook1 --grants "$T/imp.json"; rc=$?

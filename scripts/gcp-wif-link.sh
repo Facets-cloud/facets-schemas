@@ -34,12 +34,12 @@ if command -v python3 >/dev/null 2>&1; then
   # jlist <key>: one array element per line; jstr <key>: string or empty
   jlist() { python3 -c 'import json,sys;[print(x) for x in json.load(open(sys.argv[1])).get(sys.argv[2]) or []]' "$GRANTS" "$1"; }
   jstr() { python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get(sys.argv[2]) or "")' "$GRANTS" "$1"; }
-  jbody_imp() { python3 -c 'import json,sys;k=["name","projectId","projectNumber","serviceAccountEmail","impersonatorServiceAccount"];v=sys.argv[1:];print(json.dumps({"webhookId":v[0],"payload":dict([("authType","IMPERSONATION")]+list(zip(k,v[1:])))},separators=(",",":")))' "$@"; }
+  jbody_imp() { python3 -c 'import json,sys;k=["name","project","projectNumber","serviceAccountEmail","impersonatorServiceAccount"];v=sys.argv[1:];print(json.dumps({"webhookId":v[0],"payload":dict([("authType","IMPERSONATION")]+list(zip(k,v[1:])))},separators=(",",":")))' "$@"; }
   jbody() { python3 -c 'import json,sys;k=["webhookId","name","project","projectNumber","serviceAccountEmail","workloadIdentityPool","workloadIdentityProvider","awsAccountId"];v=sys.argv[1:];print(json.dumps({"webhookId":v[0],"payload":dict([("authType","WORKLOAD_IDENTITY")]+list(zip(k[1:],v[1:])))},separators=(",",":")))' "$@"; }
 elif command -v jq >/dev/null 2>&1; then
   jlist() { jq -r --arg k "$1" '.[$k] // [] | .[]' "$GRANTS"; }
   jstr() { jq -r --arg k "$1" '.[$k] // ""' "$GRANTS"; }
-  jbody_imp() { jq -nc --args '{webhookId:$ARGS.positional[0],payload:{authType:"IMPERSONATION",name:$ARGS.positional[1],projectId:$ARGS.positional[2],projectNumber:$ARGS.positional[3],serviceAccountEmail:$ARGS.positional[4],impersonatorServiceAccount:$ARGS.positional[5]}}' "$@"; }
+  jbody_imp() { jq -nc --args '{webhookId:$ARGS.positional[0],payload:{authType:"IMPERSONATION",name:$ARGS.positional[1],project:$ARGS.positional[2],projectNumber:$ARGS.positional[3],serviceAccountEmail:$ARGS.positional[4],impersonatorServiceAccount:$ARGS.positional[5]}}' "$@"; }
   jbody() { jq -nc --args '{webhookId:$ARGS.positional[0],payload:{authType:"WORKLOAD_IDENTITY",name:$ARGS.positional[1],project:$ARGS.positional[2],projectNumber:$ARGS.positional[3],serviceAccountEmail:$ARGS.positional[4],workloadIdentityPool:$ARGS.positional[5],workloadIdentityProvider:$ARGS.positional[6],awsAccountId:$ARGS.positional[7]}}' "$@"; }
 else
   die "python3 or jq is required"
