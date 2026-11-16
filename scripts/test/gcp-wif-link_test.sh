@@ -118,4 +118,32 @@ for bad in "cp.example Bad_Name hook1 --grants $T/full.json" "cp.example acme ''
   eval "run $bad"; rc=$?
   [ $rc != 0 ] && ! grep -q '^curl' "$LOG" && echo "ok   bad args rejected: $bad" || { echo "FAIL bad args: $bad"; fail=1; }
 done
+
+# Impersonation mode
+echo '{"projectRoles":["roles/owner","roles/iam.serviceAccountTokenCreator"],"apis":["compute.googleapis.com"],"impersonatorServiceAccount":"facets-root-sa@cp-proj.iam.gserviceaccount.com"}' > "$T/imp.json"
+run cp.example acme hook1 --grants "$T/imp.json"; rc=$?
+[ $rc = 0 ] && echo "ok   imp exit 0" || { echo "FAIL imp exit $rc"; cat "$T/out"; fail=1; }
+no "workload-identity-pools" "imp: no pool/provider calls"
+no "workloadIdentityUser" "imp: no workloadIdentityUser"
+no "sts.googleapis.com" "imp: sts not enabled"
+ok "service-accounts create facets-acme" "imp: SA created"
+ok "services enable iam.googleapis.com iamcredentials.googleapis.com" "imp: iamcredentials enabled"
+ok "service-accounts add-iam-policy-binding facets-acme@my-proj.iam.gserviceaccount.com --project my-proj --role roles/iam.serviceAccountTokenCreator --member serviceAccount:facets-root-sa@cp-proj.iam.gserviceaccount.com" "imp: tokenCreator on the SA only"
+ok '-d {"webhookId":"hook1","payload":{"authType":"IMPERSONATION","name":"acme","projectId":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","impersonatorServiceAccount":"facets-root-sa@cp-proj.iam.gserviceaccount.com"}} -o' "imp: exact POST body"
+grep -q 'Linked.*impersonation mode' "$T/out" && echo "ok   imp: summary names mode" || { echo "FAIL imp summary"; fail=1; }
+
+IAM_LAG=2 run cp.example acme hook1 --grants "$T/imp.json"; rc=$?
+[ $rc = 0 ] && [ "$(grep -c '^curl .*link-gcp' "$LOG")" = 3 ] && echo "ok   imp: callback retried on Invalid credentials" || { echo "FAIL imp retry rc=$rc"; fail=1; }
+
+run cp.example acme hook1 --grants "$T/full.json"
+grep -q 'Linked.*WIF mode' "$T/out" && echo "ok   wif: summary names mode" || { echo "FAIL wif summary"; cat "$T/out"; fail=1; }
+
+echo '{"projectRoles":[],"impersonatorServiceAccount":"a@p.iam.gserviceaccount.com","awsAccountId":"313496281593"}' > "$T/both.json"
+echo '{"projectRoles":[],"impersonatorServiceAccount":"evil@example.com"}' > "$T/badimp.json"
+for c in "both.json::both awsAccountId" "badimp.json::invalid impersonatorServiceAccount" "imp.json:--aws-account-id 111122223333:cannot be used in impersonation"; do
+  f=${c%%:*}; rest=${c#*:}; flag=${rest%%:*}; msg=${rest#*:}
+  # shellcheck disable=SC2086
+  run cp.example acme hook1 --grants "$T/$f" $flag; rc=$?
+  [ $rc != 0 ] && grep -q "$msg" "$T/out" && ! grep -q '^curl' "$LOG" && echo "ok   rejected: $msg" || { echo "FAIL $msg rc=$rc"; cat "$T/out"; fail=1; }
+done
 exit $fail
