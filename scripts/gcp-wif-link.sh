@@ -114,6 +114,12 @@ fi
 SA_ID=$(printf 'facets-%s' "$ACCOUNT_NAME" | cut -c1-30)
 SA_ID=${SA_ID%-}
 SA_EMAIL="$SA_ID@$PROJECT_ID.iam.gserviceaccount.com"
+# Same-project linking (the control plane's own project) is supported, but the account
+# name must not resolve to the control plane's impersonator: that SA would be reused and
+# granted the roles above.
+if [ "$MODE" = impersonation ] && [ "$SA_EMAIL" = "$IMPERSONATOR" ]; then
+  die "account name '$ACCOUNT_NAME' maps to $SA_EMAIL, the control plane's own service account; pick another name"
+fi
 if gcloud iam service-accounts describe "$SA_EMAIL" --project "$PROJECT_ID" >/dev/null 2>&1; then
   echo "Service account exists: $SA_EMAIL"
 else

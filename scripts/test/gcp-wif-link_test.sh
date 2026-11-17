@@ -146,4 +146,10 @@ for c in "both.json::both awsAccountId" "badimp.json::invalid impersonatorServic
   run cp.example acme hook1 --grants "$T/$f" $flag; rc=$?
   [ $rc != 0 ] && grep -q "$msg" "$T/out" && ! grep -q '^curl' "$LOG" && echo "ok   rejected: $msg" || { echo "FAIL $msg rc=$rc"; cat "$T/out"; fail=1; }
 done
+# Same project as the control plane: supported, but a name resolving to the impersonator is refused.
+echo '{"projectRoles":["roles/owner"],"apis":[],"impersonatorServiceAccount":"facets-release-pod@my-proj.iam.gserviceaccount.com"}' > "$T/same.json"
+run cp.example acme hook1 --grants "$T/same.json"; rc=$?
+[ $rc = 0 ] && grep -qF -- '--member serviceAccount:facets-release-pod@my-proj.iam.gserviceaccount.com' "$LOG" && echo "ok   same-project link works" || { echo "FAIL same-project rc=$rc"; cat "$T/out"; fail=1; }
+run cp.example release-pod hook1 --grants "$T/same.json"; rc=$?
+[ $rc != 0 ] && grep -q "control plane's own service account" "$T/out" && ! grep -q "add-iam-policy-binding" "$LOG" && ! grep -q '^curl' "$LOG" && echo "ok   same-project: impersonator name refused before any grant" || { echo "FAIL same-project collision rc=$rc"; cat "$T/out"; fail=1; }
 exit $fail
