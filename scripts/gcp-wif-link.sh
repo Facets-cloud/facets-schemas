@@ -1,20 +1,35 @@
 #!/bin/bash
-# Keyless GCP link via Workload Identity Federation. No service account keys.
-# Usage: bash gcp-wif-link.sh <CP_HOST> '<ACCOUNT_NAME>' <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits>]
+# Keyless GCP link. No service account keys. The mode comes from the grants file only:
+#  - grants has awsAccountId (AWS-hosted control plane): Workload Identity Federation (pool + AWS provider).
+#  - grants has impersonatorServiceAccount (GCP-hosted control plane): that service account impersonates
+#    facets-<name> (roles/iam.serviceAccountTokenCreator on it); no pool or provider.
+# Usage: bash gcp-wif-link.sh <CP_HOST> '<ACCOUNT_NAME>' <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits>] [--aws-role-arn <arn>]
+# --aws-account-id / --aws-role-arn are WIF only (override the grants' awsAccountId / awsRoleArn); errors in impersonation mode.
 # Without --project the script asks which project to use, offering the shell's current one as the default.
 set -euo pipefail
 
-usage() { echo "Usage: $0 <CP_HOST> <ACCOUNT_NAME> <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits>]" >&2; exit 1; }
+usage() { echo "Usage: $0 <CP_HOST> <ACCOUNT_NAME> <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits, WIF mode only>] [--aws-role-arn <arn, WIF mode only>]" >&2; exit 1; }
 die() { echo "ERROR: $*" >&2; exit 1; }
+# A just-created service account takes a while to show up in IAM ("does not exist"), so
+# bindings on it are retried for up to a minute before giving up.
+iam_retry() {
+  local i
+  for i in 1 2 3 4 5 6; do
+    "$@" && return 0
+    [ "$i" = 6 ] || { echo "IAM not ready yet, retrying in 10s..." >&2; sleep 10; }
+  done
+  return 1
+}
 
 [ "$#" -ge 5 ] || usage
 CP_HOST=$1; ACCOUNT_NAME=$2; WEBHOOK_ID=$3; shift 3
-GRANTS=""; AWS_ID=""; PROJECT_ID=""
+GRANTS=""; AWS_ID=""; ROLE_ARN=""; PROJECT_ID=""
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --grants) [ "$#" -ge 2 ] || usage; GRANTS=$2; shift 2 ;;
     --project) [ "$#" -ge 2 ] || usage; PROJECT_ID=$2; shift 2 ;;
     --aws-account-id) [ "$#" -ge 2 ] || usage; AWS_ID=$2; shift 2 ;;
+    --aws-role-arn) [ "$#" -ge 2 ] || usage; ROLE_ARN=$2; shift 2 ;;
     *) usage ;;
   esac
 done
@@ -30,19 +45,38 @@ if command -v python3 >/dev/null 2>&1; then
   # jlist <key>: one array element per line; jstr <key>: string or empty
   jlist() { python3 -c 'import json,sys;[print(x) for x in json.load(open(sys.argv[1])).get(sys.argv[2]) or []]' "$GRANTS" "$1"; }
   jstr() { python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get(sys.argv[2]) or "")' "$GRANTS" "$1"; }
-  jbody() { python3 -c 'import json,sys;k=["webhookId","name","project","projectNumber","serviceAccountEmail","workloadIdentityPool","workloadIdentityProvider","awsAccountId"];v=sys.argv[1:];print(json.dumps({"webhookId":v[0],"payload":dict([("authType","WORKLOAD_IDENTITY")]+list(zip(k[1:],v[1:])))},separators=(",",":")))' "$@"; }
+  jbody_imp() { python3 -c 'import json,sys;k=["name","project","projectNumber","serviceAccountEmail","impersonatorServiceAccount"];v=sys.argv[1:];print(json.dumps({"webhookId":v[0],"payload":dict([("authType","IMPERSONATION")]+list(zip(k,v[1:])))},separators=(",",":")))' "$@"; }
+  jbody() { python3 -c 'import json,sys;k=["webhookId","name","project","projectNumber","serviceAccountEmail","workloadIdentityPool","workloadIdentityProvider","awsAccountId","awsRoleArn"];v=sys.argv[1:];print(json.dumps({"webhookId":v[0],"payload":dict([("authType","WORKLOAD_IDENTITY")]+list(zip(k[1:],v[1:])))},separators=(",",":")))' "$@"; }
 elif command -v jq >/dev/null 2>&1; then
   jlist() { jq -r --arg k "$1" '.[$k] // [] | .[]' "$GRANTS"; }
   jstr() { jq -r --arg k "$1" '.[$k] // ""' "$GRANTS"; }
-  jbody() { jq -nc --args '{webhookId:$ARGS.positional[0],payload:{authType:"WORKLOAD_IDENTITY",name:$ARGS.positional[1],project:$ARGS.positional[2],projectNumber:$ARGS.positional[3],serviceAccountEmail:$ARGS.positional[4],workloadIdentityPool:$ARGS.positional[5],workloadIdentityProvider:$ARGS.positional[6],awsAccountId:$ARGS.positional[7]}}' "$@"; }
+  jbody_imp() { jq -nc --args '{webhookId:$ARGS.positional[0],payload:{authType:"IMPERSONATION",name:$ARGS.positional[1],project:$ARGS.positional[2],projectNumber:$ARGS.positional[3],serviceAccountEmail:$ARGS.positional[4],impersonatorServiceAccount:$ARGS.positional[5]}}' "$@"; }
+  jbody() { jq -nc --args '{webhookId:$ARGS.positional[0],payload:{authType:"WORKLOAD_IDENTITY",name:$ARGS.positional[1],project:$ARGS.positional[2],projectNumber:$ARGS.positional[3],serviceAccountEmail:$ARGS.positional[4],workloadIdentityPool:$ARGS.positional[5],workloadIdentityProvider:$ARGS.positional[6],awsAccountId:$ARGS.positional[7],awsRoleArn:$ARGS.positional[8]}}' "$@"; }
 else
   die "python3 or jq is required"
 fi
 
-MAPPING=$(jstr wifSubjectMapping)
-[ -n "$MAPPING" ] || die "grants file has no wifSubjectMapping"
-[ -n "$AWS_ID" ] || AWS_ID=$(jstr awsAccountId)
-[[ "$AWS_ID" =~ ^[0-9]{12}$ ]] || die "AWS account id must be 12 digits (pass --aws-account-id)"
+IMPERSONATOR=$(jstr impersonatorServiceAccount)
+if [ -n "$IMPERSONATOR" ]; then
+  MODE=impersonation
+  [[ "$IMPERSONATOR" =~ ^[a-z0-9-]+@[a-z0-9-]+\.iam\.gserviceaccount\.com$ ]] || die "invalid impersonatorServiceAccount in grants: $IMPERSONATOR"
+  [ -z "$(jstr awsAccountId)" ] || die "grants file has both awsAccountId and impersonatorServiceAccount; pick one mode"
+  [ -z "$ROLE_ARN" ] || die "--aws-role-arn cannot be used in impersonation mode"
+  [ -z "$AWS_ID" ] || die "--aws-account-id cannot be used in impersonation mode (grants name impersonatorServiceAccount)"
+else
+  MODE=wif
+  MAPPING=$(jstr wifSubjectMapping)
+  [ -n "$MAPPING" ] || die "grants file has no wifSubjectMapping"
+  [ -n "$AWS_ID" ] || AWS_ID=$(jstr awsAccountId)
+  [[ "$AWS_ID" =~ ^[0-9]{12}$ ]] || die "AWS account id must be 12 digits (pass --aws-account-id)"
+  [ -n "$ROLE_ARN" ] || ROLE_ARN=$(jstr awsRoleArn)
+  [[ "$ROLE_ARN" =~ ^arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9+=,.@_-]{1,64}$ ]] || die "AWS role ARN missing or invalid (grants awsRoleArn or --aws-role-arn)"
+  [[ "$ROLE_ARN" == "arn:aws:iam::$AWS_ID:role/"* ]] || die "AWS role ARN $ROLE_ARN is not in AWS account $AWS_ID"
+  ROLE_NAME=${ROLE_ARN##*/}
+  # Trust only this role's sessions, not the whole AWS account.
+  AWS_ROLE_EXPR="attribute.aws_role=assertion.arn.contains('assumed-role') ? assertion.arn.extract('{account_arn}assumed-role/') + 'assumed-role/' + assertion.arn.extract('assumed-role/{role_name}/') : assertion.arn"
+  case "$MAPPING" in *attribute.aws_role=*) ;; *) MAPPING="$MAPPING,$AWS_ROLE_EXPR" ;; esac
+fi
 ROLES=(); while IFS= read -r l; do ROLES+=("$l"); done < <(jlist projectRoles)
 APIS=();  while IFS= read -r l; do APIS+=("$l");  done < <(jlist apis)
 
@@ -89,21 +123,39 @@ if [ "${#APIS[@]}" -gt 0 ]; then
     gcloud services enable "${APIS[@]:i:20}" --project "$PROJECT_ID"
   done
 fi
-gcloud services enable iam.googleapis.com iamcredentials.googleapis.com sts.googleapis.com --project "$PROJECT_ID"
+if [ "$MODE" = wif ]; then
+  gcloud services enable iam.googleapis.com iamcredentials.googleapis.com sts.googleapis.com --project "$PROJECT_ID"
+else
+  gcloud services enable iam.googleapis.com iamcredentials.googleapis.com --project "$PROJECT_ID"
+fi
 
 # Service account (id: 6-30 chars, lowercase, no trailing hyphen)
 SA_ID=$(printf 'facets-%s' "$ACCOUNT_NAME" | cut -c1-30)
 SA_ID=${SA_ID%-}
 SA_EMAIL="$SA_ID@$PROJECT_ID.iam.gserviceaccount.com"
+# Same-project linking (the control plane's own project) is supported, but the account
+# name must not resolve to the control plane's impersonator: that SA would be reused and
+# granted the roles above.
+if [ "$MODE" = impersonation ] && [ "$SA_EMAIL" = "$IMPERSONATOR" ]; then
+  die "account name '$ACCOUNT_NAME' maps to $SA_EMAIL, the control plane's own service account; pick another name"
+fi
 if gcloud iam service-accounts describe "$SA_EMAIL" --project "$PROJECT_ID" >/dev/null 2>&1; then
   echo "Service account exists: $SA_EMAIL"
 else
   gcloud iam service-accounts create "$SA_ID" --display-name "Facets $ACCOUNT_NAME" --project "$PROJECT_ID"
 fi
 for r in "${ROLES[@]}"; do
-  gcloud projects add-iam-policy-binding "$PROJECT_ID" --member "serviceAccount:$SA_EMAIL" --role "$r" --condition=None >/dev/null
+  iam_retry gcloud projects add-iam-policy-binding "$PROJECT_ID" --member "serviceAccount:$SA_EMAIL" --role "$r" --condition=None >/dev/null || die "could not grant $r to $SA_EMAIL"
 done
 
+# Callback setup
+URL="${CP_SCHEME:-https}://$CP_HOST/public/v1/link-gcp"
+if [ "$MODE" = impersonation ]; then
+  # Only the control plane's service account may impersonate this SA; no pool or provider.
+  iam_retry gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" --role roles/iam.serviceAccountTokenCreator --member "serviceAccount:$IMPERSONATOR" >/dev/null     || die "could not let $IMPERSONATOR impersonate $SA_EMAIL"
+  BODY=$(jbody_imp "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$IMPERSONATOR")
+  SUMMARY="impersonation mode, service account $SA_EMAIL (impersonated by $IMPERSONATOR), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
+else
 # Pool + provider
 POOL=facets-cp-pool; PROVIDER=facets-aws-provider
 COND="attribute.aws_account=='$AWS_ID'"
@@ -123,16 +175,25 @@ gcloud iam workload-identity-pools providers "$verb" "$PROVIDER" --workload-iden
   --account-id "$AWS_ID" --attribute-mapping "$MAPPING" --attribute-condition "$COND"
 
 # Let the AWS account impersonate the SA
-MEMBER="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL/attribute.aws_account/$AWS_ID"
-gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" \
-  --role roles/iam.workloadIdentityUser --member "$MEMBER" >/dev/null
+PRINCIPAL_BASE="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL"
+MEMBER="$PRINCIPAL_BASE/attribute.aws_role/arn:aws:sts::$AWS_ID:assumed-role/$ROLE_NAME"
+# Drop the old account-wide binding from earlier runs.
+OLD="$PRINCIPAL_BASE/attribute.aws_account/$AWS_ID"
+if gcloud iam service-accounts get-iam-policy "$SA_EMAIL" --project "$PROJECT_ID" --flatten=bindings[].members --format='value(bindings.members)' | grep -qxF "$OLD"; then
+  echo "Removing account-wide binding $OLD"
+  gcloud iam service-accounts remove-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID"     --role roles/iam.workloadIdentityUser --member "$OLD" >/dev/null
+fi
+iam_retry gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" \
+  --role roles/iam.workloadIdentityUser --member "$MEMBER" >/dev/null || die "could not bind $MEMBER on $SA_EMAIL"
+
+BODY=$(jbody "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$POOL" "$PROVIDER" "$AWS_ID" "$ROLE_ARN")
+SUMMARY="WIF mode, service account $SA_EMAIL, pool $POOL, provider $PROVIDER (AWS $AWS_ID, role $ROLE_NAME), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
+fi
 
 # Callback
-BODY=$(jbody "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$POOL" "$PROVIDER" "$AWS_ID")
-URL="${CP_SCHEME:-https}://$CP_HOST/public/v1/link-gcp"
 RESP=$(mktemp); trap 'rm -f "$RESP"' EXIT
 # The control plane verifies the account by impersonating the SA, and the
-# workloadIdentityUser grant above takes up to ~2 minutes to propagate in IAM.
+# IAM grant above (workloadIdentityUser or tokenCreator) takes up to ~2 minutes to propagate in IAM.
 # A rejected callback leaves the link usable, so retry while verification fails.
 for attempt in 1 2 3 4 5 6 7 8 9; do
   # No -f: curl drops the response body on an HTTP error with -f, and that body carries the reason.
@@ -147,4 +208,4 @@ if [[ "$CODE" != 2* ]]; then
   echo "The project is set up; fix the issue above and run the same command again." >&2
   exit 1
 fi
-echo "Linked '$ACCOUNT_NAME': service account $SA_EMAIL, pool $POOL, provider $PROVIDER (AWS $AWS_ID), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
+echo "Linked '$ACCOUNT_NAME': $SUMMARY"
