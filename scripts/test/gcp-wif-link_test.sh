@@ -7,6 +7,10 @@ mkdir "$T/bin"
 cat > "$T/bin/gcloud" <<'S'
 #!/bin/bash
 printf '%s\n' "$*" >> "$LOG"
+# SA_LAG=n: the first n add-iam-policy-binding calls fail, as right after the SA is created.
+if [ -n "${SA_LAG:-}" ] && [[ "$*" == *add-iam-policy-binding* ]]; then
+  [ "$(grep -c 'add-iam-policy-binding' "$LOG")" -le "$SA_LAG" ] && { echo "INVALID_ARGUMENT: Service account does not exist." >&2; exit 1; }
+fi
 case "$*" in
   "config get-value project") [ -n "${NOPROJ:-}" ] && echo "(unset)" || echo my-proj ;;
   "projects list"*) printf '%s\n' other-proj my-proj ;;
@@ -161,4 +165,9 @@ run cp.example acme hook1 --grants "$T/same.json"; rc=$?
 [ $rc = 0 ] && grep -qF -- '--member serviceAccount:facets-release-pod@my-proj.iam.gserviceaccount.com' "$LOG" && echo "ok   same-project link works" || { echo "FAIL same-project rc=$rc"; cat "$T/out"; fail=1; }
 run cp.example release-pod hook1 --grants "$T/same.json"; rc=$?
 [ $rc != 0 ] && grep -q "control plane's own service account" "$T/out" && ! grep -q "add-iam-policy-binding" "$LOG" && ! grep -q '^curl' "$LOG" && echo "ok   same-project: impersonator name refused before any grant" || { echo "FAIL same-project collision rc=$rc"; cat "$T/out"; fail=1; }
+# A fresh SA is not visible to IAM at once: bindings retry, then the link still goes through.
+SA_LAG=2 run cp.example acme hook1 --grants "$T/imp.json"; rc=$?
+[ $rc = 0 ] && [ "$(grep -c '^sleep 10' "$LOG")" = 2 ] && grep -q 'link-gcp' "$LOG" && echo "ok   binding retried while the new SA propagates" || { echo "FAIL SA_LAG=2 rc=$rc"; cat "$T/out"; fail=1; }
+SA_LAG=99 run cp.example acme hook1 --grants "$T/imp.json"; rc=$?
+[ $rc != 0 ] && [ "$(grep -c '^sleep 10' "$LOG")" = 5 ] && ! grep -q 'link-gcp' "$LOG" && grep -q 'could not grant' "$T/out" && echo "ok   gives up after 6 tries, no callback" || { echo "FAIL SA_LAG=99 rc=$rc"; cat "$T/out"; fail=1; }
 exit $fail

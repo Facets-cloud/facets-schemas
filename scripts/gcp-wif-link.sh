@@ -10,6 +10,16 @@ set -euo pipefail
 
 usage() { echo "Usage: $0 <CP_HOST> <ACCOUNT_NAME> <WEBHOOK_ID> --grants grants.json [--project <id>] [--aws-account-id <12 digits, WIF mode only>] [--aws-role-arn <arn, WIF mode only>]" >&2; exit 1; }
 die() { echo "ERROR: $*" >&2; exit 1; }
+# A just-created service account takes a while to show up in IAM ("does not exist"), so
+# bindings on it are retried for up to a minute before giving up.
+iam_retry() {
+  local i
+  for i in 1 2 3 4 5 6; do
+    "$@" && return 0
+    [ "$i" = 6 ] || { echo "IAM not ready yet, retrying in 10s..." >&2; sleep 10; }
+  done
+  return 1
+}
 
 [ "$#" -ge 5 ] || usage
 CP_HOST=$1; ACCOUNT_NAME=$2; WEBHOOK_ID=$3; shift 3
@@ -135,14 +145,14 @@ else
   gcloud iam service-accounts create "$SA_ID" --display-name "Facets $ACCOUNT_NAME" --project "$PROJECT_ID"
 fi
 for r in "${ROLES[@]}"; do
-  gcloud projects add-iam-policy-binding "$PROJECT_ID" --member "serviceAccount:$SA_EMAIL" --role "$r" --condition=None >/dev/null
+  iam_retry gcloud projects add-iam-policy-binding "$PROJECT_ID" --member "serviceAccount:$SA_EMAIL" --role "$r" --condition=None >/dev/null || die "could not grant $r to $SA_EMAIL"
 done
 
 # Callback setup
 URL="${CP_SCHEME:-https}://$CP_HOST/public/v1/link-gcp"
 if [ "$MODE" = impersonation ]; then
   # Only the control plane's service account may impersonate this SA; no pool or provider.
-  gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID"     --role roles/iam.serviceAccountTokenCreator --member "serviceAccount:$IMPERSONATOR" >/dev/null
+  iam_retry gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" --role roles/iam.serviceAccountTokenCreator --member "serviceAccount:$IMPERSONATOR" >/dev/null     || die "could not let $IMPERSONATOR impersonate $SA_EMAIL"
   BODY=$(jbody_imp "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$IMPERSONATOR")
   SUMMARY="impersonation mode, service account $SA_EMAIL (impersonated by $IMPERSONATOR), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
 else
@@ -173,8 +183,8 @@ if gcloud iam service-accounts get-iam-policy "$SA_EMAIL" --project "$PROJECT_ID
   echo "Removing account-wide binding $OLD"
   gcloud iam service-accounts remove-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID"     --role roles/iam.workloadIdentityUser --member "$OLD" >/dev/null
 fi
-gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" \
-  --role roles/iam.workloadIdentityUser --member "$MEMBER" >/dev/null
+iam_retry gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" \
+  --role roles/iam.workloadIdentityUser --member "$MEMBER" >/dev/null || die "could not bind $MEMBER on $SA_EMAIL"
 
 BODY=$(jbody "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$POOL" "$PROVIDER" "$AWS_ID" "$ROLE_ARN")
 SUMMARY="WIF mode, service account $SA_EMAIL, pool $POOL, provider $PROVIDER (AWS $AWS_ID, role $ROLE_NAME), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
