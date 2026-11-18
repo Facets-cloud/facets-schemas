@@ -12,6 +12,7 @@ case "$*" in
   "projects list"*) printf '%s\n' other-proj my-proj ;;
   "projects describe"*) echo 123456 ;;
   *"pools describe"*"--format=value(state)"*) [ "${EXISTS:-}" = 1 ] && echo ACTIVE ;;
+  *get-iam-policy*) [ -n "${OLDBIND:-}" ] && echo "principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_account/313496281593" ;;
   *describe*) [ "${EXISTS:-}" = 1 ] || exit 1 ;;
 esac
 exit 0
@@ -37,7 +38,7 @@ fi
 S
 printf '#!/bin/bash\nprintf "sleep %%s\\n" "$*" >> "$LOG"\n' > "$T/bin/sleep"
 chmod +x "$T/bin/"*
-echo '{"projectRoles":["roles/owner"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":["compute.googleapis.com"],"awsAccountId":"313496281593"}' > "$T/full.json"
+echo '{"projectRoles":["roles/owner"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":["compute.googleapis.com"],"awsAccountId":"313496281593","awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}' > "$T/full.json"
 echo '{"projectRoles":["roles/viewer","roles/iam.securityReviewer"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":[]}' > "$T/ro.json"
 fail=0
 ok() { grep -qF -- "$1" "$LOG" && echo "ok   $2" || { echo "FAIL $2"; fail=1; }; }
@@ -53,8 +54,12 @@ ok "pools create facets-cp-pool" "full: pool created"
 ok "providers create-aws facets-aws-provider" "full: provider created"
 ok "--account-id 313496281593" "full: account id"
 ok "--attribute-condition attribute.aws_account=='313496281593'" "full: condition"
-ok "--member principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_account/313496281593" "full: principalSet"
-ok '-d {"webhookId":"hook1","payload":{"authType":"WORKLOAD_IDENTITY","name":"acme","project":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","workloadIdentityPool":"facets-cp-pool","workloadIdentityProvider":"facets-aws-provider","awsAccountId":"313496281593"}} -o' "full: exact POST body"
+ok "--member principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_role/arn:aws:sts::313496281593:assumed-role/cp-acme" "full: role principalSet"
+no "attribute.aws_account/313496281593" "full: no account-wide binding"
+no "remove-iam-policy-binding" "full: nothing to remove"
+ok "attribute.aws_role=assertion.arn.contains('assumed-role') ? assertion.arn.extract('{account_arn}assumed-role/') + 'assumed-role/' + assertion.arn.extract('assumed-role/{role_name}/') : assertion.arn" "full: aws_role mapping"
+ok "attribute.aws_account=assertion.account,attribute.aws_role=" "full: keeps aws_account mapping"
+ok '-d {"webhookId":"hook1","payload":{"authType":"WORKLOAD_IDENTITY","name":"acme","project":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","workloadIdentityPool":"facets-cp-pool","workloadIdentityProvider":"facets-aws-provider","awsAccountId":"313496281593","awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}} -o' "full: exact POST body"
 ok "http://cp.example:8080/public/v1/link-gcp" "full: URL"
 no "keys create" "full: no keys create"
 no " -k " "full: no curl -k"
@@ -84,7 +89,7 @@ NOPROJ=1 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
 run cp.example acme hook1 --grants "$T/full.json" --project Bad_Proj; rc=$?
 [ $rc != 0 ] && grep -q 'invalid --project' "$T/out" && echo "ok   invalid --project rejected" || { echo "FAIL invalid --project rc=$rc"; fail=1; }
 
-run cp.example acme hook1 --grants "$T/ro.json" --aws-account-id 111122223333; rc=$?
+run cp.example acme hook1 --grants "$T/ro.json" --aws-account-id 111122223333 --aws-role-arn arn:aws:iam::111122223333:role/r1; rc=$?
 [ $rc = 0 ] && echo "ok   ro exit 0" || { echo "FAIL ro exit $rc"; cat "$T/out"; fail=1; }
 ok "--role roles/iam.securityReviewer" "ro: role bound"
 no "services enable compute" "ro: no extra apis"
@@ -96,7 +101,7 @@ ok "providers update-aws facets-aws-provider" "rerun: provider updated"
 no "service-accounts create" "rerun: SA not recreated"
 no "pools create" "rerun: pool not recreated"
 
-python3 -c "import json;print(json.dumps({'projectRoles':['roles/owner'],'wifSubjectMapping':'google.subject=assertion.account','apis':['api%d.googleapis.com'%i for i in range(41)],'awsAccountId':'313496281593'}))" > "$T/many.json"
+python3 -c "import json;print(json.dumps({'projectRoles':['roles/owner'],'wifSubjectMapping':'google.subject=assertion.account','apis':['api%d.googleapis.com'%i for i in range(41)],'awsAccountId':'313496281593','awsRoleArn':'arn:aws:iam::313496281593:role/cp-acme'}))" > "$T/many.json"
 run cp.example acme hook1 --grants "$T/many.json"; rc=$?
 calls=$(grep -c 'services enable api' "$LOG"); widest=$(grep 'services enable api' "$LOG" | awk '{n=0; for(i=1;i<=NF;i++) if ($i ~ /^api[0-9]+\.googleapis\.com$/) n++; print n}' | sort -n | tail -1)
 [ $rc = 0 ] && [ "$calls" = 3 ] && [ "$widest" -le 20 ] && grep -q 'api40.googleapis.com' "$LOG" && echo "ok   41 apis enabled in 3 calls of <=20" || { echo "FAIL batching rc=$rc calls=$calls widest=$widest"; fail=1; }
@@ -114,7 +119,11 @@ calls=$(grep -c '^curl .*link-gcp' "$LOG")
 [ "$calls" = 1 ] && echo "ok   other rejections are not retried" || { echo "FAIL non-IAM rejection retried calls=$calls"; fail=1; }
 [ $rc != 0 ] && grep -q "bad link" "$T/out" && grep -q "HTTP 400" "$T/out" && echo "ok   rejected callback fails with the server message" || { echo "FAIL callback failure rc=$rc"; cat "$T/out"; fail=1; }
 
-for bad in "cp.example Bad_Name hook1 --grants $T/full.json" "cp.example acme '' --grants $T/full.json" "cp.example acme hook1" "cp.example acme hook1 --grants /nonexistent" "cp.example acme hook1 --grants $T/ro.json --aws-account-id 12"; do
+OLDBIND=1 run cp.example acme hook1 --grants "$T/full.json"
+ok "remove-iam-policy-binding facets-acme@my-proj.iam.gserviceaccount.com --project my-proj --role roles/iam.workloadIdentityUser --member principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_account/313496281593" "rerun: account-wide binding removed"
+grep -q 'Removing account-wide' "$T/out" && echo "ok   removal logged" || { echo "FAIL removal log"; fail=1; }
+
+for bad in "cp.example acme hook1 --grants $T/full.json --aws-role-arn arn:aws:iam::111122223333:role/x" "cp.example acme hook1 --grants $T/ro.json" "cp.example acme hook1 --grants $T/full.json --aws-role-arn bad/arn" "cp.example Bad_Name hook1 --grants $T/full.json" "cp.example acme '' --grants $T/full.json" "cp.example acme hook1" "cp.example acme hook1 --grants /nonexistent" "cp.example acme hook1 --grants $T/ro.json --aws-account-id 12"; do
   eval "run $bad"; rc=$?
   [ $rc != 0 ] && ! grep -q '^curl' "$LOG" && echo "ok   bad args rejected: $bad" || { echo "FAIL bad args: $bad"; fail=1; }
 done
