@@ -73,7 +73,16 @@ else
   [[ "$ROLE_ARN" =~ ^arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9+=,.@_-]{1,64}$ ]] || die "AWS role ARN missing or invalid (grants awsRoleArn or --aws-role-arn)"
   [[ "$ROLE_ARN" == "arn:aws:iam::$AWS_ID:role/"* ]] || die "AWS role ARN $ROLE_ARN is not in AWS account $AWS_ID"
   ROLE_NAME=${ROLE_ARN##*/}
-  # Trust only this role's sessions, not the whole AWS account.
+  # Every role the SA trusts: the CP's own (above; it validates the account) and, when release
+  # pods run as their own role, that one too (grants awsRoleArns). Older grants have only awsRoleArn.
+  TRUST_NAMES=("$ROLE_NAME")
+  while IFS= read -r r; do
+    [ -n "$r" ] || continue
+    [[ "$r" =~ ^arn:aws:iam::[0-9]{12}:role/[A-Za-z0-9+=,.@_-]{1,64}$ ]] || die "invalid role in grants awsRoleArns: $r"
+    [[ "$r" == "arn:aws:iam::$AWS_ID:role/"* ]] || die "role $r in grants awsRoleArns is not in AWS account $AWS_ID"
+    case " ${TRUST_NAMES[*]} " in *" ${r##*/} "*) ;; *) TRUST_NAMES+=("${r##*/}") ;; esac
+  done < <(jlist awsRoleArns)
+  # Trust only these roles' sessions, not the whole AWS account.
   AWS_ROLE_EXPR="attribute.aws_role=assertion.arn.contains('assumed-role') ? assertion.arn.extract('{account_arn}assumed-role/') + 'assumed-role/' + assertion.arn.extract('assumed-role/{role_name}/') : assertion.arn"
   case "$MAPPING" in *attribute.aws_role=*) ;; *) MAPPING="$MAPPING,$AWS_ROLE_EXPR" ;; esac
 fi
@@ -176,18 +185,20 @@ gcloud iam workload-identity-pools providers "$verb" "$PROVIDER" --workload-iden
 
 # Let the AWS account impersonate the SA
 PRINCIPAL_BASE="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL"
-MEMBER="$PRINCIPAL_BASE/attribute.aws_role/arn:aws:sts::$AWS_ID:assumed-role/$ROLE_NAME"
 # Drop the old account-wide binding from earlier runs.
 OLD="$PRINCIPAL_BASE/attribute.aws_account/$AWS_ID"
 if gcloud iam service-accounts get-iam-policy "$SA_EMAIL" --project "$PROJECT_ID" --flatten=bindings[].members --format='value(bindings.members)' | grep -qxF "$OLD"; then
   echo "Removing account-wide binding $OLD"
   gcloud iam service-accounts remove-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID"     --role roles/iam.workloadIdentityUser --member "$OLD" >/dev/null
 fi
-iam_retry gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" \
-  --role roles/iam.workloadIdentityUser --member "$MEMBER" >/dev/null || die "could not bind $MEMBER on $SA_EMAIL"
+for name in "${TRUST_NAMES[@]}"; do
+  MEMBER="$PRINCIPAL_BASE/attribute.aws_role/arn:aws:sts::$AWS_ID:assumed-role/$name"
+  iam_retry gcloud iam service-accounts add-iam-policy-binding "$SA_EMAIL" --project "$PROJECT_ID" \
+    --role roles/iam.workloadIdentityUser --member "$MEMBER" >/dev/null || die "could not bind $MEMBER on $SA_EMAIL"
+done
 
 BODY=$(jbody "$WEBHOOK_ID" "$ACCOUNT_NAME" "$PROJECT_ID" "$PROJECT_NUMBER" "$SA_EMAIL" "$POOL" "$PROVIDER" "$AWS_ID" "$ROLE_ARN")
-SUMMARY="WIF mode, service account $SA_EMAIL, pool $POOL, provider $PROVIDER (AWS $AWS_ID, role $ROLE_NAME), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
+SUMMARY="WIF mode, service account $SA_EMAIL, pool $POOL, provider $PROVIDER (AWS $AWS_ID, roles ${TRUST_NAMES[*]}), ${#ROLES[@]} roles, ${#APIS[@]} APIs."
 fi
 
 # Callback

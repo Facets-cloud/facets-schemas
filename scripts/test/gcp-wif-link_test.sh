@@ -66,6 +66,21 @@ ok "attribute.aws_account=assertion.account,attribute.aws_role=" "full: keeps aw
 ok '-d {"webhookId":"hook1","payload":{"authType":"WORKLOAD_IDENTITY","name":"acme","project":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","workloadIdentityPool":"facets-cp-pool","workloadIdentityProvider":"facets-aws-provider","awsAccountId":"313496281593","awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}} -o' "full: exact POST body"
 ok "http://cp.example:8080/public/v1/link-gcp" "full: URL"
 no "keys create" "full: no keys create"
+
+# Release pods on their own role: the SA trusts both roles; the callback still names the CP's own.
+python3 -c "import json;d=json.load(open('$T/full.json'));d['awsRoleArns']=['arn:aws:iam::313496281593:role/cp-acme','arn:aws:iam::313496281593:role/cp-release','arn:aws:iam::313496281593:role/cp-release'];print(json.dumps(d))" > "$T/two.json"
+run cp.example acme hook1 --grants "$T/two.json"; rc=$?
+[ $rc = 0 ] && echo "ok   two roles exit 0" || { echo "FAIL two roles exit $rc"; cat "$T/out"; fail=1; }
+grep -qE "facets-cp-pool/attribute\.aws_role/arn:aws:sts::313496281593:assumed-role/cp-acme$" "$LOG" && echo "ok   two roles: CP role bound" || { echo "FAIL two roles: CP role bound"; fail=1; }
+grep -qE "assumed-role/cp-release$" "$LOG" && echo "ok   two roles: release-pod role bound" || { echo "FAIL two roles: release-pod role bound"; fail=1; }
+[ "$(grep -cE "assumed-role/cp-release$" "$LOG")" = 1 ] && echo "ok   two roles: duplicate bound once" || { echo "FAIL duplicate role bound twice"; fail=1; }
+ok '"awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}}' "two roles: callback names the CP role"
+grep -q 'roles cp-acme cp-release' "$T/out" && echo "ok   two roles: summary names both" || { echo "FAIL two roles summary"; cat "$T/out"; fail=1; }
+for bad in "arn:aws:iam::999999999999:role/cp-release" "arn:aws:iam::313496281593:user/bob"; do
+  python3 -c "import json;d=json.load(open('$T/full.json'));d['awsRoleArns']=['arn:aws:iam::313496281593:role/cp-acme','$bad'];print(json.dumps(d))" > "$T/bad.json"
+  run cp.example acme hook1 --grants "$T/bad.json"; rc=$?
+  [ $rc != 0 ] && ! grep -q 'service-accounts create' "$LOG" && ! grep -q '^curl' "$LOG" && echo "ok   two roles: refused before any change: $bad" || { echo "FAIL two roles bad $bad rc=$rc"; cat "$T/out"; fail=1; }
+done
 no " -k " "full: no curl -k"
 
 # Project choice: --project wins, otherwise the user is asked with the current project as default.
