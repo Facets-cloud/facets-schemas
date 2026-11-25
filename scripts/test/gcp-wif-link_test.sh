@@ -42,8 +42,9 @@ fi
 S
 printf '#!/bin/bash\nprintf "sleep %%s\\n" "$*" >> "$LOG"\n' > "$T/bin/sleep"
 chmod +x "$T/bin/"*
-echo '{"projectRoles":["roles/owner"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":["compute.googleapis.com"],"awsAccountId":"313496281593","awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}' > "$T/full.json"
-echo '{"projectRoles":["roles/viewer","roles/iam.securityReviewer"],"wifSubjectMapping":"google.subject=assertion.account,attribute.aws_account=assertion.account","apis":[]}' > "$T/ro.json"
+WIF='"oidcIssuer":"https://oidc.eks.us-east-2.amazonaws.com/id/8FB31AB8","oidcAudience":"facets-gcp-wif","workloadIdentityProvider":"facets-k8s-0123456789ab","wifSubjectMapping":"google.subject=assertion.sub","k8sSubjects":["system:serviceaccount:default:release-pod-sa-1234","system:serviceaccount:facets:release-pod-sa-1234","system:serviceaccount:default:release-pod-sa-1234"]'
+echo '{"projectRoles":["roles/owner"],"apis":["compute.googleapis.com"],'"$WIF"'}' > "$T/full.json"
+echo '{"projectRoles":["roles/viewer","roles/iam.securityReviewer"],"apis":[],'"$WIF"'}' > "$T/ro.json"
 fail=0
 ok() { grep -qF -- "$1" "$LOG" && echo "ok   $2" || { echo "FAIL $2"; fail=1; }; }
 no() { grep -qF -- "$1" "$LOG" && { echo "FAIL $2"; fail=1; } || echo "ok   $2"; }
@@ -55,31 +56,25 @@ ok "services enable compute.googleapis.com" "full: api enabled"
 ok "--role roles/owner" "full: role bound"
 ok "service-accounts create facets-acme" "full: SA created"
 ok "pools create facets-cp-pool" "full: pool created"
-ok "providers create-aws facets-aws-provider" "full: provider created"
-ok "--account-id 313496281593" "full: account id"
-ok "--attribute-condition attribute.aws_account=='313496281593'" "full: condition"
-ok "--member principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_role/arn:aws:sts::313496281593:assumed-role/cp-acme" "full: role principalSet"
-no "attribute.aws_account/313496281593" "full: no account-wide binding"
+ok "providers create-oidc facets-k8s-0123456789ab --workload-identity-pool facets-cp-pool --project my-proj --location global --issuer-uri https://oidc.eks.us-east-2.amazonaws.com/id/8FB31AB8 --allowed-audiences facets-gcp-wif --attribute-mapping google.subject=assertion.sub" "full: OIDC provider on the cluster issuer, one audience"
+ok "--member principal://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/subject/system:serviceaccount:default:release-pod-sa-1234" "full: release SA bound"
+ok "--member principal://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/subject/system:serviceaccount:facets:release-pod-sa-1234" "full: CRD-namespace release SA bound"
+[ "$(grep -c 'subject/system:serviceaccount:default:release-pod-sa-1234' "$LOG")" = 1 ] && echo "ok   full: duplicate subject bound once" || { echo "FAIL duplicate subject"; fail=1; }
+no "principalSet://" "full: no set-wide binding"
+no "create-aws" "full: no AWS provider"
+no "attribute.aws_" "full: no AWS attributes"
 no "remove-iam-policy-binding" "full: nothing to remove"
-ok "attribute.aws_role=assertion.arn.contains('assumed-role') ? assertion.arn.extract('{account_arn}assumed-role/') + 'assumed-role/' + assertion.arn.extract('assumed-role/{role_name}/') : assertion.arn" "full: aws_role mapping"
-ok "attribute.aws_account=assertion.account,attribute.aws_role=" "full: keeps aws_account mapping"
-ok '-d {"webhookId":"hook1","payload":{"authType":"WORKLOAD_IDENTITY","name":"acme","project":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","workloadIdentityPool":"facets-cp-pool","workloadIdentityProvider":"facets-aws-provider","awsAccountId":"313496281593","awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}} -o' "full: exact POST body"
+ok '-d {"webhookId":"hook1","payload":{"authType":"WORKLOAD_IDENTITY","name":"acme","project":"my-proj","projectNumber":"123456","serviceAccountEmail":"facets-acme@my-proj.iam.gserviceaccount.com","workloadIdentityPool":"facets-cp-pool","workloadIdentityProvider":"facets-k8s-0123456789ab"}} -o' "full: exact POST body"
 ok "http://cp.example:8080/public/v1/link-gcp" "full: URL"
 no "keys create" "full: no keys create"
+grep -q 'trusts system:serviceaccount:default:release-pod-sa-1234 system:serviceaccount:facets:release-pod-sa-1234)' "$T/out" && echo "ok   full: summary names the trusted accounts" || { echo "FAIL summary"; cat "$T/out"; fail=1; }
 
-# Release pods on their own role: the SA trusts both roles; the callback still names the CP's own.
-python3 -c "import json;d=json.load(open('$T/full.json'));d['awsRoleArns']=['arn:aws:iam::313496281593:role/cp-acme','arn:aws:iam::313496281593:role/cp-release','arn:aws:iam::313496281593:role/cp-release'];print(json.dumps(d))" > "$T/two.json"
-run cp.example acme hook1 --grants "$T/two.json"; rc=$?
-[ $rc = 0 ] && echo "ok   two roles exit 0" || { echo "FAIL two roles exit $rc"; cat "$T/out"; fail=1; }
-grep -qE "facets-cp-pool/attribute\.aws_role/arn:aws:sts::313496281593:assumed-role/cp-acme$" "$LOG" && echo "ok   two roles: CP role bound" || { echo "FAIL two roles: CP role bound"; fail=1; }
-grep -qE "assumed-role/cp-release$" "$LOG" && echo "ok   two roles: release-pod role bound" || { echo "FAIL two roles: release-pod role bound"; fail=1; }
-[ "$(grep -cE "assumed-role/cp-release$" "$LOG")" = 1 ] && echo "ok   two roles: duplicate bound once" || { echo "FAIL duplicate role bound twice"; fail=1; }
-ok '"awsRoleArn":"arn:aws:iam::313496281593:role/cp-acme"}}' "two roles: callback names the CP role"
-grep -q 'roles cp-acme cp-release' "$T/out" && echo "ok   two roles: summary names both" || { echo "FAIL two roles summary"; cat "$T/out"; fail=1; }
-for bad in "arn:aws:iam::999999999999:role/cp-release" "arn:aws:iam::313496281593:user/bob"; do
-  python3 -c "import json;d=json.load(open('$T/full.json'));d['awsRoleArns']=['arn:aws:iam::313496281593:role/cp-acme','$bad'];print(json.dumps(d))" > "$T/bad.json"
+# Grants are validated before anything changes in the project.
+for bad in 'oidcIssuer=http://10.0.0.1/x' 'oidcIssuer=https://evil.example/x y' 'oidcAudience=' 'workloadIdentityProvider=Bad_Provider' 'k8sSubjects=["system:serviceaccounts:default"]' 'k8sSubjects=["system:serviceaccount:default:a b"]' 'k8sSubjects=[]'; do
+  k=${bad%%=*}; v=${bad#*=}
+  python3 -c "import json,sys;d=json.load(open('$T/full.json'));v=sys.argv[2];d[sys.argv[1]]=json.loads(v) if v.startswith('[') else v;print(json.dumps(d))" "$k" "$v" > "$T/bad.json"
   run cp.example acme hook1 --grants "$T/bad.json"; rc=$?
-  [ $rc != 0 ] && ! grep -q 'service-accounts create' "$LOG" && ! grep -q '^curl' "$LOG" && echo "ok   two roles: refused before any change: $bad" || { echo "FAIL two roles bad $bad rc=$rc"; cat "$T/out"; fail=1; }
+  [ $rc != 0 ] && ! grep -q 'service-accounts create' "$LOG" && ! grep -q '^curl' "$LOG" && echo "ok   bad grants refused before any change: $bad" || { echo "FAIL bad grants $bad rc=$rc"; cat "$T/out"; fail=1; }
 done
 no " -k " "full: no curl -k"
 
@@ -108,19 +103,18 @@ NOPROJ=1 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
 run cp.example acme hook1 --grants "$T/full.json" --project Bad_Proj; rc=$?
 [ $rc != 0 ] && grep -q 'invalid --project' "$T/out" && echo "ok   invalid --project rejected" || { echo "FAIL invalid --project rc=$rc"; fail=1; }
 
-run cp.example acme hook1 --grants "$T/ro.json" --aws-account-id 111122223333 --aws-role-arn arn:aws:iam::111122223333:role/r1; rc=$?
+run cp.example acme hook1 --grants "$T/ro.json"; rc=$?
 [ $rc = 0 ] && echo "ok   ro exit 0" || { echo "FAIL ro exit $rc"; cat "$T/out"; fail=1; }
 ok "--role roles/iam.securityReviewer" "ro: role bound"
 no "services enable compute" "ro: no extra apis"
-ok "--account-id 111122223333" "ro: aws id from flag"
 
 EXISTS=1 run cp.example acme hook1 --grants "$T/full.json"; rc=$?
 [ $rc = 0 ] && echo "ok   rerun exit 0" || { echo "FAIL rerun exit $rc"; cat "$T/out"; fail=1; }
-ok "providers update-aws facets-aws-provider" "rerun: provider updated"
+ok "providers update-oidc facets-k8s-0123456789ab" "rerun: provider updated"
 no "service-accounts create" "rerun: SA not recreated"
 no "pools create" "rerun: pool not recreated"
 
-python3 -c "import json;print(json.dumps({'projectRoles':['roles/owner'],'wifSubjectMapping':'google.subject=assertion.account','apis':['api%d.googleapis.com'%i for i in range(41)],'awsAccountId':'313496281593','awsRoleArn':'arn:aws:iam::313496281593:role/cp-acme'}))" > "$T/many.json"
+python3 -c "import json;d=json.load(open('$T/full.json'));d['apis']=['api%d.googleapis.com'%i for i in range(41)];print(json.dumps(d))" > "$T/many.json"
 run cp.example acme hook1 --grants "$T/many.json"; rc=$?
 calls=$(grep -c 'services enable api' "$LOG"); widest=$(grep 'services enable api' "$LOG" | awk '{n=0; for(i=1;i<=NF;i++) if ($i ~ /^api[0-9]+\.googleapis\.com$/) n++; print n}' | sort -n | tail -1)
 [ $rc = 0 ] && [ "$calls" = 3 ] && [ "$widest" -le 20 ] && grep -q 'api40.googleapis.com' "$LOG" && echo "ok   41 apis enabled in 3 calls of <=20" || { echo "FAIL batching rc=$rc calls=$calls widest=$widest"; fail=1; }
@@ -139,10 +133,11 @@ calls=$(grep -c '^curl .*link-gcp' "$LOG")
 [ $rc != 0 ] && grep -q "bad link" "$T/out" && grep -q "HTTP 400" "$T/out" && echo "ok   rejected callback fails with the server message" || { echo "FAIL callback failure rc=$rc"; cat "$T/out"; fail=1; }
 
 OLDBIND=1 run cp.example acme hook1 --grants "$T/full.json"
-ok "remove-iam-policy-binding facets-acme@my-proj.iam.gserviceaccount.com --project my-proj --role roles/iam.workloadIdentityUser --member principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_account/313496281593" "rerun: account-wide binding removed"
-grep -q 'Removing account-wide' "$T/out" && echo "ok   removal logged" || { echo "FAIL removal log"; fail=1; }
+ok "remove-iam-policy-binding facets-acme@my-proj.iam.gserviceaccount.com --project my-proj --role roles/iam.workloadIdentityUser --member principalSet://iam.googleapis.com/projects/123456/locations/global/workloadIdentityPools/facets-cp-pool/attribute.aws_account/313496281593" "rerun: old AWS-based binding removed"
+grep -q 'Removing old AWS-based binding' "$T/out" && echo "ok   removal logged" || { echo "FAIL removal log"; fail=1; }
 
-for bad in "cp.example acme hook1 --grants $T/full.json --aws-role-arn arn:aws:iam::111122223333:role/x" "cp.example acme hook1 --grants $T/ro.json" "cp.example acme hook1 --grants $T/full.json --aws-role-arn bad/arn" "cp.example Bad_Name hook1 --grants $T/full.json" "cp.example acme '' --grants $T/full.json" "cp.example acme hook1" "cp.example acme hook1 --grants /nonexistent" "cp.example acme hook1 --grants $T/ro.json --aws-account-id 12"; do
+echo '{"projectRoles":["roles/owner"],"apis":[]}' > "$T/nomode.json"
+for bad in "cp.example acme hook1 --grants $T/full.json --aws-role-arn arn:aws:iam::111122223333:role/x" "cp.example acme hook1 --grants $T/nomode.json" "cp.example Bad_Name hook1 --grants $T/full.json" "cp.example acme '' --grants $T/full.json" "cp.example acme hook1" "cp.example acme hook1 --grants /nonexistent"; do
   eval "run $bad"; rc=$?
   [ $rc != 0 ] && ! grep -q '^curl' "$LOG" && echo "ok   bad args rejected: $bad" || { echo "FAIL bad args: $bad"; fail=1; }
 done
@@ -166,9 +161,9 @@ IAM_LAG=2 run cp.example acme hook1 --grants "$T/imp.json"; rc=$?
 run cp.example acme hook1 --grants "$T/full.json"
 grep -q 'Linked.*WIF mode' "$T/out" && echo "ok   wif: summary names mode" || { echo "FAIL wif summary"; cat "$T/out"; fail=1; }
 
-echo '{"projectRoles":[],"impersonatorServiceAccount":"a@p.iam.gserviceaccount.com","awsAccountId":"313496281593"}' > "$T/both.json"
+echo '{"projectRoles":[],"impersonatorServiceAccount":"a@p.iam.gserviceaccount.com","oidcIssuer":"https://oidc.example/id/1"}' > "$T/both.json"
 echo '{"projectRoles":[],"impersonatorServiceAccount":"evil@example.com"}' > "$T/badimp.json"
-for c in "both.json::both awsAccountId" "badimp.json::invalid impersonatorServiceAccount" "imp.json:--aws-account-id 111122223333:cannot be used in impersonation"; do
+for c in "both.json::both oidcIssuer" "badimp.json::invalid impersonatorServiceAccount"; do
   f=${c%%:*}; rest=${c#*:}; flag=${rest%%:*}; msg=${rest#*:}
   # shellcheck disable=SC2086
   run cp.example acme hook1 --grants "$T/$f" $flag; rc=$?
